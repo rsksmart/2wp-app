@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
+
+div, p, h1, h2, h3, h4, h5, h6, body, button {
+  font-family: 'Roboto', sans-serif;
+  font-style: normal;
+}
+
+h1 {
+  font-weight: bold;
+  font-size: 40px;
+  line-height: 47px;
+  color: #1732A4;
+}
+
+p {
+  font-weight: normal;
+  font-size: 18px;
+  line-height: 21px;
+  color: #1732A4;
+}
+
+.custom-background {
+  background: linear-gradient(156.08deg, rgba(51, 204, 255, 0.35) -0.01%, rgba(204, 102, 255, 0.35) 99.99%);
+  height: 100%;
+  .gradient {
+    background-image: linear-gradient(270deg, #FFFFFF 0%, rgba(255, 255, 255, 0) 100%);
+    height: 100%;
+  }
+}
+
+.v-btn {
+  letter-spacing: normal !important;
+  text-transform: none;
+}
+
+.button {
+  width: 138px;
+  height: 49px;
+  background: #1732A4 !important;
+  border-radius: 30px !important;
+  span {
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 18px;
+    text-align: center;
+    color: #FFFFFF !important;
+  }
+}
+
+.v-card {
+  border-radius: 20px !important;
+}
+
+.v-tooltip {
+  border-radius: 20px !important;
+}
