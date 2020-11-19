@@ -5,7 +5,7 @@
         <v-card color="#FFF" class="container dialog">
           <v-row class="mx-0">
             <v-col cols="2" class="d-flex justify-start">
-              <v-btn class="skip-button" text @click="showDialog = false">
+              <v-btn class="skip-button" text @click="toExchange">
                 Skip
               </v-btn>
             </v-col>
@@ -34,45 +34,27 @@
             </p>
           </v-row>
           <v-row class="mx-0 my-10 justify-center">
-            <v-btn class="button" @click="showDialog = false">
+            <v-btn class="button" @click="toExchange">
               Get Started
             </v-btn>
           </v-row>
         </v-card>
       </v-dialog>
-      <div class="container">
-        <v-row class="mx-0 my-5 d-flex justify-center">
-          <h1>Bridging BTC & RBTC</h1>
-        </v-row>
-        <v-row class="mx-0 my-10 d-flex justify-center">
-          <p>Select your token conversion</p>
-        </v-row>
-        <v-row class="ma-0">
-          <v-col/>
-          <v-col cols="3" class="d-flex justify-center">
-            <v-btn outlined color="#1732A4" height="62" width="165">
-              BTC to RBTC
-            </v-btn>
-          </v-col>
-          <v-col cols="3" class="d-flex justify-center">
-            <v-btn outlined disabled color="#1732A4" height="62" width="165">
-              RBTC to BTC
-            </v-btn>
-          </v-col>
-          <v-col/>
-        </v-row>
-      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Vue } from 'vue-property-decorator';
+import { Vue, Component, Emit } from 'vue-property-decorator';
 
-export default Vue.extend({
-  name: 'Home',
-  data: () => ({
-    showDialog: true,
-  }),
-});
+@Component
+export default class Home extends Vue {
+  showDialog = true;
+
+  @Emit()
+  toExchange() {
+    this.showDialog = false;
+    this.$router.push({ name: 'Exchange' });
+  }
+}
 </script>

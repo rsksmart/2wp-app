@@ -10,6 +10,20 @@
     opacity: 0.75;
   }
 
+  .button {
+    width: 138px;
+    height: 49px;
+    background: #1732A4 !important;
+    border-radius: 30px !important;
+    span {
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 18px;
+      text-align: center;
+      color: #FFFFFF !important;
+    }
+  }
+
   .skip-button {
     text-align: left;
     span {

@@ -10,6 +10,16 @@ const routes: Array<RouteConfig> = [
     name: 'Home',
     component: Home,
   },
+  {
+    path: '/exchange',
+    name: 'Exchange',
+    component: () => import(/* webpackChunkName: "exchange" */ '../views/Exchange.vue'),
+  },
+  {
+    path: '/transactions',
+    name: 'Transactions',
+    component: () => import(/* webpackChunkName: "transactions" */ '../views/Transactions.vue'),
+  },
 ];
 
 const router = new VueRouter({
