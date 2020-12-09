@@ -28,6 +28,18 @@ p {
   }
 }
 
+.number {
+  width: 26px;
+  height: 26px;
+  border: 1px solid #A2ADDB;
+  border-radius: 50%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1732A4;
+}
+
 .v-btn {
   letter-spacing: normal !important;
   text-transform: none !important;
@@ -41,6 +53,18 @@ p {
   border-radius: 20px !important;
 }
 
+.shadow {
+  text-shadow: 1px 1px 1px #000;
+}
+
 .whiteish {
   color: #FFFFFF !important;
+}
+
+.greenish {
+  color: #23CB7D !important;
+}
+
+.grayish {
+  color: #F5FAFF !important;
 }

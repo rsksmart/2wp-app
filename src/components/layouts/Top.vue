@@ -13,9 +13,8 @@
 </template>
 
 <script lang="ts">
-import { Vue } from 'vue-property-decorator';
+import { Vue, Component } from 'vue-property-decorator';
 
-export default Vue.extend({
-  name: 'Top',
-});
+@Component
+export default class Top extends Vue {}
 </script>
