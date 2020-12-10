@@ -1,0 +1,126 @@
+.exchange-form {
+  h1 {
+    font-size: 30px;
+    line-height: 35px;
+    color: #1732A4;
+  }
+
+  h2 {
+    font-size: 22px;
+    line-height: 26px;
+    color: #1732A4;
+  }
+
+  p {
+    font-size: 20px;
+    line-height: 23px;
+    color: #1732A4;
+  }
+
+  div {
+    font-size: 16px;
+    line-height: 19px;
+    color: #1732A4;
+  }
+
+  .note {
+    background: rgba(162, 173, 219, 0.1);
+    border: 1px solid #A2ADDB;
+    box-sizing: border-box;
+    border-radius: 5px;
+    padding-left: 10px;
+
+    p {
+      font-size: 12px;
+      line-height: 14px;
+      color: #6F7591;
+    }
+  }
+
+  .input-box {
+    background: #FFFFFF;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 20px;
+    height: 45px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+
+    .v-text-field fieldset, .v-text-field .v-input__control, .v-text-field .v-input__slot {
+      padding: 0 !important;
+      margin: 0 !important;
+      height: 40px !important;
+      min-height: 42px !important;
+    }
+
+    input::-webkit-inner-spin-button {
+      display: none !important;
+      -webkit-appearance: none !important;
+      margin: 0 !important;
+    }
+
+    input {
+      text-align: center !important;
+    }
+
+    .rbtc-label {
+      background: #1732A4;
+      border-radius: 20px;
+      height: 45px;
+      padding: 0 15px 0 15px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      width: 76px;
+    }
+
+    .btc-label {
+      background: #C4C4C4;
+      border-radius: 20px;
+      height: 45px;
+      padding: 0 15px 0 15px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      width: 76px;
+    }
+  }
+  .input-box-inverted {
+    background: #FFF;
+    border-radius: 5px;
+    height: 38px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+
+    .v-text-field fieldset, .v-text-field .v-input__control, .v-text-field .v-input__slot {
+      padding: 0 !important;
+      margin: 0 !important;
+      height: 34px !important;
+      min-height: 36px !important;
+    }
+
+    input::-webkit-inner-spin-button {
+      display: none !important;
+      -webkit-appearance: none !important;
+      margin: 0 !important;
+    }
+
+    input {
+      text-align: center !important;
+    }
+
+    .label {
+      background: #1732A4;
+      border-radius: 5px;
+      height: 36px;
+      padding: 0 15px 0 15px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #FFF !important;
+    }
+  }
+}
