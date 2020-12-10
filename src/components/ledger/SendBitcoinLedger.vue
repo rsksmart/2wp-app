@@ -221,7 +221,7 @@ export default class SendBitcoinLedger extends Vue {
 
   btcRefundAddresses = ['4O5pURPUbPswwLwwiBmBs66WgRbAsyZ69j8', '5P5pURPUbPswwLwwiBmBs66WgRbAsyZ69j9']
 
-  @Prop(String) bitcoinWallet;
+  @Prop(String) bitcoinWallet!: string;
 
   get rbtcAmount() {
     return this.bitcoinAmount;

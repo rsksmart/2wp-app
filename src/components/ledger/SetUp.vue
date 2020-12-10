@@ -69,7 +69,7 @@ import {
 
 @Component
 export default class SetUp extends Vue {
-  flag: boolean;
+  flag = false;
 
   @Prop(Boolean) setUpFlag!: boolean;
 
