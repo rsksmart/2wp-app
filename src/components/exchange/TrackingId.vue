@@ -2,22 +2,26 @@
   <div class="d-flex justify-center exchange-form">
     <v-card width="550" class="container">
       <v-row class="mx-0 my-8 d-flex justify-center">
-        <v-icon color="#4CAF50" x-large>mdi-checkbox-marked-circle</v-icon>
+        <v-col cols="9">
+          <h2 class="text-center ma-0">
+            Copy the tracking ID below to check your transaction status
+          </h2>
+        </v-col>
       </v-row>
       <v-row class="mx-0 d-flex justify-center">
-        <h3 class="text-center">SUCCESS!</h3>
-      </v-row>
-      <v-row class="mx-0 mb-5 d-flex justify-center">
-        <h3 class="text-center">Your bitcoins were sent</h3>
+        <p class="text-center">Remember it will take between 16-17 hours.</p>
       </v-row>
       <v-row class="mx-0 d-flex justify-center">
-        <p class="text-center ma-0">You can close the tab freely, we will notify you.</p>
+        <p class="text-center">Transaction ID:  35gf676g</p>
+      </v-row>
+      <v-row class="mx-0 d-flex justify-center">
+        <p class="text-center">Transaction link: https://www.2wp/prototype.rsk/35gf676g</p>
       </v-row>
       <v-row class="mx-0 mb-8 d-flex justify-center">
-        <p class="text-center ma-0">Remember it will take between 16-17 hours.</p>
+        <p class="text-center ma-0">Email:  _______________________</p>
       </v-row>
       <v-row class="mx-0 mb-3 d-flex justify-center dialog">
-        <v-btn class="button" color="#126DF2" @click="$emit('track')">
+        <v-btn class="button" color="#126DF2">
           <span class="whiteish">Continue</span>
         </v-btn>
       </v-row>
@@ -32,6 +36,6 @@ import {
 } from 'vue-property-decorator';
 
 @Component
-export default class SuccessSend extends Vue {
+export default class TrackingId extends Vue {
 }
 </script>
