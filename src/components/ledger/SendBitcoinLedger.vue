@@ -168,7 +168,7 @@
         <v-row class="mx-0">
           <v-col cols="8" class="pl-0">
             <div class="input-box-inverted">
-              <span class="label">Destination RSK Address</span>
+              <span class="label">Transaction Fee</span>
               <v-text-field solo hide-details full-width single-line flat readonly
                             v-model="txFee"/>
             </div>
@@ -177,7 +177,7 @@
       </div>
       <v-row class="mx-0 d-flex justify-end">
         <v-col cols="3" class="d-flex justify-end">
-          <v-btn rounded solo dense color="#126DF2">
+          <v-btn rounded solo dense color="#126DF2" @click="sendBitcoin">
             <span class="whiteish">SEND</span>
             <v-icon color="#FFF" class="ml-2">mdi-arrow-right</v-icon>
           </v-btn>
@@ -192,11 +192,10 @@ import {
   Vue,
   Component,
   Prop,
-  Watch,
+  Emit,
 } from 'vue-property-decorator';
 import SendBitcoinDialog from '@/components/exchange/SendBitcoinDialog.vue';
 import SetUp from '@/components/ledger/SetUp.vue';
-import * as constants from '@/store/constants';
 
 @Component({
   components: {
@@ -243,9 +242,14 @@ export default class SendBitcoinLedger extends Vue {
     return txFee;
   }
 
-  @Watch('bitcoinWallet')
-  onBitcoinWalletSelection() {
-    if (this.bitcoinWallet === constants.WALLET_LEDGER) console.log('ledger on Send Bitcoin ledger!');
+  @Emit('sendBTC')
+  sendBitcoin(): object {
+    return {
+      bitcoinAmount: this.bitcoinAmount,
+      btcRefundAddressSelected: this.btcRefundAddressSelected,
+      rskAddressSelected: this.rskAddressSelected,
+      txFee: this.txFee,
+    };
   }
 }
 </script>

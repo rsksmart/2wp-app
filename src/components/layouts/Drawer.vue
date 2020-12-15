@@ -25,17 +25,10 @@ import {
   Vue,
   Component,
   Prop,
-  Watch,
 } from 'vue-property-decorator';
-import * as constants from '@/store/constants';
 
 @Component
 export default class Drawer extends Vue {
   @Prop(String) readonly bitcoinWallet!: string;
-
-  @Watch('bitcoinWallet')
-  onBitcoinWalletSelection() {
-    if (this.bitcoinWallet === constants.WALLET_LEDGER) console.log('ledger on drawer!');
-  }
 }
 </script>

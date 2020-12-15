@@ -45,6 +45,8 @@
     box-sizing: border-box;
     display: flex;
     align-items: center;
+    font-size: 12px;
+    line-height: 14px;
 
     .v-text-field fieldset, .v-text-field .v-input__control, .v-text-field .v-input__slot {
       padding: 0 !important;
@@ -92,6 +94,8 @@
     box-sizing: border-box;
     display: flex;
     align-items: center;
+    font-size: 12px;
+    line-height: 14px;
 
     .v-text-field fieldset, .v-text-field .v-input__control, .v-text-field .v-input__slot {
       padding: 0 !important;
