@@ -6,7 +6,7 @@
     <router-link class="mx-10" :to="{ name: 'Transactions' }">
       Transactions
     </router-link>
-    <router-link class="mx-10" :to="{ name: 'Transactions' }">
+    <router-link class="mx-10" :to="{ name: 'Help' }">
       Help
     </router-link>
   </v-app-bar>
