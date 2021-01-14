@@ -2,20 +2,20 @@ import { Module } from 'vuex';
 import { getters } from './getters';
 import { actions } from './actions';
 import { mutations } from './mutations';
-import { ProfileState } from './types';
+import { PegInTxState } from './types';
 import { RootState } from '../types';
 
-export const state: ProfileState = {
-  user: undefined,
-  error: false
+export const state: PegInTxState = {
+  utxoList: undefined,
+  addressList: undefined,
 };
 
-const namespaced: boolean = true;
+const namespaced = true;
 
-export const profile: Module<ProfileState, RootState> = {
+export const pegInTx: Module<PegInTxState, RootState> = {
   namespaced,
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };
