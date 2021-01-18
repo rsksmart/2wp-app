@@ -1,14 +1,24 @@
 <template>
-  <v-app-bar class="top d-flex justify-center" color="transparent" flat>
-    <router-link class="mx-10" :to="{ name: 'Exchange' }">
-      Exchange
-    </router-link>
-    <router-link class="mx-10" :to="{ name: 'Transactions' }">
-      Transactions
-    </router-link>
-    <router-link class="mx-10" :to="{ name: 'Transactions' }">
-      Help
-    </router-link>
+  <v-app-bar color="#FFFFFF" flat>
+    <v-row class="top">
+      <v-col cols="3" class="d-flex align-center">
+        <v-img src="../../assets/rsk.png" height="40" contain/>
+      </v-col>
+      <v-col cols="2" class="d-flex justify-center align-center">
+        <router-link :to="{ name: 'Exchange' }">
+          Home
+        </router-link>
+      </v-col>
+      <v-col cols="3" class="d-flex justify-center align-center">
+        <router-link :to="{ name: 'Transactions' }">
+          Transaction Status
+        </router-link>
+      </v-col>
+      <v-spacer/>
+      <v-col cols="2" class="d-flex justify-end align-center">
+        <p class="mb-0 blackish">English</p>
+      </v-col>
+    </v-row>
   </v-app-bar>
 </template>
 
