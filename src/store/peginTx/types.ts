@@ -5,16 +5,24 @@ export interface PegInTxState {
 }
 
 export interface Utxo {
-  txId: string;
+  txid: string;
   amount: number;
   address?: string;
-  derivationPath: string;
+  path: string;
   derivationArray: number[];
-  vOut: number;
+  vout: number;
 }
 
 export interface WalletAddress {
-  addr: string;
-  derivationPath: string;
-  derivationArray: number[];
+  address: string;
+  serializedPath: string;
+  path: number[];
+}
+
+export interface TransactionSummary {
+  amount: number,
+  destinationAddress: string,
+  fee: number,
+  totalAmount: number,
+  refundAddress: string,
 }

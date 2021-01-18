@@ -13,4 +13,7 @@ module.exports = {
       extensions: ['.png'],
     },
   },
+  devServer: {
+    https: true,
+  },
 };

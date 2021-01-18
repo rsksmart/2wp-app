@@ -1,63 +1,100 @@
-import TrezorConnect, { GetAddress, SignTransaction } from 'trezor-connect';
-import {WalletAddress} from "@/store/peginTx/types";
+import TrezorConnect, { GetAddress } from 'trezor-connect';
+import { Utxo, WalletAddress } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 
 export default class TrezorService {
   private coin: string;
 
-  constructor() {
-    this.coin = 'test';
+  constructor(coin: string) {
+    this.coin = coin;
     TrezorConnect.manifest({
-        email: 'ronald@trugroup.tech',
-        appUrl: 'https://trugroup.tech/',
+      email: process.env.VUE_APP_MANIFEST_EMAIL ?? '',
+      appUrl: process.env.VUE_APP_MANIFEST_APP_URL ?? '',
     });
   }
 
-  private getDerivationPath(accountType: string, accountIdx: number,
-                            change: boolean, addressIdx: number ): string {
-    const coinPath: string = this.coin == 'bitcoin' ? "/0'": "/1'";
-    let derivationPath: string = "m";
+  private getAccountPath(accountType: string, accountIdx: number) {
+    const coinPath: string = this.coin === 'bitcoin' ? "/0'" : "/1'";
+    let accountPath = 'm';
     switch (accountType) {
       case constants.BITCOIN_LEGACY_ADDRESS:
-        derivationPath += "/44'";
+        accountPath += "/44'";
         break;
       case constants.BITCOIN_SEGWIT_ADDRESS:
-        derivationPath += "/49'";
+        accountPath += "/49'";
         break;
       case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
-        derivationPath += "/84'";
+        accountPath += "/84'";
         break;
       default:
-        derivationPath += "/44'";
+        accountPath += "/44'";
     }
-    const changePath: string = change ? "/1" : "/0";
-    derivationPath += coinPath + `/${accountIdx}'` + changePath + `/${addressIdx}`;
-    return derivationPath;
+    return `${accountPath}${coinPath}/${accountIdx}`;
   }
 
-  getAddressList(accountType: string, accountIndex: number, addressStartIndex: number,
-                 batch: number): Promise<WalletAddress> | Error{
+  private getDerivationPath(accountType: string, accountIdx: number, change: boolean,
+    addressIdx: number): string {
+    const changePath: string = change ? '/1' : '/0';
+    return `${this.getAccountPath(accountType, accountIdx)}${changePath}/${addressIdx}`;
+  }
+
+  public getAddressList(accountType: string, accountIndex: number, addressStartIndex: number,
+    batch: number): Promise<WalletAddress[]> {
     return new Promise((resolve, reject) => {
-      let bundle: GetAddress[] = [];
-      for (let index = addressStartIndex; index < batch + addressStartIndex; index++) {
+      const bundle: GetAddress[] = [];
+      for (let index = addressStartIndex; index < batch + addressStartIndex; index += 1) {
         bundle.push({
-          path: this.getDerivationPath(accountType,accountIndex,false, index),
+          path: this.getDerivationPath(accountType, accountIndex, false, index),
           showOnTrezor: false,
           coin: this.coin,
         });
         bundle.push({
-          path: this.getDerivationPath(accountType,accountIndex,true, index),
+          path: this.getDerivationPath(accountType, accountIndex, true, index),
           showOnTrezor: false,
           coin: this.coin,
         });
       }
       TrezorConnect.getAddress({
-        bundle: bundle,
+        bundle,
       })
-      .then((result) => {
-        if (!result.success) reject(new Error(result.payload.error));
-        
+        .then((result) => {
+          if (!result.success) reject(new Error(result.payload.error));
+          const addresses: WalletAddress[] = [];
+          Object.entries(result.payload).forEach((obj) => {
+            addresses.push(obj[1]);
+          });
+          resolve(addresses);
+        })
+        .catch(reject);
+    });
+  }
+
+  getAccountUtxos(accountType: string, accountIndex: number): Promise<Utxo[]> {
+    return new Promise((resolve, reject) => {
+      TrezorConnect.getAccountInfo({
+        path: this.getAccountPath(accountType, accountIndex),
+        coin: this.coin,
+        details: 'txs',
       })
+        .then((result) => {
+          if (!result.success) reject(new Error(result.payload.error));
+          const utxoList: Utxo[] = [];
+          if ('utxo' in result.payload) {
+            // @ts-ignore
+            Object.entries(result.payload.utxo).forEach((obj) => {
+              const [idx, utxo] = obj;
+              utxoList.push({
+                txid: utxo.txid,
+                amount: +utxo.amount,
+                address: utxo.address,
+                path: utxo.path,
+                derivationArray: [], // TODO derivation array from path
+                vout: utxo.vout,
+              });
+            });
+          }
+          resolve(utxoList);
+        })
     });
   }
 }
