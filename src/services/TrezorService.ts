@@ -77,6 +77,7 @@ export default class TrezorService {
         details: 'txs',
       })
         .then((result) => {
+          console.log(result);
           if (!result.success) reject(new Error(result.payload.error));
           const utxoList: Utxo[] = [];
           if ('utxo' in result.payload) {
@@ -88,7 +89,7 @@ export default class TrezorService {
                 amount: +utxo.amount,
                 address: utxo.address,
                 path: utxo.path,
-                derivationArray: [], // TODO derivation array from path
+                derivationArray: this.getSerializedPath(utxo.path),
                 vout: utxo.vout,
               });
             });
@@ -96,5 +97,13 @@ export default class TrezorService {
           resolve(utxoList);
         })
     });
+  }
+
+  getSerializedPath(path: string): number[]{
+    path.substring(2, path.length);
+    const [accountType, chain, accountIdx, change, addressIdx] = path.split('/');
+    return [(+accountType.substring(0,2) | 0x80000000) >>> 0,
+      (+chain.substring(0,1) | 0x80000000) >>> 0,
+      (+accountIdx.substring(0,1) | 0x80000000) >>> 0, +change, +addressIdx];
   }
 }

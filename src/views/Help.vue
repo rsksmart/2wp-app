@@ -1,9 +1,10 @@
 <template>
   <div class="container">
-    <v-btn @click="getAddress"></v-btn>
+    <v-btn @click="getAddress">  get address</v-btn>
     <p>
       {{data}}
     </p>
+    <v-btn @click="getAccountInfo"> get account info</v-btn>
   </div>
 </template>
 
@@ -30,6 +31,13 @@ export default class Help extends Vue {
       .then((addressList) => {
         this.data = addressList;
       });
+  }
+
+  @Emit()
+  getAccountInfo() {
+    this.trezorService.getAccountUtxos(constants.BITCOIN_SEGWIT_ADDRESS, 0)
+      .then(console.log)
+      .catch(console.error);
   }
 }
 </script>

@@ -1,3 +1,3 @@
-export default abstract class TxBuilder {
+export default abstract class TxSigner {
   public abstract sign(): boolean;
 }
