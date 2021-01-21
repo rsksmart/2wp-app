@@ -1,19 +1,54 @@
 .exchange {
+  height: 80% !important;
+  width: 100% !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   div p {
     font-size: 14px;
     line-height: 16px;
-    color: #1732A4;
+    color: #000000;
+  }
+
+  .ledger-icon {
+    width: 130px;
+    height: 195px;
+    background: url('../assets/icons/ledger.png') no-repeat !important;
+    display: inline-block;
+  }
+  .ledger-icon:hover {
+    background: url('../assets/icons/ledger-white.png') no-repeat;
   }
 
   .wallet-button {
-    height: 62px !important;
-    width: 165px !important;
-    color: #1732A4 !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 20px 0 20px 0;
+    background-color: #FFFFFF !important;
     border-radius: 20px !important;
+    border: 1px solid #00B520 !important;
+    .wallet-button-content {
+      color: #00B520 !important;
+    }
+  }
+  .wallet-button:hover {
+    background-color: #00B520 !important;
+    .wallet-button-content {
+      color: #FFFFFF !important;
+    }
+  }
+  .wallet-button:focus {
+    background-color: #01941B !important;
+    .wallet-button-content {
+      color: #FFFFFF !important;
+    }
   }
 
   .selected {
-    background-color: #1732A4 !important;
+    background-color: #00B520 !important;
     border-color: transparent !important;
+    .wallet-button-content {
+      color: #FFFFFF !important;
+    }
   }
 }
