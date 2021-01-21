@@ -29,7 +29,7 @@ export default class TrezorService {
       default:
         accountPath += "/44'";
     }
-    return `${accountPath}${coinPath}/${accountIdx}`;
+    return `${accountPath}${coinPath}/${accountIdx}'`;
   }
 
   private getDerivationPath(accountType: string, accountIdx: number, change: boolean,
@@ -100,8 +100,8 @@ export default class TrezorService {
   }
 
   getSerializedPath(path: string): number[]{
-    path.substring(2, path.length);
-    const [accountType, chain, accountIdx, change, addressIdx] = path.split('/');
+    const tmpPath = path.substr(2, path.length);
+    const [accountType, chain, accountIdx, change, addressIdx] = tmpPath.split('/');
     return [(+accountType.substring(0,2) | 0x80000000) >>> 0,
       (+chain.substring(0,1) | 0x80000000) >>> 0,
       (+accountIdx.substring(0,1) | 0x80000000) >>> 0, +change, +addressIdx];
