@@ -4,15 +4,17 @@
     font-size: 20px;
     line-height: 23px;
     text-align: center;
-    color: #1732A4 !important;
+    color: #000000 !important;
     text-decoration: none !important;
   }
 
   a:hover {
     font-weight: bold;
+    text-decoration: underline !important;
   }
 
   a:focus {
     font-weight: bold;
+    text-decoration: underline !important;
   }
 }

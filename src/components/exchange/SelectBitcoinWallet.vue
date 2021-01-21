@@ -1,126 +1,123 @@
 <template>
   <div class="exchange">
     <div class="container">
-      <v-row class="mx-0 my-5 d-flex justify-center">
-        <h1>Bridging BTC & RBTC</h1>
+      <v-row class="mx-0 mb-5 d-flex justify-center">
+        <h1>Bridging BTC and RBTC</h1>
       </v-row>
-      <v-row class="mx-0 mt-10 d-flex justify-center">
-        <p>Select your token conversion</p>
-      </v-row>
-      <v-row class="ma-0">
-        <v-col/>
-        <v-col cols="3" class="d-flex justify-end">
-          <v-btn outlined class="wallet-button" @click="showBitcoinWallets"
-                 v-bind:class="{ selected: BTC2RBTC }">
-            <span v-bind:class="{ whiteish: BTC2RBTC }">BTC to RBTC</span>
-          </v-btn>
-        </v-col>
-        <v-col cols="3" class="d-flex justify-start">
-          <v-btn outlined class="wallet-button">
-            <span>RBTC to BTC</span>
-          </v-btn>
-        </v-col>
-        <v-col/>
-      </v-row>
-    </div>
-    <template v-if="showWallet" class="container">
-      <v-row class="mx-0 mt-10 d-flex justify-center">
-        <p class="text-center">Select your Bitcoin wallet</p>
-      </v-row>
-      <v-row class="ma-0">
-        <v-col/>
-        <v-col cols="3" class="d-flex justify-end">
-          <v-btn outlined class="wallet-button"
-                 @click="setBitcoinWallet(storeConstants.WALLET_LEDGER)"
-                 v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_LEDGER }">
-            <v-img class="mr-2" :src="ledgerImage" contain max-width="25"/>
-            <span v-bind:class="{ whiteish: selectedWallet === storeConstants.WALLET_LEDGER }">
-              Ledger
-            </span>
-          </v-btn>
-        </v-col>
-        <v-col cols="3" class="d-flex justify-start">
-          <v-btn outlined class="wallet-button"
-                 @click="setBitcoinWallet(storeConstants.WALLET_ELECTRUM)"
-                 v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_ELECTRUM }">
-            <v-img class="mr-2" :src="electrumImage" contain max-width="25"/>
-            <span v-bind:class="{ whiteish: selectedWallet === storeConstants.WALLET_ELECTRUM }">
-              Electrum
-            </span>
-          </v-btn>
-        </v-col>
-        <v-col/>
-      </v-row>
-      <v-row class="ma-0">
-        <v-col/>
-        <v-col cols="3" class="d-flex justify-end">
-          <v-btn outlined class="wallet-button"
-                 @click="setBitcoinWallet(storeConstants.WALLET_TREZOR)"
-                 v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_TREZOR }">
-            <v-img class="mr-2" :src="trezorImage" contain max-width="17"/>
-            <span v-bind:class="{ whiteish: selectedWallet === storeConstants.WALLET_TREZOR }">
-              Trezor
-            </span>
-          </v-btn>
-        </v-col>
-        <v-col cols="3"/>
-        <v-col/>
-      </v-row>
-      <v-row class="mx-0 d-flex justify-center">
-        <v-col cols="3" class="d-flex justify-center">
-          <v-btn outlined color="#1732A4" rounded @click="showMoreBitcoinWallets">
-            {{ moreWalletsBtn }}
-          </v-btn>
-        </v-col>
-      </v-row>
-      <template v-if="showMoreWallets">
+      <template v-if="!BTC2RBTC">
+        <v-row class="mx-0 mt-10 d-flex justify-center">
+          <p>Select your token conversion</p>
+        </v-row>
         <v-row class="ma-0">
-          <v-col/>
-          <v-col cols="3" class="d-flex justify-end">
-            <v-btn outlined class="wallet-button"
-                   @click="setBitcoinWallet(storeConstants.WALLET_RWALLET)"
-                   v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_RWALLET }">
-              <v-img class="mr-2" :src="rWalletImage" contain max-width="26"/>
-              <span v-bind:class="{ whiteish: selectedWallet === storeConstants.WALLET_RWALLET }">
-                rWallet
-              </span>
+          <v-col cols="6">
+            <v-btn class="wallet-button" @click="showBitcoinWallets"
+                   v-bind:class="{ selected: BTC2RBTC }">
+              <div>
+                <v-row class="mx-0 d-flex justify-center">
+                  <v-col/>
+                  <v-col class="pa-0 d-flex align-center">
+                    <v-img src="@/assets/exchange/btc.png" height="30" contain/>
+                  </v-col>
+                  <v-col class="pa-0 d-flex align-center">
+                    <v-icon class="wallet-button-content">mdi-arrow-right</v-icon>
+                  </v-col>
+                  <v-col class="pa-0 d-flex align-center">
+                    <v-img src="@/assets/exchange/rbtc.png" height="40" contain/>
+                  </v-col>
+                  <v-col/>
+                </v-row>
+                <v-row class="mx-0 d-flex justify-center">
+                  <span class="wallet-button-content">BTC to RBTC</span>
+                </v-row>
+              </div>
             </v-btn>
           </v-col>
-          <v-col cols="3" class="d-flex justify-start">
-            <v-btn outlined class="wallet-button"
-                   @click="setBitcoinWallet(storeConstants.WALLET_DEFIANT)"
-                   v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_DEFIANT }">
-              <v-img class="mr-2" :src="defiantImage" contain max-width="31"/>
-              <span v-bind:class="{ whiteish: selectedWallet === storeConstants.WALLET_DEFIANT }">
-                Defiant
-              </span>
+          <v-col cols="6">
+            <v-btn class="wallet-button"
+                   v-bind:class="{ selected: RBTC2BTC }">
+              <div>
+                <v-row class="mx-0 d-flex justify-center">
+                  <v-col/>
+                  <v-col class="pa-0 d-flex align-center">
+                    <v-img src="@/assets/exchange/rbtc.png" height="40" contain/>
+                  </v-col>
+                  <v-col class="pa-0 d-flex align-center">
+                    <v-icon class="wallet-button-content">mdi-arrow-right</v-icon>
+                  </v-col>
+                  <v-col class="pa-0 d-flex align-center">
+                    <v-img src="@/assets/exchange/btc.png" height="30" contain/>
+                  </v-col>
+                  <v-col/>
+                </v-row>
+                <v-row class="mx-0 d-flex justify-center">
+                  <span class="wallet-button-content">RBTC to BTC</span>
+                </v-row>
+              </div>
             </v-btn>
           </v-col>
-          <v-col/>
         </v-row>
       </template>
-      <v-row class="mx-0">
-        <v-col cols="3">
-          <v-btn outlined rounded color="#1732A4" @click="reset">
-            <v-icon class="mr-2">mdi-arrow-left</v-icon>
-            PREVIOUS STEP
-          </v-btn>
-        </v-col>
-        <v-col/>
-
-        <v-col cols="3" class="d-flex justify-end">
-          <v-btn :disabled="!selectedWallet" outlined rounded @click="toSendBitcoin"
-                 v-bind:class="{ selected: selectedWallet }">
-            <span v-bind:class="{ whiteish: selectedWallet }">
-              NEXT
-            </span>
-            <v-icon v-bind:class="{ whiteish: selectedWallet }" class="ml-2">
-              mdi-arrow-right
-            </v-icon>
-          </v-btn>
-        </v-col>
-      </v-row>
-    </template>
+      <template v-if="showWallet">
+        <v-row class="mx-0 mt-10 d-flex justify-center">
+          <p class="text-center">Select your Bitcoin wallet</p>
+        </v-row>
+        <v-row class="ma-0">
+          <v-col cols="4" class="d-flex justify-end">
+            <v-btn class="wallet-button"
+                   @click="setBitcoinWallet(storeConstants.WALLET_LEDGER)"
+                   v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_LEDGER }">
+              <v-img class="mr-2" :src="ledgerImage" contain max-width="25"/>
+              <span class="wallet-button-content">
+                Ledger
+              </span>
+            </v-btn>
+          </v-col>
+          <v-col cols="4" class="d-flex justify-start">
+            <v-btn outlined class="wallet-button"
+                   @click="setBitcoinWallet(storeConstants.WALLET_ELECTRUM)"
+                   v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_ELECTRUM }">
+              <v-img class="mr-2" :src="electrumImage" contain max-width="25"/>
+              <span class="wallet-button-content">Electrum</span>
+            </v-btn>
+          </v-col>
+          <v-col cols="4" class="d-flex justify-end">
+            <v-btn outlined class="wallet-button"
+                   @click="setBitcoinWallet(storeConstants.WALLET_TREZOR)"
+                   v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_TREZOR }">
+              <v-img class="mr-2" :src="trezorImage" contain max-width="17"/>
+              <span class="wallet-button-content">Trezor</span>
+            </v-btn>
+          </v-col>
+        </v-row>
+        <v-row class="mx-0 mt-15 d-flex justify-center">
+          <v-col cols="3" class="d-flex justify-center">
+            <v-btn outlined color="#00B520" rounded @click="showMoreBitcoinWallets">
+              {{ moreWalletsBtn }}
+            </v-btn>
+          </v-col>
+        </v-row>
+        <template v-if="showMoreWallets">
+          <v-row class="ma-0 d-flex justify-center">
+            <v-col cols="4" class="d-flex justify-end">
+              <v-btn outlined class="wallet-button"
+                     @click="setBitcoinWallet(storeConstants.WALLET_RWALLET)"
+                     v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_RWALLET }">
+                <v-img class="mr-2" :src="rWalletImage" contain max-width="26"/>
+                <span class="wallet-button-content">rWallet</span>
+              </v-btn>
+            </v-col>
+            <v-col cols="4" class="d-flex justify-start">
+              <v-btn outlined class="wallet-button"
+                     @click="setBitcoinWallet(storeConstants.WALLET_DEFIANT)"
+                     v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_DEFIANT }">
+                <v-img class="mr-2" :src="defiantImage" contain max-width="31"/>
+                <span class="wallet-button-content">Defiant</span>
+              </v-btn>
+            </v-col>
+          </v-row>
+        </template>
+      </template>
+    </div>
   </div>
 </template>
 
@@ -147,6 +144,8 @@ export default class SelectBitcoinWallet extends Vue {
   selectedWallet = '';
 
   BTC2RBTC = false;
+
+  RBTC2BTC = false;
 
   storeConstants = constants;
 
@@ -204,22 +203,27 @@ export default class SelectBitcoinWallet extends Vue {
     switch (wallet) {
       case constants.WALLET_LEDGER: {
         this.selectedWallet = constants.WALLET_LEDGER;
+        this.toSendBitcoin();
         break;
       }
       case constants.WALLET_ELECTRUM: {
         this.selectedWallet = constants.WALLET_ELECTRUM;
+        this.toSendBitcoin();
         break;
       }
       case constants.WALLET_TREZOR: {
         this.selectedWallet = constants.WALLET_TREZOR;
+        this.toSendBitcoin();
         break;
       }
       case constants.WALLET_RWALLET: {
         this.selectedWallet = constants.WALLET_RWALLET;
+        this.toSendBitcoin();
         break;
       }
       case constants.WALLET_DEFIANT: {
         this.selectedWallet = constants.WALLET_DEFIANT;
+        this.toSendBitcoin();
         break;
       }
       default: {
