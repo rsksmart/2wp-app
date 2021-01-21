@@ -1,26 +1,33 @@
 .exchange-form {
+  margin-top: 20px !important;
   h1 {
     font-size: 30px;
     line-height: 35px;
-    color: #1732A4;
+    color: #00B520;
   }
 
   h2 {
     font-size: 22px;
     line-height: 26px;
-    color: #1732A4;
+    color: #00B520;
   }
 
   p {
     font-size: 20px;
-    line-height: 23px;
-    color: #1732A4;
+    line-height: 25px;
+    color: #000000;
+  }
+
+  span {
+    font-size: 14px;
+    line-height: 17px;
+    color: #737778;
   }
 
   div {
     font-size: 16px;
     line-height: 19px;
-    color: #1732A4;
+    color: #00B520;
   }
 
   .note {
@@ -37,12 +44,21 @@
     }
   }
 
-  .input-box {
-    background: #FFFFFF;
-    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 20px;
-    height: 45px;
+  .v-slider__tick-label {
+    font-weight: bold;
+    color: #737778;
+  }
+
+  .input-box-outline {
+    background: #ECF7FC;
+    border: 1px solid #008CFF;
     box-sizing: border-box;
+    border-radius: 5px;
+    .flat {
+      background: #ECF7FC;
+      box-sizing: border-box;
+    }
+    height: 37px;
     display: flex;
     align-items: center;
     font-size: 12px;
@@ -51,8 +67,9 @@
     .v-text-field fieldset, .v-text-field .v-input__control, .v-text-field .v-input__slot {
       padding: 0 !important;
       margin: 0 !important;
-      height: 40px !important;
-      min-height: 42px !important;
+      height: 33px !important;
+      min-height: 35px !important;
+      background: #ECF7FC !important;
     }
 
     input::-webkit-inner-spin-button {
@@ -64,38 +81,63 @@
     input {
       text-align: center !important;
     }
-
-    .rbtc-label {
-      background: #1732A4;
-      border-radius: 20px;
-      height: 45px;
-      padding: 0 15px 0 15px;
-      box-sizing: border-box;
-      display: flex;
-      align-items: center;
-      width: 76px;
-    }
-
-    .btc-label {
-      background: #C4C4C4;
-      border-radius: 20px;
-      height: 45px;
-      padding: 0 15px 0 15px;
-      box-sizing: border-box;
-      display: flex;
-      align-items: center;
-      width: 76px;
-    }
   }
-  .input-box-inverted {
-    background: #FFF;
-    border-radius: 5px;
-    height: 38px;
+
+  .input-box-flat {
+    background: #FFFFFF;
     box-sizing: border-box;
+    height: 37px;
     display: flex;
     align-items: center;
     font-size: 12px;
     line-height: 14px;
+
+    .v-text-field fieldset, .v-text-field .v-input__control, .v-text-field .v-input__slot {
+      padding: 0 !important;
+      margin: 0 !important;
+      height: 33px !important;
+      min-height: 35px !important;
+      background: #FFFFFF !important;
+    }
+
+    input::-webkit-inner-spin-button {
+      display: none !important;
+      -webkit-appearance: none !important;
+      margin: 0 !important;
+    }
+
+    input {
+      text-align: center !important;
+    }
+  }
+
+  .summary-box {
+    border: 0.5px solid #BFBFBF;
+    box-sizing: border-box;
+    border-radius: 30px;
+    background: #FFF;
+
+    h1 {
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 17px;
+      color: #00B520;
+    }
+
+    p {
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 17px;
+      color: #000000;
+      margin: 0 !important;
+    }
+
+    span {
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 17px;
+      color: #C4C4C4;
+    }
 
     .v-text-field fieldset, .v-text-field .v-input__control, .v-text-field .v-input__slot {
       padding: 0 !important;
@@ -112,19 +154,6 @@
 
     input {
       text-align: center !important;
-    }
-
-    .label {
-      background: #1732A4;
-      border-radius: 5px;
-      height: 36px;
-      padding: 0 15px 0 15px;
-      box-sizing: border-box;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: #FFF !important;
     }
   }
 }

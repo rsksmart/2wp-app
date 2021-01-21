@@ -3,7 +3,7 @@
     <v-card class="container mb-5 d-flex align-center justify-center" width="650" height="340">
       <div @click="success">
         <v-row class="mx-0 d-flex justify-center">
-          <v-img src="@/assets/ledger/bitcoin.png" height="64" contain/>
+          <v-img src="@/assets/exchange/ledger/bitcoin.png" height="64" contain/>
         </v-row>
         <v-row class="mx-0 my-2 d-flex justify-center">
           <h3 class="text-center">Verify ans confirm transaction</h3>
@@ -15,7 +15,7 @@
           <p class="text-center">and confirm (or reject) it to continue.</p>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
-          <v-img src="@/assets/ledger/summary.png" height="120" contain/>
+          <v-img src="@/assets/exchange/ledger/summary.png" height="120" contain/>
         </v-row>
       </div>
     </v-card>

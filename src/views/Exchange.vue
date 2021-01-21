@@ -1,8 +1,10 @@
 <template>
   <div class="exchange">
-    <select-bitcoin-wallet v-if="!sendBitcoinStep" @bitcoinWalletSelected="toSendBitcoin"/>
-    <component v-else :is="currentComponent" :bitcoinWallet="bitcoinWallet" :btc="btcObj"
-               @sendBTC="send" @success="succeed" @track="track"/>
+    <div class="d-flex align-center">
+      <select-bitcoin-wallet v-if="!sendBitcoinStep" @bitcoinWalletSelected="toSendBitcoin"/>
+      <component v-else :is="currentComponent" :bitcoinWallet="bitcoinWallet" :btc="btcObj"
+                 @sendBTC="send" @success="succeed" @track="track"/>
+    </div>
   </div>
 </template>
 
@@ -10,6 +12,7 @@
 import { Vue, Component, Emit } from 'vue-property-decorator';
 import SelectBitcoinWallet from '@/components/exchange/SelectBitcoinWallet.vue';
 import SendBitcoinLedger from '@/components/ledger/SendBitcoinLedger.vue';
+import SendBitcoinTrezor from '@/components/trezor/SendBitcoinTrezor.vue';
 import VerifyConfirmTransaction from '@/components/ledger/VerifyConfirmTransaction.vue';
 import SuccessSend from '@/components/exchange/SuccessSend.vue';
 import TrackingId from '@/components/exchange/TrackingId.vue';
@@ -19,6 +22,7 @@ import * as constants from '@/store/constants';
   components: {
     SelectBitcoinWallet,
     SendBitcoinLedger,
+    SendBitcoinTrezor,
     VerifyConfirmTransaction,
     SuccessSend,
     TrackingId,
@@ -38,6 +42,7 @@ export default class Exchange extends Vue {
     this.bitcoinWallet = bitcoinWallet;
     this.sendBitcoinStep = true;
     if (bitcoinWallet === constants.WALLET_LEDGER) this.currentComponent = 'SendBitcoinLedger';
+    if (bitcoinWallet === constants.WALLET_TREZOR) this.currentComponent = 'SendBitcoinTrezor';
     return bitcoinWallet;
   }
 

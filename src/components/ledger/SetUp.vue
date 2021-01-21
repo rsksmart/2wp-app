@@ -12,7 +12,7 @@
           <p class="text-center">Plug in your Ledger device to your computer</p>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
-          <v-img src="../../assets/ledger/00.png" contain height="80"/>
+          <v-img src="@/assets/exchange/ledger/00.png" contain height="80"/>
         </v-row>
       </v-col>
       <v-col cols="3">
@@ -28,7 +28,7 @@
           </p>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
-          <v-img src="../../assets/ledger/01.png" contain height="80"/>
+          <v-img src="@/assets/exchange/ledger/01.png" contain height="80"/>
         </v-row>
       </v-col>
       <v-col cols="3">
@@ -44,7 +44,7 @@
           </p>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
-          <v-img src="../../assets/ledger/02.png" contain height="80"/>
+          <v-img src="@/assets/exchange/ledger/02.png" contain height="80"/>
         </v-row>
       </v-col>
     </v-row>

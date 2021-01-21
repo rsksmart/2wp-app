@@ -12,6 +12,13 @@ h1 {
   color: #00B520;
 }
 
+h2 {
+  font-weight: bold;
+  font-size: 36px;
+  line-height: 138.27%;
+  color: #00B520;
+}
+
 p {
   font-weight: normal;
   font-size: 18px;
@@ -24,15 +31,32 @@ p {
 }
 
 .number {
-  width: 26px;
-  height: 26px;
-  border: 1px solid #A2ADDB;
-  border-radius: 50%;
+  width: 23px;
+  height: 23px;
+  font-size: 12px;
+  line-height: 15px;
+  border: 1px solid #00B520;
   box-sizing: border-box;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #1732A4;
+  margin-right: 10px;
+}
+
+.number-fill {
+  width: 23px;
+  height: 23px;
+  font-size: 12px;
+  line-height: 15px;
+  border: 1px solid #00B520;
+  box-sizing: border-box;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  background: #00B520;
 }
 
 .v-btn {
@@ -52,6 +76,10 @@ p {
   text-shadow: 1px 1px 1px #000;
 }
 
+.boldie {
+  font-weight: bold !important;
+}
+
 .blackish {
   color: #000000 !important;
 }
@@ -61,7 +89,7 @@ p {
 }
 
 .greenish {
-  color: #23CB7D !important;
+  color: #00B520 !important;
 }
 
 .grayish {

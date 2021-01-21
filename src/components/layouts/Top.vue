@@ -2,7 +2,7 @@
   <v-app-bar color="#FFFFFF" flat>
     <v-row class="top">
       <v-col cols="3" class="d-flex align-center">
-        <v-img src="../../assets/rsk.png" height="40" contain/>
+        <v-img src="@/assets/rsk.png" height="40" contain/>
       </v-col>
       <v-col cols="2" class="d-flex justify-center align-center">
         <router-link :to="{ name: 'Exchange' }">
