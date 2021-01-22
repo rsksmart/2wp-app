@@ -1,4 +1,3 @@
-
 export interface PegInTxState {
   utxoList?: Utxo[];
   addressList?: WalletAddress[];
@@ -19,10 +18,16 @@ export interface WalletAddress {
   path: number[];
 }
 
+export interface UnusedWalletAddress {
+  address: string;
+  path: number[];
+  transfer: number;
+}
+
 export interface TransactionSummary {
-  amount: number,
-  destinationAddress: string,
-  fee: number,
-  totalAmount: number,
-  refundAddress: string,
+  amount: number;
+  destinationAddress: string;
+  fee: number;
+  totalAmount: number;
+  refundAddress: string;
 }

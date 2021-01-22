@@ -1,5 +1,5 @@
 import TrezorConnect, { GetAddress } from 'trezor-connect';
-import { Utxo, WalletAddress } from '@/store/peginTx/types';
+import { Utxo, WalletAddress, UnusedWalletAddress } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 
 export default class TrezorService {
@@ -69,7 +69,8 @@ export default class TrezorService {
     });
   }
 
-  getAccountUtxos(accountType: string, accountIndex: number): Promise<Utxo[]> {
+  getAccountUtxos(accountType: string, accountIndex: number):
+    Promise<[Utxo[], UnusedWalletAddress[]]> {
     return new Promise((resolve, reject) => {
       TrezorConnect.getAccountInfo({
         path: this.getAccountPath(accountType, accountIndex),
@@ -77,12 +78,21 @@ export default class TrezorService {
         details: 'txs',
       })
         .then((result) => {
-          console.log(result);
           if (!result.success) reject(new Error(result.payload.error));
+          const unusedAddresses: UnusedWalletAddress[] = [];
           const utxoList: Utxo[] = [];
+          if ('addresses' in result.payload) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            result.payload.addresses.unused.forEach((unused: UnusedWalletAddress) => {
+              unusedAddresses.push(unused);
+            });
+          }
           if ('utxo' in result.payload) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
             Object.entries(result.payload.utxo).forEach((obj) => {
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
               const [idx, utxo] = obj;
               utxoList.push({
                 txid: utxo.txid,
@@ -94,16 +104,20 @@ export default class TrezorService {
               });
             });
           }
-          resolve(utxoList);
-        })
+          resolve([utxoList, unusedAddresses]);
+        });
     });
   }
 
-  getSerializedPath(path: string): number[]{
+  // eslint-disable-next-line class-methods-use-this
+  getSerializedPath(path: string): number[] {
     const tmpPath = path.substr(2, path.length);
     const [accountType, chain, accountIdx, change, addressIdx] = tmpPath.split('/');
-    return [(+accountType.substring(0,2) | 0x80000000) >>> 0,
-      (+chain.substring(0,1) | 0x80000000) >>> 0,
-      (+accountIdx.substring(0,1) | 0x80000000) >>> 0, +change, +addressIdx];
+    // eslint-disable-next-line no-bitwise
+    return [(+accountType.substring(0, 2) | 0x80000000) >>> 0,
+      // eslint-disable-next-line no-bitwise
+      (+chain.substring(0, 1) | 0x80000000) >>> 0,
+      // eslint-disable-next-line no-bitwise
+      (+accountIdx.substring(0, 1) | 0x80000000) >>> 0, +change, +addressIdx];
   }
 }
