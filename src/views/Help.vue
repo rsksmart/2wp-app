@@ -24,14 +24,14 @@ export default class Help extends Vue {
   // @Action('fetchData', { namespace: 'profile' }) fetchData!: any;
   //
   // @Getter('fullName', { namespace: 'profile' }) fullName!: string;
-  @Emit()
-  getAddress() {
-    this.trezorService
-      .getAddressList(constants.BITCOIN_LEGACY_ADDRESS, 2, 0, 10)
-      .then((addressList) => {
-        this.data = addressList;
-      });
-  }
+  // @Emit()
+  // getAddress() {
+  //   this.trezorService
+  //     .getAddressList(constants.BITCOIN_LEGACY_ADDRESS, 2, 0, 10)
+  //     .then((addressList) => {
+  //       this.data = addressList;
+  //     });
+  // }
 
   @Emit()
   getAccountInfo() {

@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app style="z-index: 0 !important;">
     <v-main class="custom-background">
       <top/>
       <router-view @bitcoinWallet="getBitcoinWallet"/>
@@ -9,21 +9,19 @@
 <script lang="ts">
 import Vue from 'vue';
 import Top from '@/components/layouts/Top.vue';
+import { Component, Emit } from 'vue-property-decorator';
 
-export default Vue.extend({
-  name: 'App',
-  data() {
-    return {
-      bitcoinWallet: '',
-    };
-  },
+@Component({
   components: {
     Top,
   },
-  methods: {
-    getBitcoinWallet(_bitcoinWallet: string) {
-      this.bitcoinWallet = _bitcoinWallet;
-    },
-  },
-});
+})
+export default class App extends Vue {
+  bitcoinWallet = '';
+
+  @Emit()
+  getBitcoinWallet(_bitcoinWallet: string) {
+    this.bitcoinWallet = _bitcoinWallet;
+  }
+}
 </script>

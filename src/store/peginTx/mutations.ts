@@ -9,4 +9,7 @@ export const mutations: MutationTree<PegInTxState> = {
   [constants.PEGIN_TX_SET_UTXO_LIST]: (state, utxoList: Utxo[]) => {
     state.utxoList = utxoList;
   },
+  [constants.PEGIN_TX_SET_TREZOR_CONNECTED]: (state, trezorConnected: boolean) => {
+    state.trezorConnected = trezorConnected;
+  },
 };

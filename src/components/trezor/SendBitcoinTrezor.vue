@@ -57,8 +57,10 @@ import SendBitcoinForm from '@/components/exchange/SendBitcoinForm.vue';
 import ConfirmTransaction from '@/components/trezor/ConfirmTransaction.vue';
 import TrackingId from '@/components/exchange/TrackingId.vue';
 import TrezorService from '@/services/TrezorService';
-import { Utxo, UnusedWalletAddress } from '@/store/peginTx/types';
+import { Utxo, UnusedWalletAddress, PegInTxState } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
+import { Action, State } from 'vuex-class';
+import TrezorConnect, { DEVICE, DEVICE_EVENT } from 'trezor-connect';
 
 @Component({
   components: {
@@ -82,6 +84,12 @@ export default class SendBitcoinTrezor extends Vue {
 
   trezorService: TrezorService = new TrezorService('test');
 
+  @State('pegInTx') peginTxState!: PegInTxState;
+
+  @Action(constants.IS_TREZOR_CONNECTED, { namespace: 'pegInTx' }) setTrezorConnected !: any;
+
+  @Action(constants.PEGIN_TX_ADD_ADDRESSES, { namespace: 'pegInTx' }) setPeginTxAddresses !: any;
+
   @Prop(String) bitcoinWallet!: string;
 
   @Emit()
@@ -98,21 +106,36 @@ export default class SendBitcoinTrezor extends Vue {
   @Emit()
   closeDialog() {
     this.showDialog = false;
-    setTimeout(() => {
-      this.getAccountInfo();
-    }, 1500);
+    this.getAccountAddresses();
+    TrezorConnect.on(DEVICE_EVENT, (event) => {
+      if (event.type === DEVICE.CONNECT) {
+        console.log('Trezor connected :D');
+        this.setTrezorConnected(true);
+        this.showDialog = false;
+        this.trezorConnected = this.peginTxState.trezorConnected;
+      } else if (event.type === DEVICE.DISCONNECT) {
+        console.log('Trezor disconnected :(');
+        this.setTrezorConnected(false);
+        this.showDialog = false;
+        this.trezorConnected = this.peginTxState.trezorConnected;
+      }
+    });
   }
 
   @Emit()
-  getAccountInfo() {
-    this.trezorService.getAccountUtxos(constants.BITCOIN_SEGWIT_ADDRESS, 0)
-      .then((res) => {
-        [this.utxos, this.addresses] = res;
-        this.trezorConnected = true;
+  getAccountAddresses() {
+    this.trezorService.getAddressList()
+      .then((addresses) => {
+        this.setPeginTxAddresses(addresses);
       })
-      .catch((err) => {
-        console.error('Can get your account info', err);
-      });
+      .catch(console.error);
+    // this.trezorService.getAccountUtxos(constants.BITCOIN_SEGWIT_ADDRESS, 0)
+    //   .then((res) => {
+    //     [this.utxos, this.addresses] = res;
+    //   })
+    //   .catch((err) => {
+    //     console.error('Can get your account info', err);
+    //   });
   }
 }
 </script>

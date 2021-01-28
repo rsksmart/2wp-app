@@ -38,22 +38,52 @@ export default class TrezorService {
     return `${this.getAccountPath(accountType, accountIdx)}${changePath}/${addressIdx}`;
   }
 
-  public getAddressList(accountType: string, accountIndex: number, addressStartIndex: number,
-    batch: number): Promise<WalletAddress[]> {
+  private getAddressesBundle(accountIndex: number, batch: number): GetAddress [] {
+    const bundle: GetAddress[] = [];
+    for (let index = 0; index < batch; index += 1) {
+      bundle.push({
+        path: this.getDerivationPath(constants
+          .BITCOIN_LEGACY_ADDRESS, accountIndex, false, index),
+        showOnTrezor: false,
+        coin: this.coin,
+      });
+      bundle.push({
+        path: this.getDerivationPath(constants
+          .BITCOIN_LEGACY_ADDRESS, accountIndex, true, index),
+        showOnTrezor: false,
+        coin: this.coin,
+      });
+      bundle.push({
+        path: this.getDerivationPath(constants
+          .BITCOIN_SEGWIT_ADDRESS, accountIndex, false, index),
+        showOnTrezor: false,
+        coin: this.coin,
+      });
+      bundle.push({
+        path: this.getDerivationPath(constants
+          .BITCOIN_SEGWIT_ADDRESS, accountIndex, true, index),
+        showOnTrezor: false,
+        coin: this.coin,
+      });
+      bundle.push({
+        path: this.getDerivationPath(constants
+          .BITCOIN_NATIVE_SEGWIT_ADDRESS, accountIndex, false, index),
+        showOnTrezor: false,
+        coin: this.coin,
+      });
+      bundle.push({
+        path: this.getDerivationPath(constants
+          .BITCOIN_NATIVE_SEGWIT_ADDRESS, accountIndex, true, index),
+        showOnTrezor: false,
+        coin: this.coin,
+      });
+    }
+    return bundle;
+  }
+
+  public getAddressList(): Promise<WalletAddress[]> {
     return new Promise((resolve, reject) => {
-      const bundle: GetAddress[] = [];
-      for (let index = addressStartIndex; index < batch + addressStartIndex; index += 1) {
-        bundle.push({
-          path: this.getDerivationPath(accountType, accountIndex, false, index),
-          showOnTrezor: false,
-          coin: this.coin,
-        });
-        bundle.push({
-          path: this.getDerivationPath(accountType, accountIndex, true, index),
-          showOnTrezor: false,
-          coin: this.coin,
-        });
-      }
+      const bundle = this.getAddressesBundle(0, 10);
       TrezorConnect.getAddress({
         bundle,
       })
@@ -69,7 +99,7 @@ export default class TrezorService {
     });
   }
 
-  getAccountUtxos(accountType: string, accountIndex: number):
+  public getAccountUtxos(accountType: string, accountIndex: number):
     Promise<[Utxo[], UnusedWalletAddress[]]> {
     return new Promise((resolve, reject) => {
       TrezorConnect.getAccountInfo({
@@ -110,7 +140,7 @@ export default class TrezorService {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  getSerializedPath(path: string): number[] {
+  private getSerializedPath(path: string): number[] {
     const tmpPath = path.substr(2, path.length);
     const [accountType, chain, accountIdx, change, addressIdx] = tmpPath.split('/');
     // eslint-disable-next-line no-bitwise

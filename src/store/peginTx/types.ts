@@ -1,6 +1,7 @@
 export interface PegInTxState {
   utxoList?: Utxo[];
   addressList?: WalletAddress[];
+  trezorConnected: boolean;
 }
 
 export interface Utxo {

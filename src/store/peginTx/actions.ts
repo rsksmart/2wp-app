@@ -10,4 +10,7 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_ADD_UTXOS]: ({ commit }, utxoList: Utxo[]) => {
     commit(constants.PEGIN_TX_SET_UTXO_LIST, { utxoList });
   },
+  [constants.IS_TREZOR_CONNECTED]: ({ commit }, trezorConnected: boolean) => {
+    commit(constants.PEGIN_TX_SET_TREZOR_CONNECTED, trezorConnected);
+  },
 };

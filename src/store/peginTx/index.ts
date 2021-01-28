@@ -8,6 +8,7 @@ import { RootState } from '../types';
 export const state: PegInTxState = {
   utxoList: undefined,
   addressList: undefined,
+  trezorConnected: false,
 };
 
 const namespaced = true;
