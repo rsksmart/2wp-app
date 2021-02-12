@@ -13,6 +13,19 @@
       <div class="container">
         <v-row class="mx-0 d-flex align-center">
           <span class="number">1</span>
+          <p class="mb-0">Select the BTC address from which the funds will be withdrawn:</p>
+        </v-row>
+        <v-row class="mx-0">
+          <v-col cols="9">
+            <v-select v-model="btcAddressSelected" :items="utxosAddresses" color="#FFF"
+                      label="Don't forget to double check the address" solo dense/>
+          </v-col>
+        </v-row>
+      </div>
+      <v-divider class="ml-6 mx-3" color="#C4C4C4"/>
+      <div class="container">
+        <v-row class="mx-0 d-flex align-center">
+          <span class="number">2</span>
           <p class="mb-0">Type the amount you want to convert:</p>
         </v-row>
         <v-row class="mx-0 d-flex align-center container">
@@ -56,7 +69,7 @@
       <v-divider class="ml-6 mx-3" color="#C4C4C4"/>
       <div class="container">
         <v-row class="mx-0 d-flex align-center">
-          <span class="number">2</span>
+          <span class="number">3</span>
           <p class="mb-0">Select the RSK address you want to receive your RBTC:</p>
         </v-row>
         <v-row class="mx-0">
@@ -82,7 +95,7 @@
       <v-divider class="mx-3" color="#C4C4C4"/>
       <div class="container">
         <v-row class="mx-0 d-flex align-center">
-          <span class="number">3</span>
+          <span class="number">4</span>
           <p class="mb-0">Select the Transaction Fee:</p>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
@@ -119,19 +132,19 @@
       <v-divider class="mx-3" color="#C4C4C4"/>
       <div class="container">
         <v-row class="mx-0 d-flex align-center">
-          <span class="number">4</span>
+          <span class="number">5</span>
           <p class="mb-0">Paste your BTC refund address:</p>
         </v-row>
         <v-row class="mx-0">
           <v-col cols="9">
-            <v-select v-model="btcRefundAddressSelected" :items="btcRefundAddresses" color="#FFF"
+            <v-select v-model="btcRefundAddressSelected" :items="btcNewAddresses" color="#FFF"
                       label="Don't forget to double check the address" solo dense/>
           </v-col>
         </v-row>
       </div>
     </v-col>
     <v-col cols="5">
-      <v-row class="mx-0">
+      <v-row class="mx-0 mt-8">
         <h2>Transaction Summary:</h2>
       </v-row>
       <v-row class="mx-0 summary-box">
@@ -155,7 +168,7 @@
               <v-icon class="ml-2" small color="#008CFF">mdi-check-circle-outline</v-icon>
             </v-row>
             <v-row class="mx-0">
-              <p>{{ rskAddressSelected }}</p>
+              <p>{{ computedRskAddress }}</p>
             </v-row>
           </div>
           <v-divider color="#C4C4C4"/>
@@ -167,7 +180,7 @@
                   <v-icon class="ml-2" small color="#008CFF">mdi-check-circle-outline</v-icon>
                 </v-row>
                 <v-row class="mx-0">
-                  <p>{{ txFee }}</p>
+                  <p>{{ txFee }} BTC</p>
                 </v-row>
                 <v-row class="mx-0">
                   <span>USD $ 1,33</span>
@@ -181,7 +194,7 @@
                   <v-icon class="ml-2" small color="#008CFF">mdi-check-circle-outline</v-icon>
                 </v-row>
                 <v-row class="mx-0">
-                  <p>{{ txFee }}</p>
+                  <p>{{ txFee }} BTC</p>
                 </v-row>
                 <v-row class="mx-1">
                   <span>USD $ 12.001,33</span>
@@ -196,7 +209,7 @@
               <v-icon class="ml-2" small color="#008CFF">mdi-check-circle-outline</v-icon>
             </v-row>
             <v-row class="mx-0">
-              <p>{{ btcRefundAddressSelected }}</p>
+              <p>{{ computedRefundBTCAddress }}</p>
             </v-row>
           </div>
         </div>
@@ -218,6 +231,7 @@ import {
   Prop,
   Emit,
 } from 'vue-property-decorator';
+import { Utxo, UnusedWalletAddress } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 
 @Component
@@ -228,16 +242,30 @@ export default class SendBitcoinForm extends Vue {
 
   btcRefundAddressSelected = '';
 
+  btcAddressSelected = '';
+
   rskAddressSelected = '';
 
   transactionFees = ['Slow', 'Average', 'Fast']
 
-  btcRefundAddresses = ['4O5pURPUbPswwLwwiBmBs66WgRbAsyZ69j8', '5P5pURPUbPswwLwwiBmBs66WgRbAsyZ69j9']
+  btcRefundAddresses: string[] = [];
 
   @Prop(String) bitcoinWallet!: string;
 
+  @Prop() utxos!: Utxo[];
+
+  @Prop() btcUnusedAddresses!: UnusedWalletAddress[];
+
   get rbtcAmount() {
     return this.bitcoinAmount;
+  }
+
+  get computedRefundBTCAddress() {
+    return this.btcRefundAddressSelected !== '' ? this.btcRefundAddressSelected : 'Not completed';
+  }
+
+  get computedRskAddress() {
+    return this.rskAddressSelected !== '' ? this.rskAddressSelected : 'Not completed';
   }
 
   get txFeeColor() {
@@ -248,11 +276,19 @@ export default class SendBitcoinForm extends Vue {
     return color;
   }
 
-  get txFee() {
-    let txFee;
+  get fullTxFee(): string {
+    let txFee = '';
     if (this.txFeeIndex === 0) txFee = 'Slow - 0.00292 BTC';
     if (this.txFeeIndex === 1) txFee = 'Average - 0.00317 BTC';
     if (this.txFeeIndex === 2) txFee = 'Fast - 0.00365 BTC';
+    return txFee;
+  }
+
+  get txFee(): number {
+    let txFee = 0;
+    if (this.txFeeIndex === 0) txFee = 0.00292;
+    if (this.txFeeIndex === 1) txFee = 0.00317;
+    if (this.txFeeIndex === 2) txFee = 0.00365;
     return txFee;
   }
 
@@ -279,19 +315,47 @@ export default class SendBitcoinForm extends Vue {
     }
   }
 
+  get utxosAddresses() {
+    const tmp: string[] = [];
+    this.utxos.forEach((utxo: Utxo) => {
+      if (utxo.address !== undefined) {
+        const btc = this.satoshiToBtc(Number(utxo.amount));
+        tmp.push(`${utxo.address} - ${btc} BTC`);
+      }
+    });
+    return tmp;
+  }
+
+  get btcNewAddresses() {
+    const tmp: string[] = [];
+    this.btcUnusedAddresses.forEach((uadr: UnusedWalletAddress, idx) => {
+      if ('address' in uadr && idx < 5) {
+        tmp.push(uadr.address);
+      }
+    });
+    return tmp;
+  }
+
   @Emit('sendBTC')
   sendBitcoin(): object {
     return {
       bitcoinAmount: this.bitcoinAmount,
       btcRefundAddressSelected: this.btcRefundAddressSelected,
       rskAddressSelected: this.rskAddressSelected,
-      txFee: this.txFee,
+      fullTxFee: this.txFee,
+      txFee: this.fullTxFee,
     };
   }
 
   @Emit('confirmTx')
   toConfirmTx() {
     return this.bitcoinWallet;
+  }
+
+  @Emit()
+  // eslint-disable-next-line class-methods-use-this
+  satoshiToBtc(satoshis: number): number {
+    return satoshis * 0.00000001;
   }
 }
 </script>
