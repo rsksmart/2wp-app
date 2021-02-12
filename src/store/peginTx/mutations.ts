@@ -1,6 +1,8 @@
 import { MutationTree } from 'vuex';
 import * as constants from '@/store/constants';
-import { PegInTxState, Utxo, WalletAddress } from './types';
+import {
+  PeginConfiguration, PegInTxState, Utxo, WalletAddress,
+} from './types';
 
 export const mutations: MutationTree<PegInTxState> = {
   [constants.PEGIN_TX_SET_ADDRESS_LIST]: (state, addressList: WalletAddress[]) => {
@@ -11,5 +13,11 @@ export const mutations: MutationTree<PegInTxState> = {
   },
   [constants.PEGIN_TX_SET_TREZOR_CONNECTED]: (state, trezorConnected: boolean) => {
     state.trezorConnected = trezorConnected;
+  },
+  [constants.PEGIN_TX_SET_SESSION_ID]: (state, sessionId: string) => {
+    state.sessionId = sessionId;
+  },
+  [constants.PEGIN_TX_SET_PEGIN_CONFIGURATION]: (state, peginConfiguration: PeginConfiguration) => {
+    state.peginConfiguration = peginConfiguration;
   },
 };

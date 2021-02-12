@@ -6,6 +6,8 @@ import { PegInTxState } from './types';
 import { RootState } from '../types';
 
 export const state: PegInTxState = {
+  peginConfiguration: undefined,
+  sessionId: '',
   utxoList: undefined,
   addressList: undefined,
   trezorConnected: false,

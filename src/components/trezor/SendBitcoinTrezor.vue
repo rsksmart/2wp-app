@@ -57,6 +57,7 @@ import SendBitcoinForm from '@/components/exchange/SendBitcoinForm.vue';
 import ConfirmTransaction from '@/components/trezor/ConfirmTransaction.vue';
 import TrackingId from '@/components/exchange/TrackingId.vue';
 import TrezorService from '@/services/TrezorService';
+import ApiService from '@/services/ApiService';
 import { Utxo, UnusedWalletAddress, PegInTxState } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import { Action, State } from 'vuex-class';
@@ -127,6 +128,12 @@ export default class SendBitcoinTrezor extends Vue {
     this.trezorService.getAddressList()
       .then((addresses) => {
         this.setPeginTxAddresses(addresses);
+      })
+      .then(() => ApiService.getBalances(
+        this.peginTxState.sessionId, this.peginTxState.addressList,
+      ))
+      .then((balances) => {
+        console.log(balances);
       })
       .catch(console.error);
     // this.trezorService.getAccountUtxos(constants.BITCOIN_SEGWIT_ADDRESS, 0)
