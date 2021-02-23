@@ -10,10 +10,9 @@
 import Vue from 'vue';
 import Top from '@/components/layouts/Top.vue';
 import { Component, Emit } from 'vue-property-decorator';
-import { Action, State } from 'vuex-class';
+import { Action } from 'vuex-class';
 import * as constants from '@/store/constants';
 import ApiService from '@/services/ApiService';
-
 
 @Component({
   components: {

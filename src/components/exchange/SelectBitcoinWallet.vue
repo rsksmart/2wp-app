@@ -1,15 +1,16 @@
 <template>
   <div class="exchange">
-    <div class="container">
-      <v-row class="mx-0 mb-5 d-flex justify-center">
+    <div class="container mt-16">
+      <v-row class="mx-0 mt-16 mb-5 d-flex justify-center">
         <h1>Bridging BTC and RBTC</h1>
       </v-row>
       <template v-if="!BTC2RBTC">
         <v-row class="mx-0 mt-10 d-flex justify-center">
           <p>Select your token conversion</p>
         </v-row>
-        <v-row class="ma-0">
-          <v-col cols="6">
+        <v-row class="ma-0 d-flex justify-center">
+          <v-col/>
+          <v-col cols="4" class="d-flex justify-end">
             <v-btn class="wallet-button" @click="showBitcoinWallets"
                    v-bind:class="{ selected: BTC2RBTC }">
               <div>
@@ -32,7 +33,7 @@
               </div>
             </v-btn>
           </v-col>
-          <v-col cols="6">
+          <v-col cols="4" class="d-flex justify-start">
             <v-btn class="wallet-button"
                    v-bind:class="{ selected: RBTC2BTC }">
               <div>
@@ -55,24 +56,26 @@
               </div>
             </v-btn>
           </v-col>
+          <v-col/>
         </v-row>
       </template>
       <template v-if="showWallet">
         <v-row class="mx-0 mt-10 d-flex justify-center">
           <p class="text-center">Select your Bitcoin wallet</p>
         </v-row>
-        <v-row class="ma-0">
-          <v-col cols="4" class="d-flex justify-end">
+        <v-row class="ma-0 d-flex justify-center">
+          <v-col/>
+          <v-col cols="3" class="d-flex justify-end">
             <v-btn class="wallet-button-thin"
                    @click="setBitcoinWallet(storeConstants.WALLET_LEDGER)"
                    v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_LEDGER }">
                 <v-img class="mr-2" :src="ledgerImage" contain max-width="25"/>
-                <span class="wallet-button-content">
+              <span class="wallet-button-content">
                 Ledger
               </span>
             </v-btn>
           </v-col>
-          <v-col cols="4" class="d-flex justify-start">
+          <v-col cols="3" class="d-flex justify-center">
             <v-btn outlined class="wallet-button-thin"
                    @click="setBitcoinWallet(storeConstants.WALLET_ELECTRUM)"
                    v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_ELECTRUM }">
@@ -80,7 +83,7 @@
               <span class="wallet-button-content">Electrum</span>
             </v-btn>
           </v-col>
-          <v-col cols="4" class="d-flex justify-end">
+          <v-col cols="3" class="d-flex justify-start">
             <v-btn outlined class="wallet-button-thin"
                    @click="setBitcoinWallet(storeConstants.WALLET_TREZOR)"
                    v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_TREZOR }">
@@ -88,6 +91,7 @@
               <span class="wallet-button-content">Trezor</span>
             </v-btn>
           </v-col>
+          <v-col/>
         </v-row>
         <v-row class="mx-0 mt-15 d-flex justify-center">
           <v-col cols="3" class="d-flex justify-center">
@@ -99,7 +103,8 @@
         </v-row>
         <template v-if="showMoreWallets">
           <v-row class="ma-0 d-flex justify-center">
-            <v-col cols="4" class="d-flex justify-end">
+            <v-col/>
+            <v-col cols="3" class="d-flex justify-end">
               <v-btn outlined class="wallet-button-thin"
                      @click="setBitcoinWallet(storeConstants.WALLET_RWALLET)"
                      v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_RWALLET }">
@@ -107,7 +112,7 @@
                 <span class="wallet-button-content">rWallet</span>
               </v-btn>
             </v-col>
-            <v-col cols="4" class="d-flex justify-start">
+            <v-col cols="3" class="d-flex justify-start">
               <v-btn outlined class="wallet-button-thin"
                      @click="setBitcoinWallet(storeConstants.WALLET_DEFIANT)"
                      v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_DEFIANT }">
@@ -115,6 +120,7 @@
                 <span class="wallet-button-content">Defiant</span>
               </v-btn>
             </v-col>
+            <v-col/>
           </v-row>
         </template>
       </template>

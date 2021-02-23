@@ -1,10 +1,8 @@
 <template>
   <div class="exchange">
-    <div class="d-flex align-center">
-      <select-bitcoin-wallet v-if="!sendBitcoinStep" @bitcoinWalletSelected="toSendBitcoin"/>
-      <component v-else :is="currentComponent" :bitcoinWallet="bitcoinWallet" :btc="btcObj"
-                 @sendBTC="send" @success="succeed" @track="track"/>
-    </div>
+    <select-bitcoin-wallet v-if="!sendBitcoinStep" @bitcoinWalletSelected="toSendBitcoin"/>
+    <component v-else :is="currentComponent" :bitcoinWallet="bitcoinWallet" :btc="btcObj"
+               @sendBTC="send" @success="succeed" @track="track"/>
   </div>
 </template>
 

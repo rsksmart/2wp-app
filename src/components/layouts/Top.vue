@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar color="#FFFFFF" flat>
+  <v-app-bar color="#FFFFFF" elevation="1">
     <v-row class="top">
       <v-col cols="3" class="d-flex align-center">
         <v-img src="@/assets/rsk.png" height="40" contain/>
