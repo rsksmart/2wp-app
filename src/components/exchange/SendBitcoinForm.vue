@@ -17,14 +17,15 @@
             <p v-bind:class="[first ? 'boldie': '']">Select Bitcoin account to send from:</p>
           </v-row>
           <v-row class="mx-0">
-            <v-col cols="8">
+            <v-col cols="7">
               <v-select v-model="btcAccountTypeSelected" :items="accountBalances" color="#FFF"
                         label="Select the account" solo dense
                         @change="checkStep(btcAccountTypeSelected, 1)"/>
             </v-col>
-            <v-col cols="3" class="d-flex justify-center">
-              <v-btn outlined rounded color="#00B520">
-                <span class="greenish">Extensive search</span>
+            <v-col/>
+            <v-col cols="4" class="d-flex justify-center">
+              <v-btn outlined rounded color="#00B520" width="235" disabled>
+                <span class="grayish">Extensive search</span>
               </v-btn>
             </v-col>
           </v-row>
@@ -35,8 +36,8 @@
             <span v-bind:class="[second ? 'number-filled' : 'number']">2</span>
             <p v-bind:class="[second ? 'boldie' : '']">Type the amount you want to convert:</p>
           </v-row>
-          <v-row class="mx-0 d-flex align-center container">
-            <v-col cols="4" class="pa-0 input-box-outline">
+          <v-row class="mx-0 pb-0 d-flex align-center container">
+            <v-col cols="4" class="input-box-outline">
               <v-col cols="8" class="pa-0 pl-1">
                 <v-text-field solo hide-details full-width single-line flat
                               v-model="bitcoinAmount" type="number"
@@ -54,7 +55,7 @@
               </v-col>
             </v-col>
             <v-col cols="1" class="d-flex justify-center">
-              <v-icon color="#008CFF">mdi-arrow-right</v-icon>
+              <v-icon color="#000000">mdi-arrow-right</v-icon>
             </v-col>
             <v-col cols="4" class="pa-0 input-box-flat">
               <v-col cols="8" class="pa-0 pl-1">
@@ -74,6 +75,11 @@
             </v-col>
             <v-col/>
           </v-row>
+          <v-row class="mx-0 ml-3">
+            <span>
+              You can not send this amount of BTC. You can only send a minimum of 0.01 BTC
+            </span>
+          </v-row>
         </div>
         <v-divider class="ml-6 mx-3" color="#C4C4C4"/>
         <div class="container">
@@ -90,18 +96,20 @@
                             label="Select or paste the RSK address"
                             @change="checkStep(rskAddressSelected, 3)"/>
             </v-col>
-            <v-divider vertical color="#C4C4C4"/>
-            <v-col class="d-flex justify-end">
-              <v-row class="mx-0">
+            <v-col>
+              <v-divider vertical color="#C4C4C4"/>
+            </v-col>
+            <v-col cols="4" class="d-flex justify-center">
+              <div>
                 <v-row class="mx-0 d-flex justify-center">
                   <span class="text-center">Use your Software Wallet addresses </span>
                 </v-row>
                 <v-row class="mx-0 d-flex justify-center">
-                  <v-btn outlined rounded color="#00B520">
+                  <v-btn outlined rounded color="#00B520" width="235">
                     <span class="greenish">Connect Wallet</span>
                   </v-btn>
                 </v-row>
-              </v-row>
+              </div>
             </v-col>
           </v-row>
         </div>
@@ -112,7 +120,7 @@
             <p v-bind:class="[fourth ? 'boldie' : '']">Select your BTC refund address:</p>
           </v-row>
           <v-row class="mx-0">
-            <v-col cols="8">
+            <v-col cols="7">
               <v-text-field v-if="!refundAddressFromWallet" v-model="btcRefundAddressSelected"
                             solo dense label="Paste the BTC refund address"
                             @change="checkStep(btcRefundAddressSelected, 4)"/>
@@ -120,8 +128,9 @@
                         color="#FFF" label="Select the BTC refund address" solo dense
                         @change="checkStep(btcRefundAddressSelected, 4)"/>
             </v-col>
-            <v-col cols="3" class="d-flex justify-center">
-              <v-btn outlined rounded color="#00B520" @click="getAddressesFromWallet">
+            <v-col/>
+            <v-col cols="4" class="d-flex justify-center">
+              <v-btn outlined rounded color="#00B520" @click="getAddressesFromWallet" width="235">
                 <span class="greenish">From wallet</span>
               </v-btn>
             </v-col>
@@ -180,7 +189,9 @@
                 </v-icon>
               </v-row>
               <v-row class="mx-0">
-                <p>{{ computedBTCAddress }}</p>
+                <p v-bind:class="[computedBTCAddress === 'Not completed' ? 'grayish' : '']">
+                  {{ computedBTCAddress }}
+                </p>
               </v-row>
             </div>
             <v-divider color="#C4C4C4"/>
@@ -192,7 +203,9 @@
                 </v-icon>
               </v-row>
               <v-row class="mx-0">
-                <p>{{ bitcoinAmount }}</p>
+                <p v-bind:class="[computedBTCAmount === 'Not completed' ? 'grayish' : '']">
+                  {{ computedBTCAmount }}
+                </p>
               </v-row>
               <v-row class="mx-0">
                 <span>USD $ {{ bitcoinAmount * bitcoinPrice }}</span>
@@ -207,7 +220,9 @@
                 </v-icon>
               </v-row>
               <v-row class="mx-0">
-                <p>{{ computedRskAddress }}</p>
+                <p v-bind:class="[computedRskAddress === 'Not completed' ? 'grayish' : '']">
+                  {{ computedRskAddress }}
+                </p>
               </v-row>
             </div>
             <v-divider color="#C4C4C4"/>
@@ -219,7 +234,9 @@
                 </v-icon>
               </v-row>
               <v-row class="mx-0">
-                <p>{{ computedRefundBTCAddress }}</p>
+                <p v-bind:class="[computedRefundBTCAddress === 'Not completed' ? 'grayish' : '']">
+                  {{ computedRefundBTCAddress }}
+                </p>
               </v-row>
             </div>
             <v-divider color="#C4C4C4"/>
@@ -231,10 +248,12 @@
                 </v-icon>
               </v-row>
               <v-row class="mx-0">
-                <p>{{ txFee }} BTC</p>
+                <p v-bind:class="[computedTxFee === 'Not completed' ? 'grayish' : '']">
+                  {{ computedTxFee }}
+                </p>
               </v-row>
               <v-row class="mx-0">
-                <span>USD $ 1,33</span>
+                <span>{{computedTxFeeUSD}}</span>
               </v-row>
             </div>
             <v-divider color="#C4C4C4"/>
@@ -246,10 +265,12 @@
                 </v-icon>
               </v-row>
               <v-row class="mx-0">
-                <p>{{ txFee }} BTC</p>
+                <p v-bind:class="[computedFullTxFee === 'Not completed' ? 'grayish' : '']">
+                  {{ computedFullTxFee }}
+                </p>
               </v-row>
-              <v-row class="mx-1">
-                <span>USD $ 12.001,33</span>
+              <v-row class="mx-0">
+                <span>{{ computedFullTxFeeUSD }}</span>
               </v-row>
             </div>
           </div>
@@ -329,6 +350,10 @@ export default class SendBitcoinForm extends Vue {
     return this.bitcoinAmount;
   }
 
+  get computedBTCAmount() {
+    return this.bitcoinAmount > 0 ? this.bitcoinAmount : 'Not completed';
+  }
+
   get computedBTCAddress() {
     return this.btcAccountTypeSelected !== '' ? this.btcAccountTypeSelected : 'Not completed';
   }
@@ -339,6 +364,24 @@ export default class SendBitcoinForm extends Vue {
 
   get computedRskAddress() {
     return this.rskAddressSelected !== '' ? this.rskAddressSelected : 'Not completed';
+  }
+
+  get computedTxFee() {
+    return !this.fifthDone ? 'Not completed' : `${this.txFee} BTC`;
+  }
+
+  get computedFullTxFee() {
+    return !this.fifthDone && !this.secondDone ? 'Not completed' : `${Number(this
+      .txFee) + Number(this.computedBTCAmount)} BTC`;
+  }
+
+  get computedTxFeeUSD() {
+    return !this.fifthDone ? 'USD $ 0' : `USD $ ${Number(this.txFee) * this.bitcoinPrice}`;
+  }
+
+  get computedFullTxFeeUSD() {
+    return !this.fifthDone && !this.secondDone ? 'USD $ 0' : `USD $ ${(Number(this
+      .txFee) + Number(this.computedBTCAmount)) * Number(this.bitcoinPrice)}`;
   }
 
   get txFeeColor() {
@@ -389,7 +432,8 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get formFilled() {
-    return this.first && this.second && this.third && this.fourth && this.fifth;
+    return this.firstDone && this.secondDone && this.thirdDone
+      && this.fourthDone && this.fifthDone;
   }
 
   get accountType() {
@@ -402,7 +446,11 @@ export default class SendBitcoinForm extends Vue {
   @Emit('unused')
   getAddressesFromWallet() {
     this.refundAddressFromWallet = !this.refundAddressFromWallet;
-    return { flag: this.refundAddressFromWallet, accountType: this.accountType };
+    let accType = this.accountType;
+    if (this.accountType === constants.BITCOIN_NATIVE_SEGWIT_ADDRESS) {
+      accType = constants.BITCOIN_SEGWIT_ADDRESS;
+    }
+    return { flag: this.refundAddressFromWallet, accountType: accType };
   }
 
   @Emit()

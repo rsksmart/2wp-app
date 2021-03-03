@@ -45,6 +45,7 @@
   }
 
   .input-box-outline {
+    padding: 0 !important;
     background: #ECF7FC;
     border: 1px solid #008CFF;
     box-sizing: border-box;
@@ -76,6 +77,14 @@
     input {
       text-align: center !important;
     }
+  }
+
+  .yellow-box {
+    border: 1px solid #F6C61B !important;
+  }
+
+  .green-box {
+    border: 1px solid #00B43C !important;
   }
 
   .input-box-flat {
