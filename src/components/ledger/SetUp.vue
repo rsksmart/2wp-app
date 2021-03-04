@@ -6,7 +6,7 @@
     <v-row class="mx-0 d-flex justify-center">
       <v-col cols="3">
         <v-row class="mx-0 d-flex justify-center">
-          <p class="number grayish text-center">1</p>
+          <p class="number ligth-grayish text-center">1</p>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
           <p class="text-center">Plug in your Ledger device to your computer</p>
@@ -17,7 +17,7 @@
       </v-col>
       <v-col cols="3">
         <v-row class="mx-0 d-flex justify-center">
-          <p class="number grayish text-center">2</p>
+          <p class="number ligth-grayish text-center">2</p>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
           <p class="text-center">Enter your PIN in your Ledger device</p>
@@ -33,7 +33,7 @@
       </v-col>
       <v-col cols="3">
         <v-row class="mx-0 d-flex justify-center">
-          <p class="number grayish text-center">3</p>
+          <p class="number ligth-grayish text-center">3</p>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
           <p class="text-center">Select Bitcoin Wallet in your Ledger device</p>

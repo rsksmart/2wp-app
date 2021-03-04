@@ -81,9 +81,9 @@ export default class TrezorService {
     return bundle;
   }
 
-  public getAddressList(): Promise<WalletAddress[]> {
+  public getAddressList(batch: number): Promise<WalletAddress[]> {
     return new Promise((resolve, reject) => {
-      const bundle = this.getAddressesBundle(0, 10);
+      const bundle = this.getAddressesBundle(0, batch);
       TrezorConnect.getAddress({
         bundle,
       })
@@ -94,6 +94,31 @@ export default class TrezorService {
             addresses.push(obj[1]);
           });
           resolve(addresses);
+        })
+        .catch(reject);
+    });
+  }
+
+  public getAccountUnusedAddresses(accountType: string): Promise<string[]> {
+    return new Promise((resolve, reject) => {
+      TrezorConnect.getAccountInfo({
+        path: this.getAccountPath(accountType, 0),
+        coin: this.coin,
+        details: 'txs',
+      })
+        .then((result) => {
+          if (!result.success) reject(new Error(result.payload.error));
+          const unusedAddresses: string[] = [];
+          if ('addresses' in result.payload) {
+            const { addresses } = result.payload;
+            if (addresses && 'unused' in addresses) {
+              Object.entries(addresses.unused)
+                .forEach((obj) => {
+                  unusedAddresses.push(obj[1].address);
+                });
+            }
+          }
+          resolve(unusedAddresses);
         })
         .catch(reject);
     });

@@ -1,7 +1,7 @@
 <template>
   <div class="container">
-    <template v-if="!trezorConnected">
-      <v-row class="mx-0 d-flex justify-center">
+    <template v-if="!trezorDataReady">
+      <v-row class="mx-0 mb-5 mt-10 d-flex justify-center">
         <v-progress-circular indeterminate :size="60" :width="8" color="#00B520"/>
       </v-row>
       <v-row class="mx-0 d-flex justify-center">
@@ -10,17 +10,17 @@
       <v-row class="ma-0 mt-5 d-flex justify-center">
         <p class="ma-0">Plug in your Trezor device to your computer</p>
       </v-row>
-      <v-row class="ma-0 mb-5 d-flex justify-center">
+      <v-row class="ma-0 mb-8 d-flex justify-center">
         <p class="ma-0">Keep your Trezor close so you can authorize access</p>
       </v-row>
       <v-row class="mx-0 d-flex justify-center">
-        <v-img src="@/assets/exchange/trezor/connect_trezor.png" height="250" contain/>
+        <v-img src="@/assets/exchange/trezor/connect_trezor.png" height="410" contain/>
       </v-row>
     </template>
-    <template v-if="trezorConnected">
-      <component :is="currentComponent" :bitcoinWallet="bitcoinWallet" :utxos="utxos"
-                 :btcUnusedAddresses="addresses"
-                 @confirmTx="toConfirmTx" @successConfirmation="toTrackingId"/>
+    <template v-if="trezorDataReady">
+      <component :is="currentComponent" :bitcoinWallet="bitcoinWallet" :balances="balances"
+                 @confirmTx="toConfirmTx" @successConfirmation="toTrackingId"
+                 @unused="getUnusedAddresses" :unusedAddresses="unusedAddresses"/>
     </template>
     <template v-if="showDialog">
       <v-dialog v-model="showDialog" width="600" persistent>
@@ -34,11 +34,11 @@
                 This means the conversion will take 17 hours.</p>
             </v-col>
           </v-row>
-          <v-row class="mx-0 my-3">
-            <v-img src="@/assets/exchange/trezor/btc_conversion.png" height="120" contain/>
+          <v-row class="mx-0 mb-3 mt-1">
+            <v-img src="@/assets/exchange/trezor/btc_conversion.png" height="135" contain/>
           </v-row>
-          <v-row class="mx-0 mt-5 mb-10 d-flex justify-center">
-            <v-btn dense rounded color="#00B520" @click="closeDialog">
+          <v-row class="mx-0 mt-8 mb-10 d-flex justify-center">
+            <v-btn width="142" height="50" dense rounded color="#00B520" @click="closeDialog">
               <span class="whiteish">Continue</span>
             </v-btn>
           </v-row>
@@ -58,7 +58,7 @@ import ConfirmTransaction from '@/components/trezor/ConfirmTransaction.vue';
 import TrackingId from '@/components/exchange/TrackingId.vue';
 import TrezorService from '@/services/TrezorService';
 import ApiService from '@/services/ApiService';
-import { Utxo, UnusedWalletAddress, PegInTxState } from '@/store/peginTx/types';
+import { PegInTxState } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import { Action, State } from 'vuex-class';
 import TrezorConnect, { DEVICE, DEVICE_EVENT } from 'trezor-connect';
@@ -77,11 +77,13 @@ export default class SendBitcoinTrezor extends Vue {
 
   currentComponent = 'SendBitcoinForm';
 
-  addresses: UnusedWalletAddress[] = [];
+  unusedAddresses: string[] = [];
 
   txId = '';
 
-  utxos: Utxo[] = [];
+  balances = {};
+
+  trezorDataReady = false;
 
   trezorService: TrezorService = new TrezorService('test');
 
@@ -125,24 +127,29 @@ export default class SendBitcoinTrezor extends Vue {
 
   @Emit()
   getAccountAddresses() {
-    this.trezorService.getAddressList()
+    this.trezorService.getAddressList(2)
       .then((addresses) => {
         this.setPeginTxAddresses(addresses);
       })
-      .then(() => ApiService.getBalances(
-        this.peginTxState.sessionId, this.peginTxState.addressList,
-      ))
+      .then(() => ApiService
+        .getBalances(this.peginTxState.sessionId, this.peginTxState.addressList))
       .then((balances) => {
-        console.log(balances);
+        this.balances = balances;
+        this.trezorDataReady = true;
       })
       .catch(console.error);
-    // this.trezorService.getAccountUtxos(constants.BITCOIN_SEGWIT_ADDRESS, 0)
-    //   .then((res) => {
-    //     [this.utxos, this.addresses] = res;
-    //   })
-    //   .catch((err) => {
-    //     console.error('Can get your account info', err);
-    //   });
+  }
+
+  @Emit()
+  getUnusedAddresses(data: object) {
+    const { flag, accountType } = data;
+    if (flag) {
+      this.trezorService.getAccountUnusedAddresses(accountType)
+        .then((ua) => {
+          this.unusedAddresses = ua;
+        })
+        .catch(console.error);
+    }
   }
 }
 </script>

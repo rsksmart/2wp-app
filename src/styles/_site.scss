@@ -5,6 +5,10 @@ div, p, h1, h2, h3, h4, h5, h6, body, button {
   font-style: normal;
 }
 
+.v-overlay {
+  z-index: 0 !important;
+}
+
 h1 {
   font-weight: bold;
   font-size: 40px;
@@ -41,10 +45,11 @@ p {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 10px;
+  margin-right: 5px;
+  color: #000000 !important;
 }
 
-.number-fill {
+.number-filled {
   width: 23px;
   height: 23px;
   font-size: 12px;
@@ -55,16 +60,22 @@ p {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 10px;
+  margin-right: 5px;
   background: #00B520;
+  color: #FFFFFF !important;
 }
 
 .v-btn {
   letter-spacing: normal !important;
   text-transform: none !important;
+  box-shadow: none !important;
 }
 
 .v-card {
+  border-radius: 20px !important;
+}
+
+.v-dialog {
   border-radius: 20px !important;
 }
 
@@ -93,5 +104,9 @@ p {
 }
 
 .grayish {
+  color: #C4C4C4 !important;
+}
+
+.ligth-grayish {
   color: #F5FAFF !important;
 }

@@ -1,22 +1,23 @@
 <template>
   <div class="exchange">
-    <div class="container">
-      <v-row class="mx-0 mb-5 d-flex justify-center">
+    <div class="container mt-16">
+      <v-row class="mx-0 mt-16 mb-5 d-flex justify-center">
         <h1>Bridging BTC and RBTC</h1>
       </v-row>
       <template v-if="!BTC2RBTC">
         <v-row class="mx-0 mt-10 d-flex justify-center">
           <p>Select your token conversion</p>
         </v-row>
-        <v-row class="ma-0">
-          <v-col cols="6">
+        <v-row class="ma-0 d-flex justify-center">
+          <v-col/>
+          <v-col cols="4" class="d-flex justify-end">
             <v-btn class="wallet-button" @click="showBitcoinWallets"
                    v-bind:class="{ selected: BTC2RBTC }">
               <div>
                 <v-row class="mx-0 d-flex justify-center">
                   <v-col/>
                   <v-col class="pa-0 d-flex align-center">
-                    <v-img src="@/assets/exchange/btc.png" height="30" contain/>
+                    <v-img src="@/assets/exchange/btc.png" height="40" contain/>
                   </v-col>
                   <v-col class="pa-0 d-flex align-center">
                     <v-icon class="wallet-button-content">mdi-arrow-right</v-icon>
@@ -32,7 +33,7 @@
               </div>
             </v-btn>
           </v-col>
-          <v-col cols="6">
+          <v-col cols="4" class="d-flex justify-start">
             <v-btn class="wallet-button"
                    v-bind:class="{ selected: RBTC2BTC }">
               <div>
@@ -45,7 +46,7 @@
                     <v-icon class="wallet-button-content">mdi-arrow-right</v-icon>
                   </v-col>
                   <v-col class="pa-0 d-flex align-center">
-                    <v-img src="@/assets/exchange/btc.png" height="30" contain/>
+                    <v-img src="@/assets/exchange/btc.png" height="40" contain/>
                   </v-col>
                   <v-col/>
                 </v-row>
@@ -55,65 +56,71 @@
               </div>
             </v-btn>
           </v-col>
+          <v-col/>
         </v-row>
       </template>
       <template v-if="showWallet">
         <v-row class="mx-0 mt-10 d-flex justify-center">
           <p class="text-center">Select your Bitcoin wallet</p>
         </v-row>
-        <v-row class="ma-0">
-          <v-col cols="4" class="d-flex justify-end">
-            <v-btn class="wallet-button"
+        <v-row class="ma-0 d-flex justify-center">
+          <v-col/>
+          <v-col cols="3" class="d-flex justify-end">
+            <v-btn class="wallet-button-thin"
                    @click="setBitcoinWallet(storeConstants.WALLET_LEDGER)"
                    v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_LEDGER }">
-              <v-img class="mr-2" :src="ledgerImage" contain max-width="25"/>
+                <v-img class="mr-2" :src="ledgerImage" contain max-width="25"/>
               <span class="wallet-button-content">
                 Ledger
               </span>
             </v-btn>
           </v-col>
-          <v-col cols="4" class="d-flex justify-start">
-            <v-btn outlined class="wallet-button"
+          <v-col cols="3" class="d-flex justify-center">
+            <v-btn outlined class="wallet-button-thin"
                    @click="setBitcoinWallet(storeConstants.WALLET_ELECTRUM)"
                    v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_ELECTRUM }">
               <v-img class="mr-2" :src="electrumImage" contain max-width="25"/>
               <span class="wallet-button-content">Electrum</span>
             </v-btn>
           </v-col>
-          <v-col cols="4" class="d-flex justify-end">
-            <v-btn outlined class="wallet-button"
+          <v-col cols="3" class="d-flex justify-start">
+            <v-btn outlined class="wallet-button-thin"
                    @click="setBitcoinWallet(storeConstants.WALLET_TREZOR)"
                    v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_TREZOR }">
               <v-img class="mr-2" :src="trezorImage" contain max-width="17"/>
               <span class="wallet-button-content">Trezor</span>
             </v-btn>
           </v-col>
+          <v-col/>
         </v-row>
         <v-row class="mx-0 mt-15 d-flex justify-center">
           <v-col cols="3" class="d-flex justify-center">
-            <v-btn outlined color="#00B520" rounded @click="showMoreBitcoinWallets">
+            <v-btn class="px-5" width="117" outlined color="#00B520" rounded
+                   @click="showMoreBitcoinWallets">
               {{ moreWalletsBtn }}
             </v-btn>
           </v-col>
         </v-row>
         <template v-if="showMoreWallets">
           <v-row class="ma-0 d-flex justify-center">
-            <v-col cols="4" class="d-flex justify-end">
-              <v-btn outlined class="wallet-button"
+            <v-col/>
+            <v-col cols="3" class="d-flex justify-end">
+              <v-btn outlined class="wallet-button-thin"
                      @click="setBitcoinWallet(storeConstants.WALLET_RWALLET)"
                      v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_RWALLET }">
-                <v-img class="mr-2" :src="rWalletImage" contain max-width="26"/>
+                <v-img class="mr-2" :src="rWalletImage" contain max-width="20"/>
                 <span class="wallet-button-content">rWallet</span>
               </v-btn>
             </v-col>
-            <v-col cols="4" class="d-flex justify-start">
-              <v-btn outlined class="wallet-button"
+            <v-col cols="3" class="d-flex justify-start">
+              <v-btn outlined class="wallet-button-thin"
                      @click="setBitcoinWallet(storeConstants.WALLET_DEFIANT)"
                      v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_DEFIANT }">
                 <v-img class="mr-2" :src="defiantImage" contain max-width="31"/>
                 <span class="wallet-button-content">Defiant</span>
               </v-btn>
             </v-col>
+            <v-col/>
           </v-row>
         </template>
       </template>
