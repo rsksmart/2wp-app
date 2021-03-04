@@ -175,4 +175,12 @@ export default class TrezorService {
       // eslint-disable-next-line no-bitwise
       (+accountIdx.substring(0, 1) | 0x80000000) >>> 0, +change, +addressIdx];
   }
+
+  public static getPathFromAddress(addressList: WalletAddress[], address: string): number[] {
+    let path: number[] = [];
+    addressList.forEach((walletAddress) => {
+      if (walletAddress.address === address) path = walletAddress.path;
+    });
+    return path;
+  }
 }

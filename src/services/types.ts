@@ -41,3 +41,9 @@ export interface AccountBalance {
   segwit: number;
   nativeSegwit: number;
 }
+
+export interface FeeAmountData {
+  slow: number;
+  average: number;
+  fast: number;
+}
