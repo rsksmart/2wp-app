@@ -62,6 +62,7 @@ import { PegInTxState } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import { Action, State } from 'vuex-class';
 import TrezorConnect, { DEVICE, DEVICE_EVENT } from 'trezor-connect';
+import { AccountBalance } from '@/services/types';
 
 @Component({
   components: {
@@ -81,7 +82,11 @@ export default class SendBitcoinTrezor extends Vue {
 
   txId = '';
 
-  balances = {};
+  balances: AccountBalance = {
+    legacy: 0,
+    segwit: 0,
+    nativeSegwit: 0,
+  };
 
   trezorDataReady = false;
 
@@ -133,7 +138,7 @@ export default class SendBitcoinTrezor extends Vue {
       })
       .then(() => ApiService
         .getBalances(this.peginTxState.sessionId, this.peginTxState.addressList))
-      .then((balances) => {
+      .then((balances: AccountBalance) => {
         this.balances = balances;
         this.trezorDataReady = true;
       })
@@ -141,8 +146,7 @@ export default class SendBitcoinTrezor extends Vue {
   }
 
   @Emit()
-  getUnusedAddresses(data: object) {
-    const { flag, accountType } = data;
+  getUnusedAddresses({ flag, accountType }: {flag: boolean; accountType: string}) {
     if (flag) {
       this.trezorService.getAccountUnusedAddresses(accountType)
         .then((ua) => {

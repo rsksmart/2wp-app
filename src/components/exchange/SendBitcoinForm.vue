@@ -295,6 +295,7 @@ import {
   Watch,
 } from 'vue-property-decorator';
 import * as constants from '@/store/constants';
+import { AccountBalance } from '@/services/types';
 
 @Component
 export default class SendBitcoinForm extends Vue {
@@ -340,7 +341,7 @@ export default class SendBitcoinForm extends Vue {
 
   @Prop(String) bitcoinWallet!: string;
 
-  @Prop() balances!: {};
+  @Prop() balances!: AccountBalance;
 
   @Prop() addresses!: [];
 

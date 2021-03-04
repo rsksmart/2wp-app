@@ -35,3 +35,9 @@ export interface TrezorTx extends Tx {
   inputs: TransactionInput[];
   outputs: TransactionOutput[];
 }
+
+export interface AccountBalance {
+  legacy: number;
+  segwit: number;
+  nativeSegwit: number;
+}
