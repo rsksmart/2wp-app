@@ -20,7 +20,8 @@
     <template v-if="trezorDataReady">
       <component :is="currentComponent" :bitcoinWallet="bitcoinWallet" :balances="balances"
                  @confirmTx="toConfirmTx" @successConfirmation="toTrackingId"
-                 @unused="getUnusedAddresses" :unusedAddresses="unusedAddresses"/>
+                 @unused="getUnusedAddresses" :unusedAddresses="unusedAddresses"
+                 @txFee=""/>
     </template>
     <template v-if="showDialog">
       <v-dialog v-model="showDialog" width="600" persistent>
@@ -169,6 +170,15 @@ export default class SendBitcoinTrezor extends Vue {
         })
         .catch(console.error);
     }
+  }
+
+  @Emit()
+  getTxFee({ amount, accountType }: {amount: number; accountType: string}) {
+    ApiService.getTxFee(this.peginTxState.sessionId, amount, accountType)
+      .then((txFee) => {
+        console.log(txFee);
+      })
+      .catch(console.error);
   }
 }
 </script>
