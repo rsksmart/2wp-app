@@ -141,22 +141,22 @@ export default class SendBitcoinTrezor extends Vue {
       .then((balances: AccountBalance) => {
         this.balances = balances;
         this.trezorDataReady = true;
-        return ApiService.getTxFee(
-          this.peginTxState.sessionId, 10000, constants.BITCOIN_SEGWIT_ADDRESS,
-        );
+        // return ApiService.getTxFee(
+        //   this.peginTxState.sessionId, 10000, constants.BITCOIN_SEGWIT_ADDRESS,
+        // );
       })
-      .then((txFee) => {
-        console.log(txFee);
-        return ApiService.createPeginTx(
-          10000,
-          '2NFSRVejz7d24pZHFY6uqZVbEEgUC3PHCqD',
-          '0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1',
-          this.peginTxState.sessionId,
-          constants.BITCOIN_FAST_FEE,
-          '2NCJbWCHMmVRre7xNT6hbocCgEFpQxWtZVC',
-        );
-      })
-      .then(console.log)
+      // .then((txFee) => {
+      //   console.log(txFee);
+      //   return ApiService.createPeginTx(
+      //     10000,
+      //     '2NFSRVejz7d24pZHFY6uqZVbEEgUC3PHCqD',
+      //     '0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1',
+      //     this.peginTxState.sessionId,
+      //     constants.BITCOIN_FAST_FEE_LEVEL,
+      //     '2NCJbWCHMmVRre7xNT6hbocCgEFpQxWtZVC',
+      //   );
+      // })
+      // .then(console.log)
       .catch(console.error);
   }
 

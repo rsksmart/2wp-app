@@ -46,7 +46,7 @@ export default class ApiService {
       axios.post(`${this.baseURL}/pegin-tx`, {
         amountToTransferInSatoshi,
         refundAddress,
-        recipient,
+        recipient: recipient.slice(2),
         sessionId,
         feeLevel,
         changeAddress,

@@ -3,7 +3,7 @@ import TrezorTxSigner from '@/services/TrezorTxSigner';
 import { Utxo } from '@/store/peginTx/types';
 import TrezorService from '@/services/TrezorService';
 import {
-  NormalizedInput, NormalizedOutput, NormalizedTx, Tx,
+  NormalizedInput, NormalizedOutput, NormalizedTx, TrezorTx, Tx,
 } from '@/services/types';
 import { TransactionInput } from 'trezor-connect';
 
@@ -17,15 +17,10 @@ export default class TrezorTxBuilder extends TxBuilder {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  buildTx(apiTx: NormalizedTx): Promise<Tx> {
-    return new Promise((resolve, reject) => {
+  buildTx(normalizedTx: NormalizedTx): Promise<TrezorTx> {
+    return new Promise<TrezorTx>((resolve, reject) => {
       const inputs: TransactionInput[] = [];
       const utxoIdx = 0;
-      // let difference = Infinity;
-      // utxoList.forEach((utxo , idx) => {
-      // difference = (utxo.amount - amount) < difference  && utxo.amount > amount? (utxo
-      // .amount - amount) : difference;
-      // });
       resolve({
         coin: 'string',
         inputs,
