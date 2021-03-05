@@ -292,7 +292,6 @@ import {
   Component,
   Prop,
   Emit,
-  Watch,
 } from 'vue-property-decorator';
 import * as constants from '@/store/constants';
 import { AccountBalance } from '@/services/types';
@@ -474,6 +473,7 @@ export default class SendBitcoinForm extends Vue {
           this.fourth = false;
           this.fifth = false;
           this.secondDone = true;
+          this.calculateTxFee();
           break;
         }
         case 3: {
@@ -529,6 +529,12 @@ export default class SendBitcoinForm extends Vue {
   @Emit('confirmTx')
   toConfirmTx() {
     return this.bitcoinWallet;
+  }
+
+  @Emit('txFee')
+  calculateTxFee() {
+    const btcAmountInSatoshis = Number(this.bitcoinAmount) * 100000000;
+    return { amount: btcAmountInSatoshis, accountType: this.accountType };
   }
 
   @Emit()
