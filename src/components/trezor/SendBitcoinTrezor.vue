@@ -21,7 +21,8 @@
       <component :is="currentComponent" :bitcoinWallet="bitcoinWallet" :balances="balances"
                  @confirmTx="toConfirmTx" @successConfirmation="toTrackingId"
                  @unused="getUnusedAddresses" :unusedAddresses="unusedAddresses"
-                 @txFee=""/>
+                 :fees="calculatedFees"
+                 @txFee="getTxFee"/>
     </template>
     <template v-if="showDialog">
       <v-dialog v-model="showDialog" width="600" persistent>
@@ -63,7 +64,7 @@ import { PegInTxState } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import { Action, State } from 'vuex-class';
 import TrezorConnect, { DEVICE, DEVICE_EVENT } from 'trezor-connect';
-import { AccountBalance } from '@/services/types';
+import { AccountBalance, FeeAmountData } from '@/services/types';
 
 @Component({
   components: {
@@ -87,6 +88,12 @@ export default class SendBitcoinTrezor extends Vue {
     legacy: 0,
     segwit: 0,
     nativeSegwit: 0,
+  };
+
+  calculatedFees: FeeAmountData = {
+    slow: 0,
+    average: 0,
+    fast: 0,
   };
 
   trezorDataReady = false;
@@ -142,9 +149,6 @@ export default class SendBitcoinTrezor extends Vue {
       .then((balances: AccountBalance) => {
         this.balances = balances;
         this.trezorDataReady = true;
-        // return ApiService.getTxFee(
-        //   this.peginTxState.sessionId, 10000, constants.BITCOIN_SEGWIT_ADDRESS,
-        // );
       })
       // .then((txFee) => {
       //   console.log(txFee);
@@ -176,7 +180,7 @@ export default class SendBitcoinTrezor extends Vue {
   getTxFee({ amount, accountType }: {amount: number; accountType: string}) {
     ApiService.getTxFee(this.peginTxState.sessionId, amount, accountType)
       .then((txFee) => {
-        console.log(txFee);
+        this.calculatedFees = txFee;
       })
       .catch(console.error);
   }

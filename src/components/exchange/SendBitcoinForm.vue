@@ -294,7 +294,7 @@ import {
   Emit,
 } from 'vue-property-decorator';
 import * as constants from '@/store/constants';
-import { AccountBalance } from '@/services/types';
+import { AccountBalance, FeeAmountData } from '@/services/types';
 
 @Component
 export default class SendBitcoinForm extends Vue {
@@ -345,6 +345,8 @@ export default class SendBitcoinForm extends Vue {
   @Prop() addresses!: [];
 
   @Prop() unusedAddresses?: [];
+
+  @Prop() fees!: FeeAmountData;
 
   get rbtcAmount() {
     return this.bitcoinAmount;
@@ -501,6 +503,7 @@ export default class SendBitcoinForm extends Vue {
           this.fourth = false;
           this.fifth = false;
           this.fifthDone = true;
+          this.selectedFee();
           break;
         }
         default: {
@@ -514,6 +517,16 @@ export default class SendBitcoinForm extends Vue {
       }
     }
   }
+  // @Emit('selectedFee')
+  // selectedFee(): string {
+  //   switch (this.txFeeIndex) {
+  //     case 'slow':
+  //       break;
+  //       case
+  //     default:
+  //       return constants.BITCOIN_AVERAGE_FEE_LEVEL;
+  //   }
+  // }
 
   @Emit('sendBTC')
   sendBitcoin(): object {
