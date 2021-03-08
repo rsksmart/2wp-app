@@ -2,6 +2,7 @@
 import axios from 'axios';
 import { WalletAddress, PeginConfiguration } from '@/store/peginTx/types';
 import { AccountBalance, FeeAmountData, NormalizedTx } from '@/services/types';
+import * as store from '../store';
 
 export default class ApiService {
   static baseURL = process.env.VUE_APP_API_BASE_URL
@@ -54,5 +55,13 @@ export default class ApiService {
         .then((response) => resolve(response.data))
         .catch(reject);
     });
+  }
+
+  public static getPathFromAddress(addressList: WalletAddress[], address: string): number[] {
+    let path: number[] = [];
+    addressList.forEach((walletAddress) => {
+      if (walletAddress.address === address) path = walletAddress.path;
+    });
+    return path;
   }
 }
