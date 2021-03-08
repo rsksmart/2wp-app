@@ -131,7 +131,7 @@
             <v-col/>
             <v-col cols="4" class="d-flex justify-center">
               <v-btn outlined rounded color="#00B520" @click="getAddressesFromWallet" width="235">
-                <span class="greenish">From wallet</span>
+                <span class="greenish">From {{ walletName }}</span>
               </v-btn>
             </v-col>
           </v-row>
@@ -276,7 +276,7 @@
           </div>
         </v-row>
         <v-row class="mx-0 mt-5 d-flex justify-end">
-          <v-btn large rounded color="#00B43C" @click="toConfirmTx" :disabled="!formFilled">
+          <v-btn large rounded color="#00B43C" @click="createTx" :disabled="!formFilled">
             <span class="whiteish">Send</span>
             <v-icon class="ml-2" color="#FFFFFF">mdi-send-outline</v-icon>
           </v-btn>
@@ -292,9 +292,9 @@ import {
   Component,
   Prop,
   Emit,
-  Watch,
 } from 'vue-property-decorator';
 import * as constants from '@/store/constants';
+import { AccountBalance, FeeAmountData } from '@/services/types';
 
 @Component
 export default class SendBitcoinForm extends Vue {
@@ -340,11 +340,13 @@ export default class SendBitcoinForm extends Vue {
 
   @Prop(String) bitcoinWallet!: string;
 
-  @Prop() balances!: {};
+  @Prop() balances!: AccountBalance;
 
   @Prop() addresses!: [];
 
   @Prop() unusedAddresses?: [];
+
+  @Prop() fees!: FeeAmountData;
 
   get rbtcAmount() {
     return this.bitcoinAmount;
@@ -411,19 +413,19 @@ export default class SendBitcoinForm extends Vue {
   get walletName() {
     switch (this.bitcoinWallet) {
       case constants.WALLET_LEDGER: {
-        return 'Ledger wallet';
+        return 'Ledger';
       }
       case constants.WALLET_TREZOR: {
-        return 'Trezor wallet';
+        return 'Trezor';
       }
       case constants.WALLET_ELECTRUM: {
-        return 'Electrum wallet';
+        return 'Electrum';
       }
       case constants.WALLET_RWALLET: {
         return 'RWallet';
       }
       case constants.WALLET_DEFIANT: {
-        return 'Defiant wallet';
+        return 'Defiant';
       }
       default: {
         return 'wallet';
@@ -473,6 +475,7 @@ export default class SendBitcoinForm extends Vue {
           this.fourth = false;
           this.fifth = false;
           this.secondDone = true;
+          this.calculateTxFee();
           break;
         }
         case 3: {
@@ -525,15 +528,46 @@ export default class SendBitcoinForm extends Vue {
     };
   }
 
-  @Emit('confirmTx')
-  toConfirmTx() {
-    return this.bitcoinWallet;
+  @Emit('createTx')
+  createTx() {
+    let selectedFee;
+    switch (this.txFeeIndex) {
+      case 0:
+        selectedFee = constants.BITCOIN_SLOW_FEE_LEVEL;
+        break;
+      case 1:
+        selectedFee = constants.BITCOIN_AVERAGE_FEE_LEVEL;
+        break;
+      case 2:
+        selectedFee = constants.BITCOIN_FAST_FEE_LEVEL;
+        break;
+      default:
+        selectedFee = '';
+        break;
+    }
+    return {
+      amountToTransferInSatoshi: this.btcToSatoshi(this.bitcoinAmount),
+      refundAddress: this.btcRefundAddressSelected,
+      recipient: this.rskAddressSelected,
+      feeLevel: selectedFee,
+    };
+  }
+
+  @Emit('txFee')
+  calculateTxFee() {
+    return { amount: this.btcToSatoshi(this.bitcoinAmount), accountType: this.accountType };
   }
 
   @Emit()
   // eslint-disable-next-line class-methods-use-this
   satoshiToBtc(satoshis: number): number {
     return satoshis * 0.00000001;
+  }
+
+  @Emit()
+  // eslint-disable-next-line class-methods-use-this
+  btcToSatoshi(btcs: number): number {
+    return btcs * 100000000;
   }
 
   created() {

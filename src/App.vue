@@ -13,6 +13,7 @@ import { Component, Emit } from 'vue-property-decorator';
 import { Action } from 'vuex-class';
 import * as constants from '@/store/constants';
 import ApiService from '@/services/ApiService';
+import { PeginConfiguration } from '@/store/peginTx/types';
 
 @Component({
   components: {
@@ -33,7 +34,7 @@ export default class App extends Vue {
 
   created() {
     ApiService.getPeginConfiguration()
-      .then((config: object) => {
+      .then((config: PeginConfiguration) => {
         const peginConfiguration = {
           minValue: config.minValue,
           maxValue: config.maxValue,
