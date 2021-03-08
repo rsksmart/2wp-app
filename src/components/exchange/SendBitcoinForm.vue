@@ -292,9 +292,9 @@ import {
   Component,
   Prop,
   Emit,
-  Watch,
 } from 'vue-property-decorator';
 import * as constants from '@/store/constants';
+import { AccountBalance, FeeAmountData } from '@/services/types';
 
 @Component
 export default class SendBitcoinForm extends Vue {
@@ -340,11 +340,13 @@ export default class SendBitcoinForm extends Vue {
 
   @Prop(String) bitcoinWallet!: string;
 
-  @Prop() balances!: {};
+  @Prop() balances!: AccountBalance;
 
   @Prop() addresses!: [];
 
   @Prop() unusedAddresses?: [];
+
+  @Prop() fees!: FeeAmountData;
 
   get rbtcAmount() {
     return this.bitcoinAmount;
@@ -473,6 +475,7 @@ export default class SendBitcoinForm extends Vue {
           this.fourth = false;
           this.fifth = false;
           this.secondDone = true;
+          this.calculateTxFee();
           break;
         }
         case 3: {
@@ -500,6 +503,7 @@ export default class SendBitcoinForm extends Vue {
           this.fourth = false;
           this.fifth = false;
           this.fifthDone = true;
+          this.selectedFee();
           break;
         }
         default: {
@@ -511,6 +515,20 @@ export default class SendBitcoinForm extends Vue {
           break;
         }
       }
+    }
+  }
+
+  @Emit('selectedFee')
+  selectedFee(): string {
+    switch (this.txFeeIndex) {
+      case 0:
+        return constants.BITCOIN_SLOW_FEE_LEVEL;
+      case 1:
+        return constants.BITCOIN_AVERAGE_FEE_LEVEL;
+      case 2:
+        return constants.BITCOIN_FAST_FEE_LEVEL;
+      default:
+        return constants.BITCOIN_AVERAGE_FEE_LEVEL;
     }
   }
 
@@ -528,6 +546,12 @@ export default class SendBitcoinForm extends Vue {
   @Emit('confirmTx')
   toConfirmTx() {
     return this.bitcoinWallet;
+  }
+
+  @Emit('txFee')
+  calculateTxFee() {
+    const btcAmountInSatoshis = Number(this.bitcoinAmount) * 100000000;
+    return { amount: btcAmountInSatoshis, accountType: this.accountType };
   }
 
   @Emit()

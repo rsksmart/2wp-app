@@ -20,7 +20,9 @@
     <template v-if="trezorDataReady">
       <component :is="currentComponent" :bitcoinWallet="bitcoinWallet" :balances="balances"
                  @confirmTx="toConfirmTx" @successConfirmation="toTrackingId"
-                 @unused="getUnusedAddresses" :unusedAddresses="unusedAddresses"/>
+                 @unused="getUnusedAddresses" :unusedAddresses="unusedAddresses"
+                 :fees="calculatedFees"
+                 @txFee="getTxFee"/>
     </template>
     <template v-if="showDialog">
       <v-dialog v-model="showDialog" width="600" persistent>
@@ -62,6 +64,7 @@ import { PegInTxState } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import { Action, State } from 'vuex-class';
 import TrezorConnect, { DEVICE, DEVICE_EVENT } from 'trezor-connect';
+import { AccountBalance, FeeAmountData } from '@/services/types';
 
 @Component({
   components: {
@@ -81,7 +84,17 @@ export default class SendBitcoinTrezor extends Vue {
 
   txId = '';
 
-  balances = {};
+  balances: AccountBalance = {
+    legacy: 0,
+    segwit: 0,
+    nativeSegwit: 0,
+  };
+
+  calculatedFees: FeeAmountData = {
+    slow: 0,
+    average: 0,
+    fast: 0,
+  };
 
   trezorDataReady = false;
 
@@ -133,16 +146,27 @@ export default class SendBitcoinTrezor extends Vue {
       })
       .then(() => ApiService
         .getBalances(this.peginTxState.sessionId, this.peginTxState.addressList))
-      .then((balances) => {
+      .then((balances: AccountBalance) => {
         this.balances = balances;
         this.trezorDataReady = true;
       })
+      // .then((txFee) => {
+      //   console.log(txFee);
+      //   return ApiService.createPeginTx(
+      //     10000,
+      //     '2NFSRVejz7d24pZHFY6uqZVbEEgUC3PHCqD',
+      //     '0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1',
+      //     this.peginTxState.sessionId,
+      //     constants.BITCOIN_FAST_FEE_LEVEL,
+      //     '2NCJbWCHMmVRre7xNT6hbocCgEFpQxWtZVC',
+      //   );
+      // })
+      // .then(console.log)
       .catch(console.error);
   }
 
   @Emit()
-  getUnusedAddresses(data: object) {
-    const { flag, accountType } = data;
+  getUnusedAddresses({ flag, accountType }: {flag: boolean; accountType: string}) {
     if (flag) {
       this.trezorService.getAccountUnusedAddresses(accountType)
         .then((ua) => {
@@ -150,6 +174,15 @@ export default class SendBitcoinTrezor extends Vue {
         })
         .catch(console.error);
     }
+  }
+
+  @Emit()
+  getTxFee({ amount, accountType }: {amount: number; accountType: string}) {
+    ApiService.getTxFee(this.peginTxState.sessionId, amount, accountType)
+      .then((txFee) => {
+        this.calculatedFees = txFee;
+      })
+      .catch(console.error);
   }
 }
 </script>

@@ -1,6 +1,8 @@
 import TrezorConnect, { GetAddress } from 'trezor-connect';
 import { Utxo, WalletAddress, UnusedWalletAddress } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
+import { TrezorTx, Tx } from '@/services/types';
+import store from '../store';
 
 export default class TrezorService {
   private coin: string;
@@ -174,5 +176,18 @@ export default class TrezorService {
       (+chain.substring(0, 1) | 0x80000000) >>> 0,
       // eslint-disable-next-line no-bitwise
       (+accountIdx.substring(0, 1) | 0x80000000) >>> 0, +change, +addressIdx];
+  }
+
+  sign(tx: Tx): Promise<object> {
+    const trezorTx: TrezorTx = tx as TrezorTx;
+    return new Promise<object>((resolve, reject) => {
+      TrezorConnect.signTransaction({
+        inputs: trezorTx.inputs,
+        outputs: trezorTx.outputs,
+        coin: this.coin,
+      })
+        .then(resolve)
+        .catch(reject);
+    });
   }
 }

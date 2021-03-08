@@ -8,10 +8,12 @@ export interface PegInTxState {
 
 export interface PeginConfiguration {
   minValue: number;
-  maxValue: number;
+  maxValue?: number;
   federationAddress: string;
   feePerKb: number;
   btcConfirmations: number;
+  sessionId?: string;
+  id?: number;
 }
 
 export interface Utxo {
