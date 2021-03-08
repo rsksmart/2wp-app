@@ -19,10 +19,9 @@
     </template>
     <template v-if="trezorDataReady">
       <component :is="currentComponent" :bitcoinWallet="bitcoinWallet" :balances="balances"
-                 @confirmTx="toConfirmTx" @successConfirmation="toTrackingId"
+                 @createTx="toConfirmTx" @successConfirmation="toTrackingId"
                  @unused="getUnusedAddresses" :unusedAddresses="unusedAddresses"
-                 :fees="calculatedFees"
-                 @txFee="getTxFee"/>
+                 @txFee="getTxFee" :fees="calculatedFees"/>
     </template>
     <template v-if="showDialog">
       <v-dialog v-model="showDialog" width="600" persistent>
@@ -109,8 +108,27 @@ export default class SendBitcoinTrezor extends Vue {
   @Prop(String) bitcoinWallet!: string;
 
   @Emit()
-  toConfirmTx() {
-    this.currentComponent = 'ConfirmTransaction';
+  toConfirmTx({
+    amountToTransferInSatoshi, refundAddress, recipient, feeLevel,
+  }: {
+    amountToTransferInSatoshi: number;
+    refundAddress: string;
+    recipient: string;
+    feeLevel: string;
+  }) {
+    ApiService.createPeginTx(
+      amountToTransferInSatoshi,
+      refundAddress,
+      recipient,
+      this.peginTxState.sessionId,
+      feeLevel,
+      this.unusedAddresses[6],
+    )
+      .then((pegInTx) => {
+        console.log(pegInTx);
+        this.currentComponent = 'ConfirmTransaction';
+      })
+      .catch(console.error);
   }
 
   @Emit()
@@ -150,18 +168,6 @@ export default class SendBitcoinTrezor extends Vue {
         this.balances = balances;
         this.trezorDataReady = true;
       })
-      // .then((txFee) => {
-      //   console.log(txFee);
-      //   return ApiService.createPeginTx(
-      //     10000,
-      //     '2NFSRVejz7d24pZHFY6uqZVbEEgUC3PHCqD',
-      //     '0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1',
-      //     this.peginTxState.sessionId,
-      //     constants.BITCOIN_FAST_FEE_LEVEL,
-      //     '2NCJbWCHMmVRre7xNT6hbocCgEFpQxWtZVC',
-      //   );
-      // })
-      // .then(console.log)
       .catch(console.error);
   }
 
@@ -170,7 +176,7 @@ export default class SendBitcoinTrezor extends Vue {
     if (flag) {
       this.trezorService.getAccountUnusedAddresses(accountType)
         .then((ua) => {
-          this.unusedAddresses = ua;
+          this.unusedAddresses = ua.slice(0, 4);
         })
         .catch(console.error);
     }
