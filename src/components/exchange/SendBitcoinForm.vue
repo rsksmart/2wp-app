@@ -517,16 +517,20 @@ export default class SendBitcoinForm extends Vue {
       }
     }
   }
-  // @Emit('selectedFee')
-  // selectedFee(): string {
-  //   switch (this.txFeeIndex) {
-  //     case 'slow':
-  //       break;
-  //       case
-  //     default:
-  //       return constants.BITCOIN_AVERAGE_FEE_LEVEL;
-  //   }
-  // }
+
+  @Emit('selectedFee')
+  selectedFee(): string {
+    switch (this.txFeeIndex) {
+      case 0:
+        return constants.BITCOIN_SLOW_FEE_LEVEL;
+      case 1:
+        return constants.BITCOIN_AVERAGE_FEE_LEVEL;
+      case 2:
+        return constants.BITCOIN_FAST_FEE_LEVEL;
+      default:
+        return constants.BITCOIN_AVERAGE_FEE_LEVEL;
+    }
+  }
 
   @Emit('sendBTC')
   sendBitcoin(): object {
