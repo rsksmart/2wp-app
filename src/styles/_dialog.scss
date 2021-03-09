@@ -1,4 +1,7 @@
 .dialog {
+  .container-extra {
+    padding: 51px 81px 51px 81px;
+  }
   .button {
     width: 141px !important;
     height: 50px !important;
@@ -32,6 +35,14 @@
     color: #00B520;
   }
 
+  h3 {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 17px;
+    color: #00B520;
+  }
+
   p {
     font-style: normal;
     font-weight: normal;
@@ -41,5 +52,12 @@
     align-items: center;
     text-align: center;
     color: #000000;
+  }
+
+  .green-box {
+    padding: 10px 0 0 10px;
+    border: 0.5px solid #00B43C;
+    box-sizing: border-box;
+    border-radius: 20px;
   }
 }

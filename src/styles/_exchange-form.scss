@@ -39,6 +39,18 @@
     }
   }
 
+  .divider {
+    border-left: 0.5px solid #BFBFBF;
+  }
+
+  .account {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 17px;
+    color: #00B43C;
+  }
+
   .v-slider__tick-label {
     font-weight: bold;
     color: #737778;

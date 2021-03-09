@@ -1,6 +1,8 @@
 import { ActionTree } from 'vuex';
 import * as constants from '@/store/constants';
-import { PeginConfiguration, PegInTxState, Utxo, WalletAddress } from './types';
+import {
+  PeginConfiguration, PegInTxState, Utxo, WalletAddress,
+} from './types';
 import { RootState } from '../types';
 
 export const actions: ActionTree<PegInTxState, RootState> = {
