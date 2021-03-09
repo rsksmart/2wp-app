@@ -10,12 +10,12 @@ export default class TrezorTxSigner extends TxSigner {
     this.trezorService = new TrezorService(process.env.VUE_APP_COIN ?? 'test');
   }
 
-  public sign(tx: Tx): Promise<boolean> {
-    return new Promise<boolean>((resolve) => {
+  public sign(tx: Tx): Promise<object> {
+    return new Promise<object>((resolve) => {
       this.trezorService.sign(tx)
         .then((payload) => {
           console.log(payload);
-          resolve(true);
+          resolve(payload);
         })
         .catch(console.error);
     });

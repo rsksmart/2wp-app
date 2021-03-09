@@ -2,7 +2,6 @@ import TrezorConnect, { GetAddress } from 'trezor-connect';
 import { Utxo, WalletAddress, UnusedWalletAddress } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import { TrezorTx, Tx } from '@/services/types';
-import store from '../store';
 
 export default class TrezorService {
   private coin: string;

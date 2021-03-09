@@ -1,12 +1,12 @@
 import TxBuilder from '@/services/TxBuilder';
 import TrezorTxSigner from '@/services/TrezorTxSigner';
-import { Utxo } from '@/store/peginTx/types';
-import TrezorService from '@/services/TrezorService';
+import { WalletAddress } from '@/store/peginTx/types';
 import {
-  InputScriptType,
-  NormalizedInput, NormalizedOutput, NormalizedTx, TrezorTx, Tx,
+  NormalizedInput, NormalizedOutput, TrezorTx,
 } from '@/services/types';
 import { TransactionInput, TransactionOutput } from 'trezor-connect';
+import ApiService from '@/services/ApiService';
+import store from '../store';
 
 export default class TrezorTxBuilder extends TxBuilder {
   private tx!: TrezorTx;
@@ -16,30 +16,36 @@ export default class TrezorTxBuilder extends TxBuilder {
     this.signer = new TrezorTxSigner();
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  buildTx(normalizedTx: NormalizedTx): Promise<TrezorTx> {
+  buildTx({
+    amountToTransferInSatoshi, refundAddress, recipient, feeLevel, changeAddress, sessionId,
+  }: {
+    amountToTransferInSatoshi: number;
+    refundAddress: string;
+    recipient: string;
+    feeLevel: string;
+    changeAddress: string;
+    sessionId: string;
+  }): Promise<TrezorTx> {
     return new Promise<TrezorTx>((resolve, reject) => {
-      const inputs: TransactionInput[] = [];
       const coin = process.env.VUE_APP_COIN ?? 'test';
-      const utxoIdx = 0;
-      const tx = {
-        coin,
-        inputs: normalizedTx.inputs.map((input) => ({
-          // eslint-disable-next-line @typescript-eslint/camelcase
-          address_n: [0], // TODO
-          // eslint-disable-next-line @typescript-eslint/camelcase
-          prev_hash: input.prev_hash,
-          // eslint-disable-next-line @typescript-eslint/camelcase
-          prev_index: input.prev_index,
-          // eslint-disable-next-line @typescript-eslint/camelcase
-          // script_type: this.getScriptType(input.script_type), TODO
-          amount: input.amount,
-        })),
-        outputs: TrezorTxBuilder.getOutputs(normalizedTx.outputs),
-      };
-      this.tx = tx;
-      resolve(tx);
+      ApiService.createPeginTx(
+        amountToTransferInSatoshi, refundAddress, recipient, sessionId, feeLevel, changeAddress,
+      )
+        .then((normalizedTx) => {
+          const tx = {
+            coin,
+            inputs: TrezorTxBuilder.getInputs(normalizedTx.inputs),
+            outputs: TrezorTxBuilder.getOutputs(normalizedTx.outputs),
+          };
+          this.tx = tx;
+          resolve(tx);
+        })
+        .catch(reject);
     });
+  }
+
+  public sign(): Promise<object> {
+    return this.signer.sign(this.tx);
   }
 
   static getOutputs(outputs: NormalizedOutput[]): TransactionOutput[] {
@@ -48,7 +54,9 @@ export default class TrezorTxBuilder extends TxBuilder {
         return {
           amount: '0',
           // eslint-disable-next-line @typescript-eslint/camelcase
-          op_return_data: output.op_return_data,
+          op_return_data: Buffer.from(output.op_return_data).toString('hex'),
+          // eslint-disable-next-line @typescript-eslint/camelcase,max-len
+          // op_return_data: '4f505f52455455524e20353235333462353432323439463433664238433534366664363434353535626534',
           // eslint-disable-next-line @typescript-eslint/camelcase
           script_type: 'PAYTOOPRETURN',
         };
@@ -60,5 +68,30 @@ export default class TrezorTxBuilder extends TxBuilder {
         amount: output.amount,
       };
     });
+  }
+
+  private static getInputs(inputs: NormalizedInput[]): TransactionInput[] {
+    return inputs.map((input) => ({
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      address_n: TrezorTxBuilder.getPathFromAddress(input.address),
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      prev_hash: input.prev_hash,
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      prev_index: input.prev_index,
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      // script_type: this.getScriptType(input.script_type),
+      amount: input.amount,
+    }));
+  }
+
+  static getPathFromAddress(address: string): number[] {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    const addressList = store.state.pegInTx.addressList as WalletAddress[];
+    let path: number[] = [];
+    addressList.forEach((walletAddress) => {
+      if (walletAddress.address === address) path = walletAddress.path;
+    });
+    return path;
   }
 }
