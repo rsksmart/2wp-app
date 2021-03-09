@@ -184,6 +184,7 @@ export default class TrezorService {
         inputs: trezorTx.inputs,
         outputs: trezorTx.outputs,
         coin: this.coin,
+        push: false,
       })
         .then(resolve)
         .catch(reject);

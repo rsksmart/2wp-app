@@ -32,6 +32,7 @@ export default class TrezorTxBuilder extends TxBuilder {
         amountToTransferInSatoshi, refundAddress, recipient, sessionId, feeLevel, changeAddress,
       )
         .then((normalizedTx) => {
+          console.log(normalizedTx);
           const tx = {
             coin,
             inputs: TrezorTxBuilder.getInputs(normalizedTx.inputs),
@@ -79,7 +80,7 @@ export default class TrezorTxBuilder extends TxBuilder {
       // eslint-disable-next-line @typescript-eslint/camelcase
       prev_index: input.prev_index,
       // eslint-disable-next-line @typescript-eslint/camelcase
-      // script_type: this.getScriptType(input.script_type),
+      script_type: 'SPENDP2SHWITNESS', // this.getScriptType(input.address_n),
       amount: input.amount,
     }));
   }
