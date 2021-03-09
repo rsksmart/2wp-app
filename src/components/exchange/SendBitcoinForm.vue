@@ -542,7 +542,7 @@ export default class SendBitcoinForm extends Vue {
         selectedFee = constants.BITCOIN_FAST_FEE_LEVEL;
         break;
       default:
-        selectedFee = '';
+        selectedFee = constants.BITCOIN_AVERAGE_FEE_LEVEL;
         break;
     }
     return {

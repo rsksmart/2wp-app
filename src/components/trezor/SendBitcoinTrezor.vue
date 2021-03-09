@@ -64,6 +64,7 @@ import * as constants from '@/store/constants';
 import { Action, State } from 'vuex-class';
 import TrezorConnect, { DEVICE, DEVICE_EVENT } from 'trezor-connect';
 import { AccountBalance, FeeAmountData } from '@/services/types';
+import TrezorTxBuilder from '@/services/TrezorTxBuilder';
 
 @Component({
   components: {
@@ -82,6 +83,8 @@ export default class SendBitcoinTrezor extends Vue {
   unusedAddresses: string[] = [];
 
   txId = '';
+
+  txBuilder: TrezorTxBuilder = new TrezorTxBuilder();
 
   balances: AccountBalance = {
     legacy: 0,
@@ -116,18 +119,19 @@ export default class SendBitcoinTrezor extends Vue {
     recipient: string;
     feeLevel: string;
   }) {
-    ApiService.createPeginTx(
+    this.txBuilder.buildTx({
       amountToTransferInSatoshi,
       refundAddress,
       recipient,
-      this.peginTxState.sessionId,
       feeLevel,
-      this.unusedAddresses[6],
-    )
-      .then((pegInTx) => {
-        console.log(pegInTx);
-        this.currentComponent = 'ConfirmTransaction';
+      changeAddress: this.unusedAddresses[0],
+      sessionId: this.peginTxState.sessionId,
+    })
+      .then((tx) => {
+        console.log(tx);
+        return this.txBuilder.sign();
       })
+      .then(console.log)
       .catch(console.error);
   }
 
