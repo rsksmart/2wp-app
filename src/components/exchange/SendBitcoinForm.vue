@@ -24,7 +24,7 @@
             </v-col>
             <v-col/>
             <v-col cols="4" class="d-flex justify-center">
-              <v-btn outlined rounded color="#00B520" width="235" disabled>
+              <v-btn outlined rounded color="#00B520" width="220" disabled>
                 <span class="grayish">Extensive search</span>
               </v-btn>
             </v-col>
@@ -76,9 +76,10 @@
             <v-col/>
           </v-row>
           <v-row class="mx-0 ml-3">
-            <span>
-              You can not send this amount of BTC. You can only send a minimum of 0.01 BTC
-            </span>
+<!--            TODO amount field validations-->
+<!--            <span>-->
+<!--              You can not send this amount of BTC. You can only send a minimum of 0.01 BTC-->
+<!--            </span>-->
           </v-row>
         </div>
         <v-divider class="ml-6 mx-3" color="#C4C4C4"/>
@@ -90,28 +91,50 @@
             </p>
             <v-icon color="#C4C4C4">mdi-info-outlined</v-icon>
           </v-row>
-          <v-row class="mx-0">
-            <v-col cols="7">
-              <v-text-field v-model="rskAddressSelected" solo dense
-                            label="Select or paste the RSK address"
-                            @change="checkStep(rskAddressSelected, 3)"/>
-            </v-col>
-            <v-col>
-              <v-divider vertical color="#C4C4C4"/>
-            </v-col>
-            <v-col cols="4" class="d-flex justify-center">
-              <div>
+          <template v-if="web3Address">
+            <div class="container">
+              <v-row class="mx-0">
+                <span>Wallet Connected</span>
+              </v-row>
+              <v-row class="mx-0 d-flex align-center">
+                <v-col class="pa-0 d-flex justify-start">
+                  <p class="mb-0 account">{{ web3Address }}</p>
+                </v-col>
+                <v-col class="pa-0">
+                  <v-btn icon>
+                    <v-img src="@/assets/icons/edit.png" height="24" contain/>
+                  </v-btn>
+                </v-col>
+              </v-row>
+              <v-row class="mx-0">
+                <v-btn class="pa-0" text>
+                  <span class="blueish">Disconnect Wallet</span>
+                </v-btn>
+              </v-row>
+            </div>
+          </template>
+          <template v-else>
+            <v-row class="mx-0">
+              <v-col cols="7">
+                <v-text-field v-model="rskAddressSelected" solo dense
+                              label="Select or paste the RSK address"
+                              @change="checkStep(rskAddressSelected, 3)"/>
+              </v-col>
+              <v-col class="d-flex justify-start">
+                <div class="divider"/>
+              </v-col>
+              <v-col cols="4">
                 <v-row class="mx-0 d-flex justify-center">
                   <span class="text-center">Use your Software Wallet addresses </span>
                 </v-row>
                 <v-row class="mx-0 d-flex justify-center">
-                  <v-btn outlined rounded color="#00B520" width="235">
+                  <v-btn outlined rounded color="#00B520" width="220" @click="toWeb3Wallet">
                     <span class="greenish">Connect Wallet</span>
                   </v-btn>
                 </v-row>
-              </div>
-            </v-col>
-          </v-row>
+              </v-col>
+            </v-row>
+          </template>
         </div>
         <v-divider class="mx-3" color="#C4C4C4"/>
         <div class="container">
@@ -130,7 +153,7 @@
             </v-col>
             <v-col/>
             <v-col cols="4" class="d-flex justify-center">
-              <v-btn outlined rounded color="#00B520" @click="getAddressesFromWallet" width="235">
+              <v-btn outlined rounded color="#00B520" @click="getAddressesFromWallet" width="220">
                 <span class="greenish">From {{ walletName }}</span>
               </v-btn>
             </v-col>
@@ -151,24 +174,24 @@
               </v-row>
               <v-row class="mx-0">
                 <v-col cols="4" class="d-flex justify-start pa-0">
-                  <span class="text-left">0.00292 BTC</span>
+                  <span class="text-left">{{slowFee}} BTC</span>
                 </v-col>
                 <v-col cols="4" class="d-flex justify-center pa-0">
-                  <span class="text-center">0.00317 BTC</span>
+                  <span class="text-center">{{averageFee}} BTC</span>
                 </v-col>
                 <v-col cols="4" class="d-flex justify-end pa-0">
-                  <span class="text-right">0.00365 BTC</span>
+                  <span class="text-right">{{fastFee}} BTC</span>
                 </v-col>
               </v-row>
               <v-row class="mx-0">
                 <v-col cols="4" class="d-flex justify-start pa-0">
-                  <span class="boldie text-left">$ 1.07</span>
+                  <span class="boldie text-left">$ {{btcToUSD(+slowFee)}}</span>
                 </v-col>
                 <v-col cols="4" class="d-flex justify-center pa-0">
-                  <span class="boldie text-center">$ 1.16</span>
+                  <span class="boldie text-center">$ {{btcToUSD(+averageFee)}}</span>
                 </v-col>
                 <v-col cols="4" class="d-flex justify-end pa-0">
-                  <span class="boldie text-right">$ 1.33</span>
+                  <span class="boldie text-right">$ {{btcToUSD(+fastFee)}}</span>
                 </v-col>
               </v-row>
             </v-col>
@@ -208,7 +231,7 @@
                 </p>
               </v-row>
               <v-row class="mx-0">
-                <span>USD $ {{ bitcoinAmount * bitcoinPrice }}</span>
+                <span>USD $ {{ computedBitcoinUSD }}</span>
               </v-row>
             </div>
             <v-divider color="#C4C4C4"/>
@@ -283,6 +306,32 @@
         </v-row>
       </v-col>
     </v-row>
+    <template>
+      <v-dialog v-model="web3Wallet" width="470">
+        <v-card class="dialog container">
+          <v-row class="mx-0 d-flex justify-center">
+            <v-col class="my-8 d-flex justify-center">
+              <h2 class="text-center">HAVE YOU CONFIGURED THE RSK NETWORK BEFORE?</h2>
+            </v-col>
+          </v-row>
+          <v-row class="mx-0">
+            <v-col class="d-flex justify-center">
+              <v-btn rounded outlined color="#00B520" @click="connectWallet(true)">
+                No, configure wallet
+              </v-btn>
+            </v-col>
+            <v-col class="d-flex justify-center">
+              <v-btn rounded outlined color="#00B520" @click="connectWallet(false)">
+                Yes, connect wallet
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-card>
+      </v-dialog>
+      <template v-if="selectWallet">
+        <wallet :configure="configureWeb3Wallet"/>
+      </template>
+    </template>
   </div>
 </template>
 
@@ -295,8 +344,15 @@ import {
 } from 'vue-property-decorator';
 import * as constants from '@/store/constants';
 import { AccountBalance, FeeAmountData } from '@/services/types';
+import Wallet from '@/components/web3/Wallet.vue';
+import { State } from 'vuex-class';
+import { Web3SessionState } from '@/store/session/types';
 
-@Component
+@Component({
+  components: {
+    Wallet,
+  },
+})
 export default class SendBitcoinForm extends Vue {
   bitcoinPrice = 52179.73; // https://www.coindesk.com/price/bitcoin
 
@@ -330,6 +386,12 @@ export default class SendBitcoinForm extends Vue {
 
   refundAddressFromWallet = false;
 
+  web3Wallet = false;
+
+  selectWallet = false;
+
+  configureWeb3Wallet = false;
+
   rskAddressSelected = '';
 
   transactionFees = ['Slow', 'Average', 'Fast']
@@ -348,6 +410,8 @@ export default class SendBitcoinForm extends Vue {
 
   @Prop() fees!: FeeAmountData;
 
+  @State('web3Session') web3SessionState!: Web3SessionState;
+
   get rbtcAmount() {
     return this.bitcoinAmount;
   }
@@ -365,25 +429,31 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get computedRskAddress() {
-    return this.rskAddressSelected !== '' ? this.rskAddressSelected : 'Not completed';
+    if (this.web3Address) return this.web3Address;
+    if (this.rskAddressSelected) return this.rskAddressSelected;
+    return 'Not completed';
   }
 
   get computedTxFee() {
-    return !this.fifthDone ? 'Not completed' : `${this.txFee} BTC`;
+    return !this.fifthDone ? 'Not completed' : `${this.txFee.toFixed(5)} BTC`;
   }
 
   get computedFullTxFee() {
-    return !this.fifthDone && !this.secondDone ? 'Not completed' : `${Number(this
-      .txFee) + Number(this.computedBTCAmount)} BTC`;
+    const feePlusAmount = Number(this.txFee) + Number(this.bitcoinAmount);
+    return this.fifthDone && this.secondDone ? `${feePlusAmount} BTC` : 'Not completed';
+  }
+
+  get computedBitcoinUSD() {
+    return +this.bitcoinAmount ? this.btcToUSD(this.bitcoinAmount) : 0;
   }
 
   get computedTxFeeUSD() {
-    return !this.fifthDone ? 'USD $ 0' : `USD $ ${Number(this.txFee) * this.bitcoinPrice}`;
+    return !this.fifthDone ? 'USD $ 0' : `USD $ ${this.btcToUSD(+this.txFee)}`;
   }
 
   get computedFullTxFeeUSD() {
-    return !this.fifthDone && !this.secondDone ? 'USD $ 0' : `USD $ ${(Number(this
-      .txFee) + Number(this.computedBTCAmount)) * Number(this.bitcoinPrice)}`;
+    const feePlusAmount = Number(this.txFee) + Number(this.bitcoinAmount);
+    return this.fifthDone && this.secondDone ? `USD $ ${this.btcToUSD(feePlusAmount)}` : 'USD $ 0';
   }
 
   get txFeeColor() {
@@ -396,17 +466,17 @@ export default class SendBitcoinForm extends Vue {
 
   get fullTxFee(): string {
     let txFee = '';
-    if (this.txFeeIndex === 0) txFee = 'Slow - 0.00292 BTC';
-    if (this.txFeeIndex === 1) txFee = 'Average - 0.00317 BTC';
-    if (this.txFeeIndex === 2) txFee = 'Fast - 0.00365 BTC';
+    if (this.txFeeIndex === 0) txFee = `Slow - ${this.fees.slow} BTC`;
+    if (this.txFeeIndex === 1) txFee = `Average - ${this.fees.average} BTC`;
+    if (this.txFeeIndex === 2) txFee = `Fast - ${this.fees.fast} BTC`;
     return txFee;
   }
 
   get txFee(): number {
     let txFee = 0;
-    if (this.txFeeIndex === 0) txFee = 0.00292;
-    if (this.txFeeIndex === 1) txFee = 0.00317;
-    if (this.txFeeIndex === 2) txFee = 0.00365;
+    if (this.txFeeIndex === 0) txFee = this.satoshiToBtc(this.fees.slow);
+    if (this.txFeeIndex === 1) txFee = this.satoshiToBtc(this.fees.average);
+    if (this.txFeeIndex === 2) txFee = this.satoshiToBtc(this.fees.fast);
     return txFee;
   }
 
@@ -443,6 +513,22 @@ export default class SendBitcoinForm extends Vue {
     if (this.btcAccountTypeSelected[0] === 'S') return constants.BITCOIN_SEGWIT_ADDRESS;
     if (this.btcAccountTypeSelected[0] === 'M') return constants.BITCOIN_MULTISIGNATURE_ADDRESS;
     return constants.BITCOIN_NATIVE_SEGWIT_ADDRESS;
+  }
+
+  get web3Address() {
+    return this.web3SessionState.account ?? '';
+  }
+
+  get slowFee() {
+    return this.satoshiToBtc(this.fees.slow).toFixed(5);
+  }
+
+  get averageFee() {
+    return this.satoshiToBtc(this.fees.average).toFixed(5);
+  }
+
+  get fastFee() {
+    return this.satoshiToBtc(this.fees.fast).toFixed(5);
   }
 
   @Emit('unused')
@@ -559,6 +645,19 @@ export default class SendBitcoinForm extends Vue {
   }
 
   @Emit()
+  toWeb3Wallet() {
+    this.web3Wallet = true;
+    this.selectWallet = false;
+  }
+
+  @Emit()
+  connectWallet(flag: boolean) {
+    this.selectWallet = true;
+    this.web3Wallet = false;
+    this.configureWeb3Wallet = flag;
+  }
+
+  @Emit()
   // eslint-disable-next-line class-methods-use-this
   satoshiToBtc(satoshis: number): number {
     return satoshis * 0.00000001;
@@ -568,6 +667,12 @@ export default class SendBitcoinForm extends Vue {
   // eslint-disable-next-line class-methods-use-this
   btcToSatoshi(btcs: number): number {
     return btcs * 100000000;
+  }
+
+  @Emit()
+  // eslint-disable-next-line class-methods-use-this
+  btcToUSD(btcs: number) {
+    return (btcs * this.bitcoinPrice).toFixed(5);
   }
 
   created() {

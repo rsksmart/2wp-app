@@ -1,7 +1,8 @@
 import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
 import { RootState } from './types';
-import { pegInTx } from './peginTx/index';
+import { pegInTx } from './peginTx';
+import { web3Session } from './session';
 
 Vue.use(Vuex);
 
@@ -11,6 +12,7 @@ const store: StoreOptions<RootState> = {
   },
   modules: {
     pegInTx,
+    web3Session,
   },
 };
 
