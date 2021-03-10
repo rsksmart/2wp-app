@@ -131,7 +131,10 @@ export default class SendBitcoinTrezor extends Vue {
         console.log(tx);
         return this.txBuilder.sign();
       })
-      .then(console.log)
+      .then((payload) => {
+        console.log(payload);
+        this.currentComponent = 'ConfirmTransaction';
+      })
       .catch(console.error);
   }
 
