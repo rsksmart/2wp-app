@@ -663,6 +663,7 @@ export default class SendBitcoinForm extends Vue {
     this.selectWallet = true;
     this.web3Wallet = false;
     this.configureWeb3Wallet = flag;
+    this.thirdDone = true;
   }
 
   @Emit()
