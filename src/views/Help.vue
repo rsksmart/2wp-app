@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <send-bitcoin-form :balances="balances" :btcUnusedAddresses="addresses"
-                       :bitcoinWallet="bitcoinWallet"/>
+                       :bitcoinWallet="bitcoinWallet" :fees="calculatedFees"/>
 <!--    <v-btn @click="getAccountAddresses">get addresses</v-btn>-->
   </div>
 </template>
@@ -12,6 +12,7 @@ import TrezorService from '@/services/TrezorService';
 import SendBitcoinForm from '@/components/exchange/SendBitcoinForm.vue';
 import { UnusedWalletAddress } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
+import { FeeAmountData } from '@/services/types';
 
 @Component({
   components: {
@@ -24,6 +25,12 @@ export default class Help extends Vue {
   addresses: UnusedWalletAddress[] = [];
 
   bitcoinWallet = 'WALLET_TREZOR';
+
+  calculatedFees: FeeAmountData = {
+    slow: 0,
+    average: 0,
+    fast: 0,
+  };
 
   balances = {
     segwit: 50000,

@@ -37,7 +37,8 @@
             <p v-bind:class="[second ? 'boldie' : '']">Type the amount you want to convert:</p>
           </v-row>
           <v-row class="mx-0 pb-0 d-flex align-center container">
-            <v-col cols="4" class="input-box-outline">
+            <v-col cols="4" v-bind:class="[insufficientAmount ?
+             'yellow-box' : amountStyle]" class="input-box-outline">
               <v-col cols="8" class="pa-0 pl-1">
                 <v-text-field solo hide-details full-width single-line flat
                               v-model="bitcoinAmount" type="number"
@@ -75,11 +76,10 @@
             </v-col>
             <v-col/>
           </v-row>
-          <v-row class="mx-0 ml-3">
-<!--            TODO amount field validations-->
-<!--            <span>-->
-<!--              You can not send this amount of BTC. You can only send a minimum of 0.01 BTC-->
-<!--            </span>-->
+          <v-row class="mx-0 ml-3" v-if="insufficientAmount">
+            <span class="yellowish">
+              You can not send this amount of BTC. You can only send a minimum of 0.01 BTC
+            </span>
           </v-row>
         </div>
         <v-divider class="ml-6 mx-3" color="#C4C4C4"/>
@@ -394,6 +394,8 @@ export default class SendBitcoinForm extends Vue {
 
   rskAddressSelected = '';
 
+  amountStyle = 'input-box-outline';
+
   transactionFees = ['Slow', 'Average', 'Fast']
 
   btcRefundAddresses: string[] = [];
@@ -531,6 +533,12 @@ export default class SendBitcoinForm extends Vue {
     return this.satoshiToBtc(this.fees.fast).toFixed(5);
   }
 
+  get insufficientAmount() {
+    if (this.bitcoinAmount < 0.01 && this.bitcoinAmount !== 0) return true;
+    if (this.bitcoinAmount !== 0) this.amountStyle = 'green-box';
+    return false;
+  }
+
   @Emit('unused')
   getAddressesFromWallet() {
     this.refundAddressFromWallet = !this.refundAddressFromWallet;
@@ -560,7 +568,7 @@ export default class SendBitcoinForm extends Vue {
           this.third = true;
           this.fourth = false;
           this.fifth = false;
-          this.secondDone = true;
+          this.secondDone = !this.insufficientAmount;
           this.calculateTxFee();
           break;
         }

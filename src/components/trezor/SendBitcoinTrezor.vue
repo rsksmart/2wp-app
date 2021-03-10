@@ -21,7 +21,7 @@
       <component :is="currentComponent" :bitcoinWallet="bitcoinWallet" :balances="balances"
                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
                  @unused="getUnusedAddresses" :unusedAddresses="unusedAddresses"
-                 @txFee="getTxFee" :fees="calculatedFees"/>
+                 @txFee="getTxFee" :fees="calculatedFees" :tx="createdTx"/>
     </template>
     <template v-if="showDialog">
       <v-dialog v-model="showDialog" width="600" persistent>
@@ -63,7 +63,7 @@ import { PegInTxState } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import { Action, State } from 'vuex-class';
 import TrezorConnect, { DEVICE, DEVICE_EVENT } from 'trezor-connect';
-import { AccountBalance, FeeAmountData } from '@/services/types';
+import { AccountBalance, FeeAmountData, TrezorTx } from '@/services/types';
 import TrezorTxBuilder from '@/services/TrezorTxBuilder';
 
 @Component({
@@ -83,6 +83,12 @@ export default class SendBitcoinTrezor extends Vue {
   unusedAddresses: string[] = [];
 
   txId = '';
+
+  createdTx: TrezorTx = {
+    coin: process.env.VUE_APP_COIN ?? 'test',
+    inputs: [],
+    outputs: [],
+  };
 
   txBuilder: TrezorTxBuilder = new TrezorTxBuilder();
 
@@ -129,9 +135,9 @@ export default class SendBitcoinTrezor extends Vue {
     })
       .then((tx) => {
         console.log(tx);
-        return this.txBuilder.sign();
+        this.createdTx = tx;
+        return tx;
       })
-      .then(console.log)
       .catch(console.error);
   }
 

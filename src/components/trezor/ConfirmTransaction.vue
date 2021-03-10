@@ -30,13 +30,24 @@
 
 <script lang="ts">
 import {
-  Component, Emit,
+  Component, Emit, Prop,
   Vue,
 } from 'vue-property-decorator';
+import TrezorTxBuilder from '@/services/TrezorTxBuilder';
+import { TrezorTx } from '@/services/types';
 
 @Component
 export default class ConfirmTransaction extends Vue {
   txId = '';
+
+  @Prop(String) tx!: TrezorTx;
+
+  @Prop() txBuilder!: TrezorTxBuilder;
+
+  @Emit()
+  singTx() {
+    this.txBuilder.sign();
+  }
 
   @Emit('successConfirmation')
   toTrackId() {
