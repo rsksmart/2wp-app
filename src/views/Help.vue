@@ -1,26 +1,31 @@
 <template>
-  <div class="container">
-    <send-bitcoin-form :balances="balances" :btcUnusedAddresses="addresses"
-                       :bitcoinWallet="bitcoinWallet" :fees="calculatedFees"/>
-<!--    <v-btn @click="getAccountAddresses">get addresses</v-btn>-->
+  <div class="exchange">
+    <div class="container">
+      <confirm-transaction :txData="txData" :price="52179.73" :txId="txId"/>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component, Emit } from 'vue-property-decorator';
 import TrezorService from '@/services/TrezorService';
-import SendBitcoinForm from '@/components/exchange/SendBitcoinForm.vue';
 import { UnusedWalletAddress } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
-import { FeeAmountData } from '@/services/types';
+import { FeeAmountData, TrezorTx } from '@/services/types';
+import ConfirmTransaction from '@/components/trezor/ConfirmTransaction.vue';
+import TrezorTxBuilder from '@/services/TrezorTxBuilder';
 
 @Component({
   components: {
-    SendBitcoinForm,
+    ConfirmTransaction,
   },
 })
 export default class Help extends Vue {
+  txId = 'e775bc7b79af4e6133be5c28fed84b5a2415af2bdc780bfae8f48f51d813560b';
+
   trezorService: TrezorService = new TrezorService('test');
+
+  txBuilder: TrezorTxBuilder = new TrezorTxBuilder();
 
   addresses: UnusedWalletAddress[] = [];
 
@@ -37,6 +42,16 @@ export default class Help extends Vue {
     nativeSegwit: 49997000,
     legacy: 3289478,
   };
+
+  amount = 1000000;
+
+  refundAddress = '2N6jtRGNMkdSXnCKk3zG5s33KWhnbfDehkZ';
+
+  recipient = '0x9c4aAE754FF8c963966B26CE8206EF0271c614aa';
+
+  feeBTC = 0.01561;
+
+  change = '2N2U4VZT1pjjXsLq9kgUQwwNNRP5bimtnak';
 
   address = [
     {
@@ -101,6 +116,38 @@ export default class Help extends Vue {
     },
   ];
 
+  createdTx: TrezorTx = {
+    coin: process.env.VUE_APP_COIN ?? 'test',
+    inputs: [],
+    outputs: [],
+  };
+
+  get txData() {
+    return {
+      amount: this.amount,
+      refundAddress: this.refundAddress,
+      recipient: this.recipient,
+      feeBTC: this.feeBTC,
+      change: this.change,
+    };
+  }
+
+  @Emit()
+  toConfirmTx() {
+    this.txBuilder.buildTx({
+      amountToTransferInSatoshi: 1000000,
+      refundAddress: '2N6jtRGNMkdSXnCKk3zG5s33KWhnbfDehkZ',
+      recipient: '0x9c4aAE754FF8c963966B26CE8206EF0271c614aa',
+      feeLevel: 'BITCOIN_AVERAGE_FEE_LEVEL',
+      changeAddress: '2N2U4VZT1pjjXsLq9kgUQwwNNRP5bimtnak',
+      sessionId: 'f052a98df7bbce9f237e63db47acfe7f',
+    })
+      .then((tx: TrezorTx) => {
+        this.createdTx = tx;
+      })
+      .catch(console.error);
+  }
+
   @Emit()
   getAccountAddresses() {
     this.trezorService.getAccountUnusedAddresses(constants.BITCOIN_SEGWIT_ADDRESS)
@@ -108,6 +155,10 @@ export default class Help extends Vue {
         console.log(addresses);
       })
       .catch(console.error);
+  }
+
+  created() {
+    this.toConfirmTx();
   }
 }
 </script>

@@ -5,14 +5,14 @@
         <v-img src="@/assets/rsk.png" height="40" contain/>
       </v-col>
       <v-col cols="2" class="d-flex justify-center align-center">
-        <router-link :to="{ name: 'Exchange' }">
+        <a @click="toExchange">
           Home
-        </router-link>
+        </a>
       </v-col>
       <v-col cols="3" class="d-flex justify-center align-center">
-        <router-link :to="{ name: 'Transactions' }">
+        <a @click="toTransactions">
           Transaction Status
-        </router-link>
+        </a>
       </v-col>
       <v-spacer/>
       <v-col cols="2" class="d-flex justify-end align-center">
@@ -23,8 +23,20 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator';
+import { Vue, Component, Emit } from 'vue-property-decorator';
 
 @Component
-export default class Top extends Vue {}
+export default class Top extends Vue {
+  @Emit()
+  toExchange() {
+    if (this.$router.currentRoute.name === 'Exchange') this.$router.go(0);
+    this.$router.push({ name: 'Exchange' });
+  }
+
+  @Emit()
+  toTransactions() {
+    if (this.$router.currentRoute.name === 'Transactions') this.$router.go(0);
+    this.$router.push({ name: 'Transactions' });
+  }
+}
 </script>

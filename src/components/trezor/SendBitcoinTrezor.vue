@@ -21,7 +21,9 @@
       <component :is="currentComponent" :bitcoinWallet="bitcoinWallet" :balances="balances"
                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
                  @unused="getUnusedAddresses" :unusedAddresses="unusedAddresses"
-                 @txFee="getTxFee" :fees="calculatedFees" :tx="createdTx"/>
+                 @txFee="getTxFee" :fees="calculatedFees" :tx="createdTx"
+                 :txBuilder="txBuilder" :txData="txData" :price="bitcoinPrice"
+                 :txId="txId"/>
     </template>
     <template v-if="showDialog">
       <v-dialog v-model="showDialog" width="600" persistent>
@@ -63,7 +65,9 @@ import { PegInTxState } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import { Action, State } from 'vuex-class';
 import TrezorConnect, { DEVICE, DEVICE_EVENT } from 'trezor-connect';
-import { AccountBalance, FeeAmountData, TrezorTx } from '@/services/types';
+import {
+  AccountBalance, FeeAmountData, TrezorTx,
+} from '@/services/types';
 import TrezorTxBuilder from '@/services/TrezorTxBuilder';
 
 @Component({
@@ -90,6 +94,14 @@ export default class SendBitcoinTrezor extends Vue {
     outputs: [],
   };
 
+  amount = 0;
+
+  refundAddress = '';
+
+  recipient = '';
+
+  feeBTC = 0;
+
   txBuilder: TrezorTxBuilder = new TrezorTxBuilder();
 
   balances: AccountBalance = {
@@ -108,6 +120,8 @@ export default class SendBitcoinTrezor extends Vue {
 
   trezorService: TrezorService = new TrezorService('test');
 
+  bitcoinPrice = 52179.73; // https://www.coindesk.com/price/bitcoin
+
   @State('pegInTx') peginTxState!: PegInTxState;
 
   @Action(constants.IS_TREZOR_CONNECTED, { namespace: 'pegInTx' }) setTrezorConnected !: any;
@@ -116,26 +130,45 @@ export default class SendBitcoinTrezor extends Vue {
 
   @Prop(String) bitcoinWallet!: string;
 
+  get txData() {
+    return {
+      amount: this.amount,
+      refundAddress: this.refundAddress,
+      recipient: this.recipient,
+      feeBTC: this.feeBTC,
+      change: this.change,
+    };
+  }
+
+  get change() {
+    return this.unusedAddresses[5];
+  }
+
   @Emit()
   toConfirmTx({
-    amountToTransferInSatoshi, refundAddress, recipient, feeLevel,
+    amountToTransferInSatoshi, refundAddress, recipient, feeLevel, feeBTC,
   }: {
     amountToTransferInSatoshi: number;
     refundAddress: string;
     recipient: string;
     feeLevel: string;
+    feeBTC: number;
   }) {
+    this.amount = amountToTransferInSatoshi;
+    this.refundAddress = refundAddress;
+    this.recipient = recipient;
+    this.feeBTC = feeBTC;
     this.txBuilder.buildTx({
       amountToTransferInSatoshi,
       refundAddress,
       recipient,
       feeLevel,
-      changeAddress: this.unusedAddresses[0],
+      changeAddress: this.change,
       sessionId: this.peginTxState.sessionId,
     })
-      .then((tx) => {
-        console.log(tx);
+      .then((tx: TrezorTx) => {
         this.createdTx = tx;
+        this.currentComponent = 'ConfirmTransaction';
         return tx;
       })
       .catch(console.error);
@@ -186,7 +219,7 @@ export default class SendBitcoinTrezor extends Vue {
     if (flag) {
       this.trezorService.getAccountUnusedAddresses(accountType)
         .then((ua) => {
-          this.unusedAddresses = ua.slice(0, 4);
+          this.unusedAddresses = ua;
         })
         .catch(console.error);
     }

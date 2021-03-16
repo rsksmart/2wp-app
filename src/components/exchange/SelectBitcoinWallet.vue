@@ -131,16 +131,16 @@
 <script lang="ts">
 import { Vue, Component, Emit } from 'vue-property-decorator';
 import * as constants from '@/store/constants';
-import Ledger from '@/assets/icons/ledger.png';
-import LedgerWhite from '@/assets/icons/ledger-white.png';
-import Electrum from '@/assets/icons/electrum.png';
-import ElectrumWhite from '@/assets/icons/electrum-white.png';
-import Trezor from '@/assets/icons/trezor.png';
-import TrezorWhite from '@/assets/icons/trezor-white.png';
-import RWallet from '@/assets/icons/rWallet.png';
-import RWalletWhite from '@/assets/icons/rWallet-white.png';
-import Defiant from '@/assets/icons/defiant.png';
-import DefiantWhite from '@/assets/icons/defiant-white.png';
+import Ledger from '@/assets/wallet-icons/ledger.png';
+import LedgerWhite from '@/assets/wallet-icons/ledger-white.png';
+import Electrum from '@/assets/wallet-icons/electrum.png';
+import ElectrumWhite from '@/assets/wallet-icons/electrum-white.png';
+import Trezor from '@/assets/wallet-icons/trezor.png';
+import TrezorWhite from '@/assets/wallet-icons/trezor-white.png';
+import RWallet from '@/assets/wallet-icons/rWallet.png';
+import RWalletWhite from '@/assets/wallet-icons/rWallet-white.png';
+import Defiant from '@/assets/wallet-icons/defiant.png';
+import DefiantWhite from '@/assets/wallet-icons/defiant-white.png';
 
 @Component
 export default class SelectBitcoinWallet extends Vue {

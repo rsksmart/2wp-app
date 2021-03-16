@@ -32,7 +32,6 @@ export default class TrezorTxBuilder extends TxBuilder {
         amountToTransferInSatoshi, refundAddress, recipient, sessionId, feeLevel, changeAddress,
       )
         .then((normalizedTx) => {
-          console.log(normalizedTx);
           const tx = {
             coin,
             inputs: TrezorTxBuilder.getInputs(normalizedTx.inputs),
