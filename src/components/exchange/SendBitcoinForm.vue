@@ -37,7 +37,8 @@
             <p v-bind:class="[second ? 'boldie' : '']">Type the amount you want to convert:</p>
           </v-row>
           <v-row class="mx-0 pb-0 d-flex align-center container">
-            <v-col cols="4" class="input-box-outline">
+            <v-col cols="4" v-bind:class="[insufficientAmount ?
+             'yellow-box' : amountStyle]" class="input-box-outline">
               <v-col cols="8" class="pa-0 pl-1">
                 <v-text-field solo hide-details full-width single-line flat
                               v-model="bitcoinAmount" type="number"
@@ -75,11 +76,10 @@
             </v-col>
             <v-col/>
           </v-row>
-          <v-row class="mx-0 ml-3">
-<!--            TODO amount field validations-->
-<!--            <span>-->
-<!--              You can not send this amount of BTC. You can only send a minimum of 0.01 BTC-->
-<!--            </span>-->
+          <v-row class="mx-0 ml-3" v-if="insufficientAmount">
+            <span class="yellowish">
+              You can not send this amount of BTC. You can only send a minimum of 0.01 BTC
+            </span>
           </v-row>
         </div>
         <v-divider class="ml-6 mx-3" color="#C4C4C4"/>
@@ -91,7 +91,7 @@
             </p>
             <v-icon color="#C4C4C4">mdi-info-outlined</v-icon>
           </v-row>
-          <template v-if="web3Address">
+          <template v-if="useWeb3Wallet && web3Address">
             <div class="container">
               <v-row class="mx-0">
                 <span>Wallet Connected</span>
@@ -102,12 +102,12 @@
                 </v-col>
                 <v-col class="pa-0">
                   <v-btn icon>
-                    <v-img src="@/assets/icons/edit.png" height="24" contain/>
+                    <v-img src="@/assets/wallet-icons/edit.png" height="24" contain/>
                   </v-btn>
                 </v-col>
               </v-row>
               <v-row class="mx-0">
-                <v-btn class="pa-0" text>
+                <v-btn class="pa-0" text @click="disconnectWallet">
                   <span class="blueish">Disconnect Wallet</span>
                 </v-btn>
               </v-row>
@@ -147,7 +147,7 @@
               <v-text-field v-if="!refundAddressFromWallet" v-model="btcRefundAddressSelected"
                             solo dense label="Paste the BTC refund address"
                             @change="checkStep(btcRefundAddressSelected, 4)"/>
-              <v-select v-else v-model="btcRefundAddressSelected" :items="unusedAddresses"
+              <v-select v-else v-model="btcRefundAddressSelected" :items="unusedAddressList"
                         color="#FFF" label="Select the BTC refund address" solo dense
                         @change="checkStep(btcRefundAddressSelected, 4)"/>
             </v-col>
@@ -354,8 +354,6 @@ import { Web3SessionState } from '@/store/session/types';
   },
 })
 export default class SendBitcoinForm extends Vue {
-  bitcoinPrice = 52179.73; // https://www.coindesk.com/price/bitcoin
-
   bitcoinAmount = 0.0;
 
   txFeeIndex = 0.0;
@@ -392,13 +390,19 @@ export default class SendBitcoinForm extends Vue {
 
   configureWeb3Wallet = false;
 
+  useWeb3Wallet = false;
+
   rskAddressSelected = '';
+
+  amountStyle = '';
 
   transactionFees = ['Slow', 'Average', 'Fast']
 
   btcRefundAddresses: string[] = [];
 
   accountBalances: string[] = [];
+
+  @Prop() price!: number;
 
   @Prop(String) bitcoinWallet!: string;
 
@@ -412,12 +416,16 @@ export default class SendBitcoinForm extends Vue {
 
   @State('web3Session') web3SessionState!: Web3SessionState;
 
+  get unusedAddressList() {
+    return this.unusedAddresses ? this.unusedAddresses.slice(0, 4) : [];
+  }
+
   get rbtcAmount() {
     return this.bitcoinAmount;
   }
 
   get computedBTCAmount() {
-    return this.bitcoinAmount > 0 ? this.bitcoinAmount : 'Not completed';
+    return this.bitcoinAmount > 0 ? Number(this.bitcoinAmount) : 'Not completed';
   }
 
   get computedBTCAddress() {
@@ -429,7 +437,7 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get computedRskAddress() {
-    if (this.web3Address) return this.web3Address;
+    if (this.useWeb3Wallet) return this.web3Address;
     if (this.rskAddressSelected) return this.rskAddressSelected;
     return 'Not completed';
   }
@@ -440,7 +448,7 @@ export default class SendBitcoinForm extends Vue {
 
   get computedFullTxFee() {
     const feePlusAmount = Number(this.txFee) + Number(this.bitcoinAmount);
-    return this.fifthDone && this.secondDone ? `${feePlusAmount} BTC` : 'Not completed';
+    return this.fifthDone && this.secondDone ? `${feePlusAmount.toFixed(6)} BTC` : 'Not completed';
   }
 
   get computedBitcoinUSD() {
@@ -531,6 +539,17 @@ export default class SendBitcoinForm extends Vue {
     return this.satoshiToBtc(this.fees.fast).toFixed(5);
   }
 
+  get insufficientAmount() {
+    if (this.bitcoinAmount < 0.01 && this.bitcoinAmount !== 0) return true;
+    if (this.bitcoinAmount !== 0) this.amountStyle = 'green-box';
+    return false;
+  }
+
+  @Emit()
+  disconnectWallet() {
+    this.useWeb3Wallet = false;
+  }
+
   @Emit('unused')
   getAddressesFromWallet() {
     this.refundAddressFromWallet = !this.refundAddressFromWallet;
@@ -560,7 +579,7 @@ export default class SendBitcoinForm extends Vue {
           this.third = true;
           this.fourth = false;
           this.fifth = false;
-          this.secondDone = true;
+          this.secondDone = !this.insufficientAmount;
           this.calculateTxFee();
           break;
         }
@@ -603,17 +622,6 @@ export default class SendBitcoinForm extends Vue {
     }
   }
 
-  @Emit('sendBTC')
-  sendBitcoin(): object {
-    return {
-      bitcoinAmount: this.bitcoinAmount,
-      btcRefundAddressSelected: this.btcRefundAddressSelected,
-      rskAddressSelected: this.rskAddressSelected,
-      fullTxFee: this.txFee,
-      txFee: this.fullTxFee,
-    };
-  }
-
   @Emit('createTx')
   createTx() {
     let selectedFee;
@@ -634,8 +642,9 @@ export default class SendBitcoinForm extends Vue {
     return {
       amountToTransferInSatoshi: this.btcToSatoshi(this.bitcoinAmount),
       refundAddress: this.btcRefundAddressSelected,
-      recipient: this.rskAddressSelected,
+      recipient: this.computedRskAddress,
       feeLevel: selectedFee,
+      feeBTC: this.txFee,
     };
   }
 
@@ -646,6 +655,7 @@ export default class SendBitcoinForm extends Vue {
 
   @Emit()
   toWeb3Wallet() {
+    this.useWeb3Wallet = true;
     this.web3Wallet = true;
     this.selectWallet = false;
   }
@@ -655,6 +665,7 @@ export default class SendBitcoinForm extends Vue {
     this.selectWallet = true;
     this.web3Wallet = false;
     this.configureWeb3Wallet = flag;
+    this.thirdDone = true;
   }
 
   @Emit()
@@ -672,7 +683,7 @@ export default class SendBitcoinForm extends Vue {
   @Emit()
   // eslint-disable-next-line class-methods-use-this
   btcToUSD(btcs: number) {
-    return (btcs * this.bitcoinPrice).toFixed(5);
+    return (btcs * this.price).toFixed(5);
   }
 
   created() {

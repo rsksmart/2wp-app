@@ -42,9 +42,8 @@ p {
   border: 1px solid #00B520;
   box-sizing: border-box;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 3px 7px 3px 7px;
+  text-align: center;
   margin-right: 5px;
   color: #000000 !important;
 }
@@ -109,6 +108,10 @@ p {
 
 .blueish {
   color: #008CFF !important;
+}
+
+.yellowish {
+  color: #F6C61B !important;
 }
 
 .ligth-grayish {

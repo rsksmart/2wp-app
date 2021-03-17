@@ -1,16 +1,9 @@
 import Vue from 'vue';
 import Web3 from 'web3';
-import store from '@/store';
 import { ActionTree } from 'vuex';
 import * as constants from '@/store/constants';
 import { Web3SessionState } from './types';
 import { RootState } from '../types';
-
-if (window.ethereum) {
-  window.ethereum.on('accountsChanged', () => {
-    store.dispatch(constants.SESSION_CONNECT_WEB3);
-  });
-}
 
 export const actions: ActionTree<Web3SessionState, RootState> = {
   [constants.SESSION_CONNECT_WEB3]: ({ commit }) => {
