@@ -1,8 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import axios from 'axios';
 import { WalletAddress, PeginConfiguration } from '@/store/peginTx/types';
 import { AccountBalance, FeeAmountData, NormalizedTx } from '@/services/types';
-import * as store from '../store';
 
 export default class ApiService {
   static baseURL = process.env.VUE_APP_API_BASE_URL
@@ -53,6 +51,19 @@ export default class ApiService {
         changeAddress,
       })
         .then((response) => resolve(response.data))
+        .catch(reject);
+    });
+  }
+
+  public static broadcast(signedRawTx: string): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      axios.post(`${this.baseURL}/broadcast`, {
+        data: signedRawTx,
+      })
+        .then((response) => {
+          if (response.data.error) reject(response.data.error);
+          resolve(response.data.txId);
+        })
         .catch(reject);
     });
   }

@@ -1,5 +1,5 @@
 import TxSigner from '@/services/TxSigner';
-import { NormalizedTx, Tx } from '@/services/types';
+import { Tx } from '@/services/types';
 
 export default abstract class TxBuilder {
   protected signer!: TxSigner;
