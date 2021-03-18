@@ -1,6 +1,6 @@
 import TxSigner from '@/services/TxSigner';
 import TrezorService from '@/services/TrezorService';
-import { Tx } from '@/services/types';
+import { TrezorSignedTx, Tx } from '@/services/types';
 
 export default class TrezorTxSigner extends TxSigner {
   private trezorService: TrezorService;
@@ -10,8 +10,8 @@ export default class TrezorTxSigner extends TxSigner {
     this.trezorService = new TrezorService(process.env.VUE_APP_COIN ?? 'test');
   }
 
-  public sign(tx: Tx): Promise<object> {
-    return new Promise<object>((resolve) => {
+  public sign(tx: Tx): Promise<TrezorSignedTx> {
+    return new Promise<TrezorSignedTx>((resolve) => {
       this.trezorService.sign(tx)
         .then((payload) => {
           console.log(payload);

@@ -58,3 +58,12 @@ export interface TxData {
   change: string;
   feeBTC: number;
 }
+
+export interface TrezorSignedTx {
+  success: boolean;
+  id?: number;
+  payload: {
+    signatures: string[];
+    serializedTx: string;
+  };
+}
