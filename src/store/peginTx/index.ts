@@ -11,6 +11,7 @@ export const state: PegInTxState = {
   utxoList: undefined,
   addressList: undefined,
   trezorConnected: false,
+  bitcoinWallet: '',
 };
 
 const namespaced = true;

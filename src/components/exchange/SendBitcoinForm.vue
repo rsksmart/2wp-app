@@ -42,7 +42,7 @@
               <v-col cols="8" class="pa-0 pl-1">
                 <v-text-field solo hide-details full-width single-line flat
                               v-model="bitcoinAmount" type="number"
-                              @change="checkStep(bitcoinWallet, 2)"/>
+                              @change="checkStep(peginTxState.bitcoinWallet, 2)"/>
               </v-col>
               <v-col cols="4" class="pa-0">
                 <v-row>
@@ -338,15 +338,14 @@
 <script lang="ts">
 import {
   Vue,
-  Component,
-  Prop,
-  Emit,
+  Component, Prop, Emit,
 } from 'vue-property-decorator';
 import * as constants from '@/store/constants';
 import { AccountBalance, FeeAmountData } from '@/services/types';
 import Wallet from '@/components/web3/Wallet.vue';
-import { State } from 'vuex-class';
+import { Getter, State } from 'vuex-class';
 import { Web3SessionState } from '@/store/session/types';
+import { PegInTxState } from '@/store/peginTx/types';
 
 @Component({
   components: {
@@ -404,8 +403,6 @@ export default class SendBitcoinForm extends Vue {
 
   @Prop() price!: number;
 
-  @Prop(String) bitcoinWallet!: string;
-
   @Prop() balances!: AccountBalance;
 
   @Prop() addresses!: [];
@@ -414,7 +411,11 @@ export default class SendBitcoinForm extends Vue {
 
   @Prop() fees!: FeeAmountData;
 
+  @State('pegInTx') peginTxState!: PegInTxState;
+
   @State('web3Session') web3SessionState!: Web3SessionState;
+
+  @Getter(constants.WALLET_NAME, { namespace: 'pegInTx' }) walletName!: string;
 
   get unusedAddressList() {
     return this.unusedAddresses ? this.unusedAddresses.slice(0, 4) : [];
@@ -486,29 +487,6 @@ export default class SendBitcoinForm extends Vue {
     if (this.txFeeIndex === 1) txFee = this.satoshiToBtc(this.fees.average);
     if (this.txFeeIndex === 2) txFee = this.satoshiToBtc(this.fees.fast);
     return txFee;
-  }
-
-  get walletName() {
-    switch (this.bitcoinWallet) {
-      case constants.WALLET_LEDGER: {
-        return 'Ledger';
-      }
-      case constants.WALLET_TREZOR: {
-        return 'Trezor';
-      }
-      case constants.WALLET_ELECTRUM: {
-        return 'Electrum';
-      }
-      case constants.WALLET_RWALLET: {
-        return 'RWallet';
-      }
-      case constants.WALLET_DEFIANT: {
-        return 'Defiant';
-      }
-      default: {
-        return 'wallet';
-      }
-    }
   }
 
   get formFilled() {

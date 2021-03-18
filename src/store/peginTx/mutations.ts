@@ -20,4 +20,7 @@ export const mutations: MutationTree<PegInTxState> = {
   [constants.PEGIN_TX_SET_PEGIN_CONFIGURATION]: (state, peginConfiguration: PeginConfiguration) => {
     state.peginConfiguration = peginConfiguration;
   },
+  [constants.PEGIN_TX_SET_BITCOIN_WALLET]: (state, bitcoinWallet: string) => {
+    state.bitcoinWallet = bitcoinWallet;
+  },
 };

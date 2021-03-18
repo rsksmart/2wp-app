@@ -1,24 +1,10 @@
 <template>
   <div class="container">
     <template v-if="!trezorDataReady">
-      <v-row class="mx-0 mb-5 mt-10 d-flex justify-center">
-        <v-progress-circular indeterminate :size="60" :width="8" color="#00B520"/>
-      </v-row>
-      <v-row class="mx-0 d-flex justify-center">
-        <h2>Connect your Trezor</h2>
-      </v-row>
-      <v-row class="ma-0 mt-5 d-flex justify-center">
-        <p class="ma-0">Plug in your Trezor device to your computer</p>
-      </v-row>
-      <v-row class="ma-0 mb-8 d-flex justify-center">
-        <p class="ma-0">Keep your Trezor close so you can authorize access</p>
-      </v-row>
-      <v-row class="mx-0 d-flex justify-center">
-        <v-img src="@/assets/exchange/trezor/connect_trezor.png" height="410" contain/>
-      </v-row>
+      <connect-device/>
     </template>
     <template v-if="trezorDataReady">
-      <component :is="currentComponent" :bitcoinWallet="bitcoinWallet" :balances="balances"
+      <component :is="currentComponent" :balances="balances"
                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
                  @unused="getUnusedAddresses" :unusedAddresses="unusedAddresses"
                  @txFee="getTxFee" :fees="calculatedFees" :tx="createdTx"
@@ -26,34 +12,14 @@
                  :txId="txId"/>
     </template>
     <template v-if="showDialog">
-      <v-dialog v-model="showDialog" width="600" persistent>
-        <v-card class="container dialog">
-          <v-row class="mx-0 mt-10 mb-3 d-flex justify-center">
-            <h2>BTC TO RBTC CONVERSION REQUIRES THESE STEPS</h2>
-          </v-row>
-          <v-row class="mx-0 d-flex justify-center">
-            <v-col cols="10">
-              <p>Remember that the conversion process from BTC to RBTC must have 100 confirmations.
-                This means the conversion will take 17 hours.</p>
-            </v-col>
-          </v-row>
-          <v-row class="mx-0 mb-3 mt-1">
-            <v-img src="@/assets/exchange/trezor/btc_conversion.png" height="135" contain/>
-          </v-row>
-          <v-row class="mx-0 mt-8 mb-10 d-flex justify-center">
-            <v-btn width="142" height="50" dense rounded color="#00B520" @click="closeDialog">
-              <span class="whiteish">Continue</span>
-            </v-btn>
-          </v-row>
-        </v-card>
-      </v-dialog>
+      <btc-to-rbtc-dialog :showDialog="showDialog" @closeDialog="closeDialog"/>
     </template>
   </div>
 </template>
 
 <script lang="ts">
 import {
-  Component, Prop, Emit,
+  Component, Emit,
   Vue,
 } from 'vue-property-decorator';
 import SendBitcoinForm from '@/components/exchange/SendBitcoinForm.vue';
@@ -69,12 +35,16 @@ import {
   AccountBalance, FeeAmountData, TrezorTx,
 } from '@/services/types';
 import TrezorTxBuilder from '@/services/TrezorTxBuilder';
+import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
+import ConnectDevice from '@/components/exchange/ConnectDevice.vue';
 
 @Component({
   components: {
+    BtcToRbtcDialog,
     SendBitcoinForm,
     ConfirmTransaction,
     TrackingId,
+    ConnectDevice,
   },
 })
 export default class SendBitcoinTrezor extends Vue {
@@ -127,8 +97,6 @@ export default class SendBitcoinTrezor extends Vue {
   @Action(constants.IS_TREZOR_CONNECTED, { namespace: 'pegInTx' }) setTrezorConnected !: any;
 
   @Action(constants.PEGIN_TX_ADD_ADDRESSES, { namespace: 'pegInTx' }) setPeginTxAddresses !: any;
-
-  @Prop(String) bitcoinWallet!: string;
 
   get txData() {
     return {

@@ -4,6 +4,7 @@ export interface PegInTxState {
   trezorConnected: boolean;
   peginConfiguration?: PeginConfiguration;
   sessionId: string;
+  bitcoinWallet: string;
 }
 
 export interface PeginConfiguration {
