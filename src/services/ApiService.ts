@@ -1,8 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import axios from 'axios';
 import { WalletAddress, PeginConfiguration } from '@/store/peginTx/types';
 import { AccountBalance, FeeAmountData, NormalizedTx } from '@/services/types';
-import * as store from '../store';
 
 export default class ApiService {
   static baseURL = process.env.VUE_APP_API_BASE_URL

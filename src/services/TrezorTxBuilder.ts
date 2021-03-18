@@ -7,8 +7,8 @@ import {
 import { TransactionInput, TransactionOutput } from 'trezor-connect';
 import ApiService from '@/services/ApiService';
 import { getAccountType } from '@/services/utils';
-import store from '../store';
 import * as constants from '@/store/constants';
+import store from '../store';
 
 export default class TrezorTxBuilder extends TxBuilder {
   private tx!: TrezorTx;

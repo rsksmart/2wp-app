@@ -1,4 +1,4 @@
-import TrezorConnect, { GetAddress, SignedTransaction } from 'trezor-connect';
+import TrezorConnect, { GetAddress } from 'trezor-connect';
 import { Utxo, WalletAddress, UnusedWalletAddress } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import { TrezorSignedTx, TrezorTx, Tx } from '@/services/types';
