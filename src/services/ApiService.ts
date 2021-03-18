@@ -56,4 +56,17 @@ export default class ApiService {
         .catch(reject);
     });
   }
+
+  public static broadcast(signedRawTx: string): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      axios.post(`${this.baseURL}/broadcast`, {
+        data: signedRawTx,
+      })
+        .then((response) => {
+          if (response.data.error) reject(response.data.error);
+          resolve(response.data.txId);
+        })
+        .catch(reject);
+    });
+  }
 }

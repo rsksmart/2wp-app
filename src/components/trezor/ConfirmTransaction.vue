@@ -66,6 +66,7 @@ import {
 import TrezorTxBuilder from '@/services/TrezorTxBuilder';
 import { TrezorTx, TxData } from '@/services/types';
 import TxSummary from '@/components/exchange/TxSummary.vue';
+import ApiService from '@/services/ApiService';
 
 @Component({
   components: {
@@ -86,9 +87,12 @@ export default class ConfirmTransaction extends Vue {
   @Emit('successConfirmation')
   async toTrackId() {
     await this.txBuilder.sign()
-      .then((payload) => {
-        console.log(payload);
-        this.txId = 'e775bc7b79af4e6133be5c28fed84b5a2415af2bdc780bfae8f48f51d813560b';
+      .then((trezorSignedTx) => {
+        console.log(trezorSignedTx);
+        return ApiService.broadcast(trezorSignedTx.payload.serializedTx);
+      })
+      .then((txId) => {
+        this.txId = txId;
       })
       .catch(console.error);
     return this.txId;
