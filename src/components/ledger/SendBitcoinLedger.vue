@@ -25,6 +25,7 @@ import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
 import SendBitcoinForm from '@/components/exchange/SendBitcoinForm.vue';
 import ConfirmTransaction from '@/components/ledger/ConfirmTransaction.vue';
 import ConnectDevice from '@/components/exchange/ConnectDevice.vue';
+import TrackingId from '@/components/exchange/TrackingId.vue';
 import { FeeAmountData } from '@/services/types';
 
 @Component({
@@ -33,6 +34,7 @@ import { FeeAmountData } from '@/services/types';
     SendBitcoinForm,
     ConfirmTransaction,
     ConnectDevice,
+    TrackingId,
   },
 })
 export default class SendBitcoinLedger extends Vue {
