@@ -27,6 +27,7 @@ import ConfirmTransaction from '@/components/ledger/ConfirmTransaction.vue';
 import ConnectDevice from '@/components/exchange/ConnectDevice.vue';
 import TrackingId from '@/components/exchange/TrackingId.vue';
 import { FeeAmountData } from '@/services/types';
+import LedgerService from '@/services/LedgerService';
 
 @Component({
   components: {
@@ -49,6 +50,8 @@ export default class SendBitcoinLedger extends Vue {
   currentComponent = 'SendBitcoinForm';
 
   unusedAddresses: string[] = [];
+
+  ledgerService = new LedgerService(process.env.VUE_APP_COIN ?? 'test')
 
   balances = {
     segwit: 50000,
@@ -84,6 +87,7 @@ export default class SendBitcoinLedger extends Vue {
 
   @Emit()
   closeDialog() {
+    this.ledgerService.getAddressList(2);
     this.showDialog = false;
     setTimeout(() => {
       this.ledgerDataReady = true;

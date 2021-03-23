@@ -88,7 +88,7 @@ export default class SendBitcoinTrezor extends Vue {
 
   trezorDataReady = false;
 
-  trezorService: TrezorService = new TrezorService('test');
+  trezorService: TrezorService = new TrezorService(process.env.VUE_APP_COIN ?? 'test');
 
   bitcoinPrice = 52179.73; // https://www.coindesk.com/price/bitcoin
 
