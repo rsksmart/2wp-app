@@ -154,12 +154,10 @@ export default class SendBitcoinTrezor extends Vue {
     this.getAccountAddresses();
     TrezorConnect.on(DEVICE_EVENT, (event) => {
       if (event.type === DEVICE.CONNECT) {
-        console.log('Trezor connected :D');
         this.setTrezorConnected(true);
         this.showDialog = false;
         this.trezorConnected = this.peginTxState.trezorConnected;
       } else if (event.type === DEVICE.DISCONNECT) {
-        console.log('Trezor disconnected :(');
         this.setTrezorConnected(false);
         this.showDialog = false;
         this.trezorConnected = this.peginTxState.trezorConnected;

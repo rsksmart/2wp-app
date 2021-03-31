@@ -20,11 +20,6 @@ const routes: Array<RouteConfig> = [
     name: 'Transactions',
     component: () => import(/* webpackChunkName: "transactions" */ '../views/Transactions.vue'),
   },
-  {
-    path: '/help',
-    name: 'Help',
-    component: () => import(/* webpackChunkName: "help" */ '../views/Help.vue'),
-  },
 ];
 
 const router = new VueRouter({

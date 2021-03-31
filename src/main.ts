@@ -11,7 +11,6 @@ Vue.config.productionTip = false;
 Vue.prototype.$web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
 
 if (window.ethereum) {
-  console.log(`Is metamask: ${window.ethereum.isMetaMask}`);
   window.ethereum.on('accountsChanged', async () => {
     await store.dispatch(`web3Session/${constants.WEB3_SESSION_GET_ACCOUNT}`);
   });

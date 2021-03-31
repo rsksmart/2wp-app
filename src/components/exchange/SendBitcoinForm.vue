@@ -14,11 +14,11 @@
         <div class="container">
           <v-row class="mx-0 d-flex align-center">
             <span v-bind:class="[first ? 'number-filled' : 'number']">1</span>
-            <p v-bind:class="[first ? 'boldie': '']">Select Bitcoin account to send from:</p>
+            <p v-bind:class="{'boldie': first}">Select Bitcoin account to send from:</p>
           </v-row>
           <v-row class="mx-0">
             <v-col cols="7">
-              <v-select v-model="btcAccountTypeSelected" :items="accountBalances" color="#FFF"
+              <v-select v-model="btcAccountTypeSelected" :items="accountBalances" color="#fff"
                         label="Select the account" solo dense
                         @change="checkStep(btcAccountTypeSelected, 1)"/>
             </v-col>
@@ -34,7 +34,7 @@
         <div class="container">
           <v-row class="mx-0 d-flex align-center">
             <span v-bind:class="[second ? 'number-filled' : 'number']">2</span>
-            <p v-bind:class="[second ? 'boldie' : '']">Type the amount you want to convert:</p>
+            <p v-bind:class="{'boldie': second}">Type the amount you want to convert:</p>
           </v-row>
           <v-row class="mx-0 pb-0 d-flex align-center container">
             <v-col cols="4" v-bind:class="[insufficientAmount ?
@@ -56,7 +56,7 @@
               </v-col>
             </v-col>
             <v-col cols="1" class="d-flex justify-center">
-              <v-icon color="#000000">mdi-arrow-right</v-icon>
+              <v-icon color="#000">mdi-arrow-right</v-icon>
             </v-col>
             <v-col cols="4" class="pa-0 input-box-flat">
               <v-col cols="8" class="pa-0 pl-1">
@@ -86,7 +86,7 @@
         <div class="container">
           <v-row class="mx-0 d-flex align-center">
             <span v-bind:class="[third ? 'number-filled' : 'number']">3</span>
-            <p v-bind:class="[third ? 'boldie' : '']">
+            <p v-bind:class="{'boldie': third}">
               Select the RSK address you want to receive your RBTC:
             </p>
             <v-icon color="#C4C4C4">mdi-info-outlined</v-icon>
@@ -97,14 +97,7 @@
                 <span>Wallet Connected</span>
               </v-row>
               <v-row class="mx-0 d-flex align-center">
-                <v-col class="pa-0 d-flex justify-start">
-                  <p class="mb-0 account">{{ web3Address }}</p>
-                </v-col>
-                <v-col class="pa-0">
-                  <v-btn icon>
-                    <v-img src="@/assets/wallet-icons/edit.png" height="24" contain/>
-                  </v-btn>
-                </v-col>
+                <p class="mb-0 account">{{ web3Address }}</p>
               </v-row>
               <v-row class="mx-0">
                 <v-btn class="pa-0" text @click="disconnectWallet">
@@ -140,7 +133,7 @@
         <div class="container">
           <v-row class="mx-0 d-flex align-center">
             <span v-bind:class="[fourth ? 'number-filled' : 'number']">4</span>
-            <p v-bind:class="[fourth ? 'boldie' : '']">Select your BTC refund address:</p>
+            <p v-bind:class="{'boldie': fourth}">Select your BTC refund address:</p>
           </v-row>
           <v-row class="mx-0">
             <v-col cols="7">
@@ -148,7 +141,7 @@
                             solo dense label="Paste the BTC refund address"
                             @change="checkStep(btcRefundAddressSelected, 4)"/>
               <v-select v-else v-model="btcRefundAddressSelected" :items="unusedAddressList"
-                        color="#FFF" label="Select the BTC refund address" solo dense
+                        color="#fff" label="Select the BTC refund address" solo dense
                         @change="checkStep(btcRefundAddressSelected, 4)"/>
             </v-col>
             <v-col/>
@@ -163,7 +156,7 @@
         <div class="container">
           <v-row class="mx-0 d-flex align-center">
             <span v-bind:class="[fifth ? 'number-filled' : 'number']">5</span>
-            <p v-bind:class="[fifth ? 'boldie' : '']">Select the Transaction Fee:</p>
+            <p v-bind:class="{'boldie' : fifth}">Select the Transaction Fee:</p>
           </v-row>
           <v-row class="mx-0 d-flex justify-center">
             <v-col cols="11">
@@ -212,7 +205,7 @@
                 </v-icon>
               </v-row>
               <v-row class="mx-0">
-                <p v-bind:class="[computedBTCAddress === 'Not completed' ? 'grayish' : '']">
+                <p v-bind:class="{'grayish': computedBTCAddress === 'Not completed'}">
                   {{ computedBTCAddress }}
                 </p>
               </v-row>
@@ -226,7 +219,7 @@
                 </v-icon>
               </v-row>
               <v-row class="mx-0">
-                <p v-bind:class="[computedBTCAmount === 'Not completed' ? 'grayish' : '']">
+                <p v-bind:class="{'grayish': computedBTCAmount === 'Not completed'}">
                   {{ computedBTCAmount }}
                 </p>
               </v-row>
@@ -243,7 +236,7 @@
                 </v-icon>
               </v-row>
               <v-row class="mx-0">
-                <p v-bind:class="[computedRskAddress === 'Not completed' ? 'grayish' : '']">
+                <p v-bind:class="{'grayish': computedRskAddress === 'Not completed'}">
                   {{ computedRskAddress }}
                 </p>
               </v-row>
@@ -257,7 +250,7 @@
                 </v-icon>
               </v-row>
               <v-row class="mx-0">
-                <p v-bind:class="[computedRefundBTCAddress === 'Not completed' ? 'grayish' : '']">
+                <p v-bind:class="{'grayish': computedRefundBTCAddress === 'Not completed'}">
                   {{ computedRefundBTCAddress }}
                 </p>
               </v-row>
@@ -271,7 +264,7 @@
                 </v-icon>
               </v-row>
               <v-row class="mx-0">
-                <p v-bind:class="[computedTxFee === 'Not completed' ? 'grayish' : '']">
+                <p v-bind:class="{'grayish': computedTxFee === 'Not completed'}">
                   {{ computedTxFee }}
                 </p>
               </v-row>
@@ -288,7 +281,7 @@
                 </v-icon>
               </v-row>
               <v-row class="mx-0">
-                <p v-bind:class="[computedFullTxFee === 'Not completed' ? 'grayish' : '']">
+                <p v-bind:class="{'grayish': computedBTCAmount === 'Not completed'}">
                   {{ computedFullTxFee }}
                 </p>
               </v-row>
@@ -301,7 +294,7 @@
         <v-row class="mx-0 mt-5 d-flex justify-end">
           <v-btn large rounded color="#00B43C" @click="createTx" :disabled="!formFilled">
             <span class="whiteish">Send</span>
-            <v-icon class="ml-2" color="#FFFFFF">mdi-send-outline</v-icon>
+            <v-icon class="ml-2" color="#fff">mdi-send-outline</v-icon>
           </v-btn>
         </v-row>
       </v-col>
@@ -343,7 +336,7 @@ import {
 import * as constants from '@/store/constants';
 import { AccountBalance, FeeAmountData } from '@/services/types';
 import Wallet from '@/components/web3/Wallet.vue';
-import { Getter, State } from 'vuex-class';
+import { Action, Getter, State } from 'vuex-class';
 import { Web3SessionState } from '@/store/session/types';
 import { PegInTxState } from '@/store/peginTx/types';
 
@@ -416,6 +409,8 @@ export default class SendBitcoinForm extends Vue {
   @State('web3Session') web3SessionState!: Web3SessionState;
 
   @Getter(constants.WALLET_NAME, { namespace: 'pegInTx' }) walletName!: string;
+
+  @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: any;
 
   get unusedAddressList() {
     return this.unusedAddresses ? this.unusedAddresses.slice(0, 4) : [];
@@ -525,6 +520,7 @@ export default class SendBitcoinForm extends Vue {
 
   @Emit()
   disconnectWallet() {
+    this.clearAccount();
     this.useWeb3Wallet = false;
   }
 

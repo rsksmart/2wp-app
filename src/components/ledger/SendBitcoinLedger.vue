@@ -87,7 +87,6 @@ export default class SendBitcoinLedger extends Vue {
 
   @Emit()
   closeDialog() {
-    this.ledgerService.getAddressList(2);
     this.showDialog = false;
     setTimeout(() => {
       this.ledgerDataReady = true;
@@ -110,17 +109,11 @@ export default class SendBitcoinLedger extends Vue {
     feeLevel: string;
     feeBTC: number;
   }) {
-    console.log(`amountToTransferInSatoshi: ${amountToTransferInSatoshi}`);
-    console.log(`refundAddress: ${refundAddress}`);
-    console.log(`recipient: ${recipient}`);
-    console.log(`feeLevel: ${feeLevel}`);
-    console.log(`feeBTC: ${feeBTC}`);
     this.currentComponent = 'ConfirmTransaction';
   }
 
   @Emit()
   getUnusedAddresses({ flag, accountType }: {flag: boolean; accountType: string}) {
-    console.log('getUnusedAddresses', flag, accountType);
     this.unusedAddresses = [
       '2N2U4VZT1pjjXsLq9kgUQwwNNRP5bimtnak',
       '2N6jtRGNMkdSXnCKk3zG5s33KWhnbfDehkZ',
@@ -129,7 +122,6 @@ export default class SendBitcoinLedger extends Vue {
 
   @Emit()
   getTxFee({ amount, accountType }: {amount: number; accountType: string}) {
-    console.log('getTxFee', amount, accountType);
     this.calculatedFees = {
       slow: 3000,
       average: 6000,

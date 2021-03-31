@@ -17,23 +17,8 @@ export default class LedgerService {
       });
   }
 
-  public getAddressList(batch: number): Promise<WalletAddress[]> {
-    console.log(`requesting ${batch} address`);
+  public getAddressList(): Promise<WalletAddress[]> {
     return new Promise<WalletAddress[]>((resolve, reject) => {
-      // const eventualAddresses = [
-      //   this.btc.getWalletPublicKey("44'/1'/0'/0/0"),
-      //   this.btc.getWalletPublicKey("44'/1'/0'/0/1"),
-      //   this.btc.getWalletPublicKey("44'/1'/0'/1/0"),
-      //   this.btc.getWalletPublicKey("44'/1'/0'/1/1"),
-      //   this.btc.getWalletPublicKey("84'/1'/0'/0/0"),
-      //   this.btc.getWalletPublicKey("84'/1'/0'/0/1"),
-      //   this.btc.getWalletPublicKey("84'/1'/0'/1/0"),
-      //   this.btc.getWalletPublicKey("84'/1'/0'/1/1"),
-      //   this.btc.getWalletPublicKey("49'/1'/0'/0/0"),
-      //   this.btc.getWalletPublicKey("49'/1'/0'/0/1"),
-      //   this.btc.getWalletPublicKey("49'/1'/0'/1/0"),
-      //   this.btc.getWalletPublicKey("49'/1'/0'/1/1"),
-      // ];
       const responses: { publicKey: string; bitcoinAddress: string; chainCode: string }[] = [];
       this.btc.getWalletPublicKey("44'/1'/0'/0/0")
         .then((res) => {
@@ -42,9 +27,7 @@ export default class LedgerService {
         })
         .then((res) => {
           responses.push(res);
-          console.log(responses);
         })
-        // .then(console.log)
         .catch(reject);
     });
   }

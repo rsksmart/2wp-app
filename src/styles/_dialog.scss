@@ -2,6 +2,11 @@
   .container-extra {
     padding: 51px 81px 51px 81px;
   }
+  .close-btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
   .button {
     width: 141px !important;
     height: 50px !important;
@@ -14,7 +19,7 @@
       display: flex;
       align-items: center;
       text-align: center;
-      color: #FFFFFF !important;
+      color: #fff !important;
     }
   }
 
@@ -51,7 +56,7 @@
     display: flex;
     align-items: center;
     text-align: center;
-    color: #000000;
+    color: #000;
   }
 
   .green-box {

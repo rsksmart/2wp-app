@@ -1,8 +1,8 @@
 <template>
-  <v-app-bar color="#FFFFFF" elevation="1">
+  <v-app-bar color="#fff" elevation="1">
     <v-row class="top">
       <v-col cols="3" class="d-flex align-center">
-        <v-img src="@/assets/rsk.png" height="40" contain/>
+        <v-img @click="toExchange" src="@/assets/rsk.png" height="40" contain/>
       </v-col>
       <v-col cols="2" class="d-flex justify-center align-center">
         <a @click="toExchange">
@@ -13,10 +13,6 @@
         <a @click="toTransactions">
           Transaction Status
         </a>
-      </v-col>
-      <v-spacer/>
-      <v-col cols="2" class="d-flex justify-end align-center">
-        <p class="mb-0 blackish">English</p>
       </v-col>
     </v-row>
   </v-app-bar>

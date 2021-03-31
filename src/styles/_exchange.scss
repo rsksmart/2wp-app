@@ -2,24 +2,23 @@
   div p {
     font-size: 18px;
     line-height: 23px;
-    color: #000000;
+    color: #000;
   }
 
-  .ledger-icon {
-    width: 130px;
-    height: 195px;
-    background: url('../assets/wallet-icons/ledger.png') no-repeat !important;
-    display: inline-block;
-  }
-  .ledger-icon:hover {
-    background: url('../assets/wallet-icons/ledger-white.png') no-repeat;
+  .wallet-button-disabled {
+    width: 209px !important;
+    height: 101px !important;
+    margin: 20px 0 20px 0;
+    background-color: #fff !important;
+    border-radius: 20px !important;
+    border: 1px solid #B5CAB8 !important;
   }
 
   .wallet-button {
     width: 209px !important;
     height: 101px !important;
     margin: 20px 0 20px 0;
-    background-color: #FFFFFF !important;
+    background-color: #fff !important;
     border-radius: 20px !important;
     border: 1px solid #00B520 !important;
     .wallet-button-content {
@@ -29,13 +28,23 @@
   .wallet-button:hover {
     background-color: #00B520 !important;
     .wallet-button-content {
-      color: #FFFFFF !important;
+      color: #fff !important;
     }
   }
   .wallet-button:focus {
     .wallet-button-content {
-      color: #FFFFFF !important;
+      color: #fff !important;
     }
+  }
+
+  .wallet-button-thin-disabled {
+    width: 166px !important;
+    height: 62px !important;
+    margin: 16px 0 16px 0;
+    padding: 0 30px 0 30px !important;
+    background-color: #fff !important;
+    border-radius: 20px !important;
+    border: 1px solid #B5CAB8 !important;
   }
 
   .wallet-button-thin {
@@ -43,7 +52,7 @@
     height: 62px !important;
     margin: 16px 0 16px 0;
     padding: 0 30px 0 30px !important;
-    background-color: #FFFFFF !important;
+    background-color: #fff !important;
     border-radius: 20px !important;
     border: 1px solid #00B520 !important;
     .wallet-button-content {
@@ -53,13 +62,12 @@
   .wallet-button-thin:hover {
     background-color: #00B520 !important;
     .wallet-button-content {
-      color: #FFFFFF !important;
+      color: #fff !important;
     }
   }
   .wallet-button-thin:focus {
-    //background-color: #01941B !important;
     .wallet-button-content {
-      color: #FFFFFF !important;
+      color: #fff !important;
     }
   }
 
@@ -67,7 +75,20 @@
     background-color: #00B520 !important;
     border-color: transparent !important;
     .wallet-button-content {
-      color: #FFFFFF !important;
+      color: #fff !important;
     }
+  }
+
+  .wallet-icon {
+    position: relative;
+    display: inline-block;
+  }
+  .wallet-icon .on-hover {
+    display: none;
+    position: absolute;
+    z-index: 99;
+  }
+  .wallet-icon:hover .on-hover {
+    display: inline-block;
   }
 }

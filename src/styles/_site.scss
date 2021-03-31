@@ -31,7 +31,7 @@ p {
 }
 
 .custom-background {
-  background: #FFF;
+  background: #fff;
 }
 
 .number {
@@ -45,7 +45,7 @@ p {
   padding: 3px 7px 3px 7px;
   text-align: center;
   margin-right: 5px;
-  color: #000000 !important;
+  color: #000 !important;
 }
 
 .number-filled {
@@ -61,7 +61,18 @@ p {
   justify-content: center;
   margin-right: 5px;
   background: #00B520;
-  color: #FFFFFF !important;
+  color: #fff !important;
+}
+
+a {
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 14px;
+  text-decoration-line: underline;
+  color: #00B43C !important;
+  display: flex;
+  justify-items: center;
+  align-items: center;
 }
 
 .v-btn {
@@ -82,6 +93,10 @@ p {
   border-radius: 20px !important;
 }
 
+.theme--light.v-btn.v-btn--disabled .v-icon {
+  color: rgb(181,202,184,1) !important;
+}
+
 .shadow {
   text-shadow: 1px 1px 1px #000;
 }
@@ -91,11 +106,11 @@ p {
 }
 
 .blackish {
-  color: #000000 !important;
+  color: #000 !important;
 }
 
 .whiteish {
-  color: #FFFFFF !important;
+  color: #fff !important;
 }
 
 .greenish {
@@ -104,6 +119,10 @@ p {
 
 .grayish {
   color: #C4C4C4 !important;
+}
+
+.gray-greenish {
+  color: #B5CAB8 !important;
 }
 
 .blueish {

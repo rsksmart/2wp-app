@@ -14,7 +14,6 @@ export default class TrezorTxSigner extends TxSigner {
     return new Promise<TrezorSignedTx>((resolve) => {
       this.trezorService.sign(tx)
         .then((payload) => {
-          console.log(payload);
           resolve(payload);
         })
         .catch(console.error);

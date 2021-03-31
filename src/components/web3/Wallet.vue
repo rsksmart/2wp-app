@@ -2,6 +2,9 @@
   <div>
     <v-dialog v-model="useWeb3Wallet" width="673">
       <v-card class="dialog">
+        <v-btn icon text class="close-btn" color="#ECF9EE" @click="useWeb3Wallet = false">
+          <v-icon color="#000">mdi-close</v-icon>
+        </v-btn>
         <div class="container-extra">
           <v-row class="mx-0 d-flex justify-center">
             <h2 class="text-center">Select Wallet</h2>
@@ -10,25 +13,27 @@
             <v-row class="mx-0">
               <v-col>
                 <v-btn text color="transparent" width="200" @click="connectToMetamask"
-                       class="pa-0 ma-0 d-flex justify-center">
+                       class="pa-0 ma-0 d-flex justify-center" :disabled="!this.isMetamask">
                   <v-row class="mx-0">
                     <v-col cols="5" class="d-flex justify-center">
-                      <v-img src="@/assets/web3/metamask.png" height="40" contain/>
+                      <v-img :src="metamaskImg" height="40" contain/>
                     </v-col>
                     <v-col class="d-flex align-center">
-                      <p class="ma-0">Metamask</p>
+                      <p class="ma-0" v-bind:class="{'gray-greenish': !isMetamask}">Metamask</p>
                     </v-col>
                   </v-row>
                 </v-btn>
               </v-col>
               <v-col>
-                <v-btn text color="transparent" width="200" class="pa-0 ma-0 d-flex justify-center">
+                <v-btn text color="transparent" width="200" disabled
+                       class="pa-0 ma-0 d-flex justify-center">
                   <v-row class="mx-0">
                     <v-col cols="5" class="d-flex justify-center">
-                      <v-img src="@/assets/web3/my-crypto.png" height="40" width="40" contain/>
+                      <v-img src="@/assets/web3/my-crypto-disabled.png"
+                             height="40" width="40" contain/>
                     </v-col>
                     <v-col class="d-flex align-center">
-                      <p class="ma-0">MyCrypto</p>
+                      <p class="ma-0 gray-greenish">MyCrypto</p>
                     </v-col>
                   </v-row>
                 </v-btn>
@@ -36,39 +41,48 @@
             </v-row>
             <v-row class="mx-0">
               <v-col>
-                <v-btn text color="transparent" width="200" class="pa-0 ma-0 d-flex justify-center">
+                <v-btn text color="transparent" width="200" disabled
+                       class="pa-0 ma-0 d-flex justify-center">
                   <v-row class="mx-0">
                     <v-col cols="5" class="d-flex justify-center">
-                      <v-img src="@/assets/web3/my-ether.png" height="40" contain/>
+                      <v-img src="@/assets/web3/my-ether-disabled.png" height="40" contain/>
                     </v-col>
                     <v-col class="pr-0 d-flex align-center">
-                      <p class="ma-0">MyEther Wallet</p>
+                      <p class="ma-0 gray-greenish">MyEther Wallet</p>
                     </v-col>
                   </v-row>
                 </v-btn>
               </v-col>
               <v-col>
-                <v-btn text color="transparent" width="200" class="pa-0 ma-0 d-flex justify-center">
+                <v-btn text color="transparent" width="200" disabled
+                       class="pa-0 ma-0 d-flex justify-center">
                   <v-row class="mx-0">
                     <v-col cols="5" class="d-flex justify-center">
-                      <v-img src="@/assets/web3/rWallet.png" height="40" contain/>
+                      <v-img src="@/assets/web3/rWallet-disabled.png" height="40" contain/>
                     </v-col>
                     <v-col class="d-flex align-center">
-                      <p class="ma-0">rWallet</p>
+                      <p class="ma-0 gray-greenish">rWallet</p>
                     </v-col>
                   </v-row>
                 </v-btn>
               </v-col>
             </v-row>
           </div>
+          <v-row class="d-flex justify-center">
+            <p class="ma-0 mr-2">No wallet yet?</p>
+            <a href="https://developers.rsk.co/wallet/use/metamask/" target="_blank">
+              Get one here!
+            </a>
+          </v-row>
           <v-row class="mx-0 pt-8">
             <h3>What is a wallet?</h3>
           </v-row>
           <v-row class="mx-0">
             <p class="text-justify">
-              Wallets are used to send, receive, and store digital assets like Ether. Wallets come
-              in many forms. They are either built into your browser, an extension added to your
-              browser, a piece of hardware plugged into your computer or even an app on your phone.
+              Wallets are used to send, receive, and store digital assets like Ether. Wallets
+              come in many forms. They are either built into your browser, an extension added to
+              your browser, a piece of hardware plugged into your computer or even an app on your
+              phone.
             </p>
           </v-row>
         </div>
@@ -76,6 +90,9 @@
     </v-dialog>
     <v-dialog v-model="metamaskConf" width="673">
       <v-card class="dialog">
+        <v-btn icon text class="close-btn" color="#ECF9EE" @click="metamaskConf = false">
+          <v-icon color="#000">mdi-close</v-icon>
+        </v-btn>
         <div class="container-extra">
           <v-row class="mx-0 d-flex justify-center">
             <h2 class="text-center">Change Network in Metamask</h2>
@@ -151,6 +168,8 @@ import {
 } from 'vue-property-decorator';
 import { Action } from 'vuex-class';
 import * as constants from '@/store/constants';
+import MetaMask from '@/assets/web3/metamask.png';
+import MetaMaskDisabled from '@/assets/web3/metamask-disabled.png';
 
 @Component
 export default class Wallet extends Vue {
@@ -164,13 +183,19 @@ export default class Wallet extends Vue {
 
   metamaskConf = false;
 
+  isMetamask = null;
+
+  get metamaskImg() {
+    return this.isMetamask ? MetaMask : MetaMaskDisabled;
+  }
+
   @Emit()
   connectToMetamask() {
     if (this.configure) {
       this.useWeb3Wallet = false;
       this.metamaskConf = true;
     } else {
-      this.useWeb3Wallet = false;
+      this.useWeb3Wallet = true;
       this.metamaskConf = false;
       this.getWalletAddress();
     }
@@ -178,9 +203,16 @@ export default class Wallet extends Vue {
 
   @Emit('web3Address')
   getWalletAddress() {
-    this.sessionConnect();
-    this.getAccount();
+    if (this.isMetamask) {
+      this.sessionConnect();
+      this.getAccount();
+      this.useWeb3Wallet = false;
+    }
     this.metamaskConf = false;
+  }
+
+  created() {
+    this.isMetamask = window.ethereum.isMetaMask;
   }
 }
 </script>

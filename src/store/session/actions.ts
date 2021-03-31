@@ -18,4 +18,7 @@ export const actions: ActionTree<Web3SessionState, RootState> = {
     const accounts = await Vue.prototype.$web3.eth.getAccounts();
     commit(constants.SESSION_SET_ACCOUNT, accounts[0]);
   },
+  [constants.WEB3_SESSION_CLEAR_ACCOUNT]: async ({ commit }) => {
+    commit(constants.SESSION_SET_ACCOUNT, undefined);
+  },
 };
