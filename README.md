@@ -1,5 +1,5 @@
 # 2wp-app
-
+This is the front end application for 2-Way-Peg solution.
 ## Project setup
 ```
 npm install
@@ -30,5 +30,4 @@ npm run test:e2e
 npm run lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## Deployment

@@ -28,3 +28,5 @@ pnpm-debug.log*
 *.sw?
 sonar-project.properties
 .scannerwork
+ngnix.crt
+ngnix.key
