@@ -58,16 +58,30 @@
     .wallet-button-content {
       color: #00B520 !important;
     }
-  }
-  .wallet-button-thin:hover {
-    background-color: #00B520 !important;
-    .wallet-button-content {
-      color: #fff !important;
+    &:hover {
+      background-color: #00B520 !important;
+      .wallet-button-content {
+        color: #fff !important;
+      }
+      .wallet-icon {
+        background-image: url('../assets/wallet-icons/trezor-white.png');
+      }
     }
-  }
-  .wallet-button-thin:focus {
-    .wallet-button-content {
-      color: #fff !important;
+    &:focus {
+      .wallet-button-content {
+        color: #fff !important;
+      }
+      .wallet-icon {
+        background-image: url('../assets/wallet-icons/trezor-white.png');
+      }
+    }
+    .wallet-icon {
+      background-repeat: no-repeat;
+      width: 25px;
+      height: 25px;
+      position: relative;
+      padding: 5px 0 0 10px;
+      background-image: url('../assets/wallet-icons/trezor.png');
     }
   }
 
@@ -77,18 +91,5 @@
     .wallet-button-content {
       color: #fff !important;
     }
-  }
-
-  .wallet-icon {
-    position: relative;
-    display: inline-block;
-  }
-  .wallet-icon .on-hover {
-    display: none;
-    position: absolute;
-    z-index: 99;
-  }
-  .wallet-icon:hover .on-hover {
-    display: inline-block;
   }
 }

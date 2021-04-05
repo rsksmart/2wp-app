@@ -8,9 +8,7 @@
 <script lang="ts">
 import { Vue, Component, Emit } from 'vue-property-decorator';
 import SelectBitcoinWallet from '@/components/exchange/SelectBitcoinWallet.vue';
-import SendBitcoinLedger from '@/components/ledger/SendBitcoinLedger.vue';
 import SendBitcoinTrezor from '@/components/trezor/SendBitcoinTrezor.vue';
-import VerifyConfirmTransaction from '@/components/ledger/ConfirmTransaction.vue';
 import SuccessSend from '@/components/exchange/SuccessSend.vue';
 import TrackingId from '@/components/exchange/TrackingId.vue';
 import * as constants from '@/store/constants';
@@ -20,9 +18,7 @@ import { PegInTxState } from '@/store/peginTx/types';
 @Component({
   components: {
     SelectBitcoinWallet,
-    SendBitcoinLedger,
     SendBitcoinTrezor,
-    VerifyConfirmTransaction,
     SuccessSend,
     TrackingId,
   },
