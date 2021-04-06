@@ -70,7 +70,7 @@
           </div>
           <v-row class="d-flex justify-center">
             <p class="ma-0 mr-2">No wallet yet?</p>
-            <a href="https://developers.rsk.co/wallet/use/metamask/" target="_blank">
+            <a href="https://developers.rsk.co/wallet/use/metamask/" target="_blank" rel="noopener">
               Get one here!
             </a>
           </v-row>
@@ -104,7 +104,7 @@
               </v-col>
               <v-col>
                 <p class="text-justify mb-0">Click on top where it says:
-                  <b class="ml-1">Main Ethereum Network.</b>
+                  <strong class="ml-1">Main Ethereum Network.</strong>
                 </p>
               </v-col>
             </v-row>
@@ -113,7 +113,7 @@
                 <span class="number greenish">2</span>
               </v-col>
               <v-col>
-                <p class="text-justify mb-0">Select<b class="ml-1">Custom RPC.</b></p>
+                <p class="text-justify mb-0">Select<strong class="ml-1">Custom RPC.</strong></p>
               </v-col>
             </v-row>
             <v-row class="mx-0 d-flex justify-center">
@@ -124,19 +124,19 @@
                 <p class="text-justify mb-0">Fill in the enabled fields like below:</p>
                 <div class="green-box">
                   <v-row class="mx-0">
-                    <p class="mx-0">Network Name: <b class="ml-1">RSK Mainnet</b></p>
+                    <p class="mx-0">Network Name: <strong class="ml-1">RSK Mainnet</strong></p>
                   </v-row>
                   <v-row class="mx-0">
                     <p class="mx-0">New RPC URL:
-                      <b class="ml-1">https://public-node.testnet.rsk.co</b>
+                      <strong class="ml-1">https://public-node.testnet.rsk.co</strong>
                     </p>
                   </v-row>
                   <v-row class="mx-0">
-                    <p class="mx-0">Symbol: <b class="ml-1">RBTC</b></p>
+                    <p class="mx-0">Symbol: <strong class="ml-1">RBTC</strong></p>
                   </v-row>
                   <v-row class="mx-0">
                     <p class="mx-0">Block Explorer URL:
-                      <b class="ml-1">https://public-node.testnet.rsk.co</b>
+                      <strong class="ml-1">https://public-node.testnet.rsk.co</strong>
                     </p>
                   </v-row>
                 </div>
@@ -147,7 +147,7 @@
                 <span class="number greenish">4</span>
               </v-col>
               <v-col>
-                <p class="text-justify mb-0">Click on <b class="ml-1">Save.</b></p>
+                <p class="text-justify mb-0">Click on <strong class="ml-1">Save.</strong></p>
               </v-col>
             </v-row>
             <v-row class="mx-0 d-flex justify-end">

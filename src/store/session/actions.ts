@@ -11,8 +11,6 @@ export const actions: ActionTree<Web3SessionState, RootState> = {
       try {
         window.ethereum.enable();
         Vue.prototype.$web3 = new Web3(window.ethereum);
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        console.log(accounts);
         commit(constants.SESSION_IS_ENABLED, true);
       } catch (error) {
         commit(constants.SESSION_IS_ENABLED, false);

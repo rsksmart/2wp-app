@@ -1,5 +1,5 @@
 import TrezorConnect, { GetAddress } from 'trezor-connect';
-import { Utxo, WalletAddress, UnusedWalletAddress } from '@/store/peginTx/types';
+import { WalletAddress } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import { TrezorSignedTx, TrezorTx, Tx } from '@/services/types';
 
@@ -122,46 +122,6 @@ export default class TrezorService {
           resolve(unusedAddresses);
         })
         .catch(reject);
-    });
-  }
-
-  public getAccountUtxos(accountType: string, accountIndex: number):
-    Promise<[Utxo[], UnusedWalletAddress[]]> {
-    return new Promise((resolve, reject) => {
-      TrezorConnect.getAccountInfo({
-        path: this.getAccountPath(accountType, accountIndex),
-        coin: this.coin,
-        details: 'txs',
-      })
-        .then((result) => {
-          if (!result.success) reject(new Error(result.payload.error));
-          const unusedAddresses: UnusedWalletAddress[] = [];
-          const utxoList: Utxo[] = [];
-          if ('addresses' in result.payload) {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-            // @ts-ignore
-            result.payload.addresses.unused.forEach((unused: UnusedWalletAddress) => {
-              unusedAddresses.push(unused);
-            });
-          }
-          if ('utxo' in result.payload) {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-            // @ts-ignore
-            Object.entries(result.payload.utxo).forEach((obj) => {
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              const [idx, utxo] = obj;
-              utxoList.push({
-                txid: utxo.txid,
-                amount: +utxo.amount,
-                address: utxo.address,
-                path: utxo.path,
-                derivationArray: this.getSerializedPath(utxo.path),
-                vout: utxo.vout,
-              });
-            });
-          }
-          resolve([utxoList, unusedAddresses]);
-        });
     });
   }
 

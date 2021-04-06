@@ -38,7 +38,6 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "dependencies.d.ts",
     "tests/**/*.ts",
     "tests/**/*.tsx"
   ],

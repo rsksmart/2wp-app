@@ -50,16 +50,6 @@
             </v-row>
           </div>
         </div>
-<!--        TODO mailer-->
-<!--        <v-row class="mx-0 my-5 d-flex justify-center">-->
-<!--          <v-col cols="2" class="d-flex align-center">-->
-<!--            <h3>Email:</h3>-->
-<!--          </v-col>-->
-<!--          <v-col cols="10">-->
-<!--            <v-text-field hide-details dense solo outlined flat label="Email (optional)"-->
-<!--                          v-model="email" type="text"/>-->
-<!--          </v-col>-->
-<!--        </v-row>-->
         <v-row class="mx-0 my-5 d-flex justify-center dialog">
           <v-btn class="button" color="#126DF2" @click="toTxStatus">
             <span class="whiteish">Continue</span>

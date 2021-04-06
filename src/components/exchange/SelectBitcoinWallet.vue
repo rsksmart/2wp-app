@@ -84,12 +84,7 @@
             <v-btn outlined class="wallet-button-thin"
                    @click="setBitcoinWallet(storeConstants.WALLET_TREZOR)"
                    v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_TREZOR }">
-              <div class="mr-2 wallet-icon">
-<!--                <v-img src="@/assets/wallet-icons/trezor.png"-->
-<!--                       contain height="25"/>-->
-<!--                <v-img src="@/assets/wallet-icons/trezor-white.png"-->
-<!--                       contain height="25"/>-->
-              </div>
+              <div class="mr-2 wallet-icon"></div>
               <span class="wallet-button-content">Trezor</span>
             </v-btn>
           </v-col>
