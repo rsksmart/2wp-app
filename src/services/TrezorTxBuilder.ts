@@ -40,7 +40,6 @@ export default class TrezorTxBuilder extends TxBuilder {
             outputs: TrezorTxBuilder.getOutputs(normalizedTx.outputs),
           };
           this.tx = tx;
-          console.log(tx);
           resolve(tx);
         })
         .catch(reject);

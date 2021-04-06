@@ -22,4 +22,7 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_ADD_SESSION_ID]: ({ commit }, sessionId: string) => {
     commit(constants.PEGIN_TX_SET_SESSION_ID, sessionId);
   },
+  [constants.PEGIN_TX_ADD_BITCOIN_WALLET]: ({ commit }, bitcoinWallet: string) => {
+    commit(constants.PEGIN_TX_SET_BITCOIN_WALLET, bitcoinWallet);
+  },
 };

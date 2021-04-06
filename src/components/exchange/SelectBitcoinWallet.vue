@@ -34,24 +34,23 @@
             </v-btn>
           </v-col>
           <v-col cols="4" class="d-flex justify-start">
-            <v-btn class="wallet-button"
-                   v-bind:class="{ selected: RBTC2BTC }">
+            <v-btn class="wallet-button-disabled" disabled outlined>
               <div>
                 <v-row class="mx-0 d-flex justify-center">
                   <v-col/>
                   <v-col class="pa-0 d-flex align-center">
-                    <v-img src="@/assets/exchange/rbtc.png" height="40" contain/>
+                    <v-img src="@/assets/exchange/rbtc-disable.png" height="40" contain/>
                   </v-col>
                   <v-col class="pa-0 d-flex align-center">
-                    <v-icon class="wallet-button-content">mdi-arrow-right</v-icon>
+                    <v-icon color="#B5CAB8">mdi-arrow-right</v-icon>
                   </v-col>
                   <v-col class="pa-0 d-flex align-center">
-                    <v-img src="@/assets/exchange/btc.png" height="40" contain/>
+                    <v-img src="@/assets/exchange/btc-disable.png" height="40" contain/>
                   </v-col>
                   <v-col/>
                 </v-row>
                 <v-row class="mx-0 d-flex justify-center">
-                  <span class="wallet-button-content">RBTC to BTC</span>
+                  <span class="gray-greenish">RBTC to BTC</span>
                 </v-row>
               </div>
             </v-btn>
@@ -66,28 +65,31 @@
         <v-row class="ma-0 d-flex justify-center">
           <v-col/>
           <v-col cols="3" class="d-flex justify-end">
-            <v-btn class="wallet-button-thin"
-                   @click="setBitcoinWallet(storeConstants.WALLET_LEDGER)"
-                   v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_LEDGER }">
-                <v-img class="mr-2" :src="ledgerImage" contain max-width="25"/>
-              <span class="wallet-button-content">
-                Ledger
-              </span>
+            <v-btn outlined disabled class="wallet-button-thin-disabled"
+                   @click="setBitcoinWallet(storeConstants.WALLET_LEDGER)">
+                <v-img class="mr-2" src="@/assets/wallet-icons/ledger-gray.png"
+                       contain max-width="25"/>
+              <span class="gray-greenish">Ledger</span>
             </v-btn>
           </v-col>
           <v-col cols="3" class="d-flex justify-center">
-            <v-btn outlined class="wallet-button-thin"
-                   @click="setBitcoinWallet(storeConstants.WALLET_ELECTRUM)"
-                   v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_ELECTRUM }">
-              <v-img class="mr-2" :src="electrumImage" contain max-width="25"/>
-              <span class="wallet-button-content">Electrum</span>
+            <v-btn outlined disabled class="wallet-button-thin-disabled"
+                   @click="setBitcoinWallet(storeConstants.WALLET_ELECTRUM)">
+              <v-img class="mr-2" src="@/assets/wallet-icons/electrum-gray.png"
+                     contain max-width="25"/>
+              <span class="gray-greenish">Electrum</span>
             </v-btn>
           </v-col>
           <v-col cols="3" class="d-flex justify-start">
             <v-btn outlined class="wallet-button-thin"
                    @click="setBitcoinWallet(storeConstants.WALLET_TREZOR)"
                    v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_TREZOR }">
-              <v-img class="mr-2" :src="trezorImage" contain max-width="17"/>
+              <div class="mr-2 wallet-icon">
+<!--                <v-img src="@/assets/wallet-icons/trezor.png"-->
+<!--                       contain height="25"/>-->
+<!--                <v-img src="@/assets/wallet-icons/trezor-white.png"-->
+<!--                       contain height="25"/>-->
+              </div>
               <span class="wallet-button-content">Trezor</span>
             </v-btn>
           </v-col>
@@ -95,8 +97,8 @@
         </v-row>
         <v-row class="mx-0 mt-15 d-flex justify-center">
           <v-col cols="3" class="d-flex justify-center">
-            <v-btn class="px-5" width="117" outlined color="#00B520" rounded
-                   @click="showMoreBitcoinWallets">
+            <v-btn class="px-5" width="117" outlined color="#B5CAB8" rounded
+                   @click="showMoreBitcoinWallets" disabled>
               {{ moreWalletsBtn }}
             </v-btn>
           </v-col>
@@ -131,16 +133,8 @@
 <script lang="ts">
 import { Vue, Component, Emit } from 'vue-property-decorator';
 import * as constants from '@/store/constants';
-import Ledger from '@/assets/wallet-icons/ledger.png';
-import LedgerWhite from '@/assets/wallet-icons/ledger-white.png';
-import Electrum from '@/assets/wallet-icons/electrum.png';
-import ElectrumWhite from '@/assets/wallet-icons/electrum-white.png';
 import Trezor from '@/assets/wallet-icons/trezor.png';
 import TrezorWhite from '@/assets/wallet-icons/trezor-white.png';
-import RWallet from '@/assets/wallet-icons/rWallet.png';
-import RWalletWhite from '@/assets/wallet-icons/rWallet-white.png';
-import Defiant from '@/assets/wallet-icons/defiant.png';
-import DefiantWhite from '@/assets/wallet-icons/defiant-white.png';
 
 @Component
 export default class SelectBitcoinWallet extends Vue {
@@ -160,24 +154,8 @@ export default class SelectBitcoinWallet extends Vue {
     return this.showMoreWallets ? 'Show less' : 'Show more';
   }
 
-  get ledgerImage() {
-    return this.selectedWallet === constants.WALLET_LEDGER ? LedgerWhite : Ledger;
-  }
-
-  get electrumImage() {
-    return this.selectedWallet === constants.WALLET_ELECTRUM ? ElectrumWhite : Electrum;
-  }
-
   get trezorImage() {
     return this.selectedWallet === constants.WALLET_TREZOR ? TrezorWhite : Trezor;
-  }
-
-  get rWalletImage() {
-    return this.selectedWallet === constants.WALLET_RWALLET ? RWalletWhite : RWallet;
-  }
-
-  get defiantImage() {
-    return this.selectedWallet === constants.WALLET_DEFIANT ? DefiantWhite : Defiant;
   }
 
   @Emit()

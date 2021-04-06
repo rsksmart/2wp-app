@@ -1,0 +1,9 @@
+version: '3'
+services:
+  dapp:
+    build: .
+    container_name: 2-way-peg-dapp
+    ports:
+      - "443:443"
+    env_file:
+      - .env.local

@@ -1,34 +1,23 @@
 # 2wp-app
-
+This is the front end application for 2-Way-Peg solution.
 ## Project setup
 ```
 npm install
 ```
-
-### Compiles and hot-reloads for development
+### Environment variables
+Create a `.env.local` file in order to store locally the required variables for the app with the following fields:
+```js
+VUE_APP_COIN='test' // or main
+VUE_APP_MANIFEST_EMAIL= <EMAIL_FOR_TREZOR_MANIFEST>
+VUE_APP_MANIFEST_APP_URL= <URL_FOR_TREZOR_MANIFEST> // 'https://2waypeg.rsk.co/'
+VUE_APP_API_BASE_URL= <API_URL>
+```
+## Development mode
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
+## Deployment
+```shell
+docker-compose up
 ```
-npm run build
-```
-
-### Run your unit tests
-```
-npm run test:unit
-```
-
-### Run your end-to-end tests
-```
-npm run test:e2e
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
