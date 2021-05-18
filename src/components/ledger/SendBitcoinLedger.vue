@@ -22,7 +22,7 @@ import {
   Vue,
 } from 'vue-property-decorator';
 import SendBitcoinForm from '@/components/exchange/SendBitcoinForm.vue';
-import ConfirmTransaction from '@/components/trezor/ConfirmTransaction.vue';
+import ConfirmLedgerTransaction from '@/components/ledger/ConfirmLedgerTransaction.vue';
 import TrackingId from '@/components/exchange/TrackingId.vue';
 import LedgerService from '@/services/LedgerService';
 import ApiService from '@/services/ApiService';
@@ -40,7 +40,7 @@ import ConnectDevice from '@/components/exchange/ConnectDevice.vue';
   components: {
     BtcToRbtcDialog,
     SendBitcoinForm,
-    ConfirmTransaction,
+    ConfirmLedgerTransaction,
     TrackingId,
     ConnectDevice,
   },
@@ -129,7 +129,7 @@ export default class SendBitcoinLedger extends Vue {
     })
       .then((tx: LedgerTx) => {
         this.createdTx = tx;
-        this.currentComponent = 'ConfirmTransaction';
+        this.currentComponent = 'ConfirmLedgerTransaction';
         return tx;
       })
       .catch(console.error);

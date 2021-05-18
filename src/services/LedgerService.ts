@@ -116,4 +116,14 @@ export default class LedgerService extends WalletService {
     }
     return format;
   }
+
+  public static signTx(): Promise<object> {
+    return new Promise<object>((resolve, reject) => {
+      TransportWebUSB.create()
+        .then((transport: TransportWebUSB) => {
+          const btc = new AppBtc(transport);
+        })
+        .catch(reject);
+    });
+  }
 }

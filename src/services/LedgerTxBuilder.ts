@@ -37,8 +37,6 @@ export default class LedgerTxBuilder extends TxBuilder {
           this.getLedgerTxData(normalizedTx),
         ]))
         .then(([outputs, { inputs, associatedKeysets, outputScriptHex }]) => {
-          console.log(inputs);
-          console.log(outputScriptHex);
           const tx: LedgerTx = {
             outputs,
             outputScriptHex,
@@ -64,15 +62,10 @@ export default class LedgerTxBuilder extends TxBuilder {
         const txPromises = normalizedInputs.map(
           (normalizedInput) => ApiService.getTxHex(normalizedInput.prev_hash),
         );
-        console.log(normalizedInputs);
         Promise.all(txPromises)
           .then((txHexList) => LedgerService.splitTransactionList(txHexList))
-          .then((eventualSplitTx) => {
-            console.log(eventualSplitTx);
-            return Promise.all(eventualSplitTx);
-          })
+          .then((eventualSplitTx) => Promise.all(eventualSplitTx))
           .then((txList) => {
-            console.log(txList);
             txList.forEach((tx, idx) => {
               inputs.push({
                 tx,
@@ -143,5 +136,9 @@ export default class LedgerTxBuilder extends TxBuilder {
         .then(resolve)
         .catch(reject);
     });
+  }
+
+  public sign(): Promise<object> {
+    return this.signer.sign(this.tx);
   }
 }
