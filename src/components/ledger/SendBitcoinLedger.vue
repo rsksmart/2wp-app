@@ -28,11 +28,11 @@ import LedgerService from '@/services/LedgerService';
 import ApiService from '@/services/ApiService';
 import { PegInTxState } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
-import { Action, State } from 'vuex-class';
+import { Action, Getter, State } from 'vuex-class';
 import {
-  AccountBalance, FeeAmountData, TrezorTx,
+  AccountBalance, FeeAmountData, LedgerTx,
 } from '@/services/types';
-import TrezorTxBuilder from '@/services/TrezorTxBuilder';
+import LedgerTxBuilder from '@/services/LedgerTxBuilder';
 import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
 import ConnectDevice from '@/components/exchange/ConnectDevice.vue';
 
@@ -48,18 +48,17 @@ import ConnectDevice from '@/components/exchange/ConnectDevice.vue';
 export default class SendBitcoinLedger extends Vue {
   showDialog = true;
 
-  trezorConnected = false;
-
   currentComponent = 'SendBitcoinForm';
-
-  unusedAddresses: string[] = [];
 
   txId = '';
 
-  createdTx: TrezorTx = {
+  createdTx: LedgerTx = {
     coin: process.env.VUE_APP_COIN ?? 'test',
     inputs: [],
     outputs: [],
+    outputScriptHex: '',
+    changePath: '',
+    associatedKeysets: [],
   };
 
   amount = 0;
@@ -70,7 +69,7 @@ export default class SendBitcoinLedger extends Vue {
 
   feeBTC = 0;
 
-  txBuilder: TrezorTxBuilder = new TrezorTxBuilder();
+  txBuilder: LedgerTxBuilder = new LedgerTxBuilder();
 
   balances: AccountBalance = {
     legacy: 0,
@@ -94,18 +93,16 @@ export default class SendBitcoinLedger extends Vue {
 
   @Action(constants.PEGIN_TX_ADD_ADDRESSES, { namespace: 'pegInTx' }) setPeginTxAddresses !: any;
 
+  @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: string;
+
   get txData() {
     return {
       amount: this.amount,
       refundAddress: this.refundAddress,
       recipient: this.recipient,
       feeBTC: this.feeBTC,
-      change: this.change,
+      change: this.getChangeAddress,
     };
-  }
-
-  get change() {
-    return this.unusedAddresses[5];
   }
 
   @Emit()
@@ -127,10 +124,10 @@ export default class SendBitcoinLedger extends Vue {
       refundAddress,
       recipient,
       feeLevel,
-      changeAddress: this.change,
+      changeAddress: this.getChangeAddress,
       sessionId: this.peginTxState.sessionId,
     })
-      .then((tx: TrezorTx) => {
+      .then((tx: LedgerTx) => {
         this.createdTx = tx;
         this.currentComponent = 'ConfirmTransaction';
         return tx;

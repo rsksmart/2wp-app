@@ -20,7 +20,9 @@
     "@types/ledgerhq__hw-transport-webusb": "^4.70.1",
     "@types/lodash": "^4.14.168",
     "@types/trezor-connect": "^7.0.0",
+    "@types/w3c-web-usb": "^1.0.4",
     "axios": "^0.21.1",
+    "bitcoinjs-lib": "^5.2.0",
     "core-js": "^3.6.5",
     "lodash": "^4.17.21",
     "trezor-connect": "^8.1.19",
@@ -36,6 +38,7 @@
   "devDependencies": {
     "@types/chai": "^4.2.11",
     "@types/mocha": "^5.2.4",
+    "@types/node": "^15.3.0",
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",
     "@vue/cli-plugin-babel": "~4.5.0",

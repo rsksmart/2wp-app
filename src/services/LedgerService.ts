@@ -4,17 +4,48 @@ import _ from 'lodash';
 import WalletService from '@/services/WalletService';
 import * as constants from '@/store/constants';
 import { WalletAddress } from '@/store/peginTx/types';
+import { LedgerjsTransaction } from '@/services/types';
 
 export default class LedgerService extends WalletService {
-  private btc!: AppBtc;
+  public static splitTransaction(hexTx: string): Promise<LedgerjsTransaction> {
+    return new Promise<LedgerjsTransaction>((resolve, reject) => {
+      TransportWebUSB.create()
+        .then((transport: TransportWebUSB) => {
+          const btc = new AppBtc(transport);
+          const tx = btc.splitTransaction(hexTx);
+          return Promise.all([tx, transport.close()]);
+        })
+        .then(([tx]) => resolve(tx))
+        .catch(reject);
+    });
+  }
 
-  constructor(coin: string) {
-    super(coin);
-    TransportWebUSB
-      .create()
-      .then((transport) => {
-        this.btc = new AppBtc(transport);
-      });
+  static splitTransactionList(txHexList: string[]): Promise<LedgerjsTransaction[]> {
+    return new Promise<LedgerjsTransaction[]>((resolve, reject) => {
+      TransportWebUSB.create()
+        .then((transport: TransportWebUSB) => {
+          const btc = new AppBtc(transport);
+          return Promise.all([
+            txHexList.map((tx) => btc.splitTransaction(tx)),
+            transport.close(),
+          ]);
+        })
+        .then(([txList]) => resolve(txList))
+        .catch(reject);
+    });
+  }
+
+  public static serializeTransactionOutputs(splitTx: LedgerjsTransaction): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      TransportWebUSB.create()
+        .then((transport: TransportWebUSB) => {
+          const btc = new AppBtc(transport);
+          const txOutputsBuffer: Buffer = btc.serializeTransactionOutputs(splitTx);
+          return Promise.all([txOutputsBuffer, transport.close()]);
+        })
+        .then(([txOutBuffer]) => resolve(txOutBuffer.toString('hex')))
+        .catch(reject);
+    });
   }
 
   private getAddressesBundle(accountIndex: number, batch: number):
@@ -46,14 +77,15 @@ export default class LedgerService extends WalletService {
 
   public async getAddressList(batch: number):
     Promise<WalletAddress[]> {
-    console.log(`requesting ${batch} address`);
     const walletAddresses: WalletAddress[] = [];
     const bundle = this.getAddressesBundle(0, batch);
+    const transport = await TransportWebUSB.create(15000);
+    const btc = new AppBtc(transport);
     try {
       for (let i = 0; i < bundle.length; i += 1) {
         const { derivationPath, format } = bundle[i];
         // eslint-disable-next-line no-await-in-loop
-        const walletPublicKey = await this.btc.getWalletPublicKey(derivationPath, { format });
+        const walletPublicKey = await btc.getWalletPublicKey(derivationPath, { format });
         walletAddresses.push({
           address: walletPublicKey.bitcoinAddress,
           serializedPath: derivationPath,
@@ -63,6 +95,25 @@ export default class LedgerService extends WalletService {
     } catch (e) {
       console.error(e);
     }
+    await transport.close();
     return walletAddresses;
+  }
+
+  public static getLedgerAddressFormat(accountType: string): 'legacy' | 'p2sh' | 'bech32' {
+    let format: 'legacy' | 'p2sh' | 'bech32';
+    switch (accountType) {
+      case constants.BITCOIN_LEGACY_ADDRESS:
+        format = 'legacy';
+        break;
+      case constants.BITCOIN_SEGWIT_ADDRESS:
+        format = 'p2sh';
+        break;
+      case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
+        format = 'bech32';
+        break;
+      default:
+        format = 'legacy';
+    }
+    return format;
   }
 }

@@ -4,7 +4,7 @@ import { WalletAddress } from '@/store/peginTx/types';
 import {
   NormalizedInput, NormalizedOutput, TrezorSignedTx, TrezorTx,
 } from '@/services/types';
-import { TransactionInput, TransactionOutput } from 'trezor-connect';
+import { TxInputType, TxOutputType } from 'trezor-connect';
 import ApiService from '@/services/ApiService';
 import { getAccountType } from '@/services/utils';
 import * as constants from '@/store/constants';
@@ -21,15 +21,11 @@ export default class TrezorTxBuilder extends TxBuilder {
   buildTx({
     amountToTransferInSatoshi, refundAddress, recipient, feeLevel, changeAddress, sessionId,
   }: {
-    amountToTransferInSatoshi: number;
-    refundAddress: string;
-    recipient: string;
-    feeLevel: string;
-    changeAddress: string;
-    sessionId: string;
+    amountToTransferInSatoshi: number; refundAddress: string; recipient: string;
+    feeLevel: string; changeAddress: string; sessionId: string;
   }): Promise<TrezorTx> {
     return new Promise<TrezorTx>((resolve, reject) => {
-      const coin = process.env.VUE_APP_COIN ?? 'test';
+      const { coin } = this;
       ApiService.createPeginTx(
         amountToTransferInSatoshi, refundAddress, recipient, sessionId, feeLevel, changeAddress,
       )
@@ -50,15 +46,13 @@ export default class TrezorTxBuilder extends TxBuilder {
     return this.signer.sign(this.tx) as Promise<TrezorSignedTx>;
   }
 
-  static getOutputs(outputs: NormalizedOutput[]): TransactionOutput[] {
+  static getOutputs(outputs: NormalizedOutput[]): TxOutputType[] {
     return outputs.map((output) => {
       if (output.op_return_data) {
         return {
           amount: '0',
           // eslint-disable-next-line @typescript-eslint/camelcase
           op_return_data: output.op_return_data,
-          // eslint-disable-next-line @typescript-eslint/camelcase,max-len
-          // op_return_data: '4f505f52455455524e20353235333462353432323439463433664238433534366664363434353535626534',
           // eslint-disable-next-line @typescript-eslint/camelcase
           script_type: 'PAYTOOPRETURN',
         };
@@ -72,7 +66,7 @@ export default class TrezorTxBuilder extends TxBuilder {
     });
   }
 
-  private static getInputs(inputs: NormalizedInput[]): TransactionInput[] {
+  private static getInputs(inputs: NormalizedInput[]): TxInputType[] {
     return inputs.map((input) => ({
       // eslint-disable-next-line @typescript-eslint/camelcase
       address_n: TrezorTxBuilder.getPathFromAddress(input.address),
