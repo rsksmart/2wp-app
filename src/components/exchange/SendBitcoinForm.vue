@@ -9,14 +9,14 @@
         <h1 class="text-left">Send Bitcoins. Get RBTC.</h1>
       </v-col>
     </v-row>
-    <v-row class="mx-0">
+    <v-row class="mx-0 mt-2">
       <v-col cols="8">
-        <div class="container">
+        <div>
           <v-row class="mx-0 d-flex align-center">
             <span v-bind:class="[first ? 'number-filled' : 'number']">1</span>
             <p v-bind:class="{'boldie': first}">Select Bitcoin account to send from:</p>
           </v-row>
-          <v-row class="mx-0">
+          <v-row class="mx-0 my-4">
             <v-col cols="7">
               <v-select v-model="btcAccountTypeSelected" :items="accountBalances" color="#fff"
                         label="Select the account" solo dense
@@ -30,7 +30,7 @@
             </v-col>
           </v-row>
         </div>
-        <v-divider class="ml-6 mx-3" color="#C4C4C4"/>
+        <v-divider color="#C4C4C4"/>
         <div class="container">
           <v-row class="mx-0 d-flex align-center">
             <span v-bind:class="[second ? 'number-filled' : 'number']">2</span>
@@ -133,37 +133,14 @@
         <div class="container">
           <v-row class="mx-0 d-flex align-center">
             <span v-bind:class="[fourth ? 'number-filled' : 'number']">4</span>
-            <p v-bind:class="{'boldie': fourth}">Select your BTC refund address:</p>
-          </v-row>
-          <v-row class="mx-0">
-            <v-col cols="7">
-              <v-text-field v-if="!refundAddressFromWallet" v-model="btcRefundAddressSelected"
-                            solo dense label="Paste the BTC refund address"
-                            @change="checkStep(btcRefundAddressSelected, 4)"/>
-              <v-select v-else v-model="btcRefundAddressSelected" :items="unusedAddressList"
-                        color="#fff" label="Select the BTC refund address" solo dense
-                        @change="checkStep(btcRefundAddressSelected, 4)"/>
-            </v-col>
-            <v-col/>
-            <v-col cols="4" class="d-flex justify-center">
-              <v-btn outlined rounded color="#00B520" @click="getAddressesFromWallet" width="220">
-                <span class="greenish">From {{ walletName }}</span>
-              </v-btn>
-            </v-col>
-          </v-row>
-        </div>
-        <v-divider class="mx-3" color="#C4C4C4"/>
-        <div class="container">
-          <v-row class="mx-0 d-flex align-center">
-            <span v-bind:class="[fifth ? 'number-filled' : 'number']">5</span>
-            <p v-bind:class="{'boldie' : fifth}">Select the Transaction Fee:</p>
+            <p v-bind:class="{'boldie' : fourth}">Select the Transaction Fee:</p>
           </v-row>
           <v-row class="mx-0 d-flex justify-center">
             <v-col cols="11">
               <v-row class="mx-0">
                 <v-slider v-model="txFeeIndex" :tick-labels="transactionFees" :max="2"
                           :color="txFeeColor" :track-color="txFeeColor" step="1"
-                          @change="checkStep('fee', 5)"/>
+                          @change="checkStep('fee', 4)"/>
               </v-row>
               <v-row class="mx-0">
                 <v-col cols="4" class="d-flex justify-start pa-0">
@@ -259,7 +236,7 @@
             <div class="container">
               <v-row class="mx-0">
                 <h1>Transaction Fee:</h1>
-                <v-icon v-if="fifthDone" class="ml-2" small color="#008CFF">
+                <v-icon v-if="fourthDone" class="ml-2" small color="#008CFF">
                   mdi-check-circle-outline
                 </v-icon>
               </v-row>
@@ -276,7 +253,7 @@
             <div class="container">
               <v-row class="mx-0">
                 <h1>Transaction Total:</h1>
-                <v-icon v-if="fifthDone" class="ml-2" small color="#008CFF">
+                <v-icon v-if="fourthDone" class="ml-2" small color="#008CFF">
                   mdi-check-circle-outline
                 </v-icon>
               </v-row>
@@ -348,9 +325,9 @@ import { PegInTxState } from '@/store/peginTx/types';
 export default class SendBitcoinForm extends Vue {
   bitcoinAmount = 0.0;
 
-  txFeeIndex = 0.0;
+  txFeeIndex = 1.0;
 
-  btcRefundAddressSelected = '';
+  btcRefundAddressSelected = 'mhiaFELaNfUxzLn1mFxHsBgFpky6dD1ByW';
 
   btcAccountTypeSelected = '';
 
@@ -362,17 +339,13 @@ export default class SendBitcoinForm extends Vue {
 
   fourth = false;
 
-  fifth = false;
-
   firstDone = false;
 
   secondDone = false;
 
   thirdDone = false;
 
-  fourthDone = false;
-
-  fifthDone = false;
+  fourthDone = true;
 
   refundAddressFromWallet = false;
 
@@ -439,12 +412,12 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get computedTxFee() {
-    return !this.fifthDone ? 'Not completed' : `${this.txFee.toFixed(5)} BTC`;
+    return !this.fourthDone ? 'Not completed' : `${this.txFee.toFixed(5)} BTC`;
   }
 
   get computedFullTxFee() {
     const feePlusAmount = Number(this.txFee) + Number(this.bitcoinAmount);
-    return this.fifthDone && this.secondDone ? `${feePlusAmount.toFixed(6)} BTC` : 'Not completed';
+    return this.fourthDone && this.secondDone ? `${feePlusAmount.toFixed(6)} BTC` : 'Not completed';
   }
 
   get computedBitcoinUSD() {
@@ -452,12 +425,12 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get computedTxFeeUSD() {
-    return !this.fifthDone ? 'USD $ 0' : `USD $ ${this.btcToUSD(+this.txFee)}`;
+    return !this.fourthDone ? 'USD $ 0' : `USD $ ${this.btcToUSD(+this.txFee)}`;
   }
 
   get computedFullTxFeeUSD() {
     const feePlusAmount = Number(this.txFee) + Number(this.bitcoinAmount);
-    return this.fifthDone && this.secondDone ? `USD $ ${this.btcToUSD(feePlusAmount)}` : 'USD $ 0';
+    return this.fourthDone && this.secondDone ? `USD $ ${this.btcToUSD(feePlusAmount)}` : 'USD $ 0';
   }
 
   get txFeeColor() {
@@ -486,7 +459,7 @@ export default class SendBitcoinForm extends Vue {
 
   get formFilled() {
     return this.firstDone && this.secondDone && this.thirdDone
-      && this.fourthDone && this.fifthDone;
+      && this.fourthDone;
   }
 
   get accountType() {
@@ -543,7 +516,6 @@ export default class SendBitcoinForm extends Vue {
           this.second = true;
           this.third = false;
           this.fourth = false;
-          this.fifth = false;
           this.firstDone = true;
           break;
         }
@@ -552,7 +524,6 @@ export default class SendBitcoinForm extends Vue {
           this.second = false;
           this.third = true;
           this.fourth = false;
-          this.fifth = false;
           this.secondDone = !this.insufficientAmount;
           this.calculateTxFee();
           break;
@@ -562,7 +533,6 @@ export default class SendBitcoinForm extends Vue {
           this.second = false;
           this.third = false;
           this.fourth = true;
-          this.fifth = false;
           this.thirdDone = true;
           break;
         }
@@ -571,7 +541,6 @@ export default class SendBitcoinForm extends Vue {
           this.second = false;
           this.third = false;
           this.fourth = false;
-          this.fifth = true;
           this.fourthDone = true;
           break;
         }
@@ -580,8 +549,7 @@ export default class SendBitcoinForm extends Vue {
           this.second = false;
           this.third = false;
           this.fourth = false;
-          this.fifth = false;
-          this.fifthDone = true;
+          this.fourthDone = true;
           break;
         }
         default: {
@@ -589,7 +557,6 @@ export default class SendBitcoinForm extends Vue {
           this.second = false;
           this.third = false;
           this.fourth = false;
-          this.fifth = false;
           break;
         }
       }

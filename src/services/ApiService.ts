@@ -67,4 +67,15 @@ export default class ApiService {
         .catch(reject);
     });
   }
+
+  public static getTxHex(txId: string): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      axios.get(`${this.baseURL}/tx?tx=${txId}`)
+        .then((response) => {
+          if (response.data.error) reject(response.data.error);
+          resolve(response.data.txid.hex);
+        })
+        .catch(reject);
+    });
+  }
 }

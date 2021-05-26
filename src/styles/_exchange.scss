@@ -66,6 +66,9 @@
       .wallet-icon {
         background-image: url('../assets/wallet-icons/trezor-white.png');
       }
+      .wallet-icon-ledger{
+        background-image: url('../assets/wallet-icons/ledger-white.png');
+      }
     }
     &:focus {
       .wallet-button-content {
@@ -73,6 +76,9 @@
       }
       .wallet-icon {
         background-image: url('../assets/wallet-icons/trezor-white.png');
+      }
+      .wallet-icon-ledger{
+        background-image: url('../assets/wallet-icons/ledger-white.png');
       }
     }
     .wallet-icon {
@@ -82,6 +88,14 @@
       position: relative;
       padding: 5px 0 0 10px;
       background-image: url('../assets/wallet-icons/trezor.png');
+    }
+    .wallet-icon-ledger{
+      background-repeat: no-repeat;
+      width: 25px;
+      height: 25px;
+      position: relative;
+      padding: 5px 0 0 10px;
+      background-image: url('../assets/wallet-icons/ledger.png');
     }
   }
 

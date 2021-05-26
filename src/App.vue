@@ -1,9 +1,9 @@
 <template>
-  <v-app style="z-index: 0 !important;">
-    <v-main class="custom-background">
+  <v-app style="z-index: 0 !important;" class="d-flex">
+    <div class="custom-background">
       <top/>
       <router-view @bitcoinWallet="getBitcoinWallet"/>
-    </v-main>
+    </div>
   </v-app>
 </template>
 <script lang="ts">

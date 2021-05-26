@@ -65,11 +65,11 @@
         <v-row class="ma-0 d-flex justify-center">
           <v-col/>
           <v-col cols="3" class="d-flex justify-end">
-            <v-btn outlined disabled class="wallet-button-thin-disabled"
-                   @click="setBitcoinWallet(storeConstants.WALLET_LEDGER)">
-                <v-img class="mr-2" src="@/assets/wallet-icons/ledger-gray.png"
-                       contain max-width="25"/>
-              <span class="gray-greenish">Ledger</span>
+            <v-btn outlined class="wallet-button-thin"
+                   @click="setBitcoinWallet(storeConstants.WALLET_LEDGER)"
+                   v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_LEDGER }">
+              <div class="mr-2 wallet-icon-ledger"></div>
+              <span class="wallet-button-content">Ledger</span>
             </v-btn>
           </v-col>
           <v-col cols="3" class="d-flex justify-center">

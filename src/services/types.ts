@@ -1,4 +1,4 @@
-import { TransactionInput, TransactionOutput } from 'trezor-connect';
+import { TxInputType, TxOutputType } from 'trezor-connect';
 
 export interface Tx {
   coin: string;
@@ -33,8 +33,37 @@ export interface NormalizedOutput {
 
 export interface TrezorTx extends Tx {
   coin: string;
-  inputs: TransactionInput[];
-  outputs: TransactionOutput[];
+  inputs: TxInputType[];
+  outputs: TxOutputType[];
+}
+
+export interface LedgerjsTransaction {
+  version: Buffer;
+  inputs: {
+    prevout: Buffer;
+    script: Buffer;
+    sequence: Buffer;
+    tree?: Buffer;
+  }[];
+  outputs?: {
+    amount: Buffer;
+    script: Buffer;
+  }[];
+  locktime?: Buffer;
+  witness?: Buffer;
+  timestamp?: Buffer;
+  nVersionGroupId?: Buffer;
+  nExpiryHeight?: Buffer;
+  extraData?: Buffer;
+}
+
+export interface LedgerTx extends Tx {
+  coin: string;
+  inputs: { tx: LedgerjsTransaction; outputIndex: number; publicKey: string }[];
+  outputs: object[];
+  outputScriptHex: string;
+  changePath: string;
+  associatedKeysets: string[];
 }
 
 export type InputScriptType = 'SPENDADDRESS' | 'SPENDMULTISIG' | 'SPENDWITNESS' | 'SPENDP2SHWITNESS';
