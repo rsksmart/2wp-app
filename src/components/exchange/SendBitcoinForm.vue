@@ -9,14 +9,14 @@
         <h1 class="text-left">Send Bitcoins. Get RBTC.</h1>
       </v-col>
     </v-row>
-    <v-row class="mx-0">
+    <v-row class="mx-0 mt-2">
       <v-col cols="8">
-        <div class="container">
+        <div>
           <v-row class="mx-0 d-flex align-center">
             <span v-bind:class="[first ? 'number-filled' : 'number']">1</span>
             <p v-bind:class="{'boldie': first}">Select Bitcoin account to send from:</p>
           </v-row>
-          <v-row class="mx-0">
+          <v-row class="mx-0 my-4">
             <v-col cols="7">
               <v-select v-model="btcAccountTypeSelected" :items="accountBalances" color="#fff"
                         label="Select the account" solo dense
@@ -30,7 +30,7 @@
             </v-col>
           </v-row>
         </div>
-        <v-divider class="ml-6 mx-3" color="#C4C4C4"/>
+        <v-divider color="#C4C4C4"/>
         <div class="container">
           <v-row class="mx-0 d-flex align-center">
             <span v-bind:class="[second ? 'number-filled' : 'number']">2</span>

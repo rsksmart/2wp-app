@@ -59,7 +59,7 @@ export interface LedgerjsTransaction {
 
 export interface LedgerTx extends Tx {
   coin: string;
-  inputs: { tx: object; outputIndex: number }[];
+  inputs: { tx: LedgerjsTransaction; outputIndex: number; publicKey: string }[];
   outputs: object[];
   outputScriptHex: string;
   changePath: string;

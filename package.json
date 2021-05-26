@@ -10,7 +10,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@ledgerhq/hw-app-btc": "^5.46.0",
+    "@ledgerhq/hw-app-btc": "^5.51.1",
     "@ledgerhq/hw-transport": "^5.46.0",
     "@ledgerhq/hw-transport-webhid": "^5.46.0",
     "@ledgerhq/hw-transport-webusb": "^5.46.0",

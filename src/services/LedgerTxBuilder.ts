@@ -1,6 +1,7 @@
 import TxBuilder from '@/services/TxBuilder';
 import LedgerTxSigner from '@/services/LedgerTxSigner';
 import {
+  LedgerjsTransaction,
   LedgerTx, NormalizedInput, NormalizedOutput, NormalizedTx,
 } from '@/services/types';
 import store from '@/store';
@@ -53,11 +54,14 @@ export default class LedgerTxBuilder extends TxBuilder {
   }
 
   private static getInputs(normalizedInputs: NormalizedInput[]):
-    Promise<{inputs: { tx: object; outputIndex: number }[]; associatedKeysets: string[]}> {
+    Promise<{
+    inputs: { tx: LedgerjsTransaction; outputIndex: number; publicKey: string}[];
+    associatedKeysets: string[];
+    }> {
     const associatedKeysets: string[] = [];
-    const inputs: {tx: object; outputIndex: number }[] = [];
+    const inputs: {tx: LedgerjsTransaction; outputIndex: number; publicKey: string}[] = [];
     return new Promise<{
-      inputs: {tx: object; outputIndex: number}[];
+      inputs: {tx: LedgerjsTransaction; outputIndex: number; publicKey: string}[];
       associatedKeysets: string[];}>((resolve, reject) => {
         const txPromises = normalizedInputs.map(
           (normalizedInput) => ApiService.getTxHex(normalizedInput.prev_hash),
@@ -70,6 +74,7 @@ export default class LedgerTxBuilder extends TxBuilder {
               inputs.push({
                 tx,
                 outputIndex: normalizedInputs[idx].prev_index,
+                publicKey: store.getters[`pegInTx/${constants.PEGIN_TX_GET_ADDRESS_PUBLIC_KEY}`](normalizedInputs[idx].address),
               });
               associatedKeysets.push(
                 LedgerTxBuilder.getSerializedPath(normalizedInputs[idx].address),
@@ -83,12 +88,12 @@ export default class LedgerTxBuilder extends TxBuilder {
 
   private getLedgerTxData(normalizedTx: NormalizedTx):
     Promise<{
-    inputs: { tx: object; outputIndex: number }[];
+    inputs: { tx: LedgerjsTransaction; outputIndex: number; publicKey: string}[];
     associatedKeysets: string[];
     outputScriptHex: string;
   }> {
     const response: {
-      inputs: { tx: object; outputIndex: number }[];
+      inputs: { tx: LedgerjsTransaction; outputIndex: number; publicKey: string}[];
       associatedKeysets: string[];
       outputScriptHex: string;
     } = {
@@ -112,7 +117,7 @@ export default class LedgerTxBuilder extends TxBuilder {
   }
 
   private static getSerializedPath(address: string): string {
-    return store.getters[`pegInTx/${constants.PEGIN_TX_GET_DERIVATION_PATH_FROM_ADDRESS}`](address);
+    return store.getters[`pegInTx/${constants.PEGIN_TX_GET_BIP44_DERIVATION_PATH_FROM_ADDRESS}`](address);
   }
 
   private getOutputScriptHex(outputs: NormalizedOutput[]): Promise<string> {
@@ -121,7 +126,7 @@ export default class LedgerTxBuilder extends TxBuilder {
     return new Promise<string>((resolve, reject) => {
       outputs.forEach((normalizedOutput) => {
         if (normalizedOutput.op_return_data) {
-          const buffer = Buffer.from(normalizedOutput.op_return_data);
+          const buffer = Buffer.from(normalizedOutput.op_return_data, 'hex');
           const script: Payment = bitcoin.payments.embed({ data: [buffer] });
           if (script.output) {
             txBuilder.addOutput(script.output, 0);
@@ -138,7 +143,7 @@ export default class LedgerTxBuilder extends TxBuilder {
     });
   }
 
-  public sign(): Promise<object> {
-    return this.signer.sign(this.tx);
+  public sign(): Promise<{ signedTx: string }> {
+    return this.signer.sign(this.tx) as Promise<{ signedTx: string }>;
   }
 }

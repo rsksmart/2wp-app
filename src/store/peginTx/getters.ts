@@ -46,13 +46,40 @@ export const getters: GetterTree<PegInTxState, RootState> = {
     });
     return address;
   },
-  [constants.PEGIN_TX_GET_DERIVATION_PATH_FROM_ADDRESS]:
+  [constants.PEGIN_TX_GET_BIP32_DERIVATION_PATH_FROM_ADDRESS]:
     (state: PegInTxState) => (address: string): string => {
       let path = '';
       // eslint-disable-next-line no-unused-expressions
       state.addressList?.forEach((walletAddress) => {
-        if (walletAddress.address === address) path = walletAddress.serializedPath;
+        if (walletAddress.address === address) {
+          const bip44Path = walletAddress.serializedPath.slice(2);
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const [coinPath, account, change, idx] = bip44Path.slice(4).split('/');
+          path = `${account}/${change}/${idx}`;
+        }
       });
       return path;
+    },
+  [constants.PEGIN_TX_GET_BIP44_DERIVATION_PATH_FROM_ADDRESS]:
+    (state: PegInTxState) => (address: string): string => {
+      let path = '';
+      // eslint-disable-next-line no-unused-expressions
+      state.addressList?.forEach((walletAddress) => {
+        if (walletAddress.address === address) {
+          path = walletAddress.serializedPath.slice(2);
+        }
+      });
+      return path;
+    },
+  [constants.PEGIN_TX_GET_ADDRESS_PUBLIC_KEY]:
+    (state: PegInTxState) => (address: string): string => {
+      let publicKey = '';
+      // eslint-disable-next-line no-unused-expressions
+      state.addressList?.forEach((walletAddress) => {
+        if (walletAddress.publicKey && walletAddress.address === address) {
+          publicKey = walletAddress.publicKey;
+        }
+      });
+      return publicKey;
     },
 };

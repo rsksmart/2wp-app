@@ -5,7 +5,7 @@
     </v-row>
     <v-row class="mx-0 my-8 d-flex justify-center">
       <p class="text-center">
-        Make sure the amount, address and transaction fee displayed on Trezor are correct.
+        Make sure the amount, address and transaction fee displayed the Ledger device are correct.
         <br>
         To prevent malware attacks, double-check the address with the recipient.
         <br>
@@ -66,6 +66,7 @@ import {
 import { TrezorTx, TxData } from '@/services/types';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import LedgerTxBuilder from '@/services/LedgerTxBuilder';
+import ApiService from '@/services/ApiService';
 
 @Component({
   components: {
@@ -86,9 +87,12 @@ export default class ConfirmLedgerTransaction extends Vue {
   @Emit('successConfirmation')
   async toTrackId() {
     await this.txBuilder.sign()
-      .then((ledgerSignedTx) => {
-        console.log(ledgerSignedTx);
-      });
+      .then((tx) => ApiService
+        .broadcast(tx.signedTx))
+      .then((txId) => {
+        this.txId = txId;
+      })
+      .catch(console.error);
     return this.txId;
   }
 }
