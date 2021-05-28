@@ -68,8 +68,7 @@
             <v-btn outlined class="wallet-button-thin"
                    @click="setBitcoinWallet(storeConstants.WALLET_LEDGER)"
                    v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_LEDGER }">
-                <v-img class="mr-2" src="@/assets/wallet-icons/ledger.png"
-                       contain max-width="25"/>
+              <div class="mr-2 wallet-icon-ledger"></div>
               <span class="wallet-button-content">Ledger</span>
             </v-btn>
           </v-col>

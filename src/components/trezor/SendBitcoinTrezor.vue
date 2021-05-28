@@ -29,7 +29,7 @@ import TrezorService from '@/services/TrezorService';
 import ApiService from '@/services/ApiService';
 import { PegInTxState } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
-import { Action, State } from 'vuex-class';
+import { Action, Getter, State } from 'vuex-class';
 import TrezorConnect, { DEVICE, DEVICE_EVENT } from 'trezor-connect';
 import {
   AccountBalance, FeeAmountData, TrezorTx,
@@ -98,6 +98,8 @@ export default class SendBitcoinTrezor extends Vue {
 
   @Action(constants.PEGIN_TX_ADD_ADDRESSES, { namespace: 'pegInTx' }) setPeginTxAddresses !: any;
 
+  @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: string;
+
   get txData() {
     return {
       amount: this.amount,
@@ -109,7 +111,7 @@ export default class SendBitcoinTrezor extends Vue {
   }
 
   get change() {
-    return this.unusedAddresses[5];
+    return this.getChangeAddress;
   }
 
   @Emit()

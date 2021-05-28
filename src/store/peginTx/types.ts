@@ -30,6 +30,7 @@ export interface WalletAddress {
   address: string;
   serializedPath: string;
   path: number[];
+  publicKey?: string;
 }
 
 export interface UnusedWalletAddress {
