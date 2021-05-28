@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <template v-if="!trezorDataReady">
-      <connect-device/>
+      <connect-device @continueToForm="getAccountAddresses"/>
     </template>
     <template v-if="trezorDataReady">
       <component :is="currentComponent" :balances="balances"
@@ -153,7 +153,6 @@ export default class SendBitcoinTrezor extends Vue {
   @Emit()
   closeDialog() {
     this.showDialog = false;
-    this.getAccountAddresses();
     TrezorConnect.on(DEVICE_EVENT, (event) => {
       if (event.type === DEVICE.CONNECT) {
         this.setTrezorConnected(true);

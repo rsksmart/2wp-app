@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <template v-if="!ledgerDataReady">
-      <connect-device/>
+      <connect-device @continueToForm="getAccountAddresses"/>
     </template>
     <template v-if="ledgerDataReady">
       <component :is="currentComponent" :balances="balances"
@@ -144,7 +144,6 @@ export default class SendBitcoinLedger extends Vue {
   @Emit()
   closeDialog() {
     this.showDialog = false;
-    this.getAccountAddresses();
   }
 
   @Emit()
