@@ -327,8 +327,6 @@ export default class SendBitcoinForm extends Vue {
 
   txFeeIndex = 1.0;
 
-  btcRefundAddressSelected = 'mhiaFELaNfUxzLn1mFxHsBgFpky6dD1ByW';
-
   btcAccountTypeSelected = '';
 
   first = true;
@@ -383,6 +381,8 @@ export default class SendBitcoinForm extends Vue {
 
   @Getter(constants.WALLET_NAME, { namespace: 'pegInTx' }) walletName!: string;
 
+  @Getter(constants.PEGIN_TX_GET_REFUND_ADDRESS, { namespace: 'pegInTx' }) refundAddress!: string;
+
   @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: any;
 
   get unusedAddressList() {
@@ -402,7 +402,7 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get computedRefundBTCAddress() {
-    return this.btcRefundAddressSelected !== '' ? this.btcRefundAddressSelected : 'Not completed';
+    return this.refundAddress !== '' ? this.refundAddress : 'Not completed';
   }
 
   get computedRskAddress() {
@@ -582,7 +582,7 @@ export default class SendBitcoinForm extends Vue {
     }
     return {
       amountToTransferInSatoshi: this.btcToSatoshi(this.bitcoinAmount),
-      refundAddress: this.btcRefundAddressSelected,
+      refundAddress: this.refundAddress,
       recipient: this.computedRskAddress,
       feeLevel: selectedFee,
       feeBTC: this.txFee,
