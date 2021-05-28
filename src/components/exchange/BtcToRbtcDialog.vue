@@ -1,7 +1,14 @@
 <template>
   <v-dialog v-model="showDialog" width="600" persistent>
     <v-card class="container dialog">
-      <v-row class="mx-0 mt-10 mb-3 d-flex justify-center">
+      <v-row class="mx-0 mt-4 d-flex justify-end">
+        <v-btn height="50" color="#FFFFFF" @click="closeDialog">
+          <v-icon large color="grey darken-2">
+            mdi-close-circle-outline
+          </v-icon>
+        </v-btn>
+      </v-row>
+      <v-row class="mx-0 mt-5 mb-3 d-flex justify-center">
         <h2>BTC TO RBTC CONVERSION REQUIRES THESE STEPS</h2>
       </v-row>
       <v-row class="mx-0 d-flex justify-center">
@@ -13,10 +20,11 @@
       <v-row class="mx-0 mb-3 mt-1">
         <v-img src="@/assets/exchange/trezor/btc_conversion.png" height="135" contain/>
       </v-row>
-      <v-row class="mx-0 mt-8 mb-10 d-flex justify-center">
-        <v-btn width="142" height="50" dense rounded color="#00B520" @click="closeDialog">
-          <span class="whiteish">Continue</span>
-        </v-btn>
+      <v-row class="mx-0 mt-8 mb-4 d-flex justify-center">
+        <v-checkbox
+          v-model="checkbox"
+          :label="`Don't show again`">
+          </v-checkbox>
       </v-row>
     </v-card>
   </v-dialog>
@@ -31,6 +39,8 @@ import {
 @Component
 export default class BtcToRbtcDialog extends Vue {
   @Prop() showDialog!: boolean;
+
+  checkbox: boolean = false;
 
   @Emit('closeDialog')
   closeDialog() {
