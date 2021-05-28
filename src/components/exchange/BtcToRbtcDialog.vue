@@ -40,7 +40,7 @@ import {
 export default class BtcToRbtcDialog extends Vue {
   @Prop() showDialog!: boolean;
 
-  checkbox: boolean = false;
+  checkbox = false;
 
   @Emit('closeDialog')
   closeDialog() {
