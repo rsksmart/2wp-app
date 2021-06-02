@@ -1,9 +1,6 @@
 <template>
   <div class="transactions">
     <v-col offset="2" cols="8" offset-lg="3" lg="6">
-      <v-row class="mx-0 mb-5 mt-10 d-flex justify-center">
-        <v-progress-circular indeterminate :size="60" :width="8" color="#00B520" />
-      </v-row>
       <v-row class="mx-0 d-flex justify-center">
         <h1>Connect your {{ walletName }}</h1>
       </v-row>
@@ -27,10 +24,13 @@
       <v-row class="mx-0 d-flex justify-center">
         <v-img :src="deviceImagePath" height="300" contain />
       </v-row>
-      <v-row class="mx-0 mt-8 mb-10 d-flex justify-center">
+      <v-row v-if="!loadingState" class="mx-0 mt-8 mb-10 d-flex justify-center">
         <v-btn width="142" height="50" dense rounded color="#00B520" @click="continueToForm">
           <span class="whiteish">Continue</span>
         </v-btn>
+      </v-row>
+      <v-row v-if="loadingState" class="mx-0 mb-5 mt-10 d-flex justify-center">
+        <v-progress-circular indeterminate :size="60" :width="8" color="#00B520" />
       </v-row>
     </v-col>
   </div>
@@ -50,6 +50,8 @@ import Connect from '@/assets/exchange/wallet.png';
 @Component
 export default class ConnectDevice extends Vue {
   @Prop() device!: string;
+
+  @Prop() loadingState!: boolean;
 
   @State('pegInTx') peginTxState!: PegInTxState;
 
