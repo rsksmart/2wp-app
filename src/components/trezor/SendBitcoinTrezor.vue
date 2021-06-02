@@ -15,7 +15,8 @@
       <btc-to-rbtc-dialog :showDialog="showDialog" @closeDialog="closeDialog"/>
     </template>
     <template v-if="showErrorDialog">
-      <device-error-dialog :showErrorDialog="showErrorDialog" :errorMessage="errorMessage" @closeErrorDialog="closeErrorDialog"/>
+      <device-error-dialog :showErrorDialog="showErrorDialog" :errorMessage="errorMessage"
+                           @closeErrorDialog="closeErrorDialog"/>
     </template>
   </div>
 </template>
@@ -56,7 +57,9 @@ export default class SendBitcoinTrezor extends Vue {
   showDialog = true;
 
   showErrorDialog = false;
+
   errorMessage = 'test';
+
   loadingState = false;
 
   trezorConnected = false;
@@ -168,7 +171,7 @@ export default class SendBitcoinTrezor extends Vue {
         this.showDialog = false;
         this.trezorConnected = this.peginTxState.trezorConnected;
       } else if (event.type === DEVICE.DISCONNECT) {
-        console.log('DEVICE DISCONNECTEC')
+        console.log('DEVICE DISCONNECTEC');
         this.setTrezorConnected(false);
         this.showDialog = false;
         this.trezorConnected = this.peginTxState.trezorConnected;
@@ -195,7 +198,7 @@ export default class SendBitcoinTrezor extends Vue {
         this.balances = balances;
         this.trezorDataReady = true;
       })
-      .catch(e => {
+      .catch((e) => {
         console.error('ERROR CONNECTING TREZOR', e);
         console.log('ERROR CONNECTING TREZOR', e.message);
         this.errorMessage = e.message;

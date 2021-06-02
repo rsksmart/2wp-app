@@ -50,6 +50,7 @@ import Connect from '@/assets/exchange/wallet.png';
 @Component
 export default class ConnectDevice extends Vue {
   @Prop() device!: string;
+
   @Prop() loadingState!: boolean;
 
   @State('pegInTx') peginTxState!: PegInTxState;

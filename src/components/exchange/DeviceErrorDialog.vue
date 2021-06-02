@@ -13,10 +13,10 @@
         </v-col>
         <v-row class="mx-0 mb-10" justify="space-around">
           <v-btn width="200" height="50" dense outlined rounded color="#00B520" @click="toExchange">
-            <span class="greenish">Yes, return to home</span>
+            <span class="greenish">Return to home</span>
           </v-btn>
           <v-btn width="145" height="50" dense rounded color="#00B520" @click="closeErrorDialog">
-            <span class="whiteish">No, continue</span>
+            <span class="whiteish">Retry</span>
           </v-btn>
         </v-row>
       </v-col>
@@ -25,17 +25,18 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Emit, Vue } from 'vue-property-decorator';
+import {
+  Component, Prop, Emit, Vue,
+} from 'vue-property-decorator';
 import WarningIcon from '@/assets/warning.png';
 
 @Component
 export default class DeviceErrorDialog extends Vue {
   @Prop() showErrorDialog!: boolean;
+
   @Prop() errorMessage!: string;
 
-  get warningIconPath() {
-    return WarningIcon;
-  }
+  warningIconPath = WarningIcon;
 
   @Emit()
   toExchange() {

@@ -14,7 +14,8 @@
       <btc-to-rbtc-dialog :showDialog="showDialog" @closeDialog="closeDialog"/>
     </template>
     <template v-if="showErrorDialog">
-      <device-error-dialog :showErrorDialog="showErrorDialog" :errorMessage="errorMessage" @closeErrorDialog="closeErrorDialog"/>
+      <device-error-dialog :showErrorDialog="showErrorDialog"
+                           :errorMessage="errorMessage" @closeErrorDialog="closeErrorDialog"/>
     </template>
   </div>
 </template>
@@ -54,7 +55,9 @@ export default class SendBitcoinLedger extends Vue {
   showDialog = true;
 
   showErrorDialog = false;
+
   errorMessage = 'test';
+
   loadingState = false;
 
   currentComponent = 'SendBitcoinForm';
@@ -174,7 +177,7 @@ export default class SendBitcoinLedger extends Vue {
         this.balances = balances;
         this.ledgerDataReady = true;
       })
-      .catch(e => {
+      .catch((e) => {
         console.error('ERROR CONNECTING LEDGER', e);
         console.log('ERROR CONNECTING LEDGER', e.message);
         this.errorMessage = e.message;
