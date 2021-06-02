@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <template v-if="!ledgerDataReady">
-      <connect-device @continueToForm="getAccountAddresses"/>
+      <connect-device @continueToForm="getAccountAddresses" :loadingState="loadingState"/>
     </template>
     <template v-if="ledgerDataReady">
       <component :is="currentComponent" :balances="balances"
@@ -12,6 +12,9 @@
     </template>
     <template v-if="showDialog">
       <btc-to-rbtc-dialog :showDialog="showDialog" @closeDialog="closeDialog"/>
+    </template>
+    <template v-if="showErrorDialog">
+      <device-error-dialog :showErrorDialog="showErrorDialog" :errorMessage="errorMessage" @closeErrorDialog="closeErrorDialog"/>
     </template>
   </div>
 </template>
@@ -34,6 +37,7 @@ import {
 } from '@/services/types';
 import LedgerTxBuilder from '@/services/LedgerTxBuilder';
 import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
+import DeviceErrorDialog from '@/components/exchange/DeviceErrorDialog.vue';
 import ConnectDevice from '@/components/exchange/ConnectDevice.vue';
 
 @Component({
@@ -43,10 +47,15 @@ import ConnectDevice from '@/components/exchange/ConnectDevice.vue';
     ConfirmLedgerTransaction,
     TrackingId,
     ConnectDevice,
+    DeviceErrorDialog,
   },
 })
 export default class SendBitcoinLedger extends Vue {
   showDialog = true;
+
+  showErrorDialog = false;
+  errorMessage = 'test';
+  loadingState = false;
 
   currentComponent = 'SendBitcoinForm';
 
@@ -147,7 +156,14 @@ export default class SendBitcoinLedger extends Vue {
   }
 
   @Emit()
+  closeErrorDialog() {
+    this.showErrorDialog = false;
+    this.loadingState = false;
+  }
+
+  @Emit()
   getAccountAddresses() {
+    this.loadingState = true;
     this.ledgerService.getAddressList(2)
       .then((addresses) => {
         this.setPeginTxAddresses(addresses);
@@ -158,7 +174,12 @@ export default class SendBitcoinLedger extends Vue {
         this.balances = balances;
         this.ledgerDataReady = true;
       })
-      .catch(console.error);
+      .catch(e => {
+        console.error('ERROR CONNECTING LEDGER', e);
+        console.log('ERROR CONNECTING LEDGER', e.message);
+        this.errorMessage = e.message;
+        this.showErrorDialog = true;
+      });
   }
 
   @Emit()
