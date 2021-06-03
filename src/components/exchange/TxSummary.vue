@@ -36,7 +36,7 @@
               <v-col cols="6"/>
               <v-col cols="6">
                 <v-row class="mx-0">
-                  <h3>Transaction Fee</h3>
+                  <h3>Transaction total</h3>
                 </v-row>
                 <v-row class="mx-0">
                   <span>{{ fullTx }} BTC</span>

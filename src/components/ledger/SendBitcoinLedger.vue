@@ -178,8 +178,6 @@ export default class SendBitcoinLedger extends Vue {
         this.ledgerDataReady = true;
       })
       .catch((e) => {
-        console.error('ERROR CONNECTING LEDGER', e);
-        console.log('ERROR CONNECTING LEDGER', e.message);
         this.errorMessage = e.message;
         this.showErrorDialog = true;
       });

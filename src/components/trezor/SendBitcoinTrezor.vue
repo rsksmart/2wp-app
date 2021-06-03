@@ -171,7 +171,6 @@ export default class SendBitcoinTrezor extends Vue {
         this.showDialog = false;
         this.trezorConnected = this.peginTxState.trezorConnected;
       } else if (event.type === DEVICE.DISCONNECT) {
-        console.log('DEVICE DISCONNECTEC');
         this.setTrezorConnected(false);
         this.showDialog = false;
         this.trezorConnected = this.peginTxState.trezorConnected;
@@ -199,8 +198,6 @@ export default class SendBitcoinTrezor extends Vue {
         this.trezorDataReady = true;
       })
       .catch((e) => {
-        console.error('ERROR CONNECTING TREZOR', e);
-        console.log('ERROR CONNECTING TREZOR', e.message);
         this.errorMessage = e.message;
         this.showErrorDialog = true;
       });

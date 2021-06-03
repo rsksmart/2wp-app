@@ -501,15 +501,15 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get slowFee() {
-    return this.satoshiToBtc(this.fees.slow).toFixed(5);
+    return this.satoshiToBtc(this.fees.slow).toFixed(8);
   }
 
   get averageFee() {
-    return this.satoshiToBtc(this.fees.average).toFixed(5);
+    return this.satoshiToBtc(this.fees.average).toFixed(8);
   }
 
   get fastFee() {
-    return this.satoshiToBtc(this.fees.fast).toFixed(5);
+    return this.satoshiToBtc(this.fees.fast).toFixed(8);
   }
 
   get insufficientAmount() {
