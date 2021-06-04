@@ -526,10 +526,10 @@ export default class SendBitcoinForm extends Vue {
         balance = this.satoshiToBtc(this.balances.legacy);
         break;
       case 'BITCOIN_NATIVE_SEGWIT_ADDRESS':
-        balance = this.satoshiToBtc(this.balances.segwit);
+        balance = this.satoshiToBtc(this.balances.nativeSegwit);
         break;
       case 'BITCOIN_SEGWIT_ADDRESS':
-        balance = this.satoshiToBtc(this.balances.nativeSegwit);
+        balance = this.satoshiToBtc(this.balances.segwit);
         break;
       case 'BITCOIN_MULTISIGNATURE_ADDRESS':
         balance = 0;
