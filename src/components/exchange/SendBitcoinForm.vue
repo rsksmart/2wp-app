@@ -17,12 +17,27 @@
             <p v-bind:class="{'boldie': first}">Select Bitcoin account to send from:</p>
           </v-row>
           <v-row class="mx-0 my-4">
-            <v-col cols="7">
+            <v-col cols="6">
               <v-select v-model="btcAccountTypeSelected" :items="accountBalances" color="#fff"
                         label="Select the account" solo dense
                         @change="checkStep(btcAccountTypeSelected, 1)"/>
             </v-col>
-            <v-col/>
+            <v-col cols="2">
+              <v-tooltip right>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-icon
+                    small
+                    color="teal darken-2"
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    mdi-information
+                  </v-icon>
+                </template>
+                <span>Listed amounts represent the the first 2 address balances from Legacy,
+                  Segwit and Native segwit accounts including change</span>
+              </v-tooltip>
+            </v-col>
             <v-col cols="4" class="d-flex justify-center">
               <v-btn outlined rounded color="#00B520" width="220" disabled>
                 <span class="grayish">Extensive search</span>
@@ -168,7 +183,7 @@
           </v-row>
         </div>
       </v-col>
-      <v-col cols="4">
+      <v-col cols="4" class="px-3 px-lg-0">
         <v-row class="mx-0 mt-8">
           <h2>Transaction Summary:</h2>
         </v-row>
@@ -212,9 +227,14 @@
                   mdi-check-circle-outline
                 </v-icon>
               </v-row>
-              <v-row class="mx-0">
+              <v-row class="mx-0 d-none d-lg-block">
                 <p v-bind:class="{'grayish': computedRskAddress === 'Not completed'}">
                   {{ computedRskAddress }}
+                </p>
+              </v-row>
+              <v-row class="mx-0 d-lg-none">
+                <p v-bind:class="{'grayish': computedRskAddress === 'Not completed'}">
+                  {{croppedComputedRskAddress}}
                 </p>
               </v-row>
             </div>
@@ -226,9 +246,14 @@
                   mdi-check-circle-outline
                 </v-icon>
               </v-row>
-              <v-row class="mx-0">
+              <v-row class="mx-0 d-none d-lg-block">
                 <p v-bind:class="{'grayish': computedRefundBTCAddress === 'Not completed'}">
                   {{ computedRefundBTCAddress }}
+                </p>
+              </v-row>
+              <v-row class="mx-0 d-lg-none">
+                <p v-bind:class="{'grayish': computedRefundBTCAddress === 'Not completed'}">
+                  {{ croppedComputedRefundBTCAddress }}
                 </p>
               </v-row>
             </div>
@@ -361,8 +386,6 @@ export default class SendBitcoinForm extends Vue {
 
   transactionFees = ['Slow', 'Average', 'Fast']
 
-  btcRefundAddresses: string[] = [];
-
   accountBalances: string[] = [];
 
   @Prop() price!: number;
@@ -385,10 +408,6 @@ export default class SendBitcoinForm extends Vue {
 
   @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: any;
 
-  get unusedAddressList() {
-    return this.unusedAddresses ? this.unusedAddresses.slice(0, 4) : [];
-  }
-
   get rbtcAmount() {
     return this.bitcoinAmount;
   }
@@ -405,10 +424,18 @@ export default class SendBitcoinForm extends Vue {
     return this.refundAddress !== '' ? this.refundAddress : 'Not completed';
   }
 
+  get croppedComputedRefundBTCAddress() {
+    return this.getChunkedValue(this.computedRefundBTCAddress);
+  }
+
   get computedRskAddress() {
     if (this.useWeb3Wallet) return this.web3Address;
     if (this.rskAddressSelected) return this.rskAddressSelected;
     return 'Not completed';
+  }
+
+  get croppedComputedRskAddress() {
+    return this.getChunkedValue(this.computedRskAddress);
   }
 
   get computedTxFee() {
@@ -474,21 +501,48 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get slowFee() {
-    return this.satoshiToBtc(this.fees.slow).toFixed(5);
+    return this.satoshiToBtc(this.fees.slow).toFixed(8);
   }
 
   get averageFee() {
-    return this.satoshiToBtc(this.fees.average).toFixed(5);
+    return this.satoshiToBtc(this.fees.average).toFixed(8);
   }
 
   get fastFee() {
-    return this.satoshiToBtc(this.fees.fast).toFixed(5);
+    return this.satoshiToBtc(this.fees.fast).toFixed(8);
   }
 
   get insufficientAmount() {
-    if (this.bitcoinAmount < 0.01 && this.bitcoinAmount !== 0) return true;
-    if (this.bitcoinAmount !== 0) this.amountStyle = 'green-box';
+    if ((this.bitcoinAmount < 0.01 && this.bitcoinAmount !== 0)
+      || this.bitcoinAmount > this.selectedAccountBalance) return true;
+    if (this.bitcoinAmount !== 0 && this.bitcoinAmount < this.selectedAccountBalance) this.amountStyle = 'green-box';
     return false;
+  }
+
+  get selectedAccountBalance() {
+    let balance = 0;
+    switch (this.accountType) {
+      case 'BITCOIN_LEGACY_ADDRESS':
+        balance = this.satoshiToBtc(this.balances.legacy);
+        break;
+      case 'BITCOIN_NATIVE_SEGWIT_ADDRESS':
+        balance = this.satoshiToBtc(this.balances.segwit);
+        break;
+      case 'BITCOIN_SEGWIT_ADDRESS':
+        balance = this.satoshiToBtc(this.balances.nativeSegwit);
+        break;
+      case 'BITCOIN_MULTISIGNATURE_ADDRESS':
+        balance = 0;
+        break;
+      default:
+        balance = 0;
+    }
+    return balance;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getChunkedValue(value: string) {
+    return `${value.substr(0, 6)}...${value.substr(value.length - 6, value.length)}`;
   }
 
   @Emit()
