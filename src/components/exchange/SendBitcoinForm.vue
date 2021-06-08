@@ -93,7 +93,8 @@
           </v-row>
           <v-row class="mx-0 ml-3" v-if="insufficientAmount">
             <span class="yellowish">
-              You can not send this amount of BTC. You can only send a minimum of 0.01 BTC
+              You can not send this amount of BTC.
+              You can only send a minimum of 0.01 BTC and max {{selectedAccountBalance}}
             </span>
           </v-row>
         </div>
