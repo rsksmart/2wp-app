@@ -54,7 +54,7 @@ import ConnectDevice from '@/components/exchange/ConnectDevice.vue';
   },
 })
 export default class SendBitcoinTrezor extends Vue {
-  showDialog = true;
+  showDialog = SendBitcoinTrezor.checkBtcToRbtcDialogCookie();
 
   showErrorDialog = false;
 
@@ -111,6 +111,10 @@ export default class SendBitcoinTrezor extends Vue {
   @Action(constants.PEGIN_TX_ADD_ADDRESSES, { namespace: 'pegInTx' }) setPeginTxAddresses !: any;
 
   @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: string;
+
+  static checkBtcToRbtcDialogCookie(): boolean {
+    return localStorage.getItem('BTRD_COOKIE_DISABLED') !== 'true';
+  }
 
   get txData() {
     return {

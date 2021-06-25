@@ -572,6 +572,9 @@ export default class SendBitcoinForm extends Vue {
           this.third = false;
           this.fourth = false;
           this.firstDone = true;
+          if (this.firstDone && this.secondDone) {
+            this.calculateTxFee();
+          }
           break;
         }
         case 2: {
@@ -580,7 +583,9 @@ export default class SendBitcoinForm extends Vue {
           this.third = true;
           this.fourth = false;
           this.secondDone = !this.insufficientAmount;
-          this.calculateTxFee();
+          if (this.firstDone && this.secondDone) {
+            this.calculateTxFee();
+          }
           break;
         }
         case 3: {
