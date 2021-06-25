@@ -106,10 +106,11 @@ export default class ConfirmLedgerTransaction extends Vue {
         this.txId = txId;
       })
       .catch((err) => {
-        if (err.message === 'Ledger device: Condition of use not satisfied (denied by the user?) (0x6985)') {
+        console.log(err);
+        if (err.statusCode === 27013) {
           this.txError = 'Transaction cancelled by user.';
         } else {
-          this.txError = 'Error on transaction';
+          this.txError = err.message;
         }
       });
     return [this.txError, this.txId];

@@ -51,9 +51,17 @@
       <tx-summary :txData="txData" :price="price" :showTxId="false"/>
     </v-row>
     <v-row class="mx-0 d-flex justify-center">
-      <v-btn rounded outlined color="#00B520" width="110" @click="toTrackId">
-        <span>Done</span>
+      <v-btn v-if="!loadingState" rounded outlined color="#00B520" width="110" @click="toTrackId">
+        <span>Sign</span>
       </v-btn>
+      <v-col v-if="loadingState">
+        <v-row class="mx-0 mb-5 d-flex justify-center">
+          See your Trezor device to confirm your transaction!
+        </v-row>
+        <v-row class="mx-0 mb-5 mt-10 d-flex justify-center">
+          <v-progress-circular indeterminate :size="60" :width="8" color="#00B520" />
+        </v-row>
+      </v-col>
     </v-row>
   </div>
 </template>
@@ -76,6 +84,10 @@ import ApiService from '@/services/ApiService';
 export default class ConfirmTransaction extends Vue {
   txId = '';
 
+  txError = '';
+
+  loadingState = false;
+
   @Prop() tx!: TrezorTx;
 
   @Prop() txBuilder!: TrezorTxBuilder;
@@ -86,14 +98,18 @@ export default class ConfirmTransaction extends Vue {
 
   @Emit('successConfirmation')
   async toTrackId() {
+    this.loadingState = true;
     await this.txBuilder.sign()
       .then((trezorSignedTx) => ApiService
         .broadcast(trezorSignedTx.payload.serializedTx))
       .then((txId) => {
         this.txId = txId;
       })
-      .catch(console.error);
-    return this.txId;
+      .catch((err) => {
+        console.log(err);
+        this.txError = err.message;
+      });
+    return [this.txError, this.txId];
   }
 }
 </script>

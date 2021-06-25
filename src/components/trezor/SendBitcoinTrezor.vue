@@ -15,8 +15,12 @@
       <btc-to-rbtc-dialog :showDialog="showDialog" @closeDialog="closeDialog"/>
     </template>
     <template v-if="showErrorDialog">
-      <device-error-dialog :showErrorDialog="showErrorDialog" :errorMessage="errorMessage"
+      <device-error-dialog :showErrorDialog="showErrorDialog" :errorMessage="deviceError"
                            @closeErrorDialog="closeErrorDialog"/>
+    </template>
+    <template v-if="showTxErrorDialog">
+      <tx-error-dialog :showTxErrorDialog="showTxErrorDialog"
+                       :errorMessage="txError" @closeErrorDialog="closeTxErrorDialog"/>
     </template>
   </div>
 </template>
@@ -54,11 +58,13 @@ import ConnectDevice from '@/components/exchange/ConnectDevice.vue';
   },
 })
 export default class SendBitcoinTrezor extends Vue {
-  showDialog = SendBitcoinTrezor.checkBtcToRbtcDialogCookie();
+  showDialog = true;
 
   showErrorDialog = false;
 
-  errorMessage = 'test';
+  showTxErrorDialog = false;
+
+  deviceError = 'test';
 
   loadingState = false;
 
@@ -69,6 +75,8 @@ export default class SendBitcoinTrezor extends Vue {
   unusedAddresses: string[] = [];
 
   txId = '';
+
+  txError = '';
 
   createdTx: TrezorTx = {
     coin: process.env.VUE_APP_COIN ?? 'test',
@@ -112,8 +120,8 @@ export default class SendBitcoinTrezor extends Vue {
 
   @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: string;
 
-  static checkBtcToRbtcDialogCookie(): boolean {
-    return localStorage.getItem('BTRD_COOKIE_DISABLED') !== 'true';
+  beforeMount() {
+    this.showDialog = !(localStorage.getItem('BTRD_COOKIE_DISABLED') === 'true');
   }
 
   get txData() {
@@ -161,9 +169,14 @@ export default class SendBitcoinTrezor extends Vue {
   }
 
   @Emit()
-  toTrackingId(txId: string) {
+  toTrackingId([txError, txId]: string[]) {
+    if (txError !== '') {
+      this.txError = txError;
+      this.showTxErrorDialog = true;
+    } else {
+      this.currentComponent = 'TrackingId';
+    }
     this.txId = txId;
-    this.currentComponent = 'TrackingId';
   }
 
   @Emit()
@@ -189,6 +202,11 @@ export default class SendBitcoinTrezor extends Vue {
   }
 
   @Emit()
+  closeTxErrorDialog() {
+    this.showTxErrorDialog = false;
+  }
+
+  @Emit()
   getAccountAddresses() {
     this.loadingState = true;
     this.trezorService.getAddressList(2)
@@ -202,7 +220,7 @@ export default class SendBitcoinTrezor extends Vue {
         this.trezorDataReady = true;
       })
       .catch((e) => {
-        this.errorMessage = e.message;
+        this.deviceError = e.message;
         this.showErrorDialog = true;
       });
   }

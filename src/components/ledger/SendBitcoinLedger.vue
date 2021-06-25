@@ -15,7 +15,7 @@
     </template>
     <template v-if="showErrorDialog">
       <device-error-dialog :showErrorDialog="showErrorDialog"
-                           :errorMessage="errorMessage" @closeErrorDialog="closeErrorDialog"/>
+                           :errorMessage="deviceError" @closeErrorDialog="closeErrorDialog"/>
     </template>
     <template v-if="showTxErrorDialog">
       <tx-error-dialog :showTxErrorDialog="showTxErrorDialog"
@@ -58,13 +58,13 @@ import TxErrorDialog from '@/components/exchange/TxErrorDialog.vue';
   },
 })
 export default class SendBitcoinLedger extends Vue {
-  showDialog = SendBitcoinLedger.checkBtcToRbtcDialogCookie();
+  showDialog = true;
 
   showErrorDialog = false;
 
   showTxErrorDialog = false;
 
-  errorMessage = 'test';
+  deviceError = 'test';
 
   loadingState = false;
 
@@ -117,6 +117,10 @@ export default class SendBitcoinLedger extends Vue {
 
   @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: string;
 
+  beforeMount() {
+    this.showDialog = !(localStorage.getItem('BTRD_COOKIE_DISABLED') === 'true');
+  }
+
   get txData() {
     return {
       amount: this.amount,
@@ -125,10 +129,6 @@ export default class SendBitcoinLedger extends Vue {
       feeBTC: this.feeBTC,
       change: this.getChangeAddress,
     };
-  }
-
-  static checkBtcToRbtcDialogCookie(): boolean {
-    return localStorage.getItem('BTRD_COOKIE_DISABLED') !== 'true';
   }
 
   @Emit()
@@ -202,7 +202,7 @@ export default class SendBitcoinLedger extends Vue {
         this.ledgerDataReady = true;
       })
       .catch((e) => {
-        this.errorMessage = e.message;
+        this.deviceError = e.message;
         this.showErrorDialog = true;
       });
   }
