@@ -641,6 +641,7 @@ export default class SendBitcoinForm extends Vue {
       recipient: this.computedRskAddress,
       feeLevel: selectedFee,
       feeBTC: this.txFee,
+      accountType: this.accountType,
     };
   }
 

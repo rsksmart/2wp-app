@@ -26,16 +26,31 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       }
     }
   },
-  [constants.PEGIN_TX_GET_CHANGE_ADDRESS]: (state: PegInTxState) => {
-    let address = '';
-    const coin = process.env.VUE_APP_COIN ?? 'test';
-    const coinPath = coin === 'main' ? "/0'" : "/1'";
+  [constants.PEGIN_TX_GET_CHANGE_ADDRESS]:
+    (state: PegInTxState) => (accountType: string): string => {
+      let address = '';
+      let accountTypePath = '';
+      const coin = process.env.VUE_APP_COIN ?? 'test';
+      const coinPath = coin === 'main' ? "/0'" : "/1'";
+      switch (accountType) {
+        case constants.BITCOIN_LEGACY_ADDRESS:
+          accountTypePath = "44'";
+          break;
+        case constants.BITCOIN_SEGWIT_ADDRESS:
+          accountTypePath = "49'";
+          break;
+        case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
+          accountTypePath = "84'";
+          break;
+        default:
+          accountTypePath = "44'";
+      }
     // eslint-disable-next-line no-unused-expressions
     state.addressList?.forEach((walletAddress) => {
-      if (walletAddress.serializedPath === `m/44'${coinPath}/0'/1/0`) address = walletAddress.address;
+      if (walletAddress.serializedPath === `m/${accountTypePath}${coinPath}/0'/1/0`) address = walletAddress.address;
     });
     return address;
-  },
+    },
   [constants.PEGIN_TX_GET_REFUND_ADDRESS]: (state: PegInTxState) => {
     let address = '';
     const coin = process.env.VUE_APP_COIN ?? 'test';
