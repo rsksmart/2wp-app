@@ -44,6 +44,9 @@ export default class BtcToRbtcDialog extends Vue {
 
   @Emit('closeDialog')
   closeDialog() {
+    if (this.checkbox === true) {
+      localStorage.setItem('BTRD_COOKIE_DISABLED', 'true');
+    }
     return this.showDialog;
   }
 }

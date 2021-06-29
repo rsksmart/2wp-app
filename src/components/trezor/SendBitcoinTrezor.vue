@@ -15,8 +15,12 @@
       <btc-to-rbtc-dialog :showDialog="showDialog" @closeDialog="closeDialog"/>
     </template>
     <template v-if="showErrorDialog">
-      <device-error-dialog :showErrorDialog="showErrorDialog" :errorMessage="errorMessage"
+      <device-error-dialog :showErrorDialog="showErrorDialog" :errorMessage="deviceError"
                            @closeErrorDialog="closeErrorDialog"/>
+    </template>
+    <template v-if="showTxErrorDialog">
+      <tx-error-dialog :showTxErrorDialog="showTxErrorDialog"
+                       :errorMessage="txError" @closeErrorDialog="closeTxErrorDialog"/>
     </template>
   </div>
 </template>
@@ -42,6 +46,7 @@ import TrezorTxBuilder from '@/services/TrezorTxBuilder';
 import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
 import DeviceErrorDialog from '@/components/exchange/DeviceErrorDialog.vue';
 import ConnectDevice from '@/components/exchange/ConnectDevice.vue';
+import TxErrorDialog from '@/components/exchange/TxErrorDialog.vue';
 
 @Component({
   components: {
@@ -51,6 +56,7 @@ import ConnectDevice from '@/components/exchange/ConnectDevice.vue';
     TrackingId,
     ConnectDevice,
     DeviceErrorDialog,
+    TxErrorDialog,
   },
 })
 export default class SendBitcoinTrezor extends Vue {
@@ -58,7 +64,9 @@ export default class SendBitcoinTrezor extends Vue {
 
   showErrorDialog = false;
 
-  errorMessage = 'test';
+  showTxErrorDialog = false;
+
+  deviceError = 'test';
 
   loadingState = false;
 
@@ -69,6 +77,8 @@ export default class SendBitcoinTrezor extends Vue {
   unusedAddresses: string[] = [];
 
   txId = '';
+
+  txError = '';
 
   createdTx: TrezorTx = {
     coin: process.env.VUE_APP_COIN ?? 'test',
@@ -110,7 +120,11 @@ export default class SendBitcoinTrezor extends Vue {
 
   @Action(constants.PEGIN_TX_ADD_ADDRESSES, { namespace: 'pegInTx' }) setPeginTxAddresses !: any;
 
-  @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: string;
+  @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: (accountType: string) => string;
+
+  beforeMount() {
+    this.showDialog = !(localStorage.getItem('BTRD_COOKIE_DISABLED') === 'true');
+  }
 
   get txData() {
     return {
@@ -118,7 +132,7 @@ export default class SendBitcoinTrezor extends Vue {
       refundAddress: this.refundAddress,
       recipient: this.recipient,
       feeBTC: this.feeBTC,
-      change: this.change,
+      change: this.getChangeAddress,
     };
   }
 
@@ -128,13 +142,14 @@ export default class SendBitcoinTrezor extends Vue {
 
   @Emit()
   toConfirmTx({
-    amountToTransferInSatoshi, refundAddress, recipient, feeLevel, feeBTC,
+    amountToTransferInSatoshi, refundAddress, recipient, feeLevel, feeBTC, accountType,
   }: {
     amountToTransferInSatoshi: number;
     refundAddress: string;
     recipient: string;
     feeLevel: string;
     feeBTC: number;
+    accountType: string;
   }) {
     this.amount = amountToTransferInSatoshi;
     this.refundAddress = refundAddress;
@@ -145,7 +160,7 @@ export default class SendBitcoinTrezor extends Vue {
       refundAddress,
       recipient,
       feeLevel,
-      changeAddress: this.change,
+      changeAddress: this.getChangeAddress(accountType),
       sessionId: this.peginTxState.sessionId,
     })
       .then((tx: TrezorTx) => {
@@ -157,9 +172,14 @@ export default class SendBitcoinTrezor extends Vue {
   }
 
   @Emit()
-  toTrackingId(txId: string) {
+  toTrackingId([txError, txId]: string[]) {
+    if (txError !== '') {
+      this.txError = txError;
+      this.showTxErrorDialog = true;
+    } else {
+      this.currentComponent = 'TrackingId';
+    }
     this.txId = txId;
-    this.currentComponent = 'TrackingId';
   }
 
   @Emit()
@@ -185,6 +205,11 @@ export default class SendBitcoinTrezor extends Vue {
   }
 
   @Emit()
+  closeTxErrorDialog() {
+    this.showTxErrorDialog = false;
+  }
+
+  @Emit()
   getAccountAddresses() {
     this.loadingState = true;
     this.trezorService.getAddressList(2)
@@ -198,7 +223,7 @@ export default class SendBitcoinTrezor extends Vue {
         this.trezorDataReady = true;
       })
       .catch((e) => {
-        this.errorMessage = e.message;
+        this.deviceError = e.message;
         this.showErrorDialog = true;
       });
   }

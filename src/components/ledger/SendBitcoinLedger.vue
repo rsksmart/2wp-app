@@ -15,7 +15,11 @@
     </template>
     <template v-if="showErrorDialog">
       <device-error-dialog :showErrorDialog="showErrorDialog"
-                           :errorMessage="errorMessage" @closeErrorDialog="closeErrorDialog"/>
+                           :errorMessage="deviceError" @closeErrorDialog="closeErrorDialog"/>
+    </template>
+    <template v-if="showTxErrorDialog">
+      <tx-error-dialog :showTxErrorDialog="showTxErrorDialog"
+                           :errorMessage="txError" @closeErrorDialog="closeTxErrorDialog"/>
     </template>
   </div>
 </template>
@@ -40,6 +44,7 @@ import LedgerTxBuilder from '@/services/LedgerTxBuilder';
 import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
 import DeviceErrorDialog from '@/components/exchange/DeviceErrorDialog.vue';
 import ConnectDevice from '@/components/exchange/ConnectDevice.vue';
+import TxErrorDialog from '@/components/exchange/TxErrorDialog.vue';
 
 @Component({
   components: {
@@ -49,6 +54,7 @@ import ConnectDevice from '@/components/exchange/ConnectDevice.vue';
     TrackingId,
     ConnectDevice,
     DeviceErrorDialog,
+    TxErrorDialog,
   },
 })
 export default class SendBitcoinLedger extends Vue {
@@ -56,13 +62,17 @@ export default class SendBitcoinLedger extends Vue {
 
   showErrorDialog = false;
 
-  errorMessage = 'test';
+  showTxErrorDialog = false;
+
+  deviceError = 'test';
 
   loadingState = false;
 
   currentComponent = 'SendBitcoinForm';
 
   txId = '';
+
+  txError = '';
 
   createdTx: LedgerTx = {
     coin: process.env.VUE_APP_COIN ?? 'test',
@@ -110,6 +120,10 @@ export default class SendBitcoinLedger extends Vue {
 
   @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: (accountType: string) => string;
 
+  beforeMount() {
+    this.showDialog = !(localStorage.getItem('BTRD_COOKIE_DISABLED') === 'true');
+  }
+
   get txData() {
     return {
       amount: this.amount,
@@ -153,9 +167,14 @@ export default class SendBitcoinLedger extends Vue {
   }
 
   @Emit()
-  toTrackingId(txId: string) {
+  toTrackingId([txError, txId]: string[]) {
+    if (txError !== '') {
+      this.txError = txError;
+      this.showTxErrorDialog = true;
+    } else {
+      this.currentComponent = 'TrackingId';
+    }
     this.txId = txId;
-    this.currentComponent = 'TrackingId';
   }
 
   @Emit()
@@ -167,6 +186,11 @@ export default class SendBitcoinLedger extends Vue {
   closeErrorDialog() {
     this.showErrorDialog = false;
     this.loadingState = false;
+  }
+
+  @Emit()
+  closeTxErrorDialog() {
+    this.showTxErrorDialog = false;
   }
 
   @Emit()
@@ -183,7 +207,7 @@ export default class SendBitcoinLedger extends Vue {
         this.ledgerDataReady = true;
       })
       .catch((e) => {
-        this.errorMessage = e.message;
+        this.deviceError = e.message;
         this.showErrorDialog = true;
       });
   }
