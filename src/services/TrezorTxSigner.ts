@@ -11,12 +11,10 @@ export default class TrezorTxSigner extends TxSigner {
   }
 
   public sign(tx: Tx): Promise<TrezorSignedTx> {
-    return new Promise<TrezorSignedTx>((resolve) => {
+    return new Promise<TrezorSignedTx>((resolve, reject) => {
       this.trezorService.sign(tx)
-        .then((payload) => {
-          resolve(payload);
-        })
-        .catch(console.error);
+        .then(resolve)
+        .catch(reject);
     });
   }
 }

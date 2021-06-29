@@ -117,6 +117,8 @@ export default class TrezorService extends WalletService {
                 serializedTx: res.payload.serializedTx,
               },
             });
+          } else {
+            reject(new Error(res.payload.error));
           }
         })
         .catch(reject);

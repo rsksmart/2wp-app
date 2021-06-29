@@ -106,7 +106,7 @@ export default class ConfirmTransaction extends Vue {
         this.txId = txId;
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
         this.txError = err.message;
       });
     return [this.txError, this.txId];
