@@ -8,7 +8,7 @@ export default class WalletService {
   }
 
   protected getAccountPath(accountType: string, accountIdx: number) {
-    const coinPath: string = this.coin === 'bitcoin' ? "/0'" : "/1'";
+    const coinPath: string = this.coin === constants.BTC_NETWORK_MAINNET ? "/0'" : "/1'";
     let accountPath = 'm';
     switch (accountType) {
       case constants.BITCOIN_LEGACY_ADDRESS:

@@ -16,10 +16,17 @@ export default class LedgerTxBuilder extends TxBuilder {
 
   private ledgerService: LedgerService;
 
+  private txAccountType: string;
+
   constructor() {
     super();
     this.signer = new LedgerTxSigner();
     this.ledgerService = new LedgerService(this.coin);
+    this.txAccountType = constants.BITCOIN_LEGACY_ADDRESS;
+  }
+
+  set accountType(accountType: string) {
+    this.txAccountType = accountType;
   }
 
   buildTx({
@@ -41,10 +48,11 @@ export default class LedgerTxBuilder extends TxBuilder {
           const tx: LedgerTx = {
             outputs,
             outputScriptHex,
-            changePath: store.getters[`pegInTx/${constants.PEGIN_TX_GET_CHANGE_ADDRESS}`],
+            changePath: store.getters[`pegInTx/${constants.PEGIN_TX_GET_CHANGE_ADDRESS}`](this.txAccountType),
             coin,
             inputs,
             associatedKeysets,
+            accountType: this.txAccountType,
           };
           this.tx = tx;
           resolve(tx);
@@ -55,19 +63,24 @@ export default class LedgerTxBuilder extends TxBuilder {
 
   private static getInputs(normalizedInputs: NormalizedInput[]):
     Promise<{
-    inputs: { tx: LedgerjsTransaction; outputIndex: number; publicKey: string}[];
+    inputs: { tx: LedgerjsTransaction; outputIndex: number; publicKey: string; hex: string}[];
     associatedKeysets: string[];
     }> {
     const associatedKeysets: string[] = [];
-    const inputs: {tx: LedgerjsTransaction; outputIndex: number; publicKey: string}[] = [];
+    const inputs:
+      {tx: LedgerjsTransaction; outputIndex: number; publicKey: string; hex: string}[] = [];
+    let hexTxList: string[] = [];
     return new Promise<{
-      inputs: {tx: LedgerjsTransaction; outputIndex: number; publicKey: string}[];
+      inputs: {tx: LedgerjsTransaction; outputIndex: number; publicKey: string; hex: string}[];
       associatedKeysets: string[];}>((resolve, reject) => {
         const txPromises = normalizedInputs.map(
           (normalizedInput) => ApiService.getTxHex(normalizedInput.prev_hash),
         );
         Promise.all(txPromises)
-          .then((txHexList) => LedgerService.splitTransactionList(txHexList))
+          .then((txHexList) => {
+            hexTxList = txHexList;
+            return LedgerService.splitTransactionList(txHexList);
+          })
           .then((eventualSplitTx) => Promise.all(eventualSplitTx))
           .then((txList) => {
             txList.forEach((tx, idx) => {
@@ -75,6 +88,7 @@ export default class LedgerTxBuilder extends TxBuilder {
                 tx,
                 outputIndex: normalizedInputs[idx].prev_index,
                 publicKey: store.getters[`pegInTx/${constants.PEGIN_TX_GET_ADDRESS_PUBLIC_KEY}`](normalizedInputs[idx].address),
+                hex: hexTxList[idx],
               });
               associatedKeysets.push(
                 LedgerTxBuilder.getSerializedPath(normalizedInputs[idx].address),
@@ -88,12 +102,12 @@ export default class LedgerTxBuilder extends TxBuilder {
 
   private getLedgerTxData(normalizedTx: NormalizedTx):
     Promise<{
-    inputs: { tx: LedgerjsTransaction; outputIndex: number; publicKey: string}[];
+    inputs: { tx: LedgerjsTransaction; outputIndex: number; publicKey: string; hex: string}[];
     associatedKeysets: string[];
     outputScriptHex: string;
   }> {
-    const response: {
-      inputs: { tx: LedgerjsTransaction; outputIndex: number; publicKey: string}[];
+    const ledgerTxData: {
+      inputs: { tx: LedgerjsTransaction; outputIndex: number; publicKey: string; hex: string}[];
       associatedKeysets: string[];
       outputScriptHex: string;
     } = {
@@ -104,13 +118,13 @@ export default class LedgerTxBuilder extends TxBuilder {
     return new Promise((resolve, reject) => {
       LedgerTxBuilder.getInputs(normalizedTx.inputs)
         .then(({ inputs, associatedKeysets }) => {
-          response.inputs = inputs;
-          response.associatedKeysets = associatedKeysets;
+          ledgerTxData.inputs = inputs;
+          ledgerTxData.associatedKeysets = associatedKeysets;
           return this.getOutputScriptHex(normalizedTx.outputs);
         })
         .then((outputScriptHex) => {
-          response.outputScriptHex = outputScriptHex;
-          resolve(response);
+          ledgerTxData.outputScriptHex = outputScriptHex;
+          resolve(ledgerTxData);
         })
         .catch(reject);
     });

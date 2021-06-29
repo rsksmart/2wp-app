@@ -81,6 +81,7 @@ export default class SendBitcoinLedger extends Vue {
     outputScriptHex: '',
     changePath: '',
     associatedKeysets: [],
+    accountType: '',
   };
 
   amount = 0;
@@ -107,7 +108,9 @@ export default class SendBitcoinLedger extends Vue {
 
   ledgerDataReady = false;
 
-  ledgerService: LedgerService = new LedgerService(process.env.VUE_APP_COIN ?? 'test');
+  ledgerService: LedgerService = new LedgerService(
+    process.env.VUE_APP_COIN ?? constants.BTC_NETWORK_TESTNET,
+  );
 
   bitcoinPrice = 52179.73; // https://www.coindesk.com/price/bitcoin
 
@@ -115,7 +118,7 @@ export default class SendBitcoinLedger extends Vue {
 
   @Action(constants.PEGIN_TX_ADD_ADDRESSES, { namespace: 'pegInTx' }) setPeginTxAddresses !: any;
 
-  @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: string;
+  @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: (accountType: string) => string;
 
   beforeMount() {
     this.showDialog = !(localStorage.getItem('BTRD_COOKIE_DISABLED') === 'true');
@@ -133,24 +136,26 @@ export default class SendBitcoinLedger extends Vue {
 
   @Emit()
   toConfirmTx({
-    amountToTransferInSatoshi, refundAddress, recipient, feeLevel, feeBTC,
+    amountToTransferInSatoshi, refundAddress, recipient, feeLevel, feeBTC, accountType,
   }: {
     amountToTransferInSatoshi: number;
     refundAddress: string;
     recipient: string;
     feeLevel: string;
     feeBTC: number;
+    accountType: string;
   }) {
     this.amount = amountToTransferInSatoshi;
     this.refundAddress = refundAddress;
     this.recipient = recipient;
     this.feeBTC = feeBTC;
+    this.txBuilder.accountType = accountType;
     this.txBuilder.buildTx({
       amountToTransferInSatoshi,
       refundAddress,
       recipient,
       feeLevel,
-      changeAddress: this.getChangeAddress,
+      changeAddress: this.getChangeAddress(accountType),
       sessionId: this.peginTxState.sessionId,
     })
       .then((tx: LedgerTx) => {

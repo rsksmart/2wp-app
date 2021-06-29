@@ -1,4 +1,5 @@
 import { TxInputType, TxOutputType } from 'trezor-connect';
+import { Network, Psbt } from 'bitcoinjs-lib';
 
 export interface Tx {
   coin: string;
@@ -59,11 +60,19 @@ export interface LedgerjsTransaction {
 
 export interface LedgerTx extends Tx {
   coin: string;
-  inputs: { tx: LedgerjsTransaction; outputIndex: number; publicKey: string }[];
-  outputs: object[];
+  inputs: { tx: LedgerjsTransaction; outputIndex: number; publicKey: string; hex: string }[];
+  outputs: NormalizedOutput[];
   outputScriptHex: string;
   changePath: string;
   associatedKeysets: string[];
+  psbtTx?: Psbt;
+  accountType: string;
+}
+
+export interface Signer {
+  network: Network;
+  publicKey: Buffer;
+  sign: (hash: any) => Buffer;
 }
 
 export type InputScriptType = 'SPENDADDRESS' | 'SPENDMULTISIG' | 'SPENDWITNESS' | 'SPENDP2SHWITNESS';
