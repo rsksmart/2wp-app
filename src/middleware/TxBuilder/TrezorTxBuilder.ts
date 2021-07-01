@@ -1,14 +1,14 @@
-import TxBuilder from '@/services/TxBuilder';
-import TrezorTxSigner from '@/services/TrezorTxSigner';
+import TrezorTxSigner from '@/middleware/TxSigner/TrezorTxSigner';
 import { WalletAddress } from '@/store/peginTx/types';
 import {
   NormalizedInput, NormalizedOutput, TrezorSignedTx, TrezorTx,
-} from '@/services/types';
+} from '@/types';
 import { TxInputType, TxOutputType } from 'trezor-connect';
 import ApiService from '@/services/ApiService';
 import { getAccountType } from '@/services/utils';
 import * as constants from '@/store/constants';
-import store from '../store';
+import TxBuilder from './TxBuilder';
+import store from '../../store';
 
 export default class TrezorTxBuilder extends TxBuilder {
   private tx!: TrezorTx;

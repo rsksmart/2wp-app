@@ -73,7 +73,7 @@ import {
 } from 'vue-property-decorator';
 import { TrezorTx, TxData } from '@/services/types';
 import TxSummary from '@/components/exchange/TxSummary.vue';
-import LedgerTxBuilder from '@/services/LedgerTxBuilder';
+import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
 import ApiService from '@/services/ApiService';
 
 @Component({

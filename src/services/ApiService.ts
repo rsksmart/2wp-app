@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { WalletAddress, PeginConfiguration } from '@/store/peginTx/types';
-import { AccountBalance, FeeAmountData, NormalizedTx } from '@/services/types';
+import { AccountBalance, FeeAmountData, NormalizedTx } from '@/types';
 
 export default class ApiService {
   static baseURL = process.env.VUE_APP_API_BASE_URL

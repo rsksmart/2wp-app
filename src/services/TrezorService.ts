@@ -1,7 +1,7 @@
 import TrezorConnect, { GetAddress } from 'trezor-connect';
 import { WalletAddress } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
-import { TrezorSignedTx, TrezorTx, Tx } from '@/services/types';
+import { TrezorSignedTx, TrezorTx, Tx } from '@/types';
 import WalletService from '@/services/WalletService';
 
 export default class TrezorService extends WalletService {
