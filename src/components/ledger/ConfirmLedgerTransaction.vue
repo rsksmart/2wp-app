@@ -71,7 +71,7 @@ import {
   Component, Emit, Prop,
   Vue,
 } from 'vue-property-decorator';
-import { TrezorTx, TxData } from '@/services/types';
+import { TrezorTx, TxData } from '@/types';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
 import ApiService from '@/services/ApiService';

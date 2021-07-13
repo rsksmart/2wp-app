@@ -39,7 +39,7 @@ import * as constants from '@/store/constants';
 import { Action, Getter, State } from 'vuex-class';
 import {
   AccountBalance, FeeAmountData, LedgerTx,
-} from '@/services/types';
+} from '@/types';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
 import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
 import DeviceErrorDialog from '@/components/exchange/DeviceErrorDialog.vue';

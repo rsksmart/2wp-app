@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { WalletAddress, PeginConfiguration } from '@/store/peginTx/types';
 import { AccountBalance, FeeAmountData, NormalizedTx } from '@/types';
+import { PeginStatus } from '@/store/types';
 
 export default class ApiService {
   static baseURL = process.env.VUE_APP_API_BASE_URL
@@ -74,6 +75,17 @@ export default class ApiService {
         .then((response) => {
           if (response.data.error) reject(response.data.error);
           resolve(response.data.txid.hex);
+        })
+        .catch(reject);
+    });
+  }
+
+  public static getPegInStatus(txId: string): Promise<PeginStatus> {
+    return new Promise<PeginStatus>((resolve, reject) => {
+      axios.get(`${this.baseURL}/pegin-status?txId=${txId}`)
+        .then((response) => {
+          if (response.data.error) reject(response.data.error);
+          resolve(response.data);
         })
         .catch(reject);
     });

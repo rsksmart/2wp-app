@@ -61,4 +61,21 @@
     box-sizing: border-box;
     border-radius: 30px;
   }
+
+  .status {
+    font-family: Quicksand;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 22px;
+  }
+  .statusProgress{
+    color: #008CFF;
+  }
+  .statusSuccess{
+    color: #00B43C;
+  }
+  .statusRejected{
+    color: #F6C61B;
+  }
 }
