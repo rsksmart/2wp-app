@@ -99,12 +99,13 @@
         </v-row>
         <v-row class="mx-0 mt-15 d-flex justify-center">
           <v-col cols="3" class="d-flex justify-center">
-            <v-btn class="px-5" width="200" height="50" outlined color="#B5CAB8" rounded
+            <v-btn class="px-5" width="150" height="40" outlined color="#B5CAB8" rounded
                    @click="showMoreBitcoinWallets" disabled>
-              {{ moreWalletsBtn }}
-              More
-              <br/>
-              (Coming soon)
+              <h3>
+                {{ moreWalletsBtn }}
+                <v-row class="d-flex justify-center">More</v-row>
+                <v-row class="d-flex justify-center">(Coming soon)</v-row>
+              </h3>
             </v-btn>
           </v-col>
         </v-row>

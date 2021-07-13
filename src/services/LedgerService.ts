@@ -95,9 +95,9 @@ export default class LedgerService extends WalletService {
     Promise<WalletAddress[]> {
     const walletAddresses: WalletAddress[] = [];
     const bundle = this.getAddressesBundle(0, batch);
-    const transport = await TransportWebUSB.create(15000);
-    const btc = new AppBtc(transport);
     try {
+      const transport = await TransportWebUSB.create(15000);
+      const btc = new AppBtc(transport);
       for (let i = 0; i < bundle.length; i += 1) {
         const { derivationPath, format } = bundle[i];
         // eslint-disable-next-line no-await-in-loop
@@ -109,10 +109,10 @@ export default class LedgerService extends WalletService {
           publicKey: walletPublicKey.publicKey,
         });
       }
+      await transport.close();
     } catch (e) {
       console.error(e);
     }
-    await transport.close();
     return walletAddresses;
   }
 

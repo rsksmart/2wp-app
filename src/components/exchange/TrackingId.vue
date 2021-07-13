@@ -2,9 +2,7 @@
   <div class="transactions">
     <v-row class="mx-0 my-8 d-flex justify-center">
       <h1 class="text-center ma-0">
-        Copy the transaction ID
-        <br>
-        to check your transaction status
+        Your transaction was successfully sent!
       </h1>
     </v-row>
     <v-row class="mx-0 d-flex justify-center">

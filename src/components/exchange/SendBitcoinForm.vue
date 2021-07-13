@@ -1,5 +1,5 @@
 <template>
-  <div class="exchange-form">
+  <v-col offset="1" cols="10" xl="8" offset-xl="2" class="exchange-form ">
     <v-row class="mx-0">
       <v-col cols="1" class="pa-0 d-flex align-center justify-start">
         <v-img class="d-flex justify-start"
@@ -218,7 +218,7 @@
                   </v-icon>
                 </v-row>
               </v-container>
-              <v-container class="pt-2 pl-0">
+              <v-container class="pt-4 pl-0">
                 <p v-bind:class="{'grayish': computedBTCAddress === 'Not completed'}">
                   {{ computedBTCAddress }}
                 </p>
@@ -232,7 +232,7 @@
                   </v-icon>
                 </v-row>
               </v-container>
-              <v-container class="pt-2 pb-0 pl-0">
+              <v-container class="pt-4 pb-0 pl-0">
                 <p v-bind:class="{'grayish': computedBTCAmount === 'Not completed'}">
                   {{ computedBTCAmount }}
                 </p>
@@ -249,7 +249,7 @@
                   </v-icon>
                 </v-row>
               </v-container>
-              <v-container class="pt-2 pl-0">
+              <v-container class="pt-4 pl-0">
                 <v-row class="mx-0 d-none d-lg-block">
                   <p v-bind:class="{'grayish': computedRskAddress === 'Not completed'}">
                     {{ computedRskAddress }}
@@ -270,7 +270,7 @@
                   </v-icon>
                 </v-row>
               </v-container>
-              <v-container class="pt-2 pl-0">
+              <v-container class="pt-4 pl-0">
                 <v-row class="mx-0 d-none d-lg-block">
                   <p v-bind:class="{'grayish': computedRefundBTCAddress === 'Not completed'}">
                     {{ computedRefundBTCAddress }}
@@ -291,7 +291,7 @@
                   </v-icon>
                 </v-row>
               </v-container>
-              <v-container class="pt-2 pb-0 pl-0">
+              <v-container class="pt-4 pb-0 pl-0">
                 <p v-bind:class="{'grayish': computedTxFee === 'Not completed'}">
                   {{ computedTxFee }}
                 </p>
@@ -308,7 +308,7 @@
                   </v-icon>
                 </v-row>
               </v-container>
-              <v-container class="pt-2 pb-0 pl-0">
+              <v-container class="pt-4 pb-0 pl-0">
                 <p v-bind:class="{'grayish': computedBTCAmount === 'Not completed'}">
                   {{ computedFullTxFee }}
                 </p>
@@ -354,7 +354,7 @@
         <wallet :configure="configureWeb3Wallet"/>
       </template>
     </template>
-  </div>
+  </v-col>
 </template>
 
 <script lang="ts">
@@ -543,7 +543,7 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get insufficientAmount() {
-    if ((this.bitcoinAmount < 0.01 && this.bitcoinAmount !== 0)
+    if ((this.bitcoinAmount < 0.005 && this.bitcoinAmount !== 0)
       || this.bitcoinAmount > this.selectedAccountBalance) {
       return true;
     }
@@ -606,6 +606,7 @@ export default class SendBitcoinForm extends Vue {
           this.third = false;
           this.fourth = false;
           this.firstDone = true;
+          this.secondDone = !this.insufficientAmount;
           if (this.firstDone && this.secondDone) {
             this.calculateTxFee();
           }
