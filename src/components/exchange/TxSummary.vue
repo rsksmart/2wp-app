@@ -1,16 +1,15 @@
 <template>
   <v-row class="mx-0">
-    <v-col cols="2"/>
-    <v-col cols="8">
-      <v-row class="mx-0 d-flex justify-center">
+    <v-col offset="2" cols="8">
+      <v-row justify="center" class="mx-0 pb-4">
         <h2 class="text-center">Transaction Summary:</h2>
       </v-row>
-      <div class="box">
+      <v-container class="box">
         <v-row class="mx-0">
           <v-col cols="6">
             <v-row class="mx-0">
-              <v-col cols="6">
-                <v-row class="mx-0">
+              <v-col class="pl-1 pr-0 pl-lg-4 pr-lg-4" cols="6">
+                <v-row class="mx-0 mb-1">
                   <h3>Bitcoins</h3>
                 </v-row>
                 <v-row class="mx-0">
@@ -20,9 +19,9 @@
                   <span class="grayish">USD $ {{ amountPrice }}</span>
                 </v-row>
               </v-col>
-              <v-col cols="6">
-                <v-row class="mx-0">
-                  <h3>Transaction Fee</h3>
+              <v-col class="pl-0 pl-lg-4" cols="6">
+                <v-row class="mx-0 mb-1">
+                  <h3>Transaction fee</h3>
                 </v-row>
                 <v-row class="mx-0">
                   <span>{{ fee }} BTC</span>
@@ -33,9 +32,8 @@
               </v-col>
             </v-row>
             <v-row class="mx-0">
-              <v-col cols="6"/>
-              <v-col cols="6">
-                <v-row class="mx-0">
+              <v-col class="pl-0 pl-lg-4" offset="6" cols="6">
+                <v-row class="mx-0 mb-1">
                   <h3>Transaction total</h3>
                 </v-row>
                 <v-row class="mx-0">
@@ -48,42 +46,45 @@
             </v-row>
           </v-col>
           <v-divider vertical/>
-          <v-col cols="5" class="d-flex align-center">
-            <div>
-              <div class="container">
-                <v-row class="mx-0">
-                  <h3>Destination RSK Address</h3>
+          <v-col class="d-flex flex-column">
+            <v-row class="mx-0 flex-grow-1">
+              <v-col>
+                <v-row class="mx-0 mb-1">
+                  <h3>Destination RSK address</h3>
                 </v-row>
                 <v-row class="mx-0">
                   <span>{{ chunkedRecipientAddress }}</span>
                 </v-row>
-              </div>
-              <v-divider/>
-              <div class="container">
-                <v-row class="mx-0">
-                  <h3>Refund BTC Address</h3>
+              </v-col>
+            </v-row>
+            <v-divider/>
+            <v-row class="mx-0 flex-grow-1">
+              <v-col>
+                <v-row class="mx-0 mb-1">
+                  <h3>Refund BTC address</h3>
                 </v-row>
                 <v-row class="mx-0">
                   <span>{{ chunkedRefundAddress }}</span>
                 </v-row>
-              </div>
-              <template v-if="showTxId">
-                <v-divider/>
-                <div class="container">
-                  <v-row class="mx-0">
+              </v-col>
+            </v-row>
+            <template v-if="showTxId">
+              <v-divider/>
+              <v-row class="mx-0 flex-grow-1">
+                <v-col>
+                  <v-row class="mx-0 mb-1">
                     <h3>Transaction ID</h3>
                   </v-row>
                   <v-row class="mx-0">
                     <span>{{ computedTxId }}</span>
                   </v-row>
-                </div>
-              </template>
-            </div>
+                </v-col>
+              </v-row>
+            </template>
           </v-col>
         </v-row>
-      </div>
+      </v-container>
     </v-col>
-    <v-col cols="2"/>
   </v-row>
 </template>
 

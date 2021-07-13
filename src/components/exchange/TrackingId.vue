@@ -2,13 +2,16 @@
   <div class="transactions">
     <v-row class="mx-0 my-8 d-flex justify-center">
       <h1 class="text-center ma-0">
-        Copy the tracking ID
+        Copy the transaction ID
         <br>
         to check your transaction status
       </h1>
     </v-row>
     <v-row class="mx-0 d-flex justify-center">
-      <span class="text-center">Remember to copy any of the links shown on your clipboard</span>
+      <span class="text-center">
+        Take note of the transaction ID shown below, it will be useful for you to check the status
+        of the process
+      </span>
     </v-row>
     <v-row class="mx-0">
       <v-col cols="3"/>
@@ -17,7 +20,7 @@
           <div class="container">
             <v-row class="mx-0">
               <v-col>
-                <v-row class="mx-0">
+                <v-row class="mx-0 mb-1">
                   <h3>Transaction ID:</h3>
                 </v-row>
                 <v-row class="mx-0">
@@ -33,7 +36,7 @@
             <v-divider  color="#C4C4C4"/>
             <v-row class="mx-0">
               <v-col>
-                <v-row class="mx-0">
+                <v-row class="mx-0 mb-1">
                   <h3>Transaction link: </h3>
                 </v-row>
                 <v-row class="mx-0">
@@ -52,7 +55,7 @@
         </div>
         <v-row class="mx-0 my-5 d-flex justify-center dialog">
           <v-btn class="button" color="#126DF2" @click="toTxStatus">
-            <span class="whiteish">Continue</span>
+            <span class="whiteish">Done</span>
           </v-btn>
         </v-row>
       </v-col>
