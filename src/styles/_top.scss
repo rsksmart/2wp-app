@@ -8,6 +8,17 @@
     text-decoration: none !important;
   }
 
+  p {
+    font-weight: normal;
+    font-size: 20px;
+    line-height: 23px;
+    text-align: center;
+    text-decoration: none !important;
+    margin: 0;
+    color: #B5CAB8;
+    cursor: not-allowed;
+  }
+
   a:hover {
     font-weight: bold;
     text-decoration: underline !important;
