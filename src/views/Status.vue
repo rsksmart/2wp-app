@@ -4,7 +4,7 @@
       <h1 class="text-center">Transaction Status</h1>
     </v-row>
     <v-row class="mx-0 d-flex justify-center">
-      <v-col cols="3">
+      <v-col cols="7">
         <v-text-field rounded dense outlined hide-details
                       append-icon="mdi-magnify"
                       v-model="txId"
@@ -28,7 +28,7 @@
         </v-row>
       </v-col>
     </v-row>
-    <v-row v-if="showStatus" class="d-flex justify-center">
+    <v-row v-if="showStatus" class="d-flex justify-center mt-6">
       <v-col cols="9">
         <v-row v-if="isRejected" class="mx-0 d-flex justify-center progress-bar">
           <v-col cols="8" class="pa-0 d-flex justify-center">
@@ -62,8 +62,8 @@
             </v-row>
           </v-col>
         </v-row>
-        <v-row v-else- class="mx-0 progress-bar">
-          <v-col class="pa-0">
+        <v-row v-else class="mx-0 progress-bar">
+          <v-col  cols="8" class="pa-0">
             <div class="d-flex justify-start">
               <div style="{ z-index: 5; position: absolute;
                   margin-left: -75px; margin-top: -30px; }">
@@ -82,7 +82,7 @@
               height="17" />
           </v-col>
           <v-col cols="auto" class="pa-0 d-flex justify-center">
-            <div style="{ z-index: 5; position: absolute; margin-top: -30px; margin-right: 70px; }">
+            <div style="{ z-index: 2; position: absolute; margin-top: -30px; margin-right: 70px; }">
               <v-row>
                 <v-img class="d-flex justify-center"
                        src="@/assets/status/rsk-green.png" height="78" contain/>
@@ -115,12 +115,6 @@
     </v-row>
     <v-row v-if="showStatus" class="mt-4">
       <v-col>
-        <v-row v-if="isRejected" class="mx-0 mb-8 mt-12">
-          <v-img src="@/assets/transactions/refund.png" height="130" contain/>
-        </v-row>
-        <v-row v-else class="mx-0 mb-8 mt-12">
-          <v-img src="@/assets/transactions/success.png" height="130" contain/>
-        </v-row>
         <tx-summary :txData="txData" :price="price" v-if="showStatus"
                     :txId="txId" :showTxId="true"/>
         <v-row v-if="!isRejected" class="d-flex justify-center mt-6">
@@ -188,7 +182,6 @@ export default class Status extends Vue {
     this.loading = true;
     ApiService.getPegInStatus(this.txId)
       .then((pegInStatus: PeginStatus) => {
-        console.log(pegInStatus);
         this.pegInStatus = pegInStatus;
         this.setMessage();
         this.setSummary();
