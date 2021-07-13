@@ -53,6 +53,5 @@ export interface TxData {
   amount: number;
   refundAddress: string;
   recipient: string;
-  change: string;
   feeBTC: number;
 }

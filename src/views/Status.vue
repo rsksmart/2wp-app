@@ -1,5 +1,5 @@
 <template>
-  <div class="transactions">
+  <div class="transactions container">
     <v-row class="mx-0 my-10 d-flex justify-center">
       <h1 class="text-center">Transaction Status</h1>
     </v-row>
@@ -13,7 +13,7 @@
       </v-col>
     </v-row>
     <v-row v-if="showStatus" class="mx-0 d-flex justify-center">
-      <div class="my-4 status" :class="statusMessageStyle">
+      <div class="my-4 status" :class="activeMessageStyle">
         {{statusMessage}}
       </div>
     </v-row>
@@ -28,12 +28,110 @@
         </v-row>
       </v-col>
     </v-row>
-    <div v-show="showStatus">
-      <v-row class="mx-0 mb-8">
-        <v-img src="@/assets/transactions/timeline.png" height="130" contain/>
-      </v-row>
-      <tx-summary :txData="txData" :price="price" :txId="txId" :showTxId="true"/>
-    </div>
+<!--    <v-row v-if="showStatus" class="d-flex justify-center">-->
+<!--      <v-col cols="9">-->
+<!--        <v-row v-if="isRejected" class="mx-0 d-flex justify-center progress-bar">-->
+<!--          <v-col cols="8" class="pa-0">-->
+<!--            <v-row>-->
+<!--              <v-col cols="3">-->
+<!--                <v-row class="rounded-reject d-flex align-center ma-0">-->
+<!--                  <v-img class="d-flex justify-center"-->
+<!--                         src="@/assets/logo.png" height="50" contain/>-->
+<!--                </v-row>-->
+<!--                <v-row class="mt-4">-->
+<!--                  <h1>RSK Network</h1>-->
+<!--                </v-row>-->
+<!--              </v-col>-->
+<!--              <v-col cols="6" class="pa-0 d-flex align-center">-->
+<!--                <v-progress-linear-->
+<!--                  v-model="btcConfirmationsPercentage"-->
+<!--                  color="#F6C61B"-->
+<!--                  height="17"-->
+<!--                ></v-progress-linear>-->
+<!--              </v-col>-->
+<!--              <v-col cols="3">-->
+<!--                <v-row class="rounded-reject d-flex align-center ma-0">-->
+<!--                  <v-img class="d-flex justify-center"-->
+<!--                         src="@/assets/exchange/btc.png" height="50" contain/>-->
+<!--                </v-row>-->
+<!--                <v-row class="mt-4">-->
+<!--                  <h1>Refund BTC address</h1>-->
+<!--                </v-row>-->
+<!--              </v-col>-->
+<!--            </v-row>-->
+<!--          </v-col>-->
+<!--        </v-row>-->
+<!--        <v-row  v-else class="mx-0 d-flex justify-center progress-bar">-->
+<!--          <v-col cols="6" class="pa-0">-->
+<!--            <v-row>-->
+<!--              <v-col cols="3">-->
+<!--                <v-row class="rounded d-flex align-center ma-0">-->
+<!--                  <v-img class="d-flex justify-center"-->
+<!--                         src="@/assets/exchange/btc.png" height="50" contain/>-->
+<!--                </v-row>-->
+<!--                <v-row class="mt-4">-->
+<!--                  <h1>BTC Network</h1>-->
+<!--                </v-row>-->
+<!--              </v-col>-->
+<!--              <v-col cols="9" class="pa-0 d-flex align-center">-->
+<!--                <v-progress-linear-->
+<!--                  v-model="btcConfirmationsPercentage"-->
+<!--                  color="#00B43C"-->
+<!--                  height="17"-->
+<!--                ></v-progress-linear>-->
+<!--              </v-col>-->
+<!--            </v-row>-->
+<!--          </v-col>-->
+<!--          <v-col  cols="6" class="pa-0">-->
+<!--            <v-row>-->
+<!--              <v-col cols="3">-->
+<!--                <v-row class="rounded d-flex align-center ma-0">-->
+<!--                  <v-img class="d-flex justify-center"-->
+<!--                         src="@/assets/logo.png" height="50" contain/>-->
+<!--                </v-row>-->
+<!--                <v-row class="mt-4">-->
+<!--                  <h1>RSK Network</h1>-->
+<!--                </v-row>-->
+<!--              </v-col>-->
+<!--              <v-col cols="6" class="pa-0 d-flex align-center">-->
+<!--                <v-progress-linear-->
+<!--                  v-model="rskConfirmationsPercentage"-->
+<!--                  color="#00B43C"-->
+<!--                  height="17"-->
+<!--                ></v-progress-linear>-->
+<!--              </v-col>-->
+<!--              <v-col cols="3">-->
+<!--                <v-row class="rounded d-flex align-center ma-0">-->
+<!--                  <v-img class="d-flex justify-center"-->
+<!--                         src="@/assets/exchange/btc.png" height="50" contain/>-->
+<!--                </v-row>-->
+<!--                <v-row class="mt-4">-->
+<!--                  <h1>Receipt RSK address</h1>-->
+<!--                </v-row>-->
+<!--              </v-col>-->
+<!--            </v-row>-->
+<!--          </v-col>-->
+<!--        </v-row>-->
+<!--      </v-col>-->
+<!--    </v-row>-->
+    <v-row v-if="showStatus" class="mt-4">
+      <v-col>
+        <v-row v-if="isRejected" class="mx-0 mb-8 mt-12">
+          <v-img src="@/assets/transactions/refund.png" height="130" contain/>
+        </v-row>
+        <v-row v-else class="mx-0 mb-8 mt-12">
+          <v-img src="@/assets/transactions/success.png" height="130" contain/>
+        </v-row>
+        <tx-summary :txData="txData" :price="price" v-if="showStatus"
+                    :txId="txId" :showTxId="true"/>
+        <v-row v-if="!isRejected" class="d-flex justify-center mt-6">
+          <v-btn class="px-5" width="117" outlined color="#B5CAB8" rounded
+                 @click="openExplorer" >
+            <p>RSK Explorer</p>
+          </v-btn>
+        </v-row>
+      </v-col>
+    </v-row>
   </div>
 </template>
 
@@ -56,7 +154,7 @@ export default class Status extends Vue {
 
   txId = '';
 
-  status!: PegStatus;
+  pegInStatus!: PeginStatus;
 
   statusMessage = '';
 
@@ -66,33 +164,24 @@ export default class Status extends Vue {
 
   errorMessage = '';
 
-  get showStatus(): boolean {
+  activeMessageStyle = 'statusRejected';
+
+  btcConfirmationsPercentage = 0;
+
+  rskConfirmationsPercentage = 0;
+
+  isRejected = false;
+
+  get showStatus() {
     return !this.loading && !this.error && !!this.statusMessage;
   }
 
-  get statusMessageStyle() {
-    const style = {
-      statusProgress: false,
-      statusSuccess: false,
-      statusRejected: false,
-    };
-    switch (this.status) {
-      case PegStatus.CONFIRMED:
-        style.statusSuccess = true;
-        break;
-      case PegStatus.WAITING_CONFIRMATIONS:
-        style.statusProgress = true;
-        break;
-      case PegStatus.REJECTED_REFUND:
-        style.statusRejected = true;
-        break;
-      case PegStatus.REJECTED_NO_REFUND:
-        style.statusRejected = true;
-        break;
-      default:
-        style.statusRejected = true;
-    }
-    return style;
+  @Emit()
+  refreshPercentage() {
+    const btcConfirmations = this.pegInStatus ? this.pegInStatus.btc.confirmations : 0;
+    const rskConfirmations = this.pegInStatus ? this.pegInStatus.rsk.confirmations : 0;
+    this.btcConfirmationsPercentage = btcConfirmations <= 100 ? btcConfirmations : 100;
+    this.rskConfirmationsPercentage = rskConfirmations <= 100 ? rskConfirmations : 100;
   }
 
   @Emit()
@@ -100,8 +189,11 @@ export default class Status extends Vue {
     this.loading = true;
     ApiService.getPegInStatus(this.txId)
       .then((pegInStatus: PeginStatus) => {
-        this.status = pegInStatus.status;
+        console.log(pegInStatus);
+        this.pegInStatus = pegInStatus;
         this.setMessage();
+        this.setSummary();
+        this.refreshPercentage();
         this.loading = false;
         this.error = false;
       })
@@ -114,21 +206,45 @@ export default class Status extends Vue {
 
   @Emit()
   setMessage() {
-    switch (this.status) {
+    switch (this.pegInStatus.status) {
       case PegStatus.CONFIRMED:
         this.statusMessage = 'Your transaction was successful\n Check your transaction balance in the explorer';
+        this.activeMessageStyle = 'statusSuccess';
+        this.isRejected = false;
         break;
       case PegStatus.WAITING_CONFIRMATIONS:
         this.statusMessage = 'Your transaction is in progress.';
+        this.activeMessageStyle = 'statusProgress';
+        this.isRejected = false;
         break;
       case PegStatus.REJECTED_REFUND:
-        this.statusMessage = 'Your transaction was declined. \n Your BTC will be send to the refund address';
+        this.statusMessage = 'Your transaction was declined. \n Your BTC will be sent to the refund address';
+        this.activeMessageStyle = 'statusRejected';
+        this.isRejected = true;
         break;
       case PegStatus.REJECTED_NO_REFUND:
         this.statusMessage = 'Your transaction was declined.';
+        this.activeMessageStyle = 'statusRejected';
+        this.isRejected = true;
         break;
       default:
     }
+  }
+
+  @Emit()
+  setSummary() {
+    this.txData = {
+      amount: this.pegInStatus.btc.amountTransferred * 100000000,
+      refundAddress: this.pegInStatus.btc.refundAddress,
+      recipient: this.pegInStatus.rsk.recipientAddress,
+      feeBTC: 0,
+    };
+  }
+
+  @Emit()
+  // eslint-disable-next-line class-methods-use-this
+  openExplorer() {
+    window.open('https://explorer.testnet.rsk.co/', '_blank');
   }
 }
 </script>

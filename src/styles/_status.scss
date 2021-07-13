@@ -45,6 +45,12 @@
 
   p {
     margin: 0 !important;
+    font-family: Quicksand;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 15px;
+    color: #00B43C;
   }
 
   a {
@@ -69,13 +75,49 @@
     font-size: 18px;
     line-height: 22px;
   }
-  .statusProgress{
+  .statusProgress {
     color: #008CFF;
   }
-  .statusSuccess{
+  .statusSuccess {
     color: #00B43C;
   }
-  .statusRejected{
+  .statusRejected {
     color: #F6C61B;
+  }
+
+  .rounded {
+    border: 3px solid #00B43C;
+    box-sizing: border-box;
+    border-radius: 50%;
+    width: 78px;
+    height: 78px;
+  }
+
+  .rounded-disabled{
+    border: 3px solid #C4C4C4;
+    box-sizing: border-box;
+    border-radius: 50%;
+    width: 78px;
+    height: 78px;
+  }
+
+  .rounded-reject {
+    border: 3px solid #F6C61B;
+    box-sizing: border-box;
+    border-radius: 50%;
+    width: 78px;
+    height: 78px;
+  }
+
+  .progress-bar {
+    height: 80px;
+    h1 {
+      font-family: Quicksand;
+      font-style: normal;
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 20px;
+      color: #737778;
+    }
   }
 }
