@@ -14,7 +14,7 @@
     </v-row>
     <v-row v-if="showStatus" class="mx-0 d-flex justify-center">
       <div class="my-4 status" :class="activeMessageStyle">
-        {{statusMessage}}
+        {{ statusMessage }}
       </div>
     </v-row>
     <v-row v-if="error" class="mx-0 d-flex justify-center">
@@ -24,96 +24,95 @@
           please check it is a valid transaction ID.
         </v-row>
         <v-row class="statusRejected d-flex justify-center">
-          {{errorMessage}}
+          {{ errorMessage }}
         </v-row>
       </v-col>
     </v-row>
-<!--    <v-row v-if="showStatus" class="d-flex justify-center">-->
-<!--      <v-col cols="9">-->
-<!--        <v-row v-if="isRejected" class="mx-0 d-flex justify-center progress-bar">-->
-<!--          <v-col cols="8" class="pa-0">-->
-<!--            <v-row>-->
-<!--              <v-col cols="3">-->
-<!--                <v-row class="rounded-reject d-flex align-center ma-0">-->
-<!--                  <v-img class="d-flex justify-center"-->
-<!--                         src="@/assets/logo.png" height="50" contain/>-->
-<!--                </v-row>-->
-<!--                <v-row class="mt-4">-->
-<!--                  <h1>RSK Network</h1>-->
-<!--                </v-row>-->
-<!--              </v-col>-->
-<!--              <v-col cols="6" class="pa-0 d-flex align-center">-->
-<!--                <v-progress-linear-->
-<!--                  v-model="btcConfirmationsPercentage"-->
-<!--                  color="#F6C61B"-->
-<!--                  height="17"-->
-<!--                ></v-progress-linear>-->
-<!--              </v-col>-->
-<!--              <v-col cols="3">-->
-<!--                <v-row class="rounded-reject d-flex align-center ma-0">-->
-<!--                  <v-img class="d-flex justify-center"-->
-<!--                         src="@/assets/exchange/btc.png" height="50" contain/>-->
-<!--                </v-row>-->
-<!--                <v-row class="mt-4">-->
-<!--                  <h1>Refund BTC address</h1>-->
-<!--                </v-row>-->
-<!--              </v-col>-->
-<!--            </v-row>-->
-<!--          </v-col>-->
-<!--        </v-row>-->
-<!--        <v-row  v-else class="mx-0 d-flex justify-center progress-bar">-->
-<!--          <v-col cols="6" class="pa-0">-->
-<!--            <v-row>-->
-<!--              <v-col cols="3">-->
-<!--                <v-row class="rounded d-flex align-center ma-0">-->
-<!--                  <v-img class="d-flex justify-center"-->
-<!--                         src="@/assets/exchange/btc.png" height="50" contain/>-->
-<!--                </v-row>-->
-<!--                <v-row class="mt-4">-->
-<!--                  <h1>BTC Network</h1>-->
-<!--                </v-row>-->
-<!--              </v-col>-->
-<!--              <v-col cols="9" class="pa-0 d-flex align-center">-->
-<!--                <v-progress-linear-->
-<!--                  v-model="btcConfirmationsPercentage"-->
-<!--                  color="#00B43C"-->
-<!--                  height="17"-->
-<!--                ></v-progress-linear>-->
-<!--              </v-col>-->
-<!--            </v-row>-->
-<!--          </v-col>-->
-<!--          <v-col  cols="6" class="pa-0">-->
-<!--            <v-row>-->
-<!--              <v-col cols="3">-->
-<!--                <v-row class="rounded d-flex align-center ma-0">-->
-<!--                  <v-img class="d-flex justify-center"-->
-<!--                         src="@/assets/logo.png" height="50" contain/>-->
-<!--                </v-row>-->
-<!--                <v-row class="mt-4">-->
-<!--                  <h1>RSK Network</h1>-->
-<!--                </v-row>-->
-<!--              </v-col>-->
-<!--              <v-col cols="6" class="pa-0 d-flex align-center">-->
-<!--                <v-progress-linear-->
-<!--                  v-model="rskConfirmationsPercentage"-->
-<!--                  color="#00B43C"-->
-<!--                  height="17"-->
-<!--                ></v-progress-linear>-->
-<!--              </v-col>-->
-<!--              <v-col cols="3">-->
-<!--                <v-row class="rounded d-flex align-center ma-0">-->
-<!--                  <v-img class="d-flex justify-center"-->
-<!--                         src="@/assets/exchange/btc.png" height="50" contain/>-->
-<!--                </v-row>-->
-<!--                <v-row class="mt-4">-->
-<!--                  <h1>Receipt RSK address</h1>-->
-<!--                </v-row>-->
-<!--              </v-col>-->
-<!--            </v-row>-->
-<!--          </v-col>-->
-<!--        </v-row>-->
-<!--      </v-col>-->
-<!--    </v-row>-->
+    <v-row v-if="showStatus" class="d-flex justify-center">
+      <v-col cols="9">
+        <v-row v-if="isRejected" class="mx-0 d-flex justify-center progress-bar">
+          <v-col cols="8" class="pa-0 d-flex justify-center">
+            <v-row>
+              <div style="{ z-index: 5; position: absolute;
+                  margin-left: -75px; margin-top: -30px; }">
+                <v-row>
+                  <v-img class="d-flex justify-center"
+                         src="@/assets/status/rsk-yellow.png" height="78" contain/>
+                </v-row>
+                <v-row class="mt-4">
+                  <h1>RSK Network</h1>
+                </v-row>
+              </div>
+              <v-progress-linear
+                v-model="btcConfirmationsPercentage"
+                color="#F6C61B"
+                height="17"/>
+              <div class="d-flex justify-end">
+                <div style="{ z-index: 2; position: absolute;
+                  margin-right: -100px; margin-top: -30px; }">
+                  <v-row>
+                    <v-img class="d-flex justify-center"
+                           src="@/assets/status/btc-yellow.png" height="78" contain/>
+                  </v-row>
+                  <v-row class="mt-4">
+                    <h1>Refund BTC address</h1>
+                  </v-row>
+                </div>
+              </div>
+            </v-row>
+          </v-col>
+        </v-row>
+        <v-row v-else- class="mx-0 progress-bar">
+          <v-col class="pa-0">
+            <div class="d-flex justify-start">
+              <div style="{ z-index: 5; position: absolute;
+                  margin-left: -75px; margin-top: -30px; }">
+                <v-row>
+                  <v-img class="d-flex justify-center"
+                         src="@/assets/status/btc-green.png" height="78" contain/>
+                </v-row>
+                <v-row class="mt-4">
+                  <h1>BTC Network</h1>
+                </v-row>
+              </div>
+            </div>
+            <v-progress-linear
+              v-model="btcConfirmationsPercentage"
+              color="#00B43C"
+              height="17" />
+          </v-col>
+          <v-col cols="auto" class="pa-0 d-flex justify-center">
+            <div style="{ z-index: 5; position: absolute; margin-top: -30px; margin-right: 70px; }">
+              <v-row>
+                <v-img class="d-flex justify-center"
+                       src="@/assets/status/rsk-green.png" height="78" contain/>
+              </v-row>
+              <v-row class="mt-4">
+                <h1>RSK Network</h1>
+              </v-row>
+            </div>
+          </v-col>
+          <v-col class="pa-0">
+            <v-progress-linear
+              v-model="rskConfirmationsPercentage"
+              color="#00B43C"
+              height="17"/>
+            <div class="d-flex justify-end">
+              <div style="{ z-index: 5; position: absolute;
+                  margin-right: -75px; margin-top: -50px; }">
+                <v-row>
+                  <v-img class="d-flex justify-center"
+                         src="@/assets/status/btc-green.png" height="78" contain/>
+                </v-row>
+                <v-row class="mt-4">
+                  <h1>Receipt RSK address</h1>
+                </v-row>
+              </div>
+            </div>
+          </v-col>
+        </v-row>
+      </v-col>
+    </v-row>
     <v-row v-if="showStatus" class="mt-4">
       <v-col>
         <v-row v-if="isRejected" class="mx-0 mb-8 mt-12">
@@ -126,7 +125,7 @@
                     :txId="txId" :showTxId="true"/>
         <v-row v-if="!isRejected" class="d-flex justify-center mt-6">
           <v-btn class="px-5" width="117" outlined color="#B5CAB8" rounded
-                 @click="openExplorer" >
+                 @click="openExplorer">
             <p>RSK Explorer</p>
           </v-btn>
         </v-row>
