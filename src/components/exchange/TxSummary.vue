@@ -114,6 +114,8 @@ export default class TxSummary extends Vue {
 
   @Prop() showTxId!: false;
 
+  @Prop() initialExpand!: boolean;
+
   expand = false;
 
   get amount() {
@@ -126,11 +128,11 @@ export default class TxSummary extends Vue {
   }
 
   get fee() {
-    return this.txData.feeBTC ? this.txData.feeBTC.toFixed(6) : 'Not found';
+    return this.txData.feeBTC ? this.txData.feeBTC.toFixed(8) : 'Not found';
   }
 
   get feeUSD() {
-    const feePrice = this.satoshiToBtc(this.txData.feeBTC) * this.price;
+    const feePrice = this.txData.feeBTC * this.price;
     return feePrice ? feePrice.toFixed(2) : 0;
   }
 
@@ -168,6 +170,10 @@ export default class TxSummary extends Vue {
   @Emit()
   switchExpand() {
     this.expand = !this.expand;
+  }
+
+  created() {
+    this.expand = this.initialExpand;
   }
 }
 </script>

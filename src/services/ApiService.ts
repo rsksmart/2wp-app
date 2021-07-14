@@ -74,7 +74,7 @@ export default class ApiService {
       axios.get(`${this.baseURL}/tx?tx=${txId}`)
         .then((response) => {
           if (response.data.error) reject(response.data.error);
-          resolve(response.data.txid.hex);
+          resolve(response.data.hex);
         })
         .catch(reject);
     });

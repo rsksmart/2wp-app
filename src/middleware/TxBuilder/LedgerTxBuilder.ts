@@ -73,9 +73,8 @@ export default class LedgerTxBuilder extends TxBuilder {
     return new Promise<{
       inputs: {tx: LedgerjsTransaction; outputIndex: number; publicKey: string; hex: string}[];
       associatedKeysets: string[];}>((resolve, reject) => {
-        const txPromises = normalizedInputs.map(
-          (normalizedInput) => ApiService.getTxHex(normalizedInput.prev_hash),
-        );
+        const txPromises = normalizedInputs
+          .map((normalizedInput) => ApiService.getTxHex(normalizedInput.prev_hash));
         Promise.all(txPromises)
           .then((txHexList) => {
             hexTxList = txHexList;

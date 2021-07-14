@@ -93,27 +93,30 @@ export default class LedgerService extends WalletService {
 
   public async getAddressList(batch: number):
     Promise<WalletAddress[]> {
-    const walletAddresses: WalletAddress[] = [];
-    const bundle = this.getAddressesBundle(0, batch);
-    try {
-      const transport = await TransportWebUSB.create(15000);
-      const btc = new AppBtc(transport);
-      for (let i = 0; i < bundle.length; i += 1) {
-        const { derivationPath, format } = bundle[i];
-        // eslint-disable-next-line no-await-in-loop
-        const walletPublicKey = await btc.getWalletPublicKey(derivationPath, { format });
-        walletAddresses.push({
-          address: walletPublicKey.bitcoinAddress,
-          serializedPath: derivationPath,
-          path: this.getSerializedPath(derivationPath),
-          publicKey: walletPublicKey.publicKey,
-        });
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise<WalletAddress[]>(async (resolve, reject) => {
+      const walletAddresses: WalletAddress[] = [];
+      const bundle = this.getAddressesBundle(0, batch);
+      try {
+        const transport = await TransportWebUSB.create(15000);
+        const btc = new AppBtc(transport);
+        for (let i = 0; i < bundle.length; i += 1) {
+          const { derivationPath, format } = bundle[i];
+          // eslint-disable-next-line no-await-in-loop
+          const walletPublicKey = await btc.getWalletPublicKey(derivationPath, { format });
+          walletAddresses.push({
+            address: walletPublicKey.bitcoinAddress,
+            serializedPath: derivationPath,
+            path: this.getSerializedPath(derivationPath),
+            publicKey: walletPublicKey.publicKey,
+          });
+        }
+        await transport.close();
+      } catch (e) {
+        reject(e);
       }
-      await transport.close();
-    } catch (e) {
-      console.error(e);
-    }
-    return walletAddresses;
+      resolve(walletAddresses);
+    });
   }
 
   public static getLedgerAddressFormat(accountType: string): 'legacy' | 'p2sh' | 'bech32' {

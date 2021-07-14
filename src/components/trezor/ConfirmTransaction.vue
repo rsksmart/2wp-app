@@ -48,7 +48,7 @@
     </v-row>
     <v-divider/>
     <v-row class="mx-0 my-8">
-      <tx-summary :txData="txData" :price="price" :showTxId="false"/>
+      <tx-summary :txData="txData" :price="price" :showTxId="false" :initial-expand="true" />
     </v-row>
     <v-row class="mx-0 d-flex justify-center">
       <v-btn v-if="!loadingState" rounded outlined color="#00B520" width="110" @click="toTrackId">
