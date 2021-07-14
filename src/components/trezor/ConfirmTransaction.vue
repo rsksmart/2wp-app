@@ -1,7 +1,7 @@
 <template>
   <div class="transactions">
     <v-row class="mx-0 d-flex justify-center">
-      <h1 class="text-center">Confirm transaction output on your device</h1>
+      <h1 class="text-center">Confirm transaction on your device</h1>
     </v-row>
     <v-row class="mx-0 my-8 d-flex justify-center">
       <p class="text-center">
@@ -9,7 +9,7 @@
         <br>
         To prevent malware attacks, double-check the address with the recipient.
         <br>
-        Please press done when you finished.
+        Press <b>sign</b> when you finished.
       </p>
     </v-row>
     <v-row class="mx-0">

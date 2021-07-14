@@ -53,19 +53,6 @@
                   </v-row>
                 </v-btn>
               </v-col>
-              <v-col>
-                <v-btn text color="transparent" width="200" disabled
-                       class="pa-0 ma-0 d-flex justify-center">
-                  <v-row class="mx-0">
-                    <v-col cols="5" class="d-flex justify-center">
-                      <v-img src="@/assets/web3/rWallet-disabled.png" height="40" contain/>
-                    </v-col>
-                    <v-col class="d-flex align-center">
-                      <p class="ma-0 gray-greenish">rWallet</p>
-                    </v-col>
-                  </v-row>
-                </v-btn>
-              </v-col>
             </v-row>
           </div>
           <v-row class="d-flex justify-center">

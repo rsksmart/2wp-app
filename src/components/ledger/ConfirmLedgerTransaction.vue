@@ -1,7 +1,7 @@
 <template>
   <div class="transactions">
     <v-row class="mx-0 d-flex justify-center">
-      <h1 class="text-center">Confirm transaction output on your device</h1>
+      <h1 class="text-center">Confirm transaction on your device</h1>
     </v-row>
     <v-row class="mx-0 my-8 d-flex justify-center">
       <p class="text-center">
@@ -9,40 +9,60 @@
         <br>
         To prevent malware attacks, double-check the address with the recipient.
         <br>
-        Please press done when you finished.
+        Press <b>sign</b> when you finish.
       </p>
     </v-row>
-    <v-row class="mx-0">
-      <v-col>
-        <v-row class="mx-0 d-flex justify-center">
+    <v-row id="instructions" class="mx-0">
+      <v-col id="instruction-1" cols="3" class="px-1">
+        <v-row justify="center" class="mx-0">
           <v-img src="@/assets/exchange/trezor/rsk.png" height="40" contain/>
         </v-row>
-        <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center"><span class="number">1</span>Confirm RSK information</h4>
+        <v-row align="stretch" class="mx-0">
+          <v-col cols="auto" class="pr-1">
+            <div class="number">1</div>
+          </v-col>
+          <v-col class="px-0">
+            <h4 class="text-center">Confirm RSK information</h4>
+          </v-col>
         </v-row>
       </v-col>
-      <v-col>
-        <v-row class="mx-0">
+      <v-col id="instruction-2" cols="3" class="px-1">
+        <v-row justify="center" class="mx-0">
           <v-img src="@/assets/exchange/trezor/transfer.png" height="40" contain/>
         </v-row>
-        <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center"><span class="number">2</span>Confirm funds transfer</h4>
+        <v-row align="stretch" class="mx-0">
+          <v-col cols="auto" class="pr-1">
+            <div class="number">2</div>
+          </v-col>
+          <v-col class="px-0">
+            <h4 class="text-center">Confirm funds transfer</h4>
+          </v-col>
         </v-row>
       </v-col>
-      <v-col>
-        <v-row class="mx-0">
+      <v-col id="instruction-3" cols="3" class="px-1">
+        <v-row justify="center" class="mx-0">
           <v-img src="@/assets/exchange/trezor/change.png" height="40" contain/>
         </v-row>
-        <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center"><span class="number">3</span>Confirm change address</h4>
+        <v-row align="stretch" class="mx-0">
+          <v-col cols="auto" class="pr-1">
+            <div class="number">3</div>
+          </v-col>
+          <v-col class="px-0">
+            <h4 class="text-center">Confirm change address</h4>
+          </v-col>
         </v-row>
       </v-col>
-      <v-col>
-        <v-row class="mx-0">
+      <v-col id="instruction-4" cols="3" class="px-1">
+        <v-row justify="center" class="mx-0">
           <v-img src="@/assets/exchange/trezor/fee.png" height="40" contain/>
         </v-row>
-        <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center"><span class="number">4</span>Confirm Transaction Fee</h4>
+        <v-row align="stretch" class="mx-0">
+          <v-col cols="auto" class="pr-1">
+            <div class="number">4</div>
+          </v-col>
+          <v-col class="px-0">
+            <h4 class="text-center">Confirm transaction fee</h4>
+          </v-col>
         </v-row>
       </v-col>
     </v-row>

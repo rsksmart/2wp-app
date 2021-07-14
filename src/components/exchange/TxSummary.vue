@@ -1,8 +1,7 @@
 <template>
   <v-row class="mx-0">
-    <v-col cols="2"/>
-    <v-col cols="8">
-      <v-row class="mx-0 d-flex justify-center">
+    <v-col offset="2" cols="8">
+      <v-row justify="center" class="mx-0 pb-4">
         <h2 class="text-center">Transaction Summary:</h2>
       </v-row>
       <v-row class="d-flex justify-center">
@@ -95,7 +94,6 @@
         </div>
       </v-expand-transition>
     </v-col>
-    <v-col cols="2"/>
   </v-row>
 </template>
 

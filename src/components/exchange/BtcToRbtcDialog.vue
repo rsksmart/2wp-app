@@ -14,7 +14,8 @@
       <v-row class="mx-0 d-flex justify-center">
         <v-col cols="10">
           <p>Remember that the conversion process from BTC to RBTC must have 100 confirmations.
-            This means the conversion will take 17 hours.</p>
+            This means the conversion is estimated to take around 17 hours (this can vary depending
+            on conditions of the network).</p>
         </v-col>
       </v-row>
       <v-row class="mx-0 mb-3 mt-1">

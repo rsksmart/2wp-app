@@ -8,17 +8,32 @@
         <p class="ma-0">(Keep your {{ walletName }} close so you can authorize access)</p>
       </v-row>
       <v-col class="ma-0 mb-10">
-        <v-row class="ma-0 d-flex justify-start">
-          <span class="number">1</span>
-          <p class="ma-0">Plug in your {{ walletName }} device to your computer</p>
+        <v-row class="ma-0 d-flex justify-center">
+          <v-col  offset="1" cols="1">
+            <span class="number">1</span>
+          </v-col>
+          <v-col cols="9">
+            <p class="ma-0">Plug your {{ walletName }} device into your computer</p>
+          </v-col>
+          <v-col cols="1"></v-col>
         </v-row>
-        <v-row class="ma-0 mt-5 d-flex justify-start">
-          <span class="number">2</span>
-          <p class="ma-0">Insert PIN into {{ walletName }} device</p>
+        <v-row class="ma-0 mt-0 d-flex justify-center">
+          <v-col  offset="1" cols="1">
+            <span class="number">2</span>
+          </v-col>
+          <v-col cols="9">
+            <p class="ma-0">Insert {{ walletName }} device PIN code</p>
+          </v-col>
+          <v-col cols="1"></v-col>
         </v-row>
-        <v-row v-if="isLedgerWallet" class="ma-0 mt-5 d-flex justify-start">
-          <span class="number">3</span>
-          <p class="ma-0">Select Bitcoin aplication into {{ walletName }} device</p>
+        <v-row v-if="isLedgerWallet" class="ma-0 mt-0 d-flex justify-center">
+          <v-col  offset="1" cols="1">
+            <span class="number">3</span>
+          </v-col>
+          <v-col cols="9">
+            <p class="ma-0">Select the Bitcoin app in your device</p>
+          </v-col>
+          <v-col cols="1"></v-col>
         </v-row>
       </v-col>
       <v-row class="mx-0 d-flex justify-center">
