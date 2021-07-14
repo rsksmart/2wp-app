@@ -1,12 +1,12 @@
-import TxSigner from '@/services/TxSigner';
-import { Tx } from '@/services/types';
+import TxSigner from '@/middleware/TxSigner/TxSigner';
+import { Tx } from '@/types';
 
 export default abstract class TxBuilder {
   protected signer!: TxSigner;
 
   protected coin!: string;
 
-  constructor() {
+  protected constructor() {
     this.coin = process.env.VUE_APP_COIN ?? 'test';
   }
 

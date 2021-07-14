@@ -4,86 +4,95 @@
       <v-row justify="center" class="mx-0 pb-4">
         <h2 class="text-center">Transaction Summary:</h2>
       </v-row>
-      <v-container class="box">
-        <v-row class="mx-0">
-          <v-col cols="6">
-            <v-row class="mx-0">
-              <v-col class="pl-1 pr-0 pl-lg-4 pr-lg-4" cols="6">
-                <v-row class="mx-0 mb-1">
-                  <h3>Bitcoins</h3>
-                </v-row>
-                <v-row class="mx-0">
-                  <span>{{ amount }} BTC</span>
-                </v-row>
-                <v-row class="mx-0">
-                  <span class="grayish">USD $ {{ amountPrice }}</span>
-                </v-row>
-              </v-col>
-              <v-col class="pl-0 pl-lg-4" cols="6">
-                <v-row class="mx-0 mb-1">
-                  <h3>Transaction fee</h3>
-                </v-row>
-                <v-row class="mx-0">
-                  <span>{{ fee }} BTC</span>
-                </v-row>
-                <v-row class="mx-0">
-                  <span class="grayish">USD $ {{ feeUSD }}</span>
-                </v-row>
-              </v-col>
-            </v-row>
-            <v-row class="mx-0">
-              <v-col class="pl-0 pl-lg-4" offset="6" cols="6">
-                <v-row class="mx-0 mb-1">
-                  <h3>Transaction total</h3>
-                </v-row>
-                <v-row class="mx-0">
-                  <span>{{ fullTx }} BTC</span>
-                </v-row>
-                <v-row class="mx-0">
-                  <span class="grayish">USD $ {{ fullTxUSD }}</span>
-                </v-row>
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-divider vertical/>
-          <v-col class="d-flex flex-column">
-            <v-row class="mx-0 flex-grow-1">
-              <v-col>
-                <v-row class="mx-0 mb-1">
-                  <h3>Destination RSK address</h3>
-                </v-row>
-                <v-row class="mx-0">
-                  <span>{{ chunkedRecipientAddress }}</span>
-                </v-row>
-              </v-col>
-            </v-row>
-            <v-divider/>
-            <v-row class="mx-0 flex-grow-1">
-              <v-col>
-                <v-row class="mx-0 mb-1">
-                  <h3>Refund BTC address</h3>
-                </v-row>
-                <v-row class="mx-0">
-                  <span>{{ chunkedRefundAddress }}</span>
-                </v-row>
-              </v-col>
-            </v-row>
-            <template v-if="showTxId">
-              <v-divider/>
-              <v-row class="mx-0 flex-grow-1">
-                <v-col>
-                  <v-row class="mx-0 mb-1">
-                    <h3>Transaction ID</h3>
+      <v-row class="d-flex justify-center">
+        <v-btn v-show="expand" class="mb-n4" @click="switchExpand"
+               fab small outlined color="#00B43C" rounded>
+          <b>-</b>
+        </v-btn>
+        <v-btn v-show="!expand" @click="switchExpand"
+               class="mb-n4" fab small outlined color="#00B43C" rounded>
+          <b>+</b>
+        </v-btn>
+      </v-row>
+      <v-expand-transition>
+        <div class="box" v-show="expand">
+          <v-row class="mx-0">
+            <v-col cols="6">
+              <v-row class="mx-0">
+                <v-col cols="6">
+                  <v-row class="mx-0">
+                    <h3>Bitcoins</h3>
                   </v-row>
                   <v-row class="mx-0">
-                    <span>{{ computedTxId }}</span>
+                    <span>{{ amount }} BTC</span>
+                  </v-row>
+                  <v-row class="mx-0">
+                    <span class="grayish">USD $ {{ amountPrice }}</span>
+                  </v-row>
+                </v-col>
+                <v-col cols="6">
+                  <v-row class="mx-0">
+                    <h3>Transaction Fee</h3>
+                  </v-row>
+                  <v-row class="mx-0">
+                    <span>{{ fee }} BTC</span>
+                  </v-row>
+                  <v-row class="mx-0">
+                    <span class="grayish">USD $ {{ feeUSD }}</span>
                   </v-row>
                 </v-col>
               </v-row>
-            </template>
-          </v-col>
-        </v-row>
-      </v-container>
+              <v-row class="mx-0">
+                <v-col cols="6"/>
+                <v-col cols="6">
+                  <v-row class="mx-0">
+                    <h3>Transaction total</h3>
+                  </v-row>
+                  <v-row class="mx-0">
+                    <span>{{ fullTx }} BTC</span>
+                  </v-row>
+                  <v-row class="mx-0">
+                    <span class="grayish">USD $ {{ fullTxUSD }}</span>
+                  </v-row>
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-divider inset vertical/>
+            <v-col cols="5" class="d-flex align-center">
+              <div>
+                <div class="container">
+                  <v-row class="mx-0">
+                    <h3>Destination RSK Address</h3>
+                  </v-row>
+                  <v-row class="mx-0">
+                    <span>{{ chunkedRecipientAddress }}</span>
+                  </v-row>
+                </div>
+                <v-divider/>
+                <div class="container">
+                  <v-row class="mx-0">
+                    <h3>Refund BTC Address</h3>
+                  </v-row>
+                  <v-row class="mx-0">
+                    <span>{{ chunkedRefundAddress }}</span>
+                  </v-row>
+                </div>
+                <template v-if="showTxId">
+                  <v-divider/>
+                  <div class="container">
+                    <v-row class="mx-0">
+                      <h3>Transaction ID</h3>
+                    </v-row>
+                    <v-row class="mx-0">
+                      <span>{{ computedTxId }}</span>
+                    </v-row>
+                  </div>
+                </template>
+              </div>
+            </v-col>
+          </v-row>
+        </div>
+      </v-expand-transition>
     </v-col>
   </v-row>
 </template>
@@ -93,7 +102,7 @@ import {
   Component, Emit, Prop,
   Vue,
 } from 'vue-property-decorator';
-import { TxData } from '@/services/types';
+import { TxData } from '@/types';
 
 @Component
 export default class TxSummary extends Vue {
@@ -104,6 +113,8 @@ export default class TxSummary extends Vue {
   @Prop() txId!: string;
 
   @Prop() showTxId!: false;
+
+  expand = false;
 
   get amount() {
     return this.txData.amount ? this.satoshiToBtc(this.txData.amount) : 'Not found';
@@ -152,6 +163,11 @@ export default class TxSummary extends Vue {
   // eslint-disable-next-line class-methods-use-this
   satoshiToBtc(satoshis: number): number {
     return satoshis * 0.00000001;
+  }
+
+  @Emit()
+  switchExpand() {
+    this.expand = !this.expand;
   }
 }
 </script>

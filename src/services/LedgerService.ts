@@ -6,7 +6,7 @@ import * as constants from '@/store/constants';
 import { WalletAddress } from '@/store/peginTx/types';
 import {
   LedgerjsTransaction, LedgerTx, Signer,
-} from '@/services/types';
+} from '@/types';
 import * as bitcoin from 'bitcoinjs-lib';
 import { Network, Payment } from 'bitcoinjs-lib';
 

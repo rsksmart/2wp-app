@@ -1,0 +1,123 @@
+.transactions {
+  h1 {
+    font-weight: bold;
+    font-size: 36px;
+    line-height: 45px;
+    display: flex;
+    align-items: center;
+    color: #00B520;
+  }
+
+  h2 {
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 25px;
+    display: flex;
+    align-items: center;
+    color: #10B848;
+  }
+
+  h3 {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 17px;
+    display: flex;
+    align-items: center;
+    color: #00B520;
+  }
+
+  h4 {
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 25px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #000;
+  }
+
+  div {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 17px;
+    color: #000;
+  }
+
+  p {
+    margin: 0 !important;
+    font-family: Quicksand;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 15px;
+    color: #00B43C;
+  }
+
+  a {
+    color: #000 !important;
+    text-decoration: none;
+  }
+
+  .number {
+    border: 2px solid #000 !important;
+  }
+
+  .box {
+    border: 0.5px solid #BFBFBF;
+    box-sizing: border-box;
+    border-radius: 30px;
+  }
+
+  .status {
+    font-family: Quicksand;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 22px;
+  }
+  .statusProgress {
+    color: #008CFF;
+  }
+  .statusSuccess {
+    color: #00B43C;
+  }
+  .statusRejected {
+    color: #F6C61B;
+  }
+
+  .rounded {
+    border: 3px solid #00B43C;
+    box-sizing: border-box;
+    border-radius: 50%;
+    width: 78px;
+    height: 78px;
+  }
+
+  .rounded-disabled{
+    border: 3px solid #C4C4C4;
+    box-sizing: border-box;
+    border-radius: 50%;
+    width: 78px;
+    height: 78px;
+  }
+
+  .rounded-reject {
+    border: 3px solid #F6C61B;
+    box-sizing: border-box;
+    border-radius: 50%;
+    width: 78px;
+    height: 78px;
+  }
+
+  .progress-bar {
+    height: 80px;
+    h1 {
+      font-family: Quicksand;
+      font-style: normal;
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 20px;
+      color: #737778;
+    }
+  }
+}
