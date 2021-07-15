@@ -8,7 +8,6 @@ import ApiService from '@/services/ApiService';
 import LedgerService from '@/services/LedgerService';
 import * as constants from '@/store/constants';
 import * as bitcoin from 'bitcoinjs-lib';
-import { Payment } from 'bitcoinjs-lib';
 import TxBuilder from './TxBuilder';
 
 export default class LedgerTxBuilder extends TxBuilder {
@@ -73,9 +72,8 @@ export default class LedgerTxBuilder extends TxBuilder {
     return new Promise<{
       inputs: {tx: LedgerjsTransaction; outputIndex: number; publicKey: string; hex: string}[];
       associatedKeysets: string[];}>((resolve, reject) => {
-        const txPromises = normalizedInputs.map(
-          (normalizedInput) => ApiService.getTxHex(normalizedInput.prev_hash),
-        );
+        const txPromises = normalizedInputs
+          .map((normalizedInput) => ApiService.getTxHex(normalizedInput.prev_hash));
         Promise.all(txPromises)
           .then((txHexList) => {
             hexTxList = txHexList;
@@ -141,7 +139,7 @@ export default class LedgerTxBuilder extends TxBuilder {
       outputs.forEach((normalizedOutput) => {
         if (normalizedOutput.op_return_data) {
           const buffer = Buffer.from(normalizedOutput.op_return_data, 'hex');
-          const script: Payment = bitcoin.payments.embed({ data: [buffer] });
+          const script: bitcoin.Payment = bitcoin.payments.embed({ data: [buffer] });
           if (script.output) {
             txBuilder.addOutput(script.output, 0);
           }

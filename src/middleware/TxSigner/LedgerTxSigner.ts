@@ -11,16 +11,12 @@ export default class LedgerTxSigner extends TxSigner {
     const ledgerService = new LedgerService(coin);
     return new Promise<LedgerSignedTx>((resolve, reject) => {
       switch (ledgerTx.accountType) {
-        case constants.BITCOIN_LEGACY_ADDRESS:
-          LedgerService.signTx(ledgerTx)
-            .then((signedTx) => resolve({ signedTx }))
-            .catch(reject);
-          break;
         case constants.BITCOIN_SEGWIT_ADDRESS:
           ledgerService.signSegwitTx(ledgerTx)
             .then((signedTx) => resolve({ signedTx }))
             .catch(reject);
           break;
+        case constants.BITCOIN_LEGACY_ADDRESS:
         default:
           LedgerService.signTx(ledgerTx)
             .then((signedTx) => resolve({ signedTx }))

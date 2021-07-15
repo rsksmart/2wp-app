@@ -99,8 +99,7 @@
               </v-row>
               <v-row class="mx-0" v-if="insufficientAmount">
                 <span class="yellowish">
-                  You can not send this amount of BTC.
-                  You can only send a minimum of 0.01 BTC and max {{ selectedAccountBalance }}
+                  {{amountErrorMessage}}
                 </span>
               </v-row>
             </v-col>
@@ -137,9 +136,20 @@
                     <v-row class="mx-0 mb-4 d-flex justify-start">
                       <span class="text-center">Use your RSK addresses </span>
                     </v-row>
-                    <v-text-field v-model="rskAddressSelected" solo dense
-                                  label="Select or paste the RSK address"
-                                  @change="checkStep(rskAddressSelected, 3)"/>
+                    <v-row :class="[isValidRskAddress || !rskAddressSelected ?
+                     'blue-box' : 'yellow-box' ]"
+                           class="input-box-outline pa-0 pl-1" >
+                      <v-text-field v-model="rskAddressSelected" solo dense
+                                    flat
+                                    hide-details
+                                    label="Select or paste the RSK address"
+                                    @change="checkStep(rskAddressSelected, 3)"/>
+                    </v-row>
+                    <v-row v-show="!isValidRskAddress && rskAddressSelected">
+                      <span class="yellowish">
+                        Incorrect address format
+                      </span>
+                    </v-row>
                   </v-col>
                   <v-col cols="1" class="d-flex justify-center pb-0">
                     <div class="divider"/>
@@ -368,6 +378,7 @@ import Wallet from '@/components/web3/Wallet.vue';
 import { Action, Getter, State } from 'vuex-class';
 import { Web3SessionState } from '@/store/session/types';
 import { PegInTxState } from '@/store/peginTx/types';
+import Web3 from 'web3';
 
 @Component({
   components: {
@@ -415,6 +426,8 @@ export default class SendBitcoinForm extends Vue {
 
   accountBalances: string[] = [];
 
+  minAmountAllowed = 0.005;
+
   @Prop() price!: number;
 
   @Prop() balances!: AccountBalance;
@@ -434,6 +447,13 @@ export default class SendBitcoinForm extends Vue {
   @Getter(constants.PEGIN_TX_GET_REFUND_ADDRESS, { namespace: 'pegInTx' }) refundAddress!: string;
 
   @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: any;
+
+  get amountErrorMessage() {
+    let message = '';
+    if (this.bitcoinAmount < this.minAmountAllowed) message = `You can not send this amount of BTC. You can only send a minimum of ${this.minAmountAllowed} BTC`;
+    if (this.bitcoinAmount >= this.selectedAccountBalance) message = 'The typed amount is higher than your current balance';
+    return message;
+  }
 
   get rbtcAmount() {
     return this.bitcoinAmount;
@@ -543,7 +563,7 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get insufficientAmount() {
-    if ((this.bitcoinAmount < 0.005 && this.bitcoinAmount !== 0)
+    if ((this.bitcoinAmount < this.minAmountAllowed && this.bitcoinAmount !== 0)
       || this.bitcoinAmount > this.selectedAccountBalance) {
       return true;
     }
@@ -563,13 +583,14 @@ export default class SendBitcoinForm extends Vue {
       case 'BITCOIN_SEGWIT_ADDRESS':
         balance = this.satoshiToBtc(this.balances.segwit);
         break;
-      case 'BITCOIN_MULTISIGNATURE_ADDRESS':
-        balance = 0;
-        break;
       default:
-        balance = 0;
+        break;
     }
     return balance;
+  }
+
+  get isValidRskAddress() {
+    return Web3.utils.isAddress(this.rskAddressSelected);
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -628,18 +649,10 @@ export default class SendBitcoinForm extends Vue {
           this.second = false;
           this.third = false;
           this.fourth = true;
-          this.thirdDone = true;
+          this.thirdDone = this.isValidRskAddress;
           break;
         }
         case 4: {
-          this.first = false;
-          this.second = false;
-          this.third = false;
-          this.fourth = false;
-          this.fourthDone = true;
-          break;
-        }
-        case 5: {
           this.first = false;
           this.second = false;
           this.third = false;

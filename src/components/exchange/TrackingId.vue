@@ -12,8 +12,7 @@
       </span>
     </v-row>
     <v-row class="mx-0">
-      <v-col cols="3"/>
-      <v-col cols="6" class="">
+      <v-col offset="3" cols="6" class="">
         <div class="mx-0 box">
           <div class="container">
             <v-row class="mx-0">
@@ -22,7 +21,7 @@
                   <h3>Transaction ID:</h3>
                 </v-row>
                 <v-row class="mx-0">
-                  <span>{{ chunkedTxId }}</span>
+                  <span>{{ txId }}</span>
                 </v-row>
               </v-col>
               <v-col cols="2" class="d-flex justify-end">
@@ -57,7 +56,6 @@
           </v-btn>
         </v-row>
       </v-col>
-      <v-col cols="3"/>
     </v-row>
   </div>
 </template>

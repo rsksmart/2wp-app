@@ -4,15 +4,13 @@
       <v-row justify="center" class="mx-0 pb-4">
         <h2 class="text-center">Transaction Summary:</h2>
       </v-row>
-      <v-row class="d-flex justify-center">
-        <v-btn v-show="expand" class="mb-n4" @click="switchExpand"
-               fab small outlined color="#00B43C" rounded>
-          <b>-</b>
-        </v-btn>
-        <v-btn v-show="!expand" @click="switchExpand"
-               class="mb-n4" fab small outlined color="#00B43C" rounded>
-          <b>+</b>
-        </v-btn>
+      <v-row class="d-flex justify-center mb-n3">
+        <a v-show="expand" @click="switchExpand">
+          <v-img src="@/assets/status/collapse-2.png" contain max-width="30"></v-img>
+        </a>
+        <a v-show="!expand" @click="switchExpand">
+          <v-img src="@/assets/status/collapse.png" contain max-width="30"></v-img>
+        </a>
       </v-row>
       <v-expand-transition>
         <div class="box" v-show="expand">
@@ -114,6 +112,8 @@ export default class TxSummary extends Vue {
 
   @Prop() showTxId!: false;
 
+  @Prop() initialExpand!: boolean;
+
   expand = false;
 
   get amount() {
@@ -126,11 +126,11 @@ export default class TxSummary extends Vue {
   }
 
   get fee() {
-    return this.txData.feeBTC ? this.txData.feeBTC.toFixed(6) : 'Not found';
+    return this.txData.feeBTC ? this.txData.feeBTC.toFixed(8) : 'Not found';
   }
 
   get feeUSD() {
-    const feePrice = this.satoshiToBtc(this.txData.feeBTC) * this.price;
+    const feePrice = this.txData.feeBTC * this.price;
     return feePrice ? feePrice.toFixed(2) : 0;
   }
 
@@ -168,6 +168,10 @@ export default class TxSummary extends Vue {
   @Emit()
   switchExpand() {
     this.expand = !this.expand;
+  }
+
+  created() {
+    this.expand = this.initialExpand;
   }
 }
 </script>

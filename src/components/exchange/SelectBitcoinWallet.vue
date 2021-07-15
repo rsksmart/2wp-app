@@ -68,7 +68,7 @@
         </v-row>
         <v-row class="ma-0 d-flex justify-center">
           <v-col/>
-          <v-col cols="3" class="d-flex justify-center">
+          <v-col cols="2" class="d-flex justify-center">
             <v-btn outlined class="wallet-button-thin"
                    @click="setBitcoinWallet(storeConstants.WALLET_LEDGER)"
                    v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_LEDGER }">
@@ -76,7 +76,7 @@
               <span class="wallet-button-content">Ledger</span>
             </v-btn>
           </v-col>
-          <v-col cols="3" class="d-flex justify-center">
+          <v-col cols="2" class="d-flex justify-center">
             <v-btn outlined class="wallet-button-thin"
                    @click="setBitcoinWallet(storeConstants.WALLET_TREZOR)"
                    v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_TREZOR }">
@@ -84,7 +84,7 @@
               <span class="wallet-button-content">Trezor</span>
             </v-btn>
           </v-col>
-          <v-col v-if="false" cols="3" class="d-flex justify-start">
+          <v-col v-if="false" cols="2" class="d-flex justify-start">
             <v-btn outlined disabled class="wallet-button-thin-disabled"
                    @click="setBitcoinWallet(storeConstants.WALLET_ELECTRUM)">
               <v-img class="mr-2" src="@/assets/wallet-icons/electrum-gray.png"
