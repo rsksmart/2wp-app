@@ -123,7 +123,7 @@ export default class SendBitcoinTrezor extends Vue {
   @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: (accountType: string) => string;
 
   beforeMount() {
-    this.showDialog = !(localStorage.getItem('BTRD_COOKIE_DISABLED') === 'true');
+    this.showDialog = localStorage.getItem('BTRD_COOKIE_DISABLED') !== 'true';
   }
 
   get txData() {

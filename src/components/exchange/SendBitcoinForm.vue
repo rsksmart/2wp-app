@@ -583,11 +583,8 @@ export default class SendBitcoinForm extends Vue {
       case 'BITCOIN_SEGWIT_ADDRESS':
         balance = this.satoshiToBtc(this.balances.segwit);
         break;
-      case 'BITCOIN_MULTISIGNATURE_ADDRESS':
-        balance = 0;
-        break;
       default:
-        balance = 0;
+        break;
     }
     return balance;
   }
@@ -656,14 +653,6 @@ export default class SendBitcoinForm extends Vue {
           break;
         }
         case 4: {
-          this.first = false;
-          this.second = false;
-          this.third = false;
-          this.fourth = false;
-          this.fourthDone = true;
-          break;
-        }
-        case 5: {
           this.first = false;
           this.second = false;
           this.third = false;

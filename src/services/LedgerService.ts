@@ -8,10 +8,9 @@ import {
   LedgerjsTransaction, LedgerTx, Signer,
 } from '@/types';
 import * as bitcoin from 'bitcoinjs-lib';
-import { Network, Payment } from 'bitcoinjs-lib';
 
 export default class LedgerService extends WalletService {
-  private network: Network;
+  private network: bitcoin.Network;
 
   constructor(coin: string) {
     super(coin);
@@ -100,8 +99,9 @@ export default class LedgerService extends WalletService {
       try {
         const transport = await TransportWebUSB.create(15000);
         const btc = new AppBtc(transport);
-        for (let i = 0; i < bundle.length; i += 1) {
-          const { derivationPath, format } = bundle[i];
+        // eslint-disable-next-line no-restricted-syntax
+        for (const item of bundle) {
+          const { derivationPath, format } = item;
           // eslint-disable-next-line no-await-in-loop
           const walletPublicKey = await btc.getWalletPublicKey(derivationPath, { format });
           walletAddresses.push({
@@ -111,6 +111,7 @@ export default class LedgerService extends WalletService {
             publicKey: walletPublicKey.publicKey,
           });
         }
+
         await transport.close();
       } catch (e) {
         reject(e);
@@ -163,8 +164,7 @@ export default class LedgerService extends WalletService {
     const pair = bitcoin.ECPair.fromPublicKey(Buffer.from(pubkey, 'hex'));
     const p2wpkh = bitcoin.payments.p2wpkh({ pubkey: pair.publicKey, network: this.network });
     const p2sh = bitcoin.payments.p2sh({ redeem: p2wpkh, network: this.network });
-    const redeem = p2sh.redeem?.output;
-    return redeem;
+    return p2sh.redeem?.output;
   }
 
   signSegwitTx(tx: LedgerTx): Promise<string> {
@@ -183,7 +183,7 @@ export default class LedgerService extends WalletService {
       tx.outputs.forEach((output) => {
         if (output.op_return_data) {
           const buffer = Buffer.from(output.op_return_data, 'hex');
-          const script: Payment = bitcoin.payments.embed({ data: [buffer] });
+          const script: bitcoin.Payment = bitcoin.payments.embed({ data: [buffer] });
           if (script.output) {
             psbt.addOutput({
               script: script.output,

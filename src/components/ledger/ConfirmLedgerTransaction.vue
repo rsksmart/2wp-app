@@ -9,7 +9,7 @@
         <br>
         To prevent malware attacks, double-check the address with the recipient.
         <br>
-        Press <b>sign</b> when you finish.
+        Press <strong>sign</strong> when you finish.
       </p>
     </v-row>
     <v-row id="instructions" class="mx-0">
