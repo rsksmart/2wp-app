@@ -63,7 +63,7 @@
                     <h3>Destination RSK Address</h3>
                   </v-row>
                   <v-row class="mx-0">
-                    <span>{{ chunkedRecipientAddress }}</span>
+                    <span>{{ txData.recipient }}</span>
                   </v-row>
                 </div>
                 <v-divider/>
@@ -72,7 +72,7 @@
                     <h3>Refund BTC Address</h3>
                   </v-row>
                   <v-row class="mx-0">
-                    <span>{{ chunkedRefundAddress }}</span>
+                    <span>{{ txData.refundAddress }}</span>
                   </v-row>
                 </div>
                 <template v-if="showTxId">

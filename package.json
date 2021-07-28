@@ -8,13 +8,14 @@
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
     "lint": "vue-cli-service lint",
-    "scanner" : "npx sonar-scanner"
+    "scanner": "npx sonar-scanner"
   },
   "dependencies": {
     "@ledgerhq/hw-app-btc": "^5.51.1",
     "@ledgerhq/hw-transport": "^5.46.0",
     "@ledgerhq/hw-transport-webhid": "^5.46.0",
     "@ledgerhq/hw-transport-webusb": "^5.46.0",
+    "@rsksmart/rsk-utils": "^1.1.0",
     "@types/ledgerhq__hw-app-btc": "^5.19.2",
     "@types/ledgerhq__hw-transport": "^4.21.3",
     "@types/ledgerhq__hw-transport-node-hid": "^4.22.2",

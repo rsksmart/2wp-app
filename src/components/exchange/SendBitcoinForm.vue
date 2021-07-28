@@ -378,7 +378,7 @@ import Wallet from '@/components/web3/Wallet.vue';
 import { Action, Getter, State } from 'vuex-class';
 import { Web3SessionState } from '@/store/session/types';
 import { PegInTxState } from '@/store/peginTx/types';
-import Web3 from 'web3';
+import * as rskUtils from '@rsksmart/rsk-utils';
 
 @Component({
   components: {
@@ -427,6 +427,8 @@ export default class SendBitcoinForm extends Vue {
   accountBalances: string[] = [];
 
   minAmountAllowed = 0.005;
+
+  CHAIN_ID = process.env.VUE_APP_COIN === constants.BTC_NETWORK_MAINNET ? 30 : 31;
 
   @Prop() price!: number;
 
@@ -486,7 +488,7 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get computedTxFee() {
-    return !this.fourthDone ? 'Not completed' : `${this.txFee.toFixed(5)} BTC`;
+    return !this.fourthDone ? 'Not completed' : `${this.txFee.toFixed(6)} BTC`;
   }
 
   get computedFullTxFee() {
@@ -590,7 +592,7 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get isValidRskAddress() {
-    return Web3.utils.isAddress(this.rskAddressSelected);
+    return rskUtils.isValidAddress(this.rskAddressSelected, this.CHAIN_ID);
   }
 
   // eslint-disable-next-line class-methods-use-this

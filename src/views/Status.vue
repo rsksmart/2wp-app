@@ -44,7 +44,7 @@
                 </v-row>
               </div>
               <v-progress-linear
-                v-model="btcConfirmationsPercentage"
+                :value="btcConfirmationsPercentage"
                 color="#F6C61B"
                 height="17"/>
               <div class="d-flex justify-end">
@@ -77,7 +77,7 @@
               </div>
             </div>
             <v-progress-linear
-              v-model="btcConfirmationsPercentage"
+              :value="btcConfirmationsPercentage"
               color="#00B43C"
               height="17" />
           </v-col>
@@ -94,7 +94,7 @@
           </v-col>
           <v-col class="pa-0">
             <v-progress-linear
-              v-model="rskConfirmationsPercentage"
+              :value="rskConfirmationsPercentage"
               color="#00B43C"
               height="17"/>
             <div class="d-flex justify-end">
@@ -171,8 +171,12 @@ export default class Status extends Vue {
 
   @Emit()
   refreshPercentage() {
-    const btcConfirmations = this.pegInStatus ? this.pegInStatus.btc.confirmations : 0;
-    const rskConfirmations = this.pegInStatus ? this.pegInStatus.rsk.confirmations : 0;
+    let btcConfirmations = 0;
+    let rskConfirmations = 0;
+    if (this.pegInStatus) {
+      btcConfirmations = this.pegInStatus.btc.confirmations ?? 0;
+      rskConfirmations = this.pegInStatus.rsk.confirmations ?? 0;
+    }
     this.btcConfirmationsPercentage = btcConfirmations <= 100 ? btcConfirmations : 100;
     this.rskConfirmationsPercentage = rskConfirmations <= 100 ? rskConfirmations : 100;
   }
@@ -218,6 +222,16 @@ export default class Status extends Vue {
         this.statusMessage = 'Your transaction was declined.';
         this.activeMessageStyle = 'statusRejected';
         this.isRejected = true;
+        break;
+      case PegStatus.NOT_IN_BTC_YET:
+        this.statusMessage = 'Your transaction is not in BTC yet.';
+        this.activeMessageStyle = 'statusRejected';
+        this.isRejected = true;
+        break;
+      case PegStatus.NOT_IN_RSK_YET:
+        this.statusMessage = 'Your transaction in BTC is not in RSK yet, please wait.';
+        this.activeMessageStyle = 'statusProgress';
+        this.isRejected = false;
         break;
       default:
     }
