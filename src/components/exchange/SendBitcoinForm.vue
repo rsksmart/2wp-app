@@ -36,8 +36,17 @@
                         mdi-information
                       </v-icon>
                     </template>
-                    <span>Listed amounts represent the the first 2 address balances from Legacy,
-                      Segwit and Native segwit accounts including change</span>
+                    <p v-if="isLedgerWallet" class="tooltip-form mb-0">
+                      Native segwit is coming soon for Ledger devices!
+                    </p>
+                    <p v-if="isLedgerWallet" class="tooltip-form mb-0">
+                      Listed amounts represent the first 2 address balances from Legacy and Segwit
+                      accounts including change.
+                    </p>
+                    <span v-if="!isLedgerWallet">
+                      Listed amounts represent the first 2 address balances from Legacy,
+                      Segwit and Native segwit accounts including change.
+                    </span>
                   </v-tooltip>
                 </v-col>
                 <v-col v-if="false" cols="5" class="d-flex justify-center pb-0">
@@ -757,12 +766,23 @@ export default class SendBitcoinForm extends Vue {
     return Big(btcs).mul(Big(this.price)).toFixed(5);
   }
 
+  get isLedgerWallet() {
+    return this.peginTxState.bitcoinWallet === constants.WALLET_LEDGER;
+  }
+
   created() {
-    this.accountBalances = [
-      `Segwit account - ${this.satoshiToBtc(Big(this.balances.segwit).toFixed(8))} BTC`,
-      `Legacy account - ${this.satoshiToBtc(Big(this.balances.legacy).toFixed(8))} BTC`,
-      `Native segwit account - ${this.satoshiToBtc(Big(this.balances.nativeSegwit).toFixed(8))} BTC`,
-    ];
+    if (this.peginTxState.bitcoinWallet === constants.WALLET_LEDGER) {
+      this.accountBalances = [
+        `Segwit account - ${this.satoshiToBtc(this.balances.segwit)} BTC`,
+        `Legacy account - ${this.satoshiToBtc(this.balances.legacy)} BTC`,
+      ];
+    } else {
+      this.accountBalances = [
+        `Segwit account - ${this.satoshiToBtc(this.balances.segwit)} BTC`,
+        `Legacy account - ${this.satoshiToBtc(this.balances.legacy)} BTC`,
+        `Native segwit account - ${this.satoshiToBtc(this.balances.nativeSegwit)} BTC`,
+      ];
+    }
   }
 }
 </script>
