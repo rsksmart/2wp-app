@@ -66,9 +66,8 @@
         <v-row class="mx-0 mt-10 d-flex justify-center">
           <p class="text-center">Select your Bitcoin wallet</p>
         </v-row>
-        <v-row class="ma-0 d-flex justify-center">
-          <v-col/>
-          <v-col cols="2" class="d-flex justify-center">
+        <v-row class="ma-0">
+          <v-col offset="3" cols="3" offset-xl="4" xl="2" class="d-flex justify-center">
             <v-btn outlined class="wallet-button-thin"
                    @click="setBitcoinWallet(storeConstants.WALLET_LEDGER)"
                    v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_LEDGER }">
@@ -76,7 +75,7 @@
               <span class="wallet-button-content">Ledger</span>
             </v-btn>
           </v-col>
-          <v-col cols="2" class="d-flex justify-center">
+          <v-col cols="3" xl="2" class="d-flex justify-center">
             <v-btn outlined class="wallet-button-thin"
                    @click="setBitcoinWallet(storeConstants.WALLET_TREZOR)"
                    v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_TREZOR }">
@@ -95,7 +94,6 @@
               </v-col>
             </v-btn>
           </v-col>
-          <v-col/>
         </v-row>
         <v-row class="mx-0 mt-15 d-flex justify-center">
           <v-col cols="3" class="d-flex justify-center">
