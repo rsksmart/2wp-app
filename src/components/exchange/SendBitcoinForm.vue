@@ -40,7 +40,7 @@
                       Segwit and Native segwit accounts including change</span>
                   </v-tooltip>
                 </v-col>
-                <v-col cols="5" class="d-flex justify-center pb-0">
+                <v-col v-if="false" cols="5" class="d-flex justify-center pb-0">
                   <v-btn outlined rounded color="#00B520" width="100%" height="38px" disabled>
                     <span class="grayish">Extensive search</span>
                   </v-btn>
@@ -627,7 +627,6 @@ export default class SendBitcoinForm extends Vue {
 
   // eslint-disable-next-line class-methods-use-this
   blockLetterKeyDown(e: any) {
-    console.log('event key', typeof e.key, e.key);
     if (e.key === 'e') e.preventDefault();
     if (e.key === '+') e.preventDefault();
     if (e.key === '-') e.preventDefault();
