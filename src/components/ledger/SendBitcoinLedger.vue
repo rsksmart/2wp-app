@@ -29,6 +29,7 @@ import {
   Component, Emit,
   Vue,
 } from 'vue-property-decorator';
+import { Action, Getter, State } from 'vuex-class';
 import SendBitcoinForm from '@/components/exchange/SendBitcoinForm.vue';
 import ConfirmLedgerTransaction from '@/components/ledger/ConfirmLedgerTransaction.vue';
 import TrackingId from '@/components/exchange/TrackingId.vue';
@@ -36,7 +37,6 @@ import LedgerService from '@/services/LedgerService';
 import ApiService from '@/services/ApiService';
 import { PegInTxState } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
-import { Action, Getter, State } from 'vuex-class';
 import {
   AccountBalance, FeeAmountData, LedgerTx,
 } from '@/types';

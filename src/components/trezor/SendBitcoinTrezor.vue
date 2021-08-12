@@ -30,6 +30,8 @@ import {
   Component, Emit,
   Vue,
 } from 'vue-property-decorator';
+import { Action, Getter, State } from 'vuex-class';
+import TrezorConnect, { DEVICE, DEVICE_EVENT } from 'trezor-connect';
 import SendBitcoinForm from '@/components/exchange/SendBitcoinForm.vue';
 import ConfirmTransaction from '@/components/trezor/ConfirmTransaction.vue';
 import TrackingId from '@/components/exchange/TrackingId.vue';
@@ -37,8 +39,6 @@ import TrezorService from '@/services/TrezorService';
 import ApiService from '@/services/ApiService';
 import { PegInTxState } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
-import { Action, Getter, State } from 'vuex-class';
-import TrezorConnect, { DEVICE, DEVICE_EVENT } from 'trezor-connect';
 import {
   AccountBalance, FeeAmountData, TrezorTx,
 } from '@/types';

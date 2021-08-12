@@ -1,9 +1,9 @@
+import { TxInputType, TxOutputType } from 'trezor-connect';
 import TrezorTxSigner from '@/middleware/TxSigner/TrezorTxSigner';
 import { WalletAddress } from '@/store/peginTx/types';
 import {
   NormalizedInput, NormalizedOutput, TrezorSignedTx, TrezorTx,
 } from '@/types';
-import { TxInputType, TxOutputType } from 'trezor-connect';
 import ApiService from '@/services/ApiService';
 import { getAccountType } from '@/services/utils';
 import * as constants from '@/store/constants';
