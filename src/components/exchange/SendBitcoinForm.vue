@@ -372,13 +372,13 @@ import {
   Vue,
   Component, Prop, Emit,
 } from 'vue-property-decorator';
+import { Action, Getter, State } from 'vuex-class';
+import * as rskUtils from '@rsksmart/rsk-utils';
 import * as constants from '@/store/constants';
 import { AccountBalance, FeeAmountData } from '@/types';
 import Wallet from '@/components/web3/Wallet.vue';
-import { Action, Getter, State } from 'vuex-class';
 import { Web3SessionState } from '@/store/session/types';
 import { PegInTxState } from '@/store/peginTx/types';
-import * as rskUtils from '@rsksmart/rsk-utils';
 
 @Component({
   components: {

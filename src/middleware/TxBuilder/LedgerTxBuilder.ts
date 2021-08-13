@@ -1,3 +1,4 @@
+import * as bitcoin from 'bitcoinjs-lib';
 import LedgerTxSigner from '@/middleware/TxSigner/LedgerTxSigner';
 import {
   LedgerjsTransaction,
@@ -7,7 +8,6 @@ import store from '@/store';
 import ApiService from '@/services/ApiService';
 import LedgerService from '@/services/LedgerService';
 import * as constants from '@/store/constants';
-import * as bitcoin from 'bitcoinjs-lib';
 import TxBuilder from './TxBuilder';
 
 export default class LedgerTxBuilder extends TxBuilder {

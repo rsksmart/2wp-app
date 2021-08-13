@@ -8,9 +8,9 @@
 </template>
 <script lang="ts">
 import Vue from 'vue';
-import Top from '@/components/layouts/Top.vue';
 import { Component, Emit } from 'vue-property-decorator';
 import { Action } from 'vuex-class';
+import Top from '@/components/layouts/Top.vue';
 import * as constants from '@/store/constants';
 import ApiService from '@/services/ApiService';
 import { PeginConfiguration } from '@/store/peginTx/types';

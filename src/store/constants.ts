@@ -52,6 +52,10 @@ export const PEGIN_TX_GET_ADDRESS_PUBLIC_KEY = 'PEGIN_TX_GET_ADDRESS_PUBLIC_KEY'
 export const BTC_NETWORK_MAINNET = 'main';
 export const BTC_NETWORK_TESTNET = 'test';
 
+// Ledger Apps
+export const LEDGER_APP_BTC_TEST = 'Bitcoin Test';
+export const LEDGER_APP_BTC = 'Bitcoin';
+
 export enum PegStatus {
   WAITING_CONFIRMATIONS = 'WAITING_CONFIRMATIONS',
   CONFIRMED = 'CONFIRMED',

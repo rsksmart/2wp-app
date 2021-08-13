@@ -7,13 +7,13 @@
 
 <script lang="ts">
 import { Vue, Component, Emit } from 'vue-property-decorator';
+import { Action, State } from 'vuex-class';
 import SelectBitcoinWallet from '@/components/exchange/SelectBitcoinWallet.vue';
 import SendBitcoinTrezor from '@/components/trezor/SendBitcoinTrezor.vue';
 import SendBitcoinLedger from '@/components/ledger/SendBitcoinLedger.vue';
 import SuccessSend from '@/components/exchange/SuccessSend.vue';
 import TrackingId from '@/components/exchange/TrackingId.vue';
 import * as constants from '@/store/constants';
-import { Action, State } from 'vuex-class';
 import { PegInTxState } from '@/store/peginTx/types';
 
 @Component({

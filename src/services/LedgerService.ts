@@ -1,13 +1,13 @@
 import AppBtc from '@ledgerhq/hw-app-btc';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import _ from 'lodash';
+import * as bitcoin from 'bitcoinjs-lib';
 import WalletService from '@/services/WalletService';
 import * as constants from '@/store/constants';
 import { WalletAddress } from '@/store/peginTx/types';
 import {
   LedgerjsTransaction, LedgerTx, Signer,
 } from '@/types';
-import * as bitcoin from 'bitcoinjs-lib';
 
 export default class LedgerService extends WalletService {
   private network: bitcoin.Network;
@@ -98,6 +98,7 @@ export default class LedgerService extends WalletService {
       const bundle = this.getAddressesBundle(0, batch);
       try {
         const transport = await TransportWebUSB.create(15000);
+        await LedgerService.checkApp(transport);
         const btc = new AppBtc(transport);
         // eslint-disable-next-line no-restricted-syntax
         for (const item of bundle) {
@@ -264,5 +265,50 @@ export default class LedgerService extends WalletService {
     }
     console.error('Error getting Redeem script');
     return '';
+  }
+
+  public static getApp(transport: TransportWebUSB):
+    Promise<{name: string; version: string; flags: Buffer}> {
+    return new Promise<{name: string; version: string; flags: Buffer}>((resolve, reject) => {
+      transport.send(0xb0, 0x01, 0x00, 0x00)
+        .then((response: Buffer) => {
+          let i = 1;
+          // eslint-disable-next-line no-plusplus
+          const nameLength = response[i++];
+          const name = response.slice(i, (i += nameLength)).toString('ascii');
+          // eslint-disable-next-line no-plusplus
+          const versionLength = response[i++];
+          const version = response.slice(i, (i += versionLength)).toString('ascii');
+          // eslint-disable-next-line no-plusplus
+          const flagLength = response[i++];
+          const flags = response.slice(i, (i += flagLength));
+          resolve({ name, version, flags });
+        })
+        .catch(reject);
+    });
+  }
+
+  private static async checkApp(transport: TransportWebUSB): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      LedgerService.getApp(transport)
+        .then(({ name }) => {
+          const network = process.env.VUE_APP_COIN === constants.BTC_NETWORK_MAINNET
+            ? process.env.VUE_APP_COIN : constants.BTC_NETWORK_TESTNET;
+          let valid: boolean;
+          switch (name) {
+            case constants.LEDGER_APP_BTC_TEST:
+              valid = network === constants.BTC_NETWORK_TESTNET;
+              break;
+            case constants.LEDGER_APP_BTC:
+              valid = network === constants.BTC_NETWORK_MAINNET;
+              break;
+            default:
+              valid = false;
+          }
+          if (valid) resolve();
+          else reject(new Error('You are not in the required App. Check your Ledger device and try again'));
+        })
+        .catch(reject);
+    });
   }
 }
