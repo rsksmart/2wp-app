@@ -101,6 +101,7 @@ import {
   Vue,
 } from 'vue-property-decorator';
 import { TxData } from '@/types';
+import Big from 'big.js';
 
 @Component
 export default class TxSummary extends Vue {
@@ -121,28 +122,28 @@ export default class TxSummary extends Vue {
   }
 
   get amountPrice() {
-    const amountPrice = this.satoshiToBtc(this.txData.amount) * this.price;
-    return amountPrice ? amountPrice.toFixed(2) : 0;
+    const amountPrice = Big(this.satoshiToBtc(this.txData.amount)).mul(Big(this.price));
+    return amountPrice ? amountPrice.toFixed(5) : 0;
   }
 
   get fee() {
-    return this.txData.feeBTC ? this.txData.feeBTC.toFixed(8) : 'Not found';
+    return this.txData.feeBTC ? Big(this.txData.feeBTC).toFixed(8) : 'Not found';
   }
 
   get feeUSD() {
-    const feePrice = this.txData.feeBTC * this.price;
-    return feePrice ? feePrice.toFixed(2) : 0;
+    const feePrice = Big(this.txData.feeBTC).mul(Big(this.price));
+    return feePrice ? feePrice.toFixed(5) : 0;
   }
 
   get fullTx() {
-    const feePlusAmount = this.satoshiToBtc(this.txData.amount) + this.txData.feeBTC;
-    return feePlusAmount ? feePlusAmount.toFixed(6) : 'Not found';
+    const feePlusAmount = Big(this.satoshiToBtc(this.txData.amount)).plus(Big(this.txData.feeBTC));
+    return feePlusAmount ? feePlusAmount.toFixed(8) : 'Not found';
   }
 
   get fullTxUSD() {
-    const feePlusAmount = this.satoshiToBtc(this.txData.amount) + this.txData.feeBTC;
-    const feePlusAmountPrice = feePlusAmount * this.price;
-    return feePlusAmountPrice ? feePlusAmountPrice.toFixed(2) : 0;
+    const feePlusAmount = Big(this.satoshiToBtc(this.txData.amount)).plus(Big(this.txData.feeBTC));
+    const feePlusAmountPrice = feePlusAmount.times(Big(this.price));
+    return feePlusAmountPrice ? feePlusAmountPrice.toFixed(5) : 0;
   }
 
   get chunkedRecipientAddress() {

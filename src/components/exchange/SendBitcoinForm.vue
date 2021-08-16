@@ -201,13 +201,13 @@
                   </v-row>
                   <v-row class="mx-0">
                     <v-col cols="4" class="d-flex justify-start pa-0">
-                      <span class="boldie text-left">$ {{ btcToUSD(+slowFee) }}</span>
+                      <span class="boldie text-left">$ {{ btcToUSD(slowFee) }}</span>
                     </v-col>
                     <v-col cols="4" class="d-flex justify-center pa-0">
-                      <span class="boldie text-center">$ {{ btcToUSD(+averageFee) }}</span>
+                      <span class="boldie text-center">$ {{ btcToUSD(averageFee) }}</span>
                     </v-col>
                     <v-col cols="4" class="d-flex justify-end pa-0">
-                      <span class="boldie text-right">$ {{ btcToUSD(+fastFee) }}</span>
+                      <span class="boldie text-right">$ {{ btcToUSD(fastFee) }}</span>
                     </v-col>
                   </v-row>
                 </v-col>
@@ -374,13 +374,14 @@ import {
   Vue,
   Component, Prop, Emit,
 } from 'vue-property-decorator';
-import { Action, Getter, State } from 'vuex-class';
-import * as rskUtils from '@rsksmart/rsk-utils';
 import * as constants from '@/store/constants';
 import { AccountBalance, FeeAmountData } from '@/types';
 import Wallet from '@/components/web3/Wallet.vue';
+import { Action, Getter, State } from 'vuex-class';
 import { Web3SessionState } from '@/store/session/types';
 import { PegInTxState } from '@/store/peginTx/types';
+import * as rskUtils from '@rsksmart/rsk-utils';
+import Big from 'big.js';
 
 @Component({
   components: {
@@ -464,7 +465,7 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get computedBTCAmount() {
-    return this.bitcoinAmount > 0 ? Number(this.bitcoinAmount) : 'Not completed';
+    return this.bitcoinAmount > 0 ? Big(this.bitcoinAmount).toFixed(8) : 'Not completed';
   }
 
   get computedBTCAddress() {
@@ -490,12 +491,12 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get computedTxFee() {
-    return !this.fourthDone ? 'Not completed' : `${this.txFee.toFixed(6)} BTC`;
+    return !this.fourthDone ? 'Not completed' : `${Big(this.txFee).toFixed(8)} BTC`;
   }
 
   get computedFullTxFee() {
-    const feePlusAmount = Number(this.txFee) + Number(this.bitcoinAmount);
-    return this.fourthDone && this.secondDone ? `${feePlusAmount.toFixed(6)} BTC` : 'Not completed';
+    const feePlusAmount = Big(this.txFee).plus(Big(this.bitcoinAmount));
+    return this.fourthDone && this.secondDone ? `${feePlusAmount.toFixed(8)} BTC` : 'Not completed';
   }
 
   get computedBitcoinUSD() {
@@ -503,12 +504,12 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get computedTxFeeUSD() {
-    return !this.fourthDone ? 'USD $ 0' : `USD $ ${this.btcToUSD(+this.txFee)}`;
+    return !this.fourthDone ? 'USD $ 0' : `USD $ ${this.btcToUSD(Big(this.txFee).toFixed(8))}`;
   }
 
   get computedFullTxFeeUSD() {
-    const feePlusAmount = Number(this.txFee) + Number(this.bitcoinAmount);
-    return this.fourthDone && this.secondDone ? `USD $ ${this.btcToUSD(feePlusAmount)}` : 'USD $ 0';
+    const feePlusAmount = Big(this.txFee).plus(Big(this.bitcoinAmount));
+    return this.fourthDone && this.secondDone ? `USD $ ${this.btcToUSD(feePlusAmount.toFixed(8))}` : 'USD $ 0';
   }
 
   get txFeeColor() {
@@ -738,27 +739,29 @@ export default class SendBitcoinForm extends Vue {
 
   @Emit()
   // eslint-disable-next-line class-methods-use-this
-  satoshiToBtc(satoshis: number): number {
-    return satoshis * 0.00000001;
+  satoshiToBtc(satoshis: number | string): number {
+    const btcs: Big = Big(satoshis.toString()).div(100_000_000);
+    return Number(btcs.toFixed(8));
   }
 
   @Emit()
   // eslint-disable-next-line class-methods-use-this
-  btcToSatoshi(btcs: number): number {
-    return btcs * 100000000;
+  btcToSatoshi(btcs: number | string): number {
+    const satoshis: Big = Big(btcs.toString()).mul(100_000_000);
+    return Number(satoshis.toFixed(0));
   }
 
   @Emit()
   // eslint-disable-next-line class-methods-use-this
-  btcToUSD(btcs: number) {
-    return (btcs * this.price).toFixed(5);
+  btcToUSD(btcs: number | string) {
+    return Big(btcs).mul(Big(this.price)).toFixed(5);
   }
 
   created() {
     this.accountBalances = [
-      `Segwit account - ${this.satoshiToBtc(this.balances.segwit)} BTC`,
-      `Legacy account - ${this.satoshiToBtc(this.balances.legacy)} BTC`,
-      `Native segwit account - ${this.satoshiToBtc(this.balances.nativeSegwit)} BTC`,
+      `Segwit account - ${this.satoshiToBtc(Big(this.balances.segwit).toFixed(8))} BTC`,
+      `Legacy account - ${this.satoshiToBtc(Big(this.balances.legacy).toFixed(8))} BTC`,
+      `Native segwit account - ${this.satoshiToBtc(Big(this.balances.nativeSegwit).toFixed(8))} BTC`,
     ];
   }
 }
