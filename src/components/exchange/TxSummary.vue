@@ -117,13 +117,15 @@ export default class TxSummary extends Vue {
 
   expand = false;
 
+  fixedUSDValue = 2;
+
   get amount() {
     return this.txData.amount ? this.satoshiToBtc(this.txData.amount) : 'Not found';
   }
 
   get amountPrice() {
     const amountPrice = Big(this.satoshiToBtc(this.txData.amount)).mul(Big(this.price));
-    return amountPrice ? amountPrice.toFixed(5) : 0;
+    return amountPrice ? amountPrice.toFixed(this.fixedUSDValue) : 0;
   }
 
   get fee() {
@@ -132,7 +134,7 @@ export default class TxSummary extends Vue {
 
   get feeUSD() {
     const feePrice = Big(this.txData.feeBTC).mul(Big(this.price));
-    return feePrice ? feePrice.toFixed(5) : 0;
+    return feePrice ? feePrice.toFixed(this.fixedUSDValue) : 0;
   }
 
   get fullTx() {
@@ -141,9 +143,11 @@ export default class TxSummary extends Vue {
   }
 
   get fullTxUSD() {
-    const feePlusAmount = Big(this.satoshiToBtc(this.txData.amount)).plus(Big(this.txData.feeBTC));
-    const feePlusAmountPrice = feePlusAmount.times(Big(this.price));
-    return feePlusAmountPrice ? feePlusAmountPrice.toFixed(5) : 0;
+    const amountPrice = Big(this.satoshiToBtc(this.txData.amount)).mul(Big(this.price))
+      .toFixed(this.fixedUSDValue);
+    const feePrice = Big(this.txData.feeBTC).mul(Big(this.price)).toFixed(this.fixedUSDValue);
+    const feePlusAmountPrice = Big(amountPrice).plus(Big(feePrice));
+    return feePlusAmountPrice ? feePlusAmountPrice.toFixed(this.fixedUSDValue) : 0;
   }
 
   get chunkedRecipientAddress() {
@@ -163,7 +167,8 @@ export default class TxSummary extends Vue {
   @Emit()
   // eslint-disable-next-line class-methods-use-this
   satoshiToBtc(satoshis: number): number {
-    return satoshis * 0.00000001;
+    const btcs: Big = Big(satoshis.toString()).div(100_000_000);
+    return Number(btcs.toFixed(8));
   }
 
   @Emit()
