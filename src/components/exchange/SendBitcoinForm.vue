@@ -1,5 +1,5 @@
 <template>
-  <v-col offset="1" cols="10" xl="8" offset-xl="2" class="exchange-form ">
+  <v-col offset="1" cols="10" offset-xl="2" xl="8" class="exchange-form ">
     <v-row class="mx-0">
       <v-col cols="1" class="pa-0 d-flex align-center justify-start">
         <v-img class="d-flex justify-start"
@@ -40,7 +40,7 @@
                       Segwit and Native segwit accounts including change</span>
                   </v-tooltip>
                 </v-col>
-                <v-col cols="5" class="d-flex justify-center pb-0">
+                <v-col v-if="false" cols="5" class="d-flex justify-center pb-0">
                   <v-btn outlined rounded color="#00B520" width="100%" height="38px" disabled>
                     <span class="grayish">Extensive search</span>
                   </v-btn>
@@ -63,6 +63,8 @@
                   <v-col cols="8" class="pa-0 pl-1">
                     <v-text-field solo hide-details full-width single-line flat
                                   v-model="bitcoinAmount" type="number"
+                                  @input="blockLetterInput"
+                                  @keydown="blockLetterKeyDown"
                                   @change="checkStep(peginTxState.bitcoinWallet, 2)"/>
                   </v-col>
                   <v-col cols="4" class="pa-0">
@@ -199,13 +201,13 @@
                   </v-row>
                   <v-row class="mx-0">
                     <v-col cols="4" class="d-flex justify-start pa-0">
-                      <span class="boldie text-left">$ {{ btcToUSD(+slowFee) }}</span>
+                      <span class="boldie text-left">$ {{ btcToUSD(slowFee) }}</span>
                     </v-col>
                     <v-col cols="4" class="d-flex justify-center pa-0">
-                      <span class="boldie text-center">$ {{ btcToUSD(+averageFee) }}</span>
+                      <span class="boldie text-center">$ {{ btcToUSD(averageFee) }}</span>
                     </v-col>
                     <v-col cols="4" class="d-flex justify-end pa-0">
-                      <span class="boldie text-right">$ {{ btcToUSD(+fastFee) }}</span>
+                      <span class="boldie text-right">$ {{ btcToUSD(fastFee) }}</span>
                     </v-col>
                   </v-row>
                 </v-col>
@@ -214,118 +216,118 @@
           </v-row>
         </v-container>
       </v-col>
-      <v-col id="summary-col" cols="4" class="px-3 pl-lg-0 pr-lg-0">
+      <v-col id="summary-col" cols="4" class="px-3 pl-lg-0 pr-md-0 pl-xl-8">
         <v-row class="mx-0 my-4">
           <h2>Transaction summary:</h2>
         </v-row>
         <v-row class="mx-0 summary-box">
           <v-container id="summary-box-container">
-              <v-container id="summary-1" class="pb-0 pl-0">
-                <v-row class="mx-0">
-                  <h1>Device account:</h1>
-                  <v-icon v-if="firstDone" class="ml-2" small color="#008CFF">
-                    mdi-check-circle-outline
-                  </v-icon>
-                </v-row>
-              </v-container>
-              <v-container class="pt-4 pl-0">
-                <p v-bind:class="{'grayish': computedBTCAddress === 'Not completed'}">
-                  {{ computedBTCAddress }}
+            <v-container id="summary-1" class="pb-0 pl-0">
+              <v-row class="mx-0">
+                <h1>Device account:</h1>
+                <v-icon v-if="firstDone" class="ml-2" small color="#008CFF">
+                  mdi-check-circle-outline
+                </v-icon>
+              </v-row>
+            </v-container>
+            <v-container class="pt-4 pl-0">
+              <p v-bind:class="{'grayish': computedBTCAddress === 'Not completed'}">
+                {{ computedBTCAddress }}
+              </p>
+            </v-container>
+            <v-divider color="#C4C4C4"/>
+            <v-container id="summary-2" class="pb-0 pl-0">
+              <v-row class="mx-0">
+                <h1>Bitcoins:</h1>
+                <v-icon v-if="secondDone" class="ml-2" small color="#008CFF">
+                  mdi-check-circle-outline
+                </v-icon>
+              </v-row>
+            </v-container>
+            <v-container class="pt-4 pb-0 pl-0">
+              <p v-bind:class="{'grayish': computedBTCAmount === 'Not completed'}">
+                {{ computedBTCAmount }}
+              </p>
+            </v-container>
+            <v-container class="pt-0 pl-0">
+              <span>USD $ {{ computedBitcoinUSD }}</span>
+            </v-container>
+            <v-divider color="#C4C4C4"/>
+            <v-container id="summary-3" class="pb-0 pl-0">
+              <v-row class="mx-0">
+                <h1>Destination RSK address:</h1>
+                <v-icon v-if="thirdDone" class="ml-2" small color="#008CFF">
+                  mdi-check-circle-outline
+                </v-icon>
+              </v-row>
+            </v-container>
+            <v-container class="pt-4 pl-0">
+              <v-row class="mx-0 d-none d-lg-block">
+                <p v-bind:class="{'grayish': computedRskAddress === 'Not completed'}">
+                  {{ computedRskAddress }}
                 </p>
-              </v-container>
-            <v-divider color="#C4C4C4"/>
-              <v-container id="summary-2" class="pb-0 pl-0">
-                <v-row class="mx-0">
-                  <h1>Bitcoins:</h1>
-                  <v-icon v-if="secondDone" class="ml-2" small color="#008CFF">
-                    mdi-check-circle-outline
-                  </v-icon>
-                </v-row>
-              </v-container>
-              <v-container class="pt-4 pb-0 pl-0">
-                <p v-bind:class="{'grayish': computedBTCAmount === 'Not completed'}">
-                  {{ computedBTCAmount }}
+              </v-row>
+              <v-row class="mx-0 d-lg-none">
+                <p v-bind:class="{'grayish': computedRskAddress === 'Not completed'}">
+                  {{ croppedComputedRskAddress }}
                 </p>
-              </v-container>
-              <v-container class="pt-0 pl-0">
-                <span>USD $ {{ computedBitcoinUSD }}</span>
-              </v-container>
+              </v-row>
+            </v-container>
             <v-divider color="#C4C4C4"/>
-              <v-container id="summary-3" class="pb-0 pl-0">
-                <v-row class="mx-0">
-                  <h1>Destination RSK address:</h1>
-                  <v-icon v-if="thirdDone" class="ml-2" small color="#008CFF">
-                    mdi-check-circle-outline
-                  </v-icon>
-                </v-row>
-              </v-container>
-              <v-container class="pt-4 pl-0">
-                <v-row class="mx-0 d-none d-lg-block">
-                  <p v-bind:class="{'grayish': computedRskAddress === 'Not completed'}">
-                    {{ computedRskAddress }}
-                  </p>
-                </v-row>
-                <v-row class="mx-0 d-lg-none">
-                  <p v-bind:class="{'grayish': computedRskAddress === 'Not completed'}">
-                    {{ croppedComputedRskAddress }}
-                  </p>
-                </v-row>
-              </v-container>
-            <v-divider color="#C4C4C4"/>
-              <v-container id="summary-4" class="pb-0 pl-0">
-                <v-row class="mx-0">
-                  <h1>Refund BTC address:</h1>
-                  <v-icon v-if="fourthDone" class="ml-2" small color="#008CFF">
-                    mdi-check-circle-outline
-                  </v-icon>
-                </v-row>
-              </v-container>
-              <v-container class="pt-4 pl-0">
-                <v-row class="mx-0 d-none d-lg-block">
-                  <p v-bind:class="{'grayish': computedRefundBTCAddress === 'Not completed'}">
-                    {{ computedRefundBTCAddress }}
-                  </p>
-                </v-row>
-                <v-row class="mx-0 d-lg-none">
-                  <p v-bind:class="{'grayish': computedRefundBTCAddress === 'Not completed'}">
-                    {{ croppedComputedRefundBTCAddress }}
-                  </p>
-                </v-row>
-              </v-container>
-            <v-divider color="#C4C4C4"/>
-              <v-container id="summary-5" class="pb-0 pl-0">
-                <v-row class="mx-0">
-                  <h1>Transaction fee:</h1>
-                  <v-icon v-if="fourthDone" class="ml-2" small color="#008CFF">
-                    mdi-check-circle-outline
-                  </v-icon>
-                </v-row>
-              </v-container>
-              <v-container class="pt-4 pb-0 pl-0">
-                <p v-bind:class="{'grayish': computedTxFee === 'Not completed'}">
-                  {{ computedTxFee }}
+            <v-container id="summary-4" class="pb-0 pl-0">
+              <v-row class="mx-0">
+                <h1>Refund BTC address:</h1>
+                <v-icon v-if="fourthDone" class="ml-2" small color="#008CFF">
+                  mdi-check-circle-outline
+                </v-icon>
+              </v-row>
+            </v-container>
+            <v-container class="pt-4 pl-0">
+              <v-row class="mx-0 d-none d-lg-block">
+                <p v-bind:class="{'grayish': computedRefundBTCAddress === 'Not completed'}">
+                  {{ computedRefundBTCAddress }}
                 </p>
-              </v-container>
-              <v-container class="pt-0 pl-0">
-                <span>{{ computedTxFeeUSD }}</span>
-              </v-container>
-            <v-divider color="#C4C4C4"/>
-              <v-container id="summary-6" class="pb-0 pl-0">
-                <v-row class="mx-0">
-                  <h1>Transaction total:</h1>
-                  <v-icon v-if="fourthDone" class="ml-2" small color="#008CFF">
-                    mdi-check-circle-outline
-                  </v-icon>
-                </v-row>
-              </v-container>
-              <v-container class="pt-4 pb-0 pl-0">
-                <p v-bind:class="{'grayish': computedBTCAmount === 'Not completed'}">
-                  {{ computedFullTxFee }}
+              </v-row>
+              <v-row class="mx-0 d-lg-none">
+                <p v-bind:class="{'grayish': computedRefundBTCAddress === 'Not completed'}">
+                  {{ croppedComputedRefundBTCAddress }}
                 </p>
-              </v-container>
-              <v-container class="pt-0 pl-0">
-                <span>{{ computedFullTxFeeUSD }}</span>
-              </v-container>
+              </v-row>
+            </v-container>
+            <v-divider color="#C4C4C4"/>
+            <v-container id="summary-5" class="pb-0 pl-0">
+              <v-row class="mx-0">
+                <h1>Transaction fee:</h1>
+                <v-icon v-if="fourthDone" class="ml-2" small color="#008CFF">
+                  mdi-check-circle-outline
+                </v-icon>
+              </v-row>
+            </v-container>
+            <v-container class="pt-4 pb-0 pl-0">
+              <p v-bind:class="{'grayish': computedTxFee === 'Not completed'}">
+                {{ computedTxFee }}
+              </p>
+            </v-container>
+            <v-container class="pt-0 pl-0">
+              <span>{{ computedTxFeeUSD }}</span>
+            </v-container>
+            <v-divider color="#C4C4C4"/>
+            <v-container id="summary-6" class="pb-0 pl-0">
+              <v-row class="mx-0">
+                <h1>Transaction total:</h1>
+                <v-icon v-if="fourthDone" class="ml-2" small color="#008CFF">
+                  mdi-check-circle-outline
+                </v-icon>
+              </v-row>
+            </v-container>
+            <v-container class="pt-4 pb-0 pl-0">
+              <p v-bind:class="{'grayish': computedBTCAmount === 'Not completed'}">
+                {{ computedFullTxFee }}
+              </p>
+            </v-container>
+            <v-container class="pt-0 pl-0">
+              <span>{{ computedFullTxFeeUSD }}</span>
+            </v-container>
           </v-container>
         </v-row>
         <v-row class="mx-0 mt-5 d-flex justify-end">
@@ -372,13 +374,14 @@ import {
   Vue,
   Component, Prop, Emit,
 } from 'vue-property-decorator';
-import { Action, Getter, State } from 'vuex-class';
-import * as rskUtils from '@rsksmart/rsk-utils';
 import * as constants from '@/store/constants';
 import { AccountBalance, FeeAmountData } from '@/types';
 import Wallet from '@/components/web3/Wallet.vue';
+import { Action, Getter, State } from 'vuex-class';
 import { Web3SessionState } from '@/store/session/types';
 import { PegInTxState } from '@/store/peginTx/types';
+import * as rskUtils from '@rsksmart/rsk-utils';
+import Big from 'big.js';
 
 @Component({
   components: {
@@ -453,7 +456,7 @@ export default class SendBitcoinForm extends Vue {
   get amountErrorMessage() {
     let message = '';
     if (this.bitcoinAmount < this.minAmountAllowed) message = `You can not send this amount of BTC. You can only send a minimum of ${this.minAmountAllowed} BTC`;
-    if (this.bitcoinAmount >= this.selectedAccountBalance) message = 'The typed amount is higher than your current balance';
+    else if (this.bitcoinAmount >= this.selectedAccountBalance) message = 'The typed amount is higher than your current balance';
     return message;
   }
 
@@ -462,7 +465,7 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get computedBTCAmount() {
-    return this.bitcoinAmount > 0 ? Number(this.bitcoinAmount) : 'Not completed';
+    return this.bitcoinAmount > 0 ? Big(this.bitcoinAmount).toFixed(8) : 'Not completed';
   }
 
   get computedBTCAddress() {
@@ -488,12 +491,12 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get computedTxFee() {
-    return !this.fourthDone ? 'Not completed' : `${this.txFee.toFixed(6)} BTC`;
+    return !this.fourthDone ? 'Not completed' : `${Big(this.txFee).toFixed(8)} BTC`;
   }
 
   get computedFullTxFee() {
-    const feePlusAmount = Number(this.txFee) + Number(this.bitcoinAmount);
-    return this.fourthDone && this.secondDone ? `${feePlusAmount.toFixed(6)} BTC` : 'Not completed';
+    const feePlusAmount = Big(this.txFee).plus(Big(this.bitcoinAmount));
+    return this.fourthDone && this.secondDone ? `${feePlusAmount.toFixed(8)} BTC` : 'Not completed';
   }
 
   get computedBitcoinUSD() {
@@ -501,12 +504,12 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get computedTxFeeUSD() {
-    return !this.fourthDone ? 'USD $ 0' : `USD $ ${this.btcToUSD(+this.txFee)}`;
+    return !this.fourthDone ? 'USD $ 0' : `USD $ ${this.btcToUSD(Big(this.txFee).toFixed(8))}`;
   }
 
   get computedFullTxFeeUSD() {
-    const feePlusAmount = Number(this.txFee) + Number(this.bitcoinAmount);
-    return this.fourthDone && this.secondDone ? `USD $ ${this.btcToUSD(feePlusAmount)}` : 'USD $ 0';
+    const feePlusAmount = Big(this.txFee).plus(Big(this.bitcoinAmount));
+    return this.fourthDone && this.secondDone ? `USD $ ${this.btcToUSD(feePlusAmount.toFixed(8))}` : 'USD $ 0';
   }
 
   get txFeeColor() {
@@ -619,6 +622,17 @@ export default class SendBitcoinForm extends Vue {
     };
   }
 
+  blockLetterInput(input: any) {
+    this.bitcoinAmount = Number(input.toString().replaceAll('e', ''));
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  blockLetterKeyDown(e: any) {
+    if (e.key === 'e') e.preventDefault();
+    if (e.key === '+') e.preventDefault();
+    if (e.key === '-') e.preventDefault();
+  }
+
   @Emit()
   checkStep(value: string, step: number) {
     if (value) {
@@ -725,27 +739,29 @@ export default class SendBitcoinForm extends Vue {
 
   @Emit()
   // eslint-disable-next-line class-methods-use-this
-  satoshiToBtc(satoshis: number): number {
-    return satoshis * 0.00000001;
+  satoshiToBtc(satoshis: number | string): number {
+    const btcs: Big = Big(satoshis.toString()).div(100_000_000);
+    return Number(btcs.toFixed(8));
   }
 
   @Emit()
   // eslint-disable-next-line class-methods-use-this
-  btcToSatoshi(btcs: number): number {
-    return btcs * 100000000;
+  btcToSatoshi(btcs: number | string): number {
+    const satoshis: Big = Big(btcs.toString()).mul(100_000_000);
+    return Number(satoshis.toFixed(0));
   }
 
   @Emit()
   // eslint-disable-next-line class-methods-use-this
-  btcToUSD(btcs: number) {
-    return (btcs * this.price).toFixed(5);
+  btcToUSD(btcs: number | string) {
+    return Big(btcs).mul(Big(this.price)).toFixed(5);
   }
 
   created() {
     this.accountBalances = [
-      `Segwit account - ${this.satoshiToBtc(this.balances.segwit)} BTC`,
-      `Legacy account - ${this.satoshiToBtc(this.balances.legacy)} BTC`,
-      `Native segwit account - ${this.satoshiToBtc(this.balances.nativeSegwit)} BTC`,
+      `Segwit account - ${this.satoshiToBtc(Big(this.balances.segwit).toFixed(8))} BTC`,
+      `Legacy account - ${this.satoshiToBtc(Big(this.balances.legacy).toFixed(8))} BTC`,
+      `Native segwit account - ${this.satoshiToBtc(Big(this.balances.nativeSegwit).toFixed(8))} BTC`,
     ];
   }
 }
