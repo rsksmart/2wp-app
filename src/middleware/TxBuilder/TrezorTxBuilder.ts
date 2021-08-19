@@ -76,7 +76,7 @@ export default class TrezorTxBuilder extends TxBuilder {
       prev_index: input.prev_index,
       // eslint-disable-next-line @typescript-eslint/camelcase
       script_type: this.getScriptType(input.address),
-      amount: input.amount,
+      amount: input.amount.toString(),
     }));
   }
 

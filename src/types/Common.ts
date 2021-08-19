@@ -16,7 +16,7 @@ export interface NormalizedTx extends Tx {
 export interface NormalizedInput {
   address: string;
   prev_hash: string;
-  amount: string;
+  amount: number;
   address_n: number[];
   prev_index: number;
   script_type?: string;
