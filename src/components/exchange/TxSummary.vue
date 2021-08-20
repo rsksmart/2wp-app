@@ -25,7 +25,7 @@
                     <span>{{ amount }} BTC</span>
                   </v-row>
                   <v-row class="mx-0">
-                    <span class="grayish">USD $ {{ amountPrice }}</span>
+                    <span class="grayish">USD $ {{ amountUSD }}</span>
                   </v-row>
                 </v-col>
                 <v-col cols="6">
@@ -47,10 +47,10 @@
                     <h3>Transaction total</h3>
                   </v-row>
                   <v-row class="mx-0">
-                    <span>{{ fullTx }} BTC</span>
+                    <span>{{ feePlusAmount }} BTC</span>
                   </v-row>
                   <v-row class="mx-0">
-                    <span class="grayish">USD $ {{ fullTxUSD }}</span>
+                    <span class="grayish">USD $ {{ feePlusAmountUSD }}</span>
                   </v-row>
                 </v-col>
               </v-row>
@@ -117,15 +117,15 @@ export default class TxSummary extends Vue {
 
   expand = false;
 
-  fixedUSDValue = 2;
+  fixedUSDDecimals = 2;
 
   get amount() {
-    return this.txData.amount ? this.satoshiToBtc(this.txData.amount) : 'Not found';
+    return this.txData.amount ? this.satoshiToBtc(this.txData.amount).toString() : 'Not found';
   }
 
-  get amountPrice() {
-    const amountPrice = Big(this.satoshiToBtc(this.txData.amount)).mul(Big(this.price));
-    return amountPrice ? amountPrice.toFixed(this.fixedUSDValue) : 0;
+  get amountUSD() {
+    const amountUSD = Big(this.satoshiToBtc(this.txData.amount)).mul(Big(this.price));
+    return amountUSD ? amountUSD.toFixed(this.fixedUSDDecimals) : '0';
   }
 
   get fee() {
@@ -133,21 +133,18 @@ export default class TxSummary extends Vue {
   }
 
   get feeUSD() {
-    const feePrice = Big(this.txData.feeBTC).mul(Big(this.price));
-    return feePrice ? feePrice.toFixed(this.fixedUSDValue) : 0;
+    const feeUSD = Big(this.txData.feeBTC).mul(Big(this.price));
+    return feeUSD ? feeUSD.toFixed(this.fixedUSDDecimals) : '0';
   }
 
-  get fullTx() {
+  get feePlusAmount() {
     const feePlusAmount = Big(this.satoshiToBtc(this.txData.amount)).plus(Big(this.txData.feeBTC));
     return feePlusAmount ? feePlusAmount.toFixed(8) : 'Not found';
   }
 
-  get fullTxUSD() {
-    const amountPrice = Big(this.satoshiToBtc(this.txData.amount)).mul(Big(this.price))
-      .toFixed(this.fixedUSDValue);
-    const feePrice = Big(this.txData.feeBTC).mul(Big(this.price)).toFixed(this.fixedUSDValue);
-    const feePlusAmountPrice = Big(amountPrice).plus(Big(feePrice));
-    return feePlusAmountPrice ? feePlusAmountPrice.toFixed(this.fixedUSDValue) : 0;
+  get feePlusAmountUSD() {
+    const feePlusAmountUSD = Big(this.amountUSD).plus(Big(this.feeUSD));
+    return feePlusAmountUSD ? feePlusAmountUSD.toFixed(this.fixedUSDDecimals) : 0;
   }
 
   get chunkedRecipientAddress() {
