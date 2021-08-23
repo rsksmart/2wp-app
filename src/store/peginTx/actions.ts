@@ -1,5 +1,6 @@
 import { ActionTree } from 'vuex';
 import * as constants from '@/store/constants';
+import axios from 'axios';
 import {
   PeginConfiguration, PegInTxState, Utxo, WalletAddress,
 } from './types';
@@ -24,5 +25,13 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   },
   [constants.PEGIN_TX_ADD_BITCOIN_WALLET]: ({ commit }, bitcoinWallet: string) => {
     commit(constants.PEGIN_TX_SET_BITCOIN_WALLET, bitcoinWallet);
+  },
+  [constants.PEGIN_TX_ADD_BITCOIN_PRICE]: ({ commit }) => {
+    axios.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin&order=market_cap_desc&per_page=100&page=1&sparkline=false')
+      .then((response) => {
+        const [result] = response.data;
+        commit(constants.PEGIN_TX_SET_BITCOIN_PRICE, result.current_price);
+      })
+      .catch(console.error);
   },
 };

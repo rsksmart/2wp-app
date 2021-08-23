@@ -27,6 +27,8 @@ export default class App extends Vue {
 
   @Action(constants.PEGIN_TX_ADD_PEGIN_CONFIGURATION, { namespace: 'pegInTx' }) addPeginConfiguration !: any;
 
+  @Action(constants.PEGIN_TX_ADD_BITCOIN_PRICE, { namespace: 'pegInTx' }) addBitcoinPrice !: any;
+
   @Emit()
   getBitcoinWallet(_bitcoinWallet: string) {
     this.bitcoinWallet = _bitcoinWallet;
@@ -44,6 +46,7 @@ export default class App extends Vue {
         };
         this.addPeginConfiguration(peginConfiguration);
         this.addSessionId(config.sessionId);
+        this.addBitcoinPrice();
       });
   }
 }
