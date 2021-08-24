@@ -384,7 +384,7 @@ import {
   Component, Prop, Emit,
 } from 'vue-property-decorator';
 import * as constants from '@/store/constants';
-import { AccountBalance, FeeAmountData } from '@/types';
+import { AccountBalance, FeeAmountData, PegInFormValues } from '@/types';
 import Wallet from '@/components/web3/Wallet.vue';
 import { Action, Getter, State } from 'vuex-class';
 import { Web3SessionState } from '@/store/session/types';
@@ -398,11 +398,13 @@ import Big from 'big.js';
   },
 })
 export default class SendBitcoinForm extends Vue {
+  btcAccountTypeSelected = '';
+
   bitcoinAmount = 0.0;
 
-  txFeeIndex = 1.0;
+  rskAddressSelected = '';
 
-  btcAccountTypeSelected = '';
+  txFeeIndex = 1.0;
 
   first = true;
 
@@ -430,8 +432,6 @@ export default class SendBitcoinForm extends Vue {
 
   useWeb3Wallet = false;
 
-  rskAddressSelected = '';
-
   amountStyle = '';
 
   transactionFees = ['Slow', 'Average', 'Fast'];
@@ -439,6 +439,8 @@ export default class SendBitcoinForm extends Vue {
   accountBalances: string[] = [];
 
   CHAIN_ID = process.env.VUE_APP_COIN === constants.BTC_NETWORK_MAINNET ? 30 : 31;
+
+  @Prop() pegInFormData!: PegInFormValues;
 
   @Prop() price!: number;
 
@@ -607,7 +609,7 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get isValidRskAddress() {
-    return rskUtils.isValidAddress(this.rskAddressSelected, this.CHAIN_ID);
+    return rskUtils.isAddress(this.rskAddressSelected, this.CHAIN_ID);
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -723,6 +725,12 @@ export default class SendBitcoinForm extends Vue {
       feeLevel: selectedFee,
       feeBTC: this.txFee,
       accountType: this.accountType,
+      pegInFormData: {
+        amount: this.bitcoinAmount,
+        accountType: this.btcAccountTypeSelected,
+        rskAddress: this.computedRskAddress,
+        txFeeIndex: this.txFeeIndex,
+      },
     };
   }
 
@@ -773,7 +781,19 @@ export default class SendBitcoinForm extends Vue {
     return this.peginTxState.bitcoinWallet === constants.WALLET_LEDGER;
   }
 
+  fillStoredPegInFormData() {
+    this.btcAccountTypeSelected = this.pegInFormData.accountType;
+    this.firstDone = this.pegInFormData.accountType !== '';
+    this.bitcoinAmount = this.pegInFormData.amount;
+    this.secondDone = Big(this.pegInFormData.amount).gt('0');
+    this.useWeb3Wallet = this.pegInFormData.rskAddress !== '';
+    this.rskAddressSelected = this.pegInFormData.rskAddress;
+    this.thirdDone = this.pegInFormData.rskAddress !== '';
+    this.txFeeIndex = this.pegInFormData.txFeeIndex;
+  }
+
   created() {
+    this.fillStoredPegInFormData();
     if (this.peginTxState.bitcoinWallet === constants.WALLET_LEDGER) {
       this.accountBalances = [
         `Segwit account - ${this.satoshiToBtc(this.balances.segwit)} BTC`,

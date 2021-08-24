@@ -71,9 +71,16 @@
       <tx-summary :txData="txData" :price="price" :showTxId="false" :initial-expand="true" />
     </v-row>
     <v-row class="mx-0 d-flex justify-center">
-      <v-btn v-if="!loadingState" rounded outlined color="#00B520" width="110" @click="toTrackId">
-        <span>Sign</span>
-      </v-btn>
+      <v-col v-if="!loadingState" cols="3" xl="2" class="d-flex flex-column align-center">
+        <v-btn rounded outlined color="#00B520" width="110" @click="toPegInForm">
+          <span>Go Back</span>
+        </v-btn>
+      </v-col>
+      <v-col v-if="!loadingState" cols="3" xl="2" class="d-flex flex-column align-center">
+        <v-btn v-if="!loadingState" rounded outlined color="#00B520" width="110" @click="toTrackId">
+          <span>Sign</span>
+        </v-btn>
+      </v-col>
       <v-col v-if="loadingState">
         <v-row class="mx-0 mb-5 d-flex justify-center">
           See your Ledger device to confirm your transaction!
@@ -134,6 +141,12 @@ export default class ConfirmLedgerTransaction extends Vue {
         }
       });
     return [this.txError, this.txId];
+  }
+
+  @Emit('toPegInForm')
+  async toPegInForm() {
+    this.loadingState = true;
+    return 'SendBitcoinForm';
   }
 }
 </script>
