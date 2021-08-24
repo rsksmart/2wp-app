@@ -9,12 +9,12 @@
           <v-col cols="8" class="d-flex justify-start align-center">
             <v-col cols="3">
               <a @click="toExchange">
-                Home
+                New transaction
               </a>
             </v-col>
             <v-col cols="5">
               <a @click="toTransactions">
-                Transaction Status
+                Check my transaction
               </a>
             </v-col>
           </v-col>
