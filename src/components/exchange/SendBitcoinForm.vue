@@ -438,8 +438,6 @@ export default class SendBitcoinForm extends Vue {
 
   accountBalances: string[] = [];
 
-  minAmountAllowed = 0.005;
-
   CHAIN_ID = process.env.VUE_APP_COIN === constants.BTC_NETWORK_MAINNET ? 30 : 31;
 
   @Prop() price!: number;
@@ -464,8 +462,9 @@ export default class SendBitcoinForm extends Vue {
 
   get amountErrorMessage() {
     let message = '';
-    if (this.bitcoinAmount < this.minAmountAllowed) message = `You can not send this amount of BTC. You can only send a minimum of ${this.minAmountAllowed} BTC`;
-    else if (this.bitcoinAmount >= this.selectedAccountBalance) message = 'The typed amount is higher than your current balance';
+    if (this.bitcoinAmount + this.txFee < this.satoshiToBtc(this.peginTxState.peginConfiguration.minValue)) message = `You can not send this amount of BTC. You can only send a minimum of ${this.satoshiToBtc(this.peginTxState.peginConfiguration.minValue)} BTC`;
+    else if (this.bitcoinAmount + this.txFee >= this.selectedAccountBalance) message = 'The typed amount is higher than your current balance + fee';
+    else if (this.bitcoinAmount + this.txFee >= this.satoshiToBtc(this.peginTxState.peginConfiguration.maxValue)) message = 'The typed amount is higher than the one allowed by the tool';
     return message;
   }
 
@@ -577,11 +576,15 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get insufficientAmount() {
-    if ((this.bitcoinAmount < this.minAmountAllowed && this.bitcoinAmount !== 0)
-      || this.bitcoinAmount > this.selectedAccountBalance) {
+    const amount = this.bitcoinAmount + this.txFee;
+    if ((amount
+      < this.satoshiToBtc(this.peginTxState.peginConfiguration.minValue)
+      && this.bitcoinAmount !== 0)
+      || amount > this.selectedAccountBalance
+      || amount > this.satoshiToBtc(this.peginTxState.peginConfiguration.maxValue)) {
       return true;
     }
-    if (this.bitcoinAmount !== 0 && this.bitcoinAmount < this.selectedAccountBalance) this.amountStyle = 'green-box';
+    if (this.bitcoinAmount !== 0 && amount < this.selectedAccountBalance) this.amountStyle = 'green-box';
     return false;
   }
 

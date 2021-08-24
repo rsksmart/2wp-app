@@ -6,7 +6,12 @@ import { PegInTxState } from './types';
 import { RootState } from '../types';
 
 export const state: PegInTxState = {
-  peginConfiguration: undefined,
+  peginConfiguration: {
+    minValue: 0,
+    maxValue: 0,
+    federationAddress: '',
+    btcConfirmations: 100,
+  },
   sessionId: '',
   utxoList: undefined,
   addressList: undefined,
