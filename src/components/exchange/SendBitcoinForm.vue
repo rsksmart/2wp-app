@@ -40,7 +40,7 @@
                       Native segwit is coming soon for Ledger devices!
                     </p>
                     <p v-if="isLedgerWallet" class="tooltip-form mb-0">
-                      Listed amounts represent the first 2 address balances from Legacy and Segwit
+                      Listed amounts represent the balance of the first 2 addresses from Legacy and Segwit
                       accounts including change.
                     </p>
                     <span v-if="!isLedgerWallet">
