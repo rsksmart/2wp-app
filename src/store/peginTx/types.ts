@@ -2,16 +2,17 @@ export interface PegInTxState {
   utxoList?: Utxo[];
   addressList?: WalletAddress[];
   trezorConnected: boolean;
-  peginConfiguration?: PeginConfiguration;
+  peginConfiguration: PeginConfiguration;
   sessionId: string;
   bitcoinWallet: string;
+  bitcoinPrice: number;
 }
 
 export interface PeginConfiguration {
   minValue: number;
-  maxValue?: number;
+  maxValue: number;
   federationAddress: string;
-  feePerKb: number;
+  feePerKb?: number;
   btcConfirmations: number;
   sessionId?: string;
   id?: number;

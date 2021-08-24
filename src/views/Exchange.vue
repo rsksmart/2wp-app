@@ -1,8 +1,8 @@
 <template>
-  <div class="exchange container">
+  <v-container fluid class="exchange px-0">
     <select-bitcoin-wallet v-if="!sendBitcoinStep" @bitcoinWalletSelected="toSendBitcoin"/>
     <component v-else :is="currentComponent"/>
-  </div>
+  </v-container>
 </template>
 
 <script lang="ts">

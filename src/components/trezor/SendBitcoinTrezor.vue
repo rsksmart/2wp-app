@@ -8,7 +8,7 @@
                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
                  @unused="getUnusedAddresses" :unusedAddresses="unusedAddresses"
                  @txFee="getTxFee" :fees="calculatedFees" :tx="createdTx"
-                 :txBuilder="txBuilder" :txData="txData" :price="bitcoinPrice"
+                 :txBuilder="txBuilder" :txData="txData" :price="peginTxState.bitcoinPrice"
                  :txId="txId"/>
     </template>
     <template v-if="showDialog">
@@ -111,8 +111,6 @@ export default class SendBitcoinTrezor extends Vue {
   trezorDataReady = false;
 
   trezorService: TrezorService = new TrezorService(process.env.VUE_APP_COIN ?? 'test');
-
-  bitcoinPrice = 52179.73; // https://www.coindesk.com/price/bitcoin
 
   @State('pegInTx') peginTxState!: PegInTxState;
 

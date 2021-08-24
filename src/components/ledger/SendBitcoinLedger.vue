@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <v-container fluid class="px-md-0">
     <template v-if="!ledgerDataReady">
       <connect-device @continueToForm="getAccountAddresses" :loadingState="loadingState"/>
     </template>
@@ -7,7 +7,7 @@
       <component :is="currentComponent" :balances="balances"
                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
                  @txFee="getTxFee" :fees="calculatedFees" :tx="createdTx"
-                 :txBuilder="txBuilder" :txData="txData" :price="bitcoinPrice"
+                 :txBuilder="txBuilder" :txData="txData" :price="peginTxState.bitcoinPrice"
                  :txId="txId"/>
     </template>
     <template v-if="showDialog">
@@ -21,7 +21,7 @@
       <tx-error-dialog :showTxErrorDialog="showTxErrorDialog"
                            :errorMessage="txError" @closeErrorDialog="closeTxErrorDialog"/>
     </template>
-  </div>
+  </v-container>
 </template>
 
 <script lang="ts">
@@ -111,8 +111,6 @@ export default class SendBitcoinLedger extends Vue {
   ledgerService: LedgerService = new LedgerService(
     process.env.VUE_APP_COIN ?? constants.BTC_NETWORK_TESTNET,
   );
-
-  bitcoinPrice = 52179.73; // https://www.coindesk.com/price/bitcoin TODO get the price globally
 
   @State('pegInTx') peginTxState!: PegInTxState;
 
