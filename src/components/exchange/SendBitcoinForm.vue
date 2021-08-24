@@ -463,7 +463,7 @@ export default class SendBitcoinForm extends Vue {
   get amountErrorMessage() {
     let message = '';
     if (this.bitcoinAmount + this.txFee < this.satoshiToBtc(this.peginTxState.peginConfiguration.minValue)) message = `You can not send this amount of BTC. You can only send a minimum of ${this.satoshiToBtc(this.peginTxState.peginConfiguration.minValue)} BTC`;
-    else if (this.bitcoinAmount + this.txFee >= this.selectedAccountBalance) message = 'The typed amount is higher than your current balance + fee';
+    else if (this.bitcoinAmount + this.txFee >= this.selectedAccountBalance) message = 'The typed amount is higher than your current balance - fee';
     else if (this.bitcoinAmount + this.txFee >= this.satoshiToBtc(this.peginTxState.peginConfiguration.maxValue)) message = 'The typed amount is higher than the one allowed by the tool';
     return message;
   }
