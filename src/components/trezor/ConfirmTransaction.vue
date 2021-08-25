@@ -1,7 +1,15 @@
 <template>
   <div class="transactions">
-    <v-row class="mx-0 d-flex justify-center">
-      <h1 class="text-center">Confirm transaction on your device</h1>
+    <v-row class="mx-0">
+      <v-col cols="1" lg="2" xl="3" align-self="center" class="d-flex flex-column align-start">
+        <v-btn rounded outlined color="#00B520" class="return-to-form-button"
+               icon width="38" height="38" @click="toPegInForm">
+          <v-icon class="return-to-form-button-content">mdi-chevron-left</v-icon>
+        </v-btn>
+      </v-col>
+      <v-col cols="10" lg="8" xl="6" class="d-flex flex-column align-center">
+        <h1 class="text-center">Confirm transaction on your device</h1>
+      </v-col>
     </v-row>
     <v-row class="mx-0 my-8 d-flex justify-center">
       <p class="text-center">
@@ -110,6 +118,12 @@ export default class ConfirmTransaction extends Vue {
         this.txError = err.message;
       });
     return [this.txError, this.txId];
+  }
+
+  @Emit('toPegInForm')
+  async toPegInForm() {
+    this.loadingState = true;
+    return 'SendBitcoinForm';
   }
 }
 </script>
