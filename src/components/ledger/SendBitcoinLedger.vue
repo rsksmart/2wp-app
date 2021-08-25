@@ -8,7 +8,8 @@
                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
                  @txFee="getTxFee" :fees="calculatedFees" :tx="createdTx"
                  :txBuilder="txBuilder" :txData="txData" :price="peginTxState.bitcoinPrice"
-                 :txId="txId"/>
+                 :txId="txId"
+                 @toPegInForm="toPegInForm" :pegInFormData="pegInFormData"/>
     </template>
     <template v-if="showDialog">
       <btc-to-rbtc-dialog :showDialog="showDialog" @closeDialog="closeDialog"/>
@@ -19,7 +20,7 @@
     </template>
     <template v-if="showTxErrorDialog">
       <tx-error-dialog :showTxErrorDialog="showTxErrorDialog"
-                           :errorMessage="txError" @closeErrorDialog="closeTxErrorDialog"/>
+                       :errorMessage="txError" @closeErrorDialog="closeTxErrorDialog"/>
     </template>
   </v-container>
 </template>
@@ -38,7 +39,7 @@ import ApiService from '@/services/ApiService';
 import { PegInTxState } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import {
-  AccountBalance, FeeAmountData, LedgerTx,
+  AccountBalance, FeeAmountData, LedgerTx, PegInFormValues,
 } from '@/types';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
 import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
@@ -58,6 +59,13 @@ import TxErrorDialog from '@/components/exchange/TxErrorDialog.vue';
   },
 })
 export default class SendBitcoinLedger extends Vue {
+  pegInFormData: PegInFormValues ={
+    accountType: '',
+    amount: 0.0,
+    rskAddress: '',
+    txFeeIndex: 1.0,
+  };
+
   showDialog = true;
 
   showErrorDialog = false;
@@ -134,7 +142,13 @@ export default class SendBitcoinLedger extends Vue {
 
   @Emit()
   toConfirmTx({
-    amountToTransferInSatoshi, refundAddress, recipient, feeLevel, feeBTC, accountType,
+    amountToTransferInSatoshi,
+    refundAddress,
+    recipient,
+    feeLevel,
+    feeBTC,
+    accountType,
+    pegInFormData,
   }: {
     amountToTransferInSatoshi: number;
     refundAddress: string;
@@ -142,7 +156,9 @@ export default class SendBitcoinLedger extends Vue {
     feeLevel: string;
     feeBTC: number;
     accountType: string;
+    pegInFormData: PegInFormValues;
   }) {
+    this.pegInFormData = pegInFormData;
     this.amount = amountToTransferInSatoshi;
     this.refundAddress = refundAddress;
     this.recipient = recipient;
@@ -162,6 +178,11 @@ export default class SendBitcoinLedger extends Vue {
         return tx;
       })
       .catch(console.error);
+  }
+
+  @Emit()
+  toPegInForm() {
+    this.currentComponent = 'SendBitcoinForm';
   }
 
   @Emit()

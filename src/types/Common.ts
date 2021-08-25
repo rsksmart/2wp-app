@@ -55,3 +55,10 @@ export interface TxData {
   recipient: string;
   feeBTC: number;
 }
+
+export interface PegInFormValues {
+  accountType: string;
+  amount: number;
+  rskAddress: string;
+  txFeeIndex: number;
+}

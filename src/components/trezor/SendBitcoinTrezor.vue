@@ -9,7 +9,8 @@
                  @unused="getUnusedAddresses" :unusedAddresses="unusedAddresses"
                  @txFee="getTxFee" :fees="calculatedFees" :tx="createdTx"
                  :txBuilder="txBuilder" :txData="txData" :price="peginTxState.bitcoinPrice"
-                 :txId="txId"/>
+                 :txId="txId"
+                 @toPegInForm="toPegInForm" :pegInFormData="pegInFormData"/>
     </template>
     <template v-if="showDialog">
       <btc-to-rbtc-dialog :showDialog="showDialog" @closeDialog="closeDialog"/>
@@ -40,7 +41,7 @@ import ApiService from '@/services/ApiService';
 import { PegInTxState } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import {
-  AccountBalance, FeeAmountData, TrezorTx,
+  AccountBalance, FeeAmountData, PegInFormValues, TrezorTx,
 } from '@/types';
 import TrezorTxBuilder from '@/middleware/TxBuilder/TrezorTxBuilder';
 import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
@@ -60,6 +61,13 @@ import TxErrorDialog from '@/components/exchange/TxErrorDialog.vue';
   },
 })
 export default class SendBitcoinTrezor extends Vue {
+  pegInFormData: PegInFormValues ={
+    accountType: '',
+    amount: 0.0,
+    rskAddress: '',
+    txFeeIndex: 1.0,
+  };
+
   showDialog = true;
 
   showErrorDialog = false;
@@ -140,7 +148,13 @@ export default class SendBitcoinTrezor extends Vue {
 
   @Emit()
   toConfirmTx({
-    amountToTransferInSatoshi, refundAddress, recipient, feeLevel, feeBTC, accountType,
+    amountToTransferInSatoshi,
+    refundAddress,
+    recipient,
+    feeLevel,
+    feeBTC,
+    accountType,
+    pegInFormData,
   }: {
     amountToTransferInSatoshi: number;
     refundAddress: string;
@@ -148,7 +162,9 @@ export default class SendBitcoinTrezor extends Vue {
     feeLevel: string;
     feeBTC: number;
     accountType: string;
+    pegInFormData: PegInFormValues;
   }) {
+    this.pegInFormData = pegInFormData;
     this.amount = amountToTransferInSatoshi;
     this.refundAddress = refundAddress;
     this.recipient = recipient;
@@ -167,6 +183,11 @@ export default class SendBitcoinTrezor extends Vue {
         return tx;
       })
       .catch(console.error);
+  }
+
+  @Emit()
+  toPegInForm() {
+    this.currentComponent = 'SendBitcoinForm';
   }
 
   @Emit()
