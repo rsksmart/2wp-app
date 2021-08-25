@@ -28,6 +28,10 @@ export default class LedgerTxBuilder extends TxBuilder {
     this.txAccountType = accountType;
   }
 
+  get accountType() {
+    return this.txAccountType;
+  }
+
   buildTx({
     amountToTransferInSatoshi, refundAddress, recipient, feeLevel, changeAddress, sessionId,
   }: {

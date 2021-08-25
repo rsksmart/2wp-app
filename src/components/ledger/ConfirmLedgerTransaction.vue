@@ -71,6 +71,9 @@
         </v-row>
       </v-col>
     </v-row>
+    <template v-if="showUnverifiedInputsDialog">
+      <unverified-inputs-dialog :showDialog="showUnverifiedInputsDialog"/>
+    </template>
   </div>
 </template>
 
@@ -83,10 +86,13 @@ import { TrezorTx, TxData } from '@/types';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
 import ApiService from '@/services/ApiService';
+import UnverifiedInputsDialog from '@/components/ledger/UnverifiedInputsDialog.vue';
+import * as constants from '@/store/constants';
 
 @Component({
   components: {
     TxSummary,
+    UnverifiedInputsDialog,
   },
 })
 export default class ConfirmLedgerTransaction extends Vue {
@@ -103,6 +109,10 @@ export default class ConfirmLedgerTransaction extends Vue {
   @Prop() txData!: TxData;
 
   @Prop() price!: number;
+
+  get showUnverifiedInputsDialog() {
+    return this.txBuilder.accountType === constants.BITCOIN_SEGWIT_ADDRESS && this.loadingState;
+  }
 
   @Emit('successConfirmation')
   async toTrackId() {
