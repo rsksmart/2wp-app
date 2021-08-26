@@ -100,8 +100,8 @@ import {
   Component, Emit, Prop,
   Vue,
 } from 'vue-property-decorator';
-import { TxData } from '@/types';
 import Big from 'big.js';
+import { TxData } from '@/types';
 
 @Component
 export default class TxSummary extends Vue {
