@@ -1,6 +1,6 @@
 import { ActionTree } from 'vuex';
-import * as constants from '@/store/constants';
 import axios from 'axios';
+import * as constants from '@/store/constants';
 import {
   PeginConfiguration, PegInTxState, Utxo, WalletAddress,
 } from './types';

@@ -384,14 +384,14 @@ import {
   Vue,
   Component, Prop, Emit,
 } from 'vue-property-decorator';
+import { Action, Getter, State } from 'vuex-class';
+import * as rskUtils from '@rsksmart/rsk-utils';
+import Big from 'big.js';
 import * as constants from '@/store/constants';
 import { AccountBalance, FeeAmountData, PegInFormValues } from '@/types';
 import Wallet from '@/components/web3/Wallet.vue';
-import { Action, Getter, State } from 'vuex-class';
 import { Web3SessionState } from '@/store/session/types';
 import { PegInTxState } from '@/store/peginTx/types';
-import * as rskUtils from '@rsksmart/rsk-utils';
-import Big from 'big.js';
 
 @Component({
   components: {
@@ -642,7 +642,7 @@ export default class SendBitcoinForm extends Vue {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  blockLetterKeyDown(e: any) {
+  blockLetterKeyDown(e: KeyboardEvent) {
     if (e.key === 'e') e.preventDefault();
     if (e.key === '+') e.preventDefault();
     if (e.key === '-') e.preventDefault();
