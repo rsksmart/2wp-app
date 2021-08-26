@@ -129,7 +129,9 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Emit } from 'vue-property-decorator';
+import {
+  Vue, Component, Emit, Prop,
+} from 'vue-property-decorator';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import { PegStatus } from '@/store/constants';
 import ApiService from '@/services/ApiService';
@@ -164,6 +166,8 @@ export default class Status extends Vue {
   rskConfirmationsPercentage = 0;
 
   isRejected = false;
+
+  @Prop({ default: '' }) txIdProp!: string;
 
   get showStatus() {
     return !this.loading && !this.error && !!this.statusMessage;
@@ -243,7 +247,7 @@ export default class Status extends Vue {
       amount: this.pegInStatus.btc.amountTransferred * 100000000,
       refundAddress: this.pegInStatus.btc.refundAddress,
       recipient: this.pegInStatus.rsk.recipientAddress,
-      feeBTC: 0,
+      feeBTC: this.pegInStatus.btc.fees,
     };
   }
 
@@ -251,6 +255,13 @@ export default class Status extends Vue {
   // eslint-disable-next-line class-methods-use-this
   openExplorer() {
     window.open('https://explorer.testnet.rsk.co/', '_blank');
+  }
+
+  created() {
+    if (this.txIdProp) {
+      this.txId = this.txIdProp ?? '';
+      this.getPegStatus();
+    }
   }
 }
 </script>

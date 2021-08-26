@@ -86,7 +86,7 @@ export default class TrackingId extends Vue {
 
   @Emit()
   toTxStatus() {
-    this.$router.push({ name: 'Status.vue' });
+    this.$router.push({ name: 'Status', query: { txId: this.txId } });
   }
 
   @Emit()
