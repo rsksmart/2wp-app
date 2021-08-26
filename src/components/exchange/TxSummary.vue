@@ -2,7 +2,7 @@
   <v-row class="mx-0">
     <v-col offset="2" cols="8">
       <v-row justify="center" class="mx-0 pb-4">
-        <h2 class="text-center">Transaction Summary:</h2>
+        <h2 class="text-center">Transaction summary:</h2>
       </v-row>
       <v-row class="d-flex justify-center mb-n3">
         <a v-show="expand" @click="switchExpand">

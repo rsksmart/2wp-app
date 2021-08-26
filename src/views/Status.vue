@@ -3,16 +3,22 @@
     <v-row class="mx-0 my-10 d-flex justify-center">
       <h1 class="text-center">Transaction Status</h1>
     </v-row>
+    <v-row class="my-10 d-flex justify-center">
+      <h2 class="text-center">
+        Enter your Bitcoin transaction hash in the textbox below
+        to check the status of your operation
+      </h2>
+    </v-row>
     <v-row class="mx-0 d-flex justify-center">
       <v-col cols="7">
         <v-text-field rounded dense outlined hide-details
                       append-icon="mdi-magnify"
                       v-model="txId"
                       @keyup.enter="getPegStatus"
-                      color="#C4C4C4" label="Transaction ID"/>
+                      color="#C4C4C4" label="Bitcoin transaction ID"/>
       </v-col>
     </v-row>
-    <v-row v-if="showStatus" class="mx-0 d-flex justify-center">
+    <v-row v-if="showStatus" class="mx-0 my-5 d-flex justify-center">
       <div class="my-4 status" :class="activeMessageStyle">
         {{ statusMessage }}
       </div>
@@ -105,7 +111,7 @@
                          src="@/assets/status/btc-green.png" height="78" contain/>
                 </v-row>
                 <v-row class="mt-4">
-                  <h1>Receipt RSK address</h1>
+                  <h1>RBTC delivered</h1>
                 </v-row>
               </div>
             </div>
@@ -116,7 +122,7 @@
     <v-row v-if="showStatus" class="mt-4">
       <v-col>
         <tx-summary :txData="txData" :price="price" v-if="showStatus"
-                    :txId="txId" :showTxId="true"/>
+                    :txId="txId" :showTxId="true" :initialExpand="true"/>
         <v-row v-if="!isRejected" class="d-flex justify-center mt-6">
           <v-btn class="px-5" width="117" outlined color="#B5CAB8" rounded
                  @click="openExplorer">
@@ -233,7 +239,7 @@ export default class Status extends Vue {
         this.isRejected = true;
         break;
       case PegStatus.NOT_IN_RSK_YET:
-        this.statusMessage = 'Your transaction in BTC is not in RSK yet, please wait.';
+        this.statusMessage = 'More Bitcoin confirmations are yet needed, please wait';
         this.activeMessageStyle = 'statusProgress';
         this.isRejected = false;
         break;
