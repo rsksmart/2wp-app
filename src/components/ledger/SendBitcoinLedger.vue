@@ -226,7 +226,11 @@ export default class SendBitcoinLedger extends Vue {
         this.ledgerDataReady = true;
       })
       .catch((e) => {
-        this.deviceError = e.message;
+        if (e.statusCode === 27010) {
+          this.deviceError = 'Please unlock your Ledger device.';
+        } else {
+          this.deviceError = e.message;
+        }
         this.showErrorDialog = true;
       });
   }
