@@ -19,6 +19,7 @@ const routes: Array<RouteConfig> = [
     path: '/status',
     name: 'Status',
     component: () => import(/* webpackChunkName: "transactions" */ '../views/Status.vue'),
+    props: (route) => ({ txIdProp: route.query.txId }),
   },
 ];
 

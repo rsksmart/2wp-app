@@ -12,6 +12,7 @@ export interface BtcPeginStatus {
   refundAddress: string;
   confirmations: number;
   requiredConfirmation: number;
+  fees: number;
 }
 
 export interface RskPeginStatus {
