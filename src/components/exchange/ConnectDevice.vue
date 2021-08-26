@@ -1,41 +1,40 @@
 <template>
   <div class="transactions">
-    <v-col offset="2" cols="8" offset-lg="3" lg="6">
+    <v-col offset="2" cols="8" offset-lg="3" lg="6" class="d-flex flex-column align-center">
       <v-row class="mx-0 d-flex justify-center">
         <h1>Connect your {{ walletName }}</h1>
       </v-row>
       <v-row class="ma-0 mb-10 d-flex justify-center">
         <p class="ma-0">(Keep your {{ walletName }} close so you can authorize access)</p>
       </v-row>
-      <v-col class="ma-0 mb-10">
-        <v-row class="ma-0 d-flex justify-center">
-          <v-col  offset="1" cols="1">
-            <span class="number">1</span>
-          </v-col>
-          <v-col cols="9">
-            <p class="ma-0">Plug your {{ walletName }} device into your computer</p>
-          </v-col>
-          <v-col cols="1"></v-col>
-        </v-row>
-        <v-row class="ma-0 mt-0 d-flex justify-center">
-          <v-col  offset="1" cols="1">
-            <span class="number">2</span>
-          </v-col>
-          <v-col cols="9">
-            <p class="ma-0">Insert {{ walletName }} device PIN code</p>
-          </v-col>
-          <v-col cols="1"></v-col>
-        </v-row>
-        <v-row v-if="isLedgerWallet" class="ma-0 mt-0 d-flex justify-center">
-          <v-col  offset="1" cols="1">
-            <span class="number">3</span>
-          </v-col>
-          <v-col cols="9">
-            <p class="ma-0">Select the Bitcoin app in your device</p>
-          </v-col>
-          <v-col cols="1"></v-col>
-        </v-row>
-      </v-col>
+      <v-row id="connect-device-steps">
+        <v-col class="mb-10" cols="12">
+          <v-row class="ma-0">
+            <v-col cols="1">
+              <span class="number">1</span>
+            </v-col>
+            <v-col cols="11">
+              <p class="ma-0">Plug your {{ walletName }} device into your computer</p>
+            </v-col>
+          </v-row>
+          <v-row class="ma-0">
+            <v-col cols="1">
+              <span class="number">2</span>
+            </v-col>
+            <v-col cols="11">
+              <p class="ma-0">Insert {{ walletName }} device PIN code</p>
+            </v-col>
+          </v-row>
+          <v-row v-if="isLedgerWallet" class="ma-0">
+            <v-col cols="1">
+              <span class="number">3</span>
+            </v-col>
+            <v-col cols="11">
+              <p class="ma-0">Select the Bitcoin app in your device</p>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
       <v-row class="mx-0 d-flex justify-center">
         <v-img :src="deviceImagePath" height="300" contain />
       </v-row>
