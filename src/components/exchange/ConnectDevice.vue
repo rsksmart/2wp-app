@@ -38,12 +38,14 @@
       <v-row class="mx-0 d-flex justify-center">
         <v-img :src="deviceImagePath" height="300" contain />
       </v-row>
-      <v-row v-if="!loadingState" class="mx-0 mt-8 mb-10 d-flex justify-center">
-        <v-btn width="142" height="50" dense rounded color="#00B520" @click="continueToForm">
+      <v-row v-if="sendBitcoinState === 'idle' || sendBitcoinState === 'error'"
+             class="mx-0 mt-8 mb-10 d-flex justify-center">
+        <v-btn width="142" height="50" dense rounded color="#00B520"
+               @click="continueToForm" :disabled="sendBitcoinState === 'error'">
           <span class="whiteish">Continue</span>
         </v-btn>
       </v-row>
-      <v-row v-if="loadingState" class="mx-0 mb-5 mt-10 d-flex justify-center">
+      <v-row v-if="sendBitcoinState === 'loading'" class="mx-0 mb-5 mt-10 d-flex justify-center">
         <v-progress-circular indeterminate :size="60" :width="8" color="#00B520" />
       </v-row>
     </v-col>
@@ -60,12 +62,13 @@ import { PegInTxState } from '@/store/peginTx/types';
 import LedgerConnect from '@/assets/exchange/ledger/connect_ledger.png';
 import TrezorConnect from '@/assets/exchange/trezor/connect_trezor.png';
 import Connect from '@/assets/exchange/wallet.png';
+import { SendBitcoinState } from '@/types';
 
 @Component
 export default class ConnectDevice extends Vue {
   @Prop() device!: string;
 
-  @Prop() loadingState!: boolean;
+  @Prop() sendBitcoinState!: SendBitcoinState;
 
   @State('pegInTx') peginTxState!: PegInTxState;
 

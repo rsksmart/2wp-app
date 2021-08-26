@@ -1,7 +1,8 @@
 <template>
   <div class="container">
     <template v-if="!trezorDataReady">
-      <connect-device @continueToForm="getAccountAddresses" :loadingState="loadingState"/>
+      <connect-device @continueToForm="getAccountAddresses"
+                      :sendBitcoinState="sendBitcoinState"/>
     </template>
     <template v-if="trezorDataReady">
       <component :is="currentComponent" :balances="balances"
@@ -41,7 +42,7 @@ import ApiService from '@/services/ApiService';
 import { PegInTxState } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import {
-  AccountBalance, FeeAmountData, PegInFormValues, TrezorTx,
+  AccountBalance, FeeAmountData, PegInFormValues, SendBitcoinState, TrezorTx,
 } from '@/types';
 import TrezorTxBuilder from '@/middleware/TxBuilder/TrezorTxBuilder';
 import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
@@ -76,7 +77,7 @@ export default class SendBitcoinTrezor extends Vue {
 
   deviceError = 'test';
 
-  loadingState = false;
+  sendBitcoinState: SendBitcoinState = 'idle';
 
   trezorConnected = false;
 
@@ -220,7 +221,7 @@ export default class SendBitcoinTrezor extends Vue {
   @Emit()
   closeErrorDialog() {
     this.showErrorDialog = false;
-    this.loadingState = false;
+    this.sendBitcoinState = 'idle';
   }
 
   @Emit()
@@ -230,7 +231,7 @@ export default class SendBitcoinTrezor extends Vue {
 
   @Emit()
   getAccountAddresses() {
-    this.loadingState = true;
+    this.sendBitcoinState = 'loading';
     this.trezorService.getAddressList(2)
       .then((addresses) => {
         this.setPeginTxAddresses(addresses);
@@ -243,6 +244,7 @@ export default class SendBitcoinTrezor extends Vue {
       })
       .catch((e) => {
         this.deviceError = e.message;
+        this.sendBitcoinState = 'error';
         this.showErrorDialog = true;
       });
   }
