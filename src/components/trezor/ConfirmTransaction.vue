@@ -57,7 +57,8 @@
     </v-row>
     <v-divider/>
     <v-row class="mx-0 my-8">
-      <tx-summary :txData="txData" :price="price" :showTxId="false" :initial-expand="true" />
+      <tx-summary :txData="txData" :price="price" :showTxId="false" :initial-expand="true"
+                  :rskFederationAddress="rskFederationAddress"/>
     </v-row>
     <v-row class="mx-0 d-flex justify-center">
       <v-btn v-if="confirmTxState === 'idle' || confirmTxState === 'error'"
@@ -99,6 +100,8 @@ export default class ConfirmTransaction extends Vue {
 
   confirmTxState: ConfirmTxState = 'idle';
 
+  rskFederationAddress = '';
+
   @Prop() tx!: TrezorTx;
 
   @Prop() txBuilder!: TrezorTxBuilder;
@@ -128,6 +131,10 @@ export default class ConfirmTransaction extends Vue {
   async toPegInForm() {
     this.confirmTxState = 'loading';
     return 'SendBitcoinForm';
+  }
+
+  created() {
+    this.rskFederationAddress = this.tx?.outputs[1]?.address?.trim() ?? 'RSK federation address not found';
   }
 }
 </script>
