@@ -109,6 +109,7 @@ import {
 } from 'vue-property-decorator';
 import Big from 'big.js';
 import { TxData } from '@/types';
+import * as constants from '@/store/constants';
 
 @Component
 export default class TxSummary extends Vue {
@@ -182,7 +183,8 @@ export default class TxSummary extends Vue {
 
   @Emit()
   toRskExplorer() {
-    window.open(`https://explorer.testnet.rsk.co/address/${this.txData.recipient}`, '_blank');
+    const network = process.env.VUE_APP_COIN === constants.BTC_NETWORK_MAINNET ? '' : '.testnet';
+    window.open(`https://explorer${network}.rsk.co/address/${this.txData.recipient}`, '_blank');
   }
 
   created() {
