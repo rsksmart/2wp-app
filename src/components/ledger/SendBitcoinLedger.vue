@@ -1,7 +1,8 @@
 <template>
   <v-container fluid class="px-md-0">
     <template v-if="!ledgerDataReady">
-      <connect-device @continueToForm="getAccountAddresses" :loadingState="loadingState"/>
+      <connect-device @continueToForm="getAccountAddresses"
+                      :sendBitcoinState="sendBitcoinState"/>
     </template>
     <template v-if="ledgerDataReady">
       <component :is="currentComponent" :balances="balances"
@@ -39,7 +40,7 @@ import ApiService from '@/services/ApiService';
 import { PegInTxState } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import {
-  AccountBalance, FeeAmountData, LedgerTx, PegInFormValues,
+  AccountBalance, FeeAmountData, LedgerTx, PegInFormValues, SendBitcoinState,
 } from '@/types';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
 import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
@@ -74,7 +75,7 @@ export default class SendBitcoinLedger extends Vue {
 
   deviceError = 'test';
 
-  loadingState = false;
+  sendBitcoinState: SendBitcoinState = 'idle';
 
   currentComponent = 'SendBitcoinForm';
 
@@ -204,7 +205,7 @@ export default class SendBitcoinLedger extends Vue {
   @Emit()
   closeErrorDialog() {
     this.showErrorDialog = false;
-    this.loadingState = false;
+    this.sendBitcoinState = 'idle';
   }
 
   @Emit()
@@ -214,7 +215,7 @@ export default class SendBitcoinLedger extends Vue {
 
   @Emit()
   getAccountAddresses() {
-    this.loadingState = true;
+    this.sendBitcoinState = 'loading';
     this.ledgerService.getAddressList(2)
       .then((addresses) => {
         this.setPeginTxAddresses(addresses);
@@ -231,6 +232,7 @@ export default class SendBitcoinLedger extends Vue {
         } else {
           this.deviceError = e.message;
         }
+        this.sendBitcoinState = 'error';
         this.showErrorDialog = true;
       });
   }

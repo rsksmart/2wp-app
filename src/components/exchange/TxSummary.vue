@@ -93,6 +93,28 @@
                     </v-row>
                   </div>
                 </template>
+                <template>
+                  <v-divider/>
+                  <div class="container">
+                    <v-row class="mx-0" align="start">
+                      <h3 class="mr-1">RSK POWpeg Address</h3>
+                      <v-tooltip right>
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-icon small color="teal darken-2" v-bind="attrs" v-on="on">
+                            mdi-information
+                          </v-icon>
+                        </template>
+                        <p class="tooltip-form mb-0">
+                          The POWpeg address is a bitcoin multisig address secured by the RSK network that allows
+                          the RBTC transfer to your account
+                        </p>
+                      </v-tooltip>
+                    </v-row>
+                    <v-row class="mx-0">
+                      <span>{{ rskFederationAddress }}</span>
+                    </v-row>
+                  </div>
+                </template>
               </div>
             </v-col>
           </v-row>
@@ -122,6 +144,8 @@ export default class TxSummary extends Vue {
   @Prop() showTxId!: false;
 
   @Prop() initialExpand!: boolean;
+
+  @Prop() rskFederationAddress!: string;
 
   expand = false;
 

@@ -62,3 +62,7 @@ export interface PegInFormValues {
   rskAddress: string;
   txFeeIndex: number;
 }
+
+export type SendBitcoinState = 'idle' | 'loading' | 'error';
+
+export type ConfirmTxState = 'idle' | 'loading' | 'error';

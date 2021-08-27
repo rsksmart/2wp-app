@@ -3,7 +3,8 @@
     <v-row class="mx-0">
       <v-col cols="1" lg="2" xl="3" align-self="center" class="d-flex flex-column align-start">
         <v-btn rounded outlined color="#00B520" class="return-to-form-button"
-               icon width="38" height="38" @click="toPegInForm">
+               icon width="38" height="38" @click="toPegInForm"
+               :disabled="confirmTxState === 'error' || confirmTxState === 'loading'">
           <v-icon class="return-to-form-button-content">mdi-chevron-left</v-icon>
         </v-btn>
       </v-col>
@@ -56,13 +57,16 @@
     </v-row>
     <v-divider/>
     <v-row class="mx-0 my-8">
-      <tx-summary :txData="txData" :price="price" :showTxId="false" :initial-expand="true" />
+      <tx-summary :txData="txData" :price="price" :showTxId="false" :initial-expand="true"
+                  :rskFederationAddress="rskFederationAddress"/>
     </v-row>
     <v-row class="mx-0 d-flex justify-center">
-      <v-btn v-if="!loadingState" rounded outlined color="#00B520" width="110" @click="toTrackId">
+      <v-btn v-if="confirmTxState === 'idle' || confirmTxState === 'error'"
+             rounded outlined color="#00B520" width="110" @click="toTrackId"
+             :disabled="confirmTxState === 'error'">
         <span>Sign</span>
       </v-btn>
-      <v-col v-if="loadingState">
+      <v-col v-if="confirmTxState === 'loading'">
         <v-row class="mx-0 mb-5 d-flex justify-center">
           See your Ledger device to confirm your transaction!
         </v-row>
@@ -82,7 +86,7 @@ import {
   Component, Emit, Prop,
   Vue,
 } from 'vue-property-decorator';
-import { TrezorTx, TxData } from '@/types';
+import { ConfirmTxState, TrezorTx, TxData } from '@/types';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
 import ApiService from '@/services/ApiService';
@@ -100,7 +104,9 @@ export default class ConfirmLedgerTransaction extends Vue {
 
   txError = '';
 
-  loadingState = false;
+  confirmTxState: ConfirmTxState = 'idle';
+
+  rskFederationAddress = '';
 
   @Prop() tx!: TrezorTx;
 
@@ -111,12 +117,12 @@ export default class ConfirmLedgerTransaction extends Vue {
   @Prop() price!: number;
 
   get showUnverifiedInputsDialog() {
-    return this.txBuilder.accountType === constants.BITCOIN_SEGWIT_ADDRESS && this.loadingState;
+    return this.txBuilder.accountType === constants.BITCOIN_SEGWIT_ADDRESS && this.confirmTxState === 'loading';
   }
 
   @Emit('successConfirmation')
   async toTrackId() {
-    this.loadingState = true;
+    this.confirmTxState = 'loading';
     await this.txBuilder.sign()
       .then((tx) => ApiService
         .broadcast(tx.signedTx))
@@ -125,6 +131,7 @@ export default class ConfirmLedgerTransaction extends Vue {
       })
       .catch((err) => {
         console.log(err);
+        this.confirmTxState = 'error';
         if (err.statusCode === 27013) {
           this.txError = 'Transaction cancelled by user.';
         } else {
@@ -136,8 +143,12 @@ export default class ConfirmLedgerTransaction extends Vue {
 
   @Emit('toPegInForm')
   async toPegInForm() {
-    this.loadingState = true;
+    this.confirmTxState = 'loading';
     return 'SendBitcoinForm';
+  }
+
+  created() {
+    this.rskFederationAddress = this.tx?.outputs[1]?.address?.trim() ?? 'RSK POWpeg address not found';
   }
 }
 </script>
