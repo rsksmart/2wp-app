@@ -63,7 +63,14 @@
                     <h3>Destination RSK Address</h3>
                   </v-row>
                   <v-row class="mx-0">
-                    <span>{{ txData.recipient }}</span>
+                    <v-col  class="d-flex align-center my-0 mx-0 pa-0" >
+                      <span>{{ txData.recipient }}</span>
+                    </v-col>
+                    <v-col class="d-flex align-center my-0 pa-0 mx-3">
+                      <v-btn @click="toRskExplorer" icon color="#C4C4C4" x-small>
+                        <v-icon>mdi-open-in-new</v-icon>
+                      </v-btn>
+                    </v-col>
                   </v-row>
                 </div>
                 <v-divider/>
@@ -171,6 +178,11 @@ export default class TxSummary extends Vue {
   @Emit()
   switchExpand() {
     this.expand = !this.expand;
+  }
+
+  @Emit()
+  toRskExplorer() {
+    window.open(`https://explorer.testnet.rsk.co/address/${this.txData.recipient}`, '_blank');
   }
 
   created() {
