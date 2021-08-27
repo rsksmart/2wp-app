@@ -63,7 +63,14 @@
                     <h3>Destination RSK Address</h3>
                   </v-row>
                   <v-row class="mx-0">
-                    <span>{{ txData.recipient }}</span>
+                    <v-col  class="d-flex align-center my-0 mx-0 pa-0" >
+                      <span>{{ txData.recipient }}</span>
+                    </v-col>
+                    <v-col class="d-flex align-center my-0 pa-0 mx-3">
+                      <v-btn @click="toRskExplorer" icon color="#C4C4C4" x-small>
+                        <v-icon>mdi-open-in-new</v-icon>
+                      </v-btn>
+                    </v-col>
                   </v-row>
                 </div>
                 <v-divider/>
@@ -102,6 +109,7 @@ import {
 } from 'vue-property-decorator';
 import Big from 'big.js';
 import { TxData } from '@/types';
+import * as constants from '@/store/constants';
 
 @Component
 export default class TxSummary extends Vue {
@@ -171,6 +179,12 @@ export default class TxSummary extends Vue {
   @Emit()
   switchExpand() {
     this.expand = !this.expand;
+  }
+
+  @Emit()
+  toRskExplorer() {
+    const network = process.env.VUE_APP_COIN === constants.BTC_NETWORK_MAINNET ? '' : '.testnet';
+    window.open(`https://explorer${network}.rsk.co/address/${this.txData.recipient}`, '_blank');
   }
 
   created() {

@@ -11,8 +11,9 @@
     </v-row>
     <v-row class="mx-0 d-flex justify-center">
       <v-col cols="7">
-        <v-text-field rounded dense outlined hide-details
+        <v-text-field dense outlined hide-details
                       append-icon="mdi-magnify"
+                      @click:append="getPegStatus"
                       v-model="txId"
                       @keyup.enter="getPegStatus"
                       color="#C4C4C4" label="Bitcoin transaction ID"/>
@@ -108,7 +109,7 @@
                   margin-right: -75px; margin-top: -50px; }">
                 <v-row>
                   <v-img class="d-flex justify-center"
-                         src="@/assets/status/btc-green.png" height="78" contain/>
+                         src="@/assets/status/rbtc_green.png" height="78" contain/>
                 </v-row>
                 <v-row class="mt-4">
                   <h1>RBTC delivered</h1>
@@ -125,8 +126,8 @@
                     :txId="txId" :showTxId="true" :initialExpand="true"/>
         <v-row v-if="!isRejected" class="d-flex justify-center mt-6">
           <v-btn class="px-5" width="117" outlined color="#B5CAB8" rounded
-                 @click="openExplorer">
-            <p>RSK Explorer</p>
+                 @click="getPegStatus">
+            <p>Refresh</p>
           </v-btn>
         </v-row>
       </v-col>
