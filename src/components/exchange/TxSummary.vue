@@ -90,7 +90,7 @@
                   <v-divider/>
                   <div class="container">
                     <v-row class="mx-0" align="start">
-                      <h3 class="mr-1">RSK Federation Address</h3>
+                      <h3 class="mr-1">RSK POWpeg Address</h3>
                       <v-tooltip right>
                         <template v-slot:activator="{ on, attrs }">
                           <v-icon small color="teal darken-2" v-bind="attrs" v-on="on">
@@ -98,7 +98,7 @@
                           </v-icon>
                         </template>
                         <p class="tooltip-form mb-0">
-                          The federation address is a bitcoin address secured by RSK that allow
+                          The POWpeg address is a bitcoin multisig address secured by the RSK network that allows
                           the RBTC transfer to your account
                         </p>
                       </v-tooltip>

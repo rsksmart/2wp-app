@@ -148,7 +148,7 @@ export default class ConfirmLedgerTransaction extends Vue {
   }
 
   created() {
-    this.rskFederationAddress = this.tx?.outputs[1]?.address?.trim() ?? 'RSK federation address not found';
+    this.rskFederationAddress = this.tx?.outputs[1]?.address?.trim() ?? 'RSK POWpeg address not found';
   }
 }
 </script>
