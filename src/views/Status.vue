@@ -89,7 +89,7 @@
               height="17" />
             <v-row class="d-flex justify-center mt-4 pa-0">
               <h5>
-                {{leftBtcTime}}:00 left
+                {{leftBtcTime}} hours left
               </h5>
             </v-row>
             <v-row class="d-flex justify-center mt-2 pa-0">
@@ -154,10 +154,12 @@
 import {
   Vue, Component, Emit, Prop,
 } from 'vue-property-decorator';
+import { State } from 'vuex-class';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import { PegStatus } from '@/store/constants';
 import ApiService from '@/services/ApiService';
 import { PeginStatus } from '@/store/types';
+import { PegInTxState } from '@/store/peginTx/types';
 
 @Component({
   components: {
@@ -191,9 +193,11 @@ export default class Status extends Vue {
 
   isRejected = false;
 
-  leftBtcTime = 0;
+  leftBtcTime = '';
 
   @Prop({ default: '' }) txIdProp!: string;
+
+  @State('pegInTx') peginTxState!: PegInTxState;
 
   get showStatus() {
     return !this.loading && !this.error && !!this.statusMessage;
@@ -201,15 +205,18 @@ export default class Status extends Vue {
 
   @Emit()
   refreshPercentage() {
-    const rskConfirmationsRequired = 100;
+    const rskConfirmationsRequired = this.peginTxState.peginConfiguration.rskConfirmations;
+    const btcConfirmationsRequired = this.peginTxState.peginConfiguration.btcConfirmations;
     let rskConfirmations = 0;
     if (this.pegInStatus) {
       this.btcConfirmations = this.pegInStatus.btc.confirmations ?? 0;
-      this.btcConfirmations = this.btcConfirmations > 100 ? 100 : this.btcConfirmations;
+      this.btcConfirmations = this.btcConfirmations > btcConfirmationsRequired
+        ? btcConfirmationsRequired : this.btcConfirmations;
       rskConfirmations = this.pegInStatus.rsk.confirmations ?? 0;
     }
-    this.leftBtcTime = (100 - this.btcConfirmations) * 10;
-    this.btcConfirmationsPercentage = this.btcConfirmations <= 100 ? this.btcConfirmations : 100;
+    this.leftBtcTime = this.getTime((100 - this.btcConfirmations) * 10);
+    this.btcConfirmationsPercentage = this.btcConfirmations <= btcConfirmationsRequired
+      ? this.btcConfirmations : 100;
     this.rskConfirmationsPercentage = rskConfirmations <= rskConfirmationsRequired
       ? (rskConfirmations * 100) / rskConfirmationsRequired : 100;
   }
@@ -278,6 +285,13 @@ export default class Status extends Vue {
       recipient: this.pegInStatus.rsk.recipientAddress,
       feeBTC: this.pegInStatus.btc.fees,
     };
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getTime(totalMinutes: number): string {
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    return `${hours}:${minutes}`;
   }
 
   @Emit()
