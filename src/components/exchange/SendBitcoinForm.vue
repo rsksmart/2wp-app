@@ -354,11 +354,14 @@
             </v-container>
           </v-container>
         </v-row>
-        <v-row class="mx-0 mt-5 d-flex justify-end">
-          <v-btn large rounded color="#00B43C" @click="createTx" :disabled="!formFilled">
+        <v-row class="mx-0 mt-5" justify="end">
+          <v-btn v-if="!pegInFormState.matches(['loading'])" large rounded color="#00B43C"
+                 @click="createTx" :disabled="!formFilled">
             <span class="whiteish">Send</span>
             <v-icon class="ml-2" color="#fff">mdi-send-outline</v-icon>
           </v-btn>
+          <v-progress-circular v-if="pegInFormState.matches(['loading'])"
+                               indeterminate color="#00B520" class="mr-10"/>
         </v-row>
       </v-col>
     </v-row>
@@ -422,7 +425,13 @@ export default class SendBitcoinForm extends Vue {
 
   txFeeIndex = 1.0;
 
-  pegInFormState: Machine<'first' | 'second' | 'third' | 'fourth'> = new Machine('first');
+  pegInFormState: Machine<
+    'loading'
+    | 'first'
+    | 'second'
+    | 'third'
+    | 'fourth'
+    > = new Machine('first');
 
   firstDone = false;
 
@@ -693,6 +702,7 @@ export default class SendBitcoinForm extends Vue {
 
   @Emit('createTx')
   createTx() {
+    this.pegInFormState.send('loading');
     let selectedFee;
     switch (this.txFeeIndex) {
       case 0:
