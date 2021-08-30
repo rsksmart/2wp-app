@@ -105,8 +105,8 @@
                           </v-icon>
                         </template>
                         <p class="tooltip-form mb-0">
-                          The POWpeg address is a bitcoin multisig address secured by the RSK network that allows
-                          the RBTC transfer to your account
+                          The POWpeg address is a bitcoin multisig address secured by
+                          the RSK network that allows the RBTC transfer to your account
                         </p>
                       </v-tooltip>
                     </v-row>

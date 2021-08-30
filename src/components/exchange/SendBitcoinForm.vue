@@ -14,14 +14,18 @@
         <v-container id="option-1">
           <v-row align="start" class="mx-0">
             <v-col cols="auto" class="pl-0">
-              <div v-bind:class="[first ? 'number-filled' : 'number']">1</div>
+              <div v-bind:class="[pegInFormState.matches(['first']) ?
+              'number-filled' : 'number']">1</div>
             </v-col>
             <v-col class="pl-0">
-              <p v-bind:class="{'boldie': first}">Select Bitcoin account to send from:</p>
+              <p v-bind:class="{'boldie': pegInFormState.matches(['first'])}">
+                Select Bitcoin account to send from:
+              </p>
               <v-row class="mx-0 mt-4">
                 <v-col cols="6" class="pl-0 pb-0">
                   <v-select v-model="btcAccountTypeSelected" :items="accountBalances" color="#fff"
                             label="Select the account" solo dense
+                            @focus="pegInFormState.send('first')"
                             @change="checkStep(btcAccountTypeSelected, 1)"/>
                 </v-col>
                 <v-col cols="1" class="pb-0 pt-5">
@@ -63,10 +67,13 @@
         <v-container id="option-2">
           <v-row align="start" class="mx-0">
             <v-col cols="auto" class="pl-0">
-              <div v-bind:class="[second ? 'number-filled' : 'number']">2</div>
+              <div v-bind:class="[pegInFormState.matches(['second']) ?
+              'number-filled' : 'number']">2</div>
             </v-col>
             <v-col class="pl-0 mb-4">
-              <p v-bind:class="{'boldie': second}">Enter the amount you want to send:</p>
+              <p v-bind:class="{'boldie': pegInFormState.matches(['second'])}">
+                Enter the amount you want to send:
+              </p>
               <v-row class="mx-0 mt-4 pb-0 d-flex align-center">
                 <v-col cols="4" v-bind:class="[insufficientAmount ?
                  'yellow-box' : amountStyle]" class="input-box-outline">
@@ -75,6 +82,7 @@
                                   v-model="bitcoinAmount" type="number"
                                   @input="blockLetterInput"
                                   @keydown="blockLetterKeyDown"
+                                  @focus="pegInFormState.send('second')"
                                   @change="checkStep(peginTxState.bitcoinWallet, 2)"/>
                   </v-col>
                   <v-col cols="4" class="pa-0">
@@ -121,10 +129,11 @@
         <v-container id="option-3">
           <v-row align="start" class="mx-0">
             <v-col cols="auto" class="pl-0">
-              <div v-bind:class="[third ? 'number-filled' : 'number']">3</div>
+              <div v-bind:class="[pegInFormState.matches(['third']) ?
+              'number-filled' : 'number']">3</div>
             </v-col>
             <v-col class="pl-0">
-              <p v-bind:class="{'boldie': third}">
+              <p v-bind:class="{'boldie': pegInFormState.matches(['third'])}">
                 Enter or select the RSK address where RBTC will be deposited:
               </p>
               <v-row class="mx-0 mt-4">
@@ -155,6 +164,7 @@
                                     flat
                                     hide-details
                                     label="Select or paste the RSK address"
+                                    @focus="pegInFormState.send('third')"
                                     @change="checkStep(rskAddressSelected, 3)"/>
                     </v-row>
                     <v-row v-show="!isValidRskAddress && rskAddressSelected">
@@ -187,15 +197,19 @@
         <v-container id="option-4">
           <v-row align="start" class="mx-0">
             <v-col cols="auto" class="pl-0">
-              <div v-bind:class="[fourth ? 'number-filled' : 'number']">4</div>
+              <div v-bind:class="[pegInFormState.matches(['fourth']) ?
+              'number-filled' : 'number']">4</div>
             </v-col>
             <v-col class="pl-0">
-              <p v-bind:class="{'boldie' : fourth}">Select transaction fee:</p>
+              <p v-bind:class="{'boldie' : pegInFormState.matches(['fourth'])}">
+                Select transaction fee:
+              </p>
               <v-row class="mx-0 mt-4 d-flex justify-start">
                 <v-col cols="11 pl-0">
                   <v-row class="mx-0">
                     <v-slider v-model="txFeeIndex" :tick-labels="transactionFees" :max="2"
                               :color="txFeeColor" :track-color="txFeeColor" step="1"
+                              @focus="pegInFormState.send('fourth')"
                               @change="checkStep('fee', 4)"/>
                   </v-row>
                   <v-row class="mx-0">
@@ -340,11 +354,14 @@
             </v-container>
           </v-container>
         </v-row>
-        <v-row class="mx-0 mt-5 d-flex justify-end">
-          <v-btn large rounded color="#00B43C" @click="createTx" :disabled="!formFilled">
+        <v-row class="mx-0 mt-5" justify="end">
+          <v-btn v-if="!pegInFormState.matches(['loading'])" large rounded color="#00B43C"
+                 @click="createTx" :disabled="!formFilled">
             <span class="whiteish">Send</span>
             <v-icon class="ml-2" color="#fff">mdi-send-outline</v-icon>
           </v-btn>
+          <v-progress-circular v-if="pegInFormState.matches(['loading'])"
+                               indeterminate color="#00B520" class="mr-10"/>
         </v-row>
       </v-col>
     </v-row>
@@ -392,6 +409,7 @@ import { AccountBalance, FeeAmountData, PegInFormValues } from '@/types';
 import Wallet from '@/components/web3/Wallet.vue';
 import { Web3SessionState } from '@/store/session/types';
 import { PegInTxState } from '@/store/peginTx/types';
+import { Machine } from '@/services/utils';
 
 @Component({
   components: {
@@ -407,13 +425,13 @@ export default class SendBitcoinForm extends Vue {
 
   txFeeIndex = 1.0;
 
-  first = true;
-
-  second = false;
-
-  third = false;
-
-  fourth = false;
+  pegInFormState: Machine<
+    'loading'
+    | 'first'
+    | 'second'
+    | 'third'
+    | 'fourth'
+    > = new Machine('first');
 
   firstDone = false;
 
@@ -653,10 +671,6 @@ export default class SendBitcoinForm extends Vue {
     if (value) {
       switch (step) {
         case 1: {
-          this.first = false;
-          this.second = true;
-          this.third = false;
-          this.fourth = false;
           this.firstDone = true;
           this.secondDone = !this.insufficientAmount;
           if (this.firstDone && this.secondDone) {
@@ -665,10 +679,6 @@ export default class SendBitcoinForm extends Vue {
           break;
         }
         case 2: {
-          this.first = false;
-          this.second = false;
-          this.third = true;
-          this.fourth = false;
           this.secondDone = !this.insufficientAmount;
           if (this.firstDone && this.secondDone) {
             this.calculateTxFee();
@@ -676,26 +686,14 @@ export default class SendBitcoinForm extends Vue {
           break;
         }
         case 3: {
-          this.first = false;
-          this.second = false;
-          this.third = false;
-          this.fourth = true;
           this.thirdDone = this.isValidRskAddress;
           break;
         }
         case 4: {
-          this.first = false;
-          this.second = false;
-          this.third = false;
-          this.fourth = false;
           this.fourthDone = true;
           break;
         }
         default: {
-          this.first = false;
-          this.second = false;
-          this.third = false;
-          this.fourth = false;
           break;
         }
       }
@@ -704,6 +702,7 @@ export default class SendBitcoinForm extends Vue {
 
   @Emit('createTx')
   createTx() {
+    this.pegInFormState.send('loading');
     let selectedFee;
     switch (this.txFeeIndex) {
       case 0:
@@ -745,6 +744,7 @@ export default class SendBitcoinForm extends Vue {
 
   @Emit()
   toWeb3Wallet() {
+    this.pegInFormState.send('third');
     this.useWeb3Wallet = true;
     this.web3Wallet = true;
     this.selectWallet = false;

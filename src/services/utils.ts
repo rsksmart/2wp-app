@@ -11,3 +11,19 @@ export function getAccountType(address: string): string {
   if (nativeTestReg.test(address)) return constants.BITCOIN_NATIVE_SEGWIT_ADDRESS;
   return constants.BITCOIN_MULTISIGNATURE_ADDRESS;
 }
+
+export class Machine<States extends string> {
+  value: States;
+
+  constructor(value: States) {
+    this.value = value;
+  }
+
+  public matches(values: string[]) {
+    return values.map((v) => v === this.value).some((e) => e);
+  }
+
+  public send(newValue: States) {
+    this.value = newValue;
+  }
+}
