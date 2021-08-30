@@ -87,6 +87,16 @@
               :value="btcConfirmationsPercentage"
               color="#00B43C"
               height="17" />
+            <v-row class="d-flex justify-center mt-4 pa-0">
+              <h5>
+                {{leftBtcTime}}:00 left
+              </h5>
+            </v-row>
+            <v-row class="d-flex justify-center mt-2 pa-0">
+              <h5>
+                {{btcConfirmations}}/100 confirmations
+              </h5>
+            </v-row>
           </v-col>
           <v-col cols="auto" class="pa-0 d-flex justify-center">
             <div style="{ z-index: 2; position: absolute; margin-top: -30px; margin-right: 70px; }">
@@ -104,6 +114,11 @@
               :value="rskConfirmationsPercentage"
               color="#00B43C"
               height="17"/>
+            <v-row class="d-flex justify-center mt-4 pa-0">
+              <h6>
+                Can last up to 20 minutes
+              </h6>
+            </v-row>
             <div class="d-flex justify-end">
               <div style="{ z-index: 5; position: absolute;
                   margin-right: -75px; margin-top: -50px; }">
@@ -170,9 +185,13 @@ export default class Status extends Vue {
 
   btcConfirmationsPercentage = 0;
 
+  btcConfirmations = 0;
+
   rskConfirmationsPercentage = 0;
 
   isRejected = false;
+
+  leftBtcTime = 0;
 
   @Prop({ default: '' }) txIdProp!: string;
 
@@ -182,14 +201,17 @@ export default class Status extends Vue {
 
   @Emit()
   refreshPercentage() {
-    let btcConfirmations = 0;
+    const rskConfirmationsRequired = 100;
     let rskConfirmations = 0;
     if (this.pegInStatus) {
-      btcConfirmations = this.pegInStatus.btc.confirmations ?? 0;
+      this.btcConfirmations = this.pegInStatus.btc.confirmations ?? 0;
+      this.btcConfirmations = this.btcConfirmations > 100 ? 100 : this.btcConfirmations;
       rskConfirmations = this.pegInStatus.rsk.confirmations ?? 0;
     }
-    this.btcConfirmationsPercentage = btcConfirmations <= 100 ? btcConfirmations : 100;
-    this.rskConfirmationsPercentage = rskConfirmations <= 100 ? rskConfirmations : 100;
+    this.leftBtcTime = (100 - this.btcConfirmations) * 10;
+    this.btcConfirmationsPercentage = this.btcConfirmations <= 100 ? this.btcConfirmations : 100;
+    this.rskConfirmationsPercentage = rskConfirmations <= rskConfirmationsRequired
+      ? (rskConfirmations * 100) / rskConfirmationsRequired : 100;
   }
 
   @Emit()
