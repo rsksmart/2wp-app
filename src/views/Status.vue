@@ -87,6 +87,16 @@
               :value="btcConfirmationsPercentage"
               color="#00B43C"
               height="17" />
+            <v-row class="d-flex justify-center mt-4 pa-0">
+              <h5>
+                {{leftBtcTime}} hours left
+              </h5>
+            </v-row>
+            <v-row class="d-flex justify-center mt-2 pa-0">
+              <h5>
+                {{btcConfirmations}}/100 confirmations
+              </h5>
+            </v-row>
           </v-col>
           <v-col cols="auto" class="pa-0 d-flex justify-center">
             <div style="{ z-index: 2; position: absolute; margin-top: -30px; margin-right: 70px; }">
@@ -104,9 +114,14 @@
               :value="rskConfirmationsPercentage"
               color="#00B43C"
               height="17"/>
+            <v-row class="d-flex justify-center mt-4 pa-0 mx-0">
+              <h6>
+                Can last up to 20 minutes
+              </h6>
+            </v-row>
             <div class="d-flex justify-end">
               <div style="{ z-index: 5; position: absolute;
-                  margin-right: -75px; margin-top: -50px; }">
+                  margin-right: -75px; margin-top: -75px; }">
                 <v-row>
                   <v-img class="d-flex justify-center"
                          src="@/assets/status/rbtc_green.png" height="78" contain/>
@@ -137,12 +152,14 @@
 
 <script lang="ts">
 import {
-  Vue, Component, Emit, Prop,
+  Component, Emit, Prop, Vue,
 } from 'vue-property-decorator';
+import { State } from 'vuex-class';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import { PegStatus } from '@/store/constants';
 import ApiService from '@/services/ApiService';
 import { PeginStatus } from '@/store/types';
+import { PegInTxState } from '@/store/peginTx/types';
 
 @Component({
   components: {
@@ -170,11 +187,17 @@ export default class Status extends Vue {
 
   btcConfirmationsPercentage = 0;
 
+  btcConfirmations = 0;
+
   rskConfirmationsPercentage = 0;
 
   isRejected = false;
 
+  leftBtcTime = '';
+
   @Prop({ default: '' }) txIdProp!: string;
+
+  @State('pegInTx') peginTxState!: PegInTxState;
 
   get showStatus() {
     return !this.loading && !this.error && !!this.statusMessage;
@@ -182,14 +205,16 @@ export default class Status extends Vue {
 
   @Emit()
   refreshPercentage() {
-    let btcConfirmations = 0;
-    let rskConfirmations = 0;
+    const btcConfirmationsRequired = this.peginTxState.peginConfiguration.btcConfirmations;
     if (this.pegInStatus) {
-      btcConfirmations = this.pegInStatus.btc.confirmations ?? 0;
-      rskConfirmations = this.pegInStatus.rsk.confirmations ?? 0;
+      this.btcConfirmations = this.pegInStatus.btc.confirmations ?? 0;
+      this.btcConfirmations = this.btcConfirmations > btcConfirmationsRequired
+        ? btcConfirmationsRequired : this.btcConfirmations;
     }
-    this.btcConfirmationsPercentage = btcConfirmations <= 100 ? btcConfirmations : 100;
-    this.rskConfirmationsPercentage = rskConfirmations <= 100 ? rskConfirmations : 100;
+    this.leftBtcTime = this.getTime((btcConfirmationsRequired - this.btcConfirmations) * 10);
+    this.btcConfirmationsPercentage = this.btcConfirmations <= btcConfirmationsRequired
+      ? (this.btcConfirmations * 100) / btcConfirmationsRequired : 100;
+    this.rskConfirmationsPercentage = this.pegInStatus.status === PegStatus.CONFIRMED ? 100 : 0;
   }
 
   @Emit()
@@ -256,6 +281,13 @@ export default class Status extends Vue {
       recipient: this.pegInStatus.rsk.recipientAddress,
       feeBTC: this.pegInStatus.btc.fees,
     };
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getTime(totalMinutes: number): string {
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    return `${hours}:${minutes}`;
   }
 
   @Emit()
