@@ -114,14 +114,14 @@
               :value="rskConfirmationsPercentage"
               color="#00B43C"
               height="17"/>
-            <v-row class="d-flex justify-center mt-4 pa-0">
+            <v-row class="d-flex justify-center mt-4 pa-0 mx-0">
               <h6>
                 Can last up to 20 minutes
               </h6>
             </v-row>
             <div class="d-flex justify-end">
               <div style="{ z-index: 5; position: absolute;
-                  margin-right: -75px; margin-top: -50px; }">
+                  margin-right: -75px; margin-top: -75px; }">
                 <v-row>
                   <v-img class="d-flex justify-center"
                          src="@/assets/status/rbtc_green.png" height="78" contain/>
@@ -213,7 +213,7 @@ export default class Status extends Vue {
     }
     this.leftBtcTime = this.getTime((btcConfirmationsRequired - this.btcConfirmations) * 10);
     this.btcConfirmationsPercentage = this.btcConfirmations <= btcConfirmationsRequired
-      ? this.btcConfirmations : 100;
+      ? (this.btcConfirmations * 100) / btcConfirmationsRequired : 100;
     this.rskConfirmationsPercentage = this.pegInStatus.status === PegStatus.CONFIRMED ? 100 : 0;
   }
 
