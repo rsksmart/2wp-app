@@ -404,6 +404,8 @@ import {
 import { Action, Getter, State } from 'vuex-class';
 import * as rskUtils from '@rsksmart/rsk-utils';
 import Big from 'big.js';
+import RLogin from '@rsksmart/rlogin';
+import WalletConnectProvider from '@walletconnect/web3-provider';
 import * as constants from '@/store/constants';
 import { AccountBalance, FeeAmountData, PegInFormValues } from '@/types';
 import Wallet from '@/components/web3/Wallet.vue';
@@ -776,6 +778,30 @@ export default class SendBitcoinForm extends Vue {
   // eslint-disable-next-line class-methods-use-this
   btcToUSD(btcs: number | string) {
     return Big(btcs).mul(Big(this.price)).toFixed(5);
+  }
+
+  @Emit()
+  // eslint-disable-next-line class-methods-use-this
+  connectRLogin() {
+    const rLogin = new RLogin({
+      cacheProvider: false,
+      providerOptions: {
+        walletconnect: {
+          package: WalletConnectProvider,
+          options: {
+            rpc: {
+              1: 'https://mainnet.infura.io/v3/8043bb2cf99347b1bfadfb233c5325c0',
+              30: 'https://public-node.rsk.co',
+              31: 'https://public-node.testnet.rsk.co',
+            },
+          },
+        },
+      },
+      supportedChains: [1, 30, 31],
+    });
+    rLogin.connect()
+      .then(console.log)
+      .catch(console.error);
   }
 
   get isLedgerWallet() {
