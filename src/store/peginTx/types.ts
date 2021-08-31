@@ -14,7 +14,6 @@ export interface PeginConfiguration {
   federationAddress: string;
   feePerKb?: number;
   btcConfirmations: number;
-  rskConfirmations: number;
   sessionId?: string;
   id?: number;
 }

@@ -152,7 +152,7 @@
 
 <script lang="ts">
 import {
-  Vue, Component, Emit, Prop,
+  Component, Emit, Prop, Vue,
 } from 'vue-property-decorator';
 import { State } from 'vuex-class';
 import TxSummary from '@/components/exchange/TxSummary.vue';
@@ -205,20 +205,16 @@ export default class Status extends Vue {
 
   @Emit()
   refreshPercentage() {
-    const rskConfirmationsRequired = this.peginTxState.peginConfiguration.rskConfirmations;
     const btcConfirmationsRequired = this.peginTxState.peginConfiguration.btcConfirmations;
-    let rskConfirmations = 0;
     if (this.pegInStatus) {
       this.btcConfirmations = this.pegInStatus.btc.confirmations ?? 0;
       this.btcConfirmations = this.btcConfirmations > btcConfirmationsRequired
         ? btcConfirmationsRequired : this.btcConfirmations;
-      rskConfirmations = this.pegInStatus.rsk.confirmations ?? 0;
     }
-    this.leftBtcTime = this.getTime((100 - this.btcConfirmations) * 10);
+    this.leftBtcTime = this.getTime((btcConfirmationsRequired - this.btcConfirmations) * 10);
     this.btcConfirmationsPercentage = this.btcConfirmations <= btcConfirmationsRequired
       ? this.btcConfirmations : 100;
-    this.rskConfirmationsPercentage = rskConfirmations <= rskConfirmationsRequired
-      ? (rskConfirmations * 100) / rskConfirmationsRequired : 100;
+    this.rskConfirmationsPercentage = this.pegInStatus.status === PegStatus.CONFIRMED ? 100 : 0;
   }
 
   @Emit()

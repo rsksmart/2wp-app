@@ -11,7 +11,6 @@ export const state: PegInTxState = {
     maxValue: 0,
     federationAddress: '',
     btcConfirmations: 100,
-    rskConfirmations: 100,
   },
   sessionId: '',
   utxoList: undefined,
