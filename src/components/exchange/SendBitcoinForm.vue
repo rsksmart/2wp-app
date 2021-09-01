@@ -522,7 +522,8 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get computedFullTxFee() {
-    const feePlusAmount = Big(this.txFee).plus(Big(this.bitcoinAmount));
+    const amount: Big = this.safeToBig(this.bitcoinAmount);
+    const feePlusAmount = Big(this.txFee).plus(amount);
     return this.fourthDone && this.secondDone ? `${feePlusAmount.toFixed(8)} BTC` : 'Not completed';
   }
 
@@ -535,7 +536,8 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get computedFullTxFeeUSD() {
-    const feePlusAmount = Big(this.txFee).plus(Big(this.bitcoinAmount));
+    const amount: Big = this.safeToBig(this.bitcoinAmount);
+    const feePlusAmount = Big(this.txFee).plus(amount);
     return this.fourthDone && this.secondDone ? `USD $ ${this.btcToUSD(feePlusAmount.toFixed(8))}` : 'USD $ 0';
   }
 
