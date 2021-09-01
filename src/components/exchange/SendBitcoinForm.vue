@@ -597,15 +597,21 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get insufficientAmount() {
-    const amount = this.bitcoinAmount + this.txFee;
-    if ((amount
-      < this.satoshiToBtc(this.peginTxState.peginConfiguration.minValue)
-      && this.bitcoinAmount !== 0)
-      || amount > this.selectedAccountBalance
-      || amount > this.satoshiToBtc(this.peginTxState.peginConfiguration.maxValue)) {
+    const bitcoinAmount: Big = this.safeToBig(this.bitcoinAmount);
+    const txFee: Big = this.safeToBig(this.txFee);
+    const feePlusAmount: Big = bitcoinAmount.plus(txFee);
+    const minValue: Big = this.safeToBig(this.peginTxState.peginConfiguration.minValue);
+    const maxValue: Big = this.safeToBig(this.peginTxState.peginConfiguration.maxValue);
+    const accountBalance: Big = this.safeToBig(this.selectedAccountBalance);
+    if (bitcoinAmount.lte('0')
+      || feePlusAmount.gt(accountBalance)
+      || feePlusAmount.lt(this.satoshiToBtc(minValue))
+      || feePlusAmount.gt(this.satoshiToBtc(maxValue))) {
       return true;
     }
-    if (this.bitcoinAmount !== 0 && amount < this.selectedAccountBalance) this.amountStyle = 'green-box';
+    if (bitcoinAmount.gt('0') && feePlusAmount.lte(accountBalance)) {
+      return false;
+    }
     return false;
   }
 
@@ -634,6 +640,11 @@ export default class SendBitcoinForm extends Vue {
   // eslint-disable-next-line class-methods-use-this
   getChunkedValue(value: string) {
     return `${value.substr(0, 6)}...${value.substr(value.length - 6, value.length)}`;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  safeToBig(s: number | string): Big {
+    return (s.toString() === '' ? Big('0') : Big(s));
   }
 
   @Emit()
@@ -760,14 +771,14 @@ export default class SendBitcoinForm extends Vue {
 
   @Emit()
   // eslint-disable-next-line class-methods-use-this
-  satoshiToBtc(satoshis: number | string): number {
+  satoshiToBtc(satoshis: number | string | Big): number {
     const btcs: Big = Big(satoshis.toString()).div(100_000_000);
     return Number(btcs.toFixed(8));
   }
 
   @Emit()
   // eslint-disable-next-line class-methods-use-this
-  btcToSatoshi(btcs: number | string): number {
+  btcToSatoshi(btcs: number | string | Big): number {
     const satoshis: Big = Big(btcs.toString()).mul(100_000_000);
     return Number(satoshis.toFixed(0));
   }
