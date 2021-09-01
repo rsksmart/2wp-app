@@ -572,7 +572,8 @@ export default class SendBitcoinForm extends Vue {
     if (this.btcAccountTypeSelected[0] === 'L') return constants.BITCOIN_LEGACY_ADDRESS;
     if (this.btcAccountTypeSelected[0] === 'S') return constants.BITCOIN_SEGWIT_ADDRESS;
     if (this.btcAccountTypeSelected[0] === 'M') return constants.BITCOIN_MULTISIGNATURE_ADDRESS;
-    return constants.BITCOIN_NATIVE_SEGWIT_ADDRESS;
+    if (this.btcAccountTypeSelected[0] === 'N') return constants.BITCOIN_NATIVE_SEGWIT_ADDRESS;
+    return '';
   }
 
   get web3Address() {
