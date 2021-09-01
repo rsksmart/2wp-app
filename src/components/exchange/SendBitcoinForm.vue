@@ -80,7 +80,6 @@
                   <v-col cols="8" class="pa-0 pl-1">
                     <v-text-field solo hide-details full-width single-line flat
                                   v-model="bitcoinAmount" type="number"
-                                  @input="blockLetterInput"
                                   @keydown="blockLetterKeyDown"
                                   @focus="pegInFormState.send('second')"
                                   @change="checkStep(peginTxState.bitcoinWallet, 2)"/>
@@ -664,10 +663,6 @@ export default class SendBitcoinForm extends Vue {
       flag: this.refundAddressFromWallet,
       accountType: accType,
     };
-  }
-
-  blockLetterInput(input: any) {
-    this.bitcoinAmount = Number(input.toString().replaceAll('e', ''));
   }
 
   // eslint-disable-next-line class-methods-use-this
