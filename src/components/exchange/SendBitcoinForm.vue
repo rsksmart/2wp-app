@@ -457,6 +457,8 @@ export default class SendBitcoinForm extends Vue {
 
   CHAIN_ID = process.env.VUE_APP_COIN === constants.BTC_NETWORK_MAINNET ? 30 : 31;
 
+  fixedUSDDecimals = 2;
+
   @Prop() pegInFormData!: PegInFormValues;
 
   @Prop() price!: number;
@@ -532,13 +534,15 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get computedTxFeeUSD() {
-    return !this.fourthDone ? 'USD $ 0' : `USD $ ${this.btcToUSD(Big(this.txFee).toFixed(8))}`;
+    return !this.fourthDone
+      ? 'USD $ 0' : `USD $ ${this.btcToUSD(Big(this.txFee).toFixed(this.fixedUSDDecimals))}`;
   }
 
   get computedFullTxFeeUSD() {
     const amount: Big = this.safeToBig(this.bitcoinAmount);
     const feePlusAmount = Big(this.txFee).plus(amount);
-    return this.fourthDone && this.secondDone ? `USD $ ${this.btcToUSD(feePlusAmount.toFixed(8))}` : 'USD $ 0';
+    return this.fourthDone && this.secondDone
+      ? `USD $ ${this.btcToUSD(feePlusAmount.toFixed(this.fixedUSDDecimals))}` : 'USD $ 0.00';
   }
 
   get txFeeColor() {
@@ -798,8 +802,8 @@ export default class SendBitcoinForm extends Vue {
 
   @Emit()
   // eslint-disable-next-line class-methods-use-this
-  btcToUSD(btcs: number | string) {
-    return Big(btcs).mul(Big(this.price)).toFixed(5);
+  btcToUSD(btcs: number | string): string {
+    return Big(btcs).mul(Big(this.price)).toFixed(this.fixedUSDDecimals);
   }
 
   get isLedgerWallet() {
