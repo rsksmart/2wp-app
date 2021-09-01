@@ -614,6 +614,10 @@ export default class SendBitcoinForm extends Vue {
     return false;
   }
 
+  get isBTCAmountValidRegex() {
+    return /^[0-9]{1,8}(\.[0-9]{0,8})?$/.test(this.bitcoinAmount.toString());
+  }
+
   get selectedAccountBalance() {
     let balance = 0;
     switch (this.accountType) {
@@ -678,14 +682,14 @@ export default class SendBitcoinForm extends Vue {
       switch (step) {
         case 1: {
           this.firstDone = true;
-          this.secondDone = !this.insufficientAmount;
+          this.secondDone = this.isBTCAmountValidRegex && !this.insufficientAmount;
           if (this.firstDone && this.secondDone) {
             this.calculateTxFee();
           }
           break;
         }
         case 2: {
-          this.secondDone = !this.insufficientAmount;
+          this.secondDone = this.isBTCAmountValidRegex && !this.insufficientAmount;
           if (this.firstDone && this.secondDone) {
             this.calculateTxFee();
           }
@@ -792,7 +796,7 @@ export default class SendBitcoinForm extends Vue {
     this.btcAccountTypeSelected = this.pegInFormData.accountType;
     this.firstDone = this.pegInFormData.accountType !== '';
     this.bitcoinAmount = this.pegInFormData.amount;
-    this.secondDone = Big(this.pegInFormData.amount).gt('0');
+    this.secondDone = this.isBTCAmountValidRegex && !this.insufficientAmount;
     this.useWeb3Wallet = this.pegInFormData.rskAddress !== '';
     this.rskAddressSelected = this.pegInFormData.rskAddress;
     this.thirdDone = this.pegInFormData.rskAddress !== '';
