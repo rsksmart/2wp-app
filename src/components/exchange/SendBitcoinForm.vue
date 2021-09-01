@@ -75,8 +75,7 @@
                 Enter the amount you want to send:
               </p>
               <v-row class="mx-0 mt-4 pb-0 d-flex align-center">
-                <v-col cols="4" v-bind:class="[insufficientAmount ?
-                 'yellow-box' : amountStyle]" class="input-box-outline">
+                <v-col cols="4" v-bind:class="[amountStyle]" class="input-box-outline">
                   <v-col cols="8" class="pa-0 pl-1">
                     <v-text-field solo hide-details full-width single-line flat
                                   v-model="bitcoinAmount" type="number"
@@ -116,7 +115,7 @@
                 </v-col>
                 <v-col/>
               </v-row>
-              <v-row class="mx-0" v-if="insufficientAmount">
+              <v-row class="mx-0" v-if="insufficientAmount && amountStyle !== ''">
                 <span class="yellowish">
                   {{amountErrorMessage}}
                 </span>
@@ -398,7 +397,7 @@
 <script lang="ts">
 import {
   Vue,
-  Component, Prop, Emit,
+  Component, Prop, Emit, Watch,
 } from 'vue-property-decorator';
 import { Action, Getter, State } from 'vuex-class';
 import * as rskUtils from '@rsksmart/rsk-utils';
@@ -648,6 +647,18 @@ export default class SendBitcoinForm extends Vue {
   // eslint-disable-next-line class-methods-use-this
   safeToBig(s: number | string): Big {
     return (s.toString() === '' ? Big('0') : Big(s));
+  }
+
+  @Watch('btcAccountTypeSelected')
+  watchBTCAccountTypeSelected() {
+    this.secondDone = this.isBTCAmountValidRegex && !this.insufficientAmount;
+    this.amountStyle = this.secondDone ? 'green-box' : 'yellow-box';
+  }
+
+  @Watch('bitcoinAmount')
+  watchBitcoinAmount() {
+    this.secondDone = this.isBTCAmountValidRegex && !this.insufficientAmount;
+    this.amountStyle = this.secondDone ? 'green-box' : 'yellow-box';
   }
 
   @Emit()
