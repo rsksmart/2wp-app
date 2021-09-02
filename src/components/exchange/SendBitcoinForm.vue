@@ -482,11 +482,28 @@ export default class SendBitcoinForm extends Vue {
   @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: any;
 
   get amountErrorMessage() {
-    let message = '';
-    if (this.bitcoinAmount + this.txFee < this.satoshiToBtc(this.peginTxState.peginConfiguration.minValue)) message = `You can not send this amount of BTC. You can only send a minimum of ${this.satoshiToBtc(this.peginTxState.peginConfiguration.minValue)} BTC`;
-    else if (this.bitcoinAmount + this.txFee >= this.selectedAccountBalance) message = 'The typed amount is higher than your current balance - fee';
-    else if (this.bitcoinAmount + this.txFee >= this.satoshiToBtc(this.peginTxState.peginConfiguration.maxValue)) message = 'The typed amount is higher than the one allowed by the tool';
-    return message;
+    const bitcoinAmount: Big = this.safeToBig(this.bitcoinAmount);
+    const txFee: Big = this.safeToBig(this.txFee);
+    const feePlusAmount: Big = bitcoinAmount.plus(txFee);
+    const minValue: Big = this.safeToBig(this.peginTxState.peginConfiguration.minValue);
+    const maxValue: Big = this.safeToBig(this.peginTxState.peginConfiguration.maxValue);
+    const accountBalance: Big = this.safeToBig(this.selectedAccountBalance);
+    if (this.bitcoinAmount.toString() === '') {
+      return 'Please, enter an amount';
+    }
+    if (!this.isBTCAmountValidRegex) {
+      return 'Invalid format, neither letters, big amounts nor more than 8 decimals are allowed';
+    }
+    if (feePlusAmount.lt(this.satoshiToBtc(minValue))) {
+      return `You can not send this amount of BTC. You can only send a minimum of ${this.satoshiToBtc(minValue)} BTC`;
+    }
+    if (feePlusAmount.gte(accountBalance)) {
+      return 'The typed amount, along with the transaction fee, is higher than your current balance';
+    }
+    if (feePlusAmount.gt(this.satoshiToBtc(maxValue))) {
+      return `The maximum amount currently allowed by this tool is ${this.satoshiToBtc(maxValue)} BTC`;
+    }
+    return '';
   }
 
   get rbtcAmount() {
@@ -494,6 +511,7 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get computedBTCAmount() {
+    if (!this.isBTCAmountValidRegex) return 'Not completed';
     return this.bitcoinAmount > 0 ? Big(this.bitcoinAmount).toFixed(8) : 'Not completed';
   }
 
@@ -530,7 +548,8 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get computedBitcoinUSD() {
-    return +this.bitcoinAmount ? this.btcToUSD(this.bitcoinAmount) : 0;
+    if (!this.isBTCAmountValidRegex) return '0.00';
+    return +this.bitcoinAmount ? this.btcToUSD(this.bitcoinAmount) : '0.00';
   }
 
   get computedTxFeeUSD() {
