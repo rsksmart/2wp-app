@@ -504,9 +504,10 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get computedRskAddress() {
-    if (this.useWeb3Wallet) return this.web3Address;
-    if (this.rskAddressSelected) return this.rskAddressSelected;
-    return 'Not completed';
+    let address = 'Not completed';
+    if (this.useWeb3Wallet) address = this.web3Address;
+    else if (this.rskAddressSelected) address = this.rskAddressSelected;
+    return address;
   }
 
   get croppedComputedRskAddress() {
@@ -656,6 +657,8 @@ export default class SendBitcoinForm extends Vue {
   disconnectWallet() {
     this.clearAccount();
     this.useWeb3Wallet = false;
+    this.web3Wallet = false;
+    this.selectWallet = true;
     this.thirdDone = false;
   }
 
