@@ -115,7 +115,7 @@
                 </v-col>
                 <v-col/>
               </v-row>
-              <v-row class="mx-0" v-if="insufficientAmount && amountStyle !== ''">
+              <v-row class="mx-0" v-if="!secondDone && amountStyle !== ''">
                 <span class="yellowish">
                   {{amountErrorMessage}}
                 </span>
@@ -503,7 +503,7 @@ export default class SendBitcoinForm extends Vue {
     if (feePlusAmount.gt(this.satoshiToBtc(maxValue))) {
       return `The maximum amount currently allowed by this tool is ${this.satoshiToBtc(maxValue)} BTC`;
     }
-    return '';
+    return 'Invalid format';
   }
 
   get rbtcAmount() {
