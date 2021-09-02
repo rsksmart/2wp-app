@@ -775,6 +775,7 @@ export default class SendBitcoinForm extends Vue {
 
   @Emit('createTx')
   createTx() {
+    this.showWarningMessage = false;
     this.pegInFormState.send('loading');
     let selectedFee;
     switch (this.txFeeIndex) {
