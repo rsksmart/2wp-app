@@ -363,7 +363,7 @@
         <v-row class="mx-0 mt-5" justify="end">
           <v-btn v-if="!pegInFormState.matches(['loading'])" large rounded color="#00B43C"
                  @click="sendTx" :disabled="!formFilled">
-            <span class="whiteish">Send</span>
+            <span class="whiteish">Continue</span>
             <v-icon class="ml-2" color="#fff">mdi-send-outline</v-icon>
           </v-btn>
           <v-progress-circular v-if="pegInFormState.matches(['loading'])"
