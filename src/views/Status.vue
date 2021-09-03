@@ -94,7 +94,7 @@
             </v-row>
             <v-row class="d-flex justify-center mt-2 pa-0">
               <h5>
-                {{btcConfirmations}}/100 confirmations
+                {{btcConfirmations}}/{{btcConfirmationsRequired}} confirmations
               </h5>
             </v-row>
           </v-col>
@@ -195,6 +195,8 @@ export default class Status extends Vue {
 
   leftBtcTime = '';
 
+  btcConfirmationsRequired!: number;
+
   @Prop({ default: '' }) txIdProp!: string;
 
   @State('pegInTx') peginTxState!: PegInTxState;
@@ -205,15 +207,15 @@ export default class Status extends Vue {
 
   @Emit()
   refreshPercentage() {
-    const btcConfirmationsRequired = this.peginTxState.peginConfiguration.btcConfirmations;
     if (this.pegInStatus) {
+      this.btcConfirmationsRequired = this.pegInStatus.btc.requiredConfirmation;
       this.btcConfirmations = this.pegInStatus.btc.confirmations ?? 0;
-      this.btcConfirmations = this.btcConfirmations > btcConfirmationsRequired
-        ? btcConfirmationsRequired : this.btcConfirmations;
+      this.btcConfirmations = this.btcConfirmations > this.btcConfirmationsRequired
+        ? this.btcConfirmationsRequired : this.btcConfirmations;
     }
-    this.leftBtcTime = this.getTime((btcConfirmationsRequired - this.btcConfirmations) * 10);
-    this.btcConfirmationsPercentage = this.btcConfirmations <= btcConfirmationsRequired
-      ? (this.btcConfirmations * 100) / btcConfirmationsRequired : 100;
+    this.leftBtcTime = this.getTime((this.btcConfirmationsRequired - this.btcConfirmations) * 10);
+    this.btcConfirmationsPercentage = this.btcConfirmations <= this.btcConfirmationsRequired
+      ? (this.btcConfirmations * 100) / this.btcConfirmationsRequired : 100;
     this.rskConfirmationsPercentage = this.pegInStatus.status === PegStatus.CONFIRMED ? 100 : 0;
   }
 
