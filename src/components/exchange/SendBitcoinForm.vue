@@ -144,7 +144,7 @@
                     <v-row class="mx-0 d-flex align-center">
                       <p class="mb-0 account">{{ web3Address }}</p>
                     </v-row>
-                    <v-row
+                    <v-row class="mx-0"
                       v-show="(!isValidRskAddress || !isValidPegInAddress)
                       && (rskAddressSelected || web3Address)">
                       <span class="yellowish">
@@ -173,7 +173,7 @@
                                     @focus="pegInFormState.send('third')"
                                     @change="checkStep(rskAddressSelected, 3)"/>
                     </v-row>
-                    <v-row v-show="!isValidRskAddress && rskAddressSelected">
+                    <v-row v-show="!isValidRskAddress && rskAddressSelected" class="mx-0">
                       <span class="yellowish">
                         {{validAddressMessage}}
                       </span>
@@ -697,16 +697,16 @@ export default class SendBitcoinForm extends Vue {
 
   @Watch('rskAddressSelected')
   watchRSKAddressSelected() {
-    this.thirdDone = rskUtils.isAddress(this.computedRskAddress);
+    this.thirdDone = rskUtils.isAddress(this.computedRskAddress) || this.useWeb3Wallet;
   }
 
   @Emit()
   selectRLoginWallet() {
+    this.pegInFormState.send('third');
+    this.useWeb3Wallet = true;
+    this.rskAddressSelected = '';
     this.connectWeb3();
     this.getWeb3Account();
-    this.pegInFormState.send('third');
-    this.rskAddressSelected = '';
-    this.useWeb3Wallet = true;
     this.web3Wallet = true;
     this.selectWallet = false;
     this.thirdDone = true;
@@ -715,8 +715,8 @@ export default class SendBitcoinForm extends Vue {
   @Emit()
   disconnectWallet() {
     this.clearAccount();
-    this.rskAddressSelected = '';
     this.useWeb3Wallet = false;
+    this.rskAddressSelected = '';
     this.web3Wallet = false;
     this.selectWallet = true;
     this.thirdDone = false;
