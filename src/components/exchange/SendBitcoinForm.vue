@@ -165,7 +165,7 @@
                     </v-row>
                     <v-row :class="[isValidRskAddress || !rskAddressSelected ?
                      'blue-box' : 'yellow-box' ]"
-                           class="input-box-outline pa-0 pl-1" >
+                           class="input-box-outline mx-0 pa-0 pl-1" >
                       <v-text-field v-model="rskAddressSelected" solo dense
                                     flat
                                     hide-details
