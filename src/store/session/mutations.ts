@@ -12,4 +12,11 @@ export const mutations: MutationTree<Web3SessionState> = {
   [constants.SESSION_IS_ENABLED]: (state, flag: boolean) => {
     state.enabled = flag;
   },
+  [constants.SESSION_SET_RLOGIN]: (state, rLogin) => {
+    state.rLogin = rLogin;
+  },
+  [constants.SESSION_CLOSE_RLOGIN]: async (state) => {
+    // eslint-disable-next-line no-unused-expressions
+    await state.rLogin?.disconnect();
+  },
 };

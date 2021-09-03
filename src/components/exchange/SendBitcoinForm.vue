@@ -143,6 +143,13 @@
                     <v-row class="mx-0 d-flex align-center">
                       <p class="mb-0 account">{{ web3Address }}</p>
                     </v-row>
+                    <v-row
+                      v-show="(!isValidRskAddress || !isValidPegInAddress)
+                      && (rskAddressSelected || web3Address)">
+                      <span class="yellowish">
+                        {{validAddressMessage}}
+                      </span>
+                    </v-row>
                     <v-row class="mx-0">
                       <v-btn class="pa-0" text @click="disconnectWallet">
                         <span class="blueish">Disconnect Wallet</span>
@@ -167,7 +174,7 @@
                     </v-row>
                     <v-row v-show="!isValidRskAddress && rskAddressSelected">
                       <span class="yellowish">
-                        Incorrect address format
+                        {{validAddressMessage}}
                       </span>
                     </v-row>
                   </v-col>
@@ -180,7 +187,7 @@
                     </v-row>
                     <v-row class="mx-0 d-flex justify-center">
                       <v-btn outlined rounded color="#00B520" width="100%" height="38"
-                             @click="toWeb3Wallet">
+                             @click="selectRLoginWallet" >
                         <span class="greenish">Connect Wallet</span>
                       </v-btn>
                     </v-row>
@@ -354,7 +361,7 @@
         </v-row>
         <v-row class="mx-0 mt-5" justify="end">
           <v-btn v-if="!pegInFormState.matches(['loading'])" large rounded color="#00B43C"
-                 @click="createTx" :disabled="!formFilled">
+                 @click="sendTx" :disabled="!formFilled">
             <span class="whiteish">Send</span>
             <v-icon class="ml-2" color="#fff">mdi-send-outline</v-icon>
           </v-btn>
@@ -363,34 +370,13 @@
         </v-row>
       </v-col>
     </v-row>
-    <template>
-      <v-dialog v-model="web3Wallet" width="470">
-        <v-card class="dialog container">
-          <v-row class="mx-0 d-flex justify-center">
-            <v-col class="my-8 d-flex justify-center">
-              <h2 class="text-center">
-                HAVE YOU ALREADY CONFIGURED RSK NETWORK IN YOUR WEB WALLET?
-              </h2>
-            </v-col>
-          </v-row>
-          <v-row class="mx-0">
-            <v-col class="d-flex justify-center">
-              <v-btn rounded outlined color="#00B520" @click="connectWallet(true)">
-                No, configure wallet
-              </v-btn>
-            </v-col>
-            <v-col class="d-flex justify-center">
-              <v-btn rounded outlined color="#00B520" @click="connectWallet(false)">
-                Yes, connect wallet
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-card>
-      </v-dialog>
-      <template v-if="selectWallet">
-        <wallet :configure="configureWeb3Wallet"/>
-      </template>
-    </template>
+    <v-row>
+      <address-warning-dialog :address="computedRskAddress"
+                              :show-dialog="showWarningMessage"
+                              @continue="createTx"
+                              @cancel="showWarningMessage = false"
+      />
+    </v-row>
   </v-col>
 </template>
 
@@ -405,6 +391,7 @@ import Big from 'big.js';
 import * as constants from '@/store/constants';
 import { AccountBalance, FeeAmountData, PegInFormValues } from '@/types';
 import Wallet from '@/components/web3/Wallet.vue';
+import AddressWarningDialog from '@/components/exchange/AddressWarningDialog.vue';
 import { Web3SessionState } from '@/store/session/types';
 import { PegInTxState } from '@/store/peginTx/types';
 import { Machine } from '@/services/utils';
@@ -412,6 +399,7 @@ import { Machine } from '@/services/utils';
 @Component({
   components: {
     Wallet,
+    AddressWarningDialog,
   },
 })
 export default class SendBitcoinForm extends Vue {
@@ -449,6 +437,8 @@ export default class SendBitcoinForm extends Vue {
 
   useWeb3Wallet = false;
 
+  showWarningMessage = false;
+
   amountStyle = '';
 
   transactionFees = ['Slow', 'Average', 'Fast'];
@@ -480,6 +470,10 @@ export default class SendBitcoinForm extends Vue {
   @Getter(constants.PEGIN_TX_GET_REFUND_ADDRESS, { namespace: 'pegInTx' }) refundAddress!: string;
 
   @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: any;
+
+  @Action(constants.SESSION_CONNECT_WEB3, { namespace: 'web3Session' }) connectWeb3 !: any;
+
+  @Action(constants.WEB3_SESSION_GET_ACCOUNT, { namespace: 'web3Session' }) getWeb3Account!: any;
 
   get amountErrorMessage() {
     const bitcoinAmount: Big = this.safeToBig(this.bitcoinAmount);
@@ -528,9 +522,10 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get computedRskAddress() {
-    if (this.useWeb3Wallet) return this.web3Address;
-    if (this.rskAddressSelected) return this.rskAddressSelected;
-    return 'Not completed';
+    let address = 'Not completed';
+    if (this.useWeb3Wallet) address = this.web3Address;
+    else if (this.rskAddressSelected) address = this.rskAddressSelected;
+    return address;
   }
 
   get croppedComputedRskAddress() {
@@ -662,7 +657,18 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get isValidRskAddress() {
-    return rskUtils.isAddress(this.rskAddressSelected, this.CHAIN_ID);
+    return rskUtils.isValidChecksumAddress(this.computedRskAddress, this.CHAIN_ID);
+  }
+
+  get isValidPegInAddress() {
+    return rskUtils.isAddress(this.computedRskAddress, this.CHAIN_ID);
+  }
+
+  get validAddressMessage() {
+    let message = '';
+    if (!this.isValidPegInAddress) message = 'This is an invalid address';
+    else if (!this.isValidRskAddress) message = 'This may not be a valid address on the RSK network. Please check.';
+    return message;
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -688,9 +694,23 @@ export default class SendBitcoinForm extends Vue {
   }
 
   @Emit()
+  selectRLoginWallet() {
+    this.connectWeb3();
+    this.getWeb3Account();
+    this.pegInFormState.send('third');
+    this.useWeb3Wallet = true;
+    this.web3Wallet = true;
+    this.selectWallet = false;
+    this.thirdDone = true;
+  }
+
+  @Emit()
   disconnectWallet() {
     this.clearAccount();
     this.useWeb3Wallet = false;
+    this.web3Wallet = false;
+    this.selectWallet = true;
+    this.thirdDone = false;
   }
 
   @Emit('unused')
@@ -733,7 +753,7 @@ export default class SendBitcoinForm extends Vue {
           break;
         }
         case 3: {
-          this.thirdDone = this.isValidRskAddress;
+          this.thirdDone = this.isValidPegInAddress;
           break;
         }
         case 4: {
@@ -745,6 +765,12 @@ export default class SendBitcoinForm extends Vue {
         }
       }
     }
+  }
+
+  @Emit()
+  sendTx() {
+    if (this.isValidPegInAddress && !this.isValidRskAddress) this.showWarningMessage = true;
+    else this.createTx();
   }
 
   @Emit('createTx')
