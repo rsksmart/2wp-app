@@ -695,6 +695,11 @@ export default class SendBitcoinForm extends Vue {
     this.amountStyle = this.secondDone ? 'green-box' : 'yellow-box';
   }
 
+  @Watch('rskAddressSelected')
+  watchRSKAddressSelected() {
+    this.thirdDone = rskUtils.isAddress(this.computedRskAddress);
+  }
+
   @Emit()
   selectRLoginWallet() {
     this.connectWeb3();
