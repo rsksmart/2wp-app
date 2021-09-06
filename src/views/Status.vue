@@ -3,11 +3,9 @@
     <v-row class="mx-0 my-10 d-flex justify-center">
       <h1 class="text-center">Transaction Status</h1>
     </v-row>
-    <v-row class="my-10 d-flex justify-center">
-      <h2 class="text-center">
-        Enter your Bitcoin transaction hash in the textbox below
-        to check the status of your operation
-      </h2>
+    <v-row class="mx-0 mt-10 mb-8 d-flex justify-center">
+      <p>Enter your Bitcoin transaction hash in the textbox below
+        to check the status of your operation</p>
     </v-row>
     <v-row class="mx-0 d-flex justify-center">
       <v-col cols="7">
@@ -141,9 +139,9 @@
                     :txId="txId" :showTxId="true" :initialExpand="true"
                     :rsk-federation-address="pegInStatus.btc.federationAddress"/>
         <v-row v-if="!isRejected" class="d-flex justify-center mt-6">
-          <v-btn class="px-5" width="117" outlined color="#B5CAB8" rounded
+          <v-btn class="px-5" width="117" color="#00B43C" rounded
                  @click="getPegStatus">
-            <p>Refresh</p>
+            Refresh
           </v-btn>
         </v-row>
       </v-col>
