@@ -51,15 +51,12 @@ export default class TrezorTxBuilder extends TxBuilder {
       if (output.op_return_data) {
         return {
           amount: '0',
-          // eslint-disable-next-line @typescript-eslint/camelcase
           op_return_data: output.op_return_data,
-          // eslint-disable-next-line @typescript-eslint/camelcase
           script_type: 'PAYTOOPRETURN',
         };
       }
       return {
         address: output.address ?? '',
-        // eslint-disable-next-line @typescript-eslint/camelcase
         script_type: 'PAYTOADDRESS',
         amount: output.amount,
       };
@@ -68,20 +65,16 @@ export default class TrezorTxBuilder extends TxBuilder {
 
   private static getInputs(inputs: NormalizedInput[]): TxInputType[] {
     return inputs.map((input) => ({
-      // eslint-disable-next-line @typescript-eslint/camelcase
       address_n: TrezorTxBuilder.getPathFromAddress(input.address),
-      // eslint-disable-next-line @typescript-eslint/camelcase
       prev_hash: input.prev_hash,
-      // eslint-disable-next-line @typescript-eslint/camelcase
       prev_index: input.prev_index,
-      // eslint-disable-next-line @typescript-eslint/camelcase
       script_type: this.getScriptType(input.address),
       amount: input.amount.toString(),
     }));
   }
 
   static getPathFromAddress(address: string): number[] {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const addressList = store.state.pegInTx.addressList as WalletAddress[];
     let path: number[] = [];
