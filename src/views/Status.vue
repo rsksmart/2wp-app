@@ -138,7 +138,8 @@
     <v-row v-if="showStatus" class="mt-4">
       <v-col>
         <tx-summary :txData="txData" :price="price" v-if="showStatus"
-                    :txId="txId" :showTxId="true" :initialExpand="true"/>
+                    :txId="txId" :showTxId="true" :initialExpand="true"
+                    :rsk-federation-address="pegInStatus.btc.federationAddress"/>
         <v-row v-if="!isRejected" class="d-flex justify-center mt-6">
           <v-btn class="px-5" width="117" outlined color="#B5CAB8" rounded
                  @click="getPegStatus">
