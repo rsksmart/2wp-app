@@ -26,9 +26,11 @@ export const actions: ActionTree<Web3SessionState, RootState> = {
     });
     rLogin.connect()
       .then((rLoginResponse) => {
-        Vue.prototype.$web3 = new Web3(rLoginResponse.provider);
+        const web3 = new Web3(rLoginResponse.provider);
+        Vue.prototype.$web3 = web3;
         commit(constants.SESSION_IS_ENABLED, true);
         commit(constants.SESSION_SET_RLOGIN, rLoginResponse);
+        commit(constants.SESSION_SET_WEB3_INSTANCE, web3);
       })
       .catch(() => {
         commit(constants.SESSION_IS_ENABLED, false);

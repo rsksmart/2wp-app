@@ -60,6 +60,7 @@ export const BTC_NETWORK_TESTNET = 'test';
 export const LEDGER_APP_BTC_TEST = 'Bitcoin Test';
 export const LEDGER_APP_BTC = 'Bitcoin';
 
+// eslint-disable-next-line no-shadow
 export enum PegStatus {
   WAITING_CONFIRMATIONS = 'WAITING_CONFIRMATIONS',
   CONFIRMED = 'CONFIRMED',
