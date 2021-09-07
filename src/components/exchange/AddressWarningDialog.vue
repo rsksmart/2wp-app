@@ -48,7 +48,7 @@ export default class AddressWarningDialog extends Vue {
 
   @Emit('continue')
   send() {
-    this.showDialog = false;
+    return this.showDialog;
   }
 
   @Emit('cancel')

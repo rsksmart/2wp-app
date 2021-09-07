@@ -79,6 +79,7 @@
                   <v-col cols="8" class="pa-0 pl-1">
                     <v-text-field solo hide-details full-width single-line flat
                                   v-model="bitcoinAmount" type="number"
+                                  step="0.00000001"
                                   @keydown="blockLetterKeyDown"
                                   @focus="pegInFormState.send('second')"
                                   @change="checkStep(peginTxState.bitcoinWallet, 2)"/>
@@ -143,7 +144,7 @@
                     <v-row class="mx-0 d-flex align-center">
                       <p class="mb-0 account">{{ web3Address }}</p>
                     </v-row>
-                    <v-row
+                    <v-row class="mx-0"
                       v-show="(!isValidRskAddress || !isValidPegInAddress)
                       && (rskAddressSelected || web3Address)">
                       <span class="yellowish">
@@ -164,7 +165,7 @@
                     </v-row>
                     <v-row :class="[isValidRskAddress || !rskAddressSelected ?
                      'blue-box' : 'yellow-box' ]"
-                           class="input-box-outline pa-0 pl-1" >
+                           class="input-box-outline mx-0 pa-0 pl-1" >
                       <v-text-field v-model="rskAddressSelected" solo dense
                                     flat
                                     hide-details
@@ -172,7 +173,7 @@
                                     @focus="pegInFormState.send('third')"
                                     @change="checkStep(rskAddressSelected, 3)"/>
                     </v-row>
-                    <v-row v-show="!isValidRskAddress && rskAddressSelected">
+                    <v-row v-show="!isValidRskAddress && rskAddressSelected" class="mx-0">
                       <span class="yellowish">
                         {{validAddressMessage}}
                       </span>
@@ -362,7 +363,7 @@
         <v-row class="mx-0 mt-5" justify="end">
           <v-btn v-if="!pegInFormState.matches(['loading'])" large rounded color="#00B43C"
                  @click="sendTx" :disabled="!formFilled">
-            <span class="whiteish">Send</span>
+            <span class="whiteish">Continue</span>
             <v-icon class="ml-2" color="#fff">mdi-send-outline</v-icon>
           </v-btn>
           <v-progress-circular v-if="pegInFormState.matches(['loading'])"
@@ -522,10 +523,11 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get computedRskAddress() {
-    let address = 'Not completed';
-    if (this.useWeb3Wallet) address = this.web3Address;
-    else if (this.rskAddressSelected) address = this.rskAddressSelected;
-    return address;
+    if (this.rskAddressSelected !== '') {
+      return rskUtils.isAddress(this.rskAddressSelected) ? this.rskAddressSelected : 'Not completed';
+    }
+    if (this.useWeb3Wallet) return this.web3Address;
+    return 'Not completed';
   }
 
   get croppedComputedRskAddress() {
@@ -693,12 +695,18 @@ export default class SendBitcoinForm extends Vue {
     this.amountStyle = this.secondDone ? 'green-box' : 'yellow-box';
   }
 
+  @Watch('rskAddressSelected')
+  watchRSKAddressSelected() {
+    this.thirdDone = rskUtils.isAddress(this.computedRskAddress) || this.useWeb3Wallet;
+  }
+
   @Emit()
   selectRLoginWallet() {
-    this.connectWeb3();
-    this.getWeb3Account();
     this.pegInFormState.send('third');
     this.useWeb3Wallet = true;
+    this.rskAddressSelected = '';
+    this.connectWeb3();
+    this.getWeb3Account();
     this.web3Wallet = true;
     this.selectWallet = false;
     this.thirdDone = true;
@@ -708,6 +716,7 @@ export default class SendBitcoinForm extends Vue {
   disconnectWallet() {
     this.clearAccount();
     this.useWeb3Wallet = false;
+    this.rskAddressSelected = '';
     this.web3Wallet = false;
     this.selectWallet = true;
     this.thirdDone = false;
@@ -728,6 +737,13 @@ export default class SendBitcoinForm extends Vue {
 
   // eslint-disable-next-line class-methods-use-this
   blockLetterKeyDown(e: KeyboardEvent) {
+    if (this.bitcoinAmount.toString().length > 15
+      && !(e.key === 'Backspace'
+        || e.key === 'Delete'
+        || e.key === 'Home'
+        || e.key === 'End'
+        || e.key === 'ArrowRight'
+        || e.key === 'ArrowLeft')) e.preventDefault();
     if (e.key === 'e') e.preventDefault();
     if (e.key === '+') e.preventDefault();
     if (e.key === '-') e.preventDefault();
@@ -775,6 +791,7 @@ export default class SendBitcoinForm extends Vue {
 
   @Emit('createTx')
   createTx() {
+    this.showWarningMessage = false;
     this.pegInFormState.send('loading');
     let selectedFee;
     switch (this.txFeeIndex) {
