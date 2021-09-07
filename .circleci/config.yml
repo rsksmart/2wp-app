@@ -1,0 +1,14 @@
+version: 2.0
+jobs:
+  build:
+    docker:
+      # specify the version you desire here
+      - image: cimg/node:14.17.6     
+    working_directory: ~/tmp
+    steps:
+      - checkout
+      - run:
+          name: Build App
+          command: |
+            npm ci
+            npm run build
