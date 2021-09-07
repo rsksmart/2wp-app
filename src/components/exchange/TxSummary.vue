@@ -33,7 +33,7 @@
                 </v-col>
                 <v-col cols="6">
                   <v-row class="mx-0">
-                    <h3>Transaction Fee</h3>
+                    <h3>Transaction fee</h3>
                   </v-row>
                   <v-row class="mx-0">
                     <span>{{ fee }} BTC</span>
@@ -61,8 +61,18 @@
             <v-divider inset vertical/>
             <v-col cols="6" class="px-0 pl-lg-4">
               <v-container class="pr-md-0">
-                <v-row class="mx-0">
-                  <h3>Destination RSK Address</h3>
+                <v-row class="mx-0" align="start">
+                  <h3 class="mr-1">Destination RSK address</h3>
+                  <v-tooltip right>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-icon small color="teal darken-2" v-bind="attrs" v-on="on">
+                        mdi-information
+                      </v-icon>
+                    </template>
+                    <p class="tooltip-form mb-0">
+                      This is the RSK address where the RBTC will be delivered.
+                    </p>
+                  </v-tooltip>
                 </v-row>
                 <v-row class="mx-0">
                   <v-col cols="auto"
@@ -79,8 +89,18 @@
               </v-container>
               <v-divider/>
               <v-container>
-                <v-row class="mx-0">
-                  <h3>Refund BTC Address</h3>
+                <v-row class="mx-0" align="start">
+                  <h3 class="mr-1">Refund BTC Address</h3>
+                  <v-tooltip right>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-icon small color="teal darken-2" v-bind="attrs" v-on="on">
+                        mdi-information
+                      </v-icon>
+                    </template>
+                    <p class="tooltip-form mb-0">
+                      Rejected transactions will be refunded to this Bitcoin address.
+                    </p>
+                  </v-tooltip>
                 </v-row>
                 <v-row class="mx-0">
                   <span class="breakable-address">{{ txData.refundAddress }}</span>
@@ -101,7 +121,7 @@
                 <v-divider/>
                 <v-container class="container">
                   <v-row class="mx-0" align="start">
-                    <h3 class="mr-1">RSK POWpeg Address</h3>
+                    <h3 class="mr-1">PowPeg Bitcoin Address</h3>
                     <v-tooltip right>
                       <template v-slot:activator="{ on, attrs }">
                         <v-icon small color="teal darken-2" v-bind="attrs" v-on="on">
@@ -109,8 +129,10 @@
                         </v-icon>
                       </template>
                       <p class="tooltip-form mb-0">
-                        The POWpeg address is a bitcoin multisig address secured by
-                        the RSK network that allows the RBTC transfer to your account
+                        This is the Bitcoin address where your bitcoins are sent for conversion.
+                      </p>
+                      <p class="tooltip-form mb-0">
+                        Validate this in your device before confirming the transaction.
                       </p>
                     </v-tooltip>
                   </v-row>

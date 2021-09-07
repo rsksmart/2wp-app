@@ -136,4 +136,12 @@
       color: #737778;
     }
   }
+
+  .v-divider--vertical {
+    margin: 0 -1px;
+  }
+
+  .breakable-address {
+    word-break: break-all;
+  }
 }
