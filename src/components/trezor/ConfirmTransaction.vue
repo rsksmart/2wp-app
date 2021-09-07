@@ -1,14 +1,7 @@
 <template>
   <div class="transactions">
-    <v-row class="mx-0">
-      <v-col cols="1" lg="2" xl="3" align-self="center" class="d-flex flex-column align-start">
-        <v-btn rounded outlined color="#00B520" class="return-to-form-button"
-               icon width="38" height="38" @click="toPegInForm"
-               :disabled="confirmTxState === 'error' || confirmTxState === 'loading'">
-          <v-icon class="return-to-form-button-content">mdi-chevron-left</v-icon>
-        </v-btn>
-      </v-col>
-      <v-col cols="10" lg="8" xl="6" class="d-flex flex-column align-center">
+    <v-row class="mx-0 d-flex justify-center">
+      <v-col cols="10" lg="8" xl="6" class="d-flex justify-center">
         <h1 class="text-center">Confirm transaction on your device</h1>
       </v-col>
     </v-row>
@@ -60,12 +53,24 @@
       <tx-summary :txData="txData" :price="price" :showTxId="false" :initial-expand="true"
                   :rskFederationAddress="rskFederationAddress"/>
     </v-row>
+    <v-row class="ma-0 d-flex justify-center">
+      <v-col cols="4" class="ma-0 d-flex align-center">
+        <v-col cols="6" class="d-flex justify-center ma-0 pa-0">
+          <v-btn v-if="confirmTxState === 'idle' || confirmTxState === 'error'"
+                 rounded outlined color="#00B520" width="110" @click="toPegInForm">
+            <span>Back</span>
+          </v-btn>
+        </v-col>
+        <v-col cols="6" class="d-flex justify-center ma-0 pa-0">
+          <v-btn v-if="confirmTxState === 'idle' || confirmTxState === 'error'"
+                 rounded color="#00B520" width="110" @click="toTrackId"
+                 :disabled="confirmTxState === 'error'">
+            <span>Sign</span>
+          </v-btn>
+        </v-col>
+      </v-col>
+    </v-row>
     <v-row class="mx-0 d-flex justify-center">
-      <v-btn v-if="confirmTxState === 'idle' || confirmTxState === 'error'"
-             rounded outlined color="#00B520" width="110" @click="toTrackId"
-             :disabled="confirmTxState === 'error'">
-        <span>Sign</span>
-      </v-btn>
       <v-col v-if="confirmTxState === 'loading'">
         <v-row class="mx-0 mb-5 d-flex justify-center">
           See your Trezor device to confirm your transaction!
