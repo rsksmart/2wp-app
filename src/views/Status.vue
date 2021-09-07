@@ -86,14 +86,14 @@
                 :value="btcConfirmationsPercentage"
                 color="#00B43C"
                 height="17" />
-              <v-row class="d-flex justify-center mt-4 pa-0">
-                <h5>
-                  Estimated time left: {{leftBtcTime}} hours left
-                </h5>
-              </v-row>
-              <v-row class="d-flex justify-center mt-2 pa-0">
+              <v-row v-if="!btcConfirmationsAreDone" justify="center" class="mt-4 pa-0">
                 <h5>
                   {{btcConfirmations}}/{{btcConfirmationsRequired}} confirmations
+                </h5>
+              </v-row>
+              <v-row v-if="!btcConfirmationsAreDone" justify="center" class="mt-2 pa-0">
+                <h5>
+                  Estimated time left: {{leftBtcTime}} hours left
                 </h5>
               </v-row>
             </v-col>
@@ -114,7 +114,7 @@
                 :value="rskConfirmationsPercentage"
                 color="#00B43C"
                 height="17"/>
-              <v-row class="d-flex justify-center mt-4 pa-0 mx-0">
+              <v-row v-if="!rskConfirmationsAreDone" justify="center" class="mt-4 mx-0 pa-0">
                 <h6>
                   Usually takes around 20 minutes
                 </h6>
@@ -203,6 +203,14 @@ export default class Status extends Vue {
 
   get showStatus() {
     return !this.loading && !this.error && !!this.statusMessage;
+  }
+
+  get btcConfirmationsAreDone() {
+    return this.btcConfirmations > this.btcConfirmationsRequired;
+  }
+
+  get rskConfirmationsAreDone() {
+    return this.pegInStatus.status === PegStatus.CONFIRMED;
   }
 
   @Emit()
