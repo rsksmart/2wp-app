@@ -297,7 +297,8 @@ export default class Status extends Vue {
   getTime(totalMinutes: number): string {
     const hours = Math.floor(totalMinutes / 60);
     const minutes = totalMinutes % 60;
-    return `${hours}:${minutes}`;
+    const paddedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+    return `${hours}:${paddedMinutes}`;
   }
 
   @Emit()
