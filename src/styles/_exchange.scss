@@ -132,4 +132,12 @@
   #connect-device-steps {
     max-width: 475px;
   }
+
+  .v-divider--vertical {
+    margin: 0 -1px;
+  }
+
+  .breakable-address {
+    word-break: break-all;
+  }
 }

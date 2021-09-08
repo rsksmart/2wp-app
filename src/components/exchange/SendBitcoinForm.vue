@@ -46,7 +46,6 @@
                     <p v-if="isLedgerWallet" class="tooltip-form mb-0">
                       Listed amounts represent the balance of the first 2 addresses
                       from Legacy and Segwit accounts including change.
-
                     </p>
                     <span v-if="!isLedgerWallet">
                       Listed amounts represent the balance of the first 2 addresses from Legacy,
