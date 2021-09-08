@@ -23,13 +23,13 @@
           {{ statusMessage }}
         </div>
       </v-row>
-      <v-row v-if="error" class="mx-0 d-flex justify-center">
+      <v-row v-if="error" class="mx-0 mt-20 d-flex justify-center">
         <v-col class="my-4">
-          <v-row class="statusRejected d-flex justify-center">
-            There was an error getting the transaction information,
-            please check it is a valid transaction ID.
+          <v-row class="d-flex justify-center icon-alert">
+            <v-icon x-large
+                    color="#F6C61B" >mdi-alert-outline</v-icon>
           </v-row>
-          <v-row class="statusRejected d-flex justify-center">
+          <v-row class="statusRejected d-flex justify-center error-message mt-3">
             {{ errorMessage }}
           </v-row>
         </v-col>
@@ -90,6 +90,16 @@
                 <h5>
                   {{btcConfirmations}}/{{btcConfirmationsRequired}} confirmations
                 </h5>
+                <v-tooltip right>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon x-small color="teal darken-2" v-bind="attrs" v-on="on">
+                      mdi-information
+                    </v-icon>
+                  </template>
+                  <p class="tooltip-form mb-0">
+                    The estimated time is calculated based on a 10 minutes block time.
+                  </p>
+                </v-tooltip>
               </v-row>
               <v-row v-if="!btcConfirmationsAreDone" justify="center" class="mt-2 pa-0">
                 <h5>
@@ -238,7 +248,6 @@ export default class Status extends Vue {
         this.setSummary();
         this.refreshPercentage();
         this.loading = false;
-        this.error = false;
       })
       .catch((e: Error) => {
         this.errorMessage = e.message;
@@ -279,6 +288,23 @@ export default class Status extends Vue {
         this.statusMessage = 'More Bitcoin confirmations are yet needed, please wait';
         this.activeMessageStyle = 'statusProgress';
         this.isRejected = false;
+        break;
+      case PegStatus.ERROR_BELOW_MIN:
+        this.statusMessage = 'The transaction is below the minimum amount required';
+        this.activeMessageStyle = 'statusProgress';
+        this.isRejected = true;
+        break;
+      case PegStatus.ERROR_NOT_A_PEGIN:
+        this.statusMessage = 'Unfortunately this is not a Peg in transaction';
+        this.activeMessageStyle = 'statusProgress';
+        this.isRejected = true;
+        break;
+      case PegStatus.ERROR_UNEXPECTED:
+        this.error = true;
+        this.errorMessage = 'The input transaction is not valid, please check it and try again';
+        // this.statusMessage = 'Please check the input transaction, is not valid';
+        // this.activeMessageStyle = 'statusProgress';
+        // this.isRejected = true;
         break;
       default:
     }
