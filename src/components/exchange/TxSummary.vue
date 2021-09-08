@@ -1,65 +1,72 @@
 <template>
-  <v-row class="mx-0">
-    <v-col offset-sm="0" sm="12"
-           offset-md="1" md="10"
-           offset-lg="2" lg="8"
-           offset-xl="3" xl="6">
+  <v-row class="mx-0 d-flex justify-center">
+    <v-col sm="8"
+            md="7"
+           lg="6"
+           xl="4">
       <v-row justify="center" class="mx-0 pb-4">
         <h2 class="text-center">Transaction summary:</h2>
       </v-row>
       <v-row class="d-flex justify-center mb-n3">
-        <a v-show="expand" @click="switchExpand">
+        <a v-show="expand && !expandOver" @click="switchExpand" @mouseover="switchExpandOver"
+           @mouseleave="switchExpandOver">
           <v-img src="@/assets/status/collapse-2.png" contain max-width="30"></v-img>
         </a>
-        <a v-show="!expand" @click="switchExpand">
+        <a v-show="!expand && !expandOver" @click="switchExpand" @mouseover="switchExpandOver"
+           @mouseleave="switchExpandOver">
           <v-img src="@/assets/status/collapse.png" contain max-width="30"></v-img>
+        </a>
+        <a v-show="expand && expandOver" @click="switchExpand">
+          <v-img src="@/assets/status/collapse-2-green.png" contain max-width="30"></v-img>
+        </a>
+        <a v-show="!expand && expandOver" @click="switchExpand">
+          <v-img src="@/assets/status/collapse-green.png" contain max-width="30"></v-img>
         </a>
       </v-row>
       <v-expand-transition>
         <div class="box" v-show="expand">
-          <v-row class="mx-0">
-            <v-col cols="6" class="px-0 px-lg-4">
+          <v-row class="mx-0 py-2">
+            <v-col cols="4 py-0 ">
               <v-row class="mx-0">
-                <v-col cols="6">
-                  <v-row class="mx-0">
-                    <h3>Bitcoins</h3>
-                  </v-row>
-                  <v-row class="mx-0">
-                    <span>{{ amount }} BTC</span>
-                  </v-row>
-                  <v-row class="mx-0">
-                    <span class="grayish">USD $ {{ amountUSD }}</span>
-                  </v-row>
-                </v-col>
-                <v-col cols="6">
-                  <v-row class="mx-0">
-                    <h3>Transaction fee</h3>
-                  </v-row>
-                  <v-row class="mx-0">
-                    <span>{{ fee }} BTC</span>
-                  </v-row>
-                  <v-row class="mx-0">
-                    <span class="grayish">USD $ {{ feeUSD }}</span>
-                  </v-row>
-                </v-col>
-              </v-row>
-              <v-row class="mx-0">
-                <v-col cols="6"/>
-                <v-col cols="6">
-                  <v-row class="mx-0">
-                    <h3>Transaction total</h3>
-                  </v-row>
-                  <v-row class="mx-0">
-                    <span>{{ feePlusAmount }} BTC</span>
-                  </v-row>
-                  <v-row class="mx-0">
-                    <span class="grayish">USD $ {{ feePlusAmountUSD }}</span>
-                  </v-row>
+                <v-col>
+                  <v-col class="mb-2">
+                    <v-row class="mx-0">
+                      <h3>Bitcoins</h3>
+                    </v-row>
+                    <v-row class="mx-0">
+                      <span>{{ amount }} BTC</span>
+                    </v-row>
+                    <v-row class="mx-0">
+                      <span class="grayish">USD $ {{ amountUSD }}</span>
+                    </v-row>
+                  </v-col>
+                  <v-col class="mb-2">
+                    <v-row class="mx-0">
+                      <h3>Transaction Fee</h3>
+                    </v-row>
+                    <v-row class="mx-0">
+                      <span>{{ fee }} BTC</span>
+                    </v-row>
+                    <v-row class="mx-0">
+                      <span class="grayish">USD $ {{ feeUSD }}</span>
+                    </v-row>
+                  </v-col>
+                  <v-col>
+                    <v-row class="mx-0">
+                      <h3>Transaction total</h3>
+                    </v-row>
+                    <v-row class="mx-0">
+                      <span>{{ feePlusAmount }} BTC</span>
+                    </v-row>
+                    <v-row class="mx-0">
+                      <span class="grayish">USD $ {{ feePlusAmountUSD }}</span>
+                    </v-row>
+                  </v-col>
                 </v-col>
               </v-row>
             </v-col>
             <v-divider inset vertical/>
-            <v-col cols="6" class="px-0 pl-lg-4">
+            <v-col cols="8" class="px-0 pl-lg-4 pt-0 pb-0">
               <v-container class="pr-md-0">
                 <v-row class="mx-0" align="start">
                   <h3 class="mr-1">Destination RSK address</h3>
@@ -176,6 +183,8 @@ export default class TxSummary extends Vue {
 
   expand = false;
 
+  expandOver = false;
+
   fixedUSDDecimals = 2;
 
   get amount() {
@@ -230,6 +239,11 @@ export default class TxSummary extends Vue {
   @Emit()
   switchExpand() {
     this.expand = !this.expand;
+  }
+
+  @Emit()
+  switchExpandOver() {
+    this.expandOver = !this.expandOver;
   }
 
   @Emit()
