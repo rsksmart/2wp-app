@@ -290,21 +290,16 @@ export default class Status extends Vue {
         this.isRejected = false;
         break;
       case PegStatus.ERROR_BELOW_MIN:
-        this.statusMessage = 'The transaction is below the minimum amount required';
-        this.activeMessageStyle = 'statusProgress';
-        this.isRejected = true;
+        this.error = true;
+        this.errorMessage = 'The transaction is below the minimum amount required';
         break;
       case PegStatus.ERROR_NOT_A_PEGIN:
-        this.statusMessage = 'Unfortunately this is not a Peg in transaction';
-        this.activeMessageStyle = 'statusProgress';
-        this.isRejected = true;
+        this.error = true;
+        this.errorMessage = 'Unfortunately this is not a Peg in transaction, please check it and try again';
         break;
       case PegStatus.ERROR_UNEXPECTED:
         this.error = true;
         this.errorMessage = 'The input transaction is not valid, please check it and try again';
-        // this.statusMessage = 'Please check the input transaction, is not valid';
-        // this.activeMessageStyle = 'statusProgress';
-        // this.isRejected = true;
         break;
       default:
     }
