@@ -206,7 +206,7 @@ export default class Status extends Vue {
   }
 
   get btcConfirmationsAreDone() {
-    return this.btcConfirmations > this.btcConfirmationsRequired;
+    return this.btcConfirmations >= this.btcConfirmationsRequired;
   }
 
   get rskConfirmationsAreDone() {
