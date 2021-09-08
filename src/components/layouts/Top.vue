@@ -4,7 +4,8 @@
       <v-col offset="1" cols="10" offset-xl="2" xl="8" class="px-0">
         <v-row class="top mx-0" >
           <v-col cols="2" class="d-flex justify-start align-center pl-0">
-            <v-img @click="toExchange" src="@/assets/rsk.png" height="40" width="120" contain/>
+            <v-img @click="toExchange" position="center left" src="@/assets/rsk.png"
+                   height="40" width="120" contain/>
           </v-col>
           <v-col cols="8" class="d-flex justify-start align-center">
             <v-col cols="3">
@@ -19,7 +20,7 @@
             </v-col>
           </v-col>
           <v-col cols="2" class="d-flex justify-end align-center pr-0">
-            <p>
+            <p v-if="false">
               English▿
             </p>
           </v-col>
