@@ -2,6 +2,7 @@ import axios from 'axios';
 import { WalletAddress, PeginConfiguration } from '@/store/peginTx/types';
 import { AccountBalance, FeeAmountData, NormalizedTx } from '@/types';
 import { PeginStatus } from '@/store/types';
+import { isValidOpReturn } from './OpReturnUtils';
 
 export default class ApiService {
   static baseURL = process.env.VUE_APP_API_BASE_URL
@@ -51,7 +52,13 @@ export default class ApiService {
         feeLevel,
         changeAddress,
       })
-        .then((response) => resolve(response.data))
+        .then((response) => {
+          const normalizedTx: NormalizedTx = response.data;
+          if (isValidOpReturn(normalizedTx.outputs, recipient, refundAddress)){
+            resolve(response.data)
+          }
+          reject("Invalid data when parsing Opt Return")
+        })
         .catch(reject);
     });
   }
@@ -90,4 +97,5 @@ export default class ApiService {
         .catch(reject);
     });
   }
+
 }
