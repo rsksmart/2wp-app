@@ -8,12 +8,12 @@
                    height="40" width="120" contain/>
           </v-col>
           <v-col cols="8" class="d-flex justify-start align-center">
-            <v-col cols="3">
+            <v-col cols="6" md="3" lg="4">
               <a @click="toExchange">
                 New transaction
               </a>
             </v-col>
-            <v-col cols="5">
+            <v-col cols="6" md="4" lg="5">
               <a @click="toTransactions">
                 Check my transaction
               </a>

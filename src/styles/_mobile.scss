@@ -1,0 +1,41 @@
+.mobile {
+  .title-warning-sm h1 {
+    font-family: Quicksand;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 30px;
+    line-height: 37.5px;
+    color: #00B43C;
+    margin: 115px 0px 100px 0px;
+  }
+
+  .title-warning-xs h1 {
+    font-family: Quicksand;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 24px;
+    line-height: 37px;
+    color: #00B43C;
+    margin: 110px 0px 50px 0px;
+  }
+
+  .text-warning-sm p {
+    font-family: Quicksand;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 20px;
+    line-height: 20.8px;
+    color: #000000;
+    max-width: 550px;
+  }
+
+  .text-warning-xs p {
+    font-family: Quicksand;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 14.56px;
+    color: #000000;
+    max-width: 360px;
+  }
+}
