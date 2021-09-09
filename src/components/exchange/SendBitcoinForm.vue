@@ -658,7 +658,8 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get isValidRskAddress() {
-    return rskUtils.isValidChecksumAddress(this.computedRskAddress, this.CHAIN_ID);
+    return !this.useWeb3Wallet
+      ? rskUtils.isValidChecksumAddress(this.computedRskAddress, this.CHAIN_ID) : true;
   }
 
   get isValidPegInAddress() {
