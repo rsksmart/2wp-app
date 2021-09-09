@@ -55,10 +55,15 @@ export default class ApiService {
       })
         .then((response) => {
           const normalizedTx: NormalizedTx = response.data;
+<<<<<<< HEAD
             if (isValidOpReturn(normalizedTx.outputs, recipient, refundAddress)){
               if (isValidPowPegAddress(normalizedTx.outputs, 'fedAddress' )){  // TODO: Obtain value
                 resolve(response.data)
             }
+=======
+          if (isValidOpReturn(normalizedTx.outputs, recipient, refundAddress)) {
+            resolve(response.data);
+>>>>>>> Adding bridgeService and rsk node env variable
           }
           reject(new Error('Invalid data when parsing Opt Return'));
         })
