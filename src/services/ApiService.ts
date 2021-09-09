@@ -54,10 +54,10 @@ export default class ApiService {
       })
         .then((response) => {
           const normalizedTx: NormalizedTx = response.data;
-          if (isValidOpReturn(normalizedTx.outputs, recipient, refundAddress)){
-            resolve(response.data)
+          if (isValidOpReturn(normalizedTx.outputs, recipient, refundAddress)) {
+            resolve(response.data);
           }
-          reject("Invalid data when parsing Opt Return")
+          reject(new Error('Invalid data when parsing Opt Return'));
         })
         .catch(reject);
     });
@@ -97,5 +97,4 @@ export default class ApiService {
         .catch(reject);
     });
   }
-
 }
