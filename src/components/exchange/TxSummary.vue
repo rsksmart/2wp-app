@@ -110,11 +110,7 @@
                 <v-divider/>
                 <div class="container">
                   <v-row class="mx-0">
-<<<<<<< HEAD
-                    <h3>Transaction ID</h3>
-=======
-                    <h3>Destination RSK address</h3>
->>>>>>> updating names on tx summary
+                    <h3>Bitcoin transaction ID</h3>
                   </v-row>
                   <v-row class="mx-0">
                     <span>{{ computedTxId }}</span>
@@ -123,7 +119,6 @@
               </template>
               <template>
                 <v-divider/>
-<<<<<<< HEAD
                 <v-container class="container">
                   <v-row class="mx-0" align="start">
                     <h3 class="mr-1">PowPeg Bitcoin Address</h3>
@@ -140,55 +135,12 @@
                         Validate this in your device before confirming the transaction.
                       </p>
                     </v-tooltip>
-=======
-                <div class="container">
-                  <v-row class="mx-0">
-                    <h3>Refund BTC address</h3>
->>>>>>> updating names on tx summary
                   </v-row>
                   <v-row class="mx-0">
                     <span class="breakable-address">{{ rskFederationAddress }}</span>
                   </v-row>
-<<<<<<< HEAD
                 </v-container>
               </template>
-=======
-                </div>
-                <template v-if="showTxId">
-                  <v-divider/>
-                  <div class="container">
-                    <v-row class="mx-0">
-                      <h3>Bitcoin transaction ID</h3>
-                    </v-row>
-                    <v-row class="mx-0">
-                      <span>{{ computedTxId }}</span>
-                    </v-row>
-                  </div>
-                </template>
-                <template>
-                  <v-divider/>
-                  <div class="container">
-                    <v-row class="mx-0" align="start">
-                      <h3 class="mr-1">RSK POWpeg address</h3>
-                      <v-tooltip right>
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-icon small color="teal darken-2" v-bind="attrs" v-on="on">
-                            mdi-information
-                          </v-icon>
-                        </template>
-                        <p class="tooltip-form mb-0">
-                          The POWpeg address is a bitcoin multisig address secured by
-                          the RSK network that allows the RBTC transfer to your account
-                        </p>
-                      </v-tooltip>
-                    </v-row>
-                    <v-row class="mx-0">
-                      <span>{{ rskFederationAddress }}</span>
-                    </v-row>
-                  </div>
-                </template>
-              </div>
->>>>>>> updating names on tx summary
             </v-col>
           </v-row>
         </div>
