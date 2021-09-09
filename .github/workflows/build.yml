@@ -1,4 +1,4 @@
-name: rLogin front-ends for basic and permissioned dapp deploy to prod
+name: 2wp-app build
 
 on:
   push:
