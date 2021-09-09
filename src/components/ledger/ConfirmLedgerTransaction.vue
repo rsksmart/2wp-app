@@ -22,6 +22,30 @@
         <v-row class="mx-0 d-flex justify-center">
           <h4 class="text-center"><span class="number">1</span>Confirm RSK information</h4>
         </v-row>
+        <v-row class="mx-0 d-flex justify-center">
+          <fieldset class="confirmation-box px-10">
+            <legend class="px-3 d-flex justify-center">See on Ledger</legend>
+            <v-row class="mt-5 d-flex justify-center" >Review output #1</v-row>
+            <v-row class="mt-5 d-flex justify-center" >AMOUNT 0</v-row>
+            <v-row class="mt-5 d-flex justify-center" >
+            <span>
+              Address: OP_RETURN
+            </span>
+              <v-tooltip right>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-icon small color="black" v-bind="attrs" v-on="on" class="ml-2 pb-2">
+                    mdi-information
+                  </v-icon>
+                </template>
+                <p class="tooltip-form mb-0">
+                  The POWpeg address is a bitcoin multisig address secured by
+                  the RSK network that allows the RBTC transfer to your account
+                </p>
+              </v-tooltip>
+            </v-row>
+            <v-row class="mt-5 mb-3 d-flex justify-center" >ACCEPT</v-row>
+          </fieldset>
+        </v-row>
       </v-col>
       <v-col id="instruction-2" cols="3" class="px-lg-10">
         <v-row justify="center" class="mx-0">
