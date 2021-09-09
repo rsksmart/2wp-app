@@ -3,6 +3,7 @@ import { WalletAddress, PeginConfiguration } from '@/store/peginTx/types';
 import { AccountBalance, FeeAmountData, NormalizedTx } from '@/types';
 import { PeginStatus } from '@/store/types';
 import { isValidOpReturn } from './OpReturnUtils';
+import { isValidPowPegAddress } from './PowPegAddressUtils';
 
 export default class ApiService {
   static baseURL = process.env.VUE_APP_API_BASE_URL
@@ -54,8 +55,10 @@ export default class ApiService {
       })
         .then((response) => {
           const normalizedTx: NormalizedTx = response.data;
-          if (isValidOpReturn(normalizedTx.outputs, recipient, refundAddress)) {
-            resolve(response.data);
+            if (isValidOpReturn(normalizedTx.outputs, recipient, refundAddress)){
+              if (isValidPowPegAddress(normalizedTx.outputs, 'fedAddress' )){  // TODO: Obtain value
+                resolve(response.data)
+            }
           }
           reject(new Error('Invalid data when parsing Opt Return'));
         })
