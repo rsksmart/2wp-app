@@ -181,7 +181,7 @@
                   <v-col cols="1" class="d-flex justify-center pb-0">
                     <div class="divider"/>
                   </v-col>
-                  <v-col cols="5" class="pb-0">
+                  <v-col cols="5" class="pb-0 px-0">
                     <v-row class="mx-0 mb-4 d-flex justify-start">
                       <span class="text-center">Choose address from web wallet</span>
                     </v-row>
@@ -279,7 +279,7 @@
               </p>
             </v-container>
             <v-container class="pt-0 pl-0">
-              <span>USD $ {{ computedBitcoinUSD }}</span>
+              <span>USD $ {{ computedBTCAmountUSD }}</span>
             </v-container>
             <v-divider color="#C4C4C4"/>
             <v-container id="summary-3" class="pb-0 pl-0">
@@ -338,7 +338,7 @@
               </p>
             </v-container>
             <v-container class="pt-0 pl-0">
-              <span>{{ computedTxFeeUSD }}</span>
+              <span>USD $ {{ computedTxFeeUSD }}</span>
             </v-container>
             <v-divider color="#C4C4C4"/>
             <v-container id="summary-6" class="pb-0 pl-0">
@@ -351,11 +351,11 @@
             </v-container>
             <v-container class="pt-4 pb-0 pl-0">
               <p v-bind:class="{'grayish': computedBTCAmount === 'Not completed'}">
-                {{ computedFullTxFee }}
+                {{ computedFeePlusAmount }}
               </p>
             </v-container>
             <v-container class="pt-0 pl-0">
-              <span>{{ computedFullTxFeeUSD }}</span>
+              <span>USD $ {{ computedFeePlusAmountUSD }}</span>
             </v-container>
           </v-container>
         </v-row>
@@ -504,11 +504,6 @@ export default class SendBitcoinForm extends Vue {
     return this.bitcoinAmount;
   }
 
-  get computedBTCAmount() {
-    if (!this.isBTCAmountValidRegex) return 'Not completed';
-    return this.bitcoinAmount > 0 ? Big(this.bitcoinAmount).toFixed(8) : 'Not completed';
-  }
-
   get computedBTCAddress() {
     return this.btcAccountTypeSelected !== '' ? this.btcAccountTypeSelected : 'Not completed';
   }
@@ -533,31 +528,42 @@ export default class SendBitcoinForm extends Vue {
     return this.getChunkedValue(this.computedRskAddress);
   }
 
-  get computedTxFee() {
-    return !this.fourthDone ? 'Not completed' : `${Big(this.txFee).toFixed(8)} BTC`;
+  get computedBTCAmount(): string {
+    if (!this.isBTCAmountValidRegex) return 'Not completed';
+    const btcAmount: Big = this.safeToBig(this.bitcoinAmount);
+    return btcAmount.gt('0') ? `${btcAmount.toFixed(8)} BTC` : 'Not completed';
   }
 
-  get computedFullTxFee() {
-    const amount: Big = this.safeToBig(this.bitcoinAmount);
-    const feePlusAmount = Big(this.txFee).plus(amount);
-    return this.fourthDone && this.secondDone ? `${feePlusAmount.toFixed(8)} BTC` : 'Not completed';
-  }
-
-  get computedBitcoinUSD() {
+  get computedBTCAmountUSD(): string {
     if (!this.isBTCAmountValidRegex) return '0.00';
-    return +this.bitcoinAmount ? this.btcToUSD(this.bitcoinAmount) : '0.00';
+    const btcAmount: Big = this.safeToBig(this.bitcoinAmount);
+    return btcAmount.gt('0') ? this.btcToUSD(btcAmount) : '0.00';
   }
 
-  get computedTxFeeUSD() {
-    return !this.fourthDone
-      ? 'USD $ 0' : `USD $ ${this.btcToUSD(Big(this.txFee).toFixed(this.fixedUSDDecimals))}`;
+  get computedTxFee(): string {
+    const txFee: Big = this.safeToBig(this.txFee);
+    return this.fourthDone ? `${txFee.toFixed(8)} BTC` : 'Not completed';
   }
 
-  get computedFullTxFeeUSD() {
+  get computedTxFeeUSD(): string {
+    const txFee: Big = this.safeToBig(this.txFee);
+    return this.fourthDone ? this.btcToUSD(txFee) : '0.00';
+  }
+
+  get computedFeePlusAmount(): string {
     const amount: Big = this.safeToBig(this.bitcoinAmount);
-    const feePlusAmount = Big(this.txFee).plus(amount);
+    const txFee: Big = this.safeToBig(this.txFee);
+    const feePlusAmount = amount.plus(txFee);
     return this.fourthDone && this.secondDone
-      ? `USD $ ${this.btcToUSD(feePlusAmount.toFixed(this.fixedUSDDecimals))}` : 'USD $ 0.00';
+      ? `${feePlusAmount.toFixed(8)} BTC` : 'Not completed';
+  }
+
+  get computedFeePlusAmountUSD(): string {
+    const amountUSD: Big = Big(this.computedBTCAmountUSD);
+    const txFeeUSD: Big = Big(this.computedTxFeeUSD);
+    const feePlusAmountUSD: Big = amountUSD.plus(txFeeUSD);
+    return this.fourthDone && this.secondDone
+      ? feePlusAmountUSD.toFixed(this.fixedUSDDecimals) : '0.00';
   }
 
   get txFeeColor() {
@@ -679,7 +685,7 @@ export default class SendBitcoinForm extends Vue {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  safeToBig(s: number | string): Big {
+  safeToBig(s: number | string | Big): Big {
     return (s.toString() === '' ? Big('0') : Big(s));
   }
 
@@ -864,8 +870,10 @@ export default class SendBitcoinForm extends Vue {
 
   @Emit()
   // eslint-disable-next-line class-methods-use-this
-  btcToUSD(btcs: number | string): string {
-    return Big(btcs).mul(Big(this.price)).toFixed(this.fixedUSDDecimals);
+  btcToUSD(btcs: number | string | Big): string {
+    return this.safeToBig(btcs)
+      .mul(this.safeToBig(this.price))
+      .toFixed(this.fixedUSDDecimals);
   }
 
   get isLedgerWallet() {
