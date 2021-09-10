@@ -22,6 +22,34 @@
         <v-row class="mx-0 d-flex justify-center">
           <h4 class="text-center"><span class="number">1</span>Confirm RSK information</h4>
         </v-row>
+      </v-col>
+      <v-col id="instruction-2" cols="3" class="px-lg-10">
+        <v-row justify="center" class="mx-0">
+          <v-img src="@/assets/exchange/trezor/transfer.png" height="40" contain/>
+        </v-row>
+        <v-row class="mx-0 d-flex justify-center">
+          <h4 class="text-center"><span class="number">2</span>Confirm funds transfer</h4>
+        </v-row>
+      </v-col>
+      <v-col id="instruction-3" cols="3" class="px-lg-10">
+        <v-row justify="center" class="mx-0">
+          <v-img src="@/assets/exchange/trezor/change.png" height="40" contain/>
+        </v-row>
+        <v-row class="mx-0 d-flex justify-center">
+          <h4 class="text-center"><span class="number">3</span>Confirm change address</h4>
+        </v-row>
+      </v-col>
+      <v-col id="instruction-4" cols="3" class="px-lg-10">
+        <v-row justify="center" class="mx-0">
+          <v-img src="@/assets/exchange/trezor/fee.png" height="40" contain/>
+        </v-row>
+        <v-row class="mx-0 d-flex justify-center">
+          <h4 class="text-center"><span class="number">4</span>Confirm Transaction Fee</h4>
+        </v-row>
+      </v-col>
+    </v-row>
+    <v-row class="mx-0">
+      <v-col cols="3" class="px-lg-10" >
         <v-row class="mx-0 d-flex justify-center">
           <fieldset class="confirmation-box px-10">
             <legend class="px-3 d-flex justify-center">See on Ledger</legend>
@@ -47,28 +75,44 @@
           </fieldset>
         </v-row>
       </v-col>
-      <v-col id="instruction-2" cols="3" class="px-lg-10">
-        <v-row justify="center" class="mx-0">
-          <v-img src="@/assets/exchange/trezor/transfer.png" height="40" contain/>
-        </v-row>
+      <v-col cols="3" class="px-lg-10" >
         <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center"><span class="number">2</span>Confirm funds transfer</h4>
+          <fieldset class="confirmation-box px-10">
+            <legend class="px-3 d-flex justify-center">See on Ledger</legend>
+            <v-row class="mt-5 d-flex justify-center" >Review output #2</v-row>
+            <v-row class="mt-5 d-flex justify-center" >AMOUNT {{txData.amount}}</v-row>
+            <v-row class="mt-5 d-flex justify-center" >
+            <span>
+              {{rskFederationAddress}}
+            </span>
+            </v-row>
+            <v-row class="mt-5 mb-3 d-flex justify-center" >ACCEPT</v-row>
+          </fieldset>
         </v-row>
       </v-col>
-      <v-col id="instruction-3" cols="3" class="px-lg-10">
-        <v-row justify="center" class="mx-0">
-          <v-img src="@/assets/exchange/trezor/change.png" height="40" contain/>
-        </v-row>
+      <v-col cols="3" class="px-lg-10" >
         <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center"><span class="number">3</span>Confirm change address</h4>
+          <fieldset class="confirmation-box px-10">
+            <legend class="px-3 d-flex justify-center">See on Ledger</legend>
+            <v-row class="mt-5 d-flex justify-center" >Review output #3</v-row>
+            <v-row class="mt-5 d-flex justify-center" >AMOUNT change</v-row>
+            <v-row class="mt-5 d-flex justify-center" >
+            <span>
+              Address: changeAddress
+            </span>
+            </v-row>
+            <v-row class="mt-5 mb-3 d-flex justify-center" >ACCEPT</v-row>
+          </fieldset>
         </v-row>
       </v-col>
-      <v-col id="instruction-4" cols="3" class="px-lg-10">
-        <v-row justify="center" class="mx-0">
-          <v-img src="@/assets/exchange/trezor/fee.png" height="40" contain/>
-        </v-row>
+      <v-col cols="3" class="px-lg-10" >
         <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center"><span class="number">4</span>Confirm Transaction Fee</h4>
+          <fieldset class="confirmation-box px-10">
+            <legend class="px-3 d-flex justify-center">See on Ledger</legend>
+            <v-row class="mt-5 d-flex justify-center" >Confirm Transaction</v-row>
+            <v-row class="mt-5 d-flex justify-center" >FEE {{txData.feeBTC}}</v-row>
+            <v-row class="mt-5 mb-3 d-flex justify-center" >ACCEPT</v-row>
+          </fieldset>
         </v-row>
       </v-col>
     </v-row>
