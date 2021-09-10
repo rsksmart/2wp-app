@@ -295,7 +295,7 @@ export default class Status extends Vue {
         break;
       case PegStatus.ERROR_NOT_A_PEGIN:
         this.error = true;
-        this.errorMessage = 'Unfortunately this is not a Peg in transaction, please check it and try again';
+        this.errorMessage = 'Unfortunately this is not recognized as a Peg in transaction, please check it and try again';
         break;
       case PegStatus.ERROR_UNEXPECTED:
         this.error = true;
