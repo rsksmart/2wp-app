@@ -1,6 +1,7 @@
 <template>
   <v-app style="z-index: 0 !important;" class="d-flex">
-    <div class="custom-background">
+    <mobile v-if="$vuetify.breakpoint.smAndDown" />
+    <div v-else class="custom-background">
       <top/>
       <router-view @bitcoinWallet="getBitcoinWallet"/>
     </div>
@@ -11,6 +12,7 @@ import Vue from 'vue';
 import { Component, Emit } from 'vue-property-decorator';
 import { Action } from 'vuex-class';
 import Top from '@/components/layouts/Top.vue';
+import Mobile from '@/views/Mobile.vue';
 import * as constants from '@/store/constants';
 import ApiService from '@/services/ApiService';
 import { PeginConfiguration } from '@/store/peginTx/types';
@@ -18,6 +20,7 @@ import { PeginConfiguration } from '@/store/peginTx/types';
 @Component({
   components: {
     Top,
+    Mobile,
   },
 })
 export default class App extends Vue {
