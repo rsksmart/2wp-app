@@ -3,6 +3,8 @@ import { WalletAddress, PeginConfiguration } from '@/store/peginTx/types';
 import { AccountBalance, FeeAmountData, NormalizedTx } from '@/types';
 import { PeginStatus } from '@/store/types';
 import { isValidOpReturn } from './OpReturnUtils';
+import { isValidPowPegAddress } from './PowPegAddressUtils';
+import { BridgeService } from '@/services/BridgeService';
 
 export default class ApiService {
   static baseURL = process.env.VUE_APP_API_BASE_URL
@@ -43,19 +45,27 @@ export default class ApiService {
   public static createPeginTx(amountToTransferInSatoshi: number, refundAddress: string,
     recipient: string, sessionId: string, feeLevel: string,
     changeAddress: string): Promise<NormalizedTx> {
+    const bridgeService = new BridgeService();
     return new Promise<NormalizedTx>((resolve, reject) => {
-      axios.post(`${this.baseURL}/pegin-tx`, {
-        amountToTransferInSatoshi,
-        refundAddress,
-        recipient: recipient.slice(2),
-        sessionId,
-        feeLevel,
-        changeAddress,
-      })
-        .then((response) => {
+      Promise.all([
+        axios.post(`${this.baseURL}/pegin-tx`, {
+          amountToTransferInSatoshi,
+          refundAddress,
+          recipient: recipient.slice(2),
+          sessionId,
+          feeLevel,
+          changeAddress,
+        }),
+        bridgeService.getFederationAddress(),
+      ])
+        .then(([response, powPegAddress]) => {
           const normalizedTx: NormalizedTx = response.data;
           if (isValidOpReturn(normalizedTx.outputs, recipient, refundAddress)) {
-            resolve(response.data);
+            if (isValidPowPegAddress(normalizedTx.outputs, powPegAddress)) {
+              resolve(response.data);
+            } else {
+              reject(new Error('Invalid data when comparing Powpeg Address'));
+            }
           }
           reject(new Error('Invalid data when parsing Opt Return'));
         })
