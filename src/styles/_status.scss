@@ -74,6 +74,16 @@
     text-decoration: none;
   }
 
+  .error-message {
+    font-size: 20px;
+  }
+
+  .icon-alert {
+    .v-icon.v-icon{
+      font-size: 70px !important;
+    }
+  }
+
   .number {
     border: 2px solid #000 !important;
   }

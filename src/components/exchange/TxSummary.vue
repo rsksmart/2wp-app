@@ -110,7 +110,7 @@
                 <v-divider/>
                 <div class="container">
                   <v-row class="mx-0">
-                    <h3>Transaction ID</h3>
+                    <h3>Bitcoin transaction ID</h3>
                   </v-row>
                   <v-row class="mx-0">
                     <span>{{ computedTxId }}</span>
@@ -172,6 +172,8 @@ export default class TxSummary extends Vue {
 
   @Prop() rskFederationAddress!: string;
 
+  txIdValue = '';
+
   expand = false;
 
   fixedUSDDecimals = 2;
@@ -215,7 +217,7 @@ export default class TxSummary extends Vue {
   }
 
   get computedTxId() {
-    return this.txId ? `${this.txId.substr(0, 24)}...${this.txId.substr(60, 64)}` : 'Not found';
+    return this.txIdValue ? `${this.txIdValue.substr(0, 24)}...${this.txIdValue.substr(60, 64)}` : 'Not found';
   }
 
   @Emit()
@@ -238,6 +240,7 @@ export default class TxSummary extends Vue {
 
   created() {
     this.expand = this.initialExpand;
+    this.txIdValue = this.txId;
   }
 }
 </script>
