@@ -48,6 +48,58 @@
         </v-row>
       </v-col>
     </v-row>
+    <v-row class="mx-0">
+      <v-col cols="3" class="px-lg-10" >
+        <v-row class="mx-0 d-flex justify-center">
+          <fieldset class="confirmation-box px-10">
+            <legend class="px-3 d-flex justify-center">See on Trezor</legend>
+            <v-row class="mt-5 d-flex justify-center" >Confirm OP_RETURN </v-row>
+            <v-row class="mt-5 mb-3 d-flex justify-center" >Confirm</v-row>
+          </fieldset>
+        </v-row>
+      </v-col>
+      <v-col cols="3" class="px-lg-10" >
+        <v-row class="mx-0 d-flex justify-center">
+          <fieldset class="confirmation-box px-10">
+            <legend class="px-3 d-flex justify-center">See on Trezor</legend>
+            <v-row class="mt-5 d-flex justify-center" >Confirm sending</v-row>
+            <v-row class="mt-5 d-flex justify-center" >Amount {{btcAmount}}</v-row>
+            <v-row class="mt-5 d-flex justify-center" >
+            <span>
+              {{rskFederationAddress}}
+            </span>
+            </v-row>
+            <v-row class="mt-5 mb-3 d-flex justify-center" >Confirm</v-row>
+
+          </fieldset>
+        </v-row>
+      </v-col>
+      <v-col cols="3" class="px-lg-10" >
+        <v-row class="mx-0 d-flex justify-center">
+          <fieldset class="confirmation-box px-10">
+            <legend class="px-3 d-flex justify-center">See on Trezor</legend>
+            <v-row class="mt-5 d-flex justify-center" >Confirm sending</v-row>
+            <v-row class="mt-5 d-flex justify-center" >Amount {{changeAmount}}</v-row>
+            <v-row class="mt-5 d-flex justify-center" >
+            <span>
+              {{changeAddress}}
+            </span>
+            </v-row>
+            <v-row class="mt-5 mb-3 d-flex justify-center" >Confirm</v-row>
+          </fieldset>
+        </v-row>
+      </v-col>
+      <v-col cols="3" class="px-lg-10" >
+        <v-row class="mx-0 d-flex justify-center">
+          <fieldset class="confirmation-box px-10">
+            <legend class="px-3 d-flex justify-center">See on Trezor</legend>
+            <v-row class="mt-5 d-flex justify-center" >Really send amount</v-row>
+            <v-row class="mt-5 d-flex justify-center" >FEE {{txData.feeBTC}}</v-row>
+            <v-row class="mt-5 mb-3 d-flex justify-center" >Confirm</v-row>
+          </fieldset>
+        </v-row>
+      </v-col>
+    </v-row>
     <v-divider/>
     <v-row class="mx-0 my-8">
       <tx-summary :txData="txData" :price="price" :showTxId="false" :initial-expand="true"
@@ -88,6 +140,7 @@ import {
   Component, Emit, Prop,
   Vue,
 } from 'vue-property-decorator';
+import Big from 'big.js';
 import TrezorTxBuilder from '@/middleware/TxBuilder/TrezorTxBuilder';
 import { ConfirmTxState, TrezorTx, TxData } from '@/types';
 import TxSummary from '@/components/exchange/TxSummary.vue';
@@ -125,7 +178,6 @@ export default class ConfirmTransaction extends Vue {
         this.txId = txId;
       })
       .catch((err) => {
-        console.error(err);
         this.confirmTxState = 'error';
         this.txError = err.message;
       });
@@ -136,6 +188,20 @@ export default class ConfirmTransaction extends Vue {
   async toPegInForm() {
     this.confirmTxState = 'loading';
     return 'SendBitcoinForm';
+  }
+
+  get changeAddress() {
+    return this.txBuilder.changeAddress;
+  }
+
+  get btcAmount() {
+    const amount = new Big(this.txData.amount);
+    return amount.div(100_000_000).toFixed(8);
+  }
+
+  get changeAmount() {
+    const amount = new Big(this.tx.outputs[2].amount);
+    return amount.div(100_000_000).toFixed(8);
   }
 
   created() {

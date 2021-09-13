@@ -13,9 +13,16 @@ import store from '../../store';
 export default class TrezorTxBuilder extends TxBuilder {
   private tx!: TrezorTx;
 
+  private changeAddr: string;
+
   constructor() {
     super();
     this.signer = new TrezorTxSigner();
+    this.changeAddr = '';
+  }
+
+  get changeAddress(): string {
+    return this.changeAddr;
   }
 
   buildTx({
@@ -24,6 +31,7 @@ export default class TrezorTxBuilder extends TxBuilder {
     amountToTransferInSatoshi: number; refundAddress: string; recipient: string;
     feeLevel: string; changeAddress: string; sessionId: string;
   }): Promise<TrezorTx> {
+    this.changeAddr = changeAddress;
     return new Promise<TrezorTx>((resolve, reject) => {
       const { coin } = this;
       ApiService.createPeginTx(
