@@ -1,16 +1,16 @@
 <template>
-  <v-col offset="1" cols="10" offset-xl="2" xl="8" class="exchange-form ">
+  <v-col offset="1" cols="10" offset-xl="2" xl="8" class="exchange-form px-0">
     <v-row class="mx-0">
-      <v-col cols="1" class="pa-0 d-flex align-center justify-start">
-        <v-img class="d-flex justify-start"
+      <v-col cols="1" class="pa-0 pl-4 d-flex align-center">
+        <v-img position="center left"
                src="@/assets/exchange/arrow.png" height="40" contain/>
       </v-col>
-      <v-col>
+      <v-col class="px-0">
         <h1 class="text-left">Send Bitcoins. Get RBTC.</h1>
       </v-col>
     </v-row>
     <v-row class="mx-0 mt-2">
-      <v-col id="options-col" cols="8" class="pr-lg-8">
+      <v-col id="options-col" cols="8" lg="7" class="pr-0">
         <v-container id="option-1">
           <v-row align="start" class="mx-0">
             <v-col cols="auto" class="pl-0">
@@ -245,129 +245,131 @@
           </v-row>
         </v-container>
       </v-col>
-      <v-col id="summary-col" cols="4" class="px-3 pl-lg-0 pr-md-0 pl-xl-8">
-        <v-row class="mx-0 my-4">
-          <h2>Transaction summary:</h2>
-        </v-row>
-        <v-row class="mx-0 summary-box">
-          <v-container id="summary-box-container">
-            <v-container id="summary-1" class="pb-0 pl-0">
-              <v-row class="mx-0">
-                <h1>Device account:</h1>
-                <v-icon v-if="firstDone" class="ml-2" small color="#008CFF">
-                  mdi-check-circle-outline
-                </v-icon>
-              </v-row>
-            </v-container>
-            <v-container class="pt-4 pl-0">
-              <p v-bind:class="{'grayish': computedBTCAddress === 'Not completed'}">
-                {{ computedBTCAddress }}
-              </p>
-            </v-container>
-            <v-divider color="#C4C4C4"/>
-            <v-container id="summary-2" class="pb-0 pl-0">
-              <v-row class="mx-0">
-                <h1>Bitcoins:</h1>
-                <v-icon v-if="secondDone" class="ml-2" small color="#008CFF">
-                  mdi-check-circle-outline
-                </v-icon>
-              </v-row>
-            </v-container>
-            <v-container class="pt-4 pb-0 pl-0">
-              <p v-bind:class="{'grayish': computedBTCAmount === 'Not completed'}">
-                {{ computedBTCAmount }}
-              </p>
-            </v-container>
-            <v-container class="pt-0 pl-0">
-              <span>USD $ {{ computedBTCAmountUSD }}</span>
-            </v-container>
-            <v-divider color="#C4C4C4"/>
-            <v-container id="summary-3" class="pb-0 pl-0">
-              <v-row class="mx-0">
-                <h1>Destination RSK address:</h1>
-                <v-icon v-if="thirdDone" class="ml-2" small color="#008CFF">
-                  mdi-check-circle-outline
-                </v-icon>
-              </v-row>
-            </v-container>
-            <v-container class="pt-4 pl-0">
-              <v-row class="mx-0 d-none d-lg-block">
-                <p v-bind:class="{'grayish': computedRskAddress === 'Not completed'}">
-                  {{ computedRskAddress }}
+      <v-col id="summary-col" cols="4" lg="5">
+        <v-col cols="12" offset-lg="1" lg="11" xl="10" class="pa-0">
+          <v-row class="mx-0 my-4">
+            <h2>Transaction summary:</h2>
+          </v-row>
+          <v-row class="mx-0 summary-box">
+            <v-container id="summary-box-container">
+              <v-container id="summary-1" class="pb-0 pl-0">
+                <v-row class="mx-0">
+                  <h1>Device account:</h1>
+                  <v-icon v-if="firstDone" class="ml-2" small color="#008CFF">
+                    mdi-check-circle-outline
+                  </v-icon>
+                </v-row>
+              </v-container>
+              <v-container class="pt-4 pl-0">
+                <p v-bind:class="{'grayish': computedBTCAddress === 'Not completed'}">
+                  {{ computedBTCAddress }}
                 </p>
-              </v-row>
-              <v-row class="mx-0 d-lg-none">
-                <p v-bind:class="{'grayish': computedRskAddress === 'Not completed'}">
-                  {{ croppedComputedRskAddress }}
+              </v-container>
+              <v-divider color="#C4C4C4"/>
+              <v-container id="summary-2" class="pb-0 pl-0">
+                <v-row class="mx-0">
+                  <h1>Bitcoins:</h1>
+                  <v-icon v-if="secondDone" class="ml-2" small color="#008CFF">
+                    mdi-check-circle-outline
+                  </v-icon>
+                </v-row>
+              </v-container>
+              <v-container class="pt-4 pb-0 pl-0">
+                <p v-bind:class="{'grayish': computedBTCAmount === 'Not completed'}">
+                  {{ computedBTCAmount }}
                 </p>
-              </v-row>
-            </v-container>
-            <v-divider color="#C4C4C4"/>
-            <v-container id="summary-4" class="pb-0 pl-0">
-              <v-row class="mx-0">
-                <h1>Refund BTC address:</h1>
-                <v-icon v-if="fourthDone" class="ml-2" small color="#008CFF">
-                  mdi-check-circle-outline
-                </v-icon>
-              </v-row>
-            </v-container>
-            <v-container class="pt-4 pl-0">
-              <v-row class="mx-0 d-none d-lg-block">
-                <p v-bind:class="{'grayish': computedRefundBTCAddress === 'Not completed'}">
-                  {{ computedRefundBTCAddress }}
+              </v-container>
+              <v-container class="pt-0 pl-0">
+                <span>USD $ {{ computedBTCAmountUSD }}</span>
+              </v-container>
+              <v-divider color="#C4C4C4"/>
+              <v-container id="summary-3" class="pb-0 pl-0">
+                <v-row class="mx-0">
+                  <h1>Destination RSK address:</h1>
+                  <v-icon v-if="thirdDone" class="ml-2" small color="#008CFF">
+                    mdi-check-circle-outline
+                  </v-icon>
+                </v-row>
+              </v-container>
+              <v-container class="pt-4 pl-0">
+                <v-row class="mx-0 d-none d-lg-block">
+                  <p v-bind:class="{'grayish': computedRskAddress === 'Not completed'}">
+                    {{ computedRskAddress }}
+                  </p>
+                </v-row>
+                <v-row class="mx-0 d-lg-none">
+                  <p v-bind:class="{'grayish': computedRskAddress === 'Not completed'}">
+                    {{ croppedComputedRskAddress }}
+                  </p>
+                </v-row>
+              </v-container>
+              <v-divider color="#C4C4C4"/>
+              <v-container id="summary-4" class="pb-0 pl-0">
+                <v-row class="mx-0">
+                  <h1>Refund BTC address:</h1>
+                  <v-icon v-if="fourthDone" class="ml-2" small color="#008CFF">
+                    mdi-check-circle-outline
+                  </v-icon>
+                </v-row>
+              </v-container>
+              <v-container class="pt-4 pl-0">
+                <v-row class="mx-0 d-none d-lg-block">
+                  <p v-bind:class="{'grayish': computedRefundBTCAddress === 'Not completed'}">
+                    {{ computedRefundBTCAddress }}
+                  </p>
+                </v-row>
+                <v-row class="mx-0 d-lg-none">
+                  <p v-bind:class="{'grayish': computedRefundBTCAddress === 'Not completed'}">
+                    {{ croppedComputedRefundBTCAddress }}
+                  </p>
+                </v-row>
+              </v-container>
+              <v-divider color="#C4C4C4"/>
+              <v-container id="summary-5" class="pb-0 pl-0">
+                <v-row class="mx-0">
+                  <h1>Transaction fee:</h1>
+                  <v-icon v-if="fourthDone" class="ml-2" small color="#008CFF">
+                    mdi-check-circle-outline
+                  </v-icon>
+                </v-row>
+              </v-container>
+              <v-container class="pt-4 pb-0 pl-0">
+                <p v-bind:class="{'grayish': computedTxFee === 'Not completed'}">
+                  {{ computedTxFee }}
                 </p>
-              </v-row>
-              <v-row class="mx-0 d-lg-none">
-                <p v-bind:class="{'grayish': computedRefundBTCAddress === 'Not completed'}">
-                  {{ croppedComputedRefundBTCAddress }}
+              </v-container>
+              <v-container class="pt-0 pl-0">
+                <span>USD $ {{ computedTxFeeUSD }}</span>
+              </v-container>
+              <v-divider color="#C4C4C4"/>
+              <v-container id="summary-6" class="pb-0 pl-0">
+                <v-row class="mx-0">
+                  <h1>Transaction total:</h1>
+                  <v-icon v-if="fourthDone" class="ml-2" small color="#008CFF">
+                    mdi-check-circle-outline
+                  </v-icon>
+                </v-row>
+              </v-container>
+              <v-container class="pt-4 pb-0 pl-0">
+                <p v-bind:class="{'grayish': computedBTCAmount === 'Not completed'}">
+                  {{ computedFeePlusAmount }}
                 </p>
-              </v-row>
+              </v-container>
+              <v-container class="pt-0 pl-0">
+                <span>USD $ {{ computedFeePlusAmountUSD }}</span>
+              </v-container>
             </v-container>
-            <v-divider color="#C4C4C4"/>
-            <v-container id="summary-5" class="pb-0 pl-0">
-              <v-row class="mx-0">
-                <h1>Transaction fee:</h1>
-                <v-icon v-if="fourthDone" class="ml-2" small color="#008CFF">
-                  mdi-check-circle-outline
-                </v-icon>
-              </v-row>
-            </v-container>
-            <v-container class="pt-4 pb-0 pl-0">
-              <p v-bind:class="{'grayish': computedTxFee === 'Not completed'}">
-                {{ computedTxFee }}
-              </p>
-            </v-container>
-            <v-container class="pt-0 pl-0">
-              <span>USD $ {{ computedTxFeeUSD }}</span>
-            </v-container>
-            <v-divider color="#C4C4C4"/>
-            <v-container id="summary-6" class="pb-0 pl-0">
-              <v-row class="mx-0">
-                <h1>Transaction total:</h1>
-                <v-icon v-if="fourthDone" class="ml-2" small color="#008CFF">
-                  mdi-check-circle-outline
-                </v-icon>
-              </v-row>
-            </v-container>
-            <v-container class="pt-4 pb-0 pl-0">
-              <p v-bind:class="{'grayish': computedBTCAmount === 'Not completed'}">
-                {{ computedFeePlusAmount }}
-              </p>
-            </v-container>
-            <v-container class="pt-0 pl-0">
-              <span>USD $ {{ computedFeePlusAmountUSD }}</span>
-            </v-container>
-          </v-container>
-        </v-row>
-        <v-row class="mx-0 mt-5" justify="end">
-          <v-btn v-if="!pegInFormState.matches(['loading'])" large rounded color="#00B43C"
-                 @click="sendTx" :disabled="!formFilled">
-            <span class="whiteish">Continue</span>
-            <v-icon class="ml-2" color="#fff">mdi-send-outline</v-icon>
-          </v-btn>
-          <v-progress-circular v-if="pegInFormState.matches(['loading'])"
-                               indeterminate color="#00B520" class="mr-10"/>
-        </v-row>
+          </v-row>
+          <v-row class="mx-0 mt-5" justify="end">
+            <v-btn v-if="!pegInFormState.matches(['loading'])" large rounded color="#00B43C"
+                   @click="sendTx" :disabled="!formFilled">
+              <span class="whiteish">Continue</span>
+              <v-icon class="ml-2" color="#fff">mdi-send-outline</v-icon>
+            </v-btn>
+            <v-progress-circular v-if="pegInFormState.matches(['loading'])"
+                                 indeterminate color="#00B520" class="mr-10"/>
+          </v-row>
+        </v-col>
       </v-col>
     </v-row>
     <v-row>
