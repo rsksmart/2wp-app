@@ -15,7 +15,7 @@
       </p>
     </v-row>
     <v-row class="mx-0">
-      <v-col>
+      <v-col cols="3" xl="2">
         <v-row class="mx-0 d-flex justify-center">
           <v-img src="@/assets/exchange/trezor/rsk.png" height="40" contain/>
         </v-row>
@@ -23,7 +23,7 @@
           <h4 class="text-center"><span class="number">1</span>Confirm RSK information</h4>
         </v-row>
       </v-col>
-      <v-col>
+      <v-col cols="3" xl="3">
         <v-row class="mx-0">
           <v-img src="@/assets/exchange/trezor/transfer.png" height="40" contain/>
         </v-row>
@@ -31,7 +31,7 @@
           <h4 class="text-center"><span class="number">2</span>Confirm funds transfer</h4>
         </v-row>
       </v-col>
-      <v-col>
+      <v-col cols="3" xl="3">
         <v-row class="mx-0">
           <v-img src="@/assets/exchange/trezor/change.png" height="40" contain/>
         </v-row>
@@ -39,7 +39,7 @@
           <h4 class="text-center"><span class="number">3</span>Confirm change address</h4>
         </v-row>
       </v-col>
-      <v-col>
+      <v-col cols="3" xl="2">
         <v-row class="mx-0">
           <v-img src="@/assets/exchange/trezor/fee.png" height="40" contain/>
         </v-row>
@@ -48,17 +48,32 @@
         </v-row>
       </v-col>
     </v-row>
-    <v-row class="mx-0">
-      <v-col cols="3" class="px-lg-10" >
+    <v-row class="mx-0 d-flex justify-center">
+      <v-col cols="3" xl="2" class="px-lg-10" >
         <v-row class="mx-0 d-flex justify-center">
           <fieldset class="confirmation-box px-10">
             <legend class="px-3 d-flex justify-center">See on Trezor</legend>
-            <v-row class="mt-5 d-flex justify-center" >Confirm OP_RETURN </v-row>
+            <v-row class="mt-5 d-flex justify-center" >
+              <span>
+                Confirm OP_RETURN
+              </span>
+              <v-tooltip right>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-icon small color="black" v-bind="attrs" v-on="on" class="ml-2 pb-2">
+                    mdi-information
+                  </v-icon>
+                </template>
+                <p class="tooltip-form mb-0">
+                  The OP_RETURN is an opcode used to mark a transaction output as null, and store
+                  the rsk POWpeg information there.
+                </p>
+              </v-tooltip>
+            </v-row>
             <v-row class="mt-5 mb-3 d-flex justify-center" >Confirm</v-row>
           </fieldset>
         </v-row>
       </v-col>
-      <v-col cols="3" class="px-lg-10" >
+      <v-col cols="3" xl="3" class="px-lg-10" >
         <v-row class="mx-0 d-flex justify-center">
           <fieldset class="confirmation-box px-10">
             <legend class="px-3 d-flex justify-center">See on Trezor</legend>
@@ -74,7 +89,7 @@
           </fieldset>
         </v-row>
       </v-col>
-      <v-col cols="3" class="px-lg-10" >
+      <v-col cols="3" xl="3" class="px-lg-10" >
         <v-row class="mx-0 d-flex justify-center">
           <fieldset class="confirmation-box px-10">
             <legend class="px-3 d-flex justify-center">See on Trezor</legend>
@@ -89,7 +104,7 @@
           </fieldset>
         </v-row>
       </v-col>
-      <v-col cols="3" class="px-lg-10" >
+      <v-col cols="3" xl="2" class="px-lg-10" >
         <v-row class="mx-0 d-flex justify-center">
           <fieldset class="confirmation-box px-10">
             <legend class="px-3 d-flex justify-center">See on Trezor</legend>
