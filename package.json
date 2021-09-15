@@ -62,7 +62,7 @@
     "@vue/eslint-config-airbnb": "^5.0.2",
     "@vue/eslint-config-typescript": "^7.0.0",
     "@vue/test-utils": "^1.0.3",
-    "chai": "^4.1.2",
+    "chai": "^4.3.4",
     "chromedriver": "^93.0.1",
     "eslint": "^6.7.2",
     "eslint-plugin-import": "^2.20.2",
