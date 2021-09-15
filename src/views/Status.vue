@@ -147,8 +147,8 @@
       </v-row>
     </v-container>
     <v-container v-if="showStatus" fluid class="transactions px-0">
-        <tx-summary :txData="txData" :price="price" v-if="showStatus"
-                    :txId="txId" :showTxId="true" :initialExpand="true"
+        <tx-summary v-if="showStatus" :txData="txData" :price="peginTxState.bitcoinPrice"
+                  :txId="txId" :showTxId="true" :initialExpand="true"
                     :rsk-federation-address="pegInStatus.btc.federationAddress"/>
         <v-row v-if="!isRejected" justify="center" class="mt-6">
           <v-btn class="px-5" width="117" outlined color="#00B43C" rounded
@@ -178,8 +178,6 @@ import { PegInTxState } from '@/store/peginTx/types';
 })
 export default class Status extends Vue {
   txData = {};
-
-  price = 0;
 
   txId = '';
 
