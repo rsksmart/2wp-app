@@ -67,7 +67,7 @@ export default class ApiService {
               reject(new Error('Invalid data when comparing Powpeg Address'));
             }
           }
-          reject(new Error('Invalid data when parsing Opt Return'));
+          reject(new Error('Invalid data when parsing OpReturn'));
         })
         .catch(reject);
     });
