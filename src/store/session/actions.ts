@@ -31,9 +31,17 @@ export const actions: ActionTree<Web3SessionState, RootState> = {
         commit(constants.SESSION_IS_ENABLED, true);
         commit(constants.SESSION_SET_RLOGIN, rLoginResponse);
         commit(constants.SESSION_SET_WEB3_INSTANCE, web3);
+        const rLoginModal = document.getElementById('rlogin-connect-modal');
+        if (rLoginModal !== null && rLoginModal.parentNode !== null) {
+          rLoginModal.parentNode.removeChild(rLoginModal);
+        }
       })
       .catch(() => {
         commit(constants.SESSION_IS_ENABLED, false);
+        const rLoginModal = document.getElementById('rlogin-connect-modal');
+        if (rLoginModal !== null && rLoginModal.parentNode !== null) {
+          rLoginModal.parentNode.removeChild(rLoginModal);
+        }
       });
   },
   [constants.WEB3_SESSION_GET_ACCOUNT]: async ({ commit }) => {
