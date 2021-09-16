@@ -261,7 +261,7 @@
                 </v-row>
               </v-container>
               <v-container class="pt-4 pl-0">
-                <p v-bind:class="{'grayish': computedBTCAddress === 'Not completed'}">
+                <p v-bind:class="{'grayish': computedBTCAddress === VALUE_INCOMPLETE_MESSAGE}">
                   {{ computedBTCAddress }}
                 </p>
               </v-container>
@@ -275,7 +275,7 @@
                 </v-row>
               </v-container>
               <v-container class="pt-4 pb-0 pl-0">
-                <p v-bind:class="{'grayish': computedBTCAmount === 'Not completed'}">
+                <p v-bind:class="{'grayish': computedBTCAmount === VALUE_INCOMPLETE_MESSAGE}">
                   {{ computedBTCAmount }}
                 </p>
               </v-container>
@@ -293,12 +293,12 @@
               </v-container>
               <v-container class="pt-4 pl-0">
                 <v-row class="mx-0 d-none d-lg-block">
-                  <p v-bind:class="{'grayish': computedRskAddress === 'Not completed'}">
+                  <p v-bind:class="{'grayish': computedRskAddress === VALUE_INCOMPLETE_MESSAGE}">
                     {{ computedRskAddress }}
                   </p>
                 </v-row>
                 <v-row class="mx-0 d-lg-none">
-                  <p v-bind:class="{'grayish': computedRskAddress === 'Not completed'}">
+                  <p v-bind:class="{'grayish': computedRskAddress === VALUE_INCOMPLETE_MESSAGE}">
                     {{ croppedComputedRskAddress }}
                   </p>
                 </v-row>
@@ -314,12 +314,16 @@
               </v-container>
               <v-container class="pt-4 pl-0">
                 <v-row class="mx-0 d-none d-lg-block">
-                  <p v-bind:class="{'grayish': computedRefundBTCAddress === 'Not completed'}">
+                  <p v-bind:class="{
+                    'grayish': computedRefundBTCAddress === VALUE_INCOMPLETE_MESSAGE
+                  }">
                     {{ computedRefundBTCAddress }}
                   </p>
                 </v-row>
                 <v-row class="mx-0 d-lg-none">
-                  <p v-bind:class="{'grayish': computedRefundBTCAddress === 'Not completed'}">
+                  <p v-bind:class="{
+                    'grayish': computedRefundBTCAddress === VALUE_INCOMPLETE_MESSAGE
+                  }">
                     {{ croppedComputedRefundBTCAddress }}
                   </p>
                 </v-row>
@@ -334,7 +338,7 @@
                 </v-row>
               </v-container>
               <v-container class="pt-4 pb-0 pl-0">
-                <p v-bind:class="{'grayish': computedTxFee === 'Not completed'}">
+                <p v-bind:class="{'grayish': computedTxFee === VALUE_INCOMPLETE_MESSAGE}">
                   {{ computedTxFee }}
                 </p>
               </v-container>
@@ -351,7 +355,7 @@
                 </v-row>
               </v-container>
               <v-container class="pt-4 pb-0 pl-0">
-                <p v-bind:class="{'grayish': computedBTCAmount === 'Not completed'}">
+                <p v-bind:class="{'grayish': computedBTCAmount === VALUE_INCOMPLETE_MESSAGE}">
                   {{ computedFeePlusAmount }}
                 </p>
               </v-container>
@@ -449,6 +453,8 @@ export default class SendBitcoinForm extends Vue {
 
   fixedUSDDecimals = 2;
 
+  VALUE_INCOMPLETE_MESSAGE = 'Not Completed'
+
   @Prop() pegInFormData!: PegInFormValues;
 
   @Prop() price!: number;
@@ -472,8 +478,6 @@ export default class SendBitcoinForm extends Vue {
   @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: any;
 
   @Action(constants.SESSION_CONNECT_WEB3, { namespace: 'web3Session' }) connectWeb3 !: any;
-
-  @Action(constants.WEB3_SESSION_GET_ACCOUNT, { namespace: 'web3Session' }) getWeb3Account!: any;
 
   get amountErrorMessage() {
     const bitcoinAmount: Big = this.safeToBig(this.bitcoinAmount);
@@ -505,11 +509,11 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get computedBTCAddress() {
-    return this.btcAccountTypeSelected !== '' ? this.btcAccountTypeSelected : 'Not completed';
+    return this.btcAccountTypeSelected !== '' ? this.btcAccountTypeSelected : this.VALUE_INCOMPLETE_MESSAGE;
   }
 
   get computedRefundBTCAddress() {
-    return this.refundAddress !== '' ? this.refundAddress : 'Not completed';
+    return this.refundAddress !== '' ? this.refundAddress : this.VALUE_INCOMPLETE_MESSAGE;
   }
 
   get croppedComputedRefundBTCAddress() {
@@ -517,13 +521,13 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get computedRskAddress() {
-    if (this.rskAddressSelected !== '') {
-      return rskUtils.isAddress(this.rskAddressSelected) ? this.rskAddressSelected : 'Not completed';
+    if (this.rskAddressSelected !== '' && rskUtils.isAddress(this.rskAddressSelected)) {
+      return this.rskAddressSelected;
     }
-    if (this.useWeb3Wallet) {
-      return this.web3Address !== '' ? this.web3Address : 'Not completed';
+    if (this.useWeb3Wallet && this.web3Address !== '') {
+      return this.web3Address;
     }
-    return 'Not completed';
+    return this.VALUE_INCOMPLETE_MESSAGE;
   }
 
   get croppedComputedRskAddress() {
@@ -531,9 +535,9 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get computedBTCAmount(): string {
-    if (!this.isBTCAmountValidRegex) return 'Not completed';
+    if (!this.isBTCAmountValidRegex) return this.VALUE_INCOMPLETE_MESSAGE;
     const btcAmount: Big = this.safeToBig(this.bitcoinAmount);
-    return btcAmount.gt('0') ? `${btcAmount.toFixed(8)} BTC` : 'Not completed';
+    return btcAmount.gt('0') ? `${btcAmount.toFixed(8)} BTC` : this.VALUE_INCOMPLETE_MESSAGE;
   }
 
   get computedBTCAmountUSD(): string {
@@ -544,7 +548,7 @@ export default class SendBitcoinForm extends Vue {
 
   get computedTxFee(): string {
     const txFee: Big = this.safeToBig(this.txFee);
-    return this.fourthDone ? `${txFee.toFixed(8)} BTC` : 'Not completed';
+    return this.fourthDone ? `${txFee.toFixed(8)} BTC` : this.VALUE_INCOMPLETE_MESSAGE;
   }
 
   get computedTxFeeUSD(): string {
@@ -557,7 +561,7 @@ export default class SendBitcoinForm extends Vue {
     const txFee: Big = this.safeToBig(this.txFee);
     const feePlusAmount = amount.plus(txFee);
     return this.fourthDone && this.secondDone
-      ? `${feePlusAmount.toFixed(8)} BTC` : 'Not completed';
+      ? `${feePlusAmount.toFixed(8)} BTC` : this.VALUE_INCOMPLETE_MESSAGE;
   }
 
   get computedFeePlusAmountUSD(): string {
