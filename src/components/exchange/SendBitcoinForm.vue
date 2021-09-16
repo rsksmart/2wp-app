@@ -433,8 +433,6 @@ export default class SendBitcoinForm extends Vue {
 
   web3Wallet = false;
 
-  selectWallet = false;
-
   configureWeb3Wallet = false;
 
   useWeb3Wallet = false;
@@ -522,7 +520,9 @@ export default class SendBitcoinForm extends Vue {
     if (this.rskAddressSelected !== '') {
       return rskUtils.isAddress(this.rskAddressSelected) ? this.rskAddressSelected : 'Not completed';
     }
-    if (this.useWeb3Wallet) return this.web3Address;
+    if (this.useWeb3Wallet) {
+      return this.web3Address !== '' ? this.web3Address : 'Not completed';
+    }
     return 'Not completed';
   }
 
@@ -705,7 +705,14 @@ export default class SendBitcoinForm extends Vue {
 
   @Watch('rskAddressSelected')
   watchRSKAddressSelected() {
-    this.thirdDone = rskUtils.isAddress(this.computedRskAddress) || this.useWeb3Wallet;
+    this.thirdDone = rskUtils.isAddress(this.computedRskAddress)
+      || (this.useWeb3Wallet && this.web3Address !== '');
+  }
+
+  @Watch('web3SessionState.account')
+  watchWeb3Address() {
+    this.thirdDone = rskUtils.isAddress(this.computedRskAddress)
+      || (this.useWeb3Wallet && this.web3Address !== '');
   }
 
   @Emit()
@@ -714,10 +721,7 @@ export default class SendBitcoinForm extends Vue {
     this.useWeb3Wallet = true;
     this.rskAddressSelected = '';
     this.connectWeb3();
-    this.getWeb3Account();
     this.web3Wallet = true;
-    this.selectWallet = false;
-    this.thirdDone = true;
   }
 
   @Emit()
@@ -726,7 +730,6 @@ export default class SendBitcoinForm extends Vue {
     this.useWeb3Wallet = false;
     this.rskAddressSelected = '';
     this.web3Wallet = false;
-    this.selectWallet = true;
     this.thirdDone = false;
   }
 
@@ -845,12 +848,10 @@ export default class SendBitcoinForm extends Vue {
     this.pegInFormState.send('third');
     this.useWeb3Wallet = true;
     this.web3Wallet = true;
-    this.selectWallet = false;
   }
 
   @Emit()
   connectWallet(flag: boolean) {
-    this.selectWallet = true;
     this.web3Wallet = false;
     this.configureWeb3Wallet = flag;
     this.thirdDone = true;

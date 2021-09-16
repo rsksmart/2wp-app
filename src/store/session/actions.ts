@@ -32,6 +32,9 @@ export const actions: ActionTree<Web3SessionState, RootState> = {
         commit(constants.SESSION_SET_RLOGIN, rLoginResponse);
         commit(constants.SESSION_SET_RLOGIN_INSTANCE, rLogin);
         commit(constants.SESSION_SET_WEB3_INSTANCE, web3);
+        return Vue.prototype.$web3.eth.getAccounts();
+      }).then((accounts) => {
+        commit(constants.SESSION_SET_ACCOUNT, accounts[0]);
       })
       .catch(() => {
         commit(constants.SESSION_IS_ENABLED, false);
