@@ -1,5 +1,5 @@
 <template>
-  <div class="transactions">
+  <div class="transactions container">
     <v-row class="mx-0 d-flex justify-center">
       <v-col cols="10" lg="8" xl="6" class="d-flex justify-center">
         <h1 class="text-center">Confirm transaction on your device</h1>
@@ -14,8 +14,8 @@
         Press <strong>sign</strong> when you finish.
       </p>
     </v-row>
-    <v-row id="instructions" class="mx-0">
-      <v-col id="instruction-1" cols="3" class="px-lg-10">
+    <v-row id="instructions" class="d-flex justify-center">
+      <v-col id="instruction-1" cols="3" xl="2">
         <v-row justify="center" class="mx-0">
           <v-img src="@/assets/exchange/trezor/rsk.png" height="40" contain/>
         </v-row>
@@ -23,7 +23,7 @@
           <h4 class="text-center"><span class="number">1</span>Confirm RSK information</h4>
         </v-row>
       </v-col>
-      <v-col id="instruction-2" cols="3" class="px-lg-10">
+      <v-col id="instruction-2" cols="3" xl="3">
         <v-row justify="center" class="mx-0">
           <v-img src="@/assets/exchange/trezor/transfer.png" height="40" contain/>
         </v-row>
@@ -31,7 +31,7 @@
           <h4 class="text-center"><span class="number">2</span>Confirm funds transfer</h4>
         </v-row>
       </v-col>
-      <v-col id="instruction-3" cols="3" class="px-lg-10">
+      <v-col id="instruction-3" cols="3" xl="3">
         <v-row justify="center" class="mx-0">
           <v-img src="@/assets/exchange/trezor/change.png" height="40" contain/>
         </v-row>
@@ -39,7 +39,7 @@
           <h4 class="text-center"><span class="number">3</span>Confirm change address</h4>
         </v-row>
       </v-col>
-      <v-col id="instruction-4" cols="3" class="px-lg-10">
+      <v-col id="instruction-4" cols="3" xl="2">
         <v-row justify="center" class="mx-0">
           <v-img src="@/assets/exchange/trezor/fee.png" height="40" contain/>
         </v-row>
@@ -48,6 +48,79 @@
         </v-row>
       </v-col>
     </v-row>
+      <v-row class="mx-0 d-flex justify-center">
+        <v-col cols="3" xl="2" class="px-lg-10" >
+          <v-row class="mx-0 d-flex justify-center">
+            <fieldset class="confirmation-box px-10">
+              <legend class="px-3 d-flex justify-center">See on Ledger</legend>
+              <v-row class="mt-5 d-flex justify-center" >Review output #1</v-row>
+              <v-row class="mt-5 d-flex justify-center" >AMOUNT 0</v-row>
+              <v-row class="mt-5 d-flex justify-center" >
+                <span>
+                  Address: OP_RETURN
+                </span>
+                <v-tooltip right>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon small color="black" v-bind="attrs" v-on="on" class="ml-2 pb-2">
+                      mdi-information
+                    </v-icon>
+                  </template>
+                  <p class="tooltip-form mb-0">
+                    The OP_RETURN is an output with information required for the RSK network.
+                  </p>
+                </v-tooltip>
+              </v-row>
+              <v-row class="mt-5 mb-3 d-flex justify-center" >ACCEPT</v-row>
+            </fieldset>
+          </v-row>
+        </v-col>
+        <v-col cols="3" xl="3" class="px-lg-10" >
+          <v-row class="mx-0 d-flex justify-center">
+            <fieldset class="confirmation-box px-10">
+              <legend class="px-3 d-flex justify-center">See on Ledger</legend>
+              <v-row class="mt-5 d-flex justify-center" >Review output #2</v-row>
+              <v-row class="mt-5 d-flex justify-center" >AMOUNT {{btcAmount}}</v-row>
+              <v-row class="mt-5 d-flex justify-center" >
+            <span class="d-none d-xl-block">
+              {{rskFederationAddress}}
+            </span>
+            <span class="d-xl-none">
+              {{cropAddress(rskFederationAddress)}}
+            </span>
+              </v-row>
+              <v-row class="mt-5 mb-3 d-flex justify-center" >ACCEPT</v-row>
+            </fieldset>
+          </v-row>
+        </v-col>
+        <v-col cols="3" xl="3" class="px-lg-10" >
+          <v-row class="mx-0 d-flex justify-center">
+            <fieldset class="confirmation-box px-10">
+              <legend class="px-3 d-flex justify-center">See on Ledger</legend>
+              <v-row class="mt-5 d-flex justify-center" >Review output #3</v-row>
+              <v-row class="mt-5 d-flex justify-center" >AMOUNT {{changeAmount}}</v-row>
+              <v-row class="mt-5 d-flex justify-center" >
+                <span class="d-none d-xl-block">
+                  {{changeAddress}}
+                </span>
+                <span class="d-xl-none">
+                {{cropAddress(changeAddress)}}
+                </span>
+              </v-row>
+              <v-row class="mt-5 mb-3 d-flex justify-center" >ACCEPT</v-row>
+            </fieldset>
+          </v-row>
+        </v-col>
+        <v-col cols="3" xl="2" class="px-lg-10" >
+          <v-row class="mx-0 d-flex justify-center">
+            <fieldset class="confirmation-box px-10">
+              <legend class="px-3 d-flex justify-center">See on Ledger</legend>
+              <v-row class="mt-5 d-flex justify-center" >Confirm Transaction</v-row>
+              <v-row class="mt-5 d-flex justify-center" >FEE {{txData.feeBTC}}</v-row>
+              <v-row class="mt-5 mb-3 d-flex justify-center" >ACCEPT</v-row>
+            </fieldset>
+          </v-row>
+        </v-col>
+      </v-row>
     <v-divider/>
     <v-row class="mx-0 my-8">
       <tx-summary :txData="txData" :price="price" :showTxId="false" :initial-expand="true"
@@ -91,6 +164,8 @@ import {
   Component, Emit, Prop,
   Vue,
 } from 'vue-property-decorator';
+import { Getter } from 'vuex-class';
+import Big from 'big.js';
 import { ConfirmTxState, TrezorTx, TxData } from '@/types';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
@@ -121,6 +196,8 @@ export default class ConfirmLedgerTransaction extends Vue {
 
   @Prop() price!: number;
 
+  @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: (accountType: string) => string;
+
   get showUnverifiedInputsDialog() {
     return this.txBuilder.accountType === constants.BITCOIN_SEGWIT_ADDRESS && this.confirmTxState === 'loading';
   }
@@ -135,7 +212,6 @@ export default class ConfirmLedgerTransaction extends Vue {
         this.txId = txId;
       })
       .catch((err) => {
-        console.log(err);
         this.confirmTxState = 'error';
         if (err.statusCode === 27013) {
           this.txError = 'Transaction cancelled by user.';
@@ -150,6 +226,25 @@ export default class ConfirmLedgerTransaction extends Vue {
   async toPegInForm() {
     this.confirmTxState = 'loading';
     return 'SendBitcoinForm';
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  cropAddress(address: string):string {
+    return `${address.substr(0, 6)}...${address.substr(address.length - 6, address.length)}`;
+  }
+
+  get btcAmount() {
+    const amount = new Big(this.txData.amount);
+    return amount.div(100_000_000).toFixed(8);
+  }
+
+  get changeAddress() {
+    return this.getChangeAddress(this.txBuilder.accountType);
+  }
+
+  get changeAmount() {
+    const amount = new Big(this.tx.outputs[2].amount);
+    return amount.div(100_000_000).toFixed(8);
   }
 
   created() {

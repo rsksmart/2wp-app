@@ -54,6 +54,7 @@ export interface TxData {
   refundAddress: string;
   recipient: string;
   feeBTC: number;
+  change: string,
 }
 
 export interface PegInFormValues {
