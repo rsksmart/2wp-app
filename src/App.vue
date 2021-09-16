@@ -4,6 +4,7 @@
     <div v-else class="custom-background">
       <top/>
       <router-view @bitcoinWallet="getBitcoinWallet"/>
+      <footer-rsk/>
     </div>
   </v-app>
 </template>
@@ -12,6 +13,7 @@ import Vue from 'vue';
 import { Component, Emit } from 'vue-property-decorator';
 import { Action } from 'vuex-class';
 import Top from '@/components/layouts/Top.vue';
+import FooterRsk from '@/components/layouts/Footer.vue';
 import Mobile from '@/views/Mobile.vue';
 import * as constants from '@/store/constants';
 import ApiService from '@/services/ApiService';
@@ -21,6 +23,7 @@ import { PeginConfiguration } from '@/store/peginTx/types';
   components: {
     Top,
     Mobile,
+    FooterRsk,
   },
 })
 export default class App extends Vue {

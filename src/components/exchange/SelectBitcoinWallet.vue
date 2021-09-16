@@ -1,5 +1,5 @@
 <template>
-  <div class="exchange">
+  <div class="exchange mb-12">
     <div class="container mt-16">
       <v-row class="mx-0 mt-16 mb-5 d-flex justify-center">
         <h1>Bridging BTC and RBTC</h1>

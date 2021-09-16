@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="pa-0 ma-0">
+  <v-container fluid class="pa-0 mx-0 mb-12">
     <v-container class="transactions">
       <v-row class="mx-0 my-10 d-flex justify-center">
         <h1 class="text-center">Transaction Status</h1>
