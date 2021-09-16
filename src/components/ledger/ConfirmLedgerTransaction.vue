@@ -66,8 +66,7 @@
                     </v-icon>
                   </template>
                   <p class="tooltip-form mb-0">
-                    The OP_RETURN is an opcode used to mark a transaction output as null, and store
-                    the rsk POWpeg information there.
+                    The OP_RETURN is an output with information required for the RSK network.
                   </p>
                 </v-tooltip>
               </v-row>
