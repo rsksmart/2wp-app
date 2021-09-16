@@ -1,154 +1,155 @@
 <template>
-  <v-container fluid class="pa-0 ma-0">
-    <v-container class="transactions">
-      <v-row class="mx-0 my-10 d-flex justify-center">
-        <h1 class="text-center">Transaction Status</h1>
-      </v-row>
-      <v-row class="mx-0 mt-10 mb-8" justify="center">
-        <p>Enter your Bitcoin transaction hash in the textbox below
-          to check the status of your operation</p>
-      </v-row>
-      <v-row class="mx-0 d-flex justify-center">
-        <v-col cols="6" xl="5">
-          <v-text-field dense outlined hide-details
-                        append-icon="mdi-magnify"
-                        @click:append="getPegStatus"
-                        v-model="txId"
-                        @keyup.enter="getPegStatus"
-                        color="#C4C4C4" label="Bitcoin transaction ID"/>
-        </v-col>
-      </v-row>
-      <v-row v-if="showStatus" class="mx-0 my-5 d-flex justify-center">
-        <div class="my-4 status" :class="activeMessageStyle">
-          {{ statusMessage }}
-        </div>
-      </v-row>
-      <v-row v-if="error" class="mx-0 mt-20 d-flex justify-center">
-        <v-col class="my-4">
-          <v-row class="d-flex justify-center icon-alert">
-            <v-icon x-large
-                    color="#F6C61B" >mdi-alert-outline</v-icon>
-          </v-row>
-          <v-row class="statusRejected d-flex justify-center error-message mt-3">
-            {{ errorMessage }}
-          </v-row>
-        </v-col>
-      </v-row>
-      <v-row v-if="showStatus" class="d-flex justify-center mt-6">
-        <v-col cols="6">
-          <v-row v-if="isRejected" class="mx-0 d-flex justify-center progress-bar">
-            <v-col cols="8" class="pa-0 d-flex justify-center">
-              <v-row>
-                <div style="{ z-index: 5; position: absolute;
+  <v-container fluid class="pa-0 mx-0 mb-12 d-flex align-center">
+    <v-col class="my-12 py-12">
+      <v-container class="transactions">
+        <v-row class="mx-0 my-10 d-flex justify-center">
+          <h1 class="text-center">Transaction Status</h1>
+        </v-row>
+        <v-row class="mx-0 mt-10 mb-8" justify="center">
+          <p>Enter your Bitcoin transaction hash in the textbox below
+            to check the status of your operation</p>
+        </v-row>
+        <v-row class="mx-0 d-flex justify-center">
+          <v-col cols="6" xl="5">
+            <v-text-field dense outlined hide-details
+                          append-icon="mdi-magnify"
+                          @click:append="getPegStatus"
+                          v-model="txId"
+                          @keyup.enter="getPegStatus"
+                          color="#C4C4C4" label="Bitcoin transaction ID"/>
+          </v-col>
+        </v-row>
+        <v-row v-if="showStatus" class="mx-0 my-5 d-flex justify-center">
+          <div class="my-4 status" :class="activeMessageStyle">
+            {{ statusMessage }}
+          </div>
+        </v-row>
+        <v-row v-if="error" class="mx-0 mt-20 d-flex justify-center">
+          <v-col class="my-4">
+            <v-row class="d-flex justify-center icon-alert">
+              <v-icon x-large
+                      color="#F6C61B" >mdi-alert-outline</v-icon>
+            </v-row>
+            <v-row class="statusRejected d-flex justify-center error-message mt-3">
+              {{ errorMessage }}
+            </v-row>
+          </v-col>
+        </v-row>
+        <v-row v-if="showStatus" class="d-flex justify-center mt-6">
+          <v-col cols="6">
+            <v-row v-if="isRejected" class="mx-0 d-flex justify-center progress-bar">
+              <v-col cols="8" class="pa-0 d-flex justify-center">
+                <v-row>
+                  <div style="{ z-index: 5; position: absolute;
                     margin-left: -75px; margin-top: -30px; }">
+                    <v-row>
+                      <v-img class="d-flex justify-center"
+                             src="@/assets/status/rsk-yellow.png" height="78" contain/>
+                    </v-row>
+                    <v-row class="mt-4">
+                      <h1>RSK Network</h1>
+                    </v-row>
+                  </div>
+                  <v-progress-linear
+                    :value="btcConfirmationsPercentage"
+                    color="#F6C61B"
+                    height="17"/>
+                  <div class="d-flex justify-end">
+                    <div style="{ z-index: 2; position: absolute;
+                    margin-right: -100px; margin-top: -30px; }">
+                      <v-row>
+                        <v-img class="d-flex justify-center"
+                               src="@/assets/status/btc-yellow.png" height="78" contain/>
+                      </v-row>
+                      <v-row class="mt-4">
+                        <h1>Refund BTC address</h1>
+                      </v-row>
+                    </div>
+                  </div>
+                </v-row>
+              </v-col>
+            </v-row>
+            <v-row v-else class="mx-0 progress-bar">
+              <v-col  cols="8" class="pa-0">
+                <div class="d-flex justify-start">
+                  <div style="{ z-index: 5; position: absolute;
+                    margin-left: -75px; margin-top: -30px; }">
+                    <v-row>
+                      <v-img class="d-flex justify-center"
+                             src="@/assets/status/btc-green.png" height="78" contain/>
+                    </v-row>
+                    <v-row class="mt-4">
+                      <h1>BTC Network</h1>
+                    </v-row>
+                  </div>
+                </div>
+                <v-progress-linear
+                  :value="btcConfirmationsPercentage"
+                  color="#00B43C"
+                  height="17" />
+                <v-row v-if="!btcConfirmationsAreDone" justify="center" class="mt-4 pa-0">
+                  <h5>
+                    {{btcConfirmations}}/{{btcConfirmationsRequired}} confirmations
+                  </h5>
+                  <v-tooltip right>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-icon x-small color="teal darken-2" v-bind="attrs" v-on="on">
+                        mdi-information
+                      </v-icon>
+                    </template>
+                    <p class="tooltip-form mb-0">
+                      The estimated time is calculated based on a 10 minutes block time.
+                    </p>
+                  </v-tooltip>
+                </v-row>
+                <v-row v-if="!btcConfirmationsAreDone" justify="center" class="mt-2 pa-0">
+                  <h5>
+                    Estimated time left: {{leftBtcTime}} hours left
+                  </h5>
+                </v-row>
+              </v-col>
+              <v-col cols="auto" class="pa-0 d-flex justify-center">
+                <div style="{ z-index: 2; position: absolute;
+              margin-top: -30px; margin-right: 70px; }">
                   <v-row>
                     <v-img class="d-flex justify-center"
-                           src="@/assets/status/rsk-yellow.png" height="78" contain/>
+                           src="@/assets/status/rsk-green.png" height="78" contain/>
                   </v-row>
                   <v-row class="mt-4">
                     <h1>RSK Network</h1>
                   </v-row>
                 </div>
+              </v-col>
+              <v-col class="pa-0">
                 <v-progress-linear
-                  :value="btcConfirmationsPercentage"
-                  color="#F6C61B"
+                  :value="rskConfirmationsPercentage"
+                  color="#00B43C"
                   height="17"/>
+                <v-row v-if="!rskConfirmationsAreDone" justify="center" class="mt-4 mx-0 pa-0">
+                  <h6>
+                    Usually takes around 20 minutes
+                  </h6>
+                </v-row>
                 <div class="d-flex justify-end">
-                  <div style="{ z-index: 2; position: absolute;
-                    margin-right: -100px; margin-top: -30px; }">
+                  <div style="{ z-index: 5; position: absolute;
+                    margin-right: -75px; margin-top: -75px; }">
                     <v-row>
                       <v-img class="d-flex justify-center"
-                             src="@/assets/status/btc-yellow.png" height="78" contain/>
+                             src="@/assets/status/rbtc_green.png" height="78" contain/>
                     </v-row>
                     <v-row class="mt-4">
-                      <h1>Refund BTC address</h1>
+                      <h1>RBTC delivered</h1>
                     </v-row>
                   </div>
                 </div>
-              </v-row>
-            </v-col>
-          </v-row>
-          <v-row v-else class="mx-0 progress-bar">
-            <v-col  cols="8" class="pa-0">
-              <div class="d-flex justify-start">
-                <div style="{ z-index: 5; position: absolute;
-                    margin-left: -75px; margin-top: -30px; }">
-                  <v-row>
-                    <v-img class="d-flex justify-center"
-                           src="@/assets/status/btc-green.png" height="78" contain/>
-                  </v-row>
-                  <v-row class="mt-4">
-                    <h1>BTC Network</h1>
-                  </v-row>
-                </div>
-              </div>
-              <v-progress-linear
-                :value="btcConfirmationsPercentage"
-                color="#00B43C"
-                height="17" />
-              <v-row v-if="!btcConfirmationsAreDone" justify="center" class="mt-4 pa-0">
-                <h5>
-                  {{btcConfirmations}}/{{btcConfirmationsRequired}} confirmations
-                </h5>
-                <v-tooltip right>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-icon x-small color="teal darken-2" v-bind="attrs" v-on="on">
-                      mdi-information
-                    </v-icon>
-                  </template>
-                  <p class="tooltip-form mb-0">
-                    The estimated time is calculated based on a 10 minutes block time.
-                  </p>
-                </v-tooltip>
-              </v-row>
-              <v-row v-if="!btcConfirmationsAreDone" justify="center" class="mt-2 pa-0">
-                <h5>
-                  Estimated time left: {{leftBtcTime}} hours left
-                </h5>
-              </v-row>
-            </v-col>
-            <v-col cols="auto" class="pa-0 d-flex justify-center">
-              <div style="{ z-index: 2; position: absolute;
-              margin-top: -30px; margin-right: 70px; }">
-                <v-row>
-                  <v-img class="d-flex justify-center"
-                         src="@/assets/status/rsk-green.png" height="78" contain/>
-                </v-row>
-                <v-row class="mt-4">
-                  <h1>RSK Network</h1>
-                </v-row>
-              </div>
-            </v-col>
-            <v-col class="pa-0">
-              <v-progress-linear
-                :value="rskConfirmationsPercentage"
-                color="#00B43C"
-                height="17"/>
-              <v-row v-if="!rskConfirmationsAreDone" justify="center" class="mt-4 mx-0 pa-0">
-                <h6>
-                  Usually takes around 20 minutes
-                </h6>
-              </v-row>
-              <div class="d-flex justify-end">
-                <div style="{ z-index: 5; position: absolute;
-                    margin-right: -75px; margin-top: -75px; }">
-                  <v-row>
-                    <v-img class="d-flex justify-center"
-                           src="@/assets/status/rbtc_green.png" height="78" contain/>
-                  </v-row>
-                  <v-row class="mt-4">
-                    <h1>RBTC delivered</h1>
-                  </v-row>
-                </div>
-              </div>
-            </v-col>
-          </v-row>
-        </v-col>
-      </v-row>
-    </v-container>
-    <v-container v-if="showStatus" fluid class="transactions px-0">
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
+      </v-container>
+      <v-container v-if="showStatus" fluid class="transactions px-0">
         <tx-summary v-if="showStatus" :txData="txData" :price="peginTxState.bitcoinPrice"
-                  :txId="txId" :showTxId="true" :initialExpand="true"
+                    :txId="txId" :showTxId="true" :initialExpand="true"
                     :rsk-federation-address="pegInStatus.btc.federationAddress"/>
         <v-row v-if="!isRejected" justify="center" class="mt-6">
           <v-btn class="px-5" width="117" outlined color="#00B43C" rounded
@@ -156,7 +157,8 @@
             Refresh
           </v-btn>
         </v-row>
-    </v-container>
+      </v-container>
+    </v-col>
   </v-container>
 </template>
 

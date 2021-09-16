@@ -1,0 +1,44 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/all.css');
+.footer-rsk {
+
+  .footer-info {
+    a {
+      text-decoration: none;
+    }
+    p {
+      font-size: 15px;
+      font-weight: 200;
+      line-height: 28px;
+      color: white;
+    }
+  }
+  .footer-info-strong {
+    a {
+      text-decoration: none;
+    }
+    p {
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 28px;
+      color: white;
+    }
+  }
+
+  .footer-button {
+    span{
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+    }
+  }
+  .rsk-copyright p {
+    font-size: 12px;
+    font-weight: 300;
+    color: white;
+  }
+  .rsk-pk p {
+    font-size: 12px;
+    font-weight: 300;
+  }
+
+}

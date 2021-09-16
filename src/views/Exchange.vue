@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="exchange px-0">
+  <v-container fluid class="exchange px-0 mb-12">
     <select-bitcoin-wallet v-if="!sendBitcoinStep" @bitcoinWalletSelected="toSendBitcoin"/>
     <component v-else :is="currentComponent"/>
   </v-container>
