@@ -16,6 +16,9 @@ export const mutations: MutationTree<Web3SessionState> = {
   [constants.SESSION_SET_RLOGIN]: (state, rLogin) => {
     state.rLogin = rLogin;
   },
+  [constants.SESSION_SET_RLOGIN_INSTANCE]: (state, rLoginInstance) => {
+    state.rLoginInstance = rLoginInstance;
+  },
   [constants.SESSION_CLOSE_RLOGIN]: async (state) => {
     // eslint-disable-next-line no-unused-expressions
     await state.rLogin?.disconnect();

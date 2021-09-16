@@ -9,6 +9,7 @@ export const state: Web3SessionState = {
   web3: undefined,
   enabled: false,
   rLogin: undefined,
+  rLoginInstance: undefined,
 };
 
 const namespaced = true;
