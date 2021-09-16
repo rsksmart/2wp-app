@@ -1,3 +1,5 @@
+import RLogin from '@rsksmart/rlogin';
+
 export interface Web3SessionState {
   enabled: boolean;
   account?: string;
@@ -5,4 +7,5 @@ export interface Web3SessionState {
   rLogin?: {
     disconnect: () => Promise<void>;
   };
+  rLoginInstance?: RLogin;
 }
