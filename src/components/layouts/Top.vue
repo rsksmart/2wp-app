@@ -44,7 +44,7 @@ export default class Top extends Vue {
   @Emit()
   toTransactions() {
     if (this.$router.currentRoute.name === 'Status') this.$router.go(0);
-    this.$router.push({ name: 'Status' });
+    this.$router.push({ name: 'StatusSearch' });
   }
 }
 </script>

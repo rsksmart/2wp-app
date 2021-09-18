@@ -135,8 +135,8 @@
         </v-row>
         <v-row class="d-flex justify-end pt-8">
           <v-btn
-            v-for="btn in socialNetworkButtons"
-            :key="btn.icon"
+            v-for="(btn, idx) in socialNetworkButtons"
+            :key="`${btn.icon}-${idx}`"
             class="mx-1 black--text"
             fab
             color="white"
