@@ -5,7 +5,7 @@
            lg="6"
            xl="4">
       <v-row justify="center" class="mx-0 pb-4">
-        <h2 class="text-center">Transaction summary:</h2>
+        <h2 class="text-center tx-text">Transaction summary:</h2>
       </v-row>
       <v-row class="d-flex justify-center mb-n3">
         <a v-show="expand && !expandOver" @click="switchExpand" @mouseover="switchExpandOver"
