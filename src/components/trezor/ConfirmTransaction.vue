@@ -14,7 +14,7 @@
         Press <strong>sign</strong> when you finished.
       </p>
     </v-row>
-    <v-row class="mx-0">
+    <v-row id="instructions-trezor" justify="center" class="mx-0">
       <v-col cols="3" xl="2">
         <v-row class="mx-0 d-flex justify-center">
           <v-img src="@/assets/exchange/trezor/rsk.png" height="40" contain/>
@@ -48,7 +48,7 @@
         </v-row>
       </v-col>
     </v-row>
-    <v-row class="mx-0 d-flex justify-center">
+    <v-row justify="center" class="mx-0">
       <v-col cols="3" xl="2" class="px-lg-10" >
         <v-row class="mx-0 d-flex justify-center">
           <fieldset class="confirmation-box px-10">

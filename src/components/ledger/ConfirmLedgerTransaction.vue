@@ -14,7 +14,7 @@
         Press <strong>sign</strong> when you finish.
       </p>
     </v-row>
-    <v-row id="instructions" class="d-flex justify-center">
+    <v-row id="instructions-ledger" justify="center" class="mx-0">
       <v-col id="instruction-1" cols="3" xl="2">
         <v-row justify="center" class="mx-0">
           <v-img src="@/assets/exchange/trezor/rsk.png" height="40" contain/>
@@ -48,79 +48,79 @@
         </v-row>
       </v-col>
     </v-row>
-      <v-row class="mx-0 d-flex justify-center">
-        <v-col cols="3" xl="2" class="px-lg-10" >
-          <v-row class="mx-0 d-flex justify-center">
-            <fieldset class="confirmation-box px-10">
-              <legend class="px-3 d-flex justify-center">See on Ledger</legend>
-              <v-row class="mt-5 d-flex justify-center" >Review output #1</v-row>
-              <v-row class="mt-5 d-flex justify-center" >AMOUNT 0</v-row>
-              <v-row class="mt-5 d-flex justify-center" >
-                <span>
-                  Address: OP_RETURN
-                </span>
-                <v-tooltip right>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-icon small color="black" v-bind="attrs" v-on="on" class="ml-2 pb-2">
-                      mdi-information
-                    </v-icon>
-                  </template>
-                  <p class="tooltip-form mb-0">
-                    The OP_RETURN is an output with information required for the RSK network.
-                  </p>
-                </v-tooltip>
-              </v-row>
-              <v-row class="mt-5 mb-3 d-flex justify-center" >ACCEPT</v-row>
-            </fieldset>
-          </v-row>
-        </v-col>
-        <v-col cols="3" xl="3" class="px-lg-10" >
-          <v-row class="mx-0 d-flex justify-center">
-            <fieldset class="confirmation-box px-10">
-              <legend class="px-3 d-flex justify-center">See on Ledger</legend>
-              <v-row class="mt-5 d-flex justify-center" >Review output #2</v-row>
-              <v-row class="mt-5 d-flex justify-center" >AMOUNT {{btcAmount}}</v-row>
-              <v-row class="mt-5 d-flex justify-center" >
-            <span class="d-none d-xl-block">
-              {{rskFederationAddress}}
-            </span>
-            <span class="d-xl-none">
-              {{cropAddress(rskFederationAddress)}}
-            </span>
-              </v-row>
-              <v-row class="mt-5 mb-3 d-flex justify-center" >ACCEPT</v-row>
-            </fieldset>
-          </v-row>
-        </v-col>
-        <v-col cols="3" xl="3" class="px-lg-10" >
-          <v-row class="mx-0 d-flex justify-center">
-            <fieldset class="confirmation-box px-10">
-              <legend class="px-3 d-flex justify-center">See on Ledger</legend>
-              <v-row class="mt-5 d-flex justify-center" >Review output #3</v-row>
-              <v-row class="mt-5 d-flex justify-center" >AMOUNT {{changeAmount}}</v-row>
-              <v-row class="mt-5 d-flex justify-center" >
-                <span class="d-none d-xl-block">
-                  {{changeAddress}}
-                </span>
-                <span class="d-xl-none">
-                {{cropAddress(changeAddress)}}
-                </span>
-              </v-row>
-              <v-row class="mt-5 mb-3 d-flex justify-center" >ACCEPT</v-row>
-            </fieldset>
-          </v-row>
-        </v-col>
-        <v-col cols="3" xl="2" class="px-lg-10" >
-          <v-row class="mx-0 d-flex justify-center">
-            <fieldset class="confirmation-box px-10">
-              <legend class="px-3 d-flex justify-center">See on Ledger</legend>
-              <v-row class="mt-5 d-flex justify-center" >Confirm Transaction</v-row>
-              <v-row class="mt-5 d-flex justify-center" >FEE {{txData.feeBTC}}</v-row>
-              <v-row class="mt-5 mb-3 d-flex justify-center" >ACCEPT</v-row>
-            </fieldset>
-          </v-row>
-        </v-col>
-      </v-row>
+    <v-row justify="center" class="mx-0">
+      <v-col cols="3" xl="2" class="px-lg-10" >
+        <v-row class="mx-0 d-flex justify-center">
+          <fieldset class="confirmation-box px-10">
+            <legend class="px-3 d-flex justify-center">See on Ledger</legend>
+            <v-row class="mt-5 d-flex justify-center" >Review output #1</v-row>
+            <v-row class="mt-5 d-flex justify-center" >AMOUNT 0</v-row>
+            <v-row class="mt-5 d-flex justify-center" >
+              <span>
+                Address: OP_RETURN
+              </span>
+              <v-tooltip right>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-icon small color="black" v-bind="attrs" v-on="on" class="ml-2 pb-2">
+                    mdi-information
+                  </v-icon>
+                </template>
+                <p class="tooltip-form mb-0">
+                  The OP_RETURN is an output with information required for the RSK network.
+                </p>
+              </v-tooltip>
+            </v-row>
+            <v-row class="mt-5 mb-3 d-flex justify-center" >ACCEPT</v-row>
+          </fieldset>
+        </v-row>
+      </v-col>
+      <v-col cols="3" xl="3" class="px-lg-10" >
+        <v-row class="mx-0 d-flex justify-center">
+          <fieldset class="confirmation-box px-10">
+            <legend class="px-3 d-flex justify-center">See on Ledger</legend>
+            <v-row class="mt-5 d-flex justify-center" >Review output #2</v-row>
+            <v-row class="mt-5 d-flex justify-center" >AMOUNT {{btcAmount}}</v-row>
+            <v-row class="mt-5 d-flex justify-center">
+              <span class="d-none d-xl-block">
+                {{rskFederationAddress}}
+              </span>
+              <span class="d-xl-none">
+                {{cropAddress(rskFederationAddress)}}
+              </span>
+            </v-row>
+            <v-row class="mt-5 mb-3 d-flex justify-center" >ACCEPT</v-row>
+          </fieldset>
+        </v-row>
+      </v-col>
+      <v-col cols="3" xl="3" class="px-lg-10" >
+        <v-row class="mx-0 d-flex justify-center">
+          <fieldset class="confirmation-box px-10">
+            <legend class="px-3 d-flex justify-center">See on Ledger</legend>
+            <v-row class="mt-5 d-flex justify-center" >Review output #3</v-row>
+            <v-row class="mt-5 d-flex justify-center" >AMOUNT {{changeAmount}}</v-row>
+            <v-row class="mt-5 d-flex justify-center" >
+              <span class="d-none d-xl-block">
+                {{changeAddress}}
+              </span>
+              <span class="d-xl-none">
+              {{cropAddress(changeAddress)}}
+              </span>
+            </v-row>
+            <v-row class="mt-5 mb-3 d-flex justify-center" >ACCEPT</v-row>
+          </fieldset>
+        </v-row>
+      </v-col>
+      <v-col cols="3" xl="2" class="px-lg-10" >
+        <v-row class="mx-0 d-flex justify-center">
+          <fieldset class="confirmation-box px-10">
+            <legend class="px-3 d-flex justify-center">See on Ledger</legend>
+            <v-row class="mt-5 d-flex justify-center" >Confirm Transaction</v-row>
+            <v-row class="mt-5 d-flex justify-center" >FEE {{txData.feeBTC}}</v-row>
+            <v-row class="mt-5 mb-3 d-flex justify-center" >ACCEPT</v-row>
+          </fieldset>
+        </v-row>
+      </v-col>
+    </v-row>
     <v-divider/>
     <v-row class="mx-0 my-8">
       <tx-summary :txData="txData" :price="price" :showTxId="false" :initial-expand="true"
