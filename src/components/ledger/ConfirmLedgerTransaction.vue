@@ -7,7 +7,8 @@
     </v-row>
     <v-row class="mx-0 my-8 d-flex justify-center">
       <p class="text-center">
-        Make sure the amount, address and transaction fee displayed the Ledger device are correct.
+        Make sure the amount, address and transaction fee displayed
+        on the Ledger device are correct.
         <br>
         To prevent malware attacks, double-check the address with the recipient.
         <br>
@@ -70,7 +71,7 @@
                 </p>
               </v-tooltip>
             </v-row>
-            <v-row class="mt-5 mb-3 d-flex justify-center" >ACCEPT</v-row>
+            <v-row class="mt-5 mb-3 d-flex justify-center" >Accept</v-row>
           </fieldset>
         </v-row>
       </v-col>
@@ -79,7 +80,7 @@
           <fieldset class="confirmation-box px-10">
             <legend class="px-3 d-flex justify-center">See on Ledger</legend>
             <v-row class="mt-5 d-flex justify-center" >Review output #2</v-row>
-            <v-row class="mt-5 d-flex justify-center" >AMOUNT {{btcAmount}}</v-row>
+            <v-row class="mt-5 d-flex justify-center" >Amount {{btcAmount}}</v-row>
             <v-row class="mt-5 d-flex justify-center">
               <span class="d-none d-xl-block">
                 {{rskFederationAddress}}
@@ -88,7 +89,7 @@
                 {{cropAddress(rskFederationAddress)}}
               </span>
             </v-row>
-            <v-row class="mt-5 mb-3 d-flex justify-center" >ACCEPT</v-row>
+            <v-row class="mt-5 mb-3 d-flex justify-center" >Accept</v-row>
           </fieldset>
         </v-row>
       </v-col>
@@ -97,7 +98,7 @@
           <fieldset class="confirmation-box px-10">
             <legend class="px-3 d-flex justify-center">See on Ledger</legend>
             <v-row class="mt-5 d-flex justify-center" >Review output #3</v-row>
-            <v-row class="mt-5 d-flex justify-center" >AMOUNT {{changeAmount}}</v-row>
+            <v-row class="mt-5 d-flex justify-center" >Amount {{changeAmount}}</v-row>
             <v-row class="mt-5 d-flex justify-center" >
               <span class="d-none d-xl-block">
                 {{changeAddress}}
@@ -106,7 +107,7 @@
               {{cropAddress(changeAddress)}}
               </span>
             </v-row>
-            <v-row class="mt-5 mb-3 d-flex justify-center" >ACCEPT</v-row>
+            <v-row class="mt-5 mb-3 d-flex justify-center" >Accept</v-row>
           </fieldset>
         </v-row>
       </v-col>
@@ -116,7 +117,7 @@
             <legend class="px-3 d-flex justify-center">See on Ledger</legend>
             <v-row class="mt-5 d-flex justify-center" >Confirm Transaction</v-row>
             <v-row class="mt-5 d-flex justify-center" >FEE {{txData.feeBTC}}</v-row>
-            <v-row class="mt-5 mb-3 d-flex justify-center" >ACCEPT</v-row>
+            <v-row class="mt-5 mb-3 d-flex justify-center" >Accept</v-row>
           </fieldset>
         </v-row>
       </v-col>

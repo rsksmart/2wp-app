@@ -7,11 +7,12 @@
     </v-row>
     <v-row class="mx-0 my-8 d-flex justify-center">
       <p class="text-center">
-        Make sure the amount, address and transaction fee displayed on Trezor are correct.
+        Make sure the amount, address and transaction fee displayed
+        on the Trezor device are correct.
         <br>
         To prevent malware attacks, double-check the address with the recipient.
         <br>
-        Press <strong>sign</strong> when you finished.
+        Press <strong>sign</strong> when you finish.
       </p>
     </v-row>
     <v-row id="instructions-trezor" justify="center" class="mx-0">
