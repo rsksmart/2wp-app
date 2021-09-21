@@ -1,7 +1,7 @@
 <template>
-  <div class="exchange my-12">
+  <div class="exchange mb-12">
     <div class="container mt-16 d-flex align-center">
-      <v-col class="my-12 py-12">
+      <v-col class="mb-12 pb-12">
         <v-row class="mx-0 mt-16 mb-5 d-flex justify-center">
           <h2>Bridging BTC and RBTC</h2>
         </v-row>
