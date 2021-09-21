@@ -243,7 +243,7 @@ export default class ConfirmLedgerTransaction extends Vue {
   }
 
   get changeAmount() {
-    const amount = new Big(this.tx.outputs[2].amount);
+    const amount = new Big(this.tx?.outputs[2]?.amount ?? 0);
     return amount.div(100_000_000).toFixed(8);
   }
 
