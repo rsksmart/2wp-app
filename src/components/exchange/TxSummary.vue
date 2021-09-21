@@ -37,7 +37,7 @@
                       <span>{{ amount }} BTC</span>
                     </v-row>
                     <v-row class="mx-0">
-                      <span class="grayish">USD $ {{ amountUSD }}</span>
+                      <span class="grayish" id="amount-usd">USD $ {{ amountUSD }}</span>
                     </v-row>
                   </v-col>
                   <v-col class="mb-2">
@@ -48,7 +48,7 @@
                       <span>{{ fee }} BTC</span>
                     </v-row>
                     <v-row class="mx-0">
-                      <span class="grayish">USD $ {{ feeUSD }}</span>
+                      <span class="grayish" id="fee-usd">USD $ {{ feeUSD }}</span>
                     </v-row>
                   </v-col>
                   <v-col>
@@ -59,7 +59,7 @@
                       <span>{{ feePlusAmount }} BTC</span>
                     </v-row>
                     <v-row class="mx-0">
-                      <span class="grayish">USD $ {{ feePlusAmountUSD }}</span>
+                      <span class="grayish" id="total-usd">USD $ {{ feePlusAmountUSD }}</span>
                     </v-row>
                   </v-col>
                 </v-col>
