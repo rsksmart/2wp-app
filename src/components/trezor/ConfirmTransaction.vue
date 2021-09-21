@@ -79,12 +79,14 @@
             <v-row class="mt-5 d-flex justify-center" >Confirm sending</v-row>
             <v-row class="mt-5 d-flex justify-center" >Amount {{btcAmount}}</v-row>
             <v-row class="mt-5 d-flex justify-center" >
-            <span>
-              {{rskFederationAddress}}
-            </span>
+              <span class="d-none d-xl-block">
+                {{rskFederationAddress}}
+              </span>
+              <span class="d-xl-none">
+                {{cropAddress(rskFederationAddress)}}
+              </span>
             </v-row>
             <v-row class="mt-5 mb-3 d-flex justify-center" >Confirm</v-row>
-
           </fieldset>
         </v-row>
       </v-col>
@@ -95,9 +97,12 @@
             <v-row class="mt-5 d-flex justify-center" >Confirm sending</v-row>
             <v-row class="mt-5 d-flex justify-center" >Amount {{changeAmount}}</v-row>
             <v-row class="mt-5 d-flex justify-center" >
-            <span>
-              {{changeAddress}}
-            </span>
+              <span class="d-none d-xl-block">
+                {{changeAddress}}
+              </span>
+              <span class="d-xl-none">
+                {{cropAddress(changeAddress)}}
+              </span>
             </v-row>
             <v-row class="mt-5 mb-3 d-flex justify-center" >Confirm</v-row>
           </fieldset>
@@ -202,6 +207,11 @@ export default class ConfirmTransaction extends Vue {
   async toPegInForm() {
     this.confirmTxState = 'loading';
     return 'SendBitcoinForm';
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  cropAddress(address: string):string {
+    return `${address.substr(0, 6)}...${address.substr(address.length - 6, address.length)}`;
   }
 
   get changeAddress() {
