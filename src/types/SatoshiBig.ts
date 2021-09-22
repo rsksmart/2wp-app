@@ -1,21 +1,21 @@
-import Big from 'big.js';
+import Big, { BigSource } from 'big.js';
 
 const numberRegex = /^[0-9]*(\.[0-9]*)?$/;
 
 type BTCCurrency = 'satoshi' | 'mbtc' | 'btc';
 
-export class SatoshiBig extends Big {
+export default class SatoshiBig extends Big {
   constructor(src: number | string | Big, currency: BTCCurrency) {
-    const safeBig: Big = Big(numberRegex.test(src.toString()) ? '0' : src);
+    const safeBig: Big = Big(numberRegex.test(src.toString()) ? src : '0');
     switch (currency) {
       case 'satoshi':
         super(safeBig.toFixed(0));
         break;
       case 'mbtc':
-        super(safeBig.mul(100_000).toFixed(5));
+        super(safeBig.mul(100_000).toFixed(0));
         break;
       case 'btc':
-        super(safeBig.mul(100_000_000).toFixed(8));
+        super(safeBig.mul(100_000_000).toFixed(0));
         break;
       default:
         super(src);
@@ -23,13 +23,29 @@ export class SatoshiBig extends Big {
     }
   }
 
+  plus(amount: SatoshiBig) {
+    return new SatoshiBig(super.plus(amount), 'satoshi');
+  }
+
+  minus(amount: SatoshiBig) {
+    return new SatoshiBig(super.minus(amount), 'satoshi');
+  }
+
+  mul(amount: BigSource) {
+    return new SatoshiBig(super.mul(amount), 'satoshi');
+  }
+
+  div(amount: BigSource) {
+    return new SatoshiBig(super.div(amount), 'satoshi');
+  }
+
   toBTCString(): string {
-    const btcString = this.div(100_000_000).toFixed(8);
+    const btcString = super.div(100_000_000).toFixed(8);
     return btcString;
   }
 
   tomBTCString(): string {
-    const mBTCString = this.div(100_000).toFixed(5);
+    const mBTCString = super.div(100_000).toFixed(5);
     return mBTCString;
   }
 

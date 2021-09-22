@@ -1,5 +1,5 @@
 import { Network } from 'bitcoinjs-lib';
-import { SatoshiBig } from '@/types/SatoshiBig';
+import SatoshiBig from '@/types/SatoshiBig';
 
 export interface Tx {
   coin: string;

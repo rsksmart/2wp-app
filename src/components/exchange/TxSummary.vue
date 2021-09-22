@@ -164,7 +164,7 @@ import {
 import Big from 'big.js';
 import { TxData } from '@/types';
 import * as constants from '@/store/constants';
-import { SatoshiBig } from '@/types/SatoshiBig';
+import SatoshiBig from '@/types/SatoshiBig';
 
 @Component
 export default class TxSummary extends Vue {
