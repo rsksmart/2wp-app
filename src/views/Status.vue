@@ -109,8 +109,7 @@
                 </v-row>
               </v-col>
               <v-col cols="auto" class="pa-0 d-flex justify-center">
-                <div style="{ z-index: 2; position: absolute;
-              margin-top: -30px; margin-right: 70px; }">
+                <div class="img-progress-bar">
                   <v-row>
                     <v-img class="d-flex justify-center"
                            src="@/assets/status/rsk-green.png" height="78" contain/>
@@ -120,17 +119,19 @@
                   </v-row>
                 </div>
               </v-col>
-              <v-col class="pa-0">
-                <v-progress-linear
-                  :value="rskConfirmationsPercentage"
-                  color="#00B43C"
-                  height="17"/>
-                <v-row v-if="!rskConfirmationsAreDone" justify="center" class="mt-4 mx-0 pa-0">
-                  <h6>
-                    Usually takes around 20 minutes
-                  </h6>
+              <v-col class="pa-0" style="{z-index: 0;}">
+                <v-row>
+                  <v-progress-linear
+                    :value="rskConfirmationsPercentage"
+                    color="#00B43C"
+                    height="17"/>
+                  <v-row   justify="center" class="mt-4 mx-0 pa-0 mb-0 confirmations-message" >
+                    <h6 v-if="!rskConfirmationsAreDone">
+                      Usually takes around 20 minutes
+                    </h6>
+                  </v-row>
                 </v-row>
-                <div class="d-flex justify-end">
+                <div class="d-flex justify-end pa-0 ma-0">
                   <div style="{ z-index: 5; position: absolute;
                     margin-right: -75px; margin-top: -75px; }">
                     <v-row>

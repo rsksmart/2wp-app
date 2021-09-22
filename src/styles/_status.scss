@@ -157,4 +157,16 @@
       color: white;
     }
   }
+  .confirmations-message {
+    height: 12px;
+    width: 100%;
+  }
+  .img-progress-bar {
+    z-index: 5 !important;
+    position: absolute;
+    margin-top: -30px;
+    margin-right: 70px;
+    background-color: white;
+    border-radius: 50%;
+  }
 }
