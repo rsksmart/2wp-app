@@ -38,19 +38,19 @@ export interface Signer {
 }
 
 export interface AccountBalance {
-  legacy: number;
-  segwit: number;
-  nativeSegwit: number;
+  legacy: number; // SatoshiBN
+  segwit: number; // SatoshiBN
+  nativeSegwit: number; // SatoshiBN
 }
 
 export interface FeeAmountData {
-  slow: number;
-  average: number;
-  fast: number;
+  slow: number; // SatoshiBN
+  average: number; // SatoshiBN
+  fast: number; // SatoshiBN
 }
 
 export interface TxData {
-  amount: number;
+  amount: number; // SatoshiBN
   refundAddress: string;
   recipient: string;
   feeBTC: number;
@@ -59,7 +59,7 @@ export interface TxData {
 
 export interface PegInFormValues {
   accountType: string;
-  amount: number;
+  amount: number; // SatoshiBN
   rskAddress: string;
   txFeeIndex: number;
 }
