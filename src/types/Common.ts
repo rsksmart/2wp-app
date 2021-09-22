@@ -1,4 +1,5 @@
 import { Network } from 'bitcoinjs-lib';
+import { SatoshiBig } from '@/types/SatoshiBig';
 
 export interface Tx {
   coin: string;
@@ -50,10 +51,10 @@ export interface FeeAmountData {
 }
 
 export interface TxData {
-  amount: number; // SatoshiBN
+  amount: SatoshiBig; // SatoshiBN
   refundAddress: string;
   recipient: string;
-  feeBTC: number;
+  feeBTC: SatoshiBig; // SatoshiBN
   change: string,
 }
 
