@@ -411,7 +411,7 @@ import { Machine } from '@/services/utils';
 export default class SendBitcoinForm extends Vue {
   btcAccountTypeSelected = '';
 
-  bitcoinAmount = 0.0;
+  bitcoinAmount = 0.0; // SatoshiBN
 
   rskAddressSelected = '';
 
@@ -457,7 +457,7 @@ export default class SendBitcoinForm extends Vue {
 
   @Prop() pegInFormData!: PegInFormValues;
 
-  @Prop() price!: number;
+  @Prop() price!: number; // Bigjs
 
   @Prop() balances!: AccountBalance;
 

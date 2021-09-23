@@ -5,14 +5,14 @@ export interface PegInTxState {
   peginConfiguration: PeginConfiguration;
   sessionId: string;
   bitcoinWallet: string;
-  bitcoinPrice: number;
+  bitcoinPrice: number; // Bigjs
 }
 
 export interface PeginConfiguration {
-  minValue: number;
-  maxValue: number;
+  minValue: number; // SatoshiBN
+  maxValue: number; // SatoshiBN
   federationAddress: string;
-  feePerKb?: number;
+  feePerKb?: number; // SatoshiBN
   btcConfirmations: number;
   sessionId?: string;
   id?: number;
@@ -20,7 +20,7 @@ export interface PeginConfiguration {
 
 export interface Utxo {
   txid: string;
-  amount: number;
+  amount: number; // SatoshiBN
   address?: string;
   path: string;
   derivationArray: number[];
