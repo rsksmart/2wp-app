@@ -265,7 +265,7 @@ export default class Status extends Vue {
         this.isRejected = false;
         break;
       case PegStatus.WAITING_CONFIRMATIONS:
-        this.statusMessage = 'Your transaction is in progress.';
+        this.statusMessage = 'More Bitcoin confirmations are yet needed, please wait';
         this.activeMessageStyle = 'statusProgress';
         this.isRejected = false;
         break;
@@ -285,7 +285,7 @@ export default class Status extends Vue {
         this.isRejected = true;
         break;
       case PegStatus.NOT_IN_RSK_YET:
-        this.statusMessage = 'More Bitcoin confirmations are yet needed, please wait';
+        this.statusMessage = 'Waiting to be processed by the RSK network';
         this.activeMessageStyle = 'statusProgress';
         this.isRejected = false;
         break;
