@@ -212,8 +212,7 @@ export default class TxSummary extends Vue {
 
   get feePlusAmount(): string {
     if (!this.txData.amount || !this.txData.feeBTC) return this.VALUE_INCOMPLETE_MESSAGE;
-    const feePlusAmount = new SatoshiBig(this.txData.amount.plus(this.txData.feeBTC), 'satoshi');
-    return feePlusAmount.toBTCString();
+    return this.txData.amount.plus(this.txData.feeBTC).toBTCString();
   }
 
   get feePlusAmountUSD() {

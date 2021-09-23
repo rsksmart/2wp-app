@@ -80,7 +80,9 @@
           <fieldset class="confirmation-box px-10">
             <legend class="px-3 d-flex justify-center">See on Ledger</legend>
             <v-row class="mt-5 d-flex justify-center" >Review output #2</v-row>
-            <v-row class="mt-5 d-flex justify-center" >Amount {{btcAmount}}</v-row>
+            <v-row class="mt-5 d-flex justify-center" >
+              AMOUNT {{txData.amount.toBTCString()}}
+            </v-row>
             <v-row class="mt-5 d-flex justify-center">
               <span class="d-none d-xl-block">
                 {{rskFederationAddress}}
@@ -116,7 +118,7 @@
           <fieldset class="confirmation-box px-10">
             <legend class="px-3 d-flex justify-center">See on Ledger</legend>
             <v-row class="mt-5 d-flex justify-center" >Confirm Transaction</v-row>
-            <v-row class="mt-5 d-flex justify-center" >FEE {{txData.feeBTC}}</v-row>
+            <v-row class="mt-5 d-flex justify-center" >FEE {{txData.feeBTC.toBTCString()}}</v-row>
             <v-row class="mt-5 mb-3 d-flex justify-center" >Accept</v-row>
           </fieldset>
         </v-row>
@@ -232,11 +234,6 @@ export default class ConfirmLedgerTransaction extends Vue {
   // eslint-disable-next-line class-methods-use-this
   cropAddress(address: string):string {
     return `${address.substr(0, 6)}...${address.substr(address.length - 6, address.length)}`;
-  }
-
-  get btcAmount() {
-    const amount = new Big(this.txData.amount);
-    return amount.div(100_000_000).toFixed(8);
   }
 
   get changeAddress() {

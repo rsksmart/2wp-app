@@ -40,13 +40,14 @@ import ApiService from '@/services/ApiService';
 import { PegInTxState } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import {
-  AccountBalance, FeeAmountData, LedgerTx, PegInFormValues, SendBitcoinState,
+  AccountBalance, FeeAmountData, LedgerTx, PegInFormValues, SendBitcoinState, TxData,
 } from '@/types';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
 import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
 import DeviceErrorDialog from '@/components/exchange/DeviceErrorDialog.vue';
 import ConnectDevice from '@/components/exchange/ConnectDevice.vue';
 import TxErrorDialog from '@/components/exchange/TxErrorDialog.vue';
+import SatoshiBig from '@/types/SatoshiBig';
 
 @Component({
   components: {
@@ -131,13 +132,13 @@ export default class SendBitcoinLedger extends Vue {
     this.showDialog = localStorage.getItem('BTRD_COOKIE_DISABLED') !== 'true';
   }
 
-  get txData() {
+  get txData() { // : TxData
     return {
-      amount: this.amount,
+      amount: new SatoshiBig(this.amount, 'satoshi'),
       refundAddress: this.refundAddress,
       recipient: this.recipient,
-      feeBTC: this.feeBTC,
-      change: this.getChangeAddress,
+      feeBTC: new SatoshiBig(this.feeBTC, 'btc'),
+      change: this.getChangeAddress, // does not seem to be used and is passing directly a function
     };
   }
 

@@ -51,10 +51,10 @@ export interface FeeAmountData {
 }
 
 export interface TxData {
-  amount: SatoshiBig; // SatoshiBN
+  amount: SatoshiBig;
   refundAddress: string;
   recipient: string;
-  feeBTC: SatoshiBig; // SatoshiBN
+  feeBTC: SatoshiBig;
   change: string,
 }
 
