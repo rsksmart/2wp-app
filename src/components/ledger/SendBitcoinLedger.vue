@@ -94,13 +94,13 @@ export default class SendBitcoinLedger extends Vue {
     accountType: '',
   };
 
-  amount = 0;
+  amount = 0; // SatoshiBN
 
   refundAddress = '';
 
   recipient = '';
 
-  feeBTC = 0;
+  feeBTC = 0; // SatoshiBN
 
   txBuilder: LedgerTxBuilder = new LedgerTxBuilder();
 
@@ -132,13 +132,13 @@ export default class SendBitcoinLedger extends Vue {
     this.showDialog = localStorage.getItem('BTRD_COOKIE_DISABLED') !== 'true';
   }
 
-  get txData() { // : TxData
+  get txData(): TxData {
     return {
       amount: new SatoshiBig(this.amount, 'satoshi'),
       refundAddress: this.refundAddress,
       recipient: this.recipient,
       feeBTC: new SatoshiBig(this.feeBTC, 'btc'),
-      change: this.getChangeAddress, // does not seem to be used and is passing directly a function
+      change: '',
     };
   }
 

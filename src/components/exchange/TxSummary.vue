@@ -110,7 +110,7 @@
                   </v-tooltip>
                 </v-row>
                 <v-row class="mx-0">
-                  <span class="breakable-address">{{ txData.refundAddress }}</span>
+                  <span class="breakable-address">{{ computedRefundAddress }}</span>
                 </v-row>
               </v-container>
               <template v-if="showTxId">
@@ -164,7 +164,6 @@ import {
 import Big from 'big.js';
 import { TxData } from '@/types';
 import * as constants from '@/store/constants';
-import SatoshiBig from '@/types/SatoshiBig';
 
 @Component
 export default class TxSummary extends Vue {
@@ -234,6 +233,10 @@ export default class TxSummary extends Vue {
 
   get computedTxId() {
     return this.txIdValue ? `${this.txIdValue.substr(0, 24)}...${this.txIdValue.substr(60, 64)}` : this.VALUE_INCOMPLETE_MESSAGE;
+  }
+
+  get computedRefundAddress() {
+    return this.txData.refundAddress !== '' ? this.txData.refundAddress : this.VALUE_INCOMPLETE_MESSAGE;
   }
 
   @Emit()

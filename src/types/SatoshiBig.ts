@@ -54,7 +54,7 @@ export default class SatoshiBig extends Big {
   }
 
   toUSDFromBTCString(price: number | string | Big, decimals = 2): string {
-    const safePrice: Big = Big(numberRegex.test(price.toString()) ? '0' : price);
-    return this.mul(100_000_000).mul(safePrice).toFixed(decimals);
+    const safePrice: Big = Big(numberRegex.test(price.toString()) ? price : '0');
+    return Big(this.toBTCString()).mul(safePrice).toFixed(decimals);
   }
 }
