@@ -5,7 +5,7 @@
            lg="6"
            xl="4">
       <v-row justify="center" class="mx-0 pb-4">
-        <h2 class="text-center">Transaction summary:</h2>
+        <h2 class="text-center tx-text">Transaction summary:</h2>
       </v-row>
       <v-row class="d-flex justify-center mb-n3">
         <a v-show="expand && !expandOver" @click="switchExpand" @mouseover="switchExpandOver"
@@ -37,7 +37,7 @@
                       <span>{{ amount }} BTC</span>
                     </v-row>
                     <v-row class="mx-0">
-                      <span class="grayish">USD $ {{ amountUSD }}</span>
+                      <span class="grayish" id="amount-usd">USD $ {{ amountUSD }}</span>
                     </v-row>
                   </v-col>
                   <v-col class="mb-2">
@@ -48,7 +48,7 @@
                       <span>{{ fee }} BTC</span>
                     </v-row>
                     <v-row class="mx-0">
-                      <span class="grayish">USD $ {{ feeUSD }}</span>
+                      <span class="grayish" id="fee-usd">USD $ {{ feeUSD }}</span>
                     </v-row>
                   </v-col>
                   <v-col>
@@ -59,7 +59,7 @@
                       <span>{{ feePlusAmount }} BTC</span>
                     </v-row>
                     <v-row class="mx-0">
-                      <span class="grayish">USD $ {{ feePlusAmountUSD }}</span>
+                      <span class="grayish" id="total-usd">USD $ {{ feePlusAmountUSD }}</span>
                     </v-row>
                   </v-col>
                 </v-col>
