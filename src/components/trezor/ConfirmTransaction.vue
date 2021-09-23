@@ -7,14 +7,15 @@
     </v-row>
     <v-row class="mx-0 my-8 d-flex justify-center">
       <p class="text-center">
-        Make sure the amount, address and transaction fee displayed on Trezor are correct.
+        Make sure the amount, address and transaction fee displayed
+        on the Trezor device are correct.
         <br>
         To prevent malware attacks, double-check the address with the recipient.
         <br>
-        Press <strong>sign</strong> when you finished.
+        Press <strong>sign</strong> when you finish.
       </p>
     </v-row>
-    <v-row class="mx-0">
+    <v-row id="instructions-trezor" justify="center" class="mx-0">
       <v-col cols="3" xl="2">
         <v-row class="mx-0 d-flex justify-center">
           <v-img src="@/assets/exchange/trezor/rsk.png" height="40" contain/>
@@ -48,7 +49,7 @@
         </v-row>
       </v-col>
     </v-row>
-    <v-row class="mx-0 d-flex justify-center">
+    <v-row justify="center" class="mx-0">
       <v-col cols="3" xl="2" class="px-lg-10" >
         <v-row class="mx-0 d-flex justify-center">
           <fieldset class="confirmation-box px-10">
@@ -79,12 +80,14 @@
             <v-row class="mt-5 d-flex justify-center" >Confirm sending</v-row>
             <v-row class="mt-5 d-flex justify-center" >Amount {{btcAmount}}</v-row>
             <v-row class="mt-5 d-flex justify-center" >
-            <span>
-              {{rskFederationAddress}}
-            </span>
+              <span class="d-none d-xl-block">
+                {{rskFederationAddress}}
+              </span>
+              <span class="d-xl-none">
+                {{cropAddress(rskFederationAddress)}}
+              </span>
             </v-row>
             <v-row class="mt-5 mb-3 d-flex justify-center" >Confirm</v-row>
-
           </fieldset>
         </v-row>
       </v-col>
@@ -95,9 +98,12 @@
             <v-row class="mt-5 d-flex justify-center" >Confirm sending</v-row>
             <v-row class="mt-5 d-flex justify-center" >Amount {{changeAmount}}</v-row>
             <v-row class="mt-5 d-flex justify-center" >
-            <span>
-              {{changeAddress}}
-            </span>
+              <span class="d-none d-xl-block">
+                {{changeAddress}}
+              </span>
+              <span class="d-xl-none">
+                {{cropAddress(changeAddress)}}
+              </span>
             </v-row>
             <v-row class="mt-5 mb-3 d-flex justify-center" >Confirm</v-row>
           </fieldset>
@@ -204,6 +210,11 @@ export default class ConfirmTransaction extends Vue {
     return 'SendBitcoinForm';
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  cropAddress(address: string):string {
+    return `${address.substr(0, 6)}...${address.substr(address.length - 6, address.length)}`;
+  }
+
   get changeAddress() {
     return this.txBuilder.changeAddress;
   }
@@ -214,7 +225,7 @@ export default class ConfirmTransaction extends Vue {
   }
 
   get changeAmount() {
-    const amount = new Big(this.tx.outputs[2].amount);
+    const amount = new Big(this.tx?.outputs[2]?.amount ?? 0);
     return amount.div(100_000_000).toFixed(8);
   }
 

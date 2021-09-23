@@ -246,7 +246,7 @@
         </v-container>
       </v-col>
       <v-col id="summary-col" cols="4" lg="5">
-        <v-col cols="12" offset-lg="1" lg="11" xl="10" class="pa-0">
+        <v-col cols="12" offset-xl="1" xl="11" class="pa-0">
           <v-row class="mx-0 my-4">
             <h2>Transaction summary:</h2>
           </v-row>
