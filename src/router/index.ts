@@ -16,10 +16,15 @@ const routes: Array<RouteConfig> = [
     component: () => import(/* webpackChunkName: "exchange" */ '../views/Exchange.vue'),
   },
   {
-    path: '/status',
+    path: '/status/txId/:txId',
     name: 'Status',
     component: () => import(/* webpackChunkName: "transactions" */ '../views/Status.vue'),
-    props: (route) => ({ txIdProp: route.query.txId }),
+    props: (route) => ({ txIdProp: route.params.txId }),
+  },
+  {
+    path: '/status',
+    name: 'StatusSearch',
+    component: () => import(/* webpackChunkName: "transactions" */ '../views/Status.vue'),
   },
 ];
 

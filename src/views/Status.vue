@@ -164,7 +164,7 @@
 
 <script lang="ts">
 import {
-  Component, Emit, Prop, Vue,
+  Component, Emit, Prop, Vue, Watch,
 } from 'vue-property-decorator';
 import { State } from 'vuex-class';
 import TxSummary from '@/components/exchange/TxSummary.vue';
@@ -239,21 +239,24 @@ export default class Status extends Vue {
 
   @Emit()
   getPegStatus() {
-    this.loading = true;
-    this.$router.replace({ name: 'Status', query: { txId: this.txId } });
-    ApiService.getPegInStatus(this.txId)
-      .then((pegInStatus: PeginStatus) => {
-        this.pegInStatus = pegInStatus;
-        this.setMessage();
-        this.setSummary();
-        this.refreshPercentage();
-        this.loading = false;
-      })
-      .catch((e: Error) => {
-        this.errorMessage = e.message;
-        this.error = true;
-        this.loading = false;
-      });
+    if (this.txId !== '') {
+      this.loading = true;
+      this.error = false;
+      if (this.$route.path !== `/status/txId/${this.txId}`) this.$router.push({ name: 'Status', params: { txId: this.txId } });
+      ApiService.getPegInStatus(this.txId)
+        .then((pegInStatus: PeginStatus) => {
+          this.pegInStatus = pegInStatus;
+          this.setMessage();
+          this.setSummary();
+          this.refreshPercentage();
+          this.loading = false;
+        })
+        .catch((e: Error) => {
+          this.errorMessage = e.message;
+          this.error = true;
+          this.loading = false;
+        });
+    }
   }
 
   @Emit()
@@ -329,10 +332,21 @@ export default class Status extends Vue {
     window.open('https://explorer.testnet.rsk.co/', '_blank');
   }
 
-  created() {
+  @Emit()
+  clean() {
+    this.txId = '';
+    this.loading = false;
+    this.error = false;
+    this.statusMessage = '';
+  }
+
+  @Watch('$route', { immediate: true, deep: true })
+  onUrlChange() {
     if (this.txIdProp) {
       this.txId = this.txIdProp ?? '';
       this.getPegStatus();
+    } else {
+      this.clean();
     }
   }
 }
