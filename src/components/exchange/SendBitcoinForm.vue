@@ -500,7 +500,7 @@ export default class SendBitcoinForm extends Vue {
       return 'Invalid format, neither letters, big amounts nor more than 8 decimals are allowed';
     }
     if (feePlusAmount.lt(minValue)) {
-      return `You can not send this amount of BTC. You can only send a minimum of ${minValue.toBTCString()} BTC`;
+      return `You can not send this amount of BTC. You can only send a minimum of ${Number(minValue.toBTCString())} BTC`;
     }
     if (feePlusAmount.gte(accountBalance)) {
       return 'The typed amount, along with the transaction fee, is higher than your current balance';
