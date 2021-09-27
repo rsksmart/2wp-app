@@ -42,13 +42,14 @@ import ApiService from '@/services/ApiService';
 import { PegInTxState } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import {
-  AccountBalance, FeeAmountData, PegInFormValues, SendBitcoinState, TrezorTx,
+  AccountBalance, FeeAmountData, PegInFormValues, SendBitcoinState, TrezorTx, TxData,
 } from '@/types';
 import TrezorTxBuilder from '@/middleware/TxBuilder/TrezorTxBuilder';
 import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
 import DeviceErrorDialog from '@/components/exchange/DeviceErrorDialog.vue';
 import ConnectDevice from '@/components/exchange/ConnectDevice.vue';
 import TxErrorDialog from '@/components/exchange/TxErrorDialog.vue';
+import SatoshiBig from '@/types/SatoshiBig';
 
 @Component({
   components: {
@@ -64,7 +65,7 @@ import TxErrorDialog from '@/components/exchange/TxErrorDialog.vue';
 export default class SendBitcoinTrezor extends Vue {
   pegInFormData: PegInFormValues ={
     accountType: '',
-    amount: 0.0,
+    amount: new SatoshiBig('0', 'satoshi'),
     rskAddress: '',
     txFeeIndex: 1.0,
   };
@@ -133,13 +134,13 @@ export default class SendBitcoinTrezor extends Vue {
     this.showDialog = localStorage.getItem('BTRD_COOKIE_DISABLED') !== 'true';
   }
 
-  get txData() {
+  get txData(): TxData {
     return {
-      amount: this.amount,
+      amount: new SatoshiBig(this.amount, 'satoshi'),
       refundAddress: this.refundAddress,
       recipient: this.recipient,
-      feeBTC: this.feeBTC,
-      change: this.getChangeAddress,
+      feeBTC: new SatoshiBig(this.feeBTC, 'btc'),
+      change: '',
     };
   }
 

@@ -60,7 +60,7 @@ export interface TxData {
 
 export interface PegInFormValues {
   accountType: string;
-  amount: number; // SatoshiBN
+  amount: SatoshiBig;
   rskAddress: string;
   txFeeIndex: number;
 }

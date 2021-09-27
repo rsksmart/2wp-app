@@ -63,7 +63,7 @@ import SatoshiBig from '@/types/SatoshiBig';
 export default class SendBitcoinLedger extends Vue {
   pegInFormData: PegInFormValues ={
     accountType: '',
-    amount: 0.0,
+    amount: new SatoshiBig('0', 'satoshi'),
     rskAddress: '',
     txFeeIndex: 1.0,
   };
