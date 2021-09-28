@@ -230,13 +230,13 @@
                   </v-row>
                   <v-row class="mx-0">
                     <v-col cols="4" class="d-flex justify-start pa-0">
-                      <span class="boldie text-left">$ {{ btcToUSD(slowFee) }}</span>
+                      <span class="boldie text-left">$ {{ slowFeeUSD }}</span>
                     </v-col>
                     <v-col cols="4" class="d-flex justify-center pa-0">
-                      <span class="boldie text-center">$ {{ btcToUSD(averageFee) }}</span>
+                      <span class="boldie text-center">$ {{ averageFeeUSD }}</span>
                     </v-col>
                     <v-col cols="4" class="d-flex justify-end pa-0">
-                      <span class="boldie text-right">$ {{ btcToUSD(fastFee) }}</span>
+                      <span class="boldie text-right">$ {{ fastFeeUSD }}</span>
                     </v-col>
                   </v-row>
                 </v-col>
@@ -484,15 +484,17 @@ export default class SendBitcoinForm extends Vue {
     return new SatoshiBig(this.bitcoinAmount, 'btc');
   }
 
-  get safeTxFee(): SatoshiBig { // txFee computed value should be replaced eventually by this
-    return new SatoshiBig(this.txFee, 'btc');
+  get safeTxFee(): SatoshiBig {
+    if (this.txFeeIndex === 0) return this.fees.slow;
+    if (this.txFeeIndex === 1) return this.fees.average;
+    if (this.txFeeIndex === 2) return this.fees.fast;
+    return new SatoshiBig('0', 'satoshi');
   }
 
   get amountErrorMessage() { // mayor rework
     const feePlusAmount: SatoshiBig = this.safeAmount.plus(this.safeTxFee);
     const minValue: SatoshiBig = new SatoshiBig(this.peginTxState.peginConfiguration.minValue, 'satoshi');
     const maxValue: SatoshiBig = new SatoshiBig(this.peginTxState.peginConfiguration.maxValue, 'satoshi');
-    const accountBalance: SatoshiBig = new SatoshiBig(this.selectedAccountBalance, 'btc');
     if (this.bitcoinAmount.toString() === '') {
       return 'Please, enter an amount';
     }
@@ -500,9 +502,9 @@ export default class SendBitcoinForm extends Vue {
       return 'Invalid format, neither letters, big amounts nor more than 8 decimals are allowed';
     }
     if (feePlusAmount.lt(minValue)) {
-      return `You can not send this amount of BTC. You can only send a minimum of ${Number(minValue.toBTCString())} BTC`;
+      return `You can not send this amount of BTC. You can only send a minimum of ${minValue.toBTCTrimmedString()} BTC`;
     }
-    if (feePlusAmount.gte(accountBalance)) {
+    if (feePlusAmount.gte(this.selectedAccountBalance)) {
       return 'The typed amount, along with the transaction fee, is higher than your current balance';
     }
     if (feePlusAmount.gt(maxValue)) {
@@ -585,17 +587,9 @@ export default class SendBitcoinForm extends Vue {
 
   get fullTxFee(): string {
     let txFee = '';
-    if (this.txFeeIndex === 0) txFee = `Slow - ${this.fees.slow} BTC`;
-    if (this.txFeeIndex === 1) txFee = `Average - ${this.fees.average} BTC`;
-    if (this.txFeeIndex === 2) txFee = `Fast - ${this.fees.fast} BTC`;
-    return txFee;
-  }
-
-  get txFee(): number {
-    let txFee = 0;
-    if (this.txFeeIndex === 0) txFee = this.satoshiToBtc(this.fees.slow);
-    if (this.txFeeIndex === 1) txFee = this.satoshiToBtc(this.fees.average);
-    if (this.txFeeIndex === 2) txFee = this.satoshiToBtc(this.fees.fast);
+    if (this.txFeeIndex === 0) txFee = `Slow - ${this.fees.slow.toBTCString()} BTC`;
+    if (this.txFeeIndex === 1) txFee = `Average - ${this.fees.average.toBTCString()} BTC`;
+    if (this.txFeeIndex === 2) txFee = `Fast - ${this.fees.fast.toBTCString()} BTC`;
     return txFee;
   }
 
@@ -617,32 +611,40 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get slowFee() {
-    return this.satoshiToBtc(this.fees.slow)
-      .toFixed(8);
+    return this.fees.slow.toBTCString();
+  }
+
+  get slowFeeUSD() {
+    return this.fees.slow.toUSDFromBTCString(this.price, this.fixedUSDDecimals);
   }
 
   get averageFee() {
-    return this.satoshiToBtc(this.fees.average)
-      .toFixed(8);
+    return this.fees.average.toBTCString();
+  }
+
+  get averageFeeUSD() {
+    return this.fees.average.toUSDFromBTCString(this.price, this.fixedUSDDecimals);
   }
 
   get fastFee() {
-    return this.satoshiToBtc(this.fees.fast)
-      .toFixed(8);
+    return this.fees.fast.toBTCString();
+  }
+
+  get fastFeeUSD() {
+    return this.fees.fast.toUSDFromBTCString(this.price, this.fixedUSDDecimals);
   }
 
   get insufficientAmount() {
     const feePlusAmount: SatoshiBig = this.safeAmount.plus(this.safeTxFee);
     const minValue: SatoshiBig = new SatoshiBig(this.peginTxState.peginConfiguration.minValue, 'satoshi');
     const maxValue: SatoshiBig = new SatoshiBig(this.peginTxState.peginConfiguration.maxValue, 'satoshi');
-    const accountBalance: SatoshiBig = new SatoshiBig(this.selectedAccountBalance, 'btc');
     if (this.safeAmount.lte('0')
-      || feePlusAmount.gt(accountBalance)
+      || feePlusAmount.gt(this.selectedAccountBalance)
       || feePlusAmount.lt(minValue)
       || feePlusAmount.gt(maxValue)) {
       return true;
     }
-    if (this.safeAmount.gt('0') && feePlusAmount.lte(accountBalance)) {
+    if (this.safeAmount.gt('0') && feePlusAmount.lte(this.selectedAccountBalance)) {
       return false;
     }
     return false;
@@ -652,22 +654,18 @@ export default class SendBitcoinForm extends Vue {
     return /^[0-9]{1,8}(\.[0-9]{0,8})?$/.test(this.bitcoinAmount.toString());
   }
 
-  get selectedAccountBalance() {
-    let balance = 0;
+  get selectedAccountBalance(): SatoshiBig {
     switch (this.accountType) {
       case 'BITCOIN_LEGACY_ADDRESS':
-        balance = this.satoshiToBtc(this.balances.legacy);
-        break;
+        return this.balances.legacy;
       case 'BITCOIN_NATIVE_SEGWIT_ADDRESS':
-        balance = this.satoshiToBtc(this.balances.nativeSegwit);
-        break;
+        return this.balances.nativeSegwit;
       case 'BITCOIN_SEGWIT_ADDRESS':
-        balance = this.satoshiToBtc(this.balances.segwit);
-        break;
+        return this.balances.segwit;
       default:
         break;
     }
-    return balance;
+    return new SatoshiBig('0', 'satoshi');
   }
 
   get isValidRskAddress() {
@@ -862,28 +860,6 @@ export default class SendBitcoinForm extends Vue {
     this.thirdDone = true;
   }
 
-  @Emit()
-  // eslint-disable-next-line class-methods-use-this
-  satoshiToBtc(satoshis: number | string | Big): number {
-    const btcs: Big = Big(satoshis.toString()).div(100_000_000);
-    return Number(btcs.toFixed(8));
-  }
-
-  @Emit()
-  // eslint-disable-next-line class-methods-use-this
-  btcToSatoshi(btcs: number | string | Big): number {
-    const satoshis: Big = Big(btcs.toString()).mul(100_000_000);
-    return Number(satoshis.toFixed(0));
-  }
-
-  @Emit()
-  // eslint-disable-next-line class-methods-use-this
-  btcToUSD(btcs: number | string | Big): string {
-    return this.safeToBig(btcs)
-      .mul(this.safeToBig(this.price))
-      .toFixed(this.fixedUSDDecimals);
-  }
-
   get isLedgerWallet() {
     return this.peginTxState.bitcoinWallet === constants.WALLET_LEDGER;
   }
@@ -903,14 +879,14 @@ export default class SendBitcoinForm extends Vue {
     this.fillStoredPegInFormData();
     if (this.peginTxState.bitcoinWallet === constants.WALLET_LEDGER) {
       this.accountBalances = [
-        `Segwit account - ${this.satoshiToBtc(this.balances.segwit)} BTC`,
-        `Legacy account - ${this.satoshiToBtc(this.balances.legacy)} BTC`,
+        `Segwit account - ${this.balances.segwit.toBTCTrimmedString()} BTC`, // warning too many
+        `Legacy account - ${this.balances.legacy.toBTCTrimmedString()} BTC`,
       ];
     } else {
       this.accountBalances = [
-        `Segwit account - ${this.satoshiToBtc(this.balances.segwit)} BTC`,
-        `Legacy account - ${this.satoshiToBtc(this.balances.legacy)} BTC`,
-        `Native segwit account - ${this.satoshiToBtc(this.balances.nativeSegwit)} BTC`,
+        `Segwit account - ${this.balances.segwit.toBTCTrimmedString()} BTC`,
+        `Legacy account - ${this.balances.legacy.toBTCTrimmedString()} BTC`,
+        `Native segwit account - ${this.balances.nativeSegwit.toBTCTrimmedString()} BTC`,
       ];
     }
   }

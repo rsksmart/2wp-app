@@ -39,15 +39,15 @@ export interface Signer {
 }
 
 export interface AccountBalance {
-  legacy: number; // SatoshiBN
-  segwit: number; // SatoshiBN
-  nativeSegwit: number; // SatoshiBN
+  legacy: SatoshiBig;
+  segwit: SatoshiBig;
+  nativeSegwit: SatoshiBig;
 }
 
 export interface FeeAmountData {
-  slow: number; // SatoshiBN
-  average: number; // SatoshiBN
-  fast: number; // SatoshiBN
+  slow: SatoshiBig;
+  average: SatoshiBig;
+  fast: SatoshiBig;
 }
 
 export interface TxData {

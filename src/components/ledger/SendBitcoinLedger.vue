@@ -105,15 +105,15 @@ export default class SendBitcoinLedger extends Vue {
   txBuilder: LedgerTxBuilder = new LedgerTxBuilder();
 
   balances: AccountBalance = {
-    legacy: 0,
-    segwit: 0,
-    nativeSegwit: 0,
+    legacy: new SatoshiBig(0, 'satoshi'),
+    segwit: new SatoshiBig(0, 'satoshi'),
+    nativeSegwit: new SatoshiBig(0, 'satoshi'),
   };
 
   calculatedFees: FeeAmountData = {
-    slow: 0,
-    average: 0,
-    fast: 0,
+    slow: new SatoshiBig(0, 'satoshi'),
+    average: new SatoshiBig(0, 'satoshi'),
+    fast: new SatoshiBig(0, 'satoshi'),
   };
 
   ledgerDataReady = false;
@@ -224,7 +224,11 @@ export default class SendBitcoinLedger extends Vue {
       .then(() => ApiService
         .getBalances(this.peginTxState.sessionId, this.peginTxState.addressList))
       .then((balances: AccountBalance) => {
-        this.balances = balances;
+        this.balances = {
+          legacy: new SatoshiBig(balances.legacy, 'satoshi'),
+          segwit: new SatoshiBig(balances.segwit, 'satoshi'),
+          nativeSegwit: new SatoshiBig(balances.nativeSegwit, 'satoshi'),
+        };
         this.ledgerDataReady = true;
       })
       .catch((e) => {
@@ -242,7 +246,11 @@ export default class SendBitcoinLedger extends Vue {
   getTxFee({ amount, accountType }: {amount: number; accountType: string}) {
     ApiService.getTxFee(this.peginTxState.sessionId, amount, accountType)
       .then((txFee) => {
-        this.calculatedFees = txFee;
+        this.calculatedFees = {
+          slow: new SatoshiBig(txFee.slow, 'satoshi'),
+          average: new SatoshiBig(txFee.average, 'satoshi'),
+          fast: new SatoshiBig(txFee.fast, 'satoshi'),
+        };
       })
       .catch(console.error);
   }

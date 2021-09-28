@@ -18,7 +18,7 @@ export default class SatoshiBig extends Big {
         super(safeBig.mul(100_000_000).toFixed(0));
         break;
       default:
-        super(src);
+        super(safeBig);
         break;
     }
   }
@@ -41,6 +41,11 @@ export default class SatoshiBig extends Big {
 
   toBTCString(): string {
     const btcString = super.div(100_000_000).toFixed(8);
+    return btcString;
+  }
+
+  toBTCTrimmedString(): string {
+    const btcString = super.div(100_000_000).toString();
     return btcString;
   }
 
