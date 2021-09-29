@@ -96,13 +96,13 @@ export default class SendBitcoinTrezor extends Vue {
     outputs: [],
   };
 
-  amount = 0;
+ amount: SatoshiBig = new SatoshiBig('0', 'satoshi');
 
   refundAddress = '';
 
   recipient = '';
 
-  feeBTC = 0;
+  feeBTC: SatoshiBig = new SatoshiBig('0', 'satoshi');
 
   txBuilder: TrezorTxBuilder = new TrezorTxBuilder();
 
@@ -136,10 +136,10 @@ export default class SendBitcoinTrezor extends Vue {
 
   get txData(): TxData {
     return {
-      amount: new SatoshiBig(this.amount, 'satoshi'),
+      amount: this.amount,
       refundAddress: this.refundAddress,
       recipient: this.recipient,
-      feeBTC: new SatoshiBig(this.feeBTC, 'btc'),
+      feeBTC: this.feeBTC,
       change: '',
     };
   }
@@ -158,11 +158,11 @@ export default class SendBitcoinTrezor extends Vue {
     accountType,
     pegInFormData,
   }: {
-    amountToTransferInSatoshi: number;
+    amountToTransferInSatoshi: SatoshiBig;
     refundAddress: string;
     recipient: string;
     feeLevel: string;
-    feeBTC: number;
+    feeBTC: SatoshiBig;
     accountType: string;
     pegInFormData: PegInFormValues;
   }) {
@@ -172,7 +172,7 @@ export default class SendBitcoinTrezor extends Vue {
     this.recipient = recipient;
     this.feeBTC = feeBTC;
     this.txBuilder.buildTx({
-      amountToTransferInSatoshi,
+      amountToTransferInSatoshi: Number(amountToTransferInSatoshi.toString()),
       refundAddress,
       recipient,
       feeLevel,

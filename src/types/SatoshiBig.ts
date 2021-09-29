@@ -6,7 +6,9 @@ type BTCCurrency = 'satoshi' | 'mbtc' | 'btc';
 
 export default class SatoshiBig extends Big {
   constructor(src: number | string | Big, currency: BTCCurrency) {
-    const safeBig: Big = Big(numberRegex.test(src.toString()) ? src : '0');
+    const safeSrc = src ? src.toString() : '0';
+    const safeBig: Big = src instanceof Big
+      ? src : Big(numberRegex.test(safeSrc) ? safeSrc : '0');
     switch (currency) {
       case 'satoshi':
         super(safeBig.toFixed(0));

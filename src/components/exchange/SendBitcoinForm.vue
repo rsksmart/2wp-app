@@ -458,7 +458,7 @@ export default class SendBitcoinForm extends Vue {
 
   @Prop() pegInFormData!: PegInFormValues;
 
-  @Prop() price!: number; // Bigjs
+  @Prop() price!: number;
 
   @Prop() balances!: AccountBalance;
 
@@ -823,11 +823,11 @@ export default class SendBitcoinForm extends Vue {
         break;
     }
     return {
-      amountToTransferInSatoshi: Number(this.safeAmount.toSatoshiString()),
+      amountToTransferInSatoshi: this.safeAmount,
       refundAddress: this.refundAddress,
       recipient: this.computedRskAddress,
       feeLevel: selectedFee,
-      feeBTC: Number(this.safeTxFee.toBTCString()),
+      feeBTC: this.safeTxFee,
       accountType: this.accountType,
       pegInFormData: {
         amount: this.safeAmount,

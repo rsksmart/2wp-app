@@ -5,7 +5,7 @@ export interface PegInTxState {
   peginConfiguration: PeginConfiguration;
   sessionId: string;
   bitcoinWallet: string;
-  bitcoinPrice: number; // Bigjs
+  bitcoinPrice: number;
 }
 
 export interface PeginConfiguration {
