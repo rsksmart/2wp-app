@@ -3,8 +3,11 @@ import * as bitcoin from 'bitcoinjs-lib';
 import { Network } from 'bitcoinjs-lib';
 import { WalletAddress } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
-import { TrezorSignedTx, TrezorTx, Tx } from '@/types';
-import WalletService from '@/services/WalletService';
+import {
+  AccountBalance, TrezorSignedTx, TrezorTx, Tx,
+} from '@/types';
+import { WalletService } from '@/services/WalletService';
+import ApiService from './ApiService';
 
 export default class TrezorService extends WalletService {
   private network: Network;
@@ -19,9 +22,11 @@ export default class TrezorService extends WalletService {
     });
   }
 
-  private getAddressesBundle(accountIndex: number, batch: number): GetAddress [] {
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
+  private getAddressesBundle(startFrom: number, batch: number, accountIndex: number = 0):
+      GetAddress[] {
     const bundle: GetAddress[] = [];
-    for (let index = 0; index < batch; index += 1) {
+    for (let index: number = startFrom; index < batch; index += 1) {
       bundle.push({
         path: this.getDerivationPath(constants
           .BITCOIN_LEGACY_ADDRESS, accountIndex, false, index),
@@ -65,6 +70,24 @@ export default class TrezorService extends WalletService {
   public getAddressList(batch: number): Promise<WalletAddress[]> {
     return new Promise((resolve, reject) => {
       const bundle = this.getAddressesBundle(0, batch);
+      TrezorConnect.getAddress({
+        bundle,
+      })
+        .then((result) => {
+          if (!result.success) reject(new Error(result.payload.error));
+          const addresses: WalletAddress[] = [];
+          Object.entries(result.payload).forEach((obj) => {
+            addresses.push(obj[1]);
+          });
+          resolve(addresses);
+        })
+        .catch(reject);
+    });
+  }
+
+  public getAccountAddressListSinceInit(batch: number, index: number): Promise<WalletAddress[]> {
+    return new Promise((resolve, reject) => {
+      const bundle = this.getAddressesBundle(index, batch);
       TrezorConnect.getAddress({
         bundle,
       })

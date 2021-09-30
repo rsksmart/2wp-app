@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <template v-if="!trezorDataReady">
-      <connect-device @continueToForm="getAccountAddresses"
+      <connect-device @continueToForm="startAskingForBalance"
                       :sendBitcoinState="sendBitcoinState"/>
     </template>
     <template v-if="trezorDataReady">
@@ -62,6 +62,7 @@ import SatoshiBig from '@/types/SatoshiBig';
     TxErrorDialog,
   },
 })
+
 export default class SendBitcoinTrezor extends Vue {
   pegInFormData: PegInFormValues ={
     accountType: '',
@@ -96,7 +97,7 @@ export default class SendBitcoinTrezor extends Vue {
     outputs: [],
   };
 
- amount: SatoshiBig = new SatoshiBig('0', 'satoshi');
+  amount: SatoshiBig = new SatoshiBig('0', 'satoshi');
 
   refundAddress = '';
 
@@ -252,6 +253,31 @@ export default class SendBitcoinTrezor extends Vue {
         this.sendBitcoinState = 'error';
         this.showErrorDialog = true;
       });
+  }
+
+  @Emit()
+  startAskingForBalance() {
+    this.trezorService.subscribe((balance) => this.addBalance(balance));
+    this.trezorService.startAskingForBalance(this.peginTxState.sessionId)
+      .catch((e) => {
+        this.deviceError = e.message;
+        this.sendBitcoinState = 'error';
+        this.trezorService.unsubscribe((balance) => this.addBalance(balance));
+        this.showErrorDialog = true;
+      });
+    this.sendBitcoinState = 'loading';
+    this.trezorDataReady = true;
+  }
+
+  addBalance(balanceInformed: AccountBalance) {
+    this.addInformedBalance(balanceInformed);
+  }
+
+  @Emit()
+  addInformedBalance(balanceInformed: AccountBalance) {
+    this.balances.legacy.plus(balanceInformed.legacy);
+    this.balances.segwit.plus(balanceInformed.segwit);
+    this.balances.nativeSegwit.plus(balanceInformed.nativeSegwit);
   }
 
   @Emit()

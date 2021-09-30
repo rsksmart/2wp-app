@@ -7,7 +7,7 @@ import { isValidPowPegAddress } from './PowPegAddressUtils';
 import { BridgeService } from '@/services/BridgeService';
 
 export default class ApiService {
-  static baseURL = process.env.VUE_APP_API_BASE_URL
+  static baseURL = process.env.VUE_APP_API_BASE_URL;
 
   public static getBalances(sessionId: string,
     addressList?: WalletAddress[]): Promise<AccountBalance> {

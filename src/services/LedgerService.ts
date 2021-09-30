@@ -2,12 +2,12 @@ import AppBtc from '@ledgerhq/hw-app-btc';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import _ from 'lodash';
 import * as bitcoin from 'bitcoinjs-lib';
-import WalletService from '@/services/WalletService';
 import * as constants from '@/store/constants';
 import { WalletAddress } from '@/store/peginTx/types';
 import {
   LedgerjsTransaction, LedgerTx, Signer,
 } from '@/types';
+import { WalletService } from './WalletService';
 
 export default class LedgerService extends WalletService {
   private network: bitcoin.Network;
@@ -63,24 +63,24 @@ export default class LedgerService extends WalletService {
     });
   }
 
-  private getAddressesBundle(accountIndex: number, batch: number):
+  private getAddressesBundle(startFrom: number, batch: number, accountIndex = 0):
     { derivationPath: string; format: 'legacy' | 'p2sh' | 'bech32' | undefined }[] {
     const bundle: { derivationPath: string; format: 'legacy' | 'p2sh' | 'bech32' | undefined }[] = [];
-    for (let index = 0; index < batch; index += 1) {
+    for (let index: number = startFrom; index < batch; index += 1) {
       let change = true;
       _.range(2).forEach(() => {
         bundle.push({
-          derivationPath: this.getDerivationPath(constants
+          derivationPath: super.getDerivationPath(constants
             .BITCOIN_LEGACY_ADDRESS, accountIndex, change, index),
           format: 'legacy',
         });
         bundle.push({
-          derivationPath: this.getDerivationPath(constants
+          derivationPath: super.getDerivationPath(constants
             .BITCOIN_SEGWIT_ADDRESS, accountIndex, change, index),
           format: 'p2sh',
         });
         bundle.push({
-          derivationPath: this.getDerivationPath(constants
+          derivationPath: super.getDerivationPath(constants
             .BITCOIN_NATIVE_SEGWIT_ADDRESS, accountIndex, change, index),
           format: 'bech32',
         });
@@ -96,6 +96,37 @@ export default class LedgerService extends WalletService {
     return new Promise<WalletAddress[]>(async (resolve, reject) => {
       const walletAddresses: WalletAddress[] = [];
       const bundle = this.getAddressesBundle(0, batch);
+      try {
+        const transport = await TransportWebUSB.create(15000);
+        await LedgerService.checkApp(transport);
+        const btc = new AppBtc(transport);
+        // eslint-disable-next-line no-restricted-syntax
+        for (const item of bundle) {
+          const { derivationPath, format } = item;
+          // eslint-disable-next-line no-await-in-loop
+          const walletPublicKey = await btc.getWalletPublicKey(derivationPath, { format });
+          walletAddresses.push({
+            address: walletPublicKey.bitcoinAddress,
+            serializedPath: derivationPath,
+            path: super.getSerializedPath(derivationPath),
+            publicKey: walletPublicKey.publicKey,
+          });
+        }
+
+        await transport.close();
+      } catch (e) {
+        reject(e);
+      }
+      resolve(walletAddresses);
+    });
+  }
+
+  public getAccountAddressListSinceInit(batch: number, index: number): Promise<WalletAddress[]> {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      const walletAddresses: WalletAddress[] = [];
+      const bundle = this.getAddressesBundle(index, batch);
+
       try {
         const transport = await TransportWebUSB.create(15000);
         await LedgerService.checkApp(transport);
