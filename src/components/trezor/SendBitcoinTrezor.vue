@@ -1,7 +1,7 @@
 <template>
   <v-container fluid class="px-md-0">
     <template v-if="!trezorDataReady">
-      <connect-device @continueToForm="getAccountAddresses"
+      <connect-device @continueToForm="startAskingForBalance"
                       :sendBitcoinState="sendBitcoinState"/>
     </template>
     <template v-if="trezorDataReady">
@@ -62,6 +62,7 @@ import SatoshiBig from '@/types/SatoshiBig';
     TxErrorDialog,
   },
 })
+
 export default class SendBitcoinTrezor extends Vue {
   pegInFormData: PegInFormValues ={
     accountType: '',
@@ -96,7 +97,7 @@ export default class SendBitcoinTrezor extends Vue {
     outputs: [],
   };
 
- amount: SatoshiBig = new SatoshiBig('0', 'satoshi');
+  amount: SatoshiBig = new SatoshiBig('0', 'satoshi');
 
   refundAddress = '';
 
@@ -231,27 +232,38 @@ export default class SendBitcoinTrezor extends Vue {
   }
 
   @Emit()
-  getAccountAddresses() {
+  startAskingForBalance() {
     this.sendBitcoinState = 'loading';
-    this.trezorService.getAddressList(2)
-      .then((addresses) => {
-        this.setPeginTxAddresses(addresses);
-      })
-      .then(() => ApiService
-        .getBalances(this.peginTxState.sessionId, this.peginTxState.addressList))
-      .then((balances: AccountBalance) => {
-        this.balances = {
-          legacy: new SatoshiBig(balances.legacy, 'satoshi'),
-          segwit: new SatoshiBig(balances.segwit, 'satoshi'),
-          nativeSegwit: new SatoshiBig(balances.nativeSegwit, 'satoshi'),
-        };
-        this.trezorDataReady = true;
-      })
+    this.trezorService.subscribe((balance) => this.addBalance(balance));
+    this.trezorService.startAskingForBalance(this.peginTxState.sessionId)
       .catch((e) => {
         this.deviceError = e.message;
         this.sendBitcoinState = 'error';
+        this.trezorService.unsubscribe();
         this.showErrorDialog = true;
       });
+  }
+
+  addBalance(balanceInformed: AccountBalance) {
+    this.setInformedBalance(balanceInformed);
+    if (!this.trezorDataReady) {
+      this.trezorDataReady = true;
+    }
+  }
+
+  @Emit()
+  setInformedBalance(balanceInformed: AccountBalance) {
+    if (balanceInformed === undefined) {
+      this.deviceError = 'Balance was not found.';
+      this.sendBitcoinState = 'error';
+      this.trezorService.unsubscribe();
+      this.showErrorDialog = true;
+    }
+    this.balances = {
+      legacy: new SatoshiBig(balanceInformed.legacy, 'satoshi'),
+      segwit: new SatoshiBig(balanceInformed.segwit, 'satoshi'),
+      nativeSegwit: new SatoshiBig(balanceInformed.nativeSegwit, 'satoshi'),
+    };
   }
 
   @Emit()

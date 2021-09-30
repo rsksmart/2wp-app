@@ -877,8 +877,8 @@ export default class SendBitcoinForm extends Vue {
     this.txFeeIndex = this.pegInFormData.txFeeIndex;
   }
 
-  created() {
-    this.fillStoredPegInFormData();
+  @Watch('balances')
+  fillAccountBalances() {
     if (this.peginTxState.bitcoinWallet === constants.WALLET_LEDGER) {
       this.accountBalances = [
         `Segwit account - ${this.balances.segwit.toBTCTrimmedString()} BTC`, // warning too many
@@ -891,6 +891,11 @@ export default class SendBitcoinForm extends Vue {
         `Native segwit account - ${this.balances.nativeSegwit.toBTCTrimmedString()} BTC`,
       ];
     }
+  }
+
+  created() {
+    this.fillStoredPegInFormData();
+    this.fillAccountBalances();
   }
 }
 </script>
