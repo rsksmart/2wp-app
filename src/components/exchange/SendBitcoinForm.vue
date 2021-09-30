@@ -521,7 +521,9 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get computedRskAddress() {
-    if (this.rskAddressSelected !== '' && rskUtils.isAddress(this.rskAddressSelected)) {
+    if (this.rskAddressSelected !== ''
+      && rskUtils.isAddress(this.rskAddressSelected)
+      && this.rskAddressSelected.startsWith('0x')) {
       return this.rskAddressSelected;
     }
     if (this.useWeb3Wallet && this.web3Address !== '') {
@@ -675,7 +677,7 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get isValidPegInAddress() {
-    return rskUtils.isAddress(this.computedRskAddress, this.CHAIN_ID);
+    return rskUtils.isAddress(this.computedRskAddress, this.CHAIN_ID) && this.computedRskAddress.startsWith('0x');
   }
 
   get validAddressMessage() {
@@ -709,13 +711,13 @@ export default class SendBitcoinForm extends Vue {
 
   @Watch('rskAddressSelected')
   watchRSKAddressSelected() {
-    this.thirdDone = rskUtils.isAddress(this.computedRskAddress)
+    this.thirdDone = (rskUtils.isAddress(this.computedRskAddress) && this.computedRskAddress.startsWith('0x'))
       || (this.useWeb3Wallet && this.web3Address !== '');
   }
 
   @Watch('web3SessionState.account')
   watchWeb3Address() {
-    this.thirdDone = rskUtils.isAddress(this.computedRskAddress)
+    this.thirdDone = (rskUtils.isAddress(this.computedRskAddress) && this.computedRskAddress.startsWith('0x'))
       || (this.useWeb3Wallet && this.web3Address !== '');
   }
 
