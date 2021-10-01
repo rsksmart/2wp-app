@@ -40,13 +40,14 @@ import ApiService from '@/services/ApiService';
 import { PegInTxState } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import {
-  AccountBalance, FeeAmountData, LedgerTx, PegInFormValues, SendBitcoinState,
+  AccountBalance, FeeAmountData, LedgerTx, PegInFormValues, SendBitcoinState, TxData,
 } from '@/types';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
 import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
 import DeviceErrorDialog from '@/components/exchange/DeviceErrorDialog.vue';
 import ConnectDevice from '@/components/exchange/ConnectDevice.vue';
 import TxErrorDialog from '@/components/exchange/TxErrorDialog.vue';
+import SatoshiBig from '@/types/SatoshiBig';
 
 @Component({
   components: {
@@ -62,7 +63,7 @@ import TxErrorDialog from '@/components/exchange/TxErrorDialog.vue';
 export default class SendBitcoinLedger extends Vue {
   pegInFormData: PegInFormValues ={
     accountType: '',
-    amount: 0.0,
+    amount: new SatoshiBig('0', 'satoshi'),
     rskAddress: '',
     txFeeIndex: 1.0,
   };
@@ -93,26 +94,26 @@ export default class SendBitcoinLedger extends Vue {
     accountType: '',
   };
 
-  amount = 0;
+  amount: SatoshiBig = new SatoshiBig('0', 'satoshi');
 
   refundAddress = '';
 
   recipient = '';
 
-  feeBTC = 0;
+  feeBTC: SatoshiBig = new SatoshiBig('0', 'satoshi');
 
   txBuilder: LedgerTxBuilder = new LedgerTxBuilder();
 
   balances: AccountBalance = {
-    legacy: 0,
-    segwit: 0,
-    nativeSegwit: 0,
+    legacy: new SatoshiBig(0, 'satoshi'),
+    segwit: new SatoshiBig(0, 'satoshi'),
+    nativeSegwit: new SatoshiBig(0, 'satoshi'),
   };
 
   calculatedFees: FeeAmountData = {
-    slow: 0,
-    average: 0,
-    fast: 0,
+    slow: new SatoshiBig(0, 'satoshi'),
+    average: new SatoshiBig(0, 'satoshi'),
+    fast: new SatoshiBig(0, 'satoshi'),
   };
 
   ledgerDataReady = false;
@@ -131,13 +132,13 @@ export default class SendBitcoinLedger extends Vue {
     this.showDialog = localStorage.getItem('BTRD_COOKIE_DISABLED') !== 'true';
   }
 
-  get txData() {
+  get txData(): TxData {
     return {
       amount: this.amount,
       refundAddress: this.refundAddress,
       recipient: this.recipient,
       feeBTC: this.feeBTC,
-      change: this.getChangeAddress,
+      change: '',
     };
   }
 
@@ -151,11 +152,11 @@ export default class SendBitcoinLedger extends Vue {
     accountType,
     pegInFormData,
   }: {
-    amountToTransferInSatoshi: number;
+    amountToTransferInSatoshi: SatoshiBig;
     refundAddress: string;
     recipient: string;
     feeLevel: string;
-    feeBTC: number;
+    feeBTC: SatoshiBig;
     accountType: string;
     pegInFormData: PegInFormValues;
   }) {
@@ -166,7 +167,7 @@ export default class SendBitcoinLedger extends Vue {
     this.feeBTC = feeBTC;
     this.txBuilder.accountType = accountType;
     this.txBuilder.buildTx({
-      amountToTransferInSatoshi,
+      amountToTransferInSatoshi: Number(amountToTransferInSatoshi.toString()),
       refundAddress,
       recipient,
       feeLevel,
@@ -223,7 +224,11 @@ export default class SendBitcoinLedger extends Vue {
       .then(() => ApiService
         .getBalances(this.peginTxState.sessionId, this.peginTxState.addressList))
       .then((balances: AccountBalance) => {
-        this.balances = balances;
+        this.balances = {
+          legacy: new SatoshiBig(balances.legacy, 'satoshi'),
+          segwit: new SatoshiBig(balances.segwit, 'satoshi'),
+          nativeSegwit: new SatoshiBig(balances.nativeSegwit, 'satoshi'),
+        };
         this.ledgerDataReady = true;
       })
       .catch((e) => {
@@ -241,7 +246,11 @@ export default class SendBitcoinLedger extends Vue {
   getTxFee({ amount, accountType }: {amount: number; accountType: string}) {
     ApiService.getTxFee(this.peginTxState.sessionId, amount, accountType)
       .then((txFee) => {
-        this.calculatedFees = txFee;
+        this.calculatedFees = {
+          slow: new SatoshiBig(txFee.slow, 'satoshi'),
+          average: new SatoshiBig(txFee.average, 'satoshi'),
+          fast: new SatoshiBig(txFee.fast, 'satoshi'),
+        };
       })
       .catch(console.error);
   }

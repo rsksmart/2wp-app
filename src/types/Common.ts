@@ -1,4 +1,5 @@
 import { Network } from 'bitcoinjs-lib';
+import SatoshiBig from '@/types/SatoshiBig';
 
 export interface Tx {
   coin: string;
@@ -38,28 +39,28 @@ export interface Signer {
 }
 
 export interface AccountBalance {
-  legacy: number;
-  segwit: number;
-  nativeSegwit: number;
+  legacy: SatoshiBig;
+  segwit: SatoshiBig;
+  nativeSegwit: SatoshiBig;
 }
 
 export interface FeeAmountData {
-  slow: number;
-  average: number;
-  fast: number;
+  slow: SatoshiBig;
+  average: SatoshiBig;
+  fast: SatoshiBig;
 }
 
 export interface TxData {
-  amount: number;
+  amount: SatoshiBig;
   refundAddress: string;
   recipient: string;
-  feeBTC: number;
+  feeBTC: SatoshiBig;
   change: string,
 }
 
 export interface PegInFormValues {
   accountType: string;
-  amount: number;
+  amount: SatoshiBig;
   rskAddress: string;
   txFeeIndex: number;
 }

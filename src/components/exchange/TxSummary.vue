@@ -110,7 +110,7 @@
                   </v-tooltip>
                 </v-row>
                 <v-row class="mx-0">
-                  <span class="breakable-address">{{ txData.refundAddress }}</span>
+                  <span class="breakable-address">{{ computedRefundAddress }}</span>
                 </v-row>
               </v-container>
               <template v-if="showTxId">
@@ -187,53 +187,56 @@ export default class TxSummary extends Vue {
 
   fixedUSDDecimals = 2;
 
-  get amount() {
-    return this.txData.amount ? this.satoshiToBtc(this.txData.amount).toString() : 'Not found';
+  VALUE_INCOMPLETE_MESSAGE = 'Not Found';
+
+  get amount(): string {
+    if (!this.txData.amount) return this.VALUE_INCOMPLETE_MESSAGE;
+    return this.txData.amount.toBTCString();
   }
 
-  get amountUSD() {
-    const amountUSD = Big(this.satoshiToBtc(this.txData.amount)).mul(Big(this.price));
-    return amountUSD ? amountUSD.toFixed(this.fixedUSDDecimals) : '0';
+  get amountUSD(): string {
+    if (!this.txData.amount || !this.price) return this.VALUE_INCOMPLETE_MESSAGE;
+    return this.txData.amount.toUSDFromBTCString(this.price, this.fixedUSDDecimals);
   }
 
   get fee() {
-    return this.txData.feeBTC ? Big(this.txData.feeBTC).toFixed(8) : 'Not found';
+    if (!this.txData.feeBTC) return this.VALUE_INCOMPLETE_MESSAGE;
+    return this.txData.feeBTC.toBTCString();
   }
 
   get feeUSD() {
-    const feeUSD = Big(this.txData.feeBTC).mul(Big(this.price));
-    return feeUSD ? feeUSD.toFixed(this.fixedUSDDecimals) : '0';
+    if (!this.txData.feeBTC || !this.price) return this.VALUE_INCOMPLETE_MESSAGE;
+    return this.txData.feeBTC.toUSDFromBTCString(this.price, this.fixedUSDDecimals);
   }
 
-  get feePlusAmount() {
-    const feePlusAmount = Big(this.satoshiToBtc(this.txData.amount)).plus(Big(this.txData.feeBTC));
-    return feePlusAmount ? feePlusAmount.toFixed(8) : 'Not found';
+  get feePlusAmount(): string {
+    if (!this.txData.amount || !this.txData.feeBTC) return this.VALUE_INCOMPLETE_MESSAGE;
+    return this.txData.amount.plus(this.txData.feeBTC).toBTCString();
   }
 
   get feePlusAmountUSD() {
-    const feePlusAmountUSD = Big(this.amountUSD).plus(Big(this.feeUSD));
-    return feePlusAmountUSD ? feePlusAmountUSD.toFixed(this.fixedUSDDecimals) : 0;
+    if (!this.txData.amount || !this.txData.feeBTC || !this.price) {
+      return this.VALUE_INCOMPLETE_MESSAGE;
+    }
+    return Big(this.amountUSD).plus(Big(this.feeUSD)).toFixed(this.fixedUSDDecimals);
   }
 
   get chunkedRecipientAddress() {
     return this.txData.recipient ? `${this.txData.recipient.substr(0, 25)}...${this
-      .txData.recipient.substr(38, 42)}` : 'Not found';
+      .txData.recipient.substr(38, 42)}` : this.VALUE_INCOMPLETE_MESSAGE;
   }
 
   get chunkedRefundAddress() {
     return this.txData.refundAddress ? `${this.txData.refundAddress.substr(0, 24)}...${this
-      .txData.refundAddress.substr(31, 35)}` : 'Not found';
+      .txData.refundAddress.substr(31, 35)}` : this.VALUE_INCOMPLETE_MESSAGE;
   }
 
   get computedTxId() {
-    return this.txIdValue ? `${this.txIdValue.substr(0, 24)}...${this.txIdValue.substr(60, 64)}` : 'Not found';
+    return this.txIdValue ? `${this.txIdValue.substr(0, 24)}...${this.txIdValue.substr(60, 64)}` : this.VALUE_INCOMPLETE_MESSAGE;
   }
 
-  @Emit()
-  // eslint-disable-next-line class-methods-use-this
-  satoshiToBtc(satoshis: number): number {
-    const btcs: Big = Big(satoshis.toString()).div(100_000_000);
-    return Number(btcs.toFixed(8));
+  get computedRefundAddress() {
+    return this.txData.refundAddress !== '' ? this.txData.refundAddress : this.VALUE_INCOMPLETE_MESSAGE;
   }
 
   @Emit()

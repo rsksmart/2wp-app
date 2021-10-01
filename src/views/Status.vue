@@ -173,6 +173,8 @@ import { PegStatus } from '@/store/constants';
 import ApiService from '@/services/ApiService';
 import { PeginStatus } from '@/store/types';
 import { PegInTxState } from '@/store/peginTx/types';
+import { TxData } from '@/types';
+import SatoshiBig from '@/types/SatoshiBig';
 
 @Component({
   components: {
@@ -180,7 +182,7 @@ import { PegInTxState } from '@/store/peginTx/types';
   },
 })
 export default class Status extends Vue {
-  txData = {};
+  txData?: TxData;
 
   txId = '';
 
@@ -312,10 +314,11 @@ export default class Status extends Vue {
   @Emit()
   setSummary() {
     this.txData = {
-      amount: this.pegInStatus.btc.amountTransferred * 100000000,
+      amount: new SatoshiBig(this.pegInStatus.btc.amountTransferred, 'btc'),
       refundAddress: this.pegInStatus.btc.refundAddress,
       recipient: this.pegInStatus.rsk.recipientAddress,
-      feeBTC: this.pegInStatus.btc.fees,
+      feeBTC: new SatoshiBig(this.pegInStatus.btc.fees, 'btc'),
+      change: '',
     };
   }
 

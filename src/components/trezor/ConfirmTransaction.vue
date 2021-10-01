@@ -78,7 +78,9 @@
           <fieldset class="confirmation-box px-10">
             <legend class="px-3 d-flex justify-center">See on Trezor</legend>
             <v-row class="mt-5 d-flex justify-center" >Confirm sending</v-row>
-            <v-row class="mt-5 d-flex justify-center" >Amount {{btcAmount}}</v-row>
+            <v-row class="mt-5 d-flex justify-center" >
+              Amount {{this.txData.amount.toBTCString()}}
+            </v-row>
             <v-row class="mt-5 d-flex justify-center" >
               <span class="d-none d-xl-block">
                 {{rskFederationAddress}}
@@ -114,7 +116,7 @@
           <fieldset class="confirmation-box px-10">
             <legend class="px-3 d-flex justify-center">See on Trezor</legend>
             <v-row class="mt-5 d-flex justify-center" >Really send amount</v-row>
-            <v-row class="mt-5 d-flex justify-center" >FEE {{txData.feeBTC}}</v-row>
+            <v-row class="mt-5 d-flex justify-center" >FEE {{txData.feeBTC.toBTCString()}}</v-row>
             <v-row class="mt-5 mb-3 d-flex justify-center" >Confirm</v-row>
           </fieldset>
         </v-row>
@@ -217,11 +219,6 @@ export default class ConfirmTransaction extends Vue {
 
   get changeAddress() {
     return this.txBuilder.changeAddress;
-  }
-
-  get btcAmount() {
-    const amount = new Big(this.txData.amount);
-    return amount.div(100_000_000).toFixed(8);
   }
 
   get changeAmount() {
