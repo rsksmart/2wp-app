@@ -56,7 +56,12 @@
             <legend class="px-3 d-flex justify-center">See on Trezor</legend>
             <v-row class="mt-5 d-flex justify-center" >
               <span>
-                Confirm OP_RETURN
+                Confirm
+              </span>
+            </v-row>
+            <v-row justify="center" class="mt-5">
+              <span>
+              OP_RETURN
               </span>
               <v-tooltip right>
                 <template v-slot:activator="{ on, attrs }">
@@ -68,6 +73,11 @@
                   The OP_RETURN is an output with information required for the RSK network.
                 </p>
               </v-tooltip>
+            </v-row>
+            <v-row justify="center">
+              <span class="breakable-address ">
+                {{ opReturnData }}
+              </span>
             </v-row>
             <v-row class="mt-5 mb-3 d-flex justify-center" >Confirm</v-row>
           </fieldset>
@@ -115,7 +125,8 @@
         <v-row class="mx-0 d-flex justify-center">
           <fieldset class="confirmation-box px-10">
             <legend class="px-3 d-flex justify-center">See on Trezor</legend>
-            <v-row class="mt-5 d-flex justify-center" >Really send amount</v-row>
+            <v-row class="mt-5 d-flex justify-center" >Really send</v-row>
+            <v-row class="mt-5 d-flex justify-center" >Amount {{computedFeePlusAmount}}</v-row>
             <v-row class="mt-5 d-flex justify-center" >FEE {{txData.feeBTC.toBTCString()}}</v-row>
             <v-row class="mt-5 mb-3 d-flex justify-center" >Confirm</v-row>
           </fieldset>
@@ -224,6 +235,17 @@ export default class ConfirmTransaction extends Vue {
   get changeAmount() {
     const amount = new Big(this.tx?.outputs[2]?.amount ?? 0);
     return amount.div(100_000_000).toFixed(8);
+  }
+
+  get computedFeePlusAmount(): string {
+    return this.txData.amount.plus(this.txData.feeBTC).toBTCString();
+  }
+
+  get opReturnData(): string {
+    const opReturnDataOutput = this.tx?.outputs[0] ?? { script_type: '' };
+    return opReturnDataOutput.script_type === 'PAYTOOPRETURN'
+      ? `${opReturnDataOutput.op_return_data.substr(0, 45)}...`
+      : 'No OP_RETURN data';
   }
 
   created() {
