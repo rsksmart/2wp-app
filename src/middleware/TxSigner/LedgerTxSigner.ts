@@ -24,4 +24,12 @@ export default class LedgerTxSigner extends TxSigner {
       }
     });
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  getRawTx(tx: Tx): string {
+    const coin = process.env.VUE_APP_COIN ?? constants.BTC_NETWORK_TESTNET;
+    const ledgerService = new LedgerService(coin);
+    const ledgerTx = tx as LedgerTx;
+    return ledgerService.getUnsignedRawTx(ledgerTx);
+  }
 }

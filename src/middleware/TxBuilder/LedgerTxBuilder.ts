@@ -64,6 +64,14 @@ export default class LedgerTxBuilder extends TxBuilder {
     });
   }
 
+  public getRawTx(): string {
+    let rawTx = 'rawTx';
+    if (this.tx) {
+      rawTx = this.signer.getRawTx(this.tx);
+    }
+    return rawTx;
+  }
+
   private static getInputs(normalizedInputs: NormalizedInput[]):
     Promise<{
     inputs: { tx: LedgerjsTransaction; outputIndex: number; publicKey: string; hex: string}[];

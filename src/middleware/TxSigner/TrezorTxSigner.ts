@@ -20,4 +20,9 @@ export default class TrezorTxSigner extends TxSigner {
         .catch(reject);
     });
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  getRawTx(tx: Tx): string {
+    return '';
+  }
 }
