@@ -1,5 +1,7 @@
 import TrezorService from '@/services/TrezorService';
-import { TrezorSignedTx, Tx } from '@/types';
+import {
+  TrezorSignedTx, TrezorTx, Tx,
+} from '@/types';
 import * as constants from '@/store/constants';
 import TxSigner from './TxSigner';
 
@@ -23,6 +25,9 @@ export default class TrezorTxSigner extends TxSigner {
 
   // eslint-disable-next-line class-methods-use-this
   getRawTx(tx: Tx): string {
-    return '';
+    const coin = process.env.VUE_APP_COIN ?? constants.BTC_NETWORK_TESTNET;
+    const ledgerService = new TrezorService(coin);
+    const trezorTx = tx as TrezorTx;
+    return ledgerService.getUnsignedRawTx(trezorTx);
   }
 }
