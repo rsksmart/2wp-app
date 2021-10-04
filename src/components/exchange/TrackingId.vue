@@ -11,8 +11,8 @@
         of the process
       </span>
     </v-row>
-    <v-row id="tx-id-box" class="mx-0">
-      <v-col offset-sm="0" sm="12" offset-md="2" md="8" offset-lg="3" lg="6" offset-xl="4" xl="4">
+    <v-row id="tx-id-box" justify="center" class="mx-0">
+      <v-col class="tracking-box">
         <div class="mx-0 box">
           <v-container>
             <v-row class="mx-0" justify="center">
