@@ -1,8 +1,8 @@
 <template>
-  <div class="exchange mb-12">
-    <div class="container mt-16 d-flex align-center">
-      <v-col class="mb-12 pb-12">
-        <v-row class="mx-0 mt-16 mb-5 d-flex justify-center">
+  <v-container fluid class="exchange">
+    <v-row justify="center" class="mx-0">
+      <v-col>
+        <v-row class="mx-0 mb-5 d-flex justify-center">
           <h2>Bridging BTC and RBTC</h2>
         </v-row>
         <template v-if="!BTC2RBTC">
@@ -132,8 +132,8 @@
           </template>
         </template>
       </v-col>
-    </div>
-  </div>
+    </v-row>
+  </v-container>
 </template>
 
 <script lang="ts">
