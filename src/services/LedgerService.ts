@@ -311,4 +311,24 @@ export default class LedgerService extends WalletService {
         .catch(reject);
     });
   }
+
+  public getUnsignedRawTx(tx: LedgerTx) : string {
+    const txBuilder = new bitcoin.TransactionBuilder(this.network);
+    tx.inputs.forEach((input) => {
+      const utxo = bitcoin.Transaction.fromHex(input.hex);
+      txBuilder.addInput(utxo.getHash(), input.outputIndex);
+    });
+    tx.outputs.forEach((normalizedOutput) => {
+      if (normalizedOutput.op_return_data) {
+        const buffer = Buffer.from(normalizedOutput.op_return_data, 'hex');
+        const script: bitcoin.Payment = bitcoin.payments.embed({ data: [buffer] });
+        if (script.output) {
+          txBuilder.addOutput(script.output, 0);
+        }
+      } else if (normalizedOutput.address) {
+        txBuilder.addOutput(normalizedOutput.address, Number(normalizedOutput.amount));
+      }
+    });
+    return txBuilder.buildIncomplete().toHex();
+  }
 }

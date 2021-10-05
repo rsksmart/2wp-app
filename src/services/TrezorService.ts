@@ -1,12 +1,18 @@
 import TrezorConnect, { GetAddress } from 'trezor-connect';
+import * as bitcoin from 'bitcoinjs-lib';
+import { Network } from 'bitcoinjs-lib';
 import { WalletAddress } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import { TrezorSignedTx, TrezorTx, Tx } from '@/types';
 import WalletService from '@/services/WalletService';
 
 export default class TrezorService extends WalletService {
+  private network: Network;
+
   constructor(coin: string) {
     super(coin);
+    this.network = coin === constants.BTC_NETWORK_MAINNET
+      ? bitcoin.networks.bitcoin : bitcoin.networks.testnet;
     TrezorConnect.manifest({
       email: process.env.VUE_APP_MANIFEST_EMAIL ?? '',
       appUrl: process.env.VUE_APP_MANIFEST_APP_URL ?? '',
@@ -123,5 +129,24 @@ export default class TrezorService extends WalletService {
         })
         .catch(reject);
     });
+  }
+
+  getUnsignedRawTx(tx: TrezorTx) :string {
+    const txBuilder = new bitcoin.TransactionBuilder(this.network);
+    tx.inputs.forEach((input) => {
+      txBuilder.addInput(input.prev_hash, input.prev_index);
+    });
+    tx.outputs.forEach((normalizedOutput) => {
+      if (normalizedOutput.script_type === 'PAYTOOPRETURN') {
+        const buffer = Buffer.from(normalizedOutput.op_return_data, 'hex');
+        const script: bitcoin.Payment = bitcoin.payments.embed({ data: [buffer] });
+        if (script.output) {
+          txBuilder.addOutput(script.output, 0);
+        }
+      } else if (normalizedOutput.address) {
+        txBuilder.addOutput(normalizedOutput.address, Number(normalizedOutput.amount));
+      }
+    });
+    return txBuilder.buildIncomplete().toHex();
   }
 }

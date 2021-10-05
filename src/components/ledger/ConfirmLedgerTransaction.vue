@@ -129,6 +129,9 @@
       <tx-summary :txData="txData" :price="price" :showTxId="false" :initial-expand="true"
                   :rskFederationAddress="rskFederationAddress"/>
     </v-row>
+    <v-row class="mx-0 my-8">
+      <advanced-data :rawTx="rawTx" :initial-expand="true"/>
+    </v-row>
     <v-row class="ma-0 d-flex justify-center">
       <v-col cols="4" class="ma-0 d-flex align-center">
         <v-col cols="6" class="d-flex justify-center ma-0 pa-0">
@@ -174,12 +177,14 @@ import TxSummary from '@/components/exchange/TxSummary.vue';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
 import ApiService from '@/services/ApiService';
 import UnverifiedInputsDialog from '@/components/ledger/UnverifiedInputsDialog.vue';
+import AdvancedData from '@/components/exchange/AdvancedData.vue';
 import * as constants from '@/store/constants';
 
 @Component({
   components: {
     TxSummary,
     UnverifiedInputsDialog,
+    AdvancedData,
   },
 })
 export default class ConfirmLedgerTransaction extends Vue {
@@ -190,6 +195,8 @@ export default class ConfirmLedgerTransaction extends Vue {
   confirmTxState: ConfirmTxState = 'idle';
 
   rskFederationAddress = '';
+
+  rawTx = '';
 
   @Prop() tx!: TrezorTx;
 
@@ -247,6 +254,7 @@ export default class ConfirmLedgerTransaction extends Vue {
 
   created() {
     this.rskFederationAddress = this.tx?.outputs[1]?.address?.trim() ?? 'RSK POWpeg address not found';
+    this.rawTx = this.txBuilder.getRawTx();
   }
 }
 </script>
