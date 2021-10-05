@@ -4,6 +4,13 @@ import * as constants from '@/store/constants';
 import TxSigner from './TxSigner';
 
 export default class LedgerTxSigner extends TxSigner {
+  private ledgerService: LedgerService;
+
+  constructor() {
+    super();
+    this.ledgerService = new LedgerService(this.coin);
+  }
+
   // eslint-disable-next-line class-methods-use-this,@typescript-eslint/no-unused-vars
   sign(tx: Tx): Promise<LedgerSignedTx> {
     const ledgerTx = tx as LedgerTx;
@@ -27,9 +34,7 @@ export default class LedgerTxSigner extends TxSigner {
 
   // eslint-disable-next-line class-methods-use-this
   getRawTx(tx: Tx): string {
-    const coin = process.env.VUE_APP_COIN ?? constants.BTC_NETWORK_TESTNET;
-    const ledgerService = new LedgerService(coin);
     const ledgerTx = tx as LedgerTx;
-    return ledgerService.getUnsignedRawTx(ledgerTx);
+    return this.ledgerService.getUnsignedRawTx(ledgerTx);
   }
 }

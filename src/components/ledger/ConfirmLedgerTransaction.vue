@@ -144,7 +144,7 @@
           <v-btn v-if="confirmTxState === 'idle' || confirmTxState === 'error'"
                  rounded color="#00B520" width="110" @click="toTrackId"
                  :disabled="confirmTxState === 'error'">
-            <span>Sign</span>
+            <span class="whiteish">Sign</span>
           </v-btn>
         </v-col>
       </v-col>
