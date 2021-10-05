@@ -1,12 +1,12 @@
 <template>
-  <v-container fluid class="pa-0 mx-0 mb-12 d-flex align-center">
-    <v-col class="my-12 py-12">
+  <v-container fluid class="px-0 mx-0 normalized-height">
+    <v-col>
       <v-container class="transactions">
-        <v-row class="mx-0 my-10 d-flex justify-center">
+        <v-row class="mx-0 mb-5 d-flex justify-center">
           <h1 class="text-center">Transaction Status</h1>
         </v-row>
         <v-row class="mx-0 mt-10 mb-8" justify="center">
-          <p>Enter your Bitcoin transaction hash in the textbox below
+          <p class="subtitle">Enter your Bitcoin transaction hash in the textbox below
             to check the status of your operation</p>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">

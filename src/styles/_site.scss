@@ -137,3 +137,14 @@ a {
 .ligth-grayish {
   color: #F5FAFF !important;
 }
+
+.normalized-height {
+  min-height: 40vh;
+
+  @media screen and (max-height: 1440px) {
+      min-height: 50vh;
+  }
+  @media screen and (max-height: 720px) {
+      min-height: 60vh;
+  }
+}
