@@ -508,7 +508,7 @@ export default class SendBitcoinForm extends Vue {
       return 'The typed amount, along with the transaction fee, is higher than your current balance';
     }
     if (feePlusAmount.gt(maxValue)) {
-      return `The maximum amount currently allowed by this tool is ${maxValue.toBTCString()} BTC`;
+      return `The maximum amount currently allowed by this tool is ${maxValue.toBTCTrimmedString()} BTC`;
     }
     return 'Invalid format';
   }
