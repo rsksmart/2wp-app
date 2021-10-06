@@ -1,7 +1,6 @@
 <template>
-  <v-app-bar color="#fff" elevation="1" class="px-0">
-    <v-container fluid class="mx-0 px-0">
-      <v-col offset="1" cols="10" offset-xl="2" xl="8" class="px-0">
+  <v-app-bar color="#fff" elevation="1" class="px-12">
+      <v-col offset="1" cols="10" offset-xl="2" xl="8" class="px-12">
         <v-row class="top mx-0" >
           <v-col cols="2" class="d-flex justify-start align-center pl-0">
             <v-img @click="toExchange" position="center left" src="@/assets/rsk.png"
@@ -26,7 +25,6 @@
           </v-col>
         </v-row>
       </v-col>
-    </v-container>
   </v-app-bar>
 </template>
 

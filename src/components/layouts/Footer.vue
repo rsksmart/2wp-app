@@ -1,7 +1,7 @@
 <template>
   <div class="footer-rsk mt-12">
-    <v-footer padless color="black" class="pt-7">
-      <v-col cols="10" offset="1" xl="8" offset-xl="2" class="container">
+    <v-footer padless color="black" class="pt-7 px-12">
+      <v-col cols="10" offset="1" xl="8" offset-xl="2" class="container px-12">
         <v-row class="d-flex justify-start px-0 mx-0">
           <v-col cols="3" class="mx-0 px-0" >
             <v-img src="https://www.rsk.co/img/powered_by_iov.svg" height="20" width="250" contain/>
@@ -31,30 +31,7 @@
               <a href="https://github.com/rsksmart/2wp-app"
                  target="_blank"
                  rel="nofollow noopener noreferrer">
-                <p>
-                  How to use it ?
-                </p>
-              </a>
-            </v-row>
-            <v-row>
-              <a href="https://github.com/rsksmart/2wp-app"
-                 target="_blank"
-                 rel="nofollow noopener noreferrer">
-                <p>FAQ</p>
-              </a>
-            </v-row>
-            <v-row>
-              <a href="https://github.com/rsksmart/2wp-app"
-                 target="_blank"
-                 rel="nofollow noopener noreferrer">
                 <p>Repository</p>
-              </a>
-            </v-row>
-            <v-row>
-              <a href="https://github.com/rsksmart/2wp-app"
-                 target="_blank"
-                 rel="nofollow noopener noreferrer">
-                <p>Get RBTC</p>
               </a>
             </v-row>
             <v-row>
