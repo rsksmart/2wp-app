@@ -9,8 +9,7 @@
           <v-row class="mx-0 mt-10 d-flex justify-center">
             <p>Select your token conversion</p>
           </v-row>
-          <v-row class="ma-0 d-flex justify-center">
-            <v-col/>
+          <v-row justify="center" class="ma-0">
             <v-col cols="4" class="d-flex justify-end">
               <v-btn class="wallet-button" @click="showBitcoinWallets"
                      v-bind:class="{ selected: BTC2RBTC }">
@@ -60,15 +59,14 @@
                 </div>
               </v-btn>
             </v-col>
-            <v-col/>
           </v-row>
         </template>
         <template v-if="showWallet">
           <v-row class="mx-0 mt-10 d-flex justify-center">
             <p class="text-center">Select your Bitcoin wallet</p>
           </v-row>
-          <v-row class="ma-0">
-            <v-col offset="3" cols="3" offset-xl="4" xl="2" class="d-flex justify-center">
+          <v-row justify="center" class="ma-0">
+            <v-col cols="4" class="d-flex justify-end px-12">
               <v-btn outlined class="wallet-button-thin"
                      @click="setBitcoinWallet(storeConstants.WALLET_LEDGER)"
                      v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_LEDGER }">
@@ -76,7 +74,7 @@
                 <span class="wallet-button-content">Ledger</span>
               </v-btn>
             </v-col>
-            <v-col cols="3" xl="2" class="d-flex justify-center">
+            <v-col cols="4" class="d-flex justify-start px-12">
               <v-btn outlined class="wallet-button-thin"
                      @click="setBitcoinWallet(storeConstants.WALLET_TREZOR)"
                      v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_TREZOR }">
