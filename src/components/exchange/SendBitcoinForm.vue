@@ -501,14 +501,14 @@ export default class SendBitcoinForm extends Vue {
     if (!this.isBTCAmountValidNumberRegex) {
       return 'Invalid format, neither letters, big amounts nor more than 8 decimals are allowed';
     }
-    if (feePlusAmount.lt(minValue)) {
+    if (this.safeAmount.lt(minValue)) {
       return `You can not send this amount of BTC. You can only send a minimum of ${minValue.toBTCTrimmedString()} BTC`;
     }
     if (feePlusAmount.gte(this.selectedAccountBalance)) {
       return 'The typed amount, along with the transaction fee, is higher than your current balance';
     }
-    if (feePlusAmount.gt(maxValue)) {
-      return `The maximum amount currently allowed by this tool is ${maxValue.toBTCString()} BTC`;
+    if (this.safeAmount.gt(maxValue)) {
+      return `The maximum amount currently allowed by this tool is ${maxValue.toBTCTrimmedString()} BTC`;
     }
     return 'Invalid format';
   }
@@ -642,8 +642,8 @@ export default class SendBitcoinForm extends Vue {
     const maxValue: SatoshiBig = new SatoshiBig(this.peginTxState.peginConfiguration.maxValue, 'satoshi');
     if (this.safeAmount.lte('0')
       || feePlusAmount.gt(this.selectedAccountBalance)
-      || feePlusAmount.lt(minValue)
-      || feePlusAmount.gt(maxValue)) {
+      || this.safeAmount.lt(minValue)
+      || this.safeAmount.gt(maxValue)) {
       return true;
     }
     if (this.safeAmount.gt('0') && feePlusAmount.lte(this.selectedAccountBalance)) {
