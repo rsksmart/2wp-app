@@ -55,14 +55,14 @@
           <fieldset class="confirmation-box px-10">
             <legend class="px-3 d-flex justify-center">See on Ledger</legend>
             <v-row class="mt-5 d-flex justify-center" >Review output #1</v-row>
-            <v-row class="mt-5 d-flex justify-center" >AMOUNT 0</v-row>
-            <v-row class="mt-5 d-flex justify-center" >
+            <v-row class="mt-5 d-flex justify-center" >Amount: 0</v-row>
+            <v-row justify="center" align="start" class="mt-5" >
               <span>
-                Address: OP_RETURN
+                OP_RETURN
               </span>
               <v-tooltip right>
                 <template v-slot:activator="{ on, attrs }">
-                  <v-icon small color="black" v-bind="attrs" v-on="on" class="ml-2 pb-2">
+                  <v-icon small color="black" v-bind="attrs" v-on="on" class="ml-2">
                     mdi-information
                   </v-icon>
                 </template>
@@ -81,7 +81,7 @@
             <legend class="px-3 d-flex justify-center">See on Ledger</legend>
             <v-row class="mt-5 d-flex justify-center" >Review output #2</v-row>
             <v-row class="mt-5 d-flex justify-center" >
-              AMOUNT {{txData.amount.toBTCString()}}
+              Amount: {{txData.amount.toBTCTrimmedString()}}
             </v-row>
             <v-row class="mt-5 d-flex justify-center">
               <span class="d-none d-xl-block">
@@ -100,7 +100,7 @@
           <fieldset class="confirmation-box px-10">
             <legend class="px-3 d-flex justify-center">See on Ledger</legend>
             <v-row class="mt-5 d-flex justify-center" >Review output #3</v-row>
-            <v-row class="mt-5 d-flex justify-center" >Amount {{changeAmount}}</v-row>
+            <v-row class="mt-5 d-flex justify-center" >Amount: {{changeAmount}}</v-row>
             <v-row class="mt-5 d-flex justify-center" >
               <span class="d-none d-xl-block">
                 {{changeAddress}}
@@ -118,7 +118,9 @@
           <fieldset class="confirmation-box px-10">
             <legend class="px-3 d-flex justify-center">See on Ledger</legend>
             <v-row class="mt-5 d-flex justify-center" >Confirm Transaction</v-row>
-            <v-row class="mt-5 d-flex justify-center" >FEE {{txData.feeBTC.toBTCString()}}</v-row>
+            <v-row class="mt-5 d-flex justify-center" >
+              Fee: {{txData.feeBTC.toBTCTrimmedString()}}
+            </v-row>
             <v-row class="mt-5 mb-3 d-flex justify-center" >Accept</v-row>
           </fieldset>
         </v-row>
@@ -171,7 +173,6 @@ import {
   Vue,
 } from 'vue-property-decorator';
 import { Getter } from 'vuex-class';
-import Big from 'big.js';
 import { ConfirmTxState, TrezorTx, TxData } from '@/types';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
@@ -179,6 +180,7 @@ import ApiService from '@/services/ApiService';
 import UnverifiedInputsDialog from '@/components/ledger/UnverifiedInputsDialog.vue';
 import AdvancedData from '@/components/exchange/AdvancedData.vue';
 import * as constants from '@/store/constants';
+import SatoshiBig from '@/types/SatoshiBig';
 
 @Component({
   components: {
@@ -248,8 +250,8 @@ export default class ConfirmLedgerTransaction extends Vue {
   }
 
   get changeAmount() {
-    const amount = new Big(this.tx?.outputs[2]?.amount ?? 0);
-    return amount.div(100_000_000).toFixed(8);
+    const amount = new SatoshiBig(this.tx?.outputs[2]?.amount ?? 0, 'satoshi');
+    return amount.toBTCTrimmedString();
   }
 
   created() {
