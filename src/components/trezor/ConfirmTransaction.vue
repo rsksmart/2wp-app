@@ -89,7 +89,7 @@
             <legend class="px-3 d-flex justify-center">See on Trezor</legend>
             <v-row class="mt-5 d-flex justify-center" >Confirm sending</v-row>
             <v-row class="mt-5 d-flex justify-center" >
-              Amount {{this.txData.amount.toBTCString()}}
+              Amount: {{this.txData.amount.toBTCTrimmedString()}}
             </v-row>
             <v-row class="mt-5 d-flex justify-center" >
               <span class="d-none d-xl-block">
@@ -108,7 +108,7 @@
           <fieldset class="confirmation-box px-10">
             <legend class="px-3 d-flex justify-center">See on Trezor</legend>
             <v-row class="mt-5 d-flex justify-center" >Confirm sending</v-row>
-            <v-row class="mt-5 d-flex justify-center" >Amount {{changeAmount}}</v-row>
+            <v-row class="mt-5 d-flex justify-center" >Amount: {{changeAmount}}</v-row>
             <v-row class="mt-5 d-flex justify-center" >
               <span class="d-none d-xl-block">
                 {{changeAddress}}
@@ -126,8 +126,10 @@
           <fieldset class="confirmation-box px-10">
             <legend class="px-3 d-flex justify-center">See on Trezor</legend>
             <v-row class="mt-5 d-flex justify-center" >Really send</v-row>
-            <v-row class="mt-5 d-flex justify-center" >Amount {{computedFeePlusAmount}}</v-row>
-            <v-row class="mt-5 d-flex justify-center" >FEE {{txData.feeBTC.toBTCString()}}</v-row>
+            <v-row class="mt-5 d-flex justify-center" >Amount: {{computedFullAmount}}</v-row>
+            <v-row class="mt-5 d-flex justify-center" >
+              Fee: {{txData.feeBTC.toBTCTrimmedString()}}
+            </v-row>
             <v-row class="mt-5 mb-3 d-flex justify-center" >Confirm</v-row>
           </fieldset>
         </v-row>
@@ -173,11 +175,11 @@ import {
   Component, Emit, Prop,
   Vue,
 } from 'vue-property-decorator';
-import Big from 'big.js';
 import TrezorTxBuilder from '@/middleware/TxBuilder/TrezorTxBuilder';
 import { ConfirmTxState, TrezorTx, TxData } from '@/types';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import ApiService from '@/services/ApiService';
+import SatoshiBig from '@/types/SatoshiBig';
 
 @Component({
   components: {
@@ -232,13 +234,14 @@ export default class ConfirmTransaction extends Vue {
     return this.txBuilder.changeAddress;
   }
 
-  get changeAmount() {
-    const amount = new Big(this.tx?.outputs[2]?.amount ?? 0);
-    return amount.div(100_000_000).toFixed(8);
+  get changeAmount(): string {
+    const amount = new SatoshiBig(this.tx?.outputs[2]?.amount ?? 0, 'satoshi');
+    return amount.toBTCTrimmedString();
   }
 
-  get computedFeePlusAmount(): string {
-    return this.txData.amount.plus(this.txData.feeBTC).toBTCString();
+  get computedFullAmount(): string {
+    const changeAmount = new SatoshiBig(this.tx?.outputs[2]?.amount ?? 0, 'satoshi');
+    return this.txData.amount.plus(this.txData.feeBTC).plus(changeAmount).toBTCTrimmedString();
   }
 
   get opReturnData(): string {
