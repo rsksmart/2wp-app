@@ -1,7 +1,7 @@
 <template>
-  <v-col offset="1" cols="10" offset-xl="2" xl="8" class="exchange-form px-0">
+  <v-col class="exchange-form px-0">
     <v-row class="mx-0">
-      <v-col cols="1" class="pa-0 pl-4 d-flex align-center">
+      <v-col cols="1" class="pa-0 d-flex align-center">
         <v-img position="center left"
                src="@/assets/exchange/arrow.png" height="40" contain/>
       </v-col>
@@ -10,8 +10,8 @@
       </v-col>
     </v-row>
     <v-row class="mx-0 mt-2">
-      <v-col id="options-col" cols="8" lg="7" class="pr-0">
-        <v-container id="option-1">
+      <v-col id="options-col" cols="8" lg="7" class="pa-0">
+        <div id="option-1" class="py-4">
           <v-row align="start" class="mx-0">
             <v-col cols="auto" class="pl-0">
               <div v-bind:class="[pegInFormState.matches(['first']) ?
@@ -61,9 +61,9 @@
               </v-row>
             </v-col>
           </v-row>
-        </v-container>
+        </div>
         <v-divider color="#C4C4C4"/>
-        <v-container id="option-2">
+        <div id="option-2" class="py-4">
           <v-row align="start" class="mx-0">
             <v-col cols="auto" class="pl-0">
               <div v-bind:class="[pegInFormState.matches(['second']) ?
@@ -122,9 +122,9 @@
               </v-row>
             </v-col>
           </v-row>
-        </v-container>
+        </div>
         <v-divider class="ml-6 mx-3" color="#C4C4C4"/>
-        <v-container id="option-3">
+        <div id="option-3" class="py-4">
           <v-row align="start" class="mx-0">
             <v-col cols="auto" class="pl-0">
               <div v-bind:class="[pegInFormState.matches(['third']) ?
@@ -197,9 +197,9 @@
             </v-col>
             <v-icon color="#C4C4C4">mdi-info-outlined</v-icon>
           </v-row>
-        </v-container>
+        </div>
         <v-divider class="mx-3" color="#C4C4C4"/>
-        <v-container id="option-4">
+        <div id="option-4" class="py-4">
           <v-row align="start" class="mx-0">
             <v-col cols="auto" class="pl-0">
               <div v-bind:class="[pegInFormState.matches(['fourth']) ?
@@ -243,7 +243,7 @@
               </v-row>
             </v-col>
           </v-row>
-        </v-container>
+        </div>
       </v-col>
       <v-col id="summary-col" cols="4" lg="5">
         <v-col cols="12" offset-xl="1" xl="11" class="pa-0">
