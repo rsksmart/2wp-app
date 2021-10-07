@@ -2,9 +2,9 @@
   <v-app-bar color="#fff" elevation="1" class="px-12">
       <v-col offset="1" cols="10" offset-xl="2" xl="8" class="px-12">
         <v-row class="top mx-0" >
-          <v-col cols="2" class="d-flex justify-start align-center pl-0">
+          <v-col cols="2" class="pl-0">
             <v-img @click="toExchange" position="center left" src="@/assets/rsk.png"
-                   height="40" width="120" contain/>
+                   height="58" width="120" contain class="rsk-main-logo"/>
           </v-col>
           <v-col cols="8" class="d-flex justify-start align-center">
             <v-col cols="6" md="3" lg="4">
