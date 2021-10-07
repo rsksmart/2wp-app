@@ -60,6 +60,29 @@
               </v-btn>
             </v-col>
           </v-row>
+          <v-row class="d-flex justify-center">
+            <v-btn class="wallet-button" @click="toPegInStatus"
+                   v-bind:class="{ selected: BTC2RBTC }">
+              <div>
+                <v-row class="mx-0 d-flex justify-center">
+                  <v-col/>
+                  <v-col class="pa-0 d-flex align-center">
+                    <v-img src="@/assets/exchange/btc.png" height="40" contain/>
+                  </v-col>
+                  <v-col class="pa-0 d-flex align-center mx-3">
+                    <v-icon class="wallet-button-content" >fas fa-thermometer-half</v-icon>
+                  </v-col>
+                  <v-col class="pa-0 d-flex align-center">
+                    <v-img src="@/assets/exchange/rbtc.png" height="40" contain/>
+                  </v-col>
+                  <v-col/>
+                </v-row>
+                <v-row class="mx-0 d-flex justify-center">
+                  <span class="wallet-button-content">Status</span>
+                </v-row>
+              </div>
+            </v-btn>
+          </v-row>
         </template>
         <template v-if="showWallet">
           <v-row class="mx-0 mt-10 d-flex justify-center">
@@ -174,6 +197,11 @@ export default class SelectBitcoinWallet extends Vue {
   showMoreBitcoinWallets(): void {
     this.showMoreWallets = !this.showMoreWallets;
     if (this.showMoreWallets) this.$vuetify.goTo(document.body.scrollHeight);
+  }
+
+  @Emit()
+  toPegInStatus(): void {
+    if (this.$route.path !== '/status') this.$router.push('/status');
   }
 
   @Emit()
