@@ -144,7 +144,10 @@ a {
   @media screen and (max-height: 1440px) {
       min-height: 50vh;
   }
+  @media screen and (max-height: 1080px) {
+      min-height: 65vh;
+  }
   @media screen and (max-height: 720px) {
-      min-height: 60vh;
+      min-height: 75vh;
   }
 }
