@@ -60,6 +60,9 @@
               </v-btn>
             </v-col>
           </v-row>
+          <v-row class="mx-0 mt-10 d-flex justify-center">
+            <p>Or check the status of your transaction</p>
+          </v-row>
           <v-row class="d-flex justify-center">
             <v-btn class="wallet-button" @click="toPegInStatus"
                    v-bind:class="{ selected: BTC2RBTC }">
@@ -70,7 +73,7 @@
                     <v-img src="@/assets/exchange/btc.png" height="40" contain/>
                   </v-col>
                   <v-col class="pa-0 d-flex align-center mx-3">
-                    <v-icon class="wallet-button-content" >fas fa-thermometer-half</v-icon>
+                    <v-img src="@/assets/status/status-icon.png" height="40" contain/>
                   </v-col>
                   <v-col class="pa-0 d-flex align-center">
                     <v-img src="@/assets/exchange/rbtc.png" height="40" contain/>
@@ -78,7 +81,7 @@
                   <v-col/>
                 </v-row>
                 <v-row class="mx-0 d-flex justify-center">
-                  <span class="wallet-button-content">Status</span>
+                  <span class="wallet-button-content">BTC to RBTC status</span>
                 </v-row>
               </div>
             </v-btn>

@@ -1,5 +1,5 @@
 <template>
-  <div class="transactions container">
+  <div class="transactions">
     <v-row class="mx-0 d-flex justify-center">
       <v-col cols="10" lg="8" xl="6" class="d-flex justify-center">
         <h1 class="text-center">Confirm transaction on your device</h1>
@@ -16,7 +16,7 @@
       </p>
     </v-row>
     <v-row id="instructions-ledger" justify="center" class="mx-0">
-      <v-col id="instruction-1" cols="3" xl="2">
+      <v-col id="instruction-1" cols="3" xl="3">
         <v-row justify="center" class="mx-0">
           <v-img src="@/assets/exchange/trezor/rsk.png" height="40" contain/>
         </v-row>
@@ -40,7 +40,7 @@
           <h4 class="text-center"><span class="number">3</span>Confirm change address</h4>
         </v-row>
       </v-col>
-      <v-col id="instruction-4" cols="3" xl="2">
+      <v-col id="instruction-4" cols="3" xl="3">
         <v-row justify="center" class="mx-0">
           <v-img src="@/assets/exchange/trezor/fee.png" height="40" contain/>
         </v-row>
@@ -50,7 +50,7 @@
       </v-col>
     </v-row>
     <v-row justify="center" class="mx-0">
-      <v-col cols="3" xl="2" class="px-lg-10" >
+      <v-col cols="3" xl="3" class="px-lg-10" >
         <v-row class="mx-0 d-flex justify-center">
           <fieldset class="confirmation-box px-10">
             <legend class="px-3 d-flex justify-center">See on Ledger</legend>
@@ -84,10 +84,7 @@
               Amount: {{txData.amount.toBTCTrimmedString()}}
             </v-row>
             <v-row class="mt-5 d-flex justify-center">
-              <span class="d-none d-xl-block">
-                {{rskFederationAddress}}
-              </span>
-              <span class="d-xl-none">
+              <span>
                 {{cropAddress(rskFederationAddress)}}
               </span>
             </v-row>
@@ -102,10 +99,7 @@
             <v-row class="mt-5 d-flex justify-center" >Review output #3</v-row>
             <v-row class="mt-5 d-flex justify-center" >Amount: {{changeAmount}}</v-row>
             <v-row class="mt-5 d-flex justify-center" >
-              <span class="d-none d-xl-block">
-                {{changeAddress}}
-              </span>
-              <span class="d-xl-none">
+              <span>
               {{cropAddress(changeAddress)}}
               </span>
             </v-row>
@@ -113,7 +107,7 @@
           </fieldset>
         </v-row>
       </v-col>
-      <v-col cols="3" xl="2" class="px-lg-10" >
+      <v-col cols="3" xl="3" class="px-lg-10" >
         <v-row class="mx-0 d-flex justify-center">
           <fieldset class="confirmation-box px-10">
             <legend class="px-3 d-flex justify-center">See on Ledger</legend>
