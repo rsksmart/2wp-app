@@ -26,7 +26,7 @@
               </v-col>
               <v-col cols="2" class="d-flex flex-column align-end">
                 <v-btn icon @click="copyTxId">
-                  <v-img src="@/assets/wallet-icons/copy.png" height="24" contain/>
+                  <v-img src="@/assets/wallet-icons/copy.png" height="24" width="22" contain/>
                 </v-btn>
               </v-col>
             </v-row>
@@ -44,7 +44,7 @@
               </v-col>
               <v-col cols="2" class="d-flex justify-end">
                 <v-btn icon @click="copyUrl">
-                  <v-img src="@/assets/wallet-icons/copy.png" height="24" contain/>
+                  <v-img src="@/assets/wallet-icons/copy.png" height="24" width="22" contain/>
                 </v-btn>
               </v-col>
             </v-row>
