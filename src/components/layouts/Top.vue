@@ -3,8 +3,8 @@
       <v-col offset="1" cols="10" offset-xl="2" xl="8" class="px-12">
         <v-row class="top mx-0" >
           <v-col cols="2" class="pl-0">
-            <v-img @click="toExchange" position="center left" src="@/assets/rsk.png"
-                   height="58" width="120" contain class="rsk-main-logo"/>
+            <v-img @click="toExchange" position="center left" src="@/assets/logo-beta.png"
+                   height="60" contain class="rsk-main-logo"/>
           </v-col>
           <v-col cols="8" class="d-flex justify-start align-center">
             <v-col cols="6" md="3" lg="4">
@@ -19,9 +19,9 @@
             </v-col>
           </v-col>
           <v-col cols="2" class="d-flex justify-end align-center pr-0">
-            <p v-if="false">
-              English▿
-            </p>
+            <v-btn v-if="inStatus" @click="toExchange" color="#00B520" class="whiteish" rounded>
+              Create new transaction
+            </v-btn>
           </v-col>
         </v-row>
       </v-col>
@@ -33,6 +33,10 @@ import { Vue, Component, Emit } from 'vue-property-decorator';
 
 @Component
 export default class Top extends Vue {
+  get inStatus(): boolean {
+    return this.$route.path === '/status';
+  }
+
   @Emit()
   toExchange() {
     if (this.$router.currentRoute.name === 'Exchange') this.$router.go(0);
