@@ -1,9 +1,9 @@
 <template>
   <v-row class="mx-0 d-flex justify-center">
-    <v-col sm="8"
-            md="7"
-           lg="6"
-           xl="4">
+    <v-col sm="10"
+            md="9"
+           lg="8"
+           xl="7">
       <v-row justify="center" class="mx-0 pb-4">
         <h2 class="text-center tx-text">Transaction summary:</h2>
       </v-row>
