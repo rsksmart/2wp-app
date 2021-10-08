@@ -4,7 +4,8 @@
         <v-row class="top mx-0" >
           <v-col cols="2" class="pl-0">
             <v-img @click="toExchange" position="center left"
-                   src="@/assets/logo-beta.png"
+                   src="https://developers.rsk.co/assets/img/rsk_logo.svg"
+                   alt="RSK Two Way Peg"
                    height="60" contain class="rsk-main-logo"/>
           </v-col>
           <v-col class="d-flex justify-end align-center pr-0">
