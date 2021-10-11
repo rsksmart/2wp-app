@@ -24,7 +24,7 @@ import { Vue, Component, Emit } from 'vue-property-decorator';
 @Component
 export default class Top extends Vue {
   get inStatus(): boolean {
-    return this.$route.path === '/status';
+    return this.$route.name === 'Status' || this.$route.name === 'StatusSearch';
   }
 
   @Emit()
