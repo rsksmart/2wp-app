@@ -126,7 +126,7 @@
                   :rskFederationAddress="rskFederationAddress"/>
     </v-row>
     <v-row class="mx-0 my-8">
-      <advanced-data :rawTx="rawTx" :initial-expand="true"/>
+      <advanced-data :rawTx="rawTx" :initial-expand="false"/>
     </v-row>
     <v-row class="ma-0 d-flex justify-center">
       <v-col cols="4" class="ma-0 d-flex align-center">
