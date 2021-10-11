@@ -1,7 +1,7 @@
 <template>
   <v-app style="z-index: 0 !important;" class="d-flex">
-    <mobile v-if="$vuetify.breakpoint.smAndDown" />
-    <div v-else class="custom-background">
+    <mobile />
+    <div class="custom-background">
       <top/>
       <router-view @bitcoinWallet="getBitcoinWallet"/>
       <footer-rsk/>
