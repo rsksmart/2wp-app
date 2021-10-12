@@ -140,6 +140,9 @@
       <tx-summary :txData="txData" :price="price" :showTxId="false" :initial-expand="true"
                   :rskFederationAddress="rskFederationAddress"/>
     </v-row>
+    <v-row class="mx-0 my-8">
+      <advanced-data :rawTx="rawTx" :initial-expand="false"/>
+    </v-row>
     <v-row class="ma-0 d-flex justify-center">
       <v-col cols="4" class="ma-0 d-flex align-center">
         <v-col cols="6" class="d-flex justify-center ma-0 pa-0">
@@ -180,10 +183,12 @@ import { ConfirmTxState, TrezorTx, TxData } from '@/types';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import ApiService from '@/services/ApiService';
 import SatoshiBig from '@/types/SatoshiBig';
+import AdvancedData from '@/components/exchange/AdvancedData.vue';
 
 @Component({
   components: {
     TxSummary,
+    AdvancedData,
   },
 })
 export default class ConfirmTransaction extends Vue {

@@ -25,8 +25,8 @@
               <span>Start now</span>
             </v-btn>
           </v-col>
-          <v-col cols="3" ></v-col>
-          <v-col cols="3" class="footer-info">
+          <v-col cols="3" md="2" ></v-col>
+          <v-col cols="3" md="4" class="footer-info">
             <v-row>
               <a href="https://github.com/rsksmart/2wp-app"
                  target="_blank"
