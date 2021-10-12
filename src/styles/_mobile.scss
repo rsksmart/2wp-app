@@ -1,4 +1,20 @@
 .mobile {
+  position: absolute;
+  z-index: 10;
+  height: 100vh;
+  background-color: white;
+  overflow: auto;
+
+  .mobile-content {
+    padding-top: 10%;
+    @media screen and (max-width: 600px) {
+      padding-top: 20%;
+    }
+    @media screen and (max-width: 425px) {
+      padding-top: 30%;
+    }
+  }
+
   .title-warning-sm h1 {
     font-family: Quicksand;
     font-style: normal;

@@ -151,3 +151,10 @@ a {
       min-height: 75vh;
   }
 }
+
+body {
+  @media screen and (max-width: 960px) {
+    height: 100vh;
+    overflow: hidden;
+  }
+}
