@@ -10,8 +10,8 @@
             <p>Select your token conversion</p>
           </v-row>
           <v-row justify="center" class="ma-0">
-            <v-col cols="4" class="d-flex justify-end">
-              <v-btn class="wallet-button" @click="showBitcoinWallets"
+            <v-col cols="4" class="d-flex justify-end pb-0">
+              <v-btn class="wallet-button mb-0" @click="showBitcoinWallets"
                      v-bind:class="{ selected: BTC2RBTC }">
                 <div>
                   <v-row class="mx-0 d-flex justify-center">
@@ -33,8 +33,8 @@
                 </div>
               </v-btn>
             </v-col>
-            <v-col cols="4" class="d-flex justify-start">
-              <v-btn class="wallet-button-disabled" disabled outlined>
+            <v-col cols="4" class="d-flex justify-start pb-0">
+              <v-btn class="wallet-button-disabled mb-0" disabled outlined>
                 <div>
                   <v-row class="mx-0 d-flex justify-center">
                     <v-col/>
@@ -51,9 +51,7 @@
                   </v-row>
                   <v-row class="mx-0 d-flex justify-center">
                   <span class="gray-greenish">
-                    RBTC to BTC
-                    <br/>
-                    (Coming soon)
+                    RBTC to BTC (soon)
                   </span>
                   </v-row>
                 </div>
@@ -63,25 +61,19 @@
           <v-row class="mx-0 mt-10 d-flex justify-center">
             <p>Or check the status of your transaction</p>
           </v-row>
-          <v-row class="d-flex justify-center">
+          <v-row class="d-flex justify-center pt-4">
             <v-btn class="wallet-button" @click="toPegInStatus"
                    v-bind:class="{ selected: BTC2RBTC }">
               <div>
                 <v-row class="mx-0 d-flex justify-center">
                   <v-col/>
-                  <v-col class="pa-0 d-flex align-center">
-                    <v-img src="@/assets/exchange/btc.png" height="40" contain/>
-                  </v-col>
                   <v-col class="pa-0 d-flex align-center mx-3">
-                    <v-img src="@/assets/status/status-icon.png" height="40" contain/>
-                  </v-col>
-                  <v-col class="pa-0 d-flex align-center">
-                    <v-img src="@/assets/exchange/rbtc.png" height="40" contain/>
+                    <v-img src="@/assets/status/status-icon.svg" width="60" contain/>
                   </v-col>
                   <v-col/>
                 </v-row>
-                <v-row class="mx-0 d-flex justify-center">
-                  <span class="wallet-button-content">BTC to RBTC status</span>
+                <v-row class="mx-0 d-flex justify-center mt-2">
+                  <span class="wallet-button-content">Transaction status</span>
                 </v-row>
               </div>
             </v-btn>

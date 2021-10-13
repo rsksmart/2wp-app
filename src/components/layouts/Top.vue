@@ -1,6 +1,6 @@
 <template>
-  <v-app-bar color="#fff" elevation="0" class="px-12">
-      <v-col offset="1" cols="10" offset-xl="2" xl="8" class="px-12 pt-12">
+  <v-app-bar color="#fff" elevation="0" max-width="1140" class="mx-8">
+      <v-col cols="10" xl="8" class="pt-10">
         <v-row class="top mx-0" >
           <v-col cols="2" class="pl-0">
             <v-img @click="toExchange" position="center left"
