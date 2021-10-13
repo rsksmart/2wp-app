@@ -9,7 +9,7 @@
                    height="60" contain class="rsk-main-logo"/>
           </v-col>
           <v-col class="d-flex justify-end align-center pr-0">
-            <v-btn v-if="inStatus" @click="toExchange" color="#00B520" class="whiteish" rounded>
+            <v-btn v-if="false" @click="toExchange" color="#00B520" class="whiteish" rounded>
               Create new transaction
             </v-btn>
           </v-col>
