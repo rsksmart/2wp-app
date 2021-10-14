@@ -1,6 +1,5 @@
 <template>
   <v-container fluid class="px-md-0">
-    <v-col offset="1" cols="10" offset-xl="2" xl="8" class="px-12">
       <template v-if="!ledgerDataReady">
         <connect-device @continueToForm="getAccountAddresses"
                         :sendBitcoinState="sendBitcoinState"/>
@@ -24,7 +23,6 @@
         <tx-error-dialog :showTxErrorDialog="showTxErrorDialog"
                          :errorMessage="txError" @closeErrorDialog="closeTxErrorDialog"/>
       </template>
-    </v-col>
   </v-container>
 </template>
 
