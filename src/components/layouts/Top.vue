@@ -6,7 +6,7 @@
             <v-img @click="toExchange" position="center left"
                    src="@/assets/logo-beta.svg"
                    alt="RSK Two Way Peg"
-                   height="60" contain class="rsk-main-logo"/>
+                   height="65" contain class="rsk-main-logo"/>
           </v-col>
           <v-col class="d-flex justify-end align-center pr-0">
             <v-btn v-if="inStatus" @click="toExchange" color="#00B520" class="whiteish" rounded>
