@@ -50,89 +50,100 @@
       </v-col>
     </v-row>
     <v-row justify="center" class="mx-0">
-      <v-col cols="3" xl="3" class="px-lg-10" >
-        <v-row class="mx-0 d-flex justify-center">
-          <fieldset class="confirmation-box px-10">
-            <legend class="px-3 d-flex justify-center">See on Trezor</legend>
-            <v-row class="mt-5 d-flex justify-center" >
-              <span>
-                Confirm
+      <v-col cols="3">
+        <fieldset class="confirmation-box">
+          <legend align="center">See on Trezor</legend>
+          <v-row justify="center" class="mt-5 mx-0" >
+            <span>
+              Confirm
+            </span>
+          </v-row>
+          <v-row justify="center" align="start" class="mt-5 mx-0 text-center">
+            <span>
+            OP_RETURN
+            </span>
+            <v-tooltip right>
+              <template v-slot:activator="{ on, attrs }">
+                <v-icon small color="black" v-bind="attrs" v-on="on" class="ml-2">
+                  mdi-information
+                </v-icon>
+              </template>
+              <p class="tooltip-form mb-0">
+                The OP_RETURN is an output with information required for the RSK network.
+              </p>
+            </v-tooltip>
+          </v-row>
+          <v-row justify="center" class="mt-5 mx-0 d-none d-lg-block">
+            <v-col class="pa-0 d-flex flex-column align-center">
+              <span v-for="value in splitString(opReturnData)" :key="value">
+                {{ value }}
               </span>
-            </v-row>
-            <v-row justify="center" class="mt-5">
-              <span>
-              OP_RETURN
-              </span>
-              <v-tooltip right>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-icon small color="black" v-bind="attrs" v-on="on" class="ml-2 pb-2">
-                    mdi-information
-                  </v-icon>
-                </template>
-                <p class="tooltip-form mb-0">
-                  The OP_RETURN is an output with information required for the RSK network.
-                </p>
-              </v-tooltip>
-            </v-row>
-            <v-row justify="center">
-              <span class="breakable-address ">
+            </v-col>
+          </v-row>
+          <v-row justify="center" class="mt-5 mx-0 d-lg-none">
+            <v-col class="pa-0 px-4 d-flex flex-column align-center">
+              <span class="breakable-address">
                 {{ opReturnData }}
               </span>
-            </v-row>
-            <v-row class="mt-5 mb-3 d-flex justify-center" >Confirm</v-row>
-          </fieldset>
-        </v-row>
+            </v-col>
+          </v-row>
+          <v-row justify="center" class="mt-5 mb-3 mx-0">Confirm</v-row>
+        </fieldset>
       </v-col>
-      <v-col cols="3" xl="3" class="px-lg-10" >
-        <v-row class="mx-0 d-flex justify-center">
-          <fieldset class="confirmation-box px-10">
-            <legend class="px-3 d-flex justify-center">See on Trezor</legend>
-            <v-row class="mt-5 d-flex justify-center" >Confirm sending</v-row>
-            <v-row class="mt-5 d-flex justify-center" >
-              Amount: {{this.txData.amount.toBTCTrimmedString()}}
-            </v-row>
-            <v-row class="mt-5 d-flex justify-center" >
-              <span class="d-none d-xl-block">
-                {{rskFederationAddress}}
+      <v-col cols="3">
+        <fieldset class="confirmation-box">
+          <legend align="center">See on Trezor</legend>
+          <v-row justify="center" class="mt-5 mx-0">Confirm sending</v-row>
+          <v-row justify="center" class="mt-5 mx-0 text-center" >
+            Amount: {{this.txData.amount.toBTCTrimmedString()}}
+          </v-row>
+          <v-row justify="center" class="mt-5 mx-0 d-none d-lg-block">
+            <v-col class="pa-0 d-flex flex-column align-center">
+              <span v-for="value in splitString(rskFederationAddress)" :key="value">
+                {{ value }}
               </span>
-              <span class="d-xl-none">
-                {{cropAddress(rskFederationAddress)}}
-              </span>
-            </v-row>
-            <v-row class="mt-5 mb-3 d-flex justify-center" >Confirm</v-row>
-          </fieldset>
-        </v-row>
+            </v-col>
+          </v-row>
+          <v-row justify="center" class="mt-5 mx-0 d-lg-none">
+            <span>
+              {{cropAddress(rskFederationAddress)}}
+            </span>
+          </v-row>
+          <v-row justify="center" class="mt-5 mb-3 mx-0" >Confirm</v-row>
+        </fieldset>
       </v-col>
-      <v-col cols="3" xl="3" class="px-lg-10" >
-        <v-row class="mx-0 d-flex justify-center">
-          <fieldset class="confirmation-box px-10">
-            <legend class="px-3 d-flex justify-center">See on Trezor</legend>
-            <v-row class="mt-5 d-flex justify-center" >Confirm sending</v-row>
-            <v-row class="mt-5 d-flex justify-center" >Amount: {{changeAmount}}</v-row>
-            <v-row class="mt-5 d-flex justify-center" >
-              <span class="d-none d-xl-block">
-                {{changeAddress}}
+      <v-col cols="3">
+        <fieldset class="confirmation-box">
+          <legend align="center">See on Trezor</legend>
+          <v-row justify="center" class="mt-5 mx-0">Confirm sending</v-row>
+          <v-row justify="center" class="mt-5 mx-0 text-center">Amount: {{changeAmount}}</v-row>
+          <v-row justify="center" class="mt-5 mx-0 d-none d-lg-block">
+            <v-col class="pa-0 d-flex flex-column align-center">
+              <span v-for="value in splitString(changeAddress)" :key="value">
+                {{ value }}
               </span>
-              <span class="d-xl-none">
-                {{cropAddress(changeAddress)}}
-              </span>
-            </v-row>
-            <v-row class="mt-5 mb-3 d-flex justify-center" >Confirm</v-row>
-          </fieldset>
-        </v-row>
+            </v-col>
+          </v-row>
+          <v-row justify="center" class="mt-5 mx-0 d-lg-none">
+            <span>
+              {{cropAddress(changeAddress)}}
+            </span>
+          </v-row>
+          <v-row justify="center" class="mt-5 mb-3 mx-0">Confirm</v-row>
+        </fieldset>
       </v-col>
-      <v-col cols="3" xl="3" class="px-lg-10" >
-        <v-row class="mx-0 d-flex justify-center">
-          <fieldset class="confirmation-box px-10">
-            <legend class="px-3 d-flex justify-center">See on Trezor</legend>
-            <v-row class="mt-5 d-flex justify-center" >Really send</v-row>
-            <v-row class="mt-5 d-flex justify-center" >Amount: {{computedFullAmount}}</v-row>
-            <v-row class="mt-5 d-flex justify-center" >
-              Fee: {{txData.feeBTC.toBTCTrimmedString()}}
-            </v-row>
-            <v-row class="mt-5 mb-3 d-flex justify-center" >Confirm</v-row>
-          </fieldset>
-        </v-row>
+      <v-col cols="3">
+        <fieldset class="confirmation-box">
+          <legend align="center">See on Trezor</legend>
+          <v-row justify="center" class="mt-5 mx-0">Really send</v-row>
+          <v-row justify="center" class="mt-5 mx-0 text-center">
+            Amount: {{computedFullAmount}}
+          </v-row>
+          <v-row justify="center" class="mt-5 mx-0 text-center">
+            Fee: {{txData.feeBTC.toBTCTrimmedString()}}
+          </v-row>
+          <v-row justify="center" class="mt-5 mb-3 mx-0">Confirm</v-row>
+        </fieldset>
       </v-col>
     </v-row>
     <v-divider/>
@@ -198,8 +209,6 @@ export default class ConfirmTransaction extends Vue {
 
   confirmTxState: ConfirmTxState = 'idle';
 
-  rskFederationAddress = '';
-
   rawTx = '';
 
   @Prop() tx!: TrezorTx;
@@ -237,13 +246,31 @@ export default class ConfirmTransaction extends Vue {
     return `${address.substr(0, 6)}...${address.substr(address.length - 6, address.length)}`;
   }
 
-  get changeAddress() {
-    return this.txBuilder.changeAddress;
+  // eslint-disable-next-line class-methods-use-this
+  splitString(s: string): string[] {
+    return s.match(/.{1,16}/g) ?? [];
+  }
+
+  get opReturnData(): string {
+    const opReturnDataOutput = this.tx?.outputs[0] ?? { script_type: '' };
+    return opReturnDataOutput.script_type === 'PAYTOOPRETURN'
+      ? `${opReturnDataOutput.op_return_data.substr(0, 45)}...`
+      : 'OP_RETURN data not found';
+  }
+
+  get rskFederationAddress():string {
+    return this.tx?.outputs[1]?.address?.trim() ?? 'RSK Powpeg address not found';
+  }
+
+  get changeAddress(): string {
+    return this.txBuilder.changeAddress !== ''
+      ? this.txBuilder.changeAddress
+      : 'Change address not found';
   }
 
   get changeAmount(): string {
-    const amount = new SatoshiBig(this.tx?.outputs[2]?.amount ?? 0, 'satoshi');
-    return amount.toBTCTrimmedString();
+    const changeAmount = new SatoshiBig(this.tx?.outputs[2]?.amount ?? 0, 'satoshi');
+    return changeAmount.toBTCTrimmedString();
   }
 
   get computedFullAmount(): string {
@@ -251,15 +278,7 @@ export default class ConfirmTransaction extends Vue {
     return this.txData.amount.plus(this.txData.feeBTC).plus(changeAmount).toBTCTrimmedString();
   }
 
-  get opReturnData(): string {
-    const opReturnDataOutput = this.tx?.outputs[0] ?? { script_type: '' };
-    return opReturnDataOutput.script_type === 'PAYTOOPRETURN'
-      ? `${opReturnDataOutput.op_return_data.substr(0, 45)}...`
-      : 'No OP_RETURN data';
-  }
-
   created() {
-    this.rskFederationAddress = this.tx?.outputs[1]?.address?.trim() ?? 'RSK POWpeg address not found';
     this.rawTx = this.txBuilder.getRawTx();
   }
 }
