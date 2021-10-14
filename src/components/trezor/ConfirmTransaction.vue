@@ -200,6 +200,8 @@ export default class ConfirmTransaction extends Vue {
 
   rskFederationAddress = '';
 
+  rawTx = '';
+
   @Prop() tx!: TrezorTx;
 
   @Prop() txBuilder!: TrezorTxBuilder;
@@ -258,6 +260,7 @@ export default class ConfirmTransaction extends Vue {
 
   created() {
     this.rskFederationAddress = this.tx?.outputs[1]?.address?.trim() ?? 'RSK POWpeg address not found';
+    this.rawTx = this.txBuilder.getRawTx();
   }
 }
 </script>
