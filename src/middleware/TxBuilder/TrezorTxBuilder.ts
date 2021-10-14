@@ -50,6 +50,14 @@ export default class TrezorTxBuilder extends TxBuilder {
     });
   }
 
+  public getRawTx(): string {
+    let rawTx = 'rawTx';
+    if (this.tx) {
+      rawTx = this.signer.getRawTx(this.tx);
+    }
+    return rawTx;
+  }
+
   public sign(): Promise<TrezorSignedTx> {
     return this.signer.sign(this.tx) as Promise<TrezorSignedTx>;
   }
