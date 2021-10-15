@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="px-0 mx-0 normalized-height">
+  <v-container fluid class="px-0 mx-0 normalized-height max-width">
     <v-col>
       <v-container class="transactions">
         <v-row class="mx-0 mb-5 d-flex justify-center">
@@ -10,7 +10,7 @@
             to check the status of your operation</p>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
-          <v-col cols="6" xl="5">
+          <v-col cols="7" md="8" xl="7" lg="7">
             <v-text-field dense outlined hide-details
                           append-icon="mdi-magnify"
                           @click:append="getPegStatus"
@@ -36,7 +36,7 @@
           </v-col>
         </v-row>
         <v-row v-if="showStatus" class="d-flex justify-center mt-6">
-          <v-col cols="6">
+          <v-col cols="7">
             <v-row v-if="isRejected" class="mx-0 d-flex justify-center progress-bar">
               <v-col cols="8" class="pa-0 d-flex justify-center">
                 <v-row>
