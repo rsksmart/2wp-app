@@ -52,12 +52,8 @@
     <v-row justify="center" class="mx-0">
       <v-col cols="3">
         <fieldset class="confirmation-box">
-          <legend align="center">See on Trezor</legend>
-          <v-row justify="center" class="mt-5 mx-0" >
-            <span>
-              Confirm
-            </span>
-          </v-row>
+          <legend align="center" class="px-4">See on Trezor</legend>
+          <v-row justify="center" class="mt-5 mx-0"><span>Confirm</span></v-row>
           <v-row justify="center" align="start" class="mt-5 mx-0 text-center">
             <span>
             OP_RETURN
@@ -92,10 +88,10 @@
       </v-col>
       <v-col cols="3">
         <fieldset class="confirmation-box">
-          <legend align="center">See on Trezor</legend>
+          <legend align="center" class="px-4">See on Trezor</legend>
           <v-row justify="center" class="mt-5 mx-0">Confirm sending</v-row>
           <v-row justify="center" class="mt-5 mx-0 text-center" >
-            Amount: {{this.txData.amount.toBTCTrimmedString()}}
+            Amount: {{txData.amount.toBTCTrimmedString()}}
           </v-row>
           <v-row justify="center" class="mt-5 mx-0 d-none d-lg-block">
             <v-col class="pa-0 d-flex flex-column align-center">
@@ -109,12 +105,12 @@
               {{cropAddress(rskFederationAddress)}}
             </span>
           </v-row>
-          <v-row justify="center" class="mt-5 mb-3 mx-0" >Confirm</v-row>
+          <v-row justify="center" class="mt-5 mb-3 mx-0">Confirm</v-row>
         </fieldset>
       </v-col>
       <v-col cols="3">
         <fieldset class="confirmation-box">
-          <legend align="center">See on Trezor</legend>
+          <legend align="center" class="px-4">See on Trezor</legend>
           <v-row justify="center" class="mt-5 mx-0">Confirm sending</v-row>
           <v-row justify="center" class="mt-5 mx-0 text-center">Amount: {{changeAmount}}</v-row>
           <v-row justify="center" class="mt-5 mx-0 d-none d-lg-block">
@@ -134,7 +130,7 @@
       </v-col>
       <v-col cols="3">
         <fieldset class="confirmation-box">
-          <legend align="center">See on Trezor</legend>
+          <legend align="center" class="px-4">See on Trezor</legend>
           <v-row justify="center" class="mt-5 mx-0">Really send</v-row>
           <v-row justify="center" class="mt-5 mx-0 text-center">
             Amount: {{computedFullAmount}}
