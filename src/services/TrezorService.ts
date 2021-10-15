@@ -4,10 +4,9 @@ import { Network } from 'bitcoinjs-lib';
 import { WalletAddress } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import {
-  AccountBalance, TrezorSignedTx, TrezorTx, Tx,
+  TrezorSignedTx, TrezorTx, Tx,
 } from '@/types';
 import { WalletService } from '@/services/WalletService';
-import ApiService from './ApiService';
 
 export default class TrezorService extends WalletService {
   private network: Network;
@@ -85,40 +84,40 @@ export default class TrezorService extends WalletService {
     });
   }
 
-  public async startAskingForBalance(sessionId: string): Promise<void> {
-    console.log('[TrezorService - startAskingForBalance] starting');
-    const maxAmountPegin = await this.getMaxAmountForPegin();
-    console.log('[TrezorService - startAskingForBalance] getMaxAmountForPegin $maxAmountPegin');
+  // public async startAskingForBalance(sessionId: string): Promise<void> {
+  //   console.log('[TrezorService - startAskingForBalance] starting');
+  //   const maxAmountPegin = await this.getMaxAmountForPegin();
+  //   console.log('[TrezorService - startAskingForBalance] getMaxAmountForPegin $maxAmountPegin');
 
-    for (
-      let index = 0;
-      index < Number(process.env.VUE_APP_MAX_ADDRESS_GENERAL);
-      index += Number(process.env.VUE_APP_MAX_ADDRESS_PER_CALL)
-    ) {
-      console.log('[TrezorService - startAskingForBalance] index $index');
+  //   for (
+  //     let index = 0;
+  //     index < Number(process.env.VUE_APP_MAX_ADDRESS_GENERAL);
+  //     index += Number(process.env.VUE_APP_MAX_ADDRESS_PER_CALL)
+  //   ) {
+  //     console.log('[TrezorService - startAskingForBalance] index $index');
 
-      this.getAccountAddressListSinceInit(
-        index,
-        Number(process.env.VUE_APP_MAX_ADDRESS_PER_CALL),
-      )
-        .then((addresses) => ApiService.getBalances(sessionId, addresses))
-        .then((balancesFound: AccountBalance) => {
-          this.informSubscribers(balancesFound);
-          console.log('[TrezorService - startAskingForBalance] before if');
-          if (balancesFound.legacy >= maxAmountPegin
-            && balancesFound.segwit >= maxAmountPegin
-            && balancesFound.nativeSegwit >= maxAmountPegin
-          ) {
-            console.log('[TrezorService - startAskingForBalance] inside if');
+  //     this.getAccountAddressListSinceInit(
+  //       index,
+  //       Number(process.env.VUE_APP_MAX_ADDRESS_PER_CALL),
+  //     )
+  //       .then((addresses) => ApiService.getBalances(sessionId, addresses))
+  //       .then((balancesFound: AccountBalance) => {
+  //         this.informSubscribers(balancesFound);
+  //         console.log('[TrezorService - startAskingForBalance] before if');
+  //         if (balancesFound.legacy >= maxAmountPegin
+  //           && balancesFound.segwit >= maxAmountPegin
+  //           && balancesFound.nativeSegwit >= maxAmountPegin
+  //         ) {
+  //           console.log('[TrezorService - startAskingForBalance] inside if');
 
-            // eslint-disable-next-line no-unused-expressions
-           return new Promise<void>((resolve) => resolve());
-          }
-        });
-    }
-    // eslint-disable-next-line no-unused-expressions
-    return new Promise<void>((resolve) => resolve());
-  }
+  //           // eslint-disable-next-line no-unused-expressions
+  //          return new Promise<void>((resolve) => resolve());
+  //         }
+  //       });
+  //   }
+  //   // eslint-disable-next-line no-unused-expressions
+  //   return new Promise<void>((resolve) => resolve());
+  // }
 
   public getAccountAddressListSinceInit(batch: number, index: number): Promise<WalletAddress[]> {
     console.log('[TrezorService - getAccountAddressListSinceInit]');

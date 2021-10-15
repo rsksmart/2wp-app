@@ -60,43 +60,57 @@ export abstract class WalletService {
 
   public subscribe(addBalance: (balance: AccountBalance) => void): void {
     this.subscribers.push(addBalance);
+    console.log('[WalletService - subscribe] this.subscribers.length $this.subscribers.length');
   }
 
   public unsubscribe(addBalance: (balance: AccountBalance) => void): void {
+    console.log('[WalletService - unsubscribe] before this.subscribers.length $this.subscribers.length');
     const idx = (this.subscribers.findIndex((s) => s === addBalance));
     if (idx !== -1) {
       this.subscribers.splice(idx, 1);
     }
+    console.log('[WalletService - subscribe] after this.subscribers.length $this.subscribers.length');
   }
 
   protected informSubscribers(balance: AccountBalance): void {
+    console.log('[WalletService - informSubscribers] ready to inform to $this.subscribers.length');
     this.subscribers.forEach((s) => s(balance));
   }
 
-  // public async startAskingForBalance(sessionId: string): Promise<void> {
-  //   const maxAmountPegin = await this.getMaxAmountForPegin();
-  //   for (
-  //     let index = 0;
-  //     index < Number(process.env.VUE_APP_MAX_ADDRESS_GENERAL);
-  //     index += Number(process.env.VUE_APP_MAX_ADDRESS_PER_CALL)
-  //   ) {
-  //     this.getAccountAddressListSinceInit(
-  //       index,
-  //       Number(process.env.VUE_APP_MAX_ADDRESS_PER_CALL),
-  //     )
-  //       .then((addresses) => ApiService.getBalances(sessionId, addresses))
-  //       .then((balancesFound: AccountBalance) => {
-  //         this.informSubscribers(balancesFound);
-  //         if (balancesFound.legacy >= maxAmountPegin
-  //           && balancesFound.segwit >= maxAmountPegin
-  //           && balancesFound.nativeSegwit >= maxAmountPegin
-  //         ) {
-  //           // eslint-disable-next-line no-unused-expressions
-  //           Promise.resolve;
-  //         }
-  //       });
-  //   }
-  //   // eslint-disable-next-line no-unused-expressions
-  //   Promise.resolve;
-  // }
+  public async startAskingForBalance(sessionId: string): Promise<void> {
+    const maxAmountPegin = await this.getMaxAmountForPegin();
+    // eslint-disable-next-line prefer-const
+    let balanceAccumulated: AccountBalance = {
+      legacy: new SatoshiBig(0, 'satoshi'),
+      segwit: new SatoshiBig(0, 'satoshi'),
+      nativeSegwit: new SatoshiBig(0, 'satoshi'),
+    };
+
+    for (
+      let index = 0;
+      index < Number(process.env.VUE_APP_MAX_ADDRESS_GENERAL);
+      index += Number(process.env.VUE_APP_MAX_ADDRESS_PER_CALL)
+    ) {
+      this.getAccountAddressListSinceInit(
+        index,
+        Number(process.env.VUE_APP_MAX_ADDRESS_PER_CALL),
+      )
+        .then((addresses) => ApiService.getBalances(sessionId, addresses))
+        .then((balancesFound: AccountBalance) => {
+          balanceAccumulated.legacy.plus(balancesFound.legacy);
+          balanceAccumulated.segwit.plus(balancesFound.segwit);
+          balanceAccumulated.nativeSegwit.plus(balancesFound.nativeSegwit);
+          this.informSubscribers(balanceAccumulated);
+        });
+      if (balanceAccumulated.legacy >= maxAmountPegin
+        && balanceAccumulated.segwit >= maxAmountPegin
+        && balanceAccumulated.nativeSegwit >= maxAmountPegin
+      ) {
+        // eslint-disable-next-line no-unused-expressions
+        return new Promise<void>((resolve) => resolve());
+      }
+    }
+    // eslint-disable-next-line no-unused-expressions
+    return new Promise<void>((resolve) => resolve());
+  }
 }

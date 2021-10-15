@@ -257,6 +257,7 @@ export default class SendBitcoinTrezor extends Vue {
 
   @Emit()
   startAskingForBalance() {
+    console.log('[SendBitcoinTrezor - startAskingForBalance] index $index');
     this.trezorService.subscribe((balance) => this.addBalance(balance));
     this.trezorService.startAskingForBalance(this.peginTxState.sessionId)
       .catch((e) => {

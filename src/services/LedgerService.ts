@@ -5,11 +5,9 @@ import * as bitcoin from 'bitcoinjs-lib';
 import * as constants from '@/store/constants';
 import { WalletAddress } from '@/store/peginTx/types';
 import {
-  AccountBalance,
   LedgerjsTransaction, LedgerTx, Signer,
 } from '@/types';
 import { WalletService } from './WalletService';
-import ApiService from './ApiService';
 
 export default class LedgerService extends WalletService {
   private network: bitcoin.Network;
@@ -121,33 +119,6 @@ export default class LedgerService extends WalletService {
       }
       resolve(walletAddresses);
     });
-  }
-
-  public async startAskingForBalance(sessionId: string): Promise<void> {
-    const maxAmountPegin = await this.getMaxAmountForPegin();
-    for (
-      let index = 0;
-      index < Number(process.env.VUE_APP_MAX_ADDRESS_GENERAL);
-      index += Number(process.env.VUE_APP_MAX_ADDRESS_PER_CALL)
-    ) {
-      this.getAccountAddressListSinceInit(
-        index,
-        Number(process.env.VUE_APP_MAX_ADDRESS_PER_CALL),
-      )
-        .then((addresses) => ApiService.getBalances(sessionId, addresses))
-        .then((balancesFound: AccountBalance) => {
-          this.informSubscribers(balancesFound);
-          if (balancesFound.legacy >= maxAmountPegin
-            && balancesFound.segwit >= maxAmountPegin
-            && balancesFound.nativeSegwit >= maxAmountPegin
-          ) {
-            // eslint-disable-next-line no-unused-expressions
-            Promise.resolve;
-          }
-        });
-    }
-    // eslint-disable-next-line no-unused-expressions
-    Promise.resolve;
   }
 
   public getAccountAddressListSinceInit(batch: number, index: number): Promise<WalletAddress[]> {
