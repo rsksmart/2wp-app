@@ -215,15 +215,20 @@ export default class SendBitcoinLedger extends Vue {
   }
 
   @Emit()
-  startAskingForBalance() {
+  getAccountAddresses() {
     this.sendBitcoinState = 'loading';
     this.ledgerService.getAddressList(2)
       .then((addresses) => {
         this.setPeginTxAddresses(addresses);
       })
-      .then(() => {
-        this.ledgerService.subscribe((balance) => this.addBalance(balance));
-        this.ledgerService.startAskingForBalance(this.peginTxState.sessionId);
+      .then(() => ApiService
+        .getBalances(this.peginTxState.sessionId, this.peginTxState.addressList))
+      .then((balances: AccountBalance) => {
+        this.balances = {
+          legacy: new SatoshiBig(balances.legacy, 'satoshi'),
+          segwit: new SatoshiBig(balances.segwit, 'satoshi'),
+          nativeSegwit: new SatoshiBig(balances.nativeSegwit, 'satoshi'),
+        };
         this.ledgerDataReady = true;
       })
       .catch((e) => {
@@ -231,25 +236,25 @@ export default class SendBitcoinLedger extends Vue {
           this.deviceError = 'Please unlock your Ledger device.';
         } else {
           this.deviceError = e.message;
-          this.ledgerService.unsubscribe((balance) => this.addBalance(balance));
         }
         this.sendBitcoinState = 'error';
         this.showErrorDialog = true;
       });
   }
 
-  // startAskingForBalance() {
-  //   this.ledgerService.subscribe((balance) => this.addBalance(balance));
-  //   this.ledgerService.startAskingForBalance(this.peginTxState.sessionId)
-  //     .catch((e) => {
-  //       this.deviceError = e.message;
-  //       this.sendBitcoinState = 'error';
-  //       this.ledgerService.unsubscribe((balance) => this.addBalance(balance));
-  //       this.showErrorDialog = true;
-  //     });
-  //   this.sendBitcoinState = 'loading';
-  //   this.ledgerDataReady = true;
-  // }
+  @Emit()
+  startAskingForBalance() {
+    this.ledgerService.subscribe((balance) => this.addBalance(balance));
+    this.ledgerService.startAskingForBalance(this.peginTxState.sessionId)
+      .catch((e) => {
+        this.deviceError = e.message;
+        this.sendBitcoinState = 'error';
+        this.ledgerService.unsubscribe((balance) => this.addBalance(balance));
+        this.showErrorDialog = true;
+      });
+    this.sendBitcoinState = 'loading';
+    this.ledgerDataReady = true;
+  }
 
   addBalance(balanceInformed: AccountBalance) {
     this.addInformedBalance(balanceInformed);

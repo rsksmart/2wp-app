@@ -265,8 +265,8 @@ export default class SendBitcoinTrezor extends Vue {
         this.trezorService.unsubscribe((balance) => this.addBalance(balance));
         this.showErrorDialog = true;
       });
-    this.sendBitcoinState = 'loading';
     this.trezorDataReady = true;
+    this.sendBitcoinState = 'loading';
   }
 
   addBalance(balanceInformed: AccountBalance) {

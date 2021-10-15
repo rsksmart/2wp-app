@@ -73,30 +73,30 @@ export abstract class WalletService {
     this.subscribers.forEach((s) => s(balance));
   }
 
-  public async startAskingForBalance(sessionId: string): Promise<void> {
-    const maxAmountPegin = await this.getMaxAmountForPegin();
-    for (
-      let index = 0;
-      index < Number(process.env.VUE_APP_MAX_ADDRESS_GENERAL);
-      index += Number(process.env.VUE_APP_MAX_ADDRESS_PER_CALL)
-    ) {
-      this.getAccountAddressListSinceInit(
-        index,
-        Number(process.env.VUE_APP_MAX_ADDRESS_PER_CALL),
-      )
-        .then((addresses) => ApiService.getBalances(sessionId, addresses))
-        .then((balancesFound: AccountBalance) => {
-          this.informSubscribers(balancesFound);
-          if (balancesFound.legacy >= maxAmountPegin
-            && balancesFound.segwit >= maxAmountPegin
-            && balancesFound.nativeSegwit >= maxAmountPegin
-          ) {
-            // eslint-disable-next-line no-unused-expressions
-            Promise.resolve;
-          }
-        });
-    }
-    // eslint-disable-next-line no-unused-expressions
-    Promise.resolve;
-  }
+  // public async startAskingForBalance(sessionId: string): Promise<void> {
+  //   const maxAmountPegin = await this.getMaxAmountForPegin();
+  //   for (
+  //     let index = 0;
+  //     index < Number(process.env.VUE_APP_MAX_ADDRESS_GENERAL);
+  //     index += Number(process.env.VUE_APP_MAX_ADDRESS_PER_CALL)
+  //   ) {
+  //     this.getAccountAddressListSinceInit(
+  //       index,
+  //       Number(process.env.VUE_APP_MAX_ADDRESS_PER_CALL),
+  //     )
+  //       .then((addresses) => ApiService.getBalances(sessionId, addresses))
+  //       .then((balancesFound: AccountBalance) => {
+  //         this.informSubscribers(balancesFound);
+  //         if (balancesFound.legacy >= maxAmountPegin
+  //           && balancesFound.segwit >= maxAmountPegin
+  //           && balancesFound.nativeSegwit >= maxAmountPegin
+  //         ) {
+  //           // eslint-disable-next-line no-unused-expressions
+  //           Promise.resolve;
+  //         }
+  //       });
+  //   }
+  //   // eslint-disable-next-line no-unused-expressions
+  //   Promise.resolve;
+  // }
 }
