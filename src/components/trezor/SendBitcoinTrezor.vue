@@ -256,18 +256,23 @@ export default class SendBitcoinTrezor extends Vue {
   }
 
   @Emit()
+  // eslint-disable-next-line class-methods-use-this
   startAskingForBalance() {
-    console.log('[SendBitcoinTrezor - startAskingForBalance] index $index');
+    this.sendBitcoinState = 'loading';
     this.trezorService.subscribe((balance) => this.addBalance(balance));
     this.trezorService.startAskingForBalance(this.peginTxState.sessionId)
+      .then(() => {
+        console.log('[SendBitcoinTrezor - startAskingForBalance] trezor ready');
+        this.trezorDataReady = true;
+      })
       .catch((e) => {
+        console.log('[SendBitcoinTrezor - startAskingForBalance] catch');
+        console.log(e.message);
         this.deviceError = e.message;
         this.sendBitcoinState = 'error';
         this.trezorService.unsubscribe((balance) => this.addBalance(balance));
         this.showErrorDialog = true;
       });
-    this.trezorDataReady = true;
-    this.sendBitcoinState = 'loading';
   }
 
   addBalance(balanceInformed: AccountBalance) {

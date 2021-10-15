@@ -13,6 +13,8 @@ export abstract class WalletService {
     this.coin = coin;
   }
 
+  abstract getAddressList(batch: number): Promise<WalletAddress[]>;
+
   abstract getAccountAddressListSinceInit(batch: number, index: number): Promise<WalletAddress[]>;
 
   protected getAccountPath(accountType: string, accountIdx: number) {
@@ -55,7 +57,8 @@ export abstract class WalletService {
   // eslint-disable-next-line class-methods-use-this
   protected async getMaxAmountForPegin(): Promise<SatoshiBig> {
     const config = await ApiService.getPeginConfiguration();
-    return new Promise(() => new SatoshiBig(config.maxValue, 'satoshi'));
+    console.log(config.maxValue);
+    return new SatoshiBig(config.maxValue, 'satoshi');
   }
 
   public subscribe(addBalance: (balance: AccountBalance) => void): void {
@@ -77,8 +80,10 @@ export abstract class WalletService {
     this.subscribers.forEach((s) => s(balance));
   }
 
+  // eslint-disable-next-line class-methods-use-this
   public async startAskingForBalance(sessionId: string): Promise<void> {
     const maxAmountPegin = await this.getMaxAmountForPegin();
+    console.log('maxAmountPegin - working fine');
     // eslint-disable-next-line prefer-const
     let balanceAccumulated: AccountBalance = {
       legacy: new SatoshiBig(0, 'satoshi'),
@@ -91,25 +96,36 @@ export abstract class WalletService {
       index < Number(process.env.VUE_APP_MAX_ADDRESS_GENERAL);
       index += Number(process.env.VUE_APP_MAX_ADDRESS_PER_CALL)
     ) {
-      this.getAccountAddressListSinceInit(
-        index,
-        Number(process.env.VUE_APP_MAX_ADDRESS_PER_CALL),
-      )
-        .then((addresses) => ApiService.getBalances(sessionId, addresses))
-        .then((balancesFound: AccountBalance) => {
-          balanceAccumulated.legacy.plus(balancesFound.legacy);
-          balanceAccumulated.segwit.plus(balancesFound.segwit);
-          balanceAccumulated.nativeSegwit.plus(balancesFound.nativeSegwit);
-          this.informSubscribers(balanceAccumulated);
-        });
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        const addresses = await this.getAccountAddressListSinceInit(
+          Number(process.env.VUE_APP_MAX_ADDRESS_PER_CALL),
+          index,
+        );
+        // .catch((e) => {
+        //   console.log('[WalletService - startAskingForBalance] error!!!!');
+        //   console.log(e);
+        //   throw new Error('Error getting list of Addreses from device');
+        // })
+        // eslint-disable-next-line no-await-in-loop
+        const balancesFound = await ApiService.getBalances(sessionId, addresses);
+        balanceAccumulated.legacy.plus(balancesFound.legacy);
+        balanceAccumulated.segwit.plus(balancesFound.segwit);
+        balanceAccumulated.nativeSegwit.plus(balancesFound.nativeSegwit);
+        this.informSubscribers(balanceAccumulated);
+      } catch (e) {
+        throw new Error('Error getting list of Addreses from device');
+      }
       if (balanceAccumulated.legacy >= maxAmountPegin
         && balanceAccumulated.segwit >= maxAmountPegin
         && balanceAccumulated.nativeSegwit >= maxAmountPegin
       ) {
+        console.log('[WalletService - startAskingForBalance] promise1!!!!');
         // eslint-disable-next-line no-unused-expressions
         return new Promise<void>((resolve) => resolve());
       }
     }
+    console.log('[WalletService - startAskingForBalance] promise2!!!!');
     // eslint-disable-next-line no-unused-expressions
     return new Promise<void>((resolve) => resolve());
   }

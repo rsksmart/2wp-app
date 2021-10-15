@@ -214,23 +214,40 @@ export default class SendBitcoinLedger extends Vue {
     this.showTxErrorDialog = false;
   }
 
+  // @Emit()
+  // getAccountAddresses() {
+  //   this.sendBitcoinState = 'loading';
+  //   this.ledgerService.getAddressList(2)
+  //     .then((addresses) => {
+  //       this.setPeginTxAddresses(addresses);
+  //     })
+  //     .then(() => ApiService
+  //       .getBalances(this.peginTxState.sessionId, this.peginTxState.addressList))
+  //     .then((balances: AccountBalance) => {
+  //       this.balances = {
+  //         legacy: new SatoshiBig(balances.legacy, 'satoshi'),
+  //         segwit: new SatoshiBig(balances.segwit, 'satoshi'),
+  //         nativeSegwit: new SatoshiBig(balances.nativeSegwit, 'satoshi'),
+  //       };
+  //       this.ledgerDataReady = true;
+  //     })
+  //     .catch((e) => {
+  //       if (e.statusCode === 27010) {
+  //         this.deviceError = 'Please unlock your Ledger device.';
+  //       } else {
+  //         this.deviceError = e.message;
+  //       }
+  //       this.sendBitcoinState = 'error';
+  //       this.showErrorDialog = true;
+  //     });
+  // }
+
   @Emit()
-  getAccountAddresses() {
+  startAskingForBalance() {
     this.sendBitcoinState = 'loading';
-    this.ledgerService.getAddressList(2)
-      .then((addresses) => {
-        this.setPeginTxAddresses(addresses);
-      })
-      .then(() => ApiService
-        .getBalances(this.peginTxState.sessionId, this.peginTxState.addressList))
-      .then((balances: AccountBalance) => {
-        this.balances = {
-          legacy: new SatoshiBig(balances.legacy, 'satoshi'),
-          segwit: new SatoshiBig(balances.segwit, 'satoshi'),
-          nativeSegwit: new SatoshiBig(balances.nativeSegwit, 'satoshi'),
-        };
-        this.ledgerDataReady = true;
-      })
+    this.ledgerDataReady = false;
+    this.ledgerService.subscribe((balance) => this.addBalance(balance));
+    this.ledgerService.startAskingForBalance(this.peginTxState.sessionId)
       .catch((e) => {
         if (e.statusCode === 27010) {
           this.deviceError = 'Please unlock your Ledger device.';
@@ -242,22 +259,11 @@ export default class SendBitcoinLedger extends Vue {
       });
   }
 
-  @Emit()
-  startAskingForBalance() {
-    this.ledgerService.subscribe((balance) => this.addBalance(balance));
-    this.ledgerService.startAskingForBalance(this.peginTxState.sessionId)
-      .catch((e) => {
-        this.deviceError = e.message;
-        this.sendBitcoinState = 'error';
-        this.ledgerService.unsubscribe((balance) => this.addBalance(balance));
-        this.showErrorDialog = true;
-      });
-    this.sendBitcoinState = 'loading';
-    this.ledgerDataReady = true;
-  }
-
   addBalance(balanceInformed: AccountBalance) {
     this.addInformedBalance(balanceInformed);
+    if (!this.ledgerDataReady) {
+      this.ledgerDataReady = true;
+    }
   }
 
   @Emit()
