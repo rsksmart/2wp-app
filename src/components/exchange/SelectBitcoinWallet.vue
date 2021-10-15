@@ -117,7 +117,7 @@
                     </v-btn>
                   </div>
                 </template>
-                <span>Soon</span>
+                <span>Coming soon</span>
               </v-tooltip>
             </v-col>
             <v-col v-if="false" cols="2" class="d-flex justify-start">
