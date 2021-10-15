@@ -16,36 +16,36 @@
       </p>
     </v-row>
     <v-row id="instructions-trezor" justify="center" class="mx-0">
-      <v-col cols="3" xl="3">
+      <v-col cols="3">
         <v-row class="mx-0 d-flex justify-center">
           <v-img src="@/assets/exchange/trezor/rsk.png" height="40" contain/>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center"><span class="number">1</span>Confirm RSK information</h4>
+          <h4 class="text-center"><div class="number">1</div>Confirm RSK information</h4>
         </v-row>
       </v-col>
-      <v-col cols="3" xl="3">
+      <v-col cols="3">
         <v-row class="mx-0">
           <v-img src="@/assets/exchange/trezor/transfer.png" height="40" contain/>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center"><span class="number">2</span>Confirm funds transfer</h4>
+          <h4 class="text-center"><div class="number">2</div>Confirm funds transfer</h4>
         </v-row>
       </v-col>
-      <v-col cols="3" xl="3">
+      <v-col cols="3">
         <v-row class="mx-0">
           <v-img src="@/assets/exchange/trezor/change.png" height="40" contain/>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center"><span class="number">3</span>Confirm change address</h4>
+          <h4 class="text-center"><div class="number">3</div>Confirm change address</h4>
         </v-row>
       </v-col>
-      <v-col cols="3" xl="3">
+      <v-col cols="3">
         <v-row class="mx-0">
           <v-img src="@/assets/exchange/trezor/fee.png" height="40" contain/>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center"><span class="number">4</span>Confirm Transaction Fee</h4>
+          <h4 class="text-center"><div class="number">4</div>Confirm Transaction Fee</h4>
         </v-row>
       </v-col>
     </v-row>
@@ -275,7 +275,9 @@ export default class ConfirmTransaction extends Vue {
 
   get computedFullAmount(): string {
     const changeAmount = new SatoshiBig(this.tx?.outputs[2]?.amount ?? 0, 'satoshi');
-    return this.txData.amount.plus(this.txData.feeBTC).plus(changeAmount).toBTCTrimmedString();
+    return this.txData.amount.plus(this.txData.feeBTC)
+      .plus(changeAmount)
+      .toBTCTrimmedString();
   }
 
   created() {

@@ -1,6 +1,6 @@
 <template>
   <div class="transactions">
-    <v-col offset="2" cols="8" offset-lg="3" lg="6" class="d-flex flex-column align-center">
+    <v-col offset="2" cols="8" class="d-flex flex-column align-center">
       <v-row class="mx-0 d-flex justify-center">
         <h1>Connect your {{ walletName }}</h1>
       </v-row>
@@ -11,7 +11,7 @@
         <v-col class="mb-10" cols="12">
           <v-row class="ma-0">
             <v-col cols="1">
-              <span class="number">1</span>
+              <div class="number">1</div>
             </v-col>
             <v-col cols="11">
               <p class="ma-0">Plug your {{ walletName }} device into your computer</p>
@@ -19,7 +19,7 @@
           </v-row>
           <v-row class="ma-0">
             <v-col cols="1">
-              <span class="number">2</span>
+              <div class="number">2</div>
             </v-col>
             <v-col cols="11">
               <p class="ma-0">Insert {{ walletName }} device PIN code</p>
@@ -27,7 +27,7 @@
           </v-row>
           <v-row v-if="isLedgerWallet" class="ma-0">
             <v-col cols="1">
-              <span class="number">3</span>
+              <div class="number">3</div>
             </v-col>
             <v-col cols="11">
               <p class="ma-0">Select the Bitcoin app in your device</p>

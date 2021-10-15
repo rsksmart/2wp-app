@@ -85,7 +85,17 @@
   }
 
   .number {
-    border: 2px solid #000 !important;
+    width: 23px;
+    height: 23px;
+    font-size: 12px;
+    line-height: 19px;
+    border-radius: 50%;
+    text-align: center;
+    border: 2px solid #000000;
+    color: #000 !important;
+    margin: 0px 5px 0px 0px;
+    padding: 0;
+    flex: none;
   }
 
   .box {
