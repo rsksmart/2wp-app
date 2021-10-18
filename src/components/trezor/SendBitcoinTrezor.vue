@@ -281,7 +281,7 @@ export default class SendBitcoinTrezor extends Vue {
   @Emit()
   addInformedBalance(balanceInformed: AccountBalance) {
     // eslint-disable-next-line no-extra-boolean-cast
-    if (!!balanceInformed) {
+    if (balanceInformed === undefined) {
       this.deviceError = 'Balance was not found.';
       this.sendBitcoinState = 'error';
       this.trezorService.unsubscribe((balance) => this.addBalance(balance));
@@ -290,21 +290,9 @@ export default class SendBitcoinTrezor extends Vue {
 
     console.log('[SendBitcoinTrezor - addInformedBalance] Original value directly:');
 
-    console.log(balanceInformed.nativeSegwit);
+    console.log(balanceInformed.legacy);
     console.log(balanceInformed.segwit);
     console.log(balanceInformed.nativeSegwit);
-
-    console.log('[SendBitcoinTrezor - addInformedBalance] Original value NUMBER:');
-
-    console.log(balanceInformed.nativeSegwit.toNumber);
-    console.log(balanceInformed.segwit.toNumber);
-    console.log(balanceInformed.nativeSegwit.toNumber);
-
-    console.log('[SendBitcoinTrezor - addInformedBalance] Original value STRING:');
-
-    console.log(balanceInformed.nativeSegwit.toString);
-    console.log(balanceInformed.segwit.toString);
-    console.log(balanceInformed.nativeSegwit.toString);
 
     console.log('[SendBitcoinTrezor - addInformedBalance] Final value balancesFound');
 
@@ -314,17 +302,11 @@ export default class SendBitcoinTrezor extends Vue {
       nativeSegwit: new SatoshiBig(balanceInformed.nativeSegwit, 'satoshi'),
     };
 
-    console.log('[SendBitcoinTrezor - addInformedBalance] Final value NUMBER:');
+    console.log('[SendBitcoinTrezor - addInformedBalance] balances finally saved');
 
-    console.log(this.balances.nativeSegwit.toNumber);
-    console.log(this.balances.segwit.toNumber);
-    console.log(this.balances.nativeSegwit.toNumber);
-
-    console.log('[SendBitcoinTrezor - addInformedBalance] STRING:');
-
-    console.log(this.balances.nativeSegwit.toString);
-    console.log(this.balances.segwit.toString);
-    console.log(this.balances.nativeSegwit.toString);
+    console.log(this.balances.legacy);
+    console.log(this.balances.segwit);
+    console.log(this.balances.nativeSegwit);
   }
 
   @Emit()

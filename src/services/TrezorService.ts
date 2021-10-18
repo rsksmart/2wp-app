@@ -22,10 +22,10 @@ export default class TrezorService extends WalletService {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-inferrable-types
-  private getAddressesBundle(startFrom: number, batch: number, accountIndex: number = 0):
+  private getAddressesBundle(startFrom: number, batchSize: number, accountIndex: number = 0):
       GetAddress[] {
     const bundle: GetAddress[] = [];
-    for (let index: number = startFrom; index < batch; index += 1) {
+    for (let index: number = startFrom; index < batchSize; index += 1) {
       bundle.push({
         path: this.getDerivationPath(constants
           .BITCOIN_LEGACY_ADDRESS, accountIndex, false, index),

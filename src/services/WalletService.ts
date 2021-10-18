@@ -118,10 +118,16 @@ export abstract class WalletService {
           console.log(balancesFound.segwit);
           console.log(balancesFound.nativeSegwit);
 
-          balanceAccumulated.legacy.plus(balancesFound.legacy);
-          balanceAccumulated.segwit.plus(balancesFound.segwit);
-          balanceAccumulated.nativeSegwit.plus(balancesFound.nativeSegwit);
+          balanceAccumulated = {
+            legacy: new SatoshiBig(balanceAccumulated.legacy.plus(balancesFound.legacy), 'satoshi'),
+            segwit: new SatoshiBig(balanceAccumulated.segwit.plus(balancesFound.segwit), 'satoshi'),
+            nativeSegwit: new SatoshiBig(balanceAccumulated.nativeSegwit.plus(balancesFound.nativeSegwit), 'satoshi'),
+          };
           this.informSubscribers(balanceAccumulated);
+          console.log('[WalletService - startAskingForBalance] balance accumulated');
+          console.log(balanceAccumulated.legacy);
+          console.log(balanceAccumulated.segwit);
+          console.log(balanceAccumulated.nativeSegwit);
         } else {
           console.log('[WalletService - startAskingForBalance] balancesFound null or undefined');
           throw new Error('Error getting balances');
@@ -136,11 +142,11 @@ export abstract class WalletService {
       ) {
         console.log('[WalletService - startAskingForBalance] promise1!!!!');
         // eslint-disable-next-line no-unused-expressions
-        return new Promise<void>((resolve) => resolve());
+        return Promise.resolve();
       }
     }
     console.log('[WalletService - startAskingForBalance] promise2!!!!');
     // eslint-disable-next-line no-unused-expressions
-    return new Promise<void>((resolve) => resolve());
+    return Promise.resolve();
   }
 }
