@@ -23,8 +23,6 @@ export default class ApiService {
 
   public static getPeginConfiguration(): Promise<PeginConfiguration> {
     return new Promise<PeginConfiguration>((resolve, reject) => {
-      console.log('getPeginConfiguration');
-      console.log(this.baseURL);
       axios.get(`${this.baseURL}/pegin-configuration`)
         .then((response) => resolve(response.data))
         .catch(reject);

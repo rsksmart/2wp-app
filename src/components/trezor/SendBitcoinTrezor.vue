@@ -231,29 +231,29 @@ export default class SendBitcoinTrezor extends Vue {
     this.showTxErrorDialog = false;
   }
 
-  @Emit()
-  getAccountAddresses() {
-    this.sendBitcoinState = 'loading';
-    this.trezorService.getAddressList(2)
-      .then((addresses) => {
-        this.setPeginTxAddresses(addresses);
-      })
-      .then(() => ApiService
-        .getBalances(this.peginTxState.sessionId, this.peginTxState.addressList))
-      .then((balances: AccountBalance) => {
-        this.balances = {
-          legacy: new SatoshiBig(balances.legacy, 'satoshi'),
-          segwit: new SatoshiBig(balances.segwit, 'satoshi'),
-          nativeSegwit: new SatoshiBig(balances.nativeSegwit, 'satoshi'),
-        };
-        this.trezorDataReady = true;
-      })
-      .catch((e) => {
-        this.deviceError = e.message;
-        this.sendBitcoinState = 'error';
-        this.showErrorDialog = true;
-      });
-  }
+  // @Emit()
+  // getAccountAddresses() {
+  //   this.sendBitcoinState = 'loading';
+  //   this.trezorService.getAddressList(2)
+  //     .then((addresses) => {
+  //       this.setPeginTxAddresses(addresses);
+  //     })
+  //     .then(() => ApiService
+  //       .getBalances(this.peginTxState.sessionId, this.peginTxState.addressList))
+  //     .then((balances: AccountBalance) => {
+  //       this.balances = {
+  //         legacy: new SatoshiBig(balances.legacy, 'satoshi'),
+  //         segwit: new SatoshiBig(balances.segwit, 'satoshi'),
+  //         nativeSegwit: new SatoshiBig(balances.nativeSegwit, 'satoshi'),
+  //       };
+  //       this.trezorDataReady = true;
+  //     })
+  //     .catch((e) => {
+  //       this.deviceError = e.message;
+  //       this.sendBitcoinState = 'error';
+  //       this.showErrorDialog = true;
+  //     });
+  // }
 
   @Emit()
   // eslint-disable-next-line class-methods-use-this
@@ -261,13 +261,7 @@ export default class SendBitcoinTrezor extends Vue {
     this.sendBitcoinState = 'loading';
     this.trezorService.subscribe((balance) => this.addBalance(balance));
     this.trezorService.startAskingForBalance(this.peginTxState.sessionId)
-      .then(() => {
-        console.log('[SendBitcoinTrezor - startAskingForBalance] trezor ready');
-        this.trezorDataReady = true;
-      })
       .catch((e) => {
-        console.log('[SendBitcoinTrezor - startAskingForBalance] catch');
-        console.log(e.message);
         this.deviceError = e.message;
         this.sendBitcoinState = 'error';
         this.trezorService.unsubscribe((balance) => this.addBalance(balance));
@@ -276,14 +270,61 @@ export default class SendBitcoinTrezor extends Vue {
   }
 
   addBalance(balanceInformed: AccountBalance) {
+    console.log('[SendBitcoinTrezor - addInformedBalance] addBalance');
+
     this.addInformedBalance(balanceInformed);
+    if (!this.trezorDataReady) {
+      this.trezorDataReady = true;
+    }
   }
 
   @Emit()
   addInformedBalance(balanceInformed: AccountBalance) {
-    this.balances.legacy.plus(balanceInformed.legacy);
-    this.balances.segwit.plus(balanceInformed.segwit);
-    this.balances.nativeSegwit.plus(balanceInformed.nativeSegwit);
+    // eslint-disable-next-line no-extra-boolean-cast
+    if (!!balanceInformed) {
+      this.deviceError = 'Balance was not found.';
+      this.sendBitcoinState = 'error';
+      this.trezorService.unsubscribe((balance) => this.addBalance(balance));
+      this.showErrorDialog = true;
+    }
+
+    console.log('[SendBitcoinTrezor - addInformedBalance] Original value directly:');
+
+    console.log(balanceInformed.nativeSegwit);
+    console.log(balanceInformed.segwit);
+    console.log(balanceInformed.nativeSegwit);
+
+    console.log('[SendBitcoinTrezor - addInformedBalance] Original value NUMBER:');
+
+    console.log(balanceInformed.nativeSegwit.toNumber);
+    console.log(balanceInformed.segwit.toNumber);
+    console.log(balanceInformed.nativeSegwit.toNumber);
+
+    console.log('[SendBitcoinTrezor - addInformedBalance] Original value STRING:');
+
+    console.log(balanceInformed.nativeSegwit.toString);
+    console.log(balanceInformed.segwit.toString);
+    console.log(balanceInformed.nativeSegwit.toString);
+
+    console.log('[SendBitcoinTrezor - addInformedBalance] Final value balancesFound');
+
+    this.balances = {
+      legacy: new SatoshiBig(balanceInformed.legacy, 'satoshi'),
+      segwit: new SatoshiBig(balanceInformed.segwit, 'satoshi'),
+      nativeSegwit: new SatoshiBig(balanceInformed.nativeSegwit, 'satoshi'),
+    };
+
+    console.log('[SendBitcoinTrezor - addInformedBalance] Final value NUMBER:');
+
+    console.log(this.balances.nativeSegwit.toNumber);
+    console.log(this.balances.segwit.toNumber);
+    console.log(this.balances.nativeSegwit.toNumber);
+
+    console.log('[SendBitcoinTrezor - addInformedBalance] STRING:');
+
+    console.log(this.balances.nativeSegwit.toString);
+    console.log(this.balances.segwit.toString);
+    console.log(this.balances.nativeSegwit.toString);
   }
 
   @Emit()

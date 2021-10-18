@@ -57,13 +57,13 @@ export abstract class WalletService {
   // eslint-disable-next-line class-methods-use-this
   protected async getMaxAmountForPegin(): Promise<SatoshiBig> {
     const config = await ApiService.getPeginConfiguration();
-    console.log(config.maxValue);
     return new SatoshiBig(config.maxValue, 'satoshi');
   }
 
   public subscribe(addBalance: (balance: AccountBalance) => void): void {
     this.subscribers.push(addBalance);
-    console.log('[WalletService - subscribe] this.subscribers.length $this.subscribers.length');
+    console.log('[WalletService - subscribe] this.subscribers.length');
+    console.log(this.subscribers.length);
   }
 
   public unsubscribe(addBalance: (balance: AccountBalance) => void): void {
@@ -72,7 +72,7 @@ export abstract class WalletService {
     if (idx !== -1) {
       this.subscribers.splice(idx, 1);
     }
-    console.log('[WalletService - subscribe] after this.subscribers.length $this.subscribers.length');
+    console.log('[WalletService - unsubscribe] after this.subscribers.length $this.subscribers.length');
   }
 
   protected informSubscribers(balance: AccountBalance): void {
@@ -83,7 +83,6 @@ export abstract class WalletService {
   // eslint-disable-next-line class-methods-use-this
   public async startAskingForBalance(sessionId: string): Promise<void> {
     const maxAmountPegin = await this.getMaxAmountForPegin();
-    console.log('maxAmountPegin - working fine');
     // eslint-disable-next-line prefer-const
     let balanceAccumulated: AccountBalance = {
       legacy: new SatoshiBig(0, 'satoshi'),
@@ -102,18 +101,33 @@ export abstract class WalletService {
           Number(process.env.VUE_APP_MAX_ADDRESS_PER_CALL),
           index,
         );
-        // .catch((e) => {
-        //   console.log('[WalletService - startAskingForBalance] error!!!!');
-        //   console.log(e);
-        //   throw new Error('Error getting list of Addreses from device');
-        // })
+        console.log('[WalletService - startAskingForBalance] number for list of addresses');
+        console.log(addresses.length);
+
+        if (addresses.length === 0) {
+          throw new Error('Error getting list of addreses - List of addresses is empty');
+        }
+
         // eslint-disable-next-line no-await-in-loop
         const balancesFound = await ApiService.getBalances(sessionId, addresses);
-        balanceAccumulated.legacy.plus(balancesFound.legacy);
-        balanceAccumulated.segwit.plus(balancesFound.segwit);
-        balanceAccumulated.nativeSegwit.plus(balancesFound.nativeSegwit);
-        this.informSubscribers(balanceAccumulated);
+
+        // eslint-disable-next-line no-extra-boolean-cast
+        if (!!balancesFound) {
+          console.log('[WalletService - startAskingForBalance] balancesFound');
+          console.log(balancesFound.legacy);
+          console.log(balancesFound.segwit);
+          console.log(balancesFound.nativeSegwit);
+
+          balanceAccumulated.legacy.plus(balancesFound.legacy);
+          balanceAccumulated.segwit.plus(balancesFound.segwit);
+          balanceAccumulated.nativeSegwit.plus(balancesFound.nativeSegwit);
+          this.informSubscribers(balanceAccumulated);
+        } else {
+          console.log('[WalletService - startAskingForBalance] balancesFound null or undefined');
+          throw new Error('Error getting balances');
+        }
       } catch (e) {
+        console.log(e.message);
         throw new Error('Error getting list of Addreses from device');
       }
       if (balanceAccumulated.legacy >= maxAmountPegin
