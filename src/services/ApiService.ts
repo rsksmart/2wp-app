@@ -5,9 +5,10 @@ import { PeginStatus } from '@/store/types';
 import { isValidOpReturn } from './OpReturnUtils';
 import { isValidPowPegAddress } from './PowPegAddressUtils';
 import { BridgeService } from '@/services/BridgeService';
+import { EnvironmentAccessor } from '@/enviroment-accessor';
 
 export default class ApiService {
-  static baseURL = process.env.VUE_APP_API_BASE_URL
+  static baseURL = EnvironmentAccessor.getEnvironmentVariables().vueAppApiBaseUrl;
 
   public static getBalances(sessionId: string,
     addressList?: WalletAddress[]): Promise<AccountBalance> {

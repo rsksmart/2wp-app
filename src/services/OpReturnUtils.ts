@@ -1,25 +1,25 @@
 import { address, networks } from 'bitcoinjs-lib';
 import { NormalizedOutput } from '@/types';
 import * as constants from '@/store/constants';
+import { EnvironmentAccessor } from '@/enviroment-accessor';
 
 function getNetType(type: string): number {
-  // Defaulting network to testnet
-  // TODO: we should not accept this
-  if (!process.env.VUE_APP_COIN || process.env.VUE_APP_COIN === constants.BTC_NETWORK_TESTNET) {
-    if (type === 'P2PKH') {
-      return networks.testnet.pubKeyHash;
-    }
-    if (type === 'P2SH') {
-      return networks.testnet.scriptHash;
-    }
-  }
-  if (process.env.VUE_APP_COIN === constants.BTC_NETWORK_MAINNET) {
-    if (type === 'P2PKH') {
-      return networks.bitcoin.pubKeyHash;
-    }
-    if (type === 'P2SH') {
-      return networks.bitcoin.scriptHash;
-    }
+  switch(EnvironmentAccessor.getEnvironmentVariables().vueAppCoin) {
+    case constants.BTC_NETWORK_TESTNET:
+      if (type === 'P2PKH') {
+        return networks.testnet.pubKeyHash;
+      }
+      if (type === 'P2SH') {
+        return networks.testnet.scriptHash;
+      }
+      break;
+    case constants.BTC_NETWORK_MAINNET:
+      if (type === 'P2PKH') {
+        return networks.bitcoin.pubKeyHash;
+      }
+      if (type === 'P2SH') {
+        return networks.bitcoin.scriptHash;
+      }
   }
   throw new Error(`Invalid type of address ${type}`);
 }

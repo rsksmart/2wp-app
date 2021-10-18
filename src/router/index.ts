@@ -1,3 +1,4 @@
+import { EnvironmentAccessor } from '@/enviroment-accessor';
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
 import Exchange from '../views/Exchange.vue';
@@ -30,7 +31,7 @@ const routes: Array<RouteConfig> = [
 
 const router = new VueRouter({
   mode: 'history',
-  base: process.env.BASE_URL,
+  base: EnvironmentAccessor.getEnvironmentVariables().baseUrl,
   routes,
 });
 

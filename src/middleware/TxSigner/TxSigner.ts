@@ -1,11 +1,12 @@
 import { LedgerSignedTx, TrezorSignedTx, Tx } from '@/types';
 import * as constants from '@/store/constants';
+import { EnvironmentAccessor } from '@/enviroment-accessor';
 
 export default abstract class TxSigner {
   protected coin: string;
 
   constructor() {
-    this.coin = process.env.VUE_APP_COIN ?? constants.BTC_NETWORK_TESTNET;
+    this.coin = EnvironmentAccessor.getEnvironmentVariables().vueAppCoin;
   }
 
   public abstract sign(tx: Tx): Promise<TrezorSignedTx | LedgerSignedTx>;
