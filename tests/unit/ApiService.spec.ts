@@ -7,7 +7,7 @@ import { expect } from 'chai';
 import { BridgeService } from '@/services/BridgeService';
 import * as PowPegAddressUtils from '@/services/PowPegAddressUtils';
 import * as OpReturnUtils from '@/services/OpReturnUtils';
-import { EnvironmentAccessor } from '@/enviroment-accessor';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import * as constants from '@/store/constants';
 
 function getNormalizedTx(): Promise<AxiosResponse> {
@@ -35,7 +35,7 @@ function setEnvironment(isValidOpReturn: boolean, isValidPowPegAddress?: boolean
     vueAppCoin: constants.BTC_NETWORK_TESTNET,
     vueAppRskNodeHost: '',
   };
-  EnvironmentAccessor.initializeEnvironmentVariables(defaultEnvironmentVariables);
+  EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
   sinon.stub(BridgeService.prototype, 'getFederationAddress').resolves('powPegAddress');
   sinon.stub(axios, 'post').resolves(getNormalizedTx());
   sinon.stub(OpReturnUtils, 'isValidOpReturn').returns(isValidOpReturn);

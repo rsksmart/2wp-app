@@ -1,6 +1,6 @@
-import { EnvironmentAccessor } from '@/enviroment-accessor';
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import Exchange from '../views/Exchange.vue';
 
 Vue.use(VueRouter);
@@ -31,7 +31,7 @@ const routes: Array<RouteConfig> = [
 
 const router = new VueRouter({
   mode: 'history',
-  base: EnvironmentAccessor.getEnvironmentVariables().baseUrl,
+  base: EnvironmentAccessorService.getEnvironmentVariables().baseUrl,
   routes,
 });
 

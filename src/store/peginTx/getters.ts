@@ -2,7 +2,7 @@ import { GetterTree } from 'vuex';
 import * as constants from '@/store/constants';
 import { PegInTxState } from './types';
 import { RootState } from '../types';
-import { EnvironmentAccessor } from '@/enviroment-accessor';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 export const getters: GetterTree<PegInTxState, RootState> = {
   [constants.WALLET_NAME]: (state) => {
@@ -31,7 +31,7 @@ export const getters: GetterTree<PegInTxState, RootState> = {
     (state: PegInTxState) => (accountType: string): string => {
       let address = '';
       let accountTypePath = '';
-      const coin = EnvironmentAccessor.getEnvironmentVariables().vueAppCoin;
+      const coin = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
       const coinPath = coin === 'main' ? "/0'" : "/1'";
       switch (accountType) {
         case constants.BITCOIN_LEGACY_ADDRESS:
@@ -54,7 +54,7 @@ export const getters: GetterTree<PegInTxState, RootState> = {
     },
   [constants.PEGIN_TX_GET_REFUND_ADDRESS]: (state: PegInTxState) => {
     let address = '';
-    const coin = EnvironmentAccessor.getEnvironmentVariables().vueAppCoin;
+    const coin = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
     const coinPath = coin === 'main' ? "/0'" : "/1'";
     // eslint-disable-next-line no-unused-expressions
     state.addressList?.forEach((walletAddress) => {

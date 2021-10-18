@@ -1,4 +1,4 @@
-import { EnvironmentAccessor } from '@/enviroment-accessor';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import TxSigner from '@/middleware/TxSigner/TxSigner';
 import { Tx } from '@/types';
 
@@ -8,7 +8,7 @@ export default abstract class TxBuilder {
   protected coin!: string;
 
   protected constructor() {
-    this.coin = EnvironmentAccessor.getEnvironmentVariables().vueAppCoin;
+    this.coin = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
   }
 
   public abstract buildTx(apiTx: {
