@@ -260,17 +260,26 @@ export default class SendBitcoinLedger extends Vue {
   }
 
   addBalance(balanceInformed: AccountBalance) {
-    this.addInformedBalance(balanceInformed);
+    this.setInformedBalance(balanceInformed);
     if (!this.ledgerDataReady) {
       this.ledgerDataReady = true;
     }
   }
 
   @Emit()
-  addInformedBalance(balanceInformed: AccountBalance) {
-    this.balances.legacy.plus(balanceInformed.legacy);
-    this.balances.segwit.plus(balanceInformed.segwit);
-    this.balances.nativeSegwit.plus(balanceInformed.nativeSegwit);
+  setInformedBalance(balanceInformed: AccountBalance) {
+     if (balanceInformed === undefined) {
+      this.deviceError = 'Balance was not found.';
+      this.sendBitcoinState = 'error';
+      this.ledgerService.unsubscribe((balance) => this.addBalance(balance));
+      this.showErrorDialog = true;
+    }
+
+    this.balances = {
+      legacy: new SatoshiBig(balanceInformed.legacy, 'satoshi'),
+      segwit: new SatoshiBig(balanceInformed.segwit, 'satoshi'),
+      nativeSegwit: new SatoshiBig(balanceInformed.nativeSegwit, 'satoshi'),
+    };
   }
 
   @Emit()

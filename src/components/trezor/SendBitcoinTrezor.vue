@@ -272,14 +272,14 @@ export default class SendBitcoinTrezor extends Vue {
   addBalance(balanceInformed: AccountBalance) {
     console.log('[SendBitcoinTrezor - addInformedBalance] addBalance');
 
-    this.addInformedBalance(balanceInformed);
+    this.setInformedBalance(balanceInformed);
     if (!this.trezorDataReady) {
       this.trezorDataReady = true;
     }
   }
 
   @Emit()
-  addInformedBalance(balanceInformed: AccountBalance) {
+  setInformedBalance(balanceInformed: AccountBalance) {
     // eslint-disable-next-line no-extra-boolean-cast
     if (balanceInformed === undefined) {
       this.deviceError = 'Balance was not found.';

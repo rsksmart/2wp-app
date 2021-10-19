@@ -84,10 +84,9 @@ export default class TrezorService extends WalletService {
     });
   }
 
-  public getAccountAddressListSinceInit(batch: number, index: number): Promise<WalletAddress[]> {
-    console.log('[TrezorService - getAccountAddressListSinceInit]');
+  public getAccountAddressListSinceInit(batchSize: number, startFrom: number): Promise<WalletAddress[]> {
     return new Promise((resolve, reject) => {
-      const bundle = this.getAddressesBundle(index, batch);
+      const bundle = this.getAddressesBundle(startFrom, batchSize);
       TrezorConnect.getAddress({
         bundle,
       })

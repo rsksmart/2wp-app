@@ -62,21 +62,20 @@ export abstract class WalletService {
 
   public subscribe(addBalance: (balance: AccountBalance) => void): void {
     this.subscribers.push(addBalance);
-    console.log('[WalletService - subscribe] this.subscribers.length');
+    console.log('[WalletService - subscribe]');
     console.log(this.subscribers.length);
   }
 
   public unsubscribe(addBalance: (balance: AccountBalance) => void): void {
-    console.log('[WalletService - unsubscribe] before this.subscribers.length $this.subscribers.length');
+    console.log('[WalletService - unsubscribe]');
     const idx = (this.subscribers.findIndex((s) => s === addBalance));
     if (idx !== -1) {
       this.subscribers.splice(idx, 1);
     }
-    console.log('[WalletService - unsubscribe] after this.subscribers.length $this.subscribers.length');
   }
 
   protected informSubscribers(balance: AccountBalance): void {
-    console.log('[WalletService - informSubscribers] ready to inform to $this.subscribers.length');
+    console.log('[WalletService - informSubscribers] ready to inform');
     this.subscribers.forEach((s) => s(balance));
   }
 
