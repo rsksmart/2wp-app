@@ -36,11 +36,8 @@ export default class WalletService {
   protected getSerializedPath(path: string): number[] {
     const tmpPath = path.substr(2, path.length);
     const [accountType, chain, accountIdx, change, addressIdx] = tmpPath.split('/');
-    // eslint-disable-next-line no-bitwise
     return [(+accountType.substring(0, 2) | 0x80000000) >>> 0,
-      // eslint-disable-next-line no-bitwise
       (+chain.substring(0, 1) | 0x80000000) >>> 0,
-      // eslint-disable-next-line no-bitwise
       (+accountIdx.substring(0, 1) | 0x80000000) >>> 0, +change, +addressIdx];
   }
 }
