@@ -5,6 +5,7 @@ import { WalletAddress } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import { TrezorSignedTx, TrezorTx, Tx } from '@/types';
 import WalletService from '@/services/WalletService';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 export default class TrezorService extends WalletService {
   private network: Network;
@@ -14,8 +15,8 @@ export default class TrezorService extends WalletService {
     this.network = coin === constants.BTC_NETWORK_MAINNET
       ? bitcoin.networks.bitcoin : bitcoin.networks.testnet;
     TrezorConnect.manifest({
-      email: process.env.VUE_APP_MANIFEST_EMAIL ?? '',
-      appUrl: process.env.VUE_APP_MANIFEST_APP_URL ?? '',
+      email: EnvironmentAccessorService.getEnvironmentVariables().vueAppManifestEmail,
+      appUrl: EnvironmentAccessorService.getEnvironmentVariables().vueAppManifestAppUrl,
     });
   }
 

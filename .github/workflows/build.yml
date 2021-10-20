@@ -20,3 +20,7 @@ jobs:
         run: |
           npm ci
           npm run build
+
+      - name: Unit test
+        run: |
+          npm run test:unit
