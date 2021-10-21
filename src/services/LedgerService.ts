@@ -274,13 +274,10 @@ export default class LedgerService extends WalletService {
       transport.send(0xb0, 0x01, 0x00, 0x00)
         .then((response: Buffer) => {
           let i = 1;
-          // eslint-disable-next-line no-plusplus
           const nameLength = response[i++];
           const name = response.slice(i, (i += nameLength)).toString('ascii');
-          // eslint-disable-next-line no-plusplus
           const versionLength = response[i++];
           const version = response.slice(i, (i += versionLength)).toString('ascii');
-          // eslint-disable-next-line no-plusplus
           const flagLength = response[i++];
           const flags = response.slice(i, (i += flagLength));
           resolve({ name, version, flags });
