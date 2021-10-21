@@ -1,28 +1,28 @@
 <template>
   <v-container fluid class="px-md-0">
-    <template v-if="!ledgerDataReady">
-      <connect-device @continueToForm="getAccountAddresses"
-                      :sendBitcoinState="sendBitcoinState"/>
-    </template>
-    <template v-if="ledgerDataReady">
-      <component :is="currentComponent" :balances="balances"
-                 @createTx="toConfirmTx" @successConfirmation="toTrackingId"
-                 @txFee="getTxFee" :fees="calculatedFees" :tx="createdTx"
-                 :txBuilder="txBuilder" :txData="txData" :price="peginTxState.bitcoinPrice"
-                 :txId="txId"
-                 @toPegInForm="toPegInForm" :pegInFormData="pegInFormData"/>
-    </template>
-    <template v-if="showDialog">
-      <btc-to-rbtc-dialog :showDialog="showDialog" @closeDialog="closeDialog"/>
-    </template>
-    <template v-if="showErrorDialog">
-      <device-error-dialog :showErrorDialog="showErrorDialog"
-                           :errorMessage="deviceError" @closeErrorDialog="closeErrorDialog"/>
-    </template>
-    <template v-if="showTxErrorDialog">
-      <tx-error-dialog :showTxErrorDialog="showTxErrorDialog"
-                       :errorMessage="txError" @closeErrorDialog="closeTxErrorDialog"/>
-    </template>
+      <template v-if="!ledgerDataReady">
+        <connect-device @continueToForm="getAccountAddresses"
+                        :sendBitcoinState="sendBitcoinState"/>
+      </template>
+      <template v-if="ledgerDataReady">
+        <component :is="currentComponent" :balances="balances"
+                   @createTx="toConfirmTx" @successConfirmation="toTrackingId"
+                   @txFee="getTxFee" :fees="calculatedFees" :tx="createdTx"
+                   :txBuilder="txBuilder" :txData="txData" :price="peginTxState.bitcoinPrice"
+                   :txId="txId"
+                   @toPegInForm="toPegInForm" :pegInFormData="pegInFormData"/>
+      </template>
+      <template v-if="showDialog">
+        <btc-to-rbtc-dialog :showDialog="showDialog" @closeDialog="closeDialog"/>
+      </template>
+      <template v-if="showErrorDialog">
+        <device-error-dialog :showErrorDialog="showErrorDialog"
+                             :errorMessage="deviceError" @closeErrorDialog="closeErrorDialog"/>
+      </template>
+      <template v-if="showTxErrorDialog">
+        <tx-error-dialog :showTxErrorDialog="showTxErrorDialog"
+                         :errorMessage="txError" @closeErrorDialog="closeTxErrorDialog"/>
+      </template>
   </v-container>
 </template>
 

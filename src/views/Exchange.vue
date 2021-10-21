@@ -1,5 +1,6 @@
 <template>
-  <v-container fluid class="exchange normalized-height px-0">
+  <v-container fluid class="exchange normalized-height container
+  max-width mx-6">
     <select-bitcoin-wallet v-if="!sendBitcoinStep" @bitcoinWalletSelected="toSendBitcoin"/>
     <component v-else :is="currentComponent"/>
   </v-container>

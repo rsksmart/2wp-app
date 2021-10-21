@@ -1,5 +1,5 @@
 <template>
-  <div class="transactions container">
+  <div class="transactions">
     <v-row class="mx-0 d-flex justify-center">
       <v-col cols="10" lg="8" xl="6" class="d-flex justify-center">
         <h1 class="text-center">Confirm transaction on your device</h1>
@@ -16,7 +16,7 @@
       </p>
     </v-row>
     <v-row id="instructions-ledger" justify="center" class="mx-0">
-      <v-col id="instruction-1" cols="3" xl="2">
+      <v-col id="instruction-1" cols="3" xl="3">
         <v-row justify="center" class="mx-0">
           <v-img src="@/assets/exchange/trezor/rsk.png" height="40" contain/>
         </v-row>
@@ -40,7 +40,7 @@
           <h4 class="text-center"><span class="number">3</span>Confirm change address</h4>
         </v-row>
       </v-col>
-      <v-col id="instruction-4" cols="3" xl="2">
+      <v-col id="instruction-4" cols="3" xl="3">
         <v-row justify="center" class="mx-0">
           <v-img src="@/assets/exchange/trezor/fee.png" height="40" contain/>
         </v-row>
@@ -50,78 +50,80 @@
       </v-col>
     </v-row>
     <v-row justify="center" class="mx-0">
-      <v-col cols="3" xl="2" class="px-lg-10" >
-        <v-row class="mx-0 d-flex justify-center">
-          <fieldset class="confirmation-box px-10">
-            <legend class="px-3 d-flex justify-center">See on Ledger</legend>
-            <v-row class="mt-5 d-flex justify-center" >Review output #1</v-row>
-            <v-row class="mt-5 d-flex justify-center" >AMOUNT 0</v-row>
-            <v-row class="mt-5 d-flex justify-center" >
-              <span>
-                Address: OP_RETURN
-              </span>
-              <v-tooltip right>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-icon small color="black" v-bind="attrs" v-on="on" class="ml-2 pb-2">
-                    mdi-information
-                  </v-icon>
-                </template>
-                <p class="tooltip-form mb-0">
-                  The OP_RETURN is an output with information required for the RSK network.
-                </p>
-              </v-tooltip>
-            </v-row>
-            <v-row class="mt-5 mb-3 d-flex justify-center" >Accept</v-row>
-          </fieldset>
-        </v-row>
+      <v-col cols="3" >
+        <fieldset class="confirmation-box">
+          <legend align="center" class="px-4">See on Ledger</legend>
+          <v-row justify="center" class="mt-5 mx-0 text-center">Review output #1</v-row>
+          <v-row justify="center" class="mt-5 mx-0 text-center">Amount: 0</v-row>
+          <v-row justify="center" align="start" class="mt-5 mx-0 text-center" >
+            <span>
+              OP_RETURN
+            </span>
+            <v-tooltip right>
+              <template v-slot:activator="{ on, attrs }">
+                <v-icon small color="black" v-bind="attrs" v-on="on" class="ml-2">
+                  mdi-information
+                </v-icon>
+              </template>
+              <p class="tooltip-form mb-0">
+                The OP_RETURN is an output with information required for the RSK network.
+              </p>
+            </v-tooltip>
+          </v-row>
+          <v-row justify="center" class="mt-5 mb-3 mx-0">Accept</v-row>
+        </fieldset>
       </v-col>
-      <v-col cols="3" xl="3" class="px-lg-10" >
-        <v-row class="mx-0 d-flex justify-center">
-          <fieldset class="confirmation-box px-10">
-            <legend class="px-3 d-flex justify-center">See on Ledger</legend>
-            <v-row class="mt-5 d-flex justify-center" >Review output #2</v-row>
-            <v-row class="mt-5 d-flex justify-center" >
-              AMOUNT {{txData.amount.toBTCString()}}
-            </v-row>
-            <v-row class="mt-5 d-flex justify-center">
-              <span class="d-none d-xl-block">
-                {{rskFederationAddress}}
+      <v-col cols="3" >
+        <fieldset class="confirmation-box">
+          <legend align="center" class="px-4">See on Ledger</legend>
+          <v-row justify="center" class="mt-5 mx-0 text-center">Review output #2</v-row>
+          <v-row justify="center" class="mt-5 mx-0 text-center">
+            Amount: {{txData.amount.toBTCTrimmedString()}}
+          </v-row>
+          <v-row justify="center" class="mt-5 mx-0 d-none d-lg-block">
+            <v-col class="pa-0 d-flex flex-column align-center">
+              <span v-for="value in splitString(rskFederationAddress)" :key="value">
+                {{ value }}
               </span>
-              <span class="d-xl-none">
-                {{cropAddress(rskFederationAddress)}}
-              </span>
-            </v-row>
-            <v-row class="mt-5 mb-3 d-flex justify-center" >Accept</v-row>
-          </fieldset>
-        </v-row>
+            </v-col>
+          </v-row>
+          <v-row justify="center" class="mt-5 mx-0 d-lg-none">
+            <span>
+              {{cropAddress(rskFederationAddress)}}
+            </span>
+          </v-row>
+          <v-row justify="center" class="mt-5 mb-3 mx-0">Accept</v-row>
+        </fieldset>
       </v-col>
-      <v-col cols="3" xl="3" class="px-lg-10" >
-        <v-row class="mx-0 d-flex justify-center">
-          <fieldset class="confirmation-box px-10">
-            <legend class="px-3 d-flex justify-center">See on Ledger</legend>
-            <v-row class="mt-5 d-flex justify-center" >Review output #3</v-row>
-            <v-row class="mt-5 d-flex justify-center" >Amount {{changeAmount}}</v-row>
-            <v-row class="mt-5 d-flex justify-center" >
-              <span class="d-none d-xl-block">
-                {{changeAddress}}
+      <v-col cols="3" >
+        <fieldset class="confirmation-box">
+          <legend align="center" class="px-4">See on Ledger</legend>
+          <v-row justify="center" class="mt-5 mx-0 text-center">Review output #3</v-row>
+          <v-row justify="center" class="mt-5 mx-0 text-center">Amount: {{changeAmount}}</v-row>
+          <v-row justify="center" class="mt-5 mx-0 d-none d-lg-block">
+            <v-col class="pa-0 d-flex flex-column align-center">
+              <span v-for="value in splitString(changeAddress)" :key="value">
+                {{ value }}
               </span>
-              <span class="d-xl-none">
+            </v-col>
+          </v-row>
+          <v-row justify="center" class="mt-5 mx-0 d-lg-none">
+            <span>
               {{cropAddress(changeAddress)}}
-              </span>
-            </v-row>
-            <v-row class="mt-5 mb-3 d-flex justify-center" >Accept</v-row>
-          </fieldset>
-        </v-row>
+            </span>
+          </v-row>
+          <v-row justify="center" class="mt-5 mb-3 mx-0">Accept</v-row>
+        </fieldset>
       </v-col>
-      <v-col cols="3" xl="2" class="px-lg-10" >
-        <v-row class="mx-0 d-flex justify-center">
-          <fieldset class="confirmation-box px-10">
-            <legend class="px-3 d-flex justify-center">See on Ledger</legend>
-            <v-row class="mt-5 d-flex justify-center" >Confirm Transaction</v-row>
-            <v-row class="mt-5 d-flex justify-center" >FEE {{txData.feeBTC.toBTCString()}}</v-row>
-            <v-row class="mt-5 mb-3 d-flex justify-center" >Accept</v-row>
-          </fieldset>
-        </v-row>
+      <v-col cols="3" >
+        <fieldset class="confirmation-box">
+          <legend align="center" class="px-4">See on Ledger</legend>
+          <v-row justify="center" class="mt-5 mx-0 text-center">Confirm Transaction</v-row>
+          <v-row justify="center" class="mt-5 mx-0 text-center" >
+            Fee: {{txData.feeBTC.toBTCTrimmedString()}}
+          </v-row>
+          <v-row justify="center" class="mt-5 mb-3 mx-0">Accept</v-row>
+        </fieldset>
       </v-col>
     </v-row>
     <v-divider/>
@@ -130,7 +132,7 @@
                   :rskFederationAddress="rskFederationAddress"/>
     </v-row>
     <v-row class="mx-0 my-8">
-      <advanced-data :rawTx="rawTx" :initial-expand="true"/>
+      <advanced-data :rawTx="rawTx" :initial-expand="false"/>
     </v-row>
     <v-row class="ma-0 d-flex justify-center">
       <v-col cols="4" class="ma-0 d-flex align-center">
@@ -171,7 +173,6 @@ import {
   Vue,
 } from 'vue-property-decorator';
 import { Getter } from 'vuex-class';
-import Big from 'big.js';
 import { ConfirmTxState, TrezorTx, TxData } from '@/types';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
@@ -179,6 +180,7 @@ import ApiService from '@/services/ApiService';
 import UnverifiedInputsDialog from '@/components/ledger/UnverifiedInputsDialog.vue';
 import AdvancedData from '@/components/exchange/AdvancedData.vue';
 import * as constants from '@/store/constants';
+import SatoshiBig from '@/types/SatoshiBig';
 
 @Component({
   components: {
@@ -193,8 +195,6 @@ export default class ConfirmLedgerTransaction extends Vue {
   txError = '';
 
   confirmTxState: ConfirmTxState = 'idle';
-
-  rskFederationAddress = '';
 
   rawTx = '';
 
@@ -243,17 +243,27 @@ export default class ConfirmLedgerTransaction extends Vue {
     return `${address.substr(0, 6)}...${address.substr(address.length - 6, address.length)}`;
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  splitString(s: string): string[] {
+    return s.match(/.{1,16}/g) ?? [];
+  }
+
+  get rskFederationAddress():string {
+    return this.tx?.outputs[1]?.address?.trim() ?? 'RSK Powpeg address not found';
+  }
+
   get changeAddress() {
-    return this.getChangeAddress(this.txBuilder.accountType);
+    return this.getChangeAddress(this.txBuilder.accountType) !== ''
+      ? this.getChangeAddress(this.txBuilder.accountType)
+      : 'Change address not found';
   }
 
   get changeAmount() {
-    const amount = new Big(this.tx?.outputs[2]?.amount ?? 0);
-    return amount.div(100_000_000).toFixed(8);
+    const changeAmount = new SatoshiBig(this.tx?.outputs[2]?.amount ?? 0, 'satoshi');
+    return changeAmount.toBTCTrimmedString();
   }
 
   created() {
-    this.rskFederationAddress = this.tx?.outputs[1]?.address?.trim() ?? 'RSK POWpeg address not found';
     this.rawTx = this.txBuilder.getRawTx();
   }
 }

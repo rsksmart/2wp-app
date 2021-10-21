@@ -1,6 +1,7 @@
 import { bridge } from '@rsksmart/rsk-precompiled-abis';
 import Web3 from 'web3';
 import { Contract } from 'web3-eth-contract';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 export class BridgeService {
   private bridgeContract: Contract;
@@ -8,7 +9,7 @@ export class BridgeService {
   private web3: Web3;
 
   constructor() {
-    this.web3 = new Web3(`${process.env.VUE_APP_RSK_NODE_HOST}`);
+    this.web3 = new Web3(EnvironmentAccessorService.getEnvironmentVariables().vueAppRskNodeHost);
     this.bridgeContract = bridge.build(this.web3);
   }
 

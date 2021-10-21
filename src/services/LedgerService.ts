@@ -8,6 +8,7 @@ import { WalletAddress } from '@/store/peginTx/types';
 import {
   LedgerjsTransaction, LedgerTx, Signer,
 } from '@/types';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 export default class LedgerService extends WalletService {
   private network: bitcoin.Network;
@@ -292,8 +293,7 @@ export default class LedgerService extends WalletService {
     return new Promise<void>((resolve, reject) => {
       LedgerService.getApp(transport)
         .then(({ name }) => {
-          const network = process.env.VUE_APP_COIN === constants.BTC_NETWORK_MAINNET
-            ? process.env.VUE_APP_COIN : constants.BTC_NETWORK_TESTNET;
+          const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
           let valid: boolean;
           switch (name) {
             case constants.LEDGER_APP_BTC_TEST:

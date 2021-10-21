@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <v-container fluid class="px-md-0">
     <template v-if="!trezorDataReady">
       <connect-device @continueToForm="getAccountAddresses"
                       :sendBitcoinState="sendBitcoinState"/>
@@ -24,7 +24,7 @@
       <tx-error-dialog :showTxErrorDialog="showTxErrorDialog"
                        :errorMessage="txError" @closeErrorDialog="closeTxErrorDialog"/>
     </template>
-  </div>
+  </v-container>
 </template>
 
 <script lang="ts">
