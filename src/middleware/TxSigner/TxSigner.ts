@@ -1,5 +1,4 @@
 import { LedgerSignedTx, TrezorSignedTx, Tx } from '@/types';
-import * as constants from '@/store/constants';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 export default abstract class TxSigner {
