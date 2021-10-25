@@ -28,37 +28,37 @@ export default class TrezorService extends WalletService {
     const bundle: GetAddress[] = [];
     for (let index: number = startFrom; index < (startFrom + batchSize); index += 1) {
       bundle.push({
-        path: this.getDerivationPath(constants
+        path: super.getDerivationPath(constants
           .BITCOIN_LEGACY_ADDRESS, accountIndex, false, index),
         showOnTrezor: false,
         coin: this.coin,
       });
       bundle.push({
-        path: this.getDerivationPath(constants
+        path: super.getDerivationPath(constants
           .BITCOIN_LEGACY_ADDRESS, accountIndex, true, index),
         showOnTrezor: false,
         coin: this.coin,
       });
       bundle.push({
-        path: this.getDerivationPath(constants
+        path: super.getDerivationPath(constants
           .BITCOIN_SEGWIT_ADDRESS, accountIndex, false, index),
         showOnTrezor: false,
         coin: this.coin,
       });
       bundle.push({
-        path: this.getDerivationPath(constants
+        path: super.getDerivationPath(constants
           .BITCOIN_SEGWIT_ADDRESS, accountIndex, true, index),
         showOnTrezor: false,
         coin: this.coin,
       });
       bundle.push({
-        path: this.getDerivationPath(constants
+        path: super.getDerivationPath(constants
           .BITCOIN_NATIVE_SEGWIT_ADDRESS, accountIndex, false, index),
         showOnTrezor: false,
         coin: this.coin,
       });
       bundle.push({
-        path: this.getDerivationPath(constants
+        path: super.getDerivationPath(constants
           .BITCOIN_NATIVE_SEGWIT_ADDRESS, accountIndex, true, index),
         showOnTrezor: false,
         coin: this.coin,
@@ -67,7 +67,7 @@ export default class TrezorService extends WalletService {
     return bundle;
   }
 
-  public getAccountAddressListSinceInit(batch: number, startFrom: number):
+  public getAccountAddresses(batch: number, startFrom: number):
     Promise<WalletAddress[]> {
     return new Promise((resolve, reject) => {
       const bundle = this.getAddressesBundle(startFrom, batch);

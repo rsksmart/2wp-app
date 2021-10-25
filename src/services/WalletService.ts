@@ -13,7 +13,7 @@ export abstract class WalletService {
     this.coin = coin;
   }
 
-  abstract getAccountAddressListSinceInit(batch: number, index: number): Promise<WalletAddress[]>;
+  abstract getAccountAddresses(batch: number, index: number): Promise<WalletAddress[]>;
 
   protected getAccountPath(accountType: string, accountIdx: number) {
     const coinPath: string = this.coin === constants.BTC_NETWORK_MAINNET ? "/0'" : "/1'";
@@ -62,8 +62,11 @@ export abstract class WalletService {
     this.subscribers.push(addBalance);
   }
 
-  public unsubscribe(): void {
-    this.subscribers = [];
+  public unsubscribe(balanceAccumulated: (balance: AccountBalance) => void): void {
+    const idx = this.subscribers.findIndex((s) => s === balanceAccumulated);
+    if (idx !== -1) {
+      this.subscribers.splice(idx, 1);
+    }
   }
 
   protected informSubscribers(balanceAccumulated: AccountBalance): void {
@@ -88,7 +91,7 @@ export abstract class WalletService {
     ) {
       try {
         // eslint-disable-next-line no-await-in-loop
-        const addresses = await this.getAccountAddressListSinceInit(
+        const addresses = await this.getAccountAddresses(
           Number(process.env.VUE_APP_MAX_ADDRESS_PER_CALL),
           startFrom,
         );
@@ -111,18 +114,14 @@ export abstract class WalletService {
           throw new Error('Error getting balances');
         }
       } catch (e) {
-        console.log(e.message);
         throw new Error('Error getting list of Addreses from device');
       }
       if (balanceAccumulated.legacy.gte(maxAmountPegin)
         && balanceAccumulated.segwit.gte(maxAmountPegin)
         && balanceAccumulated.nativeSegwit.gte(maxAmountPegin)
       ) {
-        // eslint-disable-next-line no-unused-expressions
-        return Promise.resolve();
+        return;
       }
     }
-    // eslint-disable-next-line no-unused-expressions
-    return Promise.resolve();
   }
 }

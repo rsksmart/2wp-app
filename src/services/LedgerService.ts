@@ -93,7 +93,7 @@ export default class LedgerService extends WalletService {
     return bundle;
   }
 
-  public getAccountAddressListSinceInit(batch: number, index: number): Promise<WalletAddress[]> {
+  public getAccountAddresses(batch: number, index: number): Promise<WalletAddress[]> {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       const walletAddresses: WalletAddress[] = [];
