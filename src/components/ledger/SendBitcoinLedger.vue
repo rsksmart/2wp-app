@@ -23,6 +23,13 @@
         <tx-error-dialog :showTxErrorDialog="showTxErrorDialog"
                          :errorMessage="txError" @closeErrorDialog="closeTxErrorDialog"/>
       </template>
+    <v-row>
+      <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
+        <v-btn v-if="showBack" rounded outlined color="#00B520" width="110" @click="back">
+          <span>Back</span>
+        </v-btn>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -85,7 +92,7 @@ export default class SendBitcoinLedger extends Vue {
   txError = '';
 
   createdTx: LedgerTx = {
-    coin: process.env.VUE_APP_COIN ?? 'test',
+    coin: process.env.VUE_APP_COIN ?? constants.BTC_NETWORK_TESTNET,
     inputs: [],
     outputs: [],
     outputScriptHex: '',
@@ -126,10 +133,16 @@ export default class SendBitcoinLedger extends Vue {
 
   @Action(constants.PEGIN_TX_ADD_ADDRESSES, { namespace: 'pegInTx' }) setPeginTxAddresses !: any;
 
+  @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: any;
+
   @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: (accountType: string) => string;
 
   beforeMount() {
     this.showDialog = localStorage.getItem('BTRD_COOKIE_DISABLED') !== 'true';
+  }
+
+  get showBack(): boolean {
+    return this.currentComponent !== 'ConfirmLedgerTransaction';
   }
 
   get txData(): TxData {
@@ -253,6 +266,58 @@ export default class SendBitcoinLedger extends Vue {
         };
       })
       .catch(console.error);
+  }
+
+  @Emit('back')
+  back() {
+    this.clear();
+    this.clearAccount();
+  }
+
+  @Emit()
+  clear(): void {
+    this.pegInFormData = {
+      accountType: '',
+      amount: new SatoshiBig('0', 'satoshi'),
+      rskAddress: '',
+      txFeeIndex: 1.0,
+    };
+    this.showDialog = true;
+    this.showErrorDialog = false;
+    this.showTxErrorDialog = false;
+    this.deviceError = 'test';
+    this.sendBitcoinState = 'idle';
+    this.currentComponent = 'SendBitcoinForm';
+    this.txId = '';
+    this.txError = '';
+    this.createdTx = {
+      coin: process.env.VUE_APP_COIN ?? constants.BTC_NETWORK_TESTNET,
+      inputs: [],
+      outputs: [],
+      outputScriptHex: '',
+      changePath: '',
+      associatedKeysets: [],
+      accountType: '',
+    };
+    this.amount = new SatoshiBig('0', 'satoshi');
+    this.refundAddress = '';
+    this.recipient = '';
+    this.feeBTC = new SatoshiBig('0', 'satoshi');
+    this.txBuilder = new LedgerTxBuilder();
+    this.balances = {
+      legacy: new SatoshiBig(0, 'satoshi'),
+      segwit: new SatoshiBig(0, 'satoshi'),
+      nativeSegwit: new SatoshiBig(0, 'satoshi'),
+    };
+    this.calculatedFees = {
+      slow: new SatoshiBig(0, 'satoshi'),
+      average: new SatoshiBig(0, 'satoshi'),
+      fast: new SatoshiBig(0, 'satoshi'),
+    };
+    this.ledgerDataReady = false;
+    this.ledgerService = new LedgerService(
+      process.env.VUE_APP_COIN ?? constants.BTC_NETWORK_TESTNET,
+    );
   }
 }
 </script>

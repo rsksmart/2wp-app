@@ -1,8 +1,8 @@
 <template>
   <v-container fluid class="exchange normalized-height container
   max-width mx-6">
-    <select-bitcoin-wallet v-if="!sendBitcoinStep" @bitcoinWalletSelected="toSendBitcoin"/>
-    <component v-else :is="currentComponent"/>
+    <select-bitcoin-wallet v-show="!sendBitcoinStep" @bitcoinWalletSelected="toSendBitcoin"/>
+    <component v-if="sendBitcoinStep" :is="currentComponent" @back="back"/>
   </v-container>
 </template>
 
@@ -46,6 +46,13 @@ export default class Exchange extends Vue {
     if (this.peginTxState.bitcoinWallet === constants
       .WALLET_TREZOR) this.currentComponent = 'SendBitcoinTrezor';
     return bitcoinWallet;
+  }
+
+  @Emit()
+  back() {
+    this.setBitcoinWallet('');
+    this.sendBitcoinStep = false;
+    this.currentComponent = '';
   }
 }
 </script>

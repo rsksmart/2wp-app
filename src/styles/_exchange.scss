@@ -134,6 +134,12 @@
     .wallet-button-content {
       color: #fff !important;
     }
+    .wallet-icon {
+      background-image: url('../assets/wallet-icons/trezor-white.png');
+    }
+    .wallet-icon-ledger{
+      background-image: url('../assets/wallet-icons/ledger-white.png');
+    }
   }
 
   #connect-device-steps {
