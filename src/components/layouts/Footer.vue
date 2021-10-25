@@ -1,143 +1,36 @@
 <template>
-  <div class="footer-rsk mt-12">
-    <v-footer padless color="black" class="d-flex justify-center" >
-        <v-col class="max-width mx-8 mt-10">
-          <v-row class="d-flex justify-start px-0 mx-0">
-            <v-col cols="3" class="mx-0 px-0" >
-              <v-img src="https://www.rsk.co/img/powered_by_iov.svg" height="20" width="250" contain/>
-            </v-col>
-          </v-row>
-          <v-row class="mt-2 mb-12">
-            <v-col cols="3" class="footer-info pr-12">
-              <p>
-                Rsk is the most secure smart contract network in the world and enables
-                decentralized applications secured by the Bitcoin Network to empower people and
-                improve the quality of life of millions.
-              </p>
-              <v-btn
-                elevation="2"
-                rounded
-                href="https://developers.rsk.co/"
-                target="_blank"
-                color="#00b520"
-                class="footer-button px-8"
-              >
-                <span>Start now</span>
-              </v-btn>
-            </v-col>
-            <v-col cols="3" md="2" ></v-col>
-            <v-col cols="3" md="4" class="footer-info">
-              <v-row>
-                <a href="https://github.com/rsksmart/2wp-app"
-                   target="_blank"
-                   rel="nofollow noopener noreferrer">
-                  <p>Repository</p>
-                </a>
-              </v-row>
-              <v-row>
-                <a href="https://github.com/rsksmart/2wp-app"
-                   target="_blank"
-                   rel="nofollow noopener noreferrer">
-                  <p>Use Testnet</p>
-                </a>
-              </v-row>
-              <v-row>
-                <v-btn
-                  elevation="2"
-                  href="https://developers.rsk.co/"
-                  target="_blank"
-                  color="#00b520"
-                  class="footer-button px-8"
-                >
-                  <span>Documentation</span>
-                </v-btn>
-              </v-row>
-            </v-col>
-            <v-col cols="3">
-              <v-row class="footer-info">
-                <a href="https://www.iovlabs.org/"
-                   target="_blank"
-                   rel="nofollow noopener noreferrer">
-                  <p>
-                    About IOVlabs
-                  </p>
-                </a>
-              </v-row>
-              <v-row class="footer-info">
-                <a href="https://www.iovlabs.org/contact.html"
-                   target="_blank"
-                   rel="nofollow noopener noreferrer">
-                  <p>
-                    Contact IOVlabs
-                  </p>
-                </a>
-              </v-row>
-              <v-row class="footer-info">
-                <a href="https://blog.rsk.co/"
-                   target="_blank"
-                   rel="nofollow noopener noreferrer">
-                  <p>
-                    Blog
-                  </p>
-                </a>
-              </v-row>
-              <v-row class="footer-info-strong">
-                <a href="https://www.rsk.co/Brand_Guidelines/RSK_BrandManual_V6.pdf"
-                   target="_blank"
-                   rel="nofollow noopener noreferrer">
-                  <p>
-                    Brand Guidelines
-                  </p>
-                </a>
-              </v-row>
-              <v-row class="footer-info-strong">
-                <a href="https://www.rsk.co/terms-conditions"
-                   target="_blank"
-                   rel="nofollow noopener noreferrer">
-                  <p>
-                    Terms & Conditions
-                  </p>
-                </a>
-              </v-row>
-              <v-row class="footer-info-strong">
-                <a href="https://www.rsk.co/privacy-policy"
-                   target="_blank"
-                   rel="nofollow noopener noreferrer">
-                  <p>
-                    Privacy Policy
-                  </p>
-                </a>
-              </v-row>
-            </v-col>
-          </v-row>
-          <v-row class="d-flex justify-end pt-8 mx-0">
-            <v-btn
-              v-for="(btn, idx) in socialNetworkButtons"
-              :key="`${btn.icon}-${idx}`"
-              class="mx-1 black--text"
-              fab
-              color="white"
-              width="30"
-              height="30"
-              :href="btn.link"
-            >
-              <v-icon size="20px">
-                {{ btn.icon }}
-              </v-icon>
-            </v-btn>
-          </v-row>
-          <v-row class="mx-0">
-            <v-col class="d-flex justify-start px-0 mx-0 rsk-copyright">
-              <p>Copyright © 2015 RSK Labs. All rights reserved.</p>
-            </v-col>
-            <v-col class="d-flex justify-end px-0 mx-0 rsk-pk">
-              <p >
-                RSK Public Key (69F6 F997 2497 8762 D541 8AE4 58D2 260D 5998 6758)</p>
-            </v-col>
-          </v-row>
-        </v-col>
+    <v-footer padless fixed color="white" class="footer-rsk d-flex justify-center">
+      <v-col cols="11" class="pb-0">
+        <v-row justify="center" align="center" class="mx-0 py-md-6 py-xl-12">
+          <v-col>
+            <v-row justify="start" class="mx-0">
+              Powered by IOVlabs
+            </v-row>
+          </v-col>
+          <v-col cols="7">
+            <v-row justify="center" class="mx-0">
+              <a href="https://www.iovlabs.org/" target="_blank">About IOV Labs</a>
+              <a>Help</a>
+              <a href="https://www.rsk.co/terms-conditions" target="_blank">Terms & Conditions</a>
+              <a>Documentation</a>
+            </v-row>
+          </v-col>
+          <v-col>
+            <v-row justify="end" class="mx-0">
+              <a href="https://twitter.com/rsksmart" target="_blank" class="footer-icon">
+                <v-icon>mdi-twitter</v-icon>
+              </a>
+              <a href="https://github.com/rsksmart/2wp-app" target="_blank" class="footer-icon">
+                <v-icon>mdi-github</v-icon>
+              </a>
+              <a href="https://open-rsk-dev.slack.com/messages/support" target="_blank" class="footer-icon">
+                <v-icon>mdi-slack</v-icon>
+              </a>
+            </v-row>
+          </v-col>
+        </v-row>
+      </v-col>
     </v-footer>
-  </div>
 </template>
 
 <script lang="ts">

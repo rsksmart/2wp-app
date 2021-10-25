@@ -1,6 +1,5 @@
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/all.css');
 .footer-rsk {
-
   .footer-info {
     a {
       text-decoration: none;
@@ -41,4 +40,20 @@
     font-weight: 300;
   }
 
+  a {
+    text-decoration: none;
+    color: gray !important;
+    cursor: pointer;
+    margin: 0px 10px;
+    font-size: xx-small;
+    font-weight: bold;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  .footer-icon:hover {
+    text-decoration: none;
+  }
 }
