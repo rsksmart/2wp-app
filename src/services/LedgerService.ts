@@ -80,13 +80,6 @@ export default class LedgerService extends WalletService {
             .BITCOIN_SEGWIT_ADDRESS, accountIndex, change, index),
           format: 'p2sh',
         });
-        // TODO: Kept for performance testing purposes,
-        // to be removed for production while native segwit is not supported
-        bundle.push({
-          derivationPath: super.getDerivationPath(constants
-            .BITCOIN_NATIVE_SEGWIT_ADDRESS, accountIndex, change, index),
-          format: 'bech32',
-        });
         change = !change;
       });
     }

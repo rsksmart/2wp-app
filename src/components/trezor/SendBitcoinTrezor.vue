@@ -236,7 +236,6 @@ export default class SendBitcoinTrezor extends Vue {
   @Emit()
   startAskingForBalance() {
     this.sendBitcoinState = 'loading';
-    this.trezorServiceSubscriber = (balance) => this.addBalance(balance);
     this.trezorService.subscribe(this.trezorServiceSubscriber);
     this.trezorService.startAskingForBalance(this.peginTxState.sessionId)
       .catch((e) => {
@@ -262,11 +261,6 @@ export default class SendBitcoinTrezor extends Vue {
       this.trezorService.unsubscribe(this.trezorServiceSubscriber);
       this.showErrorDialog = true;
     }
-    // this.balances = {
-    //   legacy: new SatoshiBig(balanceInformed.legacy, 'satoshi'),
-    //   segwit: new SatoshiBig(balanceInformed.segwit, 'satoshi'),
-    //   nativeSegwit: new SatoshiBig(balanceInformed.nativeSegwit, 'satoshi'),
-    // };
     this.balances = balanceInformed;
   }
 

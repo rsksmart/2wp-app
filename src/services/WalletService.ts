@@ -58,19 +58,19 @@ export abstract class WalletService {
     return new SatoshiBig(config.maxValue, 'satoshi');
   }
 
-  public subscribe(addBalance: (balance: AccountBalance) => void): void {
-    this.subscribers.push(addBalance);
+  public subscribe(subscriber: (balance: AccountBalance) => void): void {
+    this.subscribers.push(subscriber);
   }
 
-  public unsubscribe(balanceAccumulated: (balance: AccountBalance) => void): void {
-    const idx = this.subscribers.findIndex((s) => s === balanceAccumulated);
+  public unsubscribe(subscriber: (balance: AccountBalance) => void): void {
+    const idx = this.subscribers.findIndex((s) => s === subscriber);
     if (idx !== -1) {
       this.subscribers.splice(idx, 1);
     }
   }
 
-  protected informSubscribers(balanceAccumulated: AccountBalance): void {
-    this.subscribers.forEach((s) => s(balanceAccumulated));
+  protected informSubscribers(balance: AccountBalance): void {
+    this.subscribers.forEach((s) => s(balance));
   }
 
   // eslint-disable-next-line class-methods-use-this

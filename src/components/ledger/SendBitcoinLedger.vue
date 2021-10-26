@@ -220,7 +220,6 @@ export default class SendBitcoinLedger extends Vue {
   startAskingForBalance() {
     this.sendBitcoinState = 'loading';
     this.ledgerDataReady = false;
-    this.ledgerServiceSubscriber = (balance) => this.addBalance(balance);
     this.ledgerService.subscribe(this.ledgerServiceSubscriber);
     this.ledgerService.startAskingForBalance(this.peginTxState.sessionId)
       .catch((e) => {
@@ -249,12 +248,6 @@ export default class SendBitcoinLedger extends Vue {
       this.ledgerService.unsubscribe(this.ledgerServiceSubscriber);
       this.showErrorDialog = true;
     }
-
-    // this.balances = {
-    //   legacy: new SatoshiBig(balanceInformed.legacy, 'satoshi'),
-    //   segwit: new SatoshiBig(balanceInformed.segwit, 'satoshi'),
-    //   nativeSegwit: new SatoshiBig(balanceInformed.nativeSegwit, 'satoshi'),
-    // };
     this.balances = balanceInformed;
   }
 
