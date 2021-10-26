@@ -22,6 +22,16 @@ export default class TrezorService extends WalletService {
     });
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  public getMaxAddressPerCall(): number {
+    return Number(process.env.VUE_APP_WALLET_ADDRESSES_PER_CALLTREZOR);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  public getMaxAddressCallNumber(): number {
+    return Number(process.env.VUE_APP_MAX_ADDRESS_CALL_NUMBER_TREZOR);
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   private getAddressesBundle(startFrom: number, batchSize: number, accountIndex: number = 0):
       GetAddress[] {
@@ -67,6 +77,7 @@ export default class TrezorService extends WalletService {
     return bundle;
   }
 
+  // eslint-disable-next-line class-methods-use-this
   public getAccountAddresses(batch: number, startFrom: number):
     Promise<WalletAddress[]> {
     return new Promise((resolve, reject) => {
@@ -86,6 +97,7 @@ export default class TrezorService extends WalletService {
     });
   }
 
+  // eslint-disable-next-line class-methods-use-this
   public getAccountUnusedAddresses(accountType: string): Promise<string[]> {
     return new Promise((resolve, reject) => {
       TrezorConnect.getAccountInfo({

@@ -15,6 +15,10 @@ export abstract class WalletService {
 
   abstract getAccountAddresses(batch: number, index: number): Promise<WalletAddress[]>;
 
+  abstract getMaxAddressPerCall(): number;
+
+  abstract getMaxAddressCallNumber(): number;
+
   protected getAccountPath(accountType: string, accountIdx: number) {
     const coinPath: string = this.coin === constants.BTC_NETWORK_MAINNET ? "/0'" : "/1'";
     let accountPath = 'm';
@@ -83,18 +87,15 @@ export abstract class WalletService {
       nativeSegwit: new SatoshiBig(0, 'satoshi'),
     };
 
+    const maxAddressPerCall: number = this.getMaxAddressPerCall();
     for (
       let startFrom = 0;
-      startFrom < (Number(process.env.VUE_APP_MAX_ADDRESS_CALL_NUMBER)
-      * Number(process.env.VUE_APP_MAX_ADDRESS_PER_CALL));
-      startFrom += Number(process.env.VUE_APP_MAX_ADDRESS_PER_CALL)
+      startFrom < (this.getMaxAddressCallNumber() * maxAddressPerCall);
+      startFrom += maxAddressPerCall
     ) {
       try {
         // eslint-disable-next-line no-await-in-loop
-        const addresses = await this.getAccountAddresses(
-          Number(process.env.VUE_APP_MAX_ADDRESS_PER_CALL),
-          startFrom,
-        );
+        const addresses = await this.getAccountAddresses(maxAddressPerCall, startFrom);
         if (addresses.length === 0) {
           throw new Error('Error getting list of addreses - List of addresses is empty');
         }

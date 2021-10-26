@@ -19,6 +19,16 @@ export default class LedgerService extends WalletService {
       ? bitcoin.networks.bitcoin : bitcoin.networks.testnet;
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  public getMaxAddressPerCall(): number {
+    return Number(process.env.VUE_APP_WALLET_ADDRESSES_PER_CALL_LEDGER);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  public getMaxAddressCallNumber(): number {
+    return Number(process.env.VUE_APP_MAX_ADDRESS_CALL_NUMBER_LEDGER);
+  }
+
   public static splitTransaction(hexTx: string): Promise<LedgerjsTransaction> {
     return new Promise<LedgerjsTransaction>((resolve, reject) => {
       TransportWebUSB.create()
