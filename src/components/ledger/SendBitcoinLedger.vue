@@ -55,6 +55,7 @@ import DeviceErrorDialog from '@/components/exchange/DeviceErrorDialog.vue';
 import ConnectDevice from '@/components/exchange/ConnectDevice.vue';
 import TxErrorDialog from '@/components/exchange/TxErrorDialog.vue';
 import SatoshiBig from '@/types/SatoshiBig';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 @Component({
   components: {
@@ -92,7 +93,7 @@ export default class SendBitcoinLedger extends Vue {
   txError = '';
 
   createdTx: LedgerTx = {
-    coin: process.env.VUE_APP_COIN ?? constants.BTC_NETWORK_TESTNET,
+    coin: EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
     inputs: [],
     outputs: [],
     outputScriptHex: '',
@@ -126,7 +127,7 @@ export default class SendBitcoinLedger extends Vue {
   ledgerDataReady = false;
 
   ledgerService: LedgerService = new LedgerService(
-    process.env.VUE_APP_COIN ?? constants.BTC_NETWORK_TESTNET,
+    EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
   );
 
   @State('pegInTx') peginTxState!: PegInTxState;
@@ -291,7 +292,7 @@ export default class SendBitcoinLedger extends Vue {
     this.txId = '';
     this.txError = '';
     this.createdTx = {
-      coin: process.env.VUE_APP_COIN ?? constants.BTC_NETWORK_TESTNET,
+      coin: EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
       inputs: [],
       outputs: [],
       outputScriptHex: '',
@@ -316,7 +317,7 @@ export default class SendBitcoinLedger extends Vue {
     };
     this.ledgerDataReady = false;
     this.ledgerService = new LedgerService(
-      process.env.VUE_APP_COIN ?? constants.BTC_NETWORK_TESTNET,
+      EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
     );
   }
 }

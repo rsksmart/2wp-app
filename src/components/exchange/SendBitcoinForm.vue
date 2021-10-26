@@ -402,6 +402,7 @@ import { Web3SessionState } from '@/store/session/types';
 import { PegInTxState } from '@/store/peginTx/types';
 import { Machine } from '@/services/utils';
 import SatoshiBig from '@/types/SatoshiBig';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 @Component({
   components: {
@@ -450,7 +451,9 @@ export default class SendBitcoinForm extends Vue {
 
   accountBalances: string[] = [];
 
-  CHAIN_ID = process.env.VUE_APP_COIN === constants.BTC_NETWORK_MAINNET ? 30 : 31;
+  CHAIN_ID =
+    EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin
+    === constants.BTC_NETWORK_MAINNET ? 30 : 31;
 
   fixedUSDDecimals = 2;
 

@@ -57,6 +57,7 @@ import DeviceErrorDialog from '@/components/exchange/DeviceErrorDialog.vue';
 import ConnectDevice from '@/components/exchange/ConnectDevice.vue';
 import TxErrorDialog from '@/components/exchange/TxErrorDialog.vue';
 import SatoshiBig from '@/types/SatoshiBig';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 @Component({
   components: {
@@ -98,7 +99,7 @@ export default class SendBitcoinTrezor extends Vue {
   txError = '';
 
   createdTx: TrezorTx = {
-    coin: process.env.VUE_APP_COIN ?? constants.BTC_NETWORK_TESTNET,
+    coin: EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
     inputs: [],
     outputs: [],
   };
@@ -128,7 +129,7 @@ export default class SendBitcoinTrezor extends Vue {
   trezorDataReady = false;
 
   trezorService: TrezorService = new TrezorService(
-    process.env.VUE_APP_COIN ?? constants.BTC_NETWORK_TESTNET,
+    EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
   );
 
   @State('pegInTx') peginTxState!: PegInTxState;
@@ -318,7 +319,7 @@ export default class SendBitcoinTrezor extends Vue {
     this.txId = '';
     this.txError = '';
     this.createdTx = {
-      coin: process.env.VUE_APP_COIN ?? constants.BTC_NETWORK_TESTNET,
+      coin: EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
       inputs: [],
       outputs: [],
     };
@@ -339,7 +340,7 @@ export default class SendBitcoinTrezor extends Vue {
     };
     this.trezorDataReady = false;
     this.trezorService = new TrezorService(
-      process.env.VUE_APP_COIN ?? constants.BTC_NETWORK_TESTNET,
+      EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
     );
   }
 }
