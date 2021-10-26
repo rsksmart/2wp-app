@@ -99,13 +99,13 @@ export abstract class WalletService {
       // eslint-disable-next-line no-await-in-loop
       await store.dispatch(`pegInTx/${constants.PEGIN_TX_ADD_ADDRESSES}`, addresses);
 
-      // eslint-disable-next-line no-await-in-loop
       const balancesFound = await ApiService.getBalances(sessionId, addresses);
       const balances = {
-        legacy: balancesFound.legacy ? new SatoshiBig(balancesFound.legacy, 'satoshi') : new SatoshiBig(0, 'satoshi'),
-        segwit: balancesFound.segwit ? new SatoshiBig(balancesFound.segwit, 'satoshi') : new SatoshiBig(0, 'satoshi'),
-        nativeSegwit: balancesFound.nativeSegwit ? new SatoshiBig(balancesFound.nativeSegwit, 'satoshi') : new SatoshiBig(0, 'satoshi'),
+        legacy: new SatoshiBig(balancesFound.legacy || 0, 'satoshi'),
+        segwit: new SatoshiBig(balancesFound.segwit || 0 , 'satoshi'),
+        nativeSegwit: new SatoshiBig(balancesFound.nativeSegwit || 0, 'satoshi'),
       };
+
       // eslint-disable-next-line no-extra-boolean-cast
       if (!!balances) {
         if (balances.legacy.gt(0)
