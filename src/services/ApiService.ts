@@ -108,4 +108,14 @@ export default class ApiService {
         .catch(reject);
     });
   }
+
+  public static areUnusedAddresses(addressList: string[]): Promise<boolean[]> {
+    return new Promise((resolve, reject) => {
+      axios.post(`${this.baseURL}/unusedAddreses`, {
+        addressList,
+      })
+        .then((response) => resolve(response.data))
+        .catch(reject);
+    });
+  }
 }
