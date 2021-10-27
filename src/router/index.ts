@@ -1,20 +1,22 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
-import Exchange from '../views/Exchange.vue';
+import Home from '@/views/Home.vue';
 
 Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
   {
     path: '/',
-    name: 'Exchange',
-    component: Exchange,
+    name: 'Home',
+    component: Home,
+    props: (route) => ({ peg: route.params.peg }),
   },
   {
     path: '/exchange',
     name: 'Exchange',
-    component: () => import(/* webpackChunkName: "exchange" */ '../views/Exchange.vue'),
+    component: () => import(/* webpackChunkName: "exchange2" */ '../views/Exchange.vue'),
+    props: (route) => ({ selectedWalletComponent: route.params.selectedWallet }),
   },
   {
     path: '/status/txId/:txId',

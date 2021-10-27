@@ -76,7 +76,7 @@ export default class SendBitcoinLedger extends Vue {
     txFeeIndex: 1.0,
   };
 
-  showDialog = true;
+  showDialog = false;
 
   showErrorDialog = false;
 
@@ -286,13 +286,14 @@ export default class SendBitcoinLedger extends Vue {
 
   @Emit()
   clear(): void {
+    this.ledgerService.unsubscribe(this.ledgerServiceSubscriber);
     this.pegInFormData = {
       accountType: '',
       amount: new SatoshiBig('0', 'satoshi'),
       rskAddress: '',
       txFeeIndex: 1.0,
     };
-    this.showDialog = true;
+    this.showDialog = false;
     this.showErrorDialog = false;
     this.showTxErrorDialog = false;
     this.deviceError = 'test';

@@ -1,0 +1,43 @@
+<template>
+  <v-container fluid class="exchange normalized-height container
+  max-width mx-6">
+    <select-bitcoin-wallet  :peg="peg" @bitcoinWalletSelected="toSendBitcoin"/>
+  </v-container>
+</template>
+
+<script lang="ts">
+import {
+  Vue, Component, Emit, Prop,
+} from 'vue-property-decorator';
+import { Action, State } from 'vuex-class';
+import SelectBitcoinWallet from '@/components/exchange/SelectBitcoinWallet.vue';
+import * as constants from '@/store/constants';
+import { PegInTxState } from '@/store/peginTx/types';
+
+@Component({
+  components: {
+    SelectBitcoinWallet,
+  },
+})
+export default class Home extends Vue {
+  @Prop({ default: '' }) peg!: string;
+
+  @State('pegInTx') peginTxState!: PegInTxState;
+
+  @Action(constants.PEGIN_TX_ADD_BITCOIN_WALLET, { namespace: 'pegInTx' }) setBitcoinWallet !: any;
+
+  @Emit()
+  toSendBitcoin(bitcoinWallet: string): void {
+    this.setBitcoinWallet(bitcoinWallet);
+    if (this.peginTxState.bitcoinWallet === constants
+      .WALLET_LEDGER) this.$router.push({ name: 'Exchange', params: { selectedWallet: 'SendBitcoinLedger' } });
+    if (this.peginTxState.bitcoinWallet === constants
+      .WALLET_TREZOR) this.$router.push({ name: 'Exchange', params: { selectedWallet: 'SendBitcoinTrezor' } });
+  }
+
+  @Emit()
+  back() {
+    this.setBitcoinWallet('');
+  }
+}
+</script>
