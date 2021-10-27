@@ -157,6 +157,13 @@
         </template>
       </v-col>
     </v-row>
+    <v-row>
+      <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
+        <v-btn v-if="showBack" rounded outlined color="#00B520" width="110" @click="back">
+          <span>Back</span>
+        </v-btn>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -182,6 +189,10 @@ export default class SelectBitcoinWallet extends Vue {
 
   get trezorImage() {
     return this.selectedWallet === constants.WALLET_TREZOR ? TrezorWhite : Trezor;
+  }
+
+  get showBack() {
+    return this.BTC2RBTC || this.RBTC2BTC;
   }
 
   @Emit()
@@ -246,6 +257,12 @@ export default class SelectBitcoinWallet extends Vue {
         break;
       }
     }
+  }
+
+  @Emit()
+  // eslint-disable-next-line class-methods-use-this
+  back():void {
+    this.reset();
   }
 }
 </script>

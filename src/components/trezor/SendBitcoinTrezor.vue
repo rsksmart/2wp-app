@@ -24,6 +24,13 @@
       <tx-error-dialog :showTxErrorDialog="showTxErrorDialog"
                        :errorMessage="txError" @closeErrorDialog="closeTxErrorDialog"/>
     </template>
+    <v-row>
+      <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
+        <v-btn v-if="showBack" rounded outlined color="#00B520" width="110" @click="back">
+          <span>Back</span>
+        </v-btn>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -50,6 +57,7 @@ import DeviceErrorDialog from '@/components/exchange/DeviceErrorDialog.vue';
 import ConnectDevice from '@/components/exchange/ConnectDevice.vue';
 import TxErrorDialog from '@/components/exchange/TxErrorDialog.vue';
 import SatoshiBig from '@/types/SatoshiBig';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 @Component({
   components: {
@@ -91,7 +99,7 @@ export default class SendBitcoinTrezor extends Vue {
   txError = '';
 
   createdTx: TrezorTx = {
-    coin: process.env.VUE_APP_COIN ?? 'test',
+    coin: EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
     inputs: [],
     outputs: [],
   };
@@ -120,7 +128,9 @@ export default class SendBitcoinTrezor extends Vue {
 
   trezorDataReady = false;
 
-  trezorService: TrezorService = new TrezorService(process.env.VUE_APP_COIN ?? 'test');
+  trezorService: TrezorService = new TrezorService(
+    EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
+  );
 
   @State('pegInTx') peginTxState!: PegInTxState;
 
@@ -128,10 +138,16 @@ export default class SendBitcoinTrezor extends Vue {
 
   @Action(constants.PEGIN_TX_ADD_ADDRESSES, { namespace: 'pegInTx' }) setPeginTxAddresses !: any;
 
+  @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: any;
+
   @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: (accountType: string) => string;
 
   beforeMount() {
     this.showDialog = localStorage.getItem('BTRD_COOKIE_DISABLED') !== 'true';
+  }
+
+  get showBack(): boolean {
+    return this.currentComponent !== 'ConfirmTransaction';
   }
 
   get txData(): TxData {
@@ -276,6 +292,56 @@ export default class SendBitcoinTrezor extends Vue {
         };
       })
       .catch(console.error);
+  }
+
+  @Emit('back')
+  back() {
+    this.clear();
+    this.clearAccount();
+  }
+
+  @Emit()
+  clear(): void {
+    this.pegInFormData = {
+      accountType: '',
+      amount: new SatoshiBig('0', 'satoshi'),
+      rskAddress: '',
+      txFeeIndex: 1.0,
+    };
+    this.showDialog = true;
+    this.showErrorDialog = false;
+    this.showTxErrorDialog = false;
+    this.deviceError = 'test';
+    this.sendBitcoinState = 'idle';
+    this.trezorConnected = false;
+    this.currentComponent = 'SendBitcoinForm';
+    this.unusedAddresses = [];
+    this.txId = '';
+    this.txError = '';
+    this.createdTx = {
+      coin: EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
+      inputs: [],
+      outputs: [],
+    };
+    this.amount = new SatoshiBig('0', 'satoshi');
+    this.refundAddress = '';
+    this.recipient = '';
+    this.feeBTC = new SatoshiBig('0', 'satoshi');
+    this.txBuilder = new TrezorTxBuilder();
+    this.balances = {
+      legacy: new SatoshiBig(0, 'satoshi'),
+      segwit: new SatoshiBig(0, 'satoshi'),
+      nativeSegwit: new SatoshiBig(0, 'satoshi'),
+    };
+    this.calculatedFees = {
+      slow: new SatoshiBig(0, 'satoshi'),
+      average: new SatoshiBig(0, 'satoshi'),
+      fast: new SatoshiBig(0, 'satoshi'),
+    };
+    this.trezorDataReady = false;
+    this.trezorService = new TrezorService(
+      EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
+    );
   }
 }
 </script>
