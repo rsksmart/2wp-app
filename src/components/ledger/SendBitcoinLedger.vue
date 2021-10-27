@@ -1,7 +1,7 @@
 <template>
   <v-container fluid class="px-md-0">
       <template v-if="!ledgerDataReady">
-        <connect-device @continueToForm="getAccountAddresses"
+        <connect-device @continueToForm="startAskingForBalance"
                         :sendBitcoinState="sendBitcoinState"/>
       </template>
       <template v-if="ledgerDataReady">
@@ -130,6 +130,8 @@ export default class SendBitcoinLedger extends Vue {
     EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
   );
 
+  ledgerServiceSubscriber = (balance: AccountBalance) => this.addBalance(balance);
+
   @State('pegInTx') peginTxState!: PegInTxState;
 
   @Action(constants.PEGIN_TX_ADD_ADDRESSES, { namespace: 'pegInTx' }) setPeginTxAddresses !: any;
@@ -229,22 +231,11 @@ export default class SendBitcoinLedger extends Vue {
   }
 
   @Emit()
-  getAccountAddresses() {
+  startAskingForBalance() {
     this.sendBitcoinState = 'loading';
-    this.ledgerService.getAddressList(2)
-      .then((addresses) => {
-        this.setPeginTxAddresses(addresses);
-      })
-      .then(() => ApiService
-        .getBalances(this.peginTxState.sessionId, this.peginTxState.addressList))
-      .then((balances: AccountBalance) => {
-        this.balances = {
-          legacy: new SatoshiBig(balances.legacy, 'satoshi'),
-          segwit: new SatoshiBig(balances.segwit, 'satoshi'),
-          nativeSegwit: new SatoshiBig(balances.nativeSegwit, 'satoshi'),
-        };
-        this.ledgerDataReady = true;
-      })
+    this.ledgerDataReady = false;
+    this.ledgerService.subscribe(this.ledgerServiceSubscriber);
+    this.ledgerService.startAskingForBalance(this.peginTxState.sessionId)
       .catch((e) => {
         if (e.statusCode === 27010) {
           this.deviceError = 'Please unlock your Ledger device.';
@@ -254,6 +245,24 @@ export default class SendBitcoinLedger extends Vue {
         this.sendBitcoinState = 'error';
         this.showErrorDialog = true;
       });
+  }
+
+  addBalance(balanceInformed: AccountBalance) {
+    this.setInformedBalance(balanceInformed);
+    if (!this.ledgerDataReady) {
+      this.ledgerDataReady = true;
+    }
+  }
+
+  @Emit()
+  setInformedBalance(balanceInformed: AccountBalance) {
+    if (balanceInformed === undefined) {
+      this.deviceError = 'Balance was not found.';
+      this.sendBitcoinState = 'error';
+      this.ledgerService.unsubscribe(this.ledgerServiceSubscriber);
+      this.showErrorDialog = true;
+    }
+    this.balances = balanceInformed;
   }
 
   @Emit()
