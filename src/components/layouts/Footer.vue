@@ -14,7 +14,6 @@
               <a href="https://www.iovlabs.org/" target="_blank">
                 About IOV Labs
               </a>
-              <a>Help</a>
               <a href="https://www.rsk.co/terms-conditions" target="_blank">
                 Terms & Conditions
               </a>
