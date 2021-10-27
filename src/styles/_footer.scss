@@ -40,20 +40,37 @@
     font-weight: 300;
   }
 
-  a {
-    text-decoration: none;
-    color: gray !important;
-    cursor: pointer;
-    margin: 0px 10px;
-    font-size: xx-small;
-    font-weight: bold;
+  p {
+    font-family: 'Objective';
+    font-size: 6px;
+    line-height: 24px;
+    color: black !important;
+    opacity: 50%;
+    margin: 0;
   }
 
-  a:hover {
-    text-decoration: underline;
+  .footer-links {
+    a {
+      font-family: 'Objective';
+      font-size: 10px;
+      line-height: 10px;
+      color: black !important;
+      opacity: 50%;
+      margin: 0px 10px;
+      text-decoration: none;
+      cursor: pointer;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
   }
 
-  .footer-icon:hover {
-    text-decoration: none;
+  .footer-icons {
+    a {
+      color: black !important;
+      margin: 0px 10px;
+      text-decoration: none;
+      cursor: pointer;
+    }
   }
 }

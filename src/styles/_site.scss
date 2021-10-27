@@ -1,5 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
 
+@font-face {
+  font-family: "Objective";
+  src: local("Objective"),
+       url(./fonts/Objective-Regular.woff2) format("woff2");
+}
+
 div, p, h1, h2, h3, h4, h5, h6, body, button {
   font-family: 'Quicksand', sans-serif;
   font-style: normal;

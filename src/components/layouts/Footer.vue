@@ -3,27 +3,33 @@
       <v-col cols="11" class="pb-0">
         <v-row justify="center" align="center" class="mx-0 py-md-6 py-xl-12">
           <v-col>
-            <v-row justify="start" class="mx-0">
-              Powered by IOVlabs
-            </v-row>
+              <v-img position="center left"
+                     src="@/assets/logo-iov.svg"
+                     alt="RSK Two Way Peg"
+                     width="100" contain class="rsk-main-logo"/>
+            <p>Copyright © 2015 RSK Labs All rights reserved</p>
           </v-col>
           <v-col cols="7">
-            <v-row justify="center" class="mx-0">
-              <a href="https://www.iovlabs.org/" target="_blank">About IOV Labs</a>
+            <v-row justify="center" class="mx-0 footer-links">
+              <a href="https://www.iovlabs.org/" target="_blank">
+                About IOV Labs
+              </a>
               <a>Help</a>
-              <a href="https://www.rsk.co/terms-conditions" target="_blank">Terms & Conditions</a>
+              <a href="https://www.rsk.co/terms-conditions" target="_blank">
+                Terms & Conditions
+              </a>
               <a>Documentation</a>
             </v-row>
           </v-col>
           <v-col>
-            <v-row justify="end" class="mx-0">
-              <a href="https://twitter.com/rsksmart" target="_blank" class="footer-icon">
+            <v-row justify="end" class="mx-0 footer-icons">
+              <a href="https://twitter.com/rsksmart" target="_blank">
                 <v-icon>mdi-twitter</v-icon>
               </a>
-              <a href="https://github.com/rsksmart/2wp-app" target="_blank" class="footer-icon">
+              <a href="https://github.com/rsksmart/2wp-app" target="_blank">
                 <v-icon>mdi-github</v-icon>
               </a>
-              <a href="https://open-rsk-dev.slack.com/messages/support" target="_blank" class="footer-icon">
+              <a href="https://open-rsk-dev.slack.com/messages/support" target="_blank">
                 <v-icon>mdi-slack</v-icon>
               </a>
             </v-row>
