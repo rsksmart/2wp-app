@@ -120,40 +120,7 @@
                 <span>Coming soon</span>
               </v-tooltip>
             </v-col>
-            <v-col v-if="false" cols="2" class="d-flex justify-start">
-              <v-btn outlined disabled class="wallet-button-thin-disabled"
-                     @click="setBitcoinWallet(storeConstants.WALLET_ELECTRUM)">
-                <v-img class="mr-2" src="@/assets/wallet-icons/electrum-gray.png"
-                       contain max-width="25"/>
-                <v-col class="d-flex flex-column pa-0">
-                  <span class="gray-greenish">More</span>
-                  <span class="gray-greenish">(Coming soon)</span>
-                </v-col>
-              </v-btn>
-            </v-col>
           </v-row>
-          <template v-if="showMoreWallets">
-            <v-row class="ma-0 d-flex justify-center">
-              <v-col/>
-              <v-col cols="3" class="d-flex justify-end">
-                <v-btn outlined class="wallet-button-thin"
-                       @click="setBitcoinWallet(storeConstants.WALLET_RWALLET)"
-                 v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_RWALLET }">
-                  <v-img class="mr-2" :src="rWalletImage" contain max-width="20"/>
-                  <span class="wallet-button-content">rWallet</span>
-                </v-btn>
-              </v-col>
-              <v-col cols="3" class="d-flex justify-start">
-                <v-btn outlined class="wallet-button-thin"
-                       @click="setBitcoinWallet(storeConstants.WALLET_DEFIANT)"
-                   v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_DEFIANT }">
-                  <v-img class="mr-2" :src="defiantImage" contain max-width="31"/>
-                  <span class="wallet-button-content">Defiant</span>
-                </v-btn>
-              </v-col>
-              <v-col/>
-            </v-row>
-          </template>
         </template>
       </v-col>
     </v-row>
@@ -168,17 +135,13 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Emit } from 'vue-property-decorator';
+import {
+  Vue, Component, Emit, Prop,
+} from 'vue-property-decorator';
 import * as constants from '@/store/constants';
-import Trezor from '@/assets/wallet-icons/trezor.png';
-import TrezorWhite from '@/assets/wallet-icons/trezor-white.png';
 
 @Component
 export default class SelectBitcoinWallet extends Vue {
-  showWallet = false;
-
-  showMoreWallets = false;
-
   selectedWallet = '';
 
   BTC2RBTC = false;
@@ -187,26 +150,21 @@ export default class SelectBitcoinWallet extends Vue {
 
   storeConstants = constants;
 
-  get trezorImage() {
-    return this.selectedWallet === constants.WALLET_TREZOR ? TrezorWhite : Trezor;
-  }
+  @Prop({ default: '' }) peg!: string;
 
   get showBack() {
     return this.BTC2RBTC || this.RBTC2BTC;
   }
 
-  @Emit()
-  reset(): void {
-    this.BTC2RBTC = false;
-    this.showWallet = false;
-    this.showMoreWallets = false;
-    this.selectedWallet = '';
+  get showWallet(): boolean {
+    return this.RBTC2BTC || this.BTC2RBTC;
   }
 
   @Emit()
-  showMoreBitcoinWallets(): void {
-    this.showMoreWallets = !this.showMoreWallets;
-    if (this.showMoreWallets) this.$vuetify.goTo(document.body.scrollHeight);
+  reset(): void {
+    this.BTC2RBTC = false;
+    this.RBTC2BTC = false;
+    this.selectedWallet = '';
   }
 
   @Emit()
@@ -217,7 +175,6 @@ export default class SelectBitcoinWallet extends Vue {
   @Emit()
   showBitcoinWallets(): void {
     this.BTC2RBTC = true;
-    this.showWallet = true;
   }
 
   @Emit('bitcoinWalletSelected')
@@ -263,6 +220,11 @@ export default class SelectBitcoinWallet extends Vue {
   // eslint-disable-next-line class-methods-use-this
   back():void {
     this.reset();
+  }
+
+  created() {
+    this.BTC2RBTC = this.peg === 'BTC2RBTC';
+    this.RBTC2BTC = this.peg === 'RBTC2BTC';
   }
 }
 </script>

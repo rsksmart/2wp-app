@@ -4,7 +4,7 @@
     <div class="custom-background">
       <top/>
       <v-row class="d-flex justify-center">
-        <router-view @bitcoinWallet="getBitcoinWallet"/>
+        <router-view/>
       </v-row>
       <footer-rsk/>
     </div>
@@ -12,7 +12,7 @@
 </template>
 <script lang="ts">
 import Vue from 'vue';
-import { Component, Emit } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
 import { Action } from 'vuex-class';
 import Top from '@/components/layouts/Top.vue';
 import FooterRsk from '@/components/layouts/Footer.vue';
@@ -36,11 +36,6 @@ export default class App extends Vue {
   @Action(constants.PEGIN_TX_ADD_PEGIN_CONFIGURATION, { namespace: 'pegInTx' }) addPeginConfiguration !: any;
 
   @Action(constants.PEGIN_TX_ADD_BITCOIN_PRICE, { namespace: 'pegInTx' }) addBitcoinPrice !: any;
-
-  @Emit()
-  getBitcoinWallet(_bitcoinWallet: string) {
-    this.bitcoinWallet = _bitcoinWallet;
-  }
 
   created() {
     ApiService.getPeginConfiguration()

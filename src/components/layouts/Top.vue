@@ -18,8 +18,7 @@ import { Vue, Component, Emit } from 'vue-property-decorator';
 export default class Top extends Vue {
   @Emit()
   toExchange() {
-    if (this.$router.currentRoute.name === 'Exchange') this.$router.go(0);
-    this.$router.push({ name: 'Exchange' });
+    if (this.$router.currentRoute.name !== 'Home') this.$router.push({ name: 'Home' });
   }
 }
 </script>
