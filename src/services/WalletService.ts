@@ -15,9 +15,9 @@ export abstract class WalletService {
 
   abstract getAccountAddresses(batch: number, index: number): Promise<WalletAddress[]>;
 
-  abstract getMaxAddressPerCall(): number;
+  abstract getWalletAddressesPerCall(): number;
 
-  abstract getMaxAddressCallNumber(): number;
+  abstract getWalletMaxCall(): number;
 
   protected getAccountPath(accountType: string, accountIdx: number) {
     const coinPath: string = this.coin === constants.BTC_NETWORK_MAINNET ? "/0'" : "/1'";
@@ -87,10 +87,10 @@ export abstract class WalletService {
       nativeSegwit: new SatoshiBig(0, 'satoshi'),
     };
 
-    const maxAddressPerCall: number = this.getMaxAddressPerCall();
+    const maxAddressPerCall: number = this.getWalletAddressesPerCall();
     for (
       let startFrom = 0;
-      startFrom < (this.getMaxAddressCallNumber() * maxAddressPerCall);
+      startFrom < (this.getWalletMaxCall() * maxAddressPerCall);
       startFrom += maxAddressPerCall
     ) {
       try {

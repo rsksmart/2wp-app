@@ -20,13 +20,13 @@ export default class LedgerService extends WalletService {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  public getMaxAddressPerCall(): number {
-    return Number(process.env.VUE_APP_WALLET_ADDRESSES_PER_CALL_LEDGER);
+  public getWalletAddressesPerCall(): number {
+    return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletAddressesPerCallLedger;
   }
 
   // eslint-disable-next-line class-methods-use-this
-  public getMaxAddressCallNumber(): number {
-    return Number(process.env.VUE_APP_MAX_ADDRESS_CALL_NUMBER_LEDGER);
+  public getWalletMaxCall(): number {
+    return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletMaxCallLedger;
   }
 
   public static splitTransaction(hexTx: string): Promise<LedgerjsTransaction> {

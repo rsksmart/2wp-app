@@ -23,13 +23,13 @@ export default class TrezorService extends WalletService {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  public getMaxAddressPerCall(): number {
-    return Number(process.env.VUE_APP_WALLET_ADDRESSES_PER_CALLTREZOR);
+  public getWalletAddressesPerCall(): number {
+    return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletAddressesPerCallTrezor;
   }
 
   // eslint-disable-next-line class-methods-use-this
-  public getMaxAddressCallNumber(): number {
-    return Number(process.env.VUE_APP_MAX_ADDRESS_CALL_NUMBER_TREZOR);
+  public getWalletMaxCall(): number {
+    return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletMaxCallTrezor;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-inferrable-types
