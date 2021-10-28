@@ -23,6 +23,10 @@ const defaultEnvironmentVariables = {
   vueAppCoin: constants.BTC_NETWORK_TESTNET,
   vueAppManifestEmail: '',
   vueAppManifestAppUrl: '',
+  vueAppWalletMaxCallTrezor: '1',
+  vueAppWalletAddressesPerCallTrezor: '10',
+  vueAppWalletMaxCallLedger: '2',
+  vueAppWalletAddressesPerCallLedger: '2',
 };
 
 EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
