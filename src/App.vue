@@ -2,9 +2,7 @@
   <v-app style="z-index: 0 !important;" class="d-flex">
     <mobile />
     <div class="custom-background">
-      <v-row class="d-flex justify-center">
-        <top/>
-      </v-row>
+      <top/>
       <v-row class="d-flex justify-center">
         <router-view @bitcoinWallet="getBitcoinWallet"/>
       </v-row>

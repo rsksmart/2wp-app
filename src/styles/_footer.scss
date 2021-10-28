@@ -1,6 +1,5 @@
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/all.css');
 .footer-rsk {
-
   .footer-info {
     a {
       text-decoration: none;
@@ -41,4 +40,37 @@
     font-weight: 300;
   }
 
+  p {
+    font-family: 'Objective';
+    font-size: 6px;
+    line-height: 24px;
+    color: black !important;
+    opacity: 50%;
+    margin: 0;
+  }
+
+  .footer-links {
+    a {
+      font-family: 'Objective';
+      font-size: 10px;
+      line-height: 10px;
+      color: black !important;
+      opacity: 50%;
+      margin: 0px 10px;
+      text-decoration: none;
+      cursor: pointer;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .footer-icons {
+    a {
+      color: black !important;
+      margin: 0px 10px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+  }
 }
