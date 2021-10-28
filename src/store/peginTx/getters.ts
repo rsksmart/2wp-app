@@ -3,6 +3,7 @@ import * as constants from '@/store/constants';
 import { PegInTxState } from './types';
 import { RootState } from '../types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import ApiService from '@/services/ApiService';
 
 export const getters: GetterTree<PegInTxState, RootState> = {
   [constants.WALLET_NAME]: (state) => {
@@ -46,11 +47,14 @@ export const getters: GetterTree<PegInTxState, RootState> = {
         default:
           accountTypePath = "44'";
       }
-      // eslint-disable-next-line no-unused-expressions
-      state.addressList?.forEach((walletAddress) => {
-        if (walletAddress.serializedPath === `m/${accountTypePath}${coinPath}/0'/1/0`) address = walletAddress.address;
-      });
-      return address;
+    // eslint-disable-next-line no-unused-expressions
+    state.addressList?.forEach((walletAddress) => {
+      if ((walletAddress.serializedPath === `m/${accountTypePath}${coinPath}/0'/1/0`) &&
+          (ApiService.areUnusedAddresses([walletAddress.address]))) {
+            address = walletAddress.address;
+      } 
+    });
+    return address;
     },
   [constants.PEGIN_TX_GET_REFUND_ADDRESS]: (state: PegInTxState) => {
     let address = '';
