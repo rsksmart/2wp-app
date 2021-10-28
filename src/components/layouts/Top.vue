@@ -10,7 +10,7 @@
                    height="65" contain class="rsk-main-logo"/>
           </v-col>
           <v-col class="d-flex justify-end align-center pr-0">
-            <v-btn color="#00B520" class="whiteish" rounded>
+            <v-btn v-if="false" color="#00B520" class="whiteish" rounded>
               Need help?
             </v-btn>
           </v-col>

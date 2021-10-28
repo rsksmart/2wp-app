@@ -5,15 +5,16 @@
           <v-col>
               <v-img position="center left"
                      src="@/assets/logo-iov.svg"
-                     alt="RSK Two Way Peg"
+                     alt="IOV Labs"
                      width="100" contain class="rsk-main-logo"/>
-            <p>Copyright © 2015 RSK Labs All rights reserved</p>
+            <p>Copyright © 2021 IOV Labs All rights reserved</p>
           </v-col>
           <v-col cols="7">
             <v-row justify="center" class="mx-0 footer-links">
               <a href="https://www.iovlabs.org/" target="_blank">
                 About IOV Labs
               </a>
+              <a href="https://open-rsk-dev.slack.com/messages/support">Help</a>
               <a href="https://www.rsk.co/terms-conditions" target="_blank">
                 Terms & Conditions
               </a>
