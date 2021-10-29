@@ -56,12 +56,6 @@ export abstract class WalletService {
       (+accountIdx.substring(0, 1) | 0x80000000) >>> 0, +change, +addressIdx];
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  protected async getMaxAmountForPegin(): Promise<SatoshiBig> {
-    const config = await ApiService.getPeginConfiguration();
-    return new SatoshiBig(config.maxValue, 'satoshi');
-  }
-
   public subscribe(subscriber: (balance: AccountBalance) => void): void {
     this.subscribers.push(subscriber);
   }
@@ -78,8 +72,7 @@ export abstract class WalletService {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  public async startAskingForBalance(sessionId: string): Promise<void> {
-    const maxAmountPegin = await this.getMaxAmountForPegin();
+  public async startAskingForBalance(sessionId: string, maxAmountPegin: number): Promise<void> {
     // eslint-disable-next-line prefer-const
     let balanceAccumulated: AccountBalance = {
       legacy: new SatoshiBig(0, 'satoshi'),
@@ -93,33 +86,30 @@ export abstract class WalletService {
       startFrom < (this.getWalletMaxCall() * maxAddressPerCall);
       startFrom += maxAddressPerCall
     ) {
-      try {
-        // eslint-disable-next-line no-await-in-loop
-        const addresses = await this.getAccountAddresses(maxAddressPerCall, startFrom);
-        if (addresses.length === 0) {
-          throw new Error('Error getting list of addreses - List of addresses is empty');
-        }
-
-        // eslint-disable-next-line no-await-in-loop
-        const balancesFound = await ApiService.getBalances(sessionId, addresses);
-
-        // eslint-disable-next-line no-extra-boolean-cast
-        if (!!balancesFound) {
-          balanceAccumulated = {
-            legacy: new SatoshiBig(balanceAccumulated.legacy.plus(balancesFound.legacy), 'satoshi'),
-            segwit: new SatoshiBig(balanceAccumulated.segwit.plus(balancesFound.segwit), 'satoshi'),
-            nativeSegwit: new SatoshiBig(balanceAccumulated.nativeSegwit.plus(balancesFound.nativeSegwit), 'satoshi'),
-          };
-          this.informSubscribers(balanceAccumulated);
-        } else {
-          throw new Error('Error getting balances');
-        }
-      } catch (e) {
-        throw new Error('Error getting list of Addreses from device');
+      // eslint-disable-next-line no-await-in-loop
+      const addresses = await this.getAccountAddresses(maxAddressPerCall, startFrom);
+      if (addresses.length === 0) {
+        throw new Error('Error getting list of addreses - List of addresses is empty');
       }
-      if (balanceAccumulated.legacy.gte(maxAmountPegin)
-        && balanceAccumulated.segwit.gte(maxAmountPegin)
-        && balanceAccumulated.nativeSegwit.gte(maxAmountPegin)
+
+      // eslint-disable-next-line no-await-in-loop
+      const balancesFound = await ApiService.getBalances(sessionId, addresses);
+
+      // eslint-disable-next-line no-extra-boolean-cast
+      if (!!balancesFound) {
+        balanceAccumulated = {
+          legacy: new SatoshiBig(balanceAccumulated.legacy.plus(balancesFound.legacy), 'satoshi'),
+          segwit: new SatoshiBig(balanceAccumulated.segwit.plus(balancesFound.segwit), 'satoshi'),
+          nativeSegwit: new SatoshiBig(balanceAccumulated.nativeSegwit.plus(balancesFound.nativeSegwit), 'satoshi'),
+        };
+        this.informSubscribers(balanceAccumulated);
+      } else {
+        throw new Error('Error getting balances');
+      }
+      const maxAmountPeginCompare = new SatoshiBig(maxAmountPegin, 'satoshi');
+      if (balanceAccumulated.legacy.gte(maxAmountPeginCompare)
+        && balanceAccumulated.segwit.gte(maxAmountPeginCompare)
+        && balanceAccumulated.nativeSegwit.gte(maxAmountPeginCompare)
       ) {
         return;
       }

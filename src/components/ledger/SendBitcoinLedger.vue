@@ -235,7 +235,10 @@ export default class SendBitcoinLedger extends Vue {
     this.sendBitcoinState = 'loading';
     this.ledgerDataReady = false;
     this.ledgerService.subscribe(this.ledgerServiceSubscriber);
-    this.ledgerService.startAskingForBalance(this.peginTxState.sessionId)
+    this.ledgerService.startAskingForBalance(
+      this.peginTxState.sessionId,
+      this.peginTxState.peginConfiguration.maxValue,
+    )
       .catch((e) => {
         if (e.statusCode === 27010) {
           this.deviceError = 'Please unlock your Ledger device.';
