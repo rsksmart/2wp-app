@@ -3,6 +3,7 @@ import SatoshiBig from '@/types/SatoshiBig';
 import ApiService from './ApiService';
 import { AccountBalance } from '@/types';
 import { WalletAddress } from '@/store/peginTx/types';
+import store from '@/store';
 
 export abstract class WalletService {
   protected coin: string;
@@ -67,6 +68,10 @@ export abstract class WalletService {
     }
   }
 
+  public cleanSubscriptions() {
+    this.subscribers = [];
+  }
+
   protected informSubscribers(balance: AccountBalance): void {
     this.subscribers.forEach((s) => s(balance));
   }
@@ -91,7 +96,7 @@ export abstract class WalletService {
       if (addresses.length === 0) {
         throw new Error('Error getting list of addreses - List of addresses is empty');
       }
-
+      store.dispatch(`pegInTx/${constants.PEGIN_TX_ADD_ADDRESSES}`, addresses);
       // eslint-disable-next-line no-await-in-loop
       const balancesFound = await ApiService.getBalances(sessionId, addresses);
 
