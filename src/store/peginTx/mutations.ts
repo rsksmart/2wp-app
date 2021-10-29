@@ -6,7 +6,7 @@ import {
 
 export const mutations: MutationTree<PegInTxState> = {
   [constants.PEGIN_TX_SET_ADDRESS_LIST]: (state, addressList: WalletAddress[]) => {
-    state.addressList = addressList;
+    state.addressList = state.addressList ? [...state.addressList, ...addressList] : addressList;
   },
   [constants.PEGIN_TX_SET_UTXO_LIST]: (state, utxoList: Utxo[]) => {
     state.utxoList = utxoList;

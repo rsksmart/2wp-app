@@ -286,6 +286,7 @@ export default class SendBitcoinLedger extends Vue {
 
   @Emit()
   clear(): void {
+    this.ledgerService.cleanSubscriptions();
     this.pegInFormData = {
       accountType: '',
       amount: new SatoshiBig('0', 'satoshi'),
