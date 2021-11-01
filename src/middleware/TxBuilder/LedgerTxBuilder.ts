@@ -24,6 +24,10 @@ export default class LedgerTxBuilder extends TxBuilder {
     this.txAccountType = constants.BITCOIN_LEGACY_ADDRESS;
   }
 
+  get changeAddress(): string {
+    return this.changeAddress;
+  }
+
   set accountType(accountType: string) {
     this.txAccountType = accountType;
   }
@@ -51,7 +55,7 @@ export default class LedgerTxBuilder extends TxBuilder {
           const tx: LedgerTx = {
             outputs,
             outputScriptHex,
-            changePath: store.getters[`pegInTx/${constants.PEGIN_TX_GET_CHANGE_ADDRESS}`](this.txAccountType),
+            changePath: this.changeAddress,
             coin,
             inputs,
             associatedKeysets,
