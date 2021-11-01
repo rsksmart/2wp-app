@@ -47,14 +47,17 @@ export const getters: GetterTree<PegInTxState, RootState> = {
         default:
           accountTypePath = "44'";
       }
-    // eslint-disable-next-line no-unused-expressions
-    state.addressList?.forEach((walletAddress) => {
-      if ((walletAddress.serializedPath === `m/${accountTypePath}${coinPath}/0'/1/0`) &&
-          (ApiService.areUnusedAddresses([walletAddress.address]))) {
+      // eslint-disable-next-line no-unused-expressions
+      if (state.addressList) {
+        for (let index = 0; index < state.addressList.length; index += 1) {
+          const walletAddress = state.addressList[index];
+          if ((walletAddress.serializedPath === `m/${accountTypePath}${coinPath}/0'/1/${index}`)
+              && (ApiService.areUnusedAddresses([walletAddress.address]))) {
             address = walletAddress.address;
-      } 
-    });
-    return address;
+          }
+        }
+      }
+      return address;
     },
   [constants.PEGIN_TX_GET_REFUND_ADDRESS]: (state: PegInTxState) => {
     let address = '';
