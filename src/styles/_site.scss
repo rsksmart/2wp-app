@@ -39,6 +39,8 @@ p {
 .custom-background {
   background: #fff;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .number {
@@ -146,20 +148,6 @@ a {
 
 .max-width {
   max-width: 1140px;
-}
-
-.normalized-height {
-  min-height: 40vh;
-
-  @media screen and (max-height: 1440px) {
-      min-height: 50vh;
-  }
-  @media screen and (max-height: 1080px) {
-      min-height: 65vh;
-  }
-  @media screen and (max-height: 720px) {
-      min-height: 75vh;
-  }
 }
 
 body {

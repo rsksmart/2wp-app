@@ -1,6 +1,5 @@
 <template>
-  <v-container fluid class="exchange normalized-height container
-  max-width mx-6">
+  <v-container fluid class="exchange container max-width mx-6">
     <component :is="selectedWalletComponent" @back="back"/>
   </v-container>
 </template>

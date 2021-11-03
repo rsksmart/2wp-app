@@ -1,7 +1,7 @@
 <template>
-    <v-footer padless fixed color="white" class="footer-rsk d-flex justify-center">
+    <v-footer padless color="white" class="footer-rsk d-flex justify-center">
       <v-col cols="11" class="pb-0">
-        <v-row justify="center" align="start" class="mx-0 py-md-6 py-xl-12">
+        <v-row justify="center" align="start" class="mx-0 py-md-0 py-xl-6">
           <v-col>
               <v-img position="center left"
                      src="@/assets/logo-iov.svg"
@@ -21,7 +21,7 @@
               <a>Documentation</a>
             </v-row>
           </v-col>
-          <v-col class="pt-2">
+          <v-col class="pt-1">
             <v-row justify="end" class="mx-0 footer-icons">
               <a href="https://twitter.com/rsksmart" target="_blank">
                 <v-icon>mdi-twitter</v-icon>
