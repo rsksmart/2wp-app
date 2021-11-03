@@ -449,7 +449,11 @@ export default class SendBitcoinForm extends Vue {
 
   transactionFees = ['Slow', 'Average', 'Fast'];
 
-  accountBalances: string[] = [];
+  accountBalances: {
+    text: string;
+    value: string;
+    disabled: boolean;
+  }[] = [];
 
   CHAIN_ID =
     EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin
@@ -521,7 +525,7 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get computedBTCAddress() {
-    return this.btcAccountTypeSelected !== '' ? this.btcAccountTypeSelected : this.VALUE_INCOMPLETE_MESSAGE;
+    return this.btcAccountTypeSelected !== '' ? this.getAccountBalanceText(this.btcAccountTypeSelected) : this.VALUE_INCOMPLETE_MESSAGE;
   }
 
   get computedRefundBTCAddress() {
@@ -603,14 +607,6 @@ export default class SendBitcoinForm extends Vue {
       && this.fourthDone;
   }
 
-  get accountType() {
-    if (this.btcAccountTypeSelected[0] === 'L') return constants.BITCOIN_LEGACY_ADDRESS;
-    if (this.btcAccountTypeSelected[0] === 'S') return constants.BITCOIN_SEGWIT_ADDRESS;
-    if (this.btcAccountTypeSelected[0] === 'M') return constants.BITCOIN_MULTISIGNATURE_ADDRESS;
-    if (this.btcAccountTypeSelected[0] === 'N') return constants.BITCOIN_NATIVE_SEGWIT_ADDRESS;
-    return '';
-  }
-
   get web3Address() {
     return this.web3SessionState.account ?? '';
   }
@@ -660,12 +656,12 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get selectedAccountBalance(): SatoshiBig {
-    switch (this.accountType) {
-      case 'BITCOIN_LEGACY_ADDRESS':
+    switch (this.btcAccountTypeSelected) {
+      case constants.BITCOIN_LEGACY_ADDRESS:
         return this.balances.legacy;
-      case 'BITCOIN_NATIVE_SEGWIT_ADDRESS':
+      case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
         return this.balances.nativeSegwit;
-      case 'BITCOIN_SEGWIT_ADDRESS':
+      case constants.BITCOIN_SEGWIT_ADDRESS:
         return this.balances.segwit;
       default:
         break;
@@ -744,8 +740,8 @@ export default class SendBitcoinForm extends Vue {
   @Emit('unused')
   getAddressesFromWallet() {
     this.refundAddressFromWallet = !this.refundAddressFromWallet;
-    let accType = this.accountType;
-    if (this.accountType === constants.BITCOIN_NATIVE_SEGWIT_ADDRESS) {
+    let accType = this.btcAccountTypeSelected;
+    if (this.btcAccountTypeSelected === constants.BITCOIN_NATIVE_SEGWIT_ADDRESS) {
       accType = constants.BITCOIN_SEGWIT_ADDRESS;
     }
     return {
@@ -754,7 +750,6 @@ export default class SendBitcoinForm extends Vue {
     };
   }
 
-  // eslint-disable-next-line class-methods-use-this
   blockLetterKeyDown(e: KeyboardEvent) {
     if (this.bitcoinAmount.toString().length > 15
       && !(e.key === 'Backspace'
@@ -833,7 +828,7 @@ export default class SendBitcoinForm extends Vue {
       recipient: this.computedRskAddress,
       feeLevel: selectedFee,
       feeBTC: this.safeTxFee,
-      accountType: this.accountType,
+      accountType: this.btcAccountTypeSelected,
       pegInFormData: {
         amount: this.safeAmount,
         accountType: this.btcAccountTypeSelected,
@@ -847,7 +842,7 @@ export default class SendBitcoinForm extends Vue {
   calculateTxFee() {
     return {
       amount: Number(this.safeAmount.toSatoshiString()),
-      accountType: this.accountType,
+      accountType: this.btcAccountTypeSelected,
     };
   }
 
@@ -880,25 +875,50 @@ export default class SendBitcoinForm extends Vue {
     this.txFeeIndex = this.pegInFormData.txFeeIndex;
   }
 
+  getAccountBalanceText(accountType: string): string {
+    let text = '';
+    switch (accountType) {
+      case constants.BITCOIN_LEGACY_ADDRESS:
+        text = `Legacy account - ${this.balances.legacy.toBTCTrimmedString()} BTC`;
+        break;
+      case constants.BITCOIN_SEGWIT_ADDRESS:
+        text = `Segwit account - ${this.balances.segwit.toBTCTrimmedString()} BTC`;
+        break;
+      case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
+        text = `Native segwit account - ${this.balances.nativeSegwit.toBTCTrimmedString()} BTC`;
+        break;
+      default:
+        break;
+    }
+    return text;
+  }
+
   @Watch('balances')
   fillAccountBalances() {
-    if (this.peginTxState.bitcoinWallet === constants.WALLET_LEDGER) {
-      this.accountBalances = [
-        `Segwit account - ${this.balances.segwit.toBTCTrimmedString()} BTC`, // warning too many
-        `Legacy account - ${this.balances.legacy.toBTCTrimmedString()} BTC`,
-      ];
-    } else {
-      this.accountBalances = [
-        `Segwit account - ${this.balances.segwit.toBTCTrimmedString()} BTC`,
-        `Legacy account - ${this.balances.legacy.toBTCTrimmedString()} BTC`,
-        `Native segwit account - ${this.balances.nativeSegwit.toBTCTrimmedString()} BTC`,
-      ];
-    }
+    this.accountBalances.forEach((accountItem, idx) => {
+      this.accountBalances[idx].text = this.getAccountBalanceText(accountItem.value);
+    });
   }
 
   created() {
+    this.accountBalances = [
+      {
+        text: `Segwit account - ${this.balances.segwit.toBTCTrimmedString()} BTC`,
+        value: constants.BITCOIN_SEGWIT_ADDRESS,
+        disabled: false,
+      },
+      {
+        text: `Legacy account - ${this.balances.legacy.toBTCTrimmedString()} BTC`,
+        value: constants.BITCOIN_LEGACY_ADDRESS,
+        disabled: false,
+      },
+      {
+        text: `Native segwit account - ${this.balances.nativeSegwit.toBTCTrimmedString()} BTC`,
+        value: constants.BITCOIN_NATIVE_SEGWIT_ADDRESS,
+        disabled: this.peginTxState.bitcoinWallet === constants.WALLET_LEDGER,
+      },
+    ];
     this.fillStoredPegInFormData();
-    this.fillAccountBalances();
   }
 }
 </script>
