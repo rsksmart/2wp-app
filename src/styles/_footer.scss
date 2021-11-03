@@ -43,7 +43,7 @@
   }
 
   p {
-    font-family: 'Objective';
+    font-family: 'Objective', 'Quicksand', sans-serif;;
     font-size: 6px;
     line-height: 24px;
     color: black !important;
@@ -53,12 +53,12 @@
 
   .footer-links {
     a {
-      font-family: 'Objective';
+      font-family: 'Objective', 'Quicksand', sans-serif;;
       font-size: 10px;
       line-height: 10px;
       color: black !important;
       opacity: 0.5;
-      margin: 0px 10px;
+      margin: 0 10px;
       text-decoration: none;
       cursor: pointer;
       &:hover {
@@ -70,7 +70,7 @@
   .footer-icons {
     a {
       color: black !important;
-      margin: 0px 10px;
+      margin: 0 10px;
       text-decoration: none;
       cursor: pointer;
     }
