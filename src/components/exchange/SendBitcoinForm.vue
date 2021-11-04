@@ -898,6 +898,7 @@ export default class SendBitcoinForm extends Vue {
     this.accountBalances.forEach((accountItem, idx) => {
       this.accountBalances[idx].text = this.getAccountBalanceText(accountItem.value);
     });
+    this.checkStep('addingBalances', 2);
   }
 
   created() {
