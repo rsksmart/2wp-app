@@ -903,17 +903,17 @@ export default class SendBitcoinForm extends Vue {
   created() {
     this.accountBalances = [
       {
-        text: `Segwit account - ${this.balances.segwit.toBTCTrimmedString()} BTC`,
+        text: this.getAccountBalanceText(constants.BITCOIN_SEGWIT_ADDRESS),
         value: constants.BITCOIN_SEGWIT_ADDRESS,
         disabled: false,
       },
       {
-        text: `Legacy account - ${this.balances.legacy.toBTCTrimmedString()} BTC`,
+        text: this.getAccountBalanceText(constants.BITCOIN_LEGACY_ADDRESS),
         value: constants.BITCOIN_LEGACY_ADDRESS,
         disabled: false,
       },
       {
-        text: `Native segwit account - ${this.balances.nativeSegwit.toBTCTrimmedString()} BTC`,
+        text: this.getAccountBalanceText(constants.BITCOIN_NATIVE_SEGWIT_ADDRESS),
         value: constants.BITCOIN_NATIVE_SEGWIT_ADDRESS,
         disabled: this.peginTxState.bitcoinWallet === constants.WALLET_LEDGER,
       },
