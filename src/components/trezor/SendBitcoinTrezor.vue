@@ -253,7 +253,10 @@ export default class SendBitcoinTrezor extends Vue {
   startAskingForBalance() {
     this.sendBitcoinState = 'loading';
     this.trezorService.subscribe(this.trezorServiceSubscriber);
-    this.trezorService.startAskingForBalance(this.peginTxState.sessionId)
+    this.trezorService.startAskingForBalance(
+      this.peginTxState.sessionId,
+      this.peginTxState.peginConfiguration.maxValue,
+    )
       .catch((e) => {
         this.deviceError = e.message;
         this.sendBitcoinState = 'error';
@@ -312,6 +315,7 @@ export default class SendBitcoinTrezor extends Vue {
 
   @Emit()
   clear(): void {
+    this.trezorService.cleanSubscriptions();
     this.pegInFormData = {
       accountType: '',
       amount: new SatoshiBig('0', 'satoshi'),
