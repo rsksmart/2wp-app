@@ -27,7 +27,7 @@ import { PegInTxState } from '@/store/peginTx/types';
     SendBitcoinLedger,
   },
 })
-export default class Exchange2 extends Vue {
+export default class Exchange extends Vue {
   currentComponent = '';
 
   bitcoinWallet = '';

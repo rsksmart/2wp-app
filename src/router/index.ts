@@ -15,7 +15,7 @@ const routes: Array<RouteConfig> = [
   {
     path: '/exchange',
     name: 'Exchange',
-    component: () => import(/* webpackChunkName: "exchange2" */ '../views/Exchange.vue'),
+    component: () => import(/* webpackChunkName: "exchange" */ '../views/Exchange.vue'),
     props: (route) => ({ selectedWalletComponent: route.params.selectedWallet }),
   },
   {
