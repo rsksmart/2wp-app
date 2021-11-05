@@ -3,6 +3,7 @@ import SatoshiBig from '@/types/SatoshiBig';
 import ApiService from './ApiService';
 import { AccountBalance } from '@/types';
 import { WalletAddress } from '@/store/peginTx/types';
+import store from '@/store';
 
 export abstract class WalletService {
   protected coin: string;
@@ -95,6 +96,8 @@ export abstract class WalletService {
       if (addresses.length === 0) {
         throw new Error('Error getting list of addreses - List of addresses is empty');
       }
+      // eslint-disable-next-line no-await-in-loop
+      await store.dispatch(`pegInTx/${constants.PEGIN_TX_ADD_ADDRESSES}`, addresses);
 
       // eslint-disable-next-line no-await-in-loop
       const balancesFound = await ApiService.getBalances(sessionId, addresses);
@@ -102,8 +105,8 @@ export abstract class WalletService {
       // eslint-disable-next-line no-extra-boolean-cast
       if (!!balancesFound) {
         if (balancesFound.legacy.gt(0)
-          && balancesFound.nativeSegwit.gt(0)
-          && balancesFound.segwit.gt(0)) {
+          || balancesFound.nativeSegwit.gt(0)
+          || balancesFound.segwit.gt(0)) {
           balanceAccumulated = {
             legacy: new SatoshiBig(balanceAccumulated.legacy.plus(balancesFound.legacy), 'satoshi'),
             segwit: new SatoshiBig(balanceAccumulated.segwit.plus(balancesFound.segwit), 'satoshi'),

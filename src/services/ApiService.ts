@@ -6,6 +6,7 @@ import { isValidOpReturn } from './OpReturnUtils';
 import { isValidPowPegAddress } from './PowPegAddressUtils';
 import { BridgeService } from '@/services/BridgeService';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import SatoshiBig from '@/types/SatoshiBig';
 
 export default class ApiService {
   static baseURL = EnvironmentAccessorService.getEnvironmentVariables().vueAppApiBaseUrl;
@@ -17,7 +18,12 @@ export default class ApiService {
         sessionId,
         addressList,
       })
-        .then((response) => resolve(response.data))
+        .then((response) => response.data)
+        .then((accountBalance) => resolve({
+          legacy: new SatoshiBig(accountBalance.legacy, 'satoshi'),
+          segwit: new SatoshiBig(accountBalance.segwit, 'satoshi'),
+          nativeSegwit: new SatoshiBig(accountBalance.nativeSegwit, 'satoshi'),
+        }))
         .catch(reject);
     });
   }
