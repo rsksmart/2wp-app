@@ -102,9 +102,9 @@ export abstract class WalletService {
       // eslint-disable-next-line no-await-in-loop
       const balancesFound = await ApiService.getBalances(sessionId, addresses);
       const balances = {
-        legacy: new SatoshiBig(balancesFound.legacy, 'satoshi'),
-        segwit: new SatoshiBig(balancesFound.segwit, 'satoshi'),
-        nativeSegwit: new SatoshiBig(balancesFound.nativeSegwit, 'satoshi'),
+        legacy: balancesFound.legacy ? new SatoshiBig(balancesFound.legacy, 'satoshi') : new SatoshiBig(0, 'satoshi'),
+        segwit: balancesFound.segwit ? new SatoshiBig(balancesFound.segwit, 'satoshi') : new SatoshiBig(0, 'satoshi'),
+        nativeSegwit: balancesFound.nativeSegwit ? new SatoshiBig(balancesFound.nativeSegwit, 'satoshi') : new SatoshiBig(0, 'satoshi'),
       };
       // eslint-disable-next-line no-extra-boolean-cast
       if (!!balances) {
