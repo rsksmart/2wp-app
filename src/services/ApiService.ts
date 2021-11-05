@@ -18,12 +18,7 @@ export default class ApiService {
         sessionId,
         addressList,
       })
-        .then((response) => response.data)
-        .then((accountBalance) => resolve({
-          legacy: new SatoshiBig(accountBalance.legacy, 'satoshi'),
-          segwit: new SatoshiBig(accountBalance.segwit, 'satoshi'),
-          nativeSegwit: new SatoshiBig(accountBalance.nativeSegwit, 'satoshi'),
-        }))
+        .then((response) => resolve(response.data))
         .catch(reject);
     });
   }
