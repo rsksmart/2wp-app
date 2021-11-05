@@ -13,7 +13,7 @@ import { Action, State } from 'vuex-class';
 import SelectBitcoinWallet from '@/components/exchange/SelectBitcoinWallet.vue';
 import * as constants from '@/store/constants';
 import { PegInTxState } from '@/store/peginTx/types';
-import { Peg } from '@/store/session/types';
+import { TransactionType } from '@/store/session/types';
 
 @Component({
   components: {
@@ -27,7 +27,7 @@ export default class Home extends Vue {
 
   @Action(constants.PEGIN_TX_ADD_BITCOIN_WALLET, { namespace: 'pegInTx' }) setBitcoinWallet !: any;
 
-  @Action(constants.SESSION_ADD_PEG, { namespace: 'web3Session' }) addPeg!: (peg: Peg) => void;
+  @Action(constants.SESSION_ADD_TX_TYPE, { namespace: 'web3Session' }) addPeg!: (peg: TransactionType) => void;
 
   @Emit()
   toSendBitcoin(bitcoinWallet: string): void {

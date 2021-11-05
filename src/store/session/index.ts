@@ -11,7 +11,7 @@ export const state: SessionState = {
   enabled: false,
   rLogin: undefined,
   rLoginInstance: undefined,
-  peg: undefined,
+  txType: undefined,
 };
 
 const namespaced = true;

@@ -1,7 +1,7 @@
 import { MutationTree } from 'vuex';
 import Web3 from 'web3';
 import * as constants from '@/store/constants';
-import { Peg, SessionState } from './types';
+import { TransactionType, SessionState } from './types';
 
 export const mutations: MutationTree<SessionState> = {
   [constants.SESSION_SET_ACCOUNT]: (state, account: string) => {
@@ -23,7 +23,7 @@ export const mutations: MutationTree<SessionState> = {
     // eslint-disable-next-line no-unused-expressions
     await state.rLogin?.disconnect();
   },
-  [constants.SESSION_SET_PEG]: (state, peg: Peg) => {
-    state.peg = peg;
+  [constants.SESSION_SET_TX_TYPE]: (state, txType: TransactionType) => {
+    state.txType = txType;
   },
 };

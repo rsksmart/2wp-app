@@ -1,6 +1,6 @@
 import RLogin from '@rsksmart/rlogin';
 
-export type Peg = 'PEG_IN' | 'PEG_OUT' | undefined;
+export type TransactionType = 'PEG_IN' | undefined;
 
 export interface SessionState {
   enabled: boolean;
@@ -10,5 +10,5 @@ export interface SessionState {
     disconnect: () => Promise<void>;
   };
   rLoginInstance?: RLogin;
-  peg: Peg;
+  txType: TransactionType;
 }

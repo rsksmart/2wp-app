@@ -4,5 +4,5 @@ import { SessionState } from './types';
 import { RootState } from '../types';
 
 export const getters: GetterTree<SessionState, RootState> = {
-  [constants.SESSION_CAN_PEG]: (state): boolean => state.peg !== undefined,
+  [constants.SESSION_IN_TX_FLOW]: (state): boolean => state.txType !== undefined,
 };

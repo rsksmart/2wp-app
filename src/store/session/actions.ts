@@ -4,7 +4,7 @@ import { ActionTree } from 'vuex';
 import RLogin from '@rsksmart/rlogin';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import * as constants from '@/store/constants';
-import { Peg, SessionState } from './types';
+import { TransactionType, SessionState } from './types';
 import { RootState } from '../types';
 
 export const actions: ActionTree<SessionState, RootState> = {
@@ -50,7 +50,7 @@ export const actions: ActionTree<SessionState, RootState> = {
     commit(constants.SESSION_CLOSE_RLOGIN);
     commit(constants.SESSION_SET_RLOGIN, undefined);
   },
-  [constants.SESSION_ADD_PEG]: ({ commit }, peg: Peg): void => {
-    commit(constants.SESSION_SET_PEG, peg);
+  [constants.SESSION_ADD_TX_TYPE]: ({ commit }, peg: TransactionType): void => {
+    commit(constants.SESSION_SET_TX_TYPE, peg);
   },
 };

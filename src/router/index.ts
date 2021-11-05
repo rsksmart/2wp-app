@@ -39,8 +39,8 @@ const router = new VueRouter({
   routes,
 });
 router.beforeResolve((to, from, next) => {
-  const canPeg = store.getters[`web3Session/${constants.SESSION_CAN_PEG}`];
-  if (to.name !== 'Home' && !canPeg) next({ name: 'Home' });
+  const inTxFlow = store.getters[`web3Session/${constants.SESSION_IN_TX_FLOW}`];
+  if (to.name === 'Exchange' && !inTxFlow) next({ name: 'Home' });
   else next();
 });
 
