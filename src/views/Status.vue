@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="px-0 mx-0 normalized-height max-width">
+  <v-container fluid class="px-0 mx-0 max-width">
     <v-col>
       <v-container class="transactions">
         <v-row class="mx-0 mb-5 d-flex justify-center">
