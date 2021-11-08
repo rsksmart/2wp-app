@@ -27,16 +27,6 @@ export const mutations: MutationTree<PegInTxState> = {
     state.bitcoinPrice = btcPrice;
   },
   [constants.PEGIN_TX_CLEAR]: (state) => {
-    state.peginConfiguration = {
-      minValue: 0,
-      maxValue: 0,
-      federationAddress: '',
-      btcConfirmations: 100,
-    };
-    state.sessionId = '';
-    state.addressList = [];
-    state.bitcoinPrice = 0;
-    state.trezorConnected = false;
-    state.bitcoinWallet = '';
+    Object.assign(state, constants.CLEAR_PEGIN_TX_STATE);
   },
 };

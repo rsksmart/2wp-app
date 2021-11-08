@@ -1,3 +1,5 @@
+import { PegInTxState } from '@/store/peginTx/types';
+
 export const WALLET_LEDGER = 'WALLET_LEDGER';
 export const WALLET_ELECTRUM = 'WALLET_ELECTRUM';
 export const WALLET_TREZOR = 'WALLET_TREZOR';
@@ -81,3 +83,18 @@ export enum PegStatus {
   ERROR_BELOW_MIN = 'ERROR_BELOW_MIN',
   ERROR_UNEXPECTED = 'ERROR_UNEXPECTED',
 }
+
+export const CLEAR_PEGIN_TX_STATE: PegInTxState = {
+  peginConfiguration: {
+    minValue: 0,
+    maxValue: 0,
+    federationAddress: '',
+    btcConfirmations: 100,
+  },
+  sessionId: '',
+  utxoList: undefined,
+  addressList: undefined,
+  trezorConnected: false,
+  bitcoinWallet: '',
+  bitcoinPrice: 0,
+};

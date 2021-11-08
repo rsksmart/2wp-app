@@ -4,21 +4,9 @@ import { actions } from './actions';
 import { mutations } from './mutations';
 import { PegInTxState } from './types';
 import { RootState } from '../types';
+import * as constants from '@/store/constants';
 
-export const state: PegInTxState = {
-  peginConfiguration: {
-    minValue: 0,
-    maxValue: 0,
-    federationAddress: '',
-    btcConfirmations: 100,
-  },
-  sessionId: '',
-  utxoList: undefined,
-  addressList: undefined,
-  trezorConnected: false,
-  bitcoinWallet: '',
-  bitcoinPrice: 0,
-};
+export const state: PegInTxState = constants.CLEAR_PEGIN_TX_STATE;
 
 const namespaced = true;
 
