@@ -5,6 +5,7 @@ import {
   PeginConfiguration, PegInTxState, Utxo, WalletAddress,
 } from './types';
 import { RootState } from '../types';
+import ApiService from '@/services/ApiService';
 
 export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_ADD_ADDRESSES]: ({ commit }, addressList: WalletAddress[]) => {
@@ -16,9 +17,12 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.IS_TREZOR_CONNECTED]: ({ commit }, trezorConnected: boolean) => {
     commit(constants.PEGIN_TX_SET_TREZOR_CONNECTED, trezorConnected);
   },
-  [constants.PEGIN_TX_ADD_PEGIN_CONFIGURATION]: ({ commit },
-    peginConfiguration: PeginConfiguration) => {
-    commit(constants.PEGIN_TX_SET_PEGIN_CONFIGURATION, peginConfiguration);
+  [constants.PEGIN_TX_ADD_PEGIN_CONFIGURATION]: ({ commit }) => {
+    ApiService.getPeginConfiguration()
+      .then((config: PeginConfiguration) => {
+        commit(constants.PEGIN_TX_SET_PEGIN_CONFIGURATION, config);
+        commit(constants.PEGIN_TX_SET_SESSION_ID, config.sessionId);
+      });
   },
   [constants.PEGIN_TX_ADD_SESSION_ID]: ({ commit }, sessionId: string) => {
     commit(constants.PEGIN_TX_SET_SESSION_ID, sessionId);
@@ -34,4 +38,10 @@ export const actions: ActionTree<PegInTxState, RootState> = {
       })
       .catch(console.error);
   },
+  [constants.PEGIN_TX_CLEAR_STATE]: ({ commit }): void => {
+    commit(constants.PEGIN_TX_CLEAR);
+  },
+  [constants.PEGIN_TX_INIT]: ({ dispatch }):
+    Promise<void> => dispatch(constants.PEGIN_TX_ADD_BITCOIN_PRICE)
+    .then(() => dispatch(constants.PEGIN_TX_ADD_PEGIN_CONFIGURATION)),
 };

@@ -18,8 +18,6 @@ import Top from '@/components/layouts/Top.vue';
 import FooterRsk from '@/components/layouts/Footer.vue';
 import Mobile from '@/views/Mobile.vue';
 import * as constants from '@/store/constants';
-import ApiService from '@/services/ApiService';
-import { PeginConfiguration } from '@/store/peginTx/types';
 
 @Component({
   components: {
@@ -29,28 +27,10 @@ import { PeginConfiguration } from '@/store/peginTx/types';
   },
 })
 export default class App extends Vue {
-  bitcoinWallet = '';
-
-  @Action(constants.PEGIN_TX_ADD_SESSION_ID, { namespace: 'pegInTx' }) addSessionId !: any;
-
-  @Action(constants.PEGIN_TX_ADD_PEGIN_CONFIGURATION, { namespace: 'pegInTx' }) addPeginConfiguration !: any;
-
-  @Action(constants.PEGIN_TX_ADD_BITCOIN_PRICE, { namespace: 'pegInTx' }) addBitcoinPrice !: any;
+  @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) init !: () => void;
 
   created() {
-    ApiService.getPeginConfiguration()
-      .then((config: PeginConfiguration) => {
-        const peginConfiguration = {
-          minValue: config.minValue,
-          maxValue: config.maxValue,
-          federationAddress: config.federationAddress,
-          feePerKb: config.feePerKb,
-          btcConfirmations: config.btcConfirmations,
-        };
-        this.addPeginConfiguration(peginConfiguration);
-        this.addSessionId(config.sessionId);
-        this.addBitcoinPrice();
-      });
+    this.init();
   }
 }
 </script>

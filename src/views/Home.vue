@@ -29,6 +29,10 @@ export default class Home extends Vue {
 
   @Action(constants.SESSION_ADD_TX_TYPE, { namespace: 'web3Session' }) addPeg!: (peg: TransactionType) => void;
 
+  @Action(constants.PEGIN_TX_CLEAR_STATE, { namespace: 'pegInTx' }) clear !: () => void;
+
+  @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) init !: () => void;
+
   @Emit()
   toSendBitcoin(bitcoinWallet: string): void {
     this.setBitcoinWallet(bitcoinWallet);
@@ -42,6 +46,11 @@ export default class Home extends Vue {
   @Emit()
   back() {
     this.setBitcoinWallet('');
+  }
+
+  created() {
+    this.clear();
+    this.init();
   }
 }
 </script>
