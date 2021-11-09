@@ -27,6 +27,7 @@ export const mutations: MutationTree<PegInTxState> = {
     state.bitcoinPrice = btcPrice;
   },
   [constants.PEGIN_TX_CLEAR]: (state) => {
-    Object.assign(state, constants.CLEAR_PEGIN_TX_STATE);
+    const clearState = constants.getClearPeginTxState();
+    Object.assign(state, clearState);
   },
 };

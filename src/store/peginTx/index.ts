@@ -6,7 +6,7 @@ import { PegInTxState } from './types';
 import { RootState } from '../types';
 import * as constants from '@/store/constants';
 
-export const state: PegInTxState = constants.CLEAR_PEGIN_TX_STATE;
+export const state: PegInTxState = constants.getClearPeginTxState();
 
 const namespaced = true;
 

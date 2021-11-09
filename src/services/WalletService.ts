@@ -88,17 +88,18 @@ export abstract class WalletService {
     const maxAddressPerCall: number = this.getWalletAddressesPerCall();
     for (
       let startFrom = 0;
-      startFrom < (this.getWalletMaxCall() * maxAddressPerCall);
+      startFrom < (this.getWalletMaxCall() * maxAddressPerCall) && this.subscribers.length !== 0;
       startFrom += maxAddressPerCall
     ) {
       // eslint-disable-next-line no-await-in-loop
       const addresses = await this.getAccountAddresses(maxAddressPerCall, startFrom);
       if (addresses.length === 0) {
-        throw new Error('Error getting list of addreses - List of addresses is empty');
+        throw new Error('Error getting list of addresses - List of addresses is empty');
       }
-      // eslint-disable-next-line no-await-in-loop
-      await store.dispatch(`pegInTx/${constants.PEGIN_TX_ADD_ADDRESSES}`, addresses);
-
+      if (this.subscribers.length !== 0) {
+        // eslint-disable-next-line no-await-in-loop
+        await store.dispatch(`pegInTx/${constants.PEGIN_TX_ADD_ADDRESSES}`, addresses);
+      }
       // eslint-disable-next-line no-await-in-loop
       const balancesFound = await ApiService.getBalances(sessionId, addresses);
       const balances = {
