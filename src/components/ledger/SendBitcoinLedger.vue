@@ -334,5 +334,10 @@ export default class SendBitcoinLedger extends Vue {
       EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
     );
   }
+
+  beforeDestroy() {
+    this.ledgerService.cleanSubscriptions();
+    this.clearAccount();
+  }
 }
 </script>

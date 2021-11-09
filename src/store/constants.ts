@@ -84,17 +84,19 @@ export enum PegStatus {
   ERROR_UNEXPECTED = 'ERROR_UNEXPECTED',
 }
 
-export const CLEAR_PEGIN_TX_STATE: PegInTxState = {
-  peginConfiguration: {
-    minValue: 0,
-    maxValue: 0,
-    federationAddress: '',
-    btcConfirmations: 100,
-  },
-  sessionId: '',
-  utxoList: undefined,
-  addressList: undefined,
-  trezorConnected: false,
-  bitcoinWallet: '',
-  bitcoinPrice: 0,
-};
+export function getClearPeginTxState(): PegInTxState {
+  return {
+    peginConfiguration: {
+      minValue: 0,
+      maxValue: 0,
+      federationAddress: '',
+      btcConfirmations: 100,
+    },
+    sessionId: '',
+    utxoList: undefined,
+    addressList: [],
+    trezorConnected: false,
+    bitcoinWallet: '',
+    bitcoinPrice: 0,
+  };
+}

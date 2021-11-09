@@ -358,5 +358,10 @@ export default class SendBitcoinTrezor extends Vue {
       EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
     );
   }
+
+  beforeDestroy() {
+    this.trezorService.cleanSubscriptions();
+    this.clearAccount();
+  }
 }
 </script>
