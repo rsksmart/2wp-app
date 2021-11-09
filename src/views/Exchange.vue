@@ -37,6 +37,8 @@ export default class Exchange extends Vue {
 
   @Action(constants.PEGIN_TX_ADD_BITCOIN_WALLET, { namespace: 'pegInTx' }) setBitcoinWallet !: any;
 
+  @Action(constants.PEGIN_TX_CLEAR_STATE, { namespace: 'pegInTx' }) clear !: () => void;
+
   @Emit('bitcoinWallet')
   toSendBitcoin(bitcoinWallet: string): string {
     this.setBitcoinWallet(bitcoinWallet);
@@ -49,6 +51,7 @@ export default class Exchange extends Vue {
 
   @Emit()
   back() {
+    this.clear();
     this.$router.replace({ name: 'Home', params: { peg: 'BTC2RBTC' } });
   }
 }

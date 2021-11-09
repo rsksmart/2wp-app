@@ -2,6 +2,8 @@ import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import Home from '@/views/Home.vue';
+import store from '@/store';
+import * as constants from '@/store/constants';
 
 Vue.use(VueRouter);
 
@@ -35,6 +37,11 @@ const router = new VueRouter({
   mode: 'history',
   base: EnvironmentAccessorService.getEnvironmentVariables().baseUrl,
   routes,
+});
+router.beforeResolve((to, from, next) => {
+  const inTxFlow = store.getters[`web3Session/${constants.SESSION_IN_TX_FLOW}`];
+  if (to.name === 'Exchange' && !inTxFlow) next({ name: 'Home' });
+  else next();
 });
 
 export default router;

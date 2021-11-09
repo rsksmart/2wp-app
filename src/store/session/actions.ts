@@ -4,10 +4,10 @@ import { ActionTree } from 'vuex';
 import RLogin from '@rsksmart/rlogin';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import * as constants from '@/store/constants';
-import { Web3SessionState } from './types';
+import { TransactionType, SessionState } from './types';
 import { RootState } from '../types';
 
-export const actions: ActionTree<Web3SessionState, RootState> = {
+export const actions: ActionTree<SessionState, RootState> = {
   [constants.SESSION_CONNECT_WEB3]: async ({ commit, state }) => {
     const rLogin = state.rLoginInstance === undefined ? new RLogin({
       cacheProvider: false,
@@ -49,5 +49,8 @@ export const actions: ActionTree<Web3SessionState, RootState> = {
     commit(constants.SESSION_SET_ACCOUNT, undefined);
     commit(constants.SESSION_CLOSE_RLOGIN);
     commit(constants.SESSION_SET_RLOGIN, undefined);
+  },
+  [constants.SESSION_ADD_TX_TYPE]: ({ commit }, peg: TransactionType): void => {
+    commit(constants.SESSION_SET_TX_TYPE, peg);
   },
 };

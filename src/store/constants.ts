@@ -1,3 +1,5 @@
+import { PegInTxState } from '@/store/peginTx/types';
+
 export const WALLET_LEDGER = 'WALLET_LEDGER';
 export const WALLET_ELECTRUM = 'WALLET_ELECTRUM';
 export const WALLET_TREZOR = 'WALLET_TREZOR';
@@ -25,9 +27,11 @@ export const PEGIN_TX_ADD_SESSION_ID = 'PEGIN_TX_ADD_SESSION_ID';
 export const PEGIN_TX_ADD_PEGIN_CONFIGURATION = 'PEGIN_TX_ADD_PEGIN_CONFIGURATION';
 export const PEGIN_TX_ADD_BITCOIN_WALLET = 'PEGIN_TX_ADD_BITCOIN_WALLET';
 export const PEGIN_TX_ADD_BITCOIN_PRICE = 'PEGIN_TX_ADD_BITCOIN_PRICE';
+export const PEGIN_TX_CLEAR_STATE = 'PEGIN_TX_CLEAR_STATE';
 // Session actions
 export const WEB3_SESSION_GET_ACCOUNT = 'WEB3_SESSION_GET_ACCOUNT';
 export const SESSION_CONNECT_WEB3 = 'SESSION_CONNECT_WEB3';
+export const SESSION_ADD_TX_TYPE = 'SESSION_ADD_TX_TYPE';
 
 // Pegin tx Mutations
 export const PEGIN_TX_SET_ADDRESS_LIST = 'PEGIN_TX_SET_ADDRESS_LIST';
@@ -37,6 +41,8 @@ export const PEGIN_TX_SET_SESSION_ID = 'PEGIN_TX_SET_SESSION_ID';
 export const PEGIN_TX_SET_PEGIN_CONFIGURATION = 'PEGIN_TX_SET_PEGIN_CONFIGURATION';
 export const PEGIN_TX_SET_BITCOIN_WALLET = 'PEGIN_TX_SET_BITCOIN_WALLET';
 export const PEGIN_TX_SET_BITCOIN_PRICE = 'PEGIN_TX_SET_BITCOIN_PRICE';
+export const PEGIN_TX_INIT = 'PEGIN_TX_INIT';
+export const PEGIN_TX_CLEAR = 'PEGIN_TX_CLEAR';
 // Session mutations
 export const SESSION_SET_ACCOUNT = 'SESSION_SET_ACCOUNT';
 export const SESSION_SET_WEB3_INSTANCE = 'SESSION_SET_WEB3_INSTANCE';
@@ -45,13 +51,17 @@ export const WEB3_SESSION_CLEAR_ACCOUNT = 'WEB3_SESSION_CLEAR_ACCOUNT';
 export const SESSION_SET_RLOGIN = 'SESSION_SET_RLOGIN';
 export const SESSION_SET_RLOGIN_INSTANCE = 'SESSION_SET_RLOGIN_INSTANCE';
 export const SESSION_CLOSE_RLOGIN = 'SESSION_CLOSE_RLOGIN';
+export const SESSION_SET_TX_TYPE = 'SESSION_SET_TX_TYPE';
 
-// getters
+// Pegin tx getters
 export const WALLET_NAME = 'WALLET_NAME';
 export const PEGIN_TX_GET_CHANGE_ADDRESS = 'PEGIN_TX_GET_CHANGE_ADDRESS';
 export const PEGIN_TX_GET_BIP44_DERIVATION_PATH_FROM_ADDRESS = 'PEGIN_TX_GET_BIP44_DERIVATION_PATH_FROM_ADDRESS';
 export const PEGIN_TX_GET_REFUND_ADDRESS = 'PEGIN_TX_GET_REFUND_ADDRESS';
 export const PEGIN_TX_GET_ADDRESS_PUBLIC_KEY = 'PEGIN_TX_GET_ADDRESS_PUBLIC_KEY';
+
+// Session getters
+export const SESSION_IN_TX_FLOW = 'SESSION_IN_TX_FLOW';
 
 // environment
 export const BTC_NETWORK_MAINNET = 'main';
@@ -73,3 +83,18 @@ export enum PegStatus {
   ERROR_BELOW_MIN = 'ERROR_BELOW_MIN',
   ERROR_UNEXPECTED = 'ERROR_UNEXPECTED',
 }
+
+export const CLEAR_PEGIN_TX_STATE: PegInTxState = {
+  peginConfiguration: {
+    minValue: 0,
+    maxValue: 0,
+    federationAddress: '',
+    btcConfirmations: 100,
+  },
+  sessionId: '',
+  utxoList: undefined,
+  addressList: undefined,
+  trezorConnected: false,
+  bitcoinWallet: '',
+  bitcoinPrice: 0,
+};

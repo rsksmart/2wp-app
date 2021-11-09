@@ -398,7 +398,7 @@ import * as constants from '@/store/constants';
 import { AccountBalance, FeeAmountData, PegInFormValues } from '@/types';
 import Wallet from '@/components/web3/Wallet.vue';
 import AddressWarningDialog from '@/components/exchange/AddressWarningDialog.vue';
-import { Web3SessionState } from '@/store/session/types';
+import { SessionState } from '@/store/session/types';
 import { PegInTxState } from '@/store/peginTx/types';
 import { Machine } from '@/services/utils';
 import SatoshiBig from '@/types/SatoshiBig';
@@ -477,7 +477,7 @@ export default class SendBitcoinForm extends Vue {
 
   @State('pegInTx') peginTxState!: PegInTxState;
 
-  @State('web3Session') web3SessionState!: Web3SessionState;
+  @State('web3Session') web3SessionState!: SessionState;
 
   @Getter(constants.WALLET_NAME, { namespace: 'pegInTx' }) walletName!: string;
 

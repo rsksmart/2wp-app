@@ -1,6 +1,8 @@
 import RLogin from '@rsksmart/rlogin';
 
-export interface Web3SessionState {
+export type TransactionType = 'PEG_IN' | undefined;
+
+export interface SessionState {
   enabled: boolean;
   account?: string;
   web3?: object;
@@ -8,4 +10,5 @@ export interface Web3SessionState {
     disconnect: () => Promise<void>;
   };
   rLoginInstance?: RLogin;
+  txType: TransactionType;
 }

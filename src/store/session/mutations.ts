@@ -1,9 +1,9 @@
 import { MutationTree } from 'vuex';
 import Web3 from 'web3';
 import * as constants from '@/store/constants';
-import { Web3SessionState } from './types';
+import { TransactionType, SessionState } from './types';
 
-export const mutations: MutationTree<Web3SessionState> = {
+export const mutations: MutationTree<SessionState> = {
   [constants.SESSION_SET_ACCOUNT]: (state, account: string) => {
     state.account = account;
   },
@@ -22,5 +22,8 @@ export const mutations: MutationTree<Web3SessionState> = {
   [constants.SESSION_CLOSE_RLOGIN]: async (state) => {
     // eslint-disable-next-line no-unused-expressions
     await state.rLogin?.disconnect();
+  },
+  [constants.SESSION_SET_TX_TYPE]: (state, txType: TransactionType) => {
+    state.txType = txType;
   },
 };

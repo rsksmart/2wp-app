@@ -13,6 +13,7 @@ import { Action, State } from 'vuex-class';
 import SelectBitcoinWallet from '@/components/exchange/SelectBitcoinWallet.vue';
 import * as constants from '@/store/constants';
 import { PegInTxState } from '@/store/peginTx/types';
+import { TransactionType } from '@/store/session/types';
 
 @Component({
   components: {
@@ -26,9 +27,16 @@ export default class Home extends Vue {
 
   @Action(constants.PEGIN_TX_ADD_BITCOIN_WALLET, { namespace: 'pegInTx' }) setBitcoinWallet !: any;
 
+  @Action(constants.SESSION_ADD_TX_TYPE, { namespace: 'web3Session' }) addPeg!: (peg: TransactionType) => void;
+
+  @Action(constants.PEGIN_TX_CLEAR_STATE, { namespace: 'pegInTx' }) clear !: () => void;
+
+  @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) init !: () => void;
+
   @Emit()
   toSendBitcoin(bitcoinWallet: string): void {
     this.setBitcoinWallet(bitcoinWallet);
+    this.addPeg('PEG_IN');
     if (this.peginTxState.bitcoinWallet === constants
       .WALLET_LEDGER) this.$router.push({ name: 'Exchange', params: { selectedWallet: 'SendBitcoinLedger' } });
     if (this.peginTxState.bitcoinWallet === constants
@@ -38,6 +46,11 @@ export default class Home extends Vue {
   @Emit()
   back() {
     this.setBitcoinWallet('');
+  }
+
+  created() {
+    this.clear();
+    this.init();
   }
 }
 </script>
