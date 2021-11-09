@@ -22,10 +22,11 @@ export default class LedgerTxBuilder extends TxBuilder {
     this.signer = new LedgerTxSigner();
     this.ledgerService = new LedgerService(this.coin);
     this.txAccountType = constants.BITCOIN_LEGACY_ADDRESS;
+    this.changeAddr = '';
   }
 
   get changeAddress(): string {
-    return this.changeAddress;
+    return this.changeAddr;
   }
 
   set accountType(accountType: string) {
@@ -38,6 +39,7 @@ export default class LedgerTxBuilder extends TxBuilder {
 
   buildTx(): Promise<LedgerTx> {
     return new Promise<LedgerTx>((resolve, reject) => {
+      this.changeAddr = this.changeAddress;
       const { coin } = this;
       if (this.normalizedTx) {
         this.getLedgerTxData(this.normalizedTx)

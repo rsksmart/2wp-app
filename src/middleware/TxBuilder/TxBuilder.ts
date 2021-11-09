@@ -44,6 +44,9 @@ export default abstract class TxBuilder {
         amountToTransferInSatoshi, refundAddress, recipient,
         sessionId, feeLevel, changeAddress,
       ).then((normalizedTx: NormalizedTx) => {
+        if (this.changeAddress === '') {
+          this.changeAddr = normalizedTx.inputs[0].address;
+        }
         this.normalizedTx = normalizedTx;
         resolve(normalizedTx);
       }).catch(reject);
