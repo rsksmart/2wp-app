@@ -96,9 +96,10 @@ export abstract class WalletService {
       if (addresses.length === 0) {
         throw new Error('Error getting list of addreses - List of addresses is empty');
       }
-      // eslint-disable-next-line no-await-in-loop
-      await store.dispatch(`pegInTx/${constants.PEGIN_TX_ADD_ADDRESSES}`, addresses);
-
+      if (this.subscribers.length !== 0) {
+        // eslint-disable-next-line no-await-in-loop
+        await store.dispatch(`pegInTx/${constants.PEGIN_TX_ADD_ADDRESSES}`, addresses);
+      }
       // eslint-disable-next-line no-await-in-loop
       const balancesFound = await ApiService.getBalances(sessionId, addresses);
       const balances = {
