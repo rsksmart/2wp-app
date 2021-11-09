@@ -88,13 +88,13 @@ export abstract class WalletService {
     const maxAddressPerCall: number = this.getWalletAddressesPerCall();
     for (
       let startFrom = 0;
-      startFrom < (this.getWalletMaxCall() * maxAddressPerCall);
+      startFrom < (this.getWalletMaxCall() * maxAddressPerCall) && this.subscribers.length !== 0;
       startFrom += maxAddressPerCall
     ) {
       // eslint-disable-next-line no-await-in-loop
       const addresses = await this.getAccountAddresses(maxAddressPerCall, startFrom);
       if (addresses.length === 0) {
-        throw new Error('Error getting list of addreses - List of addresses is empty');
+        throw new Error('Error getting list of addresses - List of addresses is empty');
       }
       if (this.subscribers.length !== 0) {
         // eslint-disable-next-line no-await-in-loop

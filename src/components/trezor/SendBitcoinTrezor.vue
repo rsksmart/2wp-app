@@ -315,7 +315,6 @@ export default class SendBitcoinTrezor extends Vue {
 
   @Emit()
   clear(): void {
-    this.trezorService.unsubscribe(this.trezorServiceSubscriber);
     this.trezorService.cleanSubscriptions();
     this.pegInFormData = {
       accountType: '',
