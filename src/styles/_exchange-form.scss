@@ -26,6 +26,12 @@
     color: #737778;
   }
 
+  .v-btn__content {
+    span {
+      color: rgb(0, 181, 32);
+    }
+  }
+
   .note {
     background: rgba(162, 173, 219, 0.1);
     border: 1px solid #A2ADDB;

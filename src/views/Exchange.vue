@@ -50,9 +50,11 @@ export default class Exchange extends Vue {
   }
 
   @Emit()
-  back() {
+  back(currentComponent: 'ConnectDevice' | 'PegInForm') {
     this.clear();
-    this.$router.replace({ name: 'Home', params: { peg: 'BTC2RBTC' } });
+    if (currentComponent === 'ConnectDevice') {
+      this.$router.replace({ name: 'Home', params: { peg: 'BTC2RBTC' } });
+    }
   }
 }
 </script>

@@ -364,16 +364,23 @@
               </v-container>
             </v-container>
           </v-row>
-          <v-row class="mx-0 mt-5" justify="end">
-            <v-btn v-if="!pegInFormState.matches(['loading'])" large rounded color="#00B43C"
-                   @click="sendTx" :disabled="!formFilled">
-              <span class="whiteish">Continue</span>
-              <v-icon class="ml-2" color="#fff">mdi-send-outline</v-icon>
-            </v-btn>
-            <v-progress-circular v-if="pegInFormState.matches(['loading'])"
-                                 indeterminate color="#00B520" class="mr-10"/>
-          </v-row>
         </v-col>
+      </v-col>
+    </v-row>
+    <v-row class="mx-0">
+      <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
+        <v-btn rounded outlined color="#00B520" width="110" @click="back">
+          <span>Back</span>
+        </v-btn>
+      </v-col>
+      <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0">
+        <v-btn v-if="!pegInFormState.matches(['loading'])" rounded color="#00B43C"
+               @click="sendTx" :disabled="!formFilled">
+          <span class="whiteish">Continue</span>
+          <v-icon class="ml-2" color="#fff">mdi-send-outline</v-icon>
+        </v-btn>
+        <v-progress-circular v-if="pegInFormState.matches(['loading'])"
+                             indeterminate color="#00B520" class="mr-10"/>
       </v-col>
     </v-row>
     <v-row>
@@ -735,6 +742,12 @@ export default class SendBitcoinForm extends Vue {
     this.rskAddressSelected = '';
     this.web3Wallet = false;
     this.thirdDone = false;
+  }
+
+  @Emit('back')
+  // eslint-disable-next-line class-methods-use-this
+  back() {
+    return 'PegInForm';
   }
 
   @Emit('unused')
