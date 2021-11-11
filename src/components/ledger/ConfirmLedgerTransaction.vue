@@ -215,7 +215,8 @@ export default class ConfirmLedgerTransaction extends Vue {
   @Emit('successConfirmation')
   async toTrackId() {
     this.confirmTxState = 'loading';
-    await this.txBuilder.sign()
+    await this.txBuilder.buildTx()
+      .then(() => this.txBuilder.sign())
       .then((tx) => ApiService
         .broadcast(tx.signedTx))
       .then((txId) => {

@@ -218,7 +218,8 @@ export default class ConfirmTransaction extends Vue {
   @Emit('successConfirmation')
   async toTrackId() {
     this.confirmTxState = 'loading';
-    await this.txBuilder.sign()
+    await this.txBuilder.buildTx()
+      .then(() => this.txBuilder.sign())
       .then((trezorSignedTx) => ApiService
         .broadcast(trezorSignedTx.payload.serializedTx))
       .then((txId) => {
