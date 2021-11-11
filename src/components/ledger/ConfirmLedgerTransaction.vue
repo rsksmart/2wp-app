@@ -134,21 +134,20 @@
     <v-row class="mx-0 my-8">
       <advanced-data :rawTx="rawTx" :initial-expand="false"/>
     </v-row>
-    <v-row class="ma-0 d-flex justify-center">
-      <v-col cols="4" class="ma-0 d-flex align-center">
-        <v-col cols="6" class="d-flex justify-center ma-0 pa-0">
-          <v-btn v-if="confirmTxState === 'idle' || confirmTxState === 'error'"
-                 rounded outlined color="#00B520" width="110" @click="toPegInForm">
-            <span>Back</span>
-          </v-btn>
-        </v-col>
-        <v-col cols="6" class="d-flex justify-center ma-0 pa-0">
-          <v-btn v-if="confirmTxState === 'idle' || confirmTxState === 'error'"
-                 rounded color="#00B520" width="110" @click="toTrackId"
-                 :disabled="confirmTxState === 'error'">
-            <span class="whiteish">Sign</span>
-          </v-btn>
-        </v-col>
+    <v-row class="ma-0">
+      <v-col cols="2" class="d-flex justify-start ma-0 py-0">
+        <v-btn v-if="confirmTxState === 'idle' || confirmTxState === 'error'"
+               rounded outlined color="#00B520" width="110" @click="toPegInForm"
+               :disabled="confirmTxState === 'error' || confirmTxState === 'loading'">
+          <span>Back</span>
+        </v-btn>
+      </v-col>
+      <v-col cols="10" class="d-flex justify-end ma-0 py-0">
+        <v-btn v-if="confirmTxState === 'idle' || confirmTxState === 'error'"
+               rounded color="#00B520" width="110" @click="toTrackId"
+               :disabled="confirmTxState === 'error'">
+          <span class="whiteish">Sign</span>
+        </v-btn>
       </v-col>
     </v-row>
     <v-row class="mx-0 d-flex justify-center">

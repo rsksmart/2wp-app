@@ -26,6 +26,13 @@
     color: #737778;
   }
 
+  .v-btn__content {
+    color: inherit !important;
+    span {
+      color: inherit;
+    }
+  }
+
   .note {
     background: rgba(162, 173, 219, 0.1);
     border: 1px solid #A2ADDB;
