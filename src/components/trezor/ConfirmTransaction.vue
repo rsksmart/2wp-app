@@ -186,7 +186,7 @@ import {
   Vue,
 } from 'vue-property-decorator';
 import TrezorTxBuilder from '@/middleware/TxBuilder/TrezorTxBuilder';
-import { ConfirmTxState, TrezorTx, TxData } from '@/types';
+import { ConfirmTxState, NormalizedTx, TxData } from '@/types';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import ApiService from '@/services/ApiService';
 import SatoshiBig from '@/types/SatoshiBig';
@@ -207,7 +207,7 @@ export default class ConfirmTransaction extends Vue {
 
   rawTx = '';
 
-  @Prop() tx!: TrezorTx;
+  @Prop() tx!: NormalizedTx;
 
   @Prop() txBuilder!: TrezorTxBuilder;
 
@@ -218,7 +218,8 @@ export default class ConfirmTransaction extends Vue {
   @Emit('successConfirmation')
   async toTrackId() {
     this.confirmTxState = 'loading';
-    await this.txBuilder.sign()
+    await this.txBuilder.buildTx()
+      .then(() => this.txBuilder.sign())
       .then((trezorSignedTx) => ApiService
         .broadcast(trezorSignedTx.payload.serializedTx))
       .then((txId) => {
@@ -249,7 +250,7 @@ export default class ConfirmTransaction extends Vue {
 
   get opReturnData(): string {
     const opReturnDataOutput = this.tx?.outputs[0] ?? { script_type: '' };
-    return opReturnDataOutput.script_type === 'PAYTOOPRETURN'
+    return opReturnDataOutput.op_return_data
       ? `${opReturnDataOutput.op_return_data.substr(0, 45)}...`
       : 'OP_RETURN data not found';
   }
@@ -277,7 +278,7 @@ export default class ConfirmTransaction extends Vue {
   }
 
   created() {
-    this.rawTx = this.txBuilder.getRawTx();
+    this.rawTx = this.txBuilder.getUnsignedRawTx();
   }
 }
 </script>

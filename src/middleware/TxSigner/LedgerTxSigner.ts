@@ -32,10 +32,4 @@ export default class LedgerTxSigner extends TxSigner {
       }
     });
   }
-
-  // eslint-disable-next-line class-methods-use-this
-  getRawTx(tx: Tx): string {
-    const ledgerTx = tx as LedgerTx;
-    return this.ledgerService.getUnsignedRawTx(ledgerTx);
-  }
 }

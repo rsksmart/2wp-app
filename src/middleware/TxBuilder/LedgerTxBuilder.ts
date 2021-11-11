@@ -32,44 +32,29 @@ export default class LedgerTxBuilder extends TxBuilder {
     return this.txAccountType;
   }
 
-  buildTx({
-    amountToTransferInSatoshi, refundAddress, recipient, feeLevel, changeAddress, sessionId,
-  }: {
-    amountToTransferInSatoshi: number; refundAddress: string; recipient: string;
-    feeLevel: string; changeAddress: string; sessionId: string;
-  }): Promise<LedgerTx> {
+  buildTx(): Promise<LedgerTx> {
     return new Promise<LedgerTx>((resolve, reject) => {
       const { coin } = this;
-      ApiService.createPeginTx(
-        amountToTransferInSatoshi, refundAddress, recipient, sessionId, feeLevel, changeAddress,
-      )
-        .then((normalizedTx) => Promise.all([
-          normalizedTx.outputs,
-          this.getLedgerTxData(normalizedTx),
-        ]))
-        .then(([outputs, { inputs, associatedKeysets, outputScriptHex }]) => {
-          const tx: LedgerTx = {
-            outputs,
-            outputScriptHex,
-            changePath: store.getters[`pegInTx/${constants.PEGIN_TX_GET_CHANGE_ADDRESS}`](this.txAccountType),
-            coin,
-            inputs,
-            associatedKeysets,
-            accountType: this.txAccountType,
-          };
-          this.tx = tx;
-          resolve(tx);
-        })
-        .catch(reject);
+      if (this.normalizedTx) {
+        this.getLedgerTxData(this.normalizedTx)
+          .then(({ inputs, associatedKeysets, outputScriptHex }) => {
+            const tx: LedgerTx = {
+              outputs: this.normalizedTx.outputs,
+              outputScriptHex,
+              changePath: store.getters[`pegInTx/${constants.PEGIN_TX_GET_CHANGE_ADDRESS}`](this.txAccountType),
+              coin,
+              inputs,
+              associatedKeysets,
+              accountType: this.txAccountType,
+            };
+            this.tx = tx;
+            resolve(tx);
+          })
+          .catch(reject);
+      } else {
+        reject(new Error('There is no Normalized transaction created'));
+      }
     });
-  }
-
-  public getRawTx(): string {
-    let rawTx = 'rawTx';
-    if (this.tx) {
-      rawTx = this.signer.getRawTx(this.tx);
-    }
-    return rawTx;
   }
 
   private static getInputs(normalizedInputs: NormalizedInput[]):

@@ -47,7 +47,7 @@ import ApiService from '@/services/ApiService';
 import { PegInTxState } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import {
-  AccountBalance, FeeAmountData, LedgerTx, PegInFormValues, SendBitcoinState, TxData,
+  AccountBalance, FeeAmountData, NormalizedTx, PegInFormValues, SendBitcoinState, TxData,
 } from '@/types';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
 import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
@@ -92,14 +92,10 @@ export default class SendBitcoinLedger extends Vue {
 
   txError = '';
 
-  createdTx: LedgerTx = {
+  createdTx: NormalizedTx = {
     coin: EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
     inputs: [],
     outputs: [],
-    outputScriptHex: '',
-    changePath: '',
-    associatedKeysets: [],
-    accountType: '',
   };
 
   amount: SatoshiBig = new SatoshiBig('0', 'satoshi');
@@ -182,7 +178,7 @@ export default class SendBitcoinLedger extends Vue {
     this.recipient = recipient;
     this.feeBTC = feeBTC;
     this.txBuilder.accountType = accountType;
-    this.txBuilder.buildTx({
+    this.txBuilder.getNormalizedTx({
       amountToTransferInSatoshi: Number(amountToTransferInSatoshi.toString()),
       refundAddress,
       recipient,
@@ -190,12 +186,15 @@ export default class SendBitcoinLedger extends Vue {
       changeAddress: this.getChangeAddress(accountType),
       sessionId: this.peginTxState.sessionId,
     })
-      .then((tx: LedgerTx) => {
+      .then((tx: NormalizedTx) => {
         this.createdTx = tx;
         this.currentComponent = 'ConfirmLedgerTransaction';
         return tx;
       })
-      .catch(console.error);
+      .catch((error) => {
+        this.txError = error.message;
+        this.showTxErrorDialog = true;
+      });
   }
 
   @Emit()
@@ -308,10 +307,6 @@ export default class SendBitcoinLedger extends Vue {
       coin: EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
       inputs: [],
       outputs: [],
-      outputScriptHex: '',
-      changePath: '',
-      associatedKeysets: [],
-      accountType: '',
     };
     this.amount = new SatoshiBig('0', 'satoshi');
     this.refundAddress = '';

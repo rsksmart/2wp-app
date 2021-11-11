@@ -49,7 +49,7 @@ import ApiService from '@/services/ApiService';
 import { PegInTxState } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import {
-  AccountBalance, FeeAmountData, PegInFormValues, SendBitcoinState, TrezorTx, TxData,
+  AccountBalance, FeeAmountData, NormalizedTx, PegInFormValues, SendBitcoinState, TxData,
 } from '@/types';
 import TrezorTxBuilder from '@/middleware/TxBuilder/TrezorTxBuilder';
 import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
@@ -99,7 +99,7 @@ export default class SendBitcoinTrezor extends Vue {
 
   txError = '';
 
-  createdTx: TrezorTx = {
+  createdTx: NormalizedTx = {
     coin: EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
     inputs: [],
     outputs: [],
@@ -190,7 +190,7 @@ export default class SendBitcoinTrezor extends Vue {
     this.refundAddress = refundAddress;
     this.recipient = recipient;
     this.feeBTC = feeBTC;
-    this.txBuilder.buildTx({
+    this.txBuilder.getNormalizedTx({
       amountToTransferInSatoshi: Number(amountToTransferInSatoshi.toString()),
       refundAddress,
       recipient,
@@ -198,12 +198,15 @@ export default class SendBitcoinTrezor extends Vue {
       changeAddress: this.getChangeAddress(accountType),
       sessionId: this.peginTxState.sessionId,
     })
-      .then((tx: TrezorTx) => {
+      .then((tx: NormalizedTx) => {
         this.createdTx = tx;
         this.currentComponent = 'ConfirmTransaction';
         return tx;
       })
-      .catch(console.error);
+      .catch((error) => {
+        this.txError = error.message;
+        this.showTxErrorDialog = true;
+      });
   }
 
   @Emit()

@@ -12,15 +12,35 @@ import * as constants from '@/store/constants';
 
 function getNormalizedTx(): Promise<AxiosResponse> {
     return new Promise<AxiosResponse>((resolve) => {
-       const outputs: NormalizedOutput[] = [];
+       const outputs: NormalizedOutput[] = [
+         {
+           address : 'powPegAddress',
+           address_n: [0],
+           amount: '1',
+           serializedValue: '',
+         },
+         {
+           address : 'changeAddress',
+           address_n: [],
+           amount: '0.1',
+           serializedValue: '',
+           op_return_data : 'test1',
+         },
+         {
+           address : '',
+           address_n: [],
+           amount: '0',
+           serializedValue: '',
+           op_return_data : 'test1',
+         }
+       ];
        const inputs: NormalizedInput[] = [];
-       resolve( 
+       resolve(
          {data:
               {
                 coin: '0',
-                inputs: inputs, 
+                inputs: inputs,
                 outputs: outputs,
-                opReturnData: 'test1'
               },
          status: 200,
          statusText: 'OK',
@@ -29,7 +49,7 @@ function getNormalizedTx(): Promise<AxiosResponse> {
         });
       })
 };
-  
+
 function setEnvironment(isValidOpReturn: boolean, isValidPowPegAddress?: boolean) {
   let defaultEnvironmentVariables = {
     vueAppCoin: constants.BTC_NETWORK_TESTNET,
@@ -77,7 +97,7 @@ describe('function: createPeginTx', () => {
 
     const result = await ApiService.createPeginTx(1,'refundBtcAddress', 'recipientRsKAddress', 'sessionId', 'feeLevel', 'changeBtcAddress');
     expect(result.coin).to.be.equal('0');
-    expect(result.opReturnData).to.be.equal('test1');
+    expect(result.outputs[2].op_return_data).to.be.equal('test1');
   });
 
 });

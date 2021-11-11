@@ -173,7 +173,7 @@ import {
   Vue,
 } from 'vue-property-decorator';
 import { Getter } from 'vuex-class';
-import { ConfirmTxState, TrezorTx, TxData } from '@/types';
+import { ConfirmTxState, NormalizedTx, TxData } from '@/types';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
 import ApiService from '@/services/ApiService';
@@ -198,7 +198,7 @@ export default class ConfirmLedgerTransaction extends Vue {
 
   rawTx = '';
 
-  @Prop() tx!: TrezorTx;
+  @Prop() tx!: NormalizedTx;
 
   @Prop() txBuilder!: LedgerTxBuilder;
 
@@ -215,7 +215,8 @@ export default class ConfirmLedgerTransaction extends Vue {
   @Emit('successConfirmation')
   async toTrackId() {
     this.confirmTxState = 'loading';
-    await this.txBuilder.sign()
+    await this.txBuilder.buildTx()
+      .then(() => this.txBuilder.sign())
       .then((tx) => ApiService
         .broadcast(tx.signedTx))
       .then((txId) => {
@@ -264,7 +265,7 @@ export default class ConfirmLedgerTransaction extends Vue {
   }
 
   created() {
-    this.rawTx = this.txBuilder.getRawTx();
+    this.rawTx = this.txBuilder.getUnsignedRawTx();
   }
 }
 </script>
