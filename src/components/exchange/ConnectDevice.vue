@@ -1,14 +1,14 @@
 <template>
   <div class="transactions">
-    <v-col offset="2" cols="8" class="d-flex flex-column align-center">
-      <v-row class="mx-0 d-flex justify-center">
+    <v-col offset="2" cols="8">
+      <v-row justify="center" class="mx-0">
         <h1>Connect your {{ walletName }}</h1>
       </v-row>
-      <v-row class="ma-0 mb-10 d-flex justify-center">
+      <v-row justify="center" class="ma-0 mb-10">
         <p class="ma-0">(Keep your {{ walletName }} close so you can authorize access)</p>
       </v-row>
-      <v-row id="connect-device-steps">
-        <v-col class="mb-10" cols="12">
+      <v-row justify="center">
+        <v-col id="connect-device-steps" class="mb-10" cols="12">
           <v-row class="ma-0">
             <v-col cols="1">
               <div class="number">1</div>
@@ -38,15 +38,25 @@
       <v-row class="mx-0 d-flex justify-center">
         <v-img :src="deviceImagePath" height="300" contain />
       </v-row>
-      <v-row v-if="sendBitcoinState === 'idle' || sendBitcoinState === 'error'"
-             class="mx-0 mt-8 mb-10 d-flex justify-center">
-        <v-btn width="142" height="50" dense rounded color="#00B520"
-               @click="continueToForm" :disabled="sendBitcoinState === 'error'">
-          <span class="whiteish">Continue</span>
-        </v-btn>
-      </v-row>
-      <v-row v-if="sendBitcoinState === 'loading'" class="mx-0 mb-5 mt-10 d-flex justify-center">
-        <v-progress-circular indeterminate :size="60" :width="8" color="#00B520" />
+
+      <v-row class="mx-0 mt-5">
+        <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
+          <v-btn rounded outlined color="#00B520" width="110"
+                 :disabled="sendBitcoinState === 'error' || sendBitcoinState === 'loading'"
+                 @click="back">
+            <span>Back</span>
+          </v-btn>
+        </v-col>
+        <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0">
+          <v-btn v-if="sendBitcoinState === 'idle' || sendBitcoinState === 'error'"
+                 rounded color="#00B520" width="110"
+                 :disabled="sendBitcoinState === 'error'"
+                 @click="continueToForm">
+            <span class="whiteish">Continue</span>
+          </v-btn>
+          <v-progress-circular v-if="sendBitcoinState === 'loading'"
+                               indeterminate :size="36" :width="4" color="#00B520" />
+        </v-col>
       </v-row>
     </v-col>
   </div>
@@ -87,6 +97,12 @@ export default class ConnectDevice extends Vue {
   @Emit('continueToForm')
   continueToForm() {
     return this.peginTxState.bitcoinWallet;
+  }
+
+  @Emit('back')
+  // eslint-disable-next-line class-methods-use-this
+  back() {
+    return 'ConnectDevice';
   }
 }
 </script>

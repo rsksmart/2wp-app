@@ -2,6 +2,7 @@
   <v-container fluid class="px-md-0">
     <template v-if="!trezorDataReady">
       <connect-device @continueToForm="startAskingForBalance"
+                      @back="back"
                       :sendBitcoinState="sendBitcoinState"/>
     </template>
     <template v-if="trezorDataReady">
@@ -24,14 +25,6 @@
       <tx-error-dialog :showTxErrorDialog="showTxErrorDialog"
                        :errorMessage="txError" @closeErrorDialog="closeTxErrorDialog"/>
     </template>
-    <v-row>
-      <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
-        <v-btn v-if="showBack" rounded outlined color="#00B520"
-               width="110" @click="back('ConnectDevice')">
-          <span>Back</span>
-        </v-btn>
-      </v-col>
-    </v-row>
   </v-container>
 </template>
 
@@ -148,10 +141,6 @@ export default class SendBitcoinTrezor extends Vue {
 
   beforeMount() {
     this.showDialog = localStorage.getItem('BTRD_COOKIE_DISABLED') !== 'true';
-  }
-
-  get showBack(): boolean {
-    return !this.trezorDataReady;
   }
 
   get txData(): TxData {

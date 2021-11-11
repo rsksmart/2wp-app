@@ -27,8 +27,9 @@
   }
 
   .v-btn__content {
+    color: inherit !important;
     span {
-      color: rgb(0, 181, 32);
+      color: inherit;
     }
   }
 
