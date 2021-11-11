@@ -11,7 +11,6 @@ export interface NormalizedTx extends Tx {
   coin: string;
   inputs: NormalizedInput[];
   outputs: NormalizedOutput[];
-  opReturnData: string;
 }
 
 export interface NormalizedInput {

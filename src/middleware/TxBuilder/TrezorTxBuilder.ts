@@ -4,7 +4,6 @@ import { WalletAddress } from '@/store/peginTx/types';
 import {
   NormalizedInput, NormalizedOutput, TrezorSignedTx, TrezorTx,
 } from '@/types';
-import ApiService from '@/services/ApiService';
 import { getAccountType } from '@/services/utils';
 import * as constants from '@/store/constants';
 import TxBuilder from './TxBuilder';
@@ -13,49 +12,26 @@ import store from '../../store';
 export default class TrezorTxBuilder extends TxBuilder {
   private tx!: TrezorTx;
 
-  private changeAddr: string;
-
   constructor() {
     super();
     this.signer = new TrezorTxSigner();
-    this.changeAddr = '';
   }
 
-  get changeAddress(): string {
-    return this.changeAddr;
-  }
-
-  buildTx({
-    amountToTransferInSatoshi, refundAddress, recipient, feeLevel, changeAddress, sessionId,
-  }: {
-    amountToTransferInSatoshi: number; refundAddress: string; recipient: string;
-    feeLevel: string; changeAddress: string; sessionId: string;
-  }): Promise<TrezorTx> {
-    this.changeAddr = changeAddress;
+  buildTx(): Promise<TrezorTx> {
     return new Promise<TrezorTx>((resolve, reject) => {
       const { coin } = this;
-      ApiService.createPeginTx(
-        amountToTransferInSatoshi, refundAddress, recipient, sessionId, feeLevel, changeAddress,
-      )
-        .then((normalizedTx) => {
-          const tx = {
-            coin,
-            inputs: TrezorTxBuilder.getInputs(normalizedTx.inputs),
-            outputs: TrezorTxBuilder.getOutputs(normalizedTx.outputs),
-          };
-          this.tx = tx;
-          resolve(tx);
-        })
-        .catch(reject);
+      if (this.normalizedTx) {
+        const tx = {
+          coin,
+          inputs: TrezorTxBuilder.getInputs(this.normalizedTx.inputs),
+          outputs: TrezorTxBuilder.getOutputs(this.normalizedTx.outputs),
+        };
+        this.tx = tx;
+        resolve(tx);
+      } else {
+        reject(new Error('There is no Normalized transaction created'));
+      }
     });
-  }
-
-  public getRawTx(): string {
-    let rawTx = 'rawTx';
-    if (this.tx) {
-      rawTx = this.signer.getRawTx(this.tx);
-    }
-    return rawTx;
   }
 
   public sign(): Promise<TrezorSignedTx> {
