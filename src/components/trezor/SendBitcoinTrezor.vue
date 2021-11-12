@@ -11,7 +11,7 @@
                  @unused="getUnusedAddresses" :unusedAddresses="unusedAddresses"
                  @txFee="getTxFee" :fees="calculatedFees" :tx="createdTx"
                  :txBuilder="txBuilder" :txData="txData" :price="peginTxState.bitcoinPrice"
-                 :txId="txId" @back="back"
+                 :txId="txId" @back="back" :loadingBalances="loadingBalances"
                  @toPegInForm="toPegInForm" :pegInFormData="pegInFormData"/>
     </template>
     <template v-if="showDialog">
@@ -155,6 +155,10 @@ export default class SendBitcoinTrezor extends Vue {
 
   get change() {
     return this.getChangeAddress;
+  }
+
+  get loadingBalances(): boolean {
+    return this.trezorService.isLoadingBalances();
   }
 
   @Emit()

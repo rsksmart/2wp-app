@@ -145,7 +145,7 @@ export default class SendBitcoinLedger extends Vue {
   }
 
   get loadingBalances(): boolean {
-    return this.ledgerService.loadingBalances;
+    return this.ledgerService.isLoadingBalances();
   }
 
   @Emit()
