@@ -9,32 +9,22 @@ import ApiService from '@/services/ApiService';
 import LedgerService from '@/services/LedgerService';
 import * as constants from '@/store/constants';
 import TxBuilder from './TxBuilder';
+import { WalletAddress } from '@/store/peginTx/types';
 
 export default class LedgerTxBuilder extends TxBuilder {
   private tx!: LedgerTx;
 
   private ledgerService: LedgerService;
 
-  private txAccountType: string;
-
   constructor() {
     super();
     this.signer = new LedgerTxSigner();
     this.ledgerService = new LedgerService(this.coin);
-    this.txAccountType = constants.BITCOIN_LEGACY_ADDRESS;
     this.changeAddr = '';
   }
 
   get changeAddress(): string {
     return this.changeAddr;
-  }
-
-  set accountType(accountType: string) {
-    this.txAccountType = accountType;
-  }
-
-  get accountType() {
-    return this.txAccountType;
   }
 
   buildTx(): Promise<LedgerTx> {
@@ -51,7 +41,7 @@ export default class LedgerTxBuilder extends TxBuilder {
               coin,
               inputs,
               associatedKeysets,
-              accountType: this.txAccountType,
+              accountType: this.accountType,
             };
             this.tx = tx;
             resolve(tx);

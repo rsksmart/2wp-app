@@ -5,9 +5,10 @@ import {
   NormalizedInput, NormalizedOutput, TrezorSignedTx, TrezorTx,
 } from '@/types';
 import { getAccountType } from '@/services/utils';
+import store from '../../store';
+import TrezorService from '@/services/TrezorService';
 import * as constants from '@/store/constants';
 import TxBuilder from './TxBuilder';
-import store from '../../store';
 
 export default class TrezorTxBuilder extends TxBuilder {
   private tx!: TrezorTx;
@@ -15,6 +16,11 @@ export default class TrezorTxBuilder extends TxBuilder {
   constructor() {
     super();
     this.signer = new TrezorTxSigner();
+    this.changeAddr = '';
+  }
+
+  get changeAddress(): string {
+    return this.changeAddr;
   }
 
   buildTx(): Promise<TrezorTx> {

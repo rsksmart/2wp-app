@@ -29,7 +29,7 @@ export const getters: GetterTree<PegInTxState, RootState> = {
     }
   },
   [constants.PEGIN_TX_GET_CHANGE_ADDRESS]:
-    (state: PegInTxState) => (accountType: string): string => {
+    (state: PegInTxState) => async (accountType: string): Promise<string> => {
       let address = '';
       let accountTypePath = '';
       const coin = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
@@ -52,7 +52,8 @@ export const getters: GetterTree<PegInTxState, RootState> = {
         for (let index = 0; index < state.addressList.length; index += 1) {
           const walletAddress = state.addressList[index];
           if ((walletAddress.serializedPath === `m/${accountTypePath}${coinPath}/0'/1/${index}`)
-              && (ApiService.areUnusedAddresses([walletAddress.address]))) {
+              // eslint-disable-next-line no-await-in-loop
+              && (await ApiService.areUnusedAddresses([walletAddress.address]))) {
             address = walletAddress.address;
           }
         }

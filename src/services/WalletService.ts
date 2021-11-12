@@ -1,9 +1,11 @@
+import * as bitcoin from 'bitcoinjs-lib';
 import * as constants from '@/store/constants';
 import SatoshiBig from '@/types/SatoshiBig';
 import ApiService from './ApiService';
-import { AccountBalance } from '@/types';
+import { AccountBalance, NormalizedInput } from '@/types';
 import { WalletAddress } from '@/store/peginTx/types';
 import store from '@/store';
+import { EnvironmentAccessorService } from './enviroment-accessor.service';
 
 export abstract class WalletService {
   protected coin: string;

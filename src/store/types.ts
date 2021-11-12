@@ -1,6 +1,7 @@
 import { PegStatus } from '@/store/constants';
 
 export interface RootState {
+  [x: string]: any;
   version: string;
 }
 
