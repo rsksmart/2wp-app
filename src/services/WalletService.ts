@@ -143,9 +143,11 @@ export abstract class WalletService {
           break;
         }
       }
+      // eslint-disable-next-line no-useless-catch
     } catch (e) {
-      console.error(e);
+      throw e;
+    } finally {
+      this.loadingBalances = false;
     }
-    this.loadingBalances = false;
   }
 }
