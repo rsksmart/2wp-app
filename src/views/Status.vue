@@ -148,15 +148,22 @@
           </v-col>
         </v-row>
       </v-container>
-      <v-container v-if="showStatus" fluid class="transactions px-0">
+      <v-container fluid class="transactions px-0">
         <tx-summary v-if="showStatus" :txData="txData" :price="peginTxState.bitcoinPrice"
                     :txId="txId" :showTxId="true" :initialExpand="true"
                     :rsk-federation-address="pegInStatus.btc.federationAddress"/>
-        <v-row v-if="!isRejected" justify="center" class="mt-6">
-          <v-btn class="px-5" width="117" outlined color="#00B43C" rounded
-                 @click="getPegStatus">
-            Refresh
-          </v-btn>
+        <v-row justify="center" class="mx-0 mt-5">
+          <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
+            <v-btn rounded outlined color="#00B520" width="110" @click="back">
+              <span>Back</span>
+            </v-btn>
+          </v-col>
+          <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0">
+            <v-btn v-if="!isRejected && showStatus" class="px-5" width="117" color="#00B520" rounded
+                   @click="getPegStatus">
+              <span class="whiteish">Refresh</span>
+            </v-btn>
+          </v-col>
         </v-row>
       </v-container>
     </v-col>
@@ -352,6 +359,11 @@ export default class Status extends Vue {
     } else {
       this.clean();
     }
+  }
+
+  @Emit()
+  back() {
+    this.$router.replace({ name: 'Home' });
   }
 }
 </script>
