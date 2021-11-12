@@ -53,10 +53,14 @@
                     </span>
                   </v-tooltip>
                 </v-col>
-                <v-col v-if="false" cols="5" class="d-flex justify-center pb-0">
-                  <v-btn outlined rounded color="#00B520" width="100%" height="38px" disabled>
-                    <span class="grayish">Extensive search</span>
-                  </v-btn>
+                <v-col v-if="loadingBalances" cols="5" class="d-flex align-center pb-0">
+                  <v-row class="d-flex justify-center">
+                    <span class="d-flex align-center">Loading balances   </span>
+                    <v-progress-circular
+                      indeterminate
+                      color="#C4C4C4"
+                    ></v-progress-circular>
+                  </v-row>
                 </v-col>
               </v-row>
             </v-col>
@@ -469,7 +473,9 @@ export default class SendBitcoinForm extends Vue {
 
   fixedUSDDecimals = 2;
 
-  VALUE_INCOMPLETE_MESSAGE = 'Not Completed'
+  VALUE_INCOMPLETE_MESSAGE = 'Not Completed';
+
+  @Prop() loadingBalances!: boolean;
 
   @Prop() pegInFormData!: PegInFormValues;
 

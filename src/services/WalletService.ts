@@ -10,6 +10,8 @@ export abstract class WalletService {
 
   protected subscribers: Array<(balance: AccountBalance) => void > = [];
 
+  private loading = false;
+
   constructor(coin: string) {
     this.coin = coin;
   }
@@ -19,6 +21,10 @@ export abstract class WalletService {
   abstract getWalletAddressesPerCall(): number;
 
   abstract getWalletMaxCall(): number;
+
+  get loadingBalances() {
+    return this.loading;
+  }
 
   protected getAccountPath(accountType: string, accountIdx: number) {
     const coinPath: string = this.coin === constants.BTC_NETWORK_MAINNET ? "/0'" : "/1'";
@@ -84,7 +90,7 @@ export abstract class WalletService {
       segwit: new SatoshiBig(0, 'satoshi'),
       nativeSegwit: new SatoshiBig(0, 'satoshi'),
     };
-
+    this.loading = true;
     const maxAddressPerCall: number = this.getWalletAddressesPerCall();
     for (
       let startFrom = 0;
@@ -137,5 +143,6 @@ export abstract class WalletService {
         return;
       }
     }
+    this.loading = false;
   }
 }

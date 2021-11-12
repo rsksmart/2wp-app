@@ -10,7 +10,7 @@
                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
                  @txFee="getTxFee" :fees="calculatedFees" :tx="createdTx"
                  :txBuilder="txBuilder" :txData="txData" :price="peginTxState.bitcoinPrice"
-                 :txId="txId" @back="back"
+                 :txId="txId" @back="back" :loadingBalances="loadingBalances"
                  @toPegInForm="toPegInForm" :pegInFormData="pegInFormData"/>
     </template>
     <template v-if="showDialog">
@@ -142,6 +142,10 @@ export default class SendBitcoinLedger extends Vue {
       feeBTC: this.feeBTC,
       change: '',
     };
+  }
+
+  get loadingBalances(): boolean {
+    return this.ledgerService.loadingBalances;
   }
 
   @Emit()
