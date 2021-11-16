@@ -3,10 +3,15 @@
       <v-col cols="11" class="pb-0">
         <v-row justify="center" align="start" class="mx-0 py-md-0 py-xl-6">
           <v-col>
-              <v-img position="center left"
-                     src="@/assets/logo-iov.svg"
-                     alt="IOV Labs"
-                     width="100" contain class="rsk-main-logo"/>
+              <v-row class="footer-logo mx-0" align="end">
+                <span>Built by</span>
+                <v-col class="pa-0">
+                  <v-img position="center left"
+                         src="@/assets/logo-iov.svg"
+                         alt="IOV Labs"
+                         width="100" contain class="rsk-main-logo"/>
+                </v-col>
+              </v-row>
             <p>Copyright © 2021 IOV Labs All rights reserved</p>
           </v-col>
           <v-col cols="7" class="pt-4">
