@@ -179,6 +179,7 @@ import AdvancedData from '@/components/exchange/AdvancedData.vue';
 import * as constants from '@/store/constants';
 import SatoshiBig from '@/types/SatoshiBig';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
+import { WalletService } from '@/services/WalletService';
 
 @Component({
   components: {
@@ -200,6 +201,8 @@ export default class ConfirmLedgerTransaction extends Vue {
 
   @Prop() txBuilder!: LedgerTxBuilder;
 
+  @Prop() walletService!: WalletService;
+
   @Prop() txData!: TxData;
 
   @Prop() price!: number;
@@ -211,7 +214,8 @@ export default class ConfirmLedgerTransaction extends Vue {
   @Emit('successConfirmation')
   async toTrackId() {
     this.confirmTxState = 'loading';
-    await this.txBuilder.buildTx()
+    await this.walletService.stopAskingForBalance()
+      .then(() => this.txBuilder.buildTx())
       .then(() => this.txBuilder.sign())
       .then((tx) => ApiService
         .broadcast(tx.signedTx))

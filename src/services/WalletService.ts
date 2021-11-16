@@ -74,8 +74,17 @@ export abstract class WalletService {
     }
   }
 
-  public cleanSubscriptions() {
+  private cleanSubscriptions(): void {
     this.subscribers = [];
+  }
+
+  public stopAskingForBalance(): Promise<void> {
+    return new Promise<void>((resolve) => {
+      this.cleanSubscriptions();
+      // eslint-disable-next-line no-empty
+      while (this.loadingBalances) {}
+      resolve();
+    });
   }
 
   protected informSubscribers(balance: AccountBalance): void {

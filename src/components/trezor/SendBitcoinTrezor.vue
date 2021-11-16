@@ -293,7 +293,7 @@ export default class SendBitcoinTrezor extends Vue {
 
   @Emit()
   clear(): void {
-    this.trezorService.cleanSubscriptions();
+    this.trezorService.stopAskingForBalance();
     this.pegInFormData = {
       accountType: '',
       amount: new SatoshiBig('0', 'satoshi'),
@@ -332,7 +332,7 @@ export default class SendBitcoinTrezor extends Vue {
   }
 
   beforeDestroy() {
-    this.trezorService.cleanSubscriptions();
+    this.trezorService.stopAskingForBalance();
     this.clearAccount();
   }
 }
