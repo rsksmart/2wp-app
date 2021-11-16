@@ -53,12 +53,15 @@
                     </span>
                   </v-tooltip>
                 </v-col>
-                <v-col v-if="loadingBalances" cols="5" class="d-flex align-center pb-0">
-                  <v-row class="d-flex justify-center">
+                <v-col v-if="loadingBalances" cols="5" class="d-flex align-start pa-0">
+                  <v-row class="d-flex justify-start pt-6 ma-0">
                     <span class="d-flex align-center">Loading balances   </span>
                     <v-progress-circular
+                      size="17"
+                      width="2"
                       indeterminate
                       color="#C4C4C4"
+                      class="mx-5"
                     ></v-progress-circular>
                   </v-row>
                 </v-col>
