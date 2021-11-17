@@ -5,88 +5,7 @@
         <v-row class="mx-0 mb-5 d-flex justify-center">
           <h2>Bridging BTC and RBTC</h2>
         </v-row>
-        <template v-if="!BTC2RBTC">
-          <v-row class="mx-0 mt-10 d-flex justify-center">
-            <p>Select your token conversion</p>
-          </v-row>
-          <v-row justify="center" class="ma-0">
-            <v-col cols="4" class="d-flex justify-end pb-0">
-              <v-btn class="wallet-button mb-0" @click="showBitcoinWallets"
-                     v-bind:class="{ selected: BTC2RBTC }">
-                <div>
-                  <v-row class="mx-0 d-flex justify-center">
-                    <v-col/>
-                    <v-col class="pa-0 d-flex align-center">
-                      <v-img src="@/assets/exchange/btc.png" height="40" contain/>
-                    </v-col>
-                    <v-col class="pa-0 d-flex align-center">
-                      <v-icon class="wallet-button-content">mdi-arrow-right</v-icon>
-                    </v-col>
-                    <v-col class="pa-0 d-flex align-center">
-                      <v-img src="@/assets/exchange/rbtc.png" height="40" contain/>
-                    </v-col>
-                    <v-col/>
-                  </v-row>
-                  <v-row class="mx-0 d-flex justify-center">
-                    <span class="wallet-button-content">BTC to RBTC</span>
-                  </v-row>
-                </div>
-              </v-btn>
-            </v-col>
-            <v-col cols="4" class="d-flex justify-start pb-0">
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-col  v-bind="attrs" v-on="on" class="ma-0 pa-0">
-                    <v-btn class="wallet-button-disabled mb-0" outlined disabled>
-                      <div>
-                        <v-row class="mx-0 d-flex justify-center">
-                          <v-col/>
-                          <v-col class="pa-0 d-flex align-center">
-                            <v-img src="@/assets/exchange/rbtc-disable.png" height="40" contain/>
-                          </v-col>
-                          <v-col class="pa-0 d-flex align-center">
-                            <v-icon color="#B5CAB8">mdi-arrow-right</v-icon>
-                          </v-col>
-                          <v-col class="pa-0 d-flex align-center">
-                            <v-img src="@/assets/exchange/btc-disable.png" height="40" contain/>
-                          </v-col>
-                          <v-col/>
-                        </v-row>
-                        <v-row class="mx-0 d-flex justify-center">
-                        <span class="gray-greenish">
-                          RBTC to BTC
-                        </span>
-                        </v-row>
-                      </div>
-                    </v-btn>
-                  </v-col>
-                </template>
-                <span>Coming soon</span>
-              </v-tooltip>
-            </v-col>
-          </v-row>
-          <v-row class="mx-0 mt-10 d-flex justify-center">
-            <p>Or check the status of your transaction</p>
-          </v-row>
-          <v-row class="d-flex justify-center pt-4">
-            <v-btn class="wallet-button" @click="toPegInStatus"
-                   v-bind:class="{ selected: BTC2RBTC }">
-              <div>
-                <v-row class="mx-0 d-flex justify-center">
-                  <v-col/>
-                  <v-col class="pa-0 d-flex align-center mx-3">
-                    <v-img src="@/assets/status/status-icon.svg" width="60" contain/>
-                  </v-col>
-                  <v-col/>
-                </v-row>
-                <v-row class="mx-0 d-flex justify-center mt-2">
-                  <span class="wallet-button-content">Transaction status</span>
-                </v-row>
-              </div>
-            </v-btn>
-          </v-row>
-        </template>
-        <template v-if="showWallet">
+        <template>
           <v-row class="mx-0 mt-10 d-flex justify-center">
             <p class="text-center">Select your Bitcoin wallet</p>
           </v-row>
@@ -138,93 +57,56 @@
 import {
   Vue, Component, Emit, Prop,
 } from 'vue-property-decorator';
+import { Action, State } from 'vuex-class';
 import * as constants from '@/store/constants';
+import { TransactionType } from '@/store/session/types';
+import { PegInTxState } from '@/store/peginTx/types';
 
 @Component
 export default class SelectBitcoinWallet extends Vue {
   selectedWallet = '';
 
-  BTC2RBTC = false;
-
-  RBTC2BTC = false;
-
   storeConstants = constants;
 
   @Prop({ default: '' }) peg!: string;
 
-  get showBack() {
-    return this.BTC2RBTC || this.RBTC2BTC;
-  }
+  @State('pegInTx') peginTxState!: PegInTxState;
 
-  get showWallet(): boolean {
-    return this.RBTC2BTC || this.BTC2RBTC;
+  @Action(constants.SESSION_ADD_TX_TYPE, { namespace: 'web3Session' }) addPeg!: (peg: TransactionType) => void;
+
+  @Action(constants.PEGIN_TX_ADD_BITCOIN_WALLET, { namespace: 'pegInTx' }) addBitcoinWallet !: any;
+
+  // eslint-disable-next-line class-methods-use-this
+  get showBack() {
+    return true;
   }
 
   @Emit()
   reset(): void {
-    this.BTC2RBTC = false;
-    this.RBTC2BTC = false;
     this.selectedWallet = '';
   }
 
   @Emit()
-  toPegInStatus(): void {
-    if (this.$route.path !== '/status') this.$router.push('/status');
-  }
-
-  @Emit()
-  showBitcoinWallets(): void {
-    this.BTC2RBTC = true;
-  }
-
-  @Emit('bitcoinWalletSelected')
-  toSendBitcoin(): string {
-    return this.selectedWallet;
-  }
-
-  @Emit()
   setBitcoinWallet(wallet: string): void {
-    switch (wallet) {
-      case constants.WALLET_LEDGER: {
-        this.selectedWallet = constants.WALLET_LEDGER;
-        this.toSendBitcoin();
-        break;
-      }
-      case constants.WALLET_ELECTRUM: {
-        this.selectedWallet = constants.WALLET_ELECTRUM;
-        this.toSendBitcoin();
-        break;
-      }
-      case constants.WALLET_TREZOR: {
-        this.selectedWallet = constants.WALLET_TREZOR;
-        this.toSendBitcoin();
-        break;
-      }
-      case constants.WALLET_RWALLET: {
-        this.selectedWallet = constants.WALLET_RWALLET;
-        this.toSendBitcoin();
-        break;
-      }
-      case constants.WALLET_DEFIANT: {
-        this.selectedWallet = constants.WALLET_DEFIANT;
-        this.toSendBitcoin();
-        break;
-      }
-      default: {
-        break;
-      }
-    }
+    this.addBitcoinWallet(wallet);
+    this.toSendBitcoin();
   }
 
   @Emit()
   // eslint-disable-next-line class-methods-use-this
   back():void {
     this.reset();
+    this.addBitcoinWallet('');
+    this.$router.push({ name: 'Home' });
   }
 
-  created() {
-    this.BTC2RBTC = this.peg === 'BTC2RBTC';
-    this.RBTC2BTC = this.peg === 'RBTC2BTC';
+  @Emit()
+  toSendBitcoin(): void {
+    this.addPeg('PEG_IN');
+    if (this.peginTxState.bitcoinWallet === constants
+      .WALLET_LEDGER) this.$router.push({ name: 'Exchange', params: { selectedWallet: 'SendBitcoinLedger' } });
+    if (this.peginTxState.bitcoinWallet === constants
+      .WALLET_TREZOR) this.$router.push({ name: 'Exchange', params: { selectedWallet: 'SendBitcoinTrezor' } });
   }
 }
 </script>

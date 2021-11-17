@@ -39,6 +39,8 @@ export default class Exchange extends Vue {
 
   @Action(constants.PEGIN_TX_CLEAR_STATE, { namespace: 'pegInTx' }) clear !: () => void;
 
+  @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) init !: () => void;
+
   @Emit('bitcoinWallet')
   toSendBitcoin(bitcoinWallet: string): string {
     this.setBitcoinWallet(bitcoinWallet);
@@ -53,7 +55,8 @@ export default class Exchange extends Vue {
   back(currentComponent: 'ConnectDevice' | 'PegInForm') {
     if (currentComponent === 'ConnectDevice') {
       this.clear();
-      this.$router.replace({ name: 'Home', params: { peg: 'BTC2RBTC' } });
+      this.init();
+      this.$router.replace({ name: 'PegIn', params: { peg: 'BTC2RBTC' } });
     }
   }
 }

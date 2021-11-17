@@ -31,6 +31,11 @@ const routes: Array<RouteConfig> = [
     name: 'StatusSearch',
     component: () => import(/* webpackChunkName: "transactions" */ '../views/Status.vue'),
   },
+  {
+    path: '/pegin',
+    name: 'PegIn',
+    component: () => import(/* webpackChunkName: "transactions" */ '../views/PegIn.vue'),
+  },
 ];
 
 const router = new VueRouter({
