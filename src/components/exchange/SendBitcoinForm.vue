@@ -145,7 +145,7 @@
                 <template v-if="useWeb3Wallet && web3Address">
                   <div class="container">
                     <v-row class="mx-0">
-                      <span>Wallet Connected</span>
+                      <span>Wallet connected</span>
                     </v-row>
                     <v-row class="mx-0 d-flex align-center">
                       <p class="mb-0 account">{{ web3Address }}</p>
@@ -159,7 +159,7 @@
                     </v-row>
                     <v-row class="mx-0">
                       <v-btn class="pa-0" text @click="disconnectWallet">
-                        <span class="blueish">Disconnect Wallet</span>
+                        <span class="blueish">Disconnect wallet</span>
                       </v-btn>
                     </v-row>
                   </div>
@@ -195,7 +195,7 @@
                     <v-row class="mx-0 d-flex justify-center">
                       <v-btn outlined rounded color="#00B520" width="100%" height="38"
                              @click="selectRLoginWallet" >
-                        <span class="greenish">Connect Wallet</span>
+                        <span class="greenish">Connect wallet</span>
                       </v-btn>
                     </v-row>
                   </v-col>
@@ -476,7 +476,7 @@ export default class SendBitcoinForm extends Vue {
 
   fixedUSDDecimals = 2;
 
-  VALUE_INCOMPLETE_MESSAGE = 'Not Completed';
+  VALUE_INCOMPLETE_MESSAGE = 'Not completed';
 
   @Prop() loadingBalances!: boolean;
 

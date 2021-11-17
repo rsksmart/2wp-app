@@ -7,7 +7,7 @@
     </v-row>
     <v-row class="mx-0 d-flex justify-center">
       <span class="text-center">
-        Take note of the transaction ID shown below, it will be useful for you to check the status
+        Take note of the transaction id shown below, it will be useful for you to check the status
         of the process
       </span>
     </v-row>
@@ -18,7 +18,7 @@
             <v-row class="mx-0" justify="center">
               <v-col cols="10" class="d-flex flex-column align-start" >
                 <v-row class="mx-0 mb-1">
-                  <h3>Transaction ID:</h3>
+                  <h3>Transaction id:</h3>
                 </v-row>
                 <v-row class="mx-0">
                   <span>{{ txId }}</span>

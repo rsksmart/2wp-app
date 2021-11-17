@@ -45,7 +45,7 @@
           <v-img src="@/assets/exchange/trezor/fee.png" height="40" contain/>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center"><div class="number">4</div>Confirm Transaction Fee</h4>
+          <h4 class="text-center"><div class="number">4</div>Confirm transaction fee</h4>
         </v-row>
       </v-col>
     </v-row>

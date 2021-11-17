@@ -3,7 +3,7 @@
     <v-col>
       <v-container class="transactions">
         <v-row class="mx-0 mb-5 d-flex justify-center">
-          <h1 class="text-center">Transaction Status</h1>
+          <h1 class="text-center">Transaction status</h1>
         </v-row>
         <v-row class="mx-0 mt-10 mb-8" justify="center">
           <p class="subtitle">Enter your Bitcoin transaction hash in the textbox below
@@ -16,7 +16,7 @@
                           @click:append="getPegStatus"
                           v-model="txId"
                           @keyup.enter="getPegStatus"
-                          color="#C4C4C4" label="Bitcoin transaction ID"/>
+                          color="#C4C4C4" label="BTC transaction id"/>
           </v-col>
         </v-row>
         <v-row v-if="showStatus" class="mx-0 my-5 d-flex justify-center">
@@ -155,7 +155,7 @@
         <v-row justify="center" class="mx-0 mt-5">
           <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
             <v-btn rounded outlined color="#00B520" width="110" @click="back">
-              <span>Go Home</span>
+              <span>Go home</span>
             </v-btn>
           </v-col>
           <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0">
