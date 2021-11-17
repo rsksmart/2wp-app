@@ -20,16 +20,10 @@ export default class LedgerTxBuilder extends TxBuilder {
     super();
     this.signer = new LedgerTxSigner();
     this.ledgerService = new LedgerService(this.coin);
-    this.changeAddr = '';
-  }
-
-  get changeAddress(): string {
-    return this.changeAddr;
   }
 
   buildTx(): Promise<LedgerTx> {
     return new Promise<LedgerTx>((resolve, reject) => {
-      this.changeAddr = this.changeAddress;
       const { coin } = this;
       if (this.normalizedTx) {
         this.getLedgerTxData(this.normalizedTx)

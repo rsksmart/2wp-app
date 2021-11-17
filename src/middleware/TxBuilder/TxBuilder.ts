@@ -16,7 +16,7 @@ export default abstract class TxBuilder {
 
   protected normalizedTx!: NormalizedTx;
 
-  protected changeAddr = '';
+  protected changeAddr: string;
 
   private txAccountType: string;
 
@@ -25,6 +25,7 @@ export default abstract class TxBuilder {
     this.network = this.coin === constants.BTC_NETWORK_MAINNET
       ? bitcoin.networks.bitcoin : bitcoin.networks.testnet;
     this.txAccountType = constants.BITCOIN_LEGACY_ADDRESS;
+    this.changeAddr = '';
   }
 
   set accountType(accountType: string) {
@@ -102,7 +103,8 @@ export default abstract class TxBuilder {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  private isChangeAddressUnused(walletAddress: WalletAddress, accountType: string) {
+  private isChangeAddressUnused(walletAddress: WalletAddress, accountType: string):
+    Promise<boolean> {
     let accountTypePath = '';
     const coin = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
     const coinPath = coin === 'main' ? "/0'" : "/1'";
@@ -122,24 +124,36 @@ export default abstract class TxBuilder {
     if ((walletAddress.serializedPath.startsWith(`m/${accountTypePath}${coinPath}/0'/1/`))) {
       return (ApiService.areUnusedAddresses([walletAddress.address]));
     }
-    return false;
+    return Promise.resolve(false);
   }
 
-  public verifyChangeAddress(
+  public async verifyChangeAddress(
     changeAddress: string,
     rawTx: string,
     changeAddresses: WalletAddress[],
     accountType: string,
     txInput: NormalizedInput,
-  ): boolean {
+  ): Promise<boolean> {
     const existChangeAddress = changeAddresses.find((element) => element.address === changeAddress);
     if (!existChangeAddress) {
       return false;
     }
-    if (this.isChangeAddressUnused(existChangeAddress, accountType)) {
+    if (await this.isChangeAddressUnused(existChangeAddress, accountType)) {
       return true;
     }
     const tx = bitcoin.Transaction.fromHex(rawTx);
-    return (tx.ins[0].hash.toString('utf-8') === txInput.prev_hash);
+    let script: Buffer;
+    switch (accountType) {
+      case constants.BITCOIN_LEGACY_ADDRESS:
+        script = Buffer.from(tx.ins[0].script);
+        break;
+      case constants.BITCOIN_SEGWIT_ADDRESS:
+      case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
+        script = Buffer.from(tx.ins[0].witness[1]);
+        break;
+      default:
+        throw new Error('Error trying to verify change address. Invalid type of account type. ');
+    }
+    return (bitcoin.address.fromOutputScript(script, this.network) === txInput.address);
   }
 }

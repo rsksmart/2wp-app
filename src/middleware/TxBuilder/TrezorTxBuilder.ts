@@ -16,11 +16,6 @@ export default class TrezorTxBuilder extends TxBuilder {
   constructor() {
     super();
     this.signer = new TrezorTxSigner();
-    this.changeAddr = '';
-  }
-
-  get changeAddress(): string {
-    return this.changeAddr;
   }
 
   buildTx(): Promise<TrezorTx> {
