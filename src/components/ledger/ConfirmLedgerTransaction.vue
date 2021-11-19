@@ -45,7 +45,7 @@
           <v-img src="@/assets/exchange/trezor/fee.png" height="40" contain/>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center"><span class="number">4</span>Confirm Transaction Fee</h4>
+          <h4 class="text-center"><span class="number">4</span>Confirm transaction fee</h4>
         </v-row>
       </v-col>
     </v-row>
@@ -118,11 +118,11 @@
       <v-col cols="3" >
         <fieldset class="confirmation-box">
           <legend align="center" class="px-4">See on Ledger</legend>
-          <v-row justify="center" class="mt-5 mx-0 text-center">Confirm Transaction</v-row>
+          <v-row justify="center" class="mt-5 mx-0 text-center">Confirm transaction</v-row>
           <v-row justify="center" class="mt-5 mx-0 text-center" >
-            Fee: {{txData.feeBTC.toBTCTrimmedString()}}
+            Fees: {{txData.feeBTC.toBTCTrimmedString()}}
           </v-row>
-          <v-row justify="center" class="mt-5 mb-3 mx-0">Accept</v-row>
+          <v-row justify="center" class="mt-5 mb-3 mx-0">Accept and send</v-row>
         </fieldset>
       </v-col>
     </v-row>
