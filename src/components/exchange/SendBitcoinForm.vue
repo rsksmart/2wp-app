@@ -44,12 +44,12 @@
                       Native segwit is coming soon for Ledger devices!
                     </p>
                     <p v-if="isLedgerWallet" class="tooltip-form mb-0">
-                      Listed amounts represent the balance of the first 2 addresses
-                      from Legacy and Segwit accounts including change.
+                      Listed amounts represent the balance up to the first {{maxAddressesLedger}}
+                      addresses from Legacy and Segwit accounts including change.
                     </p>
                     <span v-if="!isLedgerWallet">
-                      Listed amounts represent the balance of the first 2 addresses from Legacy,
-                      Segwit and Native segwit accounts including change.
+                      Listed amounts represent the balance up to the first {{maxAddressesTrezor}}
+                      addresses from Legacy, Segwit and Native segwit accounts including change.
                     </span>
                   </v-tooltip>
                 </v-col>
@@ -503,6 +503,18 @@ export default class SendBitcoinForm extends Vue {
   @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: any;
 
   @Action(constants.SESSION_CONNECT_WEB3, { namespace: 'web3Session' }) connectWeb3 !: any;
+
+  // eslint-disable-next-line class-methods-use-this
+  get maxAddressesLedger(): number {
+    return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletAddressesPerCallLedger
+      * EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletMaxCallLedger;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  get maxAddressesTrezor(): number {
+    return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletAddressesPerCallTrezor
+      * EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletMaxCallTrezor;
+  }
 
   get safeAmount(): SatoshiBig {
     return new SatoshiBig(this.bitcoinAmount, 'btc');
