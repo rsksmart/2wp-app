@@ -23,7 +23,7 @@
               <a href="https://www.rsk.co/terms-conditions" target="_blank">
                 Terms & Conditions
               </a>
-              <a>Documentation</a>
+              <a v-if="false">Documentation</a>
             </v-row>
           </v-col>
           <v-col class="pt-1">
