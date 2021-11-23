@@ -79,16 +79,30 @@ export abstract class WalletService {
   }
 
   public stopAskingForBalance(): Promise<void> {
-    return new Promise<void>((resolve) => {
+    let counter = 20;
+    const period = 10;
+    return new Promise<void>((resolve, reject) => {
       this.cleanSubscriptions();
-      // eslint-disable-next-line no-empty
-      while (this.loadingBalances) {}
-      resolve();
+      let askingBalance = setInterval(() => {
+        if ( counter === 0 && this.isLoadingBalances()) {
+          reject(new Error ('Can not stop asking for balance'));
+        }
+        if(!this.isLoadingBalances()) {
+          clearInterval(askingBalance);
+          resolve();
+        } else {
+          counter--;
+        }
+      }, period);
     });
   }
 
   protected informSubscribers(balance: AccountBalance): void {
     this.subscribers.forEach((s) => s(balance));
+  }
+
+  private hasSubscribers(): boolean {
+    return (this.subscribers.length > 0);
   }
 
   // eslint-disable-next-line class-methods-use-this
