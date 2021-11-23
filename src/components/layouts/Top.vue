@@ -1,11 +1,16 @@
 <template>
   <v-app-bar color="#fff" elevation="0" class="mx-8 top">
     <v-row justify="center">
-      <v-col cols="11" class="pb-0 pt-10 pl-2 pr-0">
+      <v-col cols="11" class="d-flex flex-column align-start px-0">
+        <v-col cols="auto" class="top-logo">
+          <v-col cols="auto" class="px-0 pb-1">
             <v-img @click="toExchange" position="center left"
                    src="@/assets/logo-beta.svg"
                    alt="RSK Two Way Peg"
-                   height="65" width="180" contain class="rsk-main-logo"/>
+                   height="65" width="150" contain class="rsk-main-logo"/>
+          </v-col>
+          <span v-if="isTestNet">testnet</span>
+        </v-col>
       </v-col>
     </v-row>
   </v-app-bar>
@@ -13,12 +18,20 @@
 
 <script lang="ts">
 import { Vue, Component, Emit } from 'vue-property-decorator';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import * as constants from '@/store/constants';
 
 @Component
 export default class Top extends Vue {
+  environmentVariables = EnvironmentAccessorService.getEnvironmentVariables();
+
   @Emit()
   toExchange() {
     if (this.$router.currentRoute.name !== 'Home') this.$router.push({ name: 'Home' });
+  }
+
+  get isTestNet() {
+    return this.environmentVariables.vueAppCoin === constants.BTC_NETWORK_TESTNET;
   }
 }
 </script>

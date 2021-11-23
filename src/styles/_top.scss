@@ -38,4 +38,25 @@
   .rsk-main-logo:hover {
     cursor: pointer;
   }
+
+  .top-logo {
+    padding: 40px 0 0 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-end;
+
+    span {
+      font-family: 'Objective', 'Quicksand', sans-serif;;
+      font-size: 10px;
+      line-height: 10px;
+      color: black !important;
+      opacity: 0.5;
+      margin: 0;
+      user-select: none;
+      &:hover {
+        cursor: default;
+      }
+    }
+  }
 }
