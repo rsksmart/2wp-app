@@ -80,18 +80,19 @@ export abstract class WalletService {
 
   public stopAskingForBalance(): Promise<void> {
     let counter = 20;
-    const period = 10;
+    const period = 100;
     return new Promise<void>((resolve, reject) => {
       this.cleanSubscriptions();
-      let askingBalance = setInterval(() => {
-        if ( counter === 0 && this.isLoadingBalances()) {
-          reject(new Error ('Can not stop asking for balance'));
+      const askingBalance = setInterval(() => {
+        if (counter === 0 && this.isLoadingBalances()) {
+          clearInterval(askingBalance);
+          reject(new Error('Can not stop asking for balance'));
         }
-        if(!this.isLoadingBalances()) {
+        if (!this.isLoadingBalances()) {
           clearInterval(askingBalance);
           resolve();
         } else {
-          counter--;
+          counter -= 1;
         }
       }, period);
     });
