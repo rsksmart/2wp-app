@@ -24,8 +24,8 @@ export default abstract class TxBuilder {
     this.coin = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
     this.network = this.coin === constants.BTC_NETWORK_MAINNET
       ? bitcoin.networks.bitcoin : bitcoin.networks.testnet;
-    this.txAccountType = constants.BITCOIN_LEGACY_ADDRESS;
     this.changeAddr = '';
+    this.txAccountType = '';
   }
 
   set accountType(accountType: string) {
@@ -59,10 +59,6 @@ export default abstract class TxBuilder {
       ).then((normalizedTx: NormalizedTx) => {
         this.normalizedTx = normalizedTx;
         const walletAddresses: WalletAddress[] = store.state.pegInTx.addressList as WalletAddress[];
-        if (changeAddress === ''
-          && normalizedTx.inputs[0].address !== normalizedTx.outputs[2].address) {
-           reject(new Error('Error checking the change address'));
-        }
         this.changeAddr = normalizedTx.outputs[2].address
           ? normalizedTx.outputs[2].address : changeAddress;
         if (!this.verifyChangeAddress(
@@ -115,7 +111,7 @@ export default abstract class TxBuilder {
         accountTypePath = "84'";
         break;
       default:
-        accountTypePath = "44'";
+        throw new Error('Error: invalid account type. ');
     }
     if ((walletAddress.serializedPath.startsWith(`m/${accountTypePath}${coinPath}/0'/1/`))) {
       return (ApiService.areUnusedAddresses([walletAddress.address]));
@@ -148,7 +144,7 @@ export default abstract class TxBuilder {
         script = Buffer.from(tx.ins[0].witness[1]);
         break;
       default:
-        throw new Error('Error trying to verify change address. Invalid type of account type. ');
+        throw new Error('Error trying to verify change address. Invalid type of account.');
     }
     return (bitcoin.address.fromOutputScript(script, this.network) === txInput.address);
   }

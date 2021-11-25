@@ -47,12 +47,12 @@ export const getters: GetterTree<PegInTxState, RootState> = {
         default:
           accountTypePath = "44'";
       }
-      // eslint-disable-next-line no-unused-expressions
       if (state.addressList) {
+        // eslint-disable-next-line no-restricted-syntax
         for (const walletAddress of state.addressList) {
           if ((walletAddress.serializedPath.startsWith(`m/${accountTypePath}${coinPath}/0'/1`)
               // eslint-disable-next-line no-await-in-loop
-              && (await ApiService.areUnusedAddresses([walletAddress.address]))) {
+              && (await ApiService.areUnusedAddresses([walletAddress.address])))) {
             address = walletAddress.address;
           }
         }
