@@ -145,11 +145,6 @@ export default class LedgerService extends WalletService {
     return format;
   }
 
-  static compressPublicKey(pubKey: string) {
-    const { publicKey } = bitcoin.ECPair.fromPublicKey(Buffer.from(pubKey, 'hex'));
-    return publicKey.toString('hex');
-  }
-
   public static signTx(tx: LedgerTx): Promise<string> {
     const isSegwitTx = tx.accountType === constants.BITCOIN_SEGWIT_ADDRESS;
     return new Promise<string>((resolve, reject) => {

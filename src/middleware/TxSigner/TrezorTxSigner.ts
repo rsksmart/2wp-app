@@ -5,16 +5,10 @@ import {
 import TxSigner from './TxSigner';
 
 export default class TrezorTxSigner extends TxSigner {
-  private trezorService: TrezorService;
-
-  constructor() {
-    super();
-    this.trezorService = new TrezorService(this.coin);
-  }
-
   public sign(tx: Tx): Promise<TrezorSignedTx> {
     return new Promise<TrezorSignedTx>((resolve, reject) => {
-      this.trezorService.sign(tx)
+      const trezorService: TrezorService = new TrezorService(this.coin);
+      trezorService.sign(tx)
         .then(resolve)
         .catch(reject);
     });
