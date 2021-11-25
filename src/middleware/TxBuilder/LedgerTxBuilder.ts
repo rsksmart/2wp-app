@@ -13,12 +13,9 @@ import TxBuilder from './TxBuilder';
 export default class LedgerTxBuilder extends TxBuilder {
   private tx!: LedgerTx;
 
-  private ledgerService: LedgerService;
-
   constructor() {
     super();
     this.signer = new LedgerTxSigner();
-    this.ledgerService = new LedgerService(this.coin);
   }
 
   buildTx(): Promise<LedgerTx> {
