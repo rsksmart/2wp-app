@@ -60,8 +60,9 @@ export default abstract class TxBuilder {
         this.normalizedTx = normalizedTx;
         const walletAddresses: WalletAddress[] = store.state.pegInTx.addressList as WalletAddress[];
         if (changeAddress === ''
-          && normalizedTx.inputs[0].address !== normalizedTx.outputs[2].address
-        ) reject(new Error('Error checking the change address'));
+          && normalizedTx.inputs[0].address !== normalizedTx.outputs[2].address) {
+           reject(new Error('Error checking the change address'));
+        }
         this.changeAddr = normalizedTx.outputs[2].address
           ? normalizedTx.outputs[2].address : changeAddress;
         if (!this.verifyChangeAddress(
@@ -102,7 +103,7 @@ export default abstract class TxBuilder {
     Promise<boolean> {
     let accountTypePath = '';
     const coin = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
-    const coinPath = coin === 'main' ? "/0'" : "/1'";
+    const coinPath = coin === constants.BTC_NETWORK_MAINNET ? "/0'" : "/1'";
     switch (accountType) {
       case constants.BITCOIN_LEGACY_ADDRESS:
         accountTypePath = "44'";
