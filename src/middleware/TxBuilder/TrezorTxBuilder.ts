@@ -2,6 +2,7 @@ import { TxInputType, TxOutputType } from 'trezor-connect';
 import TrezorTxSigner from '@/middleware/TxSigner/TrezorTxSigner';
 import { WalletAddress } from '@/store/peginTx/types';
 import {
+  InputScriptType,
   NormalizedInput, NormalizedOutput, TrezorSignedTx, TrezorTx,
 } from '@/types';
 import { getAccountType } from '@/services/utils';
@@ -75,7 +76,7 @@ export default class TrezorTxBuilder extends TxBuilder {
     return path;
   }
 
-  private static getScriptType(address: string): 'SPENDP2SHWITNESS' | 'SPENDADDRESS' | 'SPENDWITNESS' {
+  private static getScriptType(address: string): InputScriptType {
     const accType = getAccountType(address);
     switch (accType) {
       case constants.BITCOIN_SEGWIT_ADDRESS:

@@ -197,7 +197,7 @@ import { Machine } from '@/services/utils';
     AdvancedData,
   },
 })
-export default class ConfirmTransaction extends Vue {
+export default class ConfirmTrezorTransaction extends Vue {
   txId = '';
 
   txError = '';
