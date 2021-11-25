@@ -26,7 +26,7 @@ export abstract class WalletService {
     return this.loadingBalances;
   }
 
-  protected getAccountPath(accountType: string, accountIdx: number) {
+  protected getAccountPath(accountType: string, accountIdx: number): string {
     const coinPath: string = this.coin === constants.BTC_NETWORK_MAINNET ? "/0'" : "/1'";
     let accountPath = 'm';
     switch (accountType) {
@@ -74,7 +74,7 @@ export abstract class WalletService {
     }
   }
 
-  private cleanSubscriptions(): void {
+  public cleanSubscriptions(): void {
     this.subscribers = [];
   }
 

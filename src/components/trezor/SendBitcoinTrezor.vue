@@ -36,7 +36,7 @@ import {
 import { Action, Getter, State } from 'vuex-class';
 import TrezorConnect, { DEVICE, DEVICE_EVENT } from 'trezor-connect';
 import SendBitcoinForm from '@/components/exchange/SendBitcoinForm.vue';
-import ConfirmTransaction from '@/components/trezor/ConfirmTransaction.vue';
+import ConfirmTrezorTransaction from '@/components/trezor/ConfirmTrezorTransaction.vue';
 import TrackingId from '@/components/exchange/TrackingId.vue';
 import TrezorService from '@/services/TrezorService';
 import { PegInTxState } from '@/store/peginTx/types';
@@ -56,7 +56,7 @@ import { EnvironmentAccessorService } from '@/services/enviroment-accessor.servi
   components: {
     BtcToRbtcDialog,
     SendBitcoinForm,
-    ConfirmTransaction,
+    ConfirmTrezorTransaction,
     TrackingId,
     ConnectDevice,
     DeviceErrorDialog,
@@ -188,7 +188,7 @@ export default class SendBitcoinTrezor extends Vue {
     })
       .then((tx: NormalizedTx) => {
         this.createdTx = tx;
-        this.currentComponent = 'ConfirmTransaction';
+        this.currentComponent = 'ConfirmTrezorTransaction';
         return tx;
       })
       .catch((error) => {
