@@ -1,6 +1,6 @@
 import TrezorService from '@/services/TrezorService';
 import {
-  TrezorSignedTx, TrezorTx, Tx,
+  TrezorSignedTx, Tx,
 } from '@/types';
 import TxSigner from './TxSigner';
 

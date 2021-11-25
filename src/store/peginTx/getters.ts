@@ -51,7 +51,7 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       if (state.addressList) {
         for (let index = 0; index < state.addressList.length; index += 1) {
           const walletAddress = state.addressList[index];
-          if ((walletAddress.serializedPath === `m/${accountTypePath}${coinPath}/0'/1/${index}`)
+          if ((walletAddress.serializedPath.slice(0, walletAddress.serializedPath.length - 2) === `m/${accountTypePath}${coinPath}/0'/1`)
               // eslint-disable-next-line no-await-in-loop
               && (await ApiService.areUnusedAddresses([walletAddress.address]))) {
             address = walletAddress.address;

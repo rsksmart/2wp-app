@@ -6,7 +6,6 @@ import {
 } from '@/types';
 import { getAccountType } from '@/services/utils';
 import store from '../../store';
-import TrezorService from '@/services/TrezorService';
 import * as constants from '@/store/constants';
 import TxBuilder from './TxBuilder';
 

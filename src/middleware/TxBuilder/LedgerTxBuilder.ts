@@ -9,7 +9,6 @@ import ApiService from '@/services/ApiService';
 import LedgerService from '@/services/LedgerService';
 import * as constants from '@/store/constants';
 import TxBuilder from './TxBuilder';
-import { WalletAddress } from '@/store/peginTx/types';
 
 export default class LedgerTxBuilder extends TxBuilder {
   private tx!: LedgerTx;

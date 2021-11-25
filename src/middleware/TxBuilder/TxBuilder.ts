@@ -52,17 +52,18 @@ export default abstract class TxBuilder {
     changeAddress: string;
     sessionId: string;
   }): Promise<NormalizedTx> {
-    this.changeAddr = changeAddress;
     return new Promise<NormalizedTx>((resolve, reject) => {
       ApiService.createPeginTx(
         amountToTransferInSatoshi, refundAddress, recipient,
         sessionId, feeLevel, changeAddress,
       ).then((normalizedTx: NormalizedTx) => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const walletAddresses: WalletAddress[]
-          // eslint-disable-next-line operator-linebreak
-          = store.state.pegInTx.addressList as WalletAddress[];
+        this.normalizedTx = normalizedTx;
+        const walletAddresses: WalletAddress[] = store.state.pegInTx.addressList as WalletAddress[];
+        if (changeAddress === ''
+          && normalizedTx.inputs[0].address !== normalizedTx.outputs[2].address
+        ) reject(new Error('Error checking the change address'));
+        this.changeAddr = normalizedTx.outputs[2].address
+          ? normalizedTx.outputs[2].address : changeAddress;
         if (!this.verifyChangeAddress(
           this.changeAddress,
           this.getUnsignedRawTx(),
@@ -72,12 +73,6 @@ export default abstract class TxBuilder {
         )) {
           throw new Error('Error checking the change address');
         }
-        if (this.changeAddress === '') {
-          this.changeAddr = normalizedTx.inputs[0].address;
-        } else {
-          this.changeAddr = this.changeAddress;
-        }
-        this.normalizedTx = normalizedTx;
         resolve(normalizedTx);
       }).catch(reject);
     });
