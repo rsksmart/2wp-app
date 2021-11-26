@@ -5,7 +5,7 @@
            lg="8"
            xl="7">
       <v-row justify="center" class="mx-0 pb-4">
-        <h3 class="text-center tx-text">Advanced Data:</h3>
+        <h3 class="text-center tx-text">Advanced data:</h3>
       </v-row>
       <v-row class="d-flex justify-center mb-n3">
         <button v-show="expanded" @click="switchExpand"
@@ -28,7 +28,7 @@
           <v-row class="mx-0 py-2 px-2">
             <v-col class="py-6 px-5">
               <v-row class="mx-0">
-                <h3>Unsigned Raw Tx</h3>
+                <h3>Unsigned raw tx</h3>
               </v-row>
               <v-row class="mx-0 text-break">
                 <span>{{ rawTx }}</span>

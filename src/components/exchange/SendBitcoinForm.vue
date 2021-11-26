@@ -44,12 +44,12 @@
                       Native segwit is coming soon for Ledger devices!
                     </p>
                     <p v-if="isLedgerWallet" class="tooltip-form mb-0">
-                      Listed amounts represent the balance of the first 2 addresses
-                      from Legacy and Segwit accounts including change.
+                      Listed amounts represent the balance up to the first {{maxAddressesLedger}}
+                      addresses from Legacy and Segwit accounts including change.
                     </p>
                     <span v-if="!isLedgerWallet">
-                      Listed amounts represent the balance of the first 2 addresses from Legacy,
-                      Segwit and Native segwit accounts including change.
+                      Listed amounts represent the balance up to the first {{maxAddressesTrezor}}
+                      addresses from Legacy, Segwit and Native segwit accounts including change.
                     </span>
                   </v-tooltip>
                 </v-col>
@@ -145,7 +145,7 @@
                 <template v-if="useWeb3Wallet && web3Address">
                   <div class="container">
                     <v-row class="mx-0">
-                      <span>Wallet Connected</span>
+                      <span>Wallet connected</span>
                     </v-row>
                     <v-row class="mx-0 d-flex align-center">
                       <p class="mb-0 account">{{ web3Address }}</p>
@@ -159,7 +159,7 @@
                     </v-row>
                     <v-row class="mx-0">
                       <v-btn class="pa-0" text @click="disconnectWallet">
-                        <span class="blueish">Disconnect Wallet</span>
+                        <span class="blueish">Disconnect wallet</span>
                       </v-btn>
                     </v-row>
                   </div>
@@ -195,7 +195,7 @@
                     <v-row class="mx-0 d-flex justify-center">
                       <v-btn outlined rounded color="#00B520" width="100%" height="38"
                              @click="selectRLoginWallet" >
-                        <span class="greenish">Connect Wallet</span>
+                        <span class="greenish">Connect wallet</span>
                       </v-btn>
                     </v-row>
                   </v-col>
@@ -476,7 +476,7 @@ export default class SendBitcoinForm extends Vue {
 
   fixedUSDDecimals = 2;
 
-  VALUE_INCOMPLETE_MESSAGE = 'Not Completed';
+  VALUE_INCOMPLETE_MESSAGE = 'Not completed';
 
   @Prop() loadingBalances!: boolean;
 
@@ -503,6 +503,18 @@ export default class SendBitcoinForm extends Vue {
   @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: any;
 
   @Action(constants.SESSION_CONNECT_WEB3, { namespace: 'web3Session' }) connectWeb3 !: any;
+
+  // eslint-disable-next-line class-methods-use-this
+  get maxAddressesLedger(): number {
+    return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletAddressesPerCallLedger
+      * EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletMaxCallLedger;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  get maxAddressesTrezor(): number {
+    return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletAddressesPerCallTrezor
+      * EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletMaxCallTrezor;
+  }
 
   get safeAmount(): SatoshiBig {
     return new SatoshiBig(this.bitcoinAmount, 'btc');

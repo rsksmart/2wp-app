@@ -42,7 +42,7 @@
                   </v-col>
                   <v-col class="mb-2">
                     <v-row class="mx-0">
-                      <h3>Transaction Fee</h3>
+                      <h3>Transaction fee</h3>
                     </v-row>
                     <v-row class="mx-0">
                       <span>{{ fee }} BTC</span>
@@ -97,7 +97,7 @@
               <v-divider/>
               <v-container>
                 <v-row class="mx-0" align="start">
-                  <h3 class="mr-1">Refund BTC Address</h3>
+                  <h3 class="mr-1">Refund BTC address</h3>
                   <v-tooltip right>
                     <template v-slot:activator="{ on, attrs }">
                       <v-icon small color="teal darken-2" v-bind="attrs" v-on="on">
@@ -117,7 +117,7 @@
                 <v-divider/>
                 <div class="container">
                   <v-row class="mx-0">
-                    <h3>Bitcoin transaction ID</h3>
+                    <h3>BTC transaction id</h3>
                   </v-row>
                   <v-row class="mx-0">
                     <span>{{ computedTxId }}</span>
@@ -128,7 +128,7 @@
                 <v-divider/>
                 <v-container class="container">
                   <v-row class="mx-0" align="start">
-                    <h3 class="mr-1">PowPeg Bitcoin Address</h3>
+                    <h3 class="mr-1">PowPeg BTC Address</h3>
                     <v-tooltip right>
                       <template v-slot:activator="{ on, attrs }">
                         <v-icon small color="teal darken-2" v-bind="attrs" v-on="on">

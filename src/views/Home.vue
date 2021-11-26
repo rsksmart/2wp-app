@@ -38,7 +38,7 @@
               <v-col cols="4" class="d-flex justify-start pb-0">
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-col  v-bind="attrs" v-on="on" class="ma-0 pa-0">
+                    <v-col  v-bind="attrs" v-on="on" class="ma-0 pa-0" cols="auto">
                       <v-btn class="wallet-button-disabled mb-0" outlined disabled>
                         <div>
                           <v-row class="mx-0 d-flex justify-center">
