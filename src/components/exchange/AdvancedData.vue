@@ -12,12 +12,12 @@
                v-bind:class="[this.over ? 'expand-btn-active' : 'expand-btn-inactive']"
                @mouseover="over = true" @mouseleave="over = false">
           <span class="content">
-            {{ expand ? '-' : '+'}}
+            {{ expanded ? '-' : '+'}}
           </span>
         </v-btn>
       </v-row>
       <v-expand-transition>
-        <div class="box" v-show="expand">
+        <div class="box" v-show="expanded">
           <v-row class="mx-0 py-2 px-2">
             <v-col class="py-6 px-5">
               <v-row class="mx-0">
@@ -46,17 +46,17 @@ export default class AdvancedData extends Vue {
 
   @Prop() rawTx!: string;
 
-  expand = false;
+  expanded = false;
 
   over = false;
 
   @Emit()
   switchExpand() {
-    this.expand = !this.expand;
+    this.expanded = !this.expanded;
   }
 
   created() {
-    this.expand = this.initialExpand;
+    this.expanded = this.initialExpand;
   }
 }
 </script>
