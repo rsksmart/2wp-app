@@ -8,23 +8,23 @@
         <h2 class="text-center tx-text">Transaction summary:</h2>
       </v-row>
       <v-row class="d-flex justify-center mb-n3">
-        <a v-show="expand && !expandOver" @click="switchExpand" @mouseover="switchExpandOver"
-           @mouseleave="switchExpandOver">
-          <v-img src="@/assets/status/collapse-2.png" contain max-width="30"></v-img>
-        </a>
-        <a v-show="!expand && !expandOver" @click="switchExpand" @mouseover="switchExpandOver"
-           @mouseleave="switchExpandOver">
-          <v-img src="@/assets/status/collapse.png" contain max-width="30"></v-img>
-        </a>
-        <a v-show="expand && expandOver" @click="switchExpand">
-          <v-img src="@/assets/status/collapse-2-green.png" contain max-width="30"></v-img>
-        </a>
-        <a v-show="!expand && expandOver" @click="switchExpand">
-          <v-img src="@/assets/status/collapse-green.png" contain max-width="30"></v-img>
-        </a>
+        <button v-show="expanded" @click="switchExpand"
+                @mouseover="isMouseOver = true" @mouseleave="isMouseOver = false">
+          <v-img v-show="!isMouseOver" src="@/assets/status/collapse-2.png"
+                 contain eager max-width="30" />
+          <v-img v-show="isMouseOver" src="@/assets/status/collapse-2-green.png"
+                 contain eager max-width="30" />
+        </button>
+        <button v-show="!expanded" @click="switchExpand"
+                @mouseover="isMouseOver = true" @mouseleave="isMouseOver = false">
+          <v-img v-show="!isMouseOver" src="@/assets/status/collapse.png"
+                 contain eager max-width="30" />
+          <v-img v-show="isMouseOver" src="@/assets/status/collapse-green.png"
+                 contain eager max-width="30" />
+        </button>
       </v-row>
       <v-expand-transition>
-        <div class="box" v-show="expand">
+        <div class="box" v-show="expanded">
           <v-row class="mx-0 py-2">
             <v-col cols="4 py-0 ">
               <v-row class="mx-0">
@@ -182,9 +182,9 @@ export default class TxSummary extends Vue {
 
   txIdValue = '';
 
-  expand = false;
+  expanded = false;
 
-  expandOver = false;
+  isMouseOver = false;
 
   fixedUSDDecimals = 2;
 
@@ -242,12 +242,7 @@ export default class TxSummary extends Vue {
 
   @Emit()
   switchExpand() {
-    this.expand = !this.expand;
-  }
-
-  @Emit()
-  switchExpandOver() {
-    this.expandOver = !this.expandOver;
+    this.expanded = !this.expanded;
   }
 
   @Emit()
@@ -257,7 +252,7 @@ export default class TxSummary extends Vue {
   }
 
   created() {
-    this.expand = this.initialExpand;
+    this.expanded = this.initialExpand;
     this.txIdValue = this.txId;
   }
 }
