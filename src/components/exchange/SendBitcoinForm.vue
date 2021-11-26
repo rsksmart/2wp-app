@@ -418,6 +418,7 @@ import { PegInTxState } from '@/store/peginTx/types';
 import { Machine } from '@/services/utils';
 import SatoshiBig from '@/types/SatoshiBig';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import ApiService from '@/services/ApiService';
 
 @Component({
   components: {
@@ -478,6 +479,14 @@ export default class SendBitcoinForm extends Vue {
 
   VALUE_INCOMPLETE_MESSAGE = 'Not completed';
 
+  awaitFeeLoad!: Promise<void>;
+
+  fees: FeeAmountData = {
+    slow: new SatoshiBig(0, 'satoshi'),
+    average: new SatoshiBig(0, 'satoshi'),
+    fast: new SatoshiBig(0, 'satoshi'),
+  };
+
   @Prop() loadingBalances!: boolean;
 
   @Prop() pegInFormData!: PegInFormValues;
@@ -489,8 +498,6 @@ export default class SendBitcoinForm extends Vue {
   @Prop() addresses!: [];
 
   @Prop() unusedAddresses?: [];
-
-  @Prop() fees!: FeeAmountData;
 
   @State('pegInTx') peginTxState!: PegInTxState;
 
@@ -839,9 +846,10 @@ export default class SendBitcoinForm extends Vue {
   }
 
   @Emit('createTx')
-  createTx() {
+  async createTx() {
     this.showWarningMessage = false;
     this.pegInFormState.send('loading');
+    await this.awaitFeeLoad;
     let selectedFee;
     switch (this.txFeeIndex) {
       case 0:
@@ -873,12 +881,24 @@ export default class SendBitcoinForm extends Vue {
     };
   }
 
-  @Emit('txFee')
+  @Emit()
   calculateTxFee() {
-    return {
-      amount: Number(this.safeAmount.toSatoshiString()),
-      accountType: this.btcAccountTypeSelected,
-    };
+    this.awaitFeeLoad = new Promise<void>((resolve, reject) => {
+      ApiService.getTxFee(
+        this.peginTxState.sessionId,
+        Number(this.safeAmount.toSatoshiString()),
+        this.btcAccountTypeSelected,
+      )
+        .then((txFee) => {
+          this.fees = {
+            slow: new SatoshiBig(txFee.slow, 'satoshi'),
+            average: new SatoshiBig(txFee.average, 'satoshi'),
+            fast: new SatoshiBig(txFee.fast, 'satoshi'),
+          };
+          resolve();
+        })
+        .catch(reject);
+    });
   }
 
   @Emit()
