@@ -9,33 +9,28 @@
           <p class="subtitle">Enter your Bitcoin transaction hash in the textbox below
             to check the status of your operation</p>
         </v-row>
-        <v-row class="mx-0 d-flex justify-center">
+        <v-row justify="center" class="mx-0">
           <v-col cols="7" md="8" xl="7" lg="7">
             <v-text-field dense outlined hide-details
                           append-icon="mdi-magnify"
                           @click:append="getPegStatus"
                           v-model="txId"
                           @keyup.enter="getPegStatus"
-                          color="#C4C4C4" label="BTC transaction id"/>
+                          v-bind:color="error ? '#F6C61B': '#C4C4C4'" label="BTC transaction id"
+                          v-bind:class="error ? 'status-text-field-error' : ''"/>
+            <v-row class="mx-0 pl-1 pt-1" v-if="error">
+                <span class="yellowish">
+                  {{errorMessage}}
+                </span>
+            </v-row>
           </v-col>
         </v-row>
-        <v-row v-if="showStatus" class="mx-0 my-5 d-flex justify-center">
+        <v-row justify="center"  v-if="showStatus" class="mx-0 my-5">
           <div class="my-4 status" :class="activeMessageStyle">
             {{ statusMessage }}
           </div>
         </v-row>
-        <v-row v-if="error" class="mx-0 mt-20 d-flex justify-center">
-          <v-col class="my-4">
-            <v-row class="d-flex justify-center icon-alert">
-              <v-icon x-large
-                      color="#F6C61B" >mdi-alert-outline</v-icon>
-            </v-row>
-            <v-row class="statusRejected d-flex justify-center error-message mt-3">
-              {{ errorMessage }}
-            </v-row>
-          </v-col>
-        </v-row>
-        <v-row v-if="showStatus" class="d-flex justify-center mt-6">
+        <v-row justify="center" v-if="showStatus" class="mt-6">
           <v-col cols="7">
             <v-row v-if="isRejected" class="mx-0 d-flex justify-center progress-bar">
               <v-col cols="8" class="pa-0 d-flex justify-center">
@@ -98,13 +93,13 @@
                       </v-icon>
                     </template>
                     <p class="tooltip-form mb-0">
-                      The estimated time is calculated based on a 10 minutes block time.
+                      The estimated time is calculated based on a 10-minute block time.
                     </p>
                   </v-tooltip>
                 </v-row>
                 <v-row v-if="!btcConfirmationsAreDone" justify="center" class="mt-2 pa-0">
                   <h5>
-                    Estimated time left: {{leftBtcTime}} hours left
+                    Estimated time left: {{leftBtcTime}} hours
                   </h5>
                 </v-row>
               </v-col>
