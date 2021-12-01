@@ -79,7 +79,7 @@ export abstract class WalletService {
   }
 
   public stopAskingForBalance(): Promise<void> {
-    let counter = 150;
+    let counter = 300;
     const period = 100;
     return new Promise<void>((resolve, reject) => {
       this.cleanSubscriptions();

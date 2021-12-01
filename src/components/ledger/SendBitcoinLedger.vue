@@ -255,15 +255,15 @@ export default class SendBitcoinLedger extends Vue {
   }
 
   @Emit('back')
-  back(currentComponent: 'ConnectDevice' | 'PegInForm') {
-    this.clear();
+  async back(currentComponent: 'ConnectDevice' | 'PegInForm') {
+    await this.clear();
     this.clearAccount();
     return currentComponent;
   }
 
   @Emit()
-  clear(): void {
-    this.ledgerService.stopAskingForBalance();
+  async clear(): Promise<void> {
+    await this.ledgerService.stopAskingForBalance();
     this.pegInFormData = {
       accountType: '',
       amount: new SatoshiBig('0', 'satoshi'),
@@ -299,8 +299,8 @@ export default class SendBitcoinLedger extends Vue {
     );
   }
 
-  beforeDestroy() {
-    this.ledgerService.stopAskingForBalance();
+  async beforeDestroy() {
+    await this.ledgerService.stopAskingForBalance();
     this.clearAccount();
   }
 }
