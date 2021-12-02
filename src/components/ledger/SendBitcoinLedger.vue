@@ -121,7 +121,7 @@ export default class SendBitcoinLedger extends Vue {
 
   @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: any;
 
-  @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: (accountType: string) => string;
+  @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: (accountType: string) => Promise<string>;
 
   beforeMount() {
     this.showDialog = localStorage.getItem('BTRD_COOKIE_DISABLED') !== 'true';
@@ -142,7 +142,7 @@ export default class SendBitcoinLedger extends Vue {
   }
 
   @Emit()
-  toConfirmTx({
+  async toConfirmTx({
     amountToTransferInSatoshi,
     refundAddress,
     recipient,
@@ -170,7 +170,7 @@ export default class SendBitcoinLedger extends Vue {
       refundAddress,
       recipient,
       feeLevel,
-      changeAddress: this.getChangeAddress(accountType),
+      changeAddress: await this.getChangeAddress(accountType),
       sessionId: this.peginTxState.sessionId,
     })
       .then((tx: NormalizedTx) => {

@@ -15,21 +15,10 @@ export default class LedgerTxBuilder extends TxBuilder {
 
   private ledgerService: LedgerService;
 
-  private txAccountType: string;
-
   constructor() {
     super();
     this.signer = new LedgerTxSigner();
     this.ledgerService = new LedgerService(this.coin);
-    this.txAccountType = constants.BITCOIN_LEGACY_ADDRESS;
-  }
-
-  set accountType(accountType: string) {
-    this.txAccountType = accountType;
-  }
-
-  get accountType() {
-    return this.txAccountType;
   }
 
   buildTx(): Promise<LedgerTx> {
@@ -41,11 +30,11 @@ export default class LedgerTxBuilder extends TxBuilder {
             const tx: LedgerTx = {
               outputs: this.normalizedTx.outputs,
               outputScriptHex,
-              changePath: store.getters[`pegInTx/${constants.PEGIN_TX_GET_CHANGE_ADDRESS}`](this.txAccountType),
+              changePath: this.changeAddress,
               coin,
               inputs,
               associatedKeysets,
-              accountType: this.txAccountType,
+              accountType: this.accountType,
             };
             this.tx = tx;
             resolve(tx);

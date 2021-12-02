@@ -171,15 +171,14 @@ import {
   Component, Emit, Prop,
   Vue,
 } from 'vue-property-decorator';
-import { Getter } from 'vuex-class';
 import { ConfirmTxState, NormalizedTx, TxData } from '@/types';
 import TxSummary from '@/components/exchange/TxSummary.vue';
-import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
 import ApiService from '@/services/ApiService';
 import UnverifiedInputsDialog from '@/components/ledger/UnverifiedInputsDialog.vue';
 import AdvancedData from '@/components/exchange/AdvancedData.vue';
 import * as constants from '@/store/constants';
 import SatoshiBig from '@/types/SatoshiBig';
+import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
 
 @Component({
   components: {
@@ -204,8 +203,6 @@ export default class ConfirmLedgerTransaction extends Vue {
   @Prop() txData!: TxData;
 
   @Prop() price!: number;
-
-  @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: (accountType: string) => string;
 
   get showUnverifiedInputsDialog() {
     return this.txBuilder.accountType === constants.BITCOIN_SEGWIT_ADDRESS && this.confirmTxState === 'loading';
@@ -252,9 +249,9 @@ export default class ConfirmLedgerTransaction extends Vue {
     return this.tx?.outputs[1]?.address?.trim() ?? 'RSK Powpeg address not found';
   }
 
-  get changeAddress() {
-    return this.getChangeAddress(this.txBuilder.accountType) !== ''
-      ? this.getChangeAddress(this.txBuilder.accountType)
+  get changeAddress(): string {
+    return this.txBuilder.changeAddress !== ''
+      ? this.txBuilder.changeAddress
       : 'Change address not found';
   }
 

@@ -1,6 +1,6 @@
 import TrezorService from '@/services/TrezorService';
 import {
-  TrezorSignedTx, TrezorTx, Tx,
+  TrezorSignedTx, Tx,
 } from '@/types';
 import TxSigner from './TxSigner';
 
@@ -18,11 +18,5 @@ export default class TrezorTxSigner extends TxSigner {
         .then(resolve)
         .catch(reject);
     });
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  getRawTx(tx: Tx): string {
-    const trezorTx = tx as TrezorTx;
-    return this.trezorService.getUnsignedRawTx(trezorTx);
   }
 }
