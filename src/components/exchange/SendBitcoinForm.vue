@@ -84,6 +84,7 @@
                 <v-col cols="4" v-bind:class="[amountStyle]" class="input-box-outline">
                   <v-col cols="8" class="pa-0 pl-1">
                     <v-text-field solo hide-details full-width single-line flat
+                                  placeholder="add amount"
                                   v-model="bitcoinAmount" type="number"
                                   step="0.00000001"
                                   @keydown="blockLetterKeyDown"
@@ -122,7 +123,7 @@
                 </v-col>
                 <v-col/>
               </v-row>
-              <v-row class="mx-0" v-if="!secondDone && amountStyle !== ''">
+              <v-row v-if="secondDone === 'error'" class="mx-0">
                 <span class="yellowish">
                   {{amountErrorMessage}}
                 </span>
@@ -276,7 +277,7 @@
               <v-container id="summary-2" class="pb-0 pl-0">
                 <v-row class="mx-0">
                   <h1>Bitcoins:</h1>
-                  <v-icon v-if="secondDone" class="ml-2" small color="#008CFF">
+                  <v-icon v-if="secondDone === 'done'" class="ml-2" small color="#008CFF">
                     mdi-check-circle-outline
                   </v-icon>
                 </v-row>
@@ -433,7 +434,7 @@ import ApiService from '@/services/ApiService';
 export default class SendBitcoinForm extends Vue {
   btcAccountTypeSelected = '';
 
-  bitcoinAmount = 0.0; // SatoshiBN
+  bitcoinAmount: string | number = '';
 
   rskAddressSelected = '';
 
@@ -450,7 +451,7 @@ export default class SendBitcoinForm extends Vue {
 
   firstDone = false;
 
-  secondDone = false;
+  secondDone: 'unused' | 'done' | 'error' = 'unused';
 
   thirdDone = false;
 
@@ -495,6 +496,8 @@ export default class SendBitcoinForm extends Vue {
   txError = '';
 
   showTxErrorDialog = false;
+
+  @Prop() isBackFromConfirm!: boolean;
 
   @Prop() loadingBalances!: boolean;
 
@@ -548,7 +551,7 @@ export default class SendBitcoinForm extends Vue {
     const minValue: SatoshiBig = new SatoshiBig(this.peginTxState.peginConfiguration.minValue, 'satoshi');
     const maxValue: SatoshiBig = new SatoshiBig(this.peginTxState.peginConfiguration.maxValue, 'satoshi');
     if (this.bitcoinAmount.toString() === '') {
-      return 'Please, enter an amount';
+      return '';
     }
     if (!this.isBTCAmountValidNumberRegex) {
       return 'Invalid format, neither letters, big amounts nor more than 8 decimals are allowed';
@@ -619,7 +622,7 @@ export default class SendBitcoinForm extends Vue {
 
   get computedFeePlusAmount(): string {
     const feePlusAmount: SatoshiBig = this.safeAmount.plus(this.safeTxFee);
-    return this.fourthDone && this.secondDone
+    return this.fourthDone && this.secondDone === 'done'
       ? `${feePlusAmount.toBTCString()} BTC` : this.VALUE_INCOMPLETE_MESSAGE;
   }
 
@@ -627,7 +630,7 @@ export default class SendBitcoinForm extends Vue {
     const amountUSD: Big = Big(this.computedBTCAmountUSD);
     const txFeeUSD: Big = Big(this.computedTxFeeUSD);
     const feePlusAmountUSD: Big = amountUSD.plus(txFeeUSD);
-    return this.fourthDone && this.secondDone
+    return this.fourthDone && this.secondDone === 'done'
       ? feePlusAmountUSD.toFixed(this.fixedUSDDecimals) : '0.00';
   }
 
@@ -648,7 +651,7 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get formFilled() {
-    return this.firstDone && this.secondDone && this.thirdDone
+    return this.firstDone && this.secondDone === 'done' && this.thirdDone
       && this.fourthDone;
   }
 
@@ -742,14 +745,18 @@ export default class SendBitcoinForm extends Vue {
 
   @Watch('btcAccountTypeSelected')
   watchBTCAccountTypeSelected() {
-    this.secondDone = this.isBTCAmountValidNumberRegex && !this.insufficientAmount;
-    this.amountStyle = this.secondDone ? 'green-box' : 'yellow-box';
+    if (this.secondDone !== 'unused') {
+      this.secondDone = this.isBTCAmountValidNumberRegex && !this.insufficientAmount
+        ? 'done' : 'error';
+      this.amountStyle = this.secondDone === 'done' ? 'green-box' : 'yellow-box';
+    }
   }
 
   @Watch('bitcoinAmount')
   watchBitcoinAmount() {
-    this.secondDone = this.isBTCAmountValidNumberRegex && !this.insufficientAmount;
-    this.amountStyle = this.secondDone ? 'green-box' : 'yellow-box';
+    this.secondDone = this.isBTCAmountValidNumberRegex && !this.insufficientAmount
+      ? 'done' : 'error';
+    this.amountStyle = this.secondDone === 'done' ? 'green-box' : 'yellow-box';
   }
 
   @Watch('rskAddressSelected')
@@ -819,15 +826,19 @@ export default class SendBitcoinForm extends Vue {
       switch (step) {
         case 1: {
           this.firstDone = true;
-          this.secondDone = this.isBTCAmountValidNumberRegex && !this.insufficientAmount;
-          if (this.firstDone && this.secondDone) {
+          if (this.secondDone !== 'unused') {
+            this.secondDone = this.isBTCAmountValidNumberRegex && !this.insufficientAmount
+              ? 'done' : 'error';
+          }
+          if (this.firstDone && this.secondDone === 'done') {
             this.calculateTxFee();
           }
           break;
         }
         case 2: {
-          this.secondDone = this.isBTCAmountValidNumberRegex && !this.insufficientAmount;
-          if (this.firstDone && this.secondDone && value !== 'feeGot') {
+          this.secondDone = this.isBTCAmountValidNumberRegex && !this.insufficientAmount
+            ? 'done' : 'error';
+          if (this.firstDone && this.secondDone === 'done' && value !== 'feeGot') {
             this.calculateTxFee();
           }
           break;
@@ -933,8 +944,11 @@ export default class SendBitcoinForm extends Vue {
   fillStoredPegInFormData() {
     this.btcAccountTypeSelected = this.pegInFormData.accountType;
     this.firstDone = this.pegInFormData.accountType !== '';
-    this.bitcoinAmount = Number(this.pegInFormData.amount.toBTCString());
-    this.secondDone = this.isBTCAmountValidNumberRegex && !this.insufficientAmount;
+    if (this.isBackFromConfirm) {
+      this.bitcoinAmount = Number(this.pegInFormData.amount.toBTCString());
+      this.secondDone = this.isBTCAmountValidNumberRegex && !this.insufficientAmount
+        ? 'done' : 'error';
+    }
     this.useWeb3Wallet = this.pegInFormData.rskAddress !== '';
     this.rskAddressSelected = this.pegInFormData.rskAddress;
     this.thirdDone = this.pegInFormData.rskAddress !== '';

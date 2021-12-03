@@ -8,10 +8,11 @@
     <template v-if="ledgerDataReady">
       <component :is="currentComponent" :balances="balances"
                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
-                 :tx="createdTx" :txBuilder="txBuilder" :txData="txData"
-                 :price="peginTxState.bitcoinPrice" :txId="txId" @back="back"
-                 :loadingBalances="loadingBalances" :walletService="ledgerService"
-                 @toPegInForm="toPegInForm" :pegInFormData="pegInFormData"/>
+                 @txFee="getTxFee" :fees="calculatedFees" :tx="createdTx"
+                 :txBuilder="txBuilder" :txData="txData" :price="peginTxState.bitcoinPrice"
+                 :txId="txId" @back="back" :loadingBalances="loadingBalances"
+                 @toPegInForm="toPegInForm" :pegInFormData="pegInFormData"
+                 :isBackFromConfirm="isBackFromConfirm"/>
     </template>
     <template v-if="showDialog">
       <btc-to-rbtc-dialog :showDialog="showDialog" @closeDialog="closeDialog"/>
@@ -84,6 +85,8 @@ export default class SendBitcoinLedger extends Vue {
   txId = '';
 
   txError = '';
+
+  isBackFromConfirm = false;
 
   createdTx: NormalizedTx = {
     coin: EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
@@ -186,6 +189,7 @@ export default class SendBitcoinLedger extends Vue {
 
   @Emit()
   toPegInForm() {
+    this.isBackFromConfirm = true;
     this.currentComponent = 'SendBitcoinForm';
   }
 
