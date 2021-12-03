@@ -12,7 +12,8 @@
                  :tx="createdTx" :txBuilder="txBuilder" :txData="txData"
                  :price="peginTxState.bitcoinPrice" :walletService="trezorService"
                  :txId="txId" @back="back" :loadingBalances="loadingBalances"
-                 @toPegInForm="toPegInForm" :pegInFormData="pegInFormData"/>
+                 @toPegInForm="toPegInForm" :pegInFormData="pegInFormData"
+                 :isBackFromConfirm="isBackFromConfirm"/>
     </template>
     <template v-if="showDialog">
       <btc-to-rbtc-dialog :showDialog="showDialog" @closeDialog="closeDialog"/>
@@ -91,6 +92,8 @@ export default class SendBitcoinTrezor extends Vue {
   txId = '';
 
   txError = '';
+
+  isBackFromConfirm = false;
 
   createdTx: NormalizedTx = {
     coin: EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
@@ -199,6 +202,7 @@ export default class SendBitcoinTrezor extends Vue {
 
   @Emit()
   toPegInForm() {
+    this.isBackFromConfirm = true;
     this.currentComponent = 'SendBitcoinForm';
   }
 
