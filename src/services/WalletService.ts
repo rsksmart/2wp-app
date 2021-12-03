@@ -74,12 +74,36 @@ export abstract class WalletService {
     }
   }
 
-  public cleanSubscriptions() {
+  private cleanSubscriptions(): void {
     this.subscribers = [];
+  }
+
+  public stopAskingForBalance(): Promise<void> {
+    let counter = 300;
+    const period = 100;
+    return new Promise<void>((resolve, reject) => {
+      this.cleanSubscriptions();
+      const askingBalance = setInterval(() => {
+        if (counter === 0 && this.isLoadingBalances()) {
+          clearInterval(askingBalance);
+          reject(new Error('Can not stop asking for balance'));
+        }
+        if (!this.isLoadingBalances()) {
+          clearInterval(askingBalance);
+          resolve();
+        } else {
+          counter -= 1;
+        }
+      }, period);
+    });
   }
 
   protected informSubscribers(balance: AccountBalance): void {
     this.subscribers.forEach((s) => s(balance));
+  }
+
+  private hasSubscribers(): boolean {
+    return (this.subscribers.length > 0);
   }
 
   // eslint-disable-next-line class-methods-use-this
