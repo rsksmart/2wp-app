@@ -9,14 +9,17 @@ import {
 } from '@/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import { WalletService } from './WalletService';
+import LedgerTransportService from './LedgetTransportService';
 
 export default class LedgerService extends WalletService {
   private network: bitcoin.Network;
+  private transport: LedgerTransportService;
 
   constructor(coin: string) {
     super(coin);
     this.network = coin === constants.BTC_NETWORK_MAINNET
       ? bitcoin.networks.bitcoin : bitcoin.networks.testnet;
+    this.transport = new LedgerTransportService();
   }
 
   // eslint-disable-next-line class-methods-use-this
