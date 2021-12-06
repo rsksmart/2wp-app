@@ -10,7 +10,7 @@
                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
                  :tx="createdTx" :txBuilder="txBuilder" :txData="txData"
                  :price="peginTxState.bitcoinPrice" :txId="txId" @back="back"
-                 :loadingBalances="loadingBalances"
+                 :loadingBalances="loadingBalances" :walletService="ledgerService"
                  @toPegInForm="toPegInForm" :pegInFormData="pegInFormData"/>
     </template>
     <template v-if="showDialog">
