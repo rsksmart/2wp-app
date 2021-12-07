@@ -54,6 +54,7 @@ export const getters: GetterTree<PegInTxState, RootState> = {
               // eslint-disable-next-line no-await-in-loop
               && (await ApiService.areUnusedAddresses([walletAddress.address])))) {
             address = walletAddress.address;
+            break;
           }
         }
       }

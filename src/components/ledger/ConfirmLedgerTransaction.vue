@@ -264,8 +264,8 @@ export default class ConfirmLedgerTransaction extends Vue {
     return changeAmount.toBTCTrimmedString();
   }
 
-  created() {
-    this.rawTx = this.txBuilder.getUnsignedRawTx();
+  async created() {
+    this.rawTx = await this.txBuilder.getUnsignedRawTx();
   }
 }
 </script>
