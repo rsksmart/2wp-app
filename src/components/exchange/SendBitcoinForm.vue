@@ -376,9 +376,9 @@
     </v-row>
     <v-row class="mx-0">
       <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
-        <v-btn rounded outlined color="#00B520" width="110" @click="back"
+        <v-btn rounded outlined color="#00B520" width="110" @click="backHome"
                :disabled="pegInFormState.matches(['loading'])">
-          <span>Back</span>
+          <span>Go home</span>
         </v-btn>
       </v-col>
       <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0">
@@ -773,10 +773,8 @@ export default class SendBitcoinForm extends Vue {
     this.thirdDone = false;
   }
 
-  @Emit('back')
-  // eslint-disable-next-line class-methods-use-this
-  back() {
-    return 'PegInForm';
+  backHome() {
+    this.$router.replace({ name: 'Home' });
   }
 
   @Emit('unused')
