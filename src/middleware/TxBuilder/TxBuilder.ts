@@ -82,9 +82,10 @@ export default abstract class TxBuilder {
       // eslint-disable-next-line no-await-in-loop
       const hexTx = await ApiService.getTxHex(input.prev_hash);
       const prevTx = bitcoin.Transaction.fromHex(hexTx);
-      console.log(prevTx.outs);
-      // eslint-disable-next-line max-len
-      txBuilder.addInput(input.prev_hash, input.prev_index, 0, prevTx.outs[input.prev_index].script);
+      txBuilder.addInput(
+        input.prev_hash, input.prev_index,
+        0, prevTx.outs[input.prev_index].script,
+      );
     }
     this.normalizedTx.outputs.forEach((normalizedOutput) => {
       if (normalizedOutput.op_return_data) {
@@ -138,20 +139,13 @@ export default abstract class TxBuilder {
       return false;
     }
     if (await this.isChangeAddressUnused(existChangeAddress, accountType)) {
-      console.log(`address unused ${existChangeAddress.address}`);
       return true;
     }
     const tx = bitcoin.Transaction.fromHex(rawTx);
-    console.log(tx);
     let script: Buffer;
     switch (accountType) {
       case constants.BITCOIN_LEGACY_ADDRESS:
         script = Buffer.from(tx.ins[0].script.buffer);
-        console.log('script to check.........');
-        console.log(bitcoin.address.toOutputScript(txInput.address, this.network));
-        console.log('script got: .....');
-        console.log(tx.ins[0].script.buffer);
-        console.log(script.toString('hex'));
         break;
       case constants.BITCOIN_SEGWIT_ADDRESS:
       case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
@@ -160,8 +154,6 @@ export default abstract class TxBuilder {
       default:
         throw new Error('Error trying to verify change address. Invalid type of account.');
     }
-    console.log(tx);
-    console.log(`script: ${script}`);
     return (bitcoin.address.fromOutputScript(script, this.network) === txInput.address);
   }
 }
