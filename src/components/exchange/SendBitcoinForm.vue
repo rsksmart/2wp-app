@@ -774,7 +774,7 @@ export default class SendBitcoinForm extends Vue {
   }
 
   backHome() {
-    this.$router.replace({ name: 'Home' });
+    this.$router.go(0);
   }
 
   @Emit('unused')
