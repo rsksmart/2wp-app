@@ -150,24 +150,22 @@
     <v-row class="mx-0 my-8">
       <advanced-data :rawTx="rawTx" :initial-expand="false"/>
     </v-row>
-    <v-row class="ma-0">
+    <v-row v-if="confirmTxState.matches(['idle', 'error', 'goingHome'])" class="ma-0">
       <v-col cols="2" class="d-flex justify-start ma-0 py-0">
-        <v-btn v-if="confirmTxState === 'idle' || confirmTxState === 'error'"
-               rounded outlined color="#00B520" width="110" @click="toPegInForm"
-               :disabled="confirmTxState === 'error' || confirmTxState === 'loading'">
-          <span>Back</span>
+        <v-btn rounded outlined color="#00B520" width="110" @click="backHome"
+               :disabled="confirmTxState.matches(['error', 'goingHome', 'loading'])">
+          <span>Go home</span>
         </v-btn>
       </v-col>
       <v-col cols="10" class="d-flex justify-end ma-0 py-0">
-        <v-btn v-if="confirmTxState === 'idle' || confirmTxState === 'error'"
-               rounded color="#00B520" width="110" @click="toTrackId"
-               :disabled="confirmTxState === 'error'">
+        <v-btn rounded color="#00B520" width="110" @click="toTrackId"
+               :disabled="confirmTxState.matches(['error', 'goingHome', 'loading'])">
           <span class="whiteish">Sign</span>
         </v-btn>
       </v-col>
     </v-row>
-    <v-row class="mx-0 d-flex justify-center">
-      <v-col v-if="confirmTxState === 'loading'">
+    <v-row v-if="confirmTxState.matches(['loading'])" class="mx-0 d-flex justify-center">
+      <v-col>
         <v-row class="mx-0 mb-5 d-flex justify-center">
           See your Trezor device to confirm your transaction!
         </v-row>
@@ -185,12 +183,13 @@ import {
   Vue,
 } from 'vue-property-decorator';
 import TrezorTxBuilder from '@/middleware/TxBuilder/TrezorTxBuilder';
-import { ConfirmTxState, NormalizedTx, TxData } from '@/types';
+import { NormalizedTx, TxData } from '@/types';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import ApiService from '@/services/ApiService';
 import SatoshiBig from '@/types/SatoshiBig';
 import AdvancedData from '@/components/exchange/AdvancedData.vue';
 import { WalletService } from '@/services/WalletService';
+import { Machine } from '@/services/utils';
 
 @Component({
   components: {
@@ -203,7 +202,12 @@ export default class ConfirmTransaction extends Vue {
 
   txError = '';
 
-  confirmTxState: ConfirmTxState = 'idle';
+  confirmTxState: Machine<
+    'idle'
+    | 'loading'
+    | 'error'
+    | 'goingHome'
+    > = new Machine('idle');
 
   rawTx = '';
 
@@ -219,7 +223,7 @@ export default class ConfirmTransaction extends Vue {
 
   @Emit('successConfirmation')
   async toTrackId() {
-    this.confirmTxState = 'loading';
+    this.confirmTxState.send('loading');
     await this.walletService.stopAskingForBalance()
       .then(() => this.txBuilder.buildTx())
       .then(() => this.txBuilder.sign())
@@ -229,15 +233,20 @@ export default class ConfirmTransaction extends Vue {
         this.txId = txId;
       })
       .catch((err) => {
-        this.confirmTxState = 'error';
+        this.confirmTxState.send('error');
         this.txError = err.message;
       });
     return [this.txError, this.txId];
   }
 
+  backHome() {
+    this.confirmTxState.send('goingHome');
+    this.$router.go(0);
+  }
+
   @Emit('toPegInForm')
   async toPegInForm() {
-    this.confirmTxState = 'loading';
+    this.confirmTxState.send('loading');
     return 'SendBitcoinForm';
   }
 

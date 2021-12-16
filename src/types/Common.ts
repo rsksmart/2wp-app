@@ -65,5 +65,3 @@ export interface PegInFormValues {
 }
 
 export type SendBitcoinState = 'idle' | 'loading' | 'error';
-
-export type ConfirmTxState = 'idle' | 'loading' | 'error';
