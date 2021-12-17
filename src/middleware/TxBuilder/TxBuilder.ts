@@ -56,14 +56,14 @@ export default abstract class TxBuilder {
       ApiService.createPeginTx(
         amountToTransferInSatoshi, refundAddress, recipient,
         sessionId, feeLevel, changeAddress,
-      ).then((normalizedTx: NormalizedTx) => {
+      ).then(async (normalizedTx: NormalizedTx) => {
         this.normalizedTx = normalizedTx;
         const walletAddresses: WalletAddress[] = store.state.pegInTx.addressList as WalletAddress[];
         this.changeAddr = normalizedTx.outputs[2].address
           ? normalizedTx.outputs[2].address : changeAddress;
         if (!this.verifyChangeAddress(
           this.changeAddress,
-          this.getUnsignedRawTx(),
+          await this.getUnsignedRawTx(),
           walletAddresses,
           this.accountType,
           normalizedTx.inputs[0],
@@ -75,11 +75,18 @@ export default abstract class TxBuilder {
     });
   }
 
-  public getUnsignedRawTx(): string {
+  public async getUnsignedRawTx(): Promise<string> {
     const txBuilder = new bitcoin.TransactionBuilder(this.network);
-    this.normalizedTx.inputs.forEach((input) => {
-      txBuilder.addInput(input.prev_hash, input.prev_index);
-    });
+    // eslint-disable-next-line no-restricted-syntax
+    for (const input of this.normalizedTx.inputs) {
+      // eslint-disable-next-line no-await-in-loop
+      const hexTx = await ApiService.getTxHex(input.prev_hash);
+      const prevTx = bitcoin.Transaction.fromHex(hexTx);
+      txBuilder.addInput(
+        input.prev_hash, input.prev_index,
+        0, prevTx.outs[input.prev_index].script,
+      );
+    }
     this.normalizedTx.outputs.forEach((normalizedOutput) => {
       if (normalizedOutput.op_return_data) {
         const buffer = Buffer.from(normalizedOutput.op_return_data, 'hex');
@@ -91,7 +98,8 @@ export default abstract class TxBuilder {
         txBuilder.addOutput(normalizedOutput.address, Number(normalizedOutput.amount));
       }
     });
-    return txBuilder.buildIncomplete().toHex();
+    return txBuilder.buildIncomplete()
+      .toHex();
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -137,7 +145,7 @@ export default abstract class TxBuilder {
     let script: Buffer;
     switch (accountType) {
       case constants.BITCOIN_LEGACY_ADDRESS:
-        script = Buffer.from(tx.ins[0].script);
+        script = Buffer.from(tx.ins[0].script.buffer);
         break;
       case constants.BITCOIN_SEGWIT_ADDRESS:
       case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:

@@ -280,8 +280,8 @@ export default class ConfirmTransaction extends Vue {
       .toBTCTrimmedString();
   }
 
-  created() {
-    this.rawTx = this.txBuilder.getUnsignedRawTx();
+  async created() {
+    this.rawTx = await this.txBuilder.getUnsignedRawTx();
   }
 }
 </script>

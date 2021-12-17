@@ -10,7 +10,7 @@
                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
                  @unused="getUnusedAddresses" :unusedAddresses="unusedAddresses"
                  :tx="createdTx" :txBuilder="txBuilder" :txData="txData"
-                 :price="peginTxState.bitcoinPrice"
+                 :price="peginTxState.bitcoinPrice" :walletService="trezorService"
                  :txId="txId" @back="back" :loadingBalances="loadingBalances"
                  @toPegInForm="toPegInForm" :pegInFormData="pegInFormData"/>
     </template>
@@ -155,7 +155,7 @@ export default class SendBitcoinTrezor extends Vue {
   }
 
   @Emit()
-  toConfirmTx({
+  async toConfirmTx({
     amountToTransferInSatoshi,
     refundAddress,
     recipient,
@@ -177,12 +177,13 @@ export default class SendBitcoinTrezor extends Vue {
     this.refundAddress = refundAddress;
     this.recipient = recipient;
     this.feeBTC = feeBTC;
+    this.txBuilder.accountType = accountType;
     this.txBuilder.getNormalizedTx({
       amountToTransferInSatoshi: Number(amountToTransferInSatoshi.toString()),
       refundAddress,
       recipient,
       feeLevel,
-      changeAddress: this.getChangeAddress(accountType),
+      changeAddress: await this.getChangeAddress(accountType),
       sessionId: this.peginTxState.sessionId,
     })
       .then((tx: NormalizedTx) => {
