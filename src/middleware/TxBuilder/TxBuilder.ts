@@ -142,18 +142,28 @@ export default abstract class TxBuilder {
       return true;
     }
     const tx = bitcoin.Transaction.fromHex(rawTx);
-    let script: Buffer;
+    let address: string;
+    let keyPair: bitcoin.ECPairInterface;
+    let chunks;
     switch (accountType) {
       case constants.BITCOIN_LEGACY_ADDRESS:
-        script = Buffer.from(tx.ins[0].script.buffer);
+        chunks = bitcoin.script.decompile(tx.ins[0].script)! as Buffer[];
+        keyPair = bitcoin.ECPair.fromPublicKey(chunks[chunks.length - 1]);
+        address = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey }).address!;
         break;
       case constants.BITCOIN_SEGWIT_ADDRESS:
+        keyPair = bitcoin.ECPair.fromPublicKey(tx.ins[0].witness[1]);
+        address = bitcoin.payments.p2sh({
+          redeem: bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey }),
+        }).address!;
+        break;
       case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
-        script = Buffer.from(tx.ins[0].witness[1]);
+        keyPair = bitcoin.ECPair.fromPublicKey(tx.ins[0].witness[1]);
+        address = bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey }).address!;
         break;
       default:
         throw new Error('Error trying to verify change address. Invalid type of account.');
     }
-    return (bitcoin.address.fromOutputScript(script, this.network) === txInput.address);
+    return (address === txInput.address);
   }
 }
