@@ -13,11 +13,9 @@
 <script lang="ts">
 import Vue from 'vue';
 import { Component } from 'vue-property-decorator';
-import { Action } from 'vuex-class';
 import Top from '@/components/layouts/Top.vue';
 import FooterRsk from '@/components/layouts/Footer.vue';
 import Mobile from '@/views/Mobile.vue';
-import * as constants from '@/store/constants';
 
 @Component({
   components: {
@@ -27,10 +25,5 @@ import * as constants from '@/store/constants';
   },
 })
 export default class App extends Vue {
-  @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) init !: () => void;
-
-  created() {
-    this.init();
-  }
 }
 </script>

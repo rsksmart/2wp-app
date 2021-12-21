@@ -376,14 +376,14 @@
     </v-row>
     <v-row class="mx-0">
       <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
-        <v-btn rounded outlined color="#00B520" width="110" @click="back"
-               :disabled="pegInFormState.matches(['loading'])">
-          <span>Back</span>
+        <v-btn rounded outlined color="#00B520" width="110" @click="backHome"
+               :disabled="pegInFormState.matches(['loading', 'goingHome'])">
+          <span>Go home</span>
         </v-btn>
       </v-col>
       <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0">
         <v-btn v-if="!pegInFormState.matches(['loading'])" rounded color="#00B43C"
-               @click="sendTx" :disabled="!formFilled">
+               @click="sendTx" :disabled="!formFilled || pegInFormState.matches(['goingHome'])">
           <span class="whiteish">Continue</span>
           <v-icon class="ml-2" color="#fff">mdi-send-outline</v-icon>
         </v-btn>
@@ -418,6 +418,7 @@ import { PegInTxState } from '@/store/peginTx/types';
 import { Machine } from '@/services/utils';
 import SatoshiBig from '@/types/SatoshiBig';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import ApiService from '@/services/ApiService';
 
 @Component({
   components: {
@@ -440,6 +441,7 @@ export default class SendBitcoinForm extends Vue {
     | 'second'
     | 'third'
     | 'fourth'
+    | 'goingHome'
     > = new Machine('first');
 
   firstDone = false;
@@ -478,6 +480,14 @@ export default class SendBitcoinForm extends Vue {
 
   VALUE_INCOMPLETE_MESSAGE = 'Not completed';
 
+  awaitFeeLoad!: Promise<void>;
+
+  fees: FeeAmountData = {
+    slow: new SatoshiBig(0, 'satoshi'),
+    average: new SatoshiBig(0, 'satoshi'),
+    fast: new SatoshiBig(0, 'satoshi'),
+  };
+
   @Prop() loadingBalances!: boolean;
 
   @Prop() pegInFormData!: PegInFormValues;
@@ -489,8 +499,6 @@ export default class SendBitcoinForm extends Vue {
   @Prop() addresses!: [];
 
   @Prop() unusedAddresses?: [];
-
-  @Prop() fees!: FeeAmountData;
 
   @State('pegInTx') peginTxState!: PegInTxState;
 
@@ -766,10 +774,9 @@ export default class SendBitcoinForm extends Vue {
     this.thirdDone = false;
   }
 
-  @Emit('back')
-  // eslint-disable-next-line class-methods-use-this
-  back() {
-    return 'PegInForm';
+  backHome() {
+    this.pegInFormState.send('goingHome');
+    this.$router.go(0);
   }
 
   @Emit('unused')
@@ -839,9 +846,10 @@ export default class SendBitcoinForm extends Vue {
   }
 
   @Emit('createTx')
-  createTx() {
+  async createTx() {
     this.showWarningMessage = false;
     this.pegInFormState.send('loading');
+    await this.awaitFeeLoad;
     let selectedFee;
     switch (this.txFeeIndex) {
       case 0:
@@ -873,12 +881,24 @@ export default class SendBitcoinForm extends Vue {
     };
   }
 
-  @Emit('txFee')
+  @Emit()
   calculateTxFee() {
-    return {
-      amount: Number(this.safeAmount.toSatoshiString()),
-      accountType: this.btcAccountTypeSelected,
-    };
+    this.awaitFeeLoad = new Promise<void>((resolve, reject) => {
+      ApiService.getTxFee(
+        this.peginTxState.sessionId,
+        Number(this.safeAmount.toSatoshiString()),
+        this.btcAccountTypeSelected,
+      )
+        .then((txFee) => {
+          this.fees = {
+            slow: new SatoshiBig(txFee.slow, 'satoshi'),
+            average: new SatoshiBig(txFee.average, 'satoshi'),
+            fast: new SatoshiBig(txFee.fast, 'satoshi'),
+          };
+          resolve();
+        })
+        .catch(reject);
+    });
   }
 
   @Emit()

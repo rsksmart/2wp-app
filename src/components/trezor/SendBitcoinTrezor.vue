@@ -9,8 +9,8 @@
       <component :is="currentComponent" :balances="balances"
                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
                  @unused="getUnusedAddresses" :unusedAddresses="unusedAddresses"
-                 @txFee="getTxFee" :fees="calculatedFees" :tx="createdTx"
-                 :txBuilder="txBuilder" :txData="txData" :price="peginTxState.bitcoinPrice"
+                 :tx="createdTx" :txBuilder="txBuilder" :txData="txData"
+                 :price="peginTxState.bitcoinPrice" :walletService="trezorService"
                  :txId="txId" @back="back" :loadingBalances="loadingBalances"
                  @toPegInForm="toPegInForm" :pegInFormData="pegInFormData"/>
     </template>
@@ -39,11 +39,10 @@ import SendBitcoinForm from '@/components/exchange/SendBitcoinForm.vue';
 import ConfirmTransaction from '@/components/trezor/ConfirmTransaction.vue';
 import TrackingId from '@/components/exchange/TrackingId.vue';
 import TrezorService from '@/services/TrezorService';
-import ApiService from '@/services/ApiService';
 import { PegInTxState } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import {
-  AccountBalance, FeeAmountData, NormalizedTx, PegInFormValues, SendBitcoinState, TxData,
+  AccountBalance, NormalizedTx, PegInFormValues, SendBitcoinState, TxData,
 } from '@/types';
 import TrezorTxBuilder from '@/middleware/TxBuilder/TrezorTxBuilder';
 import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
@@ -115,12 +114,6 @@ export default class SendBitcoinTrezor extends Vue {
     nativeSegwit: new SatoshiBig(0, 'satoshi'),
   };
 
-  calculatedFees: FeeAmountData = {
-    slow: new SatoshiBig(0, 'satoshi'),
-    average: new SatoshiBig(0, 'satoshi'),
-    fast: new SatoshiBig(0, 'satoshi'),
-  };
-
   trezorDataReady = false;
 
   trezorService: TrezorService = new TrezorService(
@@ -162,7 +155,7 @@ export default class SendBitcoinTrezor extends Vue {
   }
 
   @Emit()
-  toConfirmTx({
+  async toConfirmTx({
     amountToTransferInSatoshi,
     refundAddress,
     recipient,
@@ -184,12 +177,13 @@ export default class SendBitcoinTrezor extends Vue {
     this.refundAddress = refundAddress;
     this.recipient = recipient;
     this.feeBTC = feeBTC;
+    this.txBuilder.accountType = accountType;
     this.txBuilder.getNormalizedTx({
       amountToTransferInSatoshi: Number(amountToTransferInSatoshi.toString()),
       refundAddress,
       recipient,
       feeLevel,
-      changeAddress: this.getChangeAddress(accountType),
+      changeAddress: await this.getChangeAddress(accountType),
       sessionId: this.peginTxState.sessionId,
     })
       .then((tx: NormalizedTx) => {
@@ -291,29 +285,16 @@ export default class SendBitcoinTrezor extends Vue {
     }
   }
 
-  @Emit()
-  getTxFee({ amount, accountType }: {amount: number; accountType: string}) {
-    ApiService.getTxFee(this.peginTxState.sessionId, amount, accountType)
-      .then((txFee) => {
-        this.calculatedFees = {
-          slow: new SatoshiBig(txFee.slow, 'satoshi'),
-          average: new SatoshiBig(txFee.average, 'satoshi'),
-          fast: new SatoshiBig(txFee.fast, 'satoshi'),
-        };
-      })
-      .catch(console.error);
-  }
-
   @Emit('back')
-  back(currentComponent: 'ConnectDevice' | 'PegInForm') {
-    this.clear();
+  async back(currentComponent: 'ConnectDevice' | 'PegInForm') {
+    await this.clear();
     this.clearAccount();
     return currentComponent;
   }
 
   @Emit()
-  clear(): void {
-    this.trezorService.cleanSubscriptions();
+  async clear(): Promise<void> {
+    await this.trezorService.stopAskingForBalance();
     this.pegInFormData = {
       accountType: '',
       amount: new SatoshiBig('0', 'satoshi'),
@@ -345,19 +326,14 @@ export default class SendBitcoinTrezor extends Vue {
       segwit: new SatoshiBig(0, 'satoshi'),
       nativeSegwit: new SatoshiBig(0, 'satoshi'),
     };
-    this.calculatedFees = {
-      slow: new SatoshiBig(0, 'satoshi'),
-      average: new SatoshiBig(0, 'satoshi'),
-      fast: new SatoshiBig(0, 'satoshi'),
-    };
     this.trezorDataReady = false;
     this.trezorService = new TrezorService(
       EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
     );
   }
 
-  beforeDestroy() {
-    this.trezorService.cleanSubscriptions();
+  async beforeDestroy() {
+    await this.trezorService.stopAskingForBalance();
     this.clearAccount();
   }
 }

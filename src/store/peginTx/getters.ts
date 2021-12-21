@@ -3,6 +3,7 @@ import * as constants from '@/store/constants';
 import { PegInTxState } from './types';
 import { RootState } from '../types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import ApiService from '@/services/ApiService';
 
 export const getters: GetterTree<PegInTxState, RootState> = {
   [constants.WALLET_NAME]: (state) => {
@@ -28,7 +29,7 @@ export const getters: GetterTree<PegInTxState, RootState> = {
     }
   },
   [constants.PEGIN_TX_GET_CHANGE_ADDRESS]:
-    (state: PegInTxState) => (accountType: string): string => {
+    (state: PegInTxState) => async (accountType: string): Promise<string> => {
       let address = '';
       let accountTypePath = '';
       const coin = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
@@ -46,10 +47,17 @@ export const getters: GetterTree<PegInTxState, RootState> = {
         default:
           accountTypePath = "44'";
       }
-      // eslint-disable-next-line no-unused-expressions
-      state.addressList?.forEach((walletAddress) => {
-        if (walletAddress.serializedPath === `m/${accountTypePath}${coinPath}/0'/1/0`) address = walletAddress.address;
-      });
+      if (state.addressList) {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const walletAddress of state.addressList) {
+          if ((walletAddress.serializedPath.startsWith(`m/${accountTypePath}${coinPath}/0'/1`)
+              // eslint-disable-next-line no-await-in-loop
+              && (await ApiService.areUnusedAddresses([walletAddress.address])))) {
+            address = walletAddress.address;
+            break;
+          }
+        }
+      }
       return address;
     },
   [constants.PEGIN_TX_GET_REFUND_ADDRESS]: (state: PegInTxState) => {

@@ -8,9 +8,9 @@
     <template v-if="ledgerDataReady">
       <component :is="currentComponent" :balances="balances"
                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
-                 @txFee="getTxFee" :fees="calculatedFees" :tx="createdTx"
-                 :txBuilder="txBuilder" :txData="txData" :price="peginTxState.bitcoinPrice"
-                 :txId="txId" @back="back" :loadingBalances="loadingBalances"
+                 :tx="createdTx" :txBuilder="txBuilder" :txData="txData"
+                 :price="peginTxState.bitcoinPrice" :txId="txId" @back="back"
+                 :loadingBalances="loadingBalances" :walletService="ledgerService"
                  @toPegInForm="toPegInForm" :pegInFormData="pegInFormData"/>
     </template>
     <template v-if="showDialog">
@@ -37,11 +37,10 @@ import SendBitcoinForm from '@/components/exchange/SendBitcoinForm.vue';
 import ConfirmLedgerTransaction from '@/components/ledger/ConfirmLedgerTransaction.vue';
 import TrackingId from '@/components/exchange/TrackingId.vue';
 import LedgerService from '@/services/LedgerService';
-import ApiService from '@/services/ApiService';
 import { PegInTxState } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import {
-  AccountBalance, FeeAmountData, NormalizedTx, PegInFormValues, SendBitcoinState, TxData,
+  AccountBalance, NormalizedTx, PegInFormValues, SendBitcoinState, TxData,
 } from '@/types';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
 import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
@@ -108,12 +107,6 @@ export default class SendBitcoinLedger extends Vue {
     nativeSegwit: new SatoshiBig(0, 'satoshi'),
   };
 
-  calculatedFees: FeeAmountData = {
-    slow: new SatoshiBig(0, 'satoshi'),
-    average: new SatoshiBig(0, 'satoshi'),
-    fast: new SatoshiBig(0, 'satoshi'),
-  };
-
   ledgerDataReady = false;
 
   ledgerService: LedgerService = new LedgerService(
@@ -128,7 +121,7 @@ export default class SendBitcoinLedger extends Vue {
 
   @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: any;
 
-  @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: (accountType: string) => string;
+  @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: (accountType: string) => Promise<string>;
 
   beforeMount() {
     this.showDialog = localStorage.getItem('BTRD_COOKIE_DISABLED') !== 'true';
@@ -149,7 +142,7 @@ export default class SendBitcoinLedger extends Vue {
   }
 
   @Emit()
-  toConfirmTx({
+  async toConfirmTx({
     amountToTransferInSatoshi,
     refundAddress,
     recipient,
@@ -177,7 +170,7 @@ export default class SendBitcoinLedger extends Vue {
       refundAddress,
       recipient,
       feeLevel,
-      changeAddress: this.getChangeAddress(accountType),
+      changeAddress: await this.getChangeAddress(accountType),
       sessionId: this.peginTxState.sessionId,
     })
       .then((tx: NormalizedTx) => {
@@ -261,29 +254,16 @@ export default class SendBitcoinLedger extends Vue {
     this.balances = balanceInformed;
   }
 
-  @Emit()
-  getTxFee({ amount, accountType }: {amount: number; accountType: string}) {
-    ApiService.getTxFee(this.peginTxState.sessionId, amount, accountType)
-      .then((txFee) => {
-        this.calculatedFees = {
-          slow: new SatoshiBig(txFee.slow, 'satoshi'),
-          average: new SatoshiBig(txFee.average, 'satoshi'),
-          fast: new SatoshiBig(txFee.fast, 'satoshi'),
-        };
-      })
-      .catch(console.error);
-  }
-
   @Emit('back')
-  back(currentComponent: 'ConnectDevice' | 'PegInForm') {
-    this.clear();
+  async back(currentComponent: 'ConnectDevice' | 'PegInForm') {
+    await this.clear();
     this.clearAccount();
     return currentComponent;
   }
 
   @Emit()
-  clear(): void {
-    this.ledgerService.cleanSubscriptions();
+  async clear(): Promise<void> {
+    await this.ledgerService.stopAskingForBalance();
     this.pegInFormData = {
       accountType: '',
       amount: new SatoshiBig('0', 'satoshi'),
@@ -313,19 +293,14 @@ export default class SendBitcoinLedger extends Vue {
       segwit: new SatoshiBig(0, 'satoshi'),
       nativeSegwit: new SatoshiBig(0, 'satoshi'),
     };
-    this.calculatedFees = {
-      slow: new SatoshiBig(0, 'satoshi'),
-      average: new SatoshiBig(0, 'satoshi'),
-      fast: new SatoshiBig(0, 'satoshi'),
-    };
     this.ledgerDataReady = false;
     this.ledgerService = new LedgerService(
       EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
     );
   }
 
-  beforeDestroy() {
-    this.ledgerService.cleanSubscriptions();
+  async beforeDestroy() {
+    await this.ledgerService.stopAskingForBalance();
     this.clearAccount();
   }
 }

@@ -121,7 +121,7 @@ export default class Home extends Vue {
 
   @Action(constants.PEGIN_TX_CLEAR_STATE, { namespace: 'pegInTx' }) clear !: () => void;
 
-  @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) init !: () => void;
+  @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) init !: () => Promise<void>;
 
   get showWallet(): boolean {
     return this.RBTC2BTC || this.BTC2RBTC;
@@ -145,9 +145,9 @@ export default class Home extends Vue {
     if (this.$route.path !== '/status') this.$router.push('/status');
   }
 
-  created() {
+  async created() {
     this.clear();
-    this.init();
+    await this.init();
     this.STATUS = false;
     this.BTC2RBTC = this.peg === 'BTC2RBTC';
     this.RBTC2BTC = this.peg === 'RBTC2BTC';
