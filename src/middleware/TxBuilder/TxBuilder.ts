@@ -74,6 +74,7 @@ export default abstract class TxBuilder {
 
   public async getUnsignedRawTx(): Promise<string> {
     const txBuilder = new bitcoin.TransactionBuilder(this.network);
+    txBuilder.setVersion(constants.BITCOIN_TX_VERSION);
     // eslint-disable-next-line no-restricted-syntax
     for (const input of this.normalizedTx.inputs) {
       // eslint-disable-next-line no-await-in-loop

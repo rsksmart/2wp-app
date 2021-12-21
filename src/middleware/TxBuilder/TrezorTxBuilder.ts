@@ -25,6 +25,7 @@ export default class TrezorTxBuilder extends TxBuilder {
           coin,
           inputs: TrezorTxBuilder.getInputs(this.normalizedTx.inputs),
           outputs: TrezorTxBuilder.getOutputs(this.normalizedTx.outputs),
+          version: constants.BITCOIN_TX_VERSION,
         };
         this.tx = tx;
         resolve(tx);
@@ -66,8 +67,6 @@ export default class TrezorTxBuilder extends TxBuilder {
   }
 
   static getPathFromAddress(address: string): number[] {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     const addressList = store.state.pegInTx.addressList as WalletAddress[];
     let path: number[] = [];
     addressList.forEach((walletAddress) => {
