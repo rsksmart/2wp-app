@@ -376,14 +376,14 @@
     </v-row>
     <v-row class="mx-0">
       <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
-        <v-btn rounded outlined color="#00B520" width="110" @click="back"
-               :disabled="pegInFormState.matches(['loading'])">
-          <span>Back</span>
+        <v-btn rounded outlined color="#00B520" width="110" @click="backHome"
+               :disabled="pegInFormState.matches(['loading', 'goingHome'])">
+          <span>Go home</span>
         </v-btn>
       </v-col>
       <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0">
         <v-btn v-if="!pegInFormState.matches(['loading'])" rounded color="#00B43C"
-               @click="sendTx" :disabled="!formFilled">
+               @click="sendTx" :disabled="!formFilled || pegInFormState.matches(['goingHome'])">
           <span class="whiteish">Continue</span>
           <v-icon class="ml-2" color="#fff">mdi-send-outline</v-icon>
         </v-btn>
@@ -441,6 +441,7 @@ export default class SendBitcoinForm extends Vue {
     | 'second'
     | 'third'
     | 'fourth'
+    | 'goingHome'
     > = new Machine('first');
 
   firstDone = false;
@@ -773,10 +774,9 @@ export default class SendBitcoinForm extends Vue {
     this.thirdDone = false;
   }
 
-  @Emit('back')
-  // eslint-disable-next-line class-methods-use-this
-  back() {
-    return 'PegInForm';
+  backHome() {
+    this.pegInFormState.send('goingHome');
+    this.$router.go(0);
   }
 
   @Emit('unused')
