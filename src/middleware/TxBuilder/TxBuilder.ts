@@ -42,7 +42,7 @@ export default abstract class TxBuilder {
     return this.changeAddr;
   }
 
-  public getNormalizedTx({
+  public async getNormalizedTx({
     amountToTransferInSatoshi, refundAddress, recipient, feeLevel, changeAddress, sessionId,
   }:{
     amountToTransferInSatoshi: number;
@@ -52,27 +52,24 @@ export default abstract class TxBuilder {
     changeAddress: string;
     sessionId: string;
   }): Promise<NormalizedTx> {
-    return new Promise<NormalizedTx>((resolve, reject) => {
-      ApiService.createPeginTx(
-        amountToTransferInSatoshi, refundAddress, recipient,
-        sessionId, feeLevel, changeAddress,
-      ).then(async (normalizedTx: NormalizedTx) => {
-        this.normalizedTx = normalizedTx;
-        const walletAddresses: WalletAddress[] = store.state.pegInTx.addressList as WalletAddress[];
-        this.changeAddr = normalizedTx.outputs[2].address
-          ? normalizedTx.outputs[2].address : changeAddress;
-        if (!this.verifyChangeAddress(
-          this.changeAddress,
-          await this.getUnsignedRawTx(),
-          walletAddresses,
-          this.accountType,
-          normalizedTx.inputs[0],
-        )) {
-          throw new Error('Error checking the change address');
-        }
-        resolve(normalizedTx);
-      }).catch(reject);
-    });
+    this.normalizedTx = await ApiService.createPeginTx(
+      amountToTransferInSatoshi, refundAddress, recipient,
+      sessionId, feeLevel, changeAddress,
+    );
+    const walletAddresses: WalletAddress[] = store.state.pegInTx.addressList as WalletAddress[];
+    this.changeAddr = this.normalizedTx.outputs[2].address
+      ? this.normalizedTx.outputs[2].address : changeAddress;
+
+    if (!await this.verifyChangeAddress(
+      this.changeAddress,
+      await this.getUnsignedRawTx(),
+      walletAddresses,
+      this.accountType,
+      this.normalizedTx.inputs[0],
+    )) {
+      throw new Error('Error checking the change address');
+    }
+    return this.normalizedTx;
   }
 
   public async getUnsignedRawTx(): Promise<string> {
