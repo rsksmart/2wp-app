@@ -42,7 +42,7 @@ export default abstract class TxBuilder {
     return this.changeAddr;
   }
 
-  public getNormalizedTx({
+  public async getNormalizedTx({
     amountToTransferInSatoshi, refundAddress, recipient, feeLevel, changeAddress, sessionId,
   }:{
     amountToTransferInSatoshi: number;
@@ -52,27 +52,24 @@ export default abstract class TxBuilder {
     changeAddress: string;
     sessionId: string;
   }): Promise<NormalizedTx> {
-    return new Promise<NormalizedTx>((resolve, reject) => {
-      ApiService.createPeginTx(
-        amountToTransferInSatoshi, refundAddress, recipient,
-        sessionId, feeLevel, changeAddress,
-      ).then(async (normalizedTx: NormalizedTx) => {
-        this.normalizedTx = normalizedTx;
-        const walletAddresses: WalletAddress[] = store.state.pegInTx.addressList as WalletAddress[];
-        this.changeAddr = normalizedTx.outputs[2].address
-          ? normalizedTx.outputs[2].address : changeAddress;
-        if (!this.verifyChangeAddress(
-          this.changeAddress,
-          await this.getUnsignedRawTx(),
-          walletAddresses,
-          this.accountType,
-          normalizedTx.inputs[0],
-        )) {
-          throw new Error('Error checking the change address');
-        }
-        resolve(normalizedTx);
-      }).catch(reject);
-    });
+    this.normalizedTx = await ApiService.createPeginTx(
+      amountToTransferInSatoshi, refundAddress, recipient,
+      sessionId, feeLevel, changeAddress,
+    );
+    const walletAddresses: WalletAddress[] = store.state.pegInTx.addressList as WalletAddress[];
+    this.changeAddr = this.normalizedTx.outputs[2].address
+      ? this.normalizedTx.outputs[2].address : changeAddress;
+
+    if (!await this.verifyChangeAddress(
+      this.changeAddress,
+      await this.getUnsignedRawTx(),
+      walletAddresses,
+      this.accountType,
+      this.normalizedTx.inputs[0],
+    )) {
+      throw new Error('Error checking the change address');
+    }
+    return this.normalizedTx;
   }
 
   public async getUnsignedRawTx(): Promise<string> {
@@ -142,18 +139,28 @@ export default abstract class TxBuilder {
       return true;
     }
     const tx = bitcoin.Transaction.fromHex(rawTx);
-    let script: Buffer;
+    let address: string;
+    let keyPair: bitcoin.ECPairInterface;
+    let chunks;
     switch (accountType) {
       case constants.BITCOIN_LEGACY_ADDRESS:
-        script = Buffer.from(tx.ins[0].script.buffer);
+        chunks = bitcoin.script.decompile(tx.ins[0].script)! as Buffer[];
+        keyPair = bitcoin.ECPair.fromPublicKey(chunks[chunks.length - 1]);
+        address = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey }).address!;
         break;
       case constants.BITCOIN_SEGWIT_ADDRESS:
+        keyPair = bitcoin.ECPair.fromPublicKey(tx.ins[0].witness[1]);
+        address = bitcoin.payments.p2sh({
+          redeem: bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey }),
+        }).address!;
+        break;
       case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
-        script = Buffer.from(tx.ins[0].witness[1]);
+        keyPair = bitcoin.ECPair.fromPublicKey(tx.ins[0].witness[1]);
+        address = bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey }).address!;
         break;
       default:
         throw new Error('Error trying to verify change address. Invalid type of account.');
     }
-    return (bitcoin.address.fromOutputScript(script, this.network) === txInput.address);
+    return (address === txInput.address);
   }
 }
