@@ -59,7 +59,7 @@ export default abstract class TxBuilder {
     const walletAddresses: WalletAddress[] = store.state.pegInTx.addressList as WalletAddress[];
     this.changeAddr = this.normalizedTx.outputs[2].address
       ? this.normalizedTx.outputs[2].address : changeAddress;
-
+    console.log('verifying Address');
     if (!await this.verifyChangeAddress(
       this.changeAddress,
       await this.getUnsignedRawTx(),
@@ -69,6 +69,7 @@ export default abstract class TxBuilder {
     )) {
       throw new Error('Error checking the change address');
     }
+    console.log('Address verified');
     return this.normalizedTx;
   }
 
