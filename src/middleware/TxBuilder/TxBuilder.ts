@@ -59,7 +59,6 @@ export default abstract class TxBuilder {
     const walletAddresses: WalletAddress[] = store.state.pegInTx.addressList as WalletAddress[];
     this.changeAddr = this.normalizedTx.outputs[2].address
       ? this.normalizedTx.outputs[2].address : changeAddress;
-    console.log('verifying Address');
     if (!await this.verifyChangeAddress(
       this.changeAddress,
       await this.getUnsignedRawTx(),
@@ -69,7 +68,6 @@ export default abstract class TxBuilder {
     )) {
       throw new Error('Error checking the change address');
     }
-    console.log('Address verified');
     return this.normalizedTx;
   }
 
@@ -141,28 +139,17 @@ export default abstract class TxBuilder {
       return true;
     }
     const tx = bitcoin.Transaction.fromHex(rawTx);
-    let address: string;
-    let keyPair: bitcoin.ECPairInterface;
-    let chunks;
-    switch (accountType) {
-      case constants.BITCOIN_LEGACY_ADDRESS:
-        chunks = bitcoin.script.decompile(tx.ins[0].script)! as Buffer[];
-        keyPair = bitcoin.ECPair.fromPublicKey(chunks[chunks.length - 1]);
-        address = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey }).address!;
-        break;
-      case constants.BITCOIN_SEGWIT_ADDRESS:
-        keyPair = bitcoin.ECPair.fromPublicKey(tx.ins[0].witness[1]);
-        address = bitcoin.payments.p2sh({
-          redeem: bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey }),
-        }).address!;
-        break;
-      case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
-        keyPair = bitcoin.ECPair.fromPublicKey(tx.ins[0].witness[1]);
-        address = bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey }).address!;
-        break;
-      default:
-        throw new Error('Error trying to verify change address. Invalid type of account.');
-    }
-    return (address === txInput.address);
+    const [input] = tx.ins;
+    if (!input || !input.hash) return false;
+    const prevHash = input.hash.reverse().toString('hex');
+    const prevTxHex = await ApiService.getTxHex(prevHash);
+    const firstInputPrevTx = bitcoin.Transaction.fromHex(prevTxHex);
+    const address = bitcoin.address
+      .fromOutputScript(firstInputPrevTx.outs[input.index].script, this.network);
+    let isUserAddress = false;
+    changeAddresses.forEach((walletAddress) => {
+      isUserAddress = (walletAddress.address === address) || isUserAddress;
+    });
+    return (address === txInput.address && isUserAddress);
   }
 }
