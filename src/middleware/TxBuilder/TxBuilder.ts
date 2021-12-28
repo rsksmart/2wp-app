@@ -138,18 +138,23 @@ export default abstract class TxBuilder {
     if (await this.isChangeAddressUnused(existChangeAddress, accountType)) {
       return true;
     }
+    let isUserAddress = false;
+    changeAddresses.forEach((walletAddress) => {
+      isUserAddress = (walletAddress.address === changeAddress) || isUserAddress;
+    });
+    if (!isUserAddress) {
+      return false;
+    }
     const tx = bitcoin.Transaction.fromHex(rawTx);
     const [input] = tx.ins;
-    if (!input || !input.hash) return false;
+    if (!input || !input.hash) {
+      return false;
+    }
     const prevHash = input.hash.reverse().toString('hex');
     const prevTxHex = await ApiService.getTxHex(prevHash);
     const firstInputPrevTx = bitcoin.Transaction.fromHex(prevTxHex);
     const address = bitcoin.address
       .fromOutputScript(firstInputPrevTx.outs[input.index].script, this.network);
-    let isUserAddress = false;
-    changeAddresses.forEach((walletAddress) => {
-      isUserAddress = (walletAddress.address === address) || isUserAddress;
-    });
-    return (address === txInput.address && isUserAddress);
+    return (address === txInput.address);
   }
 }
