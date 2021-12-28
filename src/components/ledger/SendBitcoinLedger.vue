@@ -174,13 +174,11 @@ export default class SendBitcoinLedger extends Vue {
       sessionId: this.peginTxState.sessionId,
     })
       .then((tx: NormalizedTx) => {
-        console.log('got normalized Tx');
         this.createdTx = tx;
         this.currentComponent = 'ConfirmLedgerTransaction';
         return tx;
       })
       .catch((error) => {
-        console.error(error);
         this.txError = error.message;
         this.showTxErrorDialog = true;
       });
