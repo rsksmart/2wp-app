@@ -153,6 +153,9 @@ export default abstract class TxBuilder {
     const prevHash = input.hash.reverse().toString('hex');
     const prevTxHex = await ApiService.getTxHex(prevHash);
     const firstInputPrevTx = bitcoin.Transaction.fromHex(prevTxHex);
+    if (prevHash !== firstInputPrevTx.getId()) {
+      return false;
+    }
     const address = bitcoin.address
       .fromOutputScript(firstInputPrevTx.outs[input.index].script, this.network);
     return (address === txInput.address);
