@@ -827,7 +827,7 @@ export default class SendBitcoinForm extends Vue {
         }
         case 2: {
           this.secondDone = this.isBTCAmountValidNumberRegex && !this.insufficientAmount;
-          if (this.firstDone && this.secondDone) {
+          if (this.firstDone && this.secondDone && value !== 'feeGot') {
             this.calculateTxFee();
           }
           break;
@@ -837,7 +837,7 @@ export default class SendBitcoinForm extends Vue {
           break;
         }
         case 4: {
-          this.fourthDone = true && !this.insufficientAmount;
+          this.fourthDone = !this.insufficientAmount;
           break;
         }
         default: {
