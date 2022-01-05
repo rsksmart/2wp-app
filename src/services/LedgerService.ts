@@ -204,7 +204,7 @@ export default class LedgerService extends WalletService {
           });
         }
       });
-      psbt.setVersion(2);
+      psbt.setVersion(constants.BITCOIN_TX_VERSION);
       this.signP2SH(tx)
         .then((signatures) => signatures
           .map((signature, index) => psbt
@@ -239,7 +239,6 @@ export default class LedgerService extends WalletService {
     return new Promise<string[]>((resolve, reject) => {
       const LOCK_TIME = 0;
       const SIGHASH_ALL = 1;
-      const TX_VERSION = 2;
       TransportWebUSB.create()
         .then((transport: TransportWebUSB) => {
           const btc = new AppBtc(transport);
@@ -250,7 +249,7 @@ export default class LedgerService extends WalletService {
               this.getLedgerRedeemScript(input.publicKey),
               null,
             ]),
-            transactionVersion: TX_VERSION,
+            transactionVersion: constants.BITCOIN_TX_VERSION,
             associatedKeysets: tx.associatedKeysets,
             outputScriptHex: tx.outputScriptHex,
             lockTime: LOCK_TIME,

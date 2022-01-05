@@ -398,10 +398,14 @@
                               @cancel="showWarningMessage = false"
       />
     </v-row>
+    <template v-if="showTxErrorDialog">
+      <tx-error-dialog :showTxErrorDialog="showTxErrorDialog"
+                       :errorMessage="txError" @closeErrorDialog="closeTxErrorDialog"/>
+   </template>
   </v-col>
 </template>
-
 <script lang="ts">
+
 import {
   Vue,
   Component, Prop, Emit, Watch,
@@ -487,6 +491,10 @@ export default class SendBitcoinForm extends Vue {
     average: new SatoshiBig(0, 'satoshi'),
     fast: new SatoshiBig(0, 'satoshi'),
   };
+
+  txError = '';
+
+  showTxErrorDialog = false;
 
   @Prop() loadingBalances!: boolean;
 
@@ -819,17 +827,17 @@ export default class SendBitcoinForm extends Vue {
         }
         case 2: {
           this.secondDone = this.isBTCAmountValidNumberRegex && !this.insufficientAmount;
-          if (this.firstDone && this.secondDone) {
+          if (this.firstDone && this.secondDone && value !== 'feeGot') {
             this.calculateTxFee();
           }
           break;
         }
         case 3: {
-          this.thirdDone = this.isValidPegInAddress;
+          this.thirdDone = this.isValidPegInAddress && !this.insufficientAmount;
           break;
         }
         case 4: {
-          this.fourthDone = true;
+          this.fourthDone = !this.insufficientAmount;
           break;
         }
         default: {
@@ -843,6 +851,11 @@ export default class SendBitcoinForm extends Vue {
   sendTx() {
     if (this.isValidPegInAddress && !this.isValidRskAddress) this.showWarningMessage = true;
     else this.createTx();
+  }
+
+  @Emit()
+  closeTxErrorDialog() {
+    this.showTxErrorDialog = false;
   }
 
   @Emit('createTx')
@@ -895,6 +908,7 @@ export default class SendBitcoinForm extends Vue {
             average: new SatoshiBig(txFee.average, 'satoshi'),
             fast: new SatoshiBig(txFee.fast, 'satoshi'),
           };
+          this.checkStep('feeGot', 2);
           resolve();
         })
         .catch(reject);

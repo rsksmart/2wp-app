@@ -121,6 +121,7 @@ export default class LedgerTxBuilder extends TxBuilder {
   private getOutputScriptHex(outputs: NormalizedOutput[]): Promise<string> {
     const network = this.coin === 'main' ? bitcoin.networks.bitcoin : bitcoin.networks.testnet;
     const txBuilder = new bitcoin.TransactionBuilder(network);
+    txBuilder.setVersion(constants.BITCOIN_TX_VERSION);
     return new Promise<string>((resolve, reject) => {
       outputs.forEach((normalizedOutput) => {
         if (normalizedOutput.op_return_data) {
