@@ -3,7 +3,6 @@ import { Tx } from '@/types/Common';
 
 export type InputScriptType =
   'SPENDADDRESS' |
-  'SPENDMULTISIG' |
   'SPENDWITNESS' |
   'SPENDP2SHWITNESS';
 

@@ -5,7 +5,7 @@ import * as bitcoin from 'bitcoinjs-lib';
 import * as constants from '@/store/constants';
 import { WalletAddress } from '@/store/peginTx/types';
 import {
-  LedgerjsTransaction, LedgerTx, Signer,
+  LedgerjsTransaction, LedgerTx, Signer, Tx,
 } from '@/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import { WalletService } from './WalletService';
@@ -145,20 +145,21 @@ export default class LedgerService extends WalletService {
     return format;
   }
 
-  static compressPublicKey(pubKey: string) {
+  static compressPublicKey(pubKey: string): string {
     const { publicKey } = bitcoin.ECPair.fromPublicKey(Buffer.from(pubKey, 'hex'));
     return publicKey.toString('hex');
   }
 
-  public static signTx(tx: LedgerTx): Promise<string> {
+  public static signTx(tx: Tx): Promise<string> {
+    const ledgerTx: LedgerTx = tx as LedgerTx;
     return new Promise<string>((resolve, reject) => {
       TransportWebUSB.create()
         .then((transport: TransportWebUSB) => {
           const btc = new AppBtc(transport);
           return btc.createPaymentTransactionNew({
-            inputs: tx.inputs.map((input) => [input.tx, input.outputIndex, null, null]),
-            associatedKeysets: tx.associatedKeysets,
-            outputScriptHex: tx.outputScriptHex,
+            inputs: ledgerTx.inputs.map((input) => [input.tx, input.outputIndex, null, null]),
+            associatedKeysets: ledgerTx.associatedKeysets,
+            outputScriptHex: ledgerTx.outputScriptHex,
           });
         })
         .then(resolve)
@@ -166,7 +167,7 @@ export default class LedgerService extends WalletService {
     });
   }
 
-  private getRedeem(publicKey: string) {
+  private getRedeem(publicKey: string): Buffer | undefined {
     const pubkey = LedgerService.compressPublicKey(publicKey);
     const pair = bitcoin.ECPair.fromPublicKey(Buffer.from(pubkey, 'hex'));
     const p2wpkh = bitcoin.payments.p2wpkh({ pubkey: pair.publicKey, network: this.network });
@@ -220,7 +221,7 @@ export default class LedgerService extends WalletService {
     });
   }
 
-  generateSigner(signature: string, publicKey: string): Signer {
+  private generateSigner(signature: string, publicKey: string): Signer {
     const pair = bitcoin.ECPair.fromPublicKey(Buffer.from(publicKey, 'hex'));
     return {
       network: this.network,
