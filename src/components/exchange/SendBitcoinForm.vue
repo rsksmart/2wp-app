@@ -6,7 +6,8 @@
                src="@/assets/exchange/arrow.png" height="40" contain/>
       </v-col>
       <v-col class="px-0">
-        <h1 class="text-left">Send Bitcoins. Get RBTC.</h1>
+        <h1 class="text-left">Send {{environmentContext.getBtcTicker()}}.
+        Get {{environmentContext.getRbtcTicker()}}.</h1>
       </v-col>
     </v-row>
     <v-row class="mx-0 mt-2">
@@ -19,7 +20,7 @@
             </v-col>
             <v-col class="pl-0">
               <p v-bind:class="{'boldie': pegInFormState.matches(['first'])}">
-                Select Bitcoin account to send from:
+                Select {{environmentContext.getBtcText()}} account to send from:
               </p>
               <v-row class="mx-0 mt-4">
                 <v-col cols="6" class="pl-0 pb-0">
@@ -96,7 +97,7 @@
                         <v-img src="@/assets/exchange/btc.png" height="20" contain/>
                       </v-col>
                       <v-col cols="7" class="pa-0 d-flex align-center">
-                        <span>BTC</span>
+                        <span>{{environmentContext.getBtcTicker()}}</span>
                       </v-col>
                     </v-row>
                   </v-col>
@@ -115,7 +116,7 @@
                         <v-img src="@/assets/exchange/rbtc.png" height="20" contain/>
                       </v-col>
                       <v-col cols="7" class="pa-0 d-flex align-center">
-                        <span>RBTC</span>
+                        <span>{{environmentContext.getRbtcTicker()}}</span>
                       </v-col>
                     </v-row>
                   </v-col>
@@ -139,7 +140,8 @@
             </v-col>
             <v-col class="pl-0">
               <p v-bind:class="{'boldie': pegInFormState.matches(['third'])}">
-                Enter or select the RSK address where RBTC will be deposited:
+                Enter or select the {{environmentContext.getRskText()}} address where
+                {{environmentContext.getRbtcTicker()}} will be deposited:
               </p>
               <v-row class="mx-0 mt-4">
                 <template v-if="useWeb3Wallet && web3Address">
@@ -167,7 +169,9 @@
                 <template v-else>
                   <v-col cols="6" class="pl-0 pb-0">
                     <v-row class="mx-0 mb-4 d-flex justify-start">
-                      <span class="text-center">Use your RSK addresses </span>
+                      <span class="text-center">
+                        Use your {{environmentContext.getRskText()}} addresses
+                      </span>
                     </v-row>
                     <v-row :class="[isValidRskAddress || !rskAddressSelected ?
                      'blue-box' : 'yellow-box' ]"
@@ -175,7 +179,8 @@
                       <v-text-field v-model="rskAddressSelected" solo dense
                                     flat
                                     hide-details
-                                    label="Select or paste the RSK address"
+                                    :label="`Select or paste
+                                    the ${environmentContext.getRskText()} address`"
                                     @focus="pegInFormState.send('third')"
                                     @change="checkStep(rskAddressSelected, 3)"/>
                     </v-row>
@@ -226,13 +231,16 @@
                   </v-row>
                   <v-row class="mx-0">
                     <v-col cols="4" class="d-flex justify-start pa-0">
-                      <span class="text-left">{{ slowFee }} BTC</span>
+                      <span class="text-left">{{ slowFee }}
+                      {{environmentContext.getBtcTicker()}}</span>
                     </v-col>
                     <v-col cols="4" class="d-flex justify-center pa-0">
-                      <span class="text-center">{{ averageFee }} BTC</span>
+                      <span class="text-center">{{ averageFee }}
+                      {{environmentContext.getBtcTicker()}}</span>
                     </v-col>
                     <v-col cols="4" class="d-flex justify-end pa-0">
-                      <span class="text-right">{{ fastFee }} BTC</span>
+                      <span class="text-right">{{ fastFee }}
+                      {{environmentContext.getBtcTicker()}}</span>
                     </v-col>
                   </v-row>
                   <v-row class="mx-0">
@@ -275,7 +283,7 @@
               <v-divider color="#C4C4C4"/>
               <v-container id="summary-2" class="pb-0 pl-0">
                 <v-row class="mx-0">
-                  <h1>Bitcoins:</h1>
+                  <h1>{{environmentContext.getBtcText()}}s:</h1>
                   <v-icon v-if="secondDone" class="ml-2" small color="#008CFF">
                     mdi-check-circle-outline
                   </v-icon>
@@ -292,7 +300,7 @@
               <v-divider color="#C4C4C4"/>
               <v-container id="summary-3" class="pb-0 pl-0">
                 <v-row class="mx-0">
-                  <h1>Destination RSK address:</h1>
+                  <h1>Destination {{environmentContext.getRskText()}} address:</h1>
                   <v-icon v-if="thirdDone" class="ml-2" small color="#008CFF">
                     mdi-check-circle-outline
                   </v-icon>
@@ -313,7 +321,7 @@
               <v-divider color="#C4C4C4"/>
               <v-container id="summary-4" class="pb-0 pl-0">
                 <v-row class="mx-0">
-                  <h1>Refund BTC address:</h1>
+                  <h1>Refund {{environmentContext.getBtcTicker()}} address:</h1>
                   <v-icon v-if="fourthDone" class="ml-2" small color="#008CFF">
                     mdi-check-circle-outline
                   </v-icon>
@@ -423,6 +431,7 @@ import { Machine } from '@/services/utils';
 import SatoshiBig from '@/types/SatoshiBig';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import ApiService from '@/services/ApiService';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
 @Component({
   components: {
@@ -496,6 +505,8 @@ export default class SendBitcoinForm extends Vue {
 
   showTxErrorDialog = false;
 
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+
   @Prop() loadingBalances!: boolean;
 
   @Prop() pegInFormData!: PegInFormValues;
@@ -554,13 +565,13 @@ export default class SendBitcoinForm extends Vue {
       return 'Invalid format, neither letters, big amounts nor more than 8 decimals are allowed';
     }
     if (this.safeAmount.lt(minValue)) {
-      return `You can not send this amount of BTC. You can only send a minimum of ${minValue.toBTCTrimmedString()} BTC`;
+      return `You can not send this amount of ${this.environmentContext.getBtcTicker()}. You can only send a minimum of ${minValue.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
     }
     if (feePlusAmount.gte(this.selectedAccountBalance)) {
       return 'The typed amount, along with the transaction fee, is higher than your current balance';
     }
     if (this.safeAmount.gt(maxValue)) {
-      return `The maximum amount currently allowed by this tool is ${maxValue.toBTCTrimmedString()} BTC`;
+      return `The maximum amount currently allowed by this tool is ${maxValue.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
     }
     return 'Invalid format';
   }
@@ -601,7 +612,7 @@ export default class SendBitcoinForm extends Vue {
     if (!this.isBTCAmountValidNumberRegex || this.safeAmount.lte('0')) {
       return this.VALUE_INCOMPLETE_MESSAGE;
     }
-    return `${this.safeAmount.toBTCString()} BTC`;
+    return `${this.safeAmount.toBTCString()} ${this.environmentContext.getBtcTicker()}`;
   }
 
   get computedBTCAmountUSD(): string {
@@ -610,7 +621,7 @@ export default class SendBitcoinForm extends Vue {
   }
 
   get computedTxFee(): string {
-    return this.fourthDone ? `${this.safeTxFee.toBTCString()} BTC` : this.VALUE_INCOMPLETE_MESSAGE;
+    return this.fourthDone ? `${this.safeTxFee.toBTCString()} ${this.environmentContext.getBtcTicker()}` : this.VALUE_INCOMPLETE_MESSAGE;
   }
 
   get computedTxFeeUSD(): string {
@@ -620,7 +631,7 @@ export default class SendBitcoinForm extends Vue {
   get computedFeePlusAmount(): string {
     const feePlusAmount: SatoshiBig = this.safeAmount.plus(this.safeTxFee);
     return this.fourthDone && this.secondDone
-      ? `${feePlusAmount.toBTCString()} BTC` : this.VALUE_INCOMPLETE_MESSAGE;
+      ? `${feePlusAmount.toBTCString()} ${this.environmentContext.getBtcTicker()}` : this.VALUE_INCOMPLETE_MESSAGE;
   }
 
   get computedFeePlusAmountUSD(): string {
@@ -641,9 +652,10 @@ export default class SendBitcoinForm extends Vue {
 
   get fullTxFee(): string {
     let txFee = '';
-    if (this.txFeeIndex === 0) txFee = `Slow - ${this.fees.slow.toBTCString()} BTC`;
-    if (this.txFeeIndex === 1) txFee = `Average - ${this.fees.average.toBTCString()} BTC`;
-    if (this.txFeeIndex === 2) txFee = `Fast - ${this.fees.fast.toBTCString()} BTC`;
+    const BTC = this.environmentContext.getBtcTicker();
+    if (this.txFeeIndex === 0) txFee = `Slow - ${this.fees.slow.toBTCString()} ${BTC}`;
+    if (this.txFeeIndex === 1) txFee = `Average - ${this.fees.average.toBTCString()} ${BTC}`;
+    if (this.txFeeIndex === 2) txFee = `Fast - ${this.fees.fast.toBTCString()} ${BTC}`;
     return txFee;
   }
 
@@ -726,7 +738,7 @@ export default class SendBitcoinForm extends Vue {
   get validAddressMessage() {
     let message = '';
     if (!this.isValidPegInAddress) message = 'This is an invalid address';
-    else if (!this.isValidRskAddress) message = 'This may not be a valid address on the RSK network. Please check.';
+    else if (!this.isValidRskAddress) message = `This may not be a valid address on the ${this.environmentContext.getRskText()} network. Please check.`;
     return message;
   }
 
@@ -946,15 +958,16 @@ export default class SendBitcoinForm extends Vue {
 
   getAccountBalanceText(accountType: string): string {
     let text = '';
+    const BTC = this.environmentContext.getBtcTicker();
     switch (accountType) {
       case constants.BITCOIN_LEGACY_ADDRESS:
-        text = `Legacy account - ${this.balances.legacy.toBTCTrimmedString()} BTC`;
+        text = `Legacy account - ${this.balances.legacy.toBTCTrimmedString()} ${BTC}`;
         break;
       case constants.BITCOIN_SEGWIT_ADDRESS:
-        text = `Segwit account - ${this.balances.segwit.toBTCTrimmedString()} BTC`;
+        text = `Segwit account - ${this.balances.segwit.toBTCTrimmedString()} ${BTC}`;
         break;
       case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
-        text = `Native segwit account - ${this.balances.nativeSegwit.toBTCTrimmedString()} BTC`;
+        text = `Native segwit account - ${this.balances.nativeSegwit.toBTCTrimmedString()} ${BTC}`;
         break;
       default:
         break;

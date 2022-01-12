@@ -30,7 +30,10 @@
               <div class="number">3</div>
             </v-col>
             <v-col cols="11">
-              <p class="ma-0">Select the Bitcoin app in your device</p>
+
+              <p class="ma-0">
+                Select the {{environmentContext.getBtcLedgerAppName()}} app in your device
+              </p>
             </v-col>
           </v-row>
         </v-col>
@@ -73,6 +76,7 @@ import LedgerConnect from '@/assets/exchange/ledger/connect_ledger.png';
 import TrezorConnect from '@/assets/exchange/trezor/connect_trezor.png';
 import Connect from '@/assets/exchange/wallet.png';
 import { SendBitcoinState } from '@/types';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
 @Component
 export default class ConnectDevice extends Vue {
@@ -83,6 +87,8 @@ export default class ConnectDevice extends Vue {
   @State('pegInTx') peginTxState!: PegInTxState;
 
   @Getter(constants.WALLET_NAME, { namespace: 'pegInTx' }) walletName!: string;
+
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
   get deviceImagePath() {
     if (this.peginTxState.bitcoinWallet === constants.WALLET_LEDGER) return LedgerConnect;

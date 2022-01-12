@@ -5,7 +5,8 @@
       <v-row justify="center" class="mx-0">
         <v-col>
           <v-row class="mx-0 mb-5 d-flex justify-center">
-            <h2>Bridging BTC and RBTC</h2>
+            <h2>Bridging {{environmentContext.getBtcTicker()}} and
+            {{environmentContext.getRbtcTicker()}}</h2>
           </v-row>
           <template>
             <v-row class="mx-0 mt-10 d-flex justify-center">
@@ -30,7 +31,8 @@
                       <v-col/>
                     </v-row>
                     <v-row class="mx-0 d-flex justify-center">
-                      <span class="wallet-button-content">BTC to RBTC</span>
+                      <span class="wallet-button-content">{{environmentContext.getBtcTicker()}} to
+                      {{environmentContext.getRbtcTicker()}}</span>
                     </v-row>
                   </div>
                 </v-btn>
@@ -56,7 +58,8 @@
                           </v-row>
                           <v-row class="mx-0 d-flex justify-center">
                         <span class="gray-greenish">
-                          RBTC to BTC
+                          {{environmentContext.getRbtcTicker()}} to
+                          {{environmentContext.getBtcTicker()}}
                         </span>
                           </v-row>
                         </div>
@@ -102,6 +105,7 @@ import { Action, State } from 'vuex-class';
 import SelectBitcoinWallet from '@/components/exchange/SelectBitcoinWallet.vue';
 import * as constants from '@/store/constants';
 import { PegInTxState } from '@/store/peginTx/types';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
 @Component({
   components: {
@@ -116,6 +120,8 @@ export default class Home extends Vue {
   RBTC2BTC = false;
 
   STATUS = false;
+
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
   @State('pegInTx') peginTxState!: PegInTxState;
 
