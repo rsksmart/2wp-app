@@ -6,7 +6,8 @@
           <h1 class="text-center">Transaction status</h1>
         </v-row>
         <v-row class="mx-0 mt-10 mb-8" justify="center">
-          <p class="subtitle">Enter your Bitcoin transaction hash in the textbox below
+          <p class="subtitle">Enter your {{environmentContext.getBtcText()}}
+            transaction hash in the textbox below
             to check the status of your operation</p>
         </v-row>
         <v-row justify="center" class="mx-0">
@@ -16,7 +17,8 @@
                           @click:append="getPegStatus"
                           v-model="txId"
                           @keyup.enter="getPegStatus"
-                          v-bind:color="error ? '#F6C61B': '#C4C4C4'" label="BTC transaction id"
+                          v-bind:color="error ? '#F6C61B': '#C4C4C4'"
+                          :label="`${environmentContext.getBtcTicker()} transaction id`"
                           v-bind:class="error ? 'status-text-field-error' : ''"/>
             <v-row class="mx-0 pl-1 pt-1" v-if="error">
                 <span class="yellowish">
@@ -42,7 +44,7 @@
                              src="@/assets/status/rsk-yellow.png" height="78" contain/>
                     </v-row>
                     <v-row class="mt-4">
-                      <h1>RSK Network</h1>
+                      <h1>{{environmentContext.getRskText()}} Network</h1>
                     </v-row>
                   </div>
                   <v-progress-linear
@@ -57,7 +59,7 @@
                                src="@/assets/status/btc-yellow.png" height="78" contain/>
                       </v-row>
                       <v-row class="mt-4">
-                        <h1>Refund BTC address</h1>
+                        <h1>Refund {{environmentContext.getBtcTicker()}} address</h1>
                       </v-row>
                     </div>
                   </div>
@@ -74,7 +76,7 @@
                              src="@/assets/status/btc-green.png" height="78" contain/>
                     </v-row>
                     <v-row class="mt-4">
-                      <h1>BTC Network</h1>
+                      <h1>{{environmentContext.getBtcTicker()}} Network</h1>
                     </v-row>
                   </div>
                 </div>
@@ -110,7 +112,7 @@
                            src="@/assets/status/rsk-green.png" height="78" contain/>
                   </v-row>
                   <v-row class="mt-4">
-                    <h1>RSK Network</h1>
+                    <h1>{{environmentContext.getRskText()}} Network</h1>
                   </v-row>
                 </div>
               </v-col>
@@ -134,7 +136,7 @@
                              src="@/assets/status/rbtc_green.png" height="78" contain/>
                     </v-row>
                     <v-row class="mt-4">
-                      <h1>RBTC delivered</h1>
+                      <h1>{{environmentContext.getRbtcTicker()}} delivered</h1>
                     </v-row>
                   </div>
                 </div>
@@ -177,6 +179,7 @@ import { PeginStatus } from '@/store/types';
 import { PegInTxState } from '@/store/peginTx/types';
 import { TxData } from '@/types';
 import SatoshiBig from '@/types/SatoshiBig';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
 @Component({
   components: {
@@ -211,6 +214,8 @@ export default class Status extends Vue {
   leftBtcTime = '';
 
   btcConfirmationsRequired!: number;
+
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
   @Prop({ default: '' }) txIdProp!: string;
 
@@ -273,12 +278,12 @@ export default class Status extends Vue {
         this.isRejected = false;
         break;
       case PegStatus.WAITING_CONFIRMATIONS:
-        this.statusMessage = 'More Bitcoin confirmations are yet needed, please wait';
+        this.statusMessage = `More ${this.environmentContext.getBtcText()} confirmations are yet needed, please wait`;
         this.activeMessageStyle = 'statusProgress';
         this.isRejected = false;
         break;
       case PegStatus.REJECTED_REFUND:
-        this.statusMessage = 'Your transaction was declined. \n Your BTC will be sent to the refund address';
+        this.statusMessage = `Your transaction was declined. \n Your ${this.environmentContext.getBtcTicker()} will be sent to the refund address`;
         this.activeMessageStyle = 'statusRejected';
         this.isRejected = true;
         break;
@@ -288,12 +293,12 @@ export default class Status extends Vue {
         this.isRejected = true;
         break;
       case PegStatus.NOT_IN_BTC_YET:
-        this.statusMessage = 'Your transaction is not in BTC yet.';
+        this.statusMessage = `Your transaction is not in ${this.environmentContext.getBtcTicker()} yet.`;
         this.activeMessageStyle = 'statusRejected';
         this.isRejected = true;
         break;
       case PegStatus.NOT_IN_RSK_YET:
-        this.statusMessage = 'Waiting to be processed by the RSK network';
+        this.statusMessage = `Waiting to be processed by the ${this.environmentContext.getRskText()} network`;
         this.activeMessageStyle = 'statusProgress';
         this.isRejected = false;
         break;
