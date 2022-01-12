@@ -111,7 +111,11 @@
                 <p class="text-justify mb-0">Fill in the enabled fields like below:</p>
                 <div class="green-box">
                   <v-row class="mx-0">
-                    <p class="mx-0">Network Name: <strong class="ml-1">RSK Mainnet</strong></p>
+                    <p class="mx-0">Network Name:
+                      <strong class="ml-1">
+                        {{environmentContext.getRskText()}} Mainnet
+                      </strong>
+                    </p>
                   </v-row>
                   <v-row class="mx-0">
                     <p class="mx-0">New RPC URL:
@@ -119,7 +123,9 @@
                     </p>
                   </v-row>
                   <v-row class="mx-0">
-                    <p class="mx-0">Symbol: <strong class="ml-1">RBTC</strong></p>
+                    <p class="mx-0">Symbol: <strong class="ml-1">
+                    {{environmentContext.getRbtcTicker()}}</strong></p>
+
                   </v-row>
                   <v-row class="mx-0">
                     <p class="mx-0">Block Explorer URL:
@@ -157,6 +163,7 @@ import { Action } from 'vuex-class';
 import * as constants from '@/store/constants';
 import MetaMask from '@/assets/web3/metamask.png';
 import MetaMaskDisabled from '@/assets/web3/metamask-disabled.png';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
 @Component
 export default class Wallet extends Vue {
@@ -171,6 +178,8 @@ export default class Wallet extends Vue {
   metamaskConf = false;
 
   isMetamask = null;
+
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
   get metamaskImg() {
     return this.isMetamask ? MetaMask : MetaMaskDisabled;
