@@ -31,10 +31,10 @@
                 <v-col>
                   <v-col class="mb-2">
                     <v-row class="mx-0">
-                      <h3>Bitcoins</h3>
+                      <h3>{{environmentContext.getBtcText()}}s</h3>
                     </v-row>
                     <v-row class="mx-0">
-                      <span>{{ amount }} BTC</span>
+                      <span>{{ amount }} {{environmentContext.getBtcTicker()}}</span>
                     </v-row>
                     <v-row class="mx-0">
                       <span class="grayish" id="amount-usd">USD $ {{ amountUSD }}</span>
@@ -45,7 +45,7 @@
                       <h3>Transaction fee</h3>
                     </v-row>
                     <v-row class="mx-0">
-                      <span>{{ fee }} BTC</span>
+                      <span>{{ fee }} {{environmentContext.getBtcTicker()}}</span>
                     </v-row>
                     <v-row class="mx-0">
                       <span class="grayish" id="fee-usd">USD $ {{ feeUSD }}</span>
@@ -56,7 +56,7 @@
                       <h3>Transaction total</h3>
                     </v-row>
                     <v-row class="mx-0">
-                      <span>{{ feePlusAmount }} BTC</span>
+                      <span>{{ feePlusAmount }} {{environmentContext.getBtcTicker()}}</span>
                     </v-row>
                     <v-row class="mx-0">
                       <span class="grayish" id="total-usd">USD $ {{ feePlusAmountUSD }}</span>
@@ -69,7 +69,7 @@
             <v-col cols="8" class="px-0 pl-lg-4 pt-0 pb-0">
               <v-container class="pr-md-0">
                 <v-row class="mx-0" align="start">
-                  <h3 class="mr-1">Destination RSK address</h3>
+                  <h3 class="mr-1">Destination {{environmentContext.getRskText()}} address</h3>
                   <v-tooltip right>
                     <template v-slot:activator="{ on, attrs }">
                       <v-icon small color="teal darken-2" v-bind="attrs" v-on="on">
@@ -77,7 +77,8 @@
                       </v-icon>
                     </template>
                     <p class="tooltip-form mb-0">
-                      This is the RSK address where the RBTC will be delivered.
+                      This is the {{environmentContext.getRskText()}} address where the
+                      {{environmentContext.getRbtcTicker()}} will be delivered.
                     </p>
                   </v-tooltip>
                 </v-row>
@@ -97,7 +98,7 @@
               <v-divider/>
               <v-container>
                 <v-row class="mx-0" align="start">
-                  <h3 class="mr-1">Refund BTC address</h3>
+                  <h3 class="mr-1">Refund {{environmentContext.getBtcTicker()}} address</h3>
                   <v-tooltip right>
                     <template v-slot:activator="{ on, attrs }">
                       <v-icon small color="teal darken-2" v-bind="attrs" v-on="on">
@@ -105,7 +106,8 @@
                       </v-icon>
                     </template>
                     <p class="tooltip-form mb-0">
-                      Rejected transactions will be refunded to this Bitcoin address.
+                      Rejected transactions will be refunded to this
+                      {{environmentContext.getBtcText()}} address.
                     </p>
                   </v-tooltip>
                 </v-row>
@@ -117,7 +119,7 @@
                 <v-divider/>
                 <div class="container">
                   <v-row class="mx-0">
-                    <h3>BTC transaction id</h3>
+                    <h3>{{environmentContext.getBtcTicker()}} transaction id</h3>
                   </v-row>
                   <v-row class="mx-0">
                     <span>{{ computedTxId }}</span>
@@ -128,7 +130,7 @@
                 <v-divider/>
                 <v-container class="container">
                   <v-row class="mx-0" align="start">
-                    <h3 class="mr-1">PowPeg BTC Address</h3>
+                    <h3 class="mr-1">PowPeg {{environmentContext.getBtcTicker()}} Address</h3>
                     <v-tooltip right>
                       <template v-slot:activator="{ on, attrs }">
                         <v-icon small color="teal darken-2" v-bind="attrs" v-on="on">
@@ -136,7 +138,9 @@
                         </v-icon>
                       </template>
                       <p class="tooltip-form mb-0">
-                        This is the Bitcoin address where your bitcoins are sent for conversion.
+                        This is the {{environmentContext.getBtcText()}}
+                        address where your {{environmentContext.getBtcTicker()}}s
+                        are sent for conversion.
                       </p>
                       <p class="tooltip-form mb-0">
                         Validate this in your device before confirming the transaction.
@@ -165,6 +169,7 @@ import Big from 'big.js';
 import { TxData } from '@/types';
 import * as constants from '@/store/constants';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
 @Component
 export default class TxSummary extends Vue {
@@ -189,6 +194,8 @@ export default class TxSummary extends Vue {
   fixedUSDDecimals = 2;
 
   VALUE_INCOMPLETE_MESSAGE = 'Not Found';
+
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
   get amount(): string {
     if (!this.txData.amount) return this.VALUE_INCOMPLETE_MESSAGE;

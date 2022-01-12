@@ -8,7 +8,7 @@
         <h3 class="text-center">SUCCESS!</h3>
       </v-row>
       <v-row class="mx-0 mb-5 d-flex justify-center">
-        <h3 class="text-center">Your bitcoins were sent</h3>
+        <h3 class="text-center">Your {{environmentContext.getBtcText()}}s were sent</h3>
       </v-row>
       <v-row class="mx-0 d-flex justify-center">
         <p class="text-center ma-0">You can close the tab freely, we will notify you.</p>
@@ -30,8 +30,10 @@ import {
   Component,
   Vue,
 } from 'vue-property-decorator';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
 @Component
 export default class SuccessSend extends Vue {
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 }
 </script>
