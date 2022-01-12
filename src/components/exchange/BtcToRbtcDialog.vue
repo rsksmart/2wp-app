@@ -9,17 +9,24 @@
         </v-btn>
       </v-row>
       <v-row class="mx-0 mt-5 mb-3 d-flex justify-center">
-        <h2>BTC TO RBTC CONVERSION REQUIRES THESE STEPS</h2>
+        <h2>{{environmentContext.getBtcTicker()}} TO
+        {{environmentContext.getRbtcTicker()}} CONVERSION REQUIRES THESE STEPS</h2>
       </v-row>
       <v-row class="mx-0 d-flex justify-center">
         <v-col cols="10">
-          <p>Please take into consideration that the BTC to RBTC conversion process requires 100
-            Bitcoin block confirmations. It is estimated to take around 17 hours (can vary
-            depending on conditions of the Bitcoin network).</p>
+          <p>Please take into consideration that the {{environmentContext.getBtcTicker()}} to
+          {{environmentContext.getRbtcTicker()}} conversion process requires 100
+            {{environmentContext.getBtcText()}} block confirmations.
+            It is estimated to take around 17 hours (can vary
+            depending on conditions of the {{environmentContext.getBtcText()}} network).</p>
         </v-col>
       </v-row>
       <v-row class="mx-0 mb-3 mt-1">
-        <v-img src="@/assets/exchange/trezor/btc_conversion.png" height="135" contain/>
+        <v-img
+        :src="require(`@/assets/exchange/trezor/${this.environmentContext
+        .getBtcTicker().toLowerCase()}_conversion.png`)"
+        height="135" contain
+        />
       </v-row>
       <v-row class="mx-0 mt-8 mb-4 d-flex justify-center">
         <v-checkbox
@@ -36,12 +43,15 @@ import {
   Component, Prop, Emit,
   Vue,
 } from 'vue-property-decorator';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
 @Component
 export default class BtcToRbtcDialog extends Vue {
   @Prop() showDialog!: boolean;
 
   checkbox = false;
+
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
   @Emit('closeDialog')
   closeDialog() {

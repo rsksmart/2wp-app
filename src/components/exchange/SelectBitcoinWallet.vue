@@ -3,11 +3,12 @@
     <v-row justify="center" class="mx-0">
       <v-col>
         <v-row class="mx-0 mb-5 d-flex justify-center">
-          <h2>Bridging BTC and RBTC</h2>
+          <h2>Bridging {{environmentContext.getBtcTicker()}}
+          and {{environmentContext.getRbtcTicker()}}</h2>
         </v-row>
         <template>
           <v-row class="mx-0 mt-10 d-flex justify-center">
-            <p class="text-center">Select your Bitcoin wallet</p>
+            <p class="text-center">Select your {{environmentContext.getBtcText()}} wallet</p>
           </v-row>
           <v-row justify="center" class="ma-0">
             <v-col cols="3" class="d-flex justify-center">
@@ -59,12 +60,15 @@ import { Action, State } from 'vuex-class';
 import * as constants from '@/store/constants';
 import { TransactionType } from '@/store/session/types';
 import { PegInTxState } from '@/store/peginTx/types';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
 @Component
 export default class SelectBitcoinWallet extends Vue {
   selectedWallet = '';
 
   storeConstants = constants;
+
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
   @Prop({ default: '' }) peg!: string;
 
