@@ -434,7 +434,7 @@ import ApiService from '@/services/ApiService';
 export default class SendBitcoinForm extends Vue {
   btcAccountTypeSelected = '';
 
-  bitcoinAmount: string | number = '';
+  bitcoinAmount = '';
 
   rskAddressSelected = '';
 
@@ -948,7 +948,7 @@ export default class SendBitcoinForm extends Vue {
     this.btcAccountTypeSelected = this.pegInFormData.accountType;
     this.firstDone = this.pegInFormData.accountType !== '';
     if (this.isBackFromConfirm) {
-      this.bitcoinAmount = Number(this.pegInFormData.amount.toBTCString());
+      this.bitcoinAmount = this.pegInFormData.amount.toBTCString();
       this.secondDone = this.isBTCAmountValidNumberRegex && !this.insufficientAmount
         ? 'done' : 'error';
     }
