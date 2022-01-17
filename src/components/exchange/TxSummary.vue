@@ -139,7 +139,7 @@
                       </template>
                       <p class="tooltip-form mb-0">
                         This is the {{environmentContext.getBtcText()}}
-                        address where your {{environmentContext.getBtcText()}}s
+                        address where your {{environmentContext.getBtcTicker()}}s
                         are sent for conversion.
                       </p>
                       <p class="tooltip-form mb-0">

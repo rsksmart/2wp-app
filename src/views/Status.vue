@@ -18,7 +18,7 @@
                           v-model="txId"
                           @keyup.enter="getPegStatus"
                           v-bind:color="error ? '#F6C61B': '#C4C4C4'"
-                          :label="`${environmentContext.getBtcTicker()} transaction id`"
+                          :label="`${environmentContext.getBtcText()} transaction id`"
                           v-bind:class="error ? 'status-text-field-error' : ''"/>
             <v-row class="mx-0 pl-1 pt-1" v-if="error">
                 <span class="yellowish">
@@ -59,7 +59,7 @@
                                src="@/assets/status/btc-yellow.png" height="78" contain/>
                       </v-row>
                       <v-row class="mt-4">
-                        <h1>Refund {{environmentContext.getBtcTicker()}} address</h1>
+                        <h1>Refund {{environmentContext.getBtcText()}} address</h1>
                       </v-row>
                     </div>
                   </div>
@@ -76,7 +76,7 @@
                              src="@/assets/status/btc-green.png" height="78" contain/>
                     </v-row>
                     <v-row class="mt-4">
-                      <h1>{{environmentContext.getBtcTicker()}} Network</h1>
+                      <h1>{{environmentContext.getBtcText()}} Network</h1>
                     </v-row>
                   </div>
                 </div>
@@ -293,7 +293,7 @@ export default class Status extends Vue {
         this.isRejected = true;
         break;
       case PegStatus.NOT_IN_BTC_YET:
-        this.statusMessage = `Your transaction is not in ${this.environmentContext.getBtcTicker()} yet.`;
+        this.statusMessage = `Your transaction is not in ${this.environmentContext.getBtcText()} yet.`;
         this.activeMessageStyle = 'statusRejected';
         this.isRejected = true;
         break;
