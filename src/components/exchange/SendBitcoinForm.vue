@@ -655,10 +655,10 @@ export default class SendBitcoinForm extends Vue {
 
   get fullTxFee(): string {
     let txFee = '';
-    const BTC = this.environmentContext.getBtcTicker();
-    if (this.txFeeIndex === 0) txFee = `Slow - ${this.fees.slow.toBTCString()} ${BTC}`;
-    if (this.txFeeIndex === 1) txFee = `Average - ${this.fees.average.toBTCString()} ${BTC}`;
-    if (this.txFeeIndex === 2) txFee = `Fast - ${this.fees.fast.toBTCString()} ${BTC}`;
+    const btcTicker = this.environmentContext.getBtcTicker();
+    if (this.txFeeIndex === 0) txFee = `Slow - ${this.fees.slow.toBTCString()} ${btcTicker}`;
+    if (this.txFeeIndex === 1) txFee = `Average - ${this.fees.average.toBTCString()} ${btcTicker}`;
+    if (this.txFeeIndex === 2) txFee = `Fast - ${this.fees.fast.toBTCString()} ${btcTicker}`;
     return txFee;
   }
 
@@ -972,16 +972,16 @@ export default class SendBitcoinForm extends Vue {
 
   getAccountBalanceText(accountType: string): string {
     let text = '';
-    const BTC = this.environmentContext.getBtcTicker();
+    const btcTicker = this.environmentContext.getBtcTicker();
     switch (accountType) {
       case constants.BITCOIN_LEGACY_ADDRESS:
-        text = `Legacy account - ${this.balances.legacy.toBTCTrimmedString()} ${BTC}`;
+        text = `Legacy account - ${this.balances.legacy.toBTCTrimmedString()} ${btcTicker}`;
         break;
       case constants.BITCOIN_SEGWIT_ADDRESS:
-        text = `Segwit account - ${this.balances.segwit.toBTCTrimmedString()} ${BTC}`;
+        text = `Segwit account - ${this.balances.segwit.toBTCTrimmedString()} ${btcTicker}`;
         break;
       case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
-        text = `Native segwit account - ${this.balances.nativeSegwit.toBTCTrimmedString()} ${BTC}`;
+        text = `Native segwit account - ${this.balances.nativeSegwit.toBTCTrimmedString()} ${btcTicker}`;
         break;
       default:
         break;
