@@ -13,13 +13,11 @@ import LedgerTransportService from './LedgetTransportService';
 
 export default class LedgerService extends WalletService {
   private network: bitcoin.Network;
-  private transport: LedgerTransportService;
 
   constructor(coin: string) {
     super(coin);
     this.network = coin === constants.BTC_NETWORK_MAINNET
       ? bitcoin.networks.bitcoin : bitcoin.networks.testnet;
-    this.transport = new LedgerTransportService();
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -30,6 +28,21 @@ export default class LedgerService extends WalletService {
   // eslint-disable-next-line class-methods-use-this
   public getWalletMaxCall(): number {
     return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletMaxCallLedger;
+  }
+
+  public static splitTransaction2(hexTx: string): Promise<LedgerjsTransaction> {
+    return new Promise<LedgerjsTransaction>((resolve, reject) => {
+      LedgerTransportService.getInstance()
+        .getTransport()
+        .then((transport:TransportWebUSB) => {
+          const btc = new AppBtc(transport);
+          const bitcoinJsTx = bitcoin.Transaction.fromHex(hexTx);
+          const tx = btc.splitTransaction(hexTx, bitcoinJsTx.hasWitnesses());
+          return Promise.all([tx, LedgerTransportService.getInstance().processNext()]);
+        })
+        .then(([tx]) => resolve(tx))
+        .catch(reject);
+    });
   }
 
   public static splitTransaction(hexTx: string): Promise<LedgerjsTransaction> {
