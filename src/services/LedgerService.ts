@@ -9,7 +9,7 @@ import {
 } from '@/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import { WalletService } from './WalletService';
-import LedgerTransportService from './LedgetTransportService';
+import LedgerTransportService from '@/services/LedgetTransportService';
 
 export default class LedgerService extends WalletService {
   private network: bitcoin.Network;
@@ -30,7 +30,7 @@ export default class LedgerService extends WalletService {
     return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletMaxCallLedger;
   }
 
-  public static splitTransaction2(hexTx: string): Promise<LedgerjsTransaction> {
+  public static splitTransaction(hexTx: string): Promise<LedgerjsTransaction> {
     return new Promise<LedgerjsTransaction>((resolve, reject) => {
       LedgerTransportService.getInstance()
         .getTransport()
@@ -38,30 +38,16 @@ export default class LedgerService extends WalletService {
           const btc = new AppBtc(transport);
           const bitcoinJsTx = bitcoin.Transaction.fromHex(hexTx);
           const tx = btc.splitTransaction(hexTx, bitcoinJsTx.hasWitnesses());
-          return Promise.all([tx, LedgerTransportService.getInstance().processNext()]);
+          LedgerTransportService.getInstance().releaseTransport();
+          resolve(tx);
         })
-        .then(([tx]) => resolve(tx))
-        .catch(reject);
-    });
-  }
-
-  public static splitTransaction(hexTx: string): Promise<LedgerjsTransaction> {
-    return new Promise<LedgerjsTransaction>((resolve, reject) => {
-      TransportWebUSB.create()
-        .then((transport: TransportWebUSB) => {
-          const btc = new AppBtc(transport);
-          const bitcoinJsTx = bitcoin.Transaction.fromHex(hexTx);
-          const tx = btc.splitTransaction(hexTx, bitcoinJsTx.hasWitnesses());
-          return Promise.all([tx, transport.close()]);
-        })
-        .then(([tx]) => resolve(tx))
         .catch(reject);
     });
   }
 
   static splitTransactionList(txHexList: string[]): Promise<LedgerjsTransaction[]> {
     return new Promise<LedgerjsTransaction[]>((resolve, reject) => {
-      TransportWebUSB.create()
+      LedgerTransportService.getInstance().getTransport()
         .then((transport: TransportWebUSB) => {
           const btc = new AppBtc(transport);
           return Promise.all([
@@ -69,7 +55,7 @@ export default class LedgerService extends WalletService {
               const bitcoinJsTx = bitcoin.Transaction.fromHex(tx);
               return btc.splitTransaction(tx, bitcoinJsTx.hasWitnesses());
             }),
-            transport.close(),
+            LedgerTransportService.getInstance().releaseTransport(),
           ]);
         })
         .then(([txList]) => resolve(txList))
@@ -79,13 +65,13 @@ export default class LedgerService extends WalletService {
 
   public static serializeTransactionOutputs(splitTx: LedgerjsTransaction): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-      TransportWebUSB.create()
+      LedgerTransportService.getInstance().getTransport()
         .then((transport: TransportWebUSB) => {
           const btc = new AppBtc(transport);
           const txOutputsBuffer: Buffer = btc.serializeTransactionOutputs(splitTx);
-          return Promise.all([txOutputsBuffer, transport.close()]);
+          LedgerTransportService.getInstance().releaseTransport();
+          resolve(txOutputsBuffer.toString('hex'));
         })
-        .then(([txOutBuffer]) => resolve(txOutBuffer.toString('hex')))
         .catch(reject);
     });
   }
@@ -119,7 +105,7 @@ export default class LedgerService extends WalletService {
       const bundle = this.getAddressesBundle(index, batch);
 
       try {
-        const transport = await TransportWebUSB.create(15000);
+        const transport = await LedgerTransportService.getInstance().getTransport();
         await LedgerService.checkApp(transport);
         const btc = new AppBtc(transport);
         // eslint-disable-next-line no-restricted-syntax
@@ -134,8 +120,7 @@ export default class LedgerService extends WalletService {
             publicKey: walletPublicKey.publicKey,
           });
         }
-
-        await transport.close();
+        LedgerTransportService.getInstance().releaseTransport();
       } catch (e) {
         reject(e);
       }
@@ -169,7 +154,7 @@ export default class LedgerService extends WalletService {
   public static signTx(tx: Tx): Promise<string> {
     const ledgerTx: LedgerTx = tx as LedgerTx;
     return new Promise<string>((resolve, reject) => {
-      TransportWebUSB.create()
+      LedgerTransportService.getInstance().getTransport()
         .then((transport: TransportWebUSB) => {
           const btc = new AppBtc(transport);
           return btc.createPaymentTransactionNew({
@@ -178,7 +163,10 @@ export default class LedgerService extends WalletService {
             outputScriptHex: ledgerTx.outputScriptHex,
           });
         })
-        .then(resolve)
+        .then((signedTx) => {
+          LedgerTransportService.getInstance().releaseTransport();
+          resolve(signedTx);
+        })
         .catch(reject);
     });
   }
@@ -256,7 +244,7 @@ export default class LedgerService extends WalletService {
     return new Promise<string[]>((resolve, reject) => {
       const LOCK_TIME = 0;
       const SIGHASH_ALL = 1;
-      TransportWebUSB.create()
+      LedgerTransportService.getInstance().getTransport()
         .then((transport: TransportWebUSB) => {
           const btc = new AppBtc(transport);
           return btc.signP2SHTransaction({
@@ -274,7 +262,10 @@ export default class LedgerService extends WalletService {
             segwit: true,
           });
         })
-        .then(resolve)
+        .then((signatures) => {
+          LedgerTransportService.getInstance().releaseTransport();
+          resolve(signatures);
+        })
         .catch(reject);
     });
   }
