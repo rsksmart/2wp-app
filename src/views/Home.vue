@@ -135,12 +135,18 @@ export default class Home extends Vue {
 
   @Emit()
   selectPegIn(): void {
+    if(!this.isChromeBrowser()) {
+      return alert('Only available in Chrome');
+    }
     this.BTC2RBTC = true;
     this.$router.push({ name: 'PegIn' });
   }
 
   @Emit()
   toPegInStatus(): void {
+    if(!this.isTxStatusAllowedBrowser()) {
+      return alert('Not available in this browser');
+    }
     this.STATUS = true;
     if (this.$route.path !== '/status') this.$router.push('/status');
   }
@@ -151,6 +157,19 @@ export default class Home extends Vue {
     this.STATUS = false;
     this.BTC2RBTC = this.peg === 'BTC2RBTC';
     this.RBTC2BTC = this.peg === 'RBTC2BTC';
+  }
+
+  isChromeBrowser() {
+    return navigator.userAgent.indexOf('Chrome') !== -1;
+  }
+
+  isTxStatusAllowedBrowser() {
+    const userAgent = navigator.userAgent;
+    if(userAgent.indexOf('Chrome') !== -1 || userAgent.indexOf('Brave') !== -1
+    || userAgent.indexOf('Firefox') !== -1 || userAgent.indexOf('Edg') !== -1) {
+      return true;
+    }
+    return false;
   }
 }
 </script>
