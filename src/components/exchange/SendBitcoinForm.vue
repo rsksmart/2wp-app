@@ -856,13 +856,10 @@ export default class SendBitcoinForm extends Vue {
           break;
         }
         case 3: {
-          this.thirdDone = this.isValidPegInAddress && !this.insufficientAmount;
+          this.thirdDone = this.isValidPegInAddress;
           break;
         }
-        case 4: {
-          this.fourthDone = !this.insufficientAmount;
-          break;
-        }
+        case 4:
         default: {
           break;
         }
