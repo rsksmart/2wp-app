@@ -129,7 +129,7 @@
                   </v-row>
                   <v-row class="mx-0">
                     <p class="mx-0">Block Explorer URL:
-                      <strong class="ml-1">{{vueAppRskNodeHost}}</strong>
+                      <strong class="ml-1">{{rskBlockExplorer}}</strong>
                     </p>
                   </v-row>
                 </div>
@@ -183,6 +183,8 @@ export default class Wallet extends Vue {
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
   vueAppRskNodeHost = EnvironmentAccessorService.getEnvironmentVariables().vueAppRskNodeHost;
+
+  rskBlockExplorer = EnvironmentAccessorService.getEnvironmentVariables().vueAppRskExplorer;
 
   get metamaskImg() {
     return this.isMetamask ? MetaMask : MetaMaskDisabled;
