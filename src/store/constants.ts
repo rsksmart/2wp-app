@@ -1,4 +1,5 @@
 import { PegInTxState } from '@/store/peginTx/types';
+import SatoshiBig from '@/types/SatoshiBig';
 
 export const WALLET_LEDGER = 'WALLET_LEDGER';
 export const WALLET_ELECTRUM = 'WALLET_ELECTRUM';
@@ -28,6 +29,7 @@ export const PEGIN_TX_ADD_PEGIN_CONFIGURATION = 'PEGIN_TX_ADD_PEGIN_CONFIGURATIO
 export const PEGIN_TX_ADD_BITCOIN_WALLET = 'PEGIN_TX_ADD_BITCOIN_WALLET';
 export const PEGIN_TX_ADD_BITCOIN_PRICE = 'PEGIN_TX_ADD_BITCOIN_PRICE';
 export const PEGIN_TX_CLEAR_STATE = 'PEGIN_TX_CLEAR_STATE';
+export const PEGIN_TX_SELECT_ACCOUNT_TYPE = 'PEGIN_TX_SELECT_ACCOUNT_TYPE';
 // Session actions
 export const WEB3_SESSION_GET_ACCOUNT = 'WEB3_SESSION_GET_ACCOUNT';
 export const SESSION_CONNECT_WEB3 = 'SESSION_CONNECT_WEB3';
@@ -43,6 +45,7 @@ export const PEGIN_TX_SET_BITCOIN_WALLET = 'PEGIN_TX_SET_BITCOIN_WALLET';
 export const PEGIN_TX_SET_BITCOIN_PRICE = 'PEGIN_TX_SET_BITCOIN_PRICE';
 export const PEGIN_TX_INIT = 'PEGIN_TX_INIT';
 export const PEGIN_TX_CLEAR = 'PEGIN_TX_CLEAR';
+export const PEGIN_TX_SET_ACCOUNT_TYPE = 'PEGIN_TX_SET_ACCOUNT_TYPE';
 // Session mutations
 export const SESSION_SET_ACCOUNT = 'SESSION_SET_ACCOUNT';
 export const SESSION_SET_WEB3_INSTANCE = 'SESSION_SET_WEB3_INSTANCE';
@@ -84,19 +87,24 @@ export enum PegStatus {
   ERROR_UNEXPECTED = 'ERROR_UNEXPECTED',
 }
 
-export function getClearPeginTxState(): PegInTxState {
-  return {
-    peginConfiguration: {
-      minValue: 0,
-      maxValue: 0,
-      federationAddress: '',
-      btcConfirmations: 100,
-    },
-    sessionId: '',
-    utxoList: undefined,
-    addressList: [],
-    trezorConnected: false,
-    bitcoinWallet: '',
-    bitcoinPrice: 0,
-  };
-}
+export const getClearPeginTxState = (): PegInTxState => ({
+  peginConfiguration: {
+    minValue: 0,
+    maxValue: 0,
+    federationAddress: '',
+    btcConfirmations: 100,
+  },
+  sessionId: '',
+  utxoList: undefined,
+  addressList: [],
+  trezorConnected: false,
+  bitcoinWallet: '',
+  bitcoinPrice: 0,
+  balances: {
+    legacy: new SatoshiBig(0, 'satoshi'),
+    segwit: new SatoshiBig(0, 'satoshi'),
+    nativeSegwit: new SatoshiBig(0, 'satoshi'),
+  },
+  loadingBalance: false,
+  selectedAccount: undefined,
+});

@@ -36,6 +36,11 @@ const routes: Array<RouteConfig> = [
     name: 'PegIn',
     component: () => import(/* webpackChunkName: "transactions" */ '../views/PegIn.vue'),
   },
+  {
+    path: '/pegin/create',
+    name: 'Create',
+    component: () => import(/* webpackChunkName: "transactions" */ '../views/Create.vue'),
+  },
 ];
 
 const router = new VueRouter({

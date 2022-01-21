@@ -1,11 +1,14 @@
-export interface PegInTxState {
-  utxoList?: Utxo[];
-  addressList?: WalletAddress[];
-  trezorConnected: boolean;
-  peginConfiguration: PeginConfiguration;
-  sessionId: string;
-  bitcoinWallet: string;
-  bitcoinPrice: number;
+import { AccountBalance } from '@/types';
+
+export type BtcAccount = 'BITCOIN_LEGACY_ADDRESS' |
+  'BITCOIN_SEGWIT_ADDRESS' |
+  'BITCOIN_NATIVE_SEGWIT_ADDRESS';
+
+export interface WalletAddress {
+  address: string;
+  serializedPath: string;
+  path: number[];
+  publicKey?: string;
 }
 
 export interface PeginConfiguration {
@@ -27,11 +30,17 @@ export interface Utxo {
   vout: number;
 }
 
-export interface WalletAddress {
-  address: string;
-  serializedPath: string;
-  path: number[];
-  publicKey?: string;
+export interface PegInTxState {
+  utxoList?: Utxo[];
+  addressList?: WalletAddress[];
+  balances: AccountBalance;
+  loadingBalance: boolean;
+  trezorConnected: boolean;
+  peginConfiguration: PeginConfiguration;
+  sessionId: string;
+  bitcoinWallet: string;
+  selectedAccount?: BtcAccount;
+  bitcoinPrice: number;
 }
 
 export interface UnusedWalletAddress {

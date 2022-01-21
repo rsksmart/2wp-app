@@ -2,6 +2,7 @@ import { ActionTree } from 'vuex';
 import axios from 'axios';
 import * as constants from '@/store/constants';
 import {
+  BtcAccount,
   PeginConfiguration, PegInTxState, Utxo, WalletAddress,
 } from './types';
 import { RootState } from '../types';
@@ -44,4 +45,8 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_INIT]: ({ dispatch }):
     Promise<void> => dispatch(constants.PEGIN_TX_ADD_BITCOIN_PRICE)
     .then(() => dispatch(constants.PEGIN_TX_ADD_PEGIN_CONFIGURATION)),
+
+  [constants.PEGIN_TX_SELECT_ACCOUNT_TYPE]: ({ commit }, accountType: BtcAccount):void => {
+    commit(constants.PEGIN_TX_SET_ACCOUNT_TYPE, accountType);
+  },
 };

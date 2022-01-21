@@ -1,6 +1,7 @@
 import { MutationTree } from 'vuex';
 import * as constants from '@/store/constants';
 import {
+  BtcAccount,
   PeginConfiguration, PegInTxState, Utxo, WalletAddress,
 } from './types';
 
@@ -29,5 +30,8 @@ export const mutations: MutationTree<PegInTxState> = {
   [constants.PEGIN_TX_CLEAR]: (state) => {
     const clearState = constants.getClearPeginTxState();
     Object.assign(state, clearState);
+  },
+  [constants.PEGIN_TX_SET_ACCOUNT_TYPE]: (state, accountType: BtcAccount) => {
+    state.selectedAccount = accountType;
   },
 };
