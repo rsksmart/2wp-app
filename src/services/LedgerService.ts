@@ -46,34 +46,27 @@ export default class LedgerService extends WalletService {
   }
 
   static splitTransactionList(txHexList: string[]): Promise<LedgerjsTransaction[]> {
-    return new Promise<LedgerjsTransaction[]>((resolve, reject) => {
-      LedgerTransportService.getInstance().getTransport()
-        .then((transport: TransportWebUSB) => {
-          const btc = new AppBtc(transport);
-          return Promise.all([
-            txHexList.map((tx) => {
-              const bitcoinJsTx = bitcoin.Transaction.fromHex(tx);
-              return btc.splitTransaction(tx, bitcoinJsTx.hasWitnesses());
-            }),
-            LedgerTransportService.getInstance().releaseTransport(),
-          ]);
-        })
-        .then(([txList]) => resolve(txList))
-        .catch(reject);
-    });
+    return LedgerTransportService.getInstance()
+      .enqueueRequest((transport: TransportWebUSB) => {
+        const btc = new AppBtc(transport);
+        return Promise.all(txHexList.map((tx) => {
+          const bitcoinJsTx = bitcoin.Transaction.fromHex(tx);
+          return btc.splitTransaction(tx, bitcoinJsTx.hasWitnesses());
+        }));
+      })
+      .then((txlist) => txlist as LedgerjsTransaction[]);
   }
 
   public static serializeTransactionOutputs(splitTx: LedgerjsTransaction): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-      LedgerTransportService.getInstance().getTransport()
-        .then((transport: TransportWebUSB) => {
+    return LedgerTransportService.getInstance()
+      .enqueueRequest(
+        (transport: TransportWebUSB) => new Promise<string>((resolve) => {
           const btc = new AppBtc(transport);
           const txOutputsBuffer: Buffer = btc.serializeTransactionOutputs(splitTx);
-          LedgerTransportService.getInstance().releaseTransport();
           resolve(txOutputsBuffer.toString('hex'));
-        })
-        .catch(reject);
-    });
+        }),
+      )
+      .then((serializedOutputs) => serializedOutputs as string);
   }
 
   private getAddressesBundle(startFrom: number, batchSize: number, accountIndex = 0):
@@ -99,33 +92,34 @@ export default class LedgerService extends WalletService {
   }
 
   public getAccountAddresses(batch: number, index: number): Promise<WalletAddress[]> {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve, reject) => {
-      const walletAddresses: WalletAddress[] = [];
-      const bundle = this.getAddressesBundle(index, batch);
-
-      try {
-        const transport = await LedgerTransportService.getInstance().getTransport();
-        await LedgerService.checkApp(transport);
-        const btc = new AppBtc(transport);
-        // eslint-disable-next-line no-restricted-syntax
-        for (const item of bundle) {
-          const { derivationPath, format } = item;
-          // eslint-disable-next-line no-await-in-loop
-          const walletPublicKey = await btc.getWalletPublicKey(derivationPath, { format });
-          walletAddresses.push({
-            address: walletPublicKey.bitcoinAddress,
-            serializedPath: derivationPath,
-            path: this.getSerializedPath(derivationPath),
-            publicKey: walletPublicKey.publicKey,
-          });
-        }
-        LedgerTransportService.getInstance().releaseTransport();
-      } catch (e) {
-        reject(e);
-      }
-      resolve(walletAddresses);
-    });
+    const bundle = this.getAddressesBundle(index, batch);
+    return LedgerTransportService.getInstance()
+      .enqueueRequest(
+        // eslint-disable-next-line no-async-promise-executor
+        (transport: TransportWebUSB) => new Promise<WalletAddress[]>(async (resolve, reject) => {
+          const walletAddresses: WalletAddress[] = [];
+          try {
+            await LedgerService.checkApp(transport);
+            const btc = new AppBtc(transport);
+            // eslint-disable-next-line no-restricted-syntax
+            for (const item of bundle) {
+              const { derivationPath, format } = item;
+              // eslint-disable-next-line no-await-in-loop
+              const walletPublicKey = await btc.getWalletPublicKey(derivationPath, { format });
+              walletAddresses.push({
+                address: walletPublicKey.bitcoinAddress,
+                serializedPath: derivationPath,
+                path: this.getSerializedPath(derivationPath),
+                publicKey: walletPublicKey.publicKey,
+              });
+            }
+          } catch (e) {
+            reject(e);
+          }
+          resolve(walletAddresses);
+        }),
+      )
+      .then((response) => response as WalletAddress[]);
   }
 
   public static getLedgerAddressFormat(accountType: string): 'legacy' | 'p2sh' | 'bech32' {
@@ -153,22 +147,20 @@ export default class LedgerService extends WalletService {
 
   public static signTx(tx: Tx): Promise<string> {
     const ledgerTx: LedgerTx = tx as LedgerTx;
-    return new Promise<string>((resolve, reject) => {
-      LedgerTransportService.getInstance().getTransport()
-        .then((transport: TransportWebUSB) => {
+    return LedgerTransportService.getInstance()
+      .enqueueRequest(
+        (transport: TransportWebUSB) => new Promise<string>((resolve, reject) => {
           const btc = new AppBtc(transport);
-          return btc.createPaymentTransactionNew({
+          btc.createPaymentTransactionNew({
             inputs: ledgerTx.inputs.map((input) => [input.tx, input.outputIndex, null, null]),
             associatedKeysets: ledgerTx.associatedKeysets,
             outputScriptHex: ledgerTx.outputScriptHex,
-          });
-        })
-        .then((signedTx) => {
-          LedgerTransportService.getInstance().releaseTransport();
-          resolve(signedTx);
-        })
-        .catch(reject);
-    });
+          })
+            .then(resolve)
+            .catch(reject);
+        }),
+      )
+      .then((signature) => signature as string);
   }
 
   private getRedeem(publicKey: string): Buffer | undefined {
@@ -239,15 +231,14 @@ export default class LedgerService extends WalletService {
     };
   }
 
-  // eslint-disable-next-line class-methods-use-this
   private signP2SH(tx: LedgerTx): Promise<string[]> {
-    return new Promise<string[]>((resolve, reject) => {
-      const LOCK_TIME = 0;
-      const SIGHASH_ALL = 1;
-      LedgerTransportService.getInstance().getTransport()
-        .then((transport: TransportWebUSB) => {
+    return LedgerTransportService.getInstance()
+      .enqueueRequest(
+        ((transport: TransportWebUSB) => new Promise<string[]>((resolve, reject) => {
+          const LOCK_TIME = 0;
+          const SIGHASH_ALL = 1;
           const btc = new AppBtc(transport);
-          return btc.signP2SHTransaction({
+          btc.signP2SHTransaction({
             inputs: tx.inputs.map((input) => [
               input.tx,
               input.outputIndex,
@@ -260,14 +251,12 @@ export default class LedgerService extends WalletService {
             lockTime: LOCK_TIME,
             sigHashType: SIGHASH_ALL,
             segwit: true,
-          });
-        })
-        .then((signatures) => {
-          LedgerTransportService.getInstance().releaseTransport();
-          resolve(signatures);
-        })
-        .catch(reject);
-    });
+          })
+            .then(resolve)
+            .catch(reject);
+        })),
+      )
+      .then((signatures) => signatures as string[]);
   }
 
   private getLedgerRedeemScript(publicKey: string): string {
