@@ -1,9 +1,17 @@
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
+import { WalletAddress } from '@/store/peginTx/types';
+import { LedgerjsTransaction } from '@/types';
 
 interface TransportRequest {
   resolve: (value: (PromiseLike<TransportWebUSB> | TransportWebUSB)) => void;
   reject: (reason?: any) => void;
 }
+type LedgerResponse = string | string[] | Buffer | WalletAddress[] | {
+  publicKey: string;
+  bitcoinAddress: string;
+  chainCode: string;
+} | LedgerjsTransaction[];
+type LedgerRequest = (transport: TransportWebUSB) => Promise<LedgerResponse>;
 
 export default class LedgerTransportService {
   private static instance: LedgerTransportService;
@@ -29,7 +37,6 @@ export default class LedgerTransportService {
 
   getTransport(): Promise<TransportWebUSB> {
     return new Promise<TransportWebUSB>((resolve, reject) => {
-      console.log('Enqueue transport request ');
       if (this.transportRequestList.length === 0 && !this.isTransportBusy) {
         this.transportRequestList.push({ resolve, reject });
         this.processNext();
@@ -39,13 +46,24 @@ export default class LedgerTransportService {
     });
   }
 
+  public enqueueRequest(request: LedgerRequest): Promise<LedgerResponse> {
+    return new Promise<LedgerResponse>((resolve, reject) => {
+      this.getTransport()
+        .then((transport :TransportWebUSB) => request(transport))
+        .then((response) => {
+          this.releaseTransport();
+          resolve(response);
+        })
+        .catch(reject);
+    });
+  }
+
   public releaseTransport():void {
     this.isTransportBusy = false;
     this.processNext();
   }
 
   private processNext(): void {
-    console.log(`Processing request - RequestList length: ${this.transportRequestList.length}`);
     if (this.transportRequestList.length === 0) return;
     this.isTransportBusy = true;
     const request = this.transportRequestList.shift();
@@ -65,6 +83,5 @@ export default class LedgerTransportService {
       // @ts-ignore
       request.resolve(this.transportWebUsb);
     }
-    console.log('Transport resolved - waiting for next release');
   }
 }
