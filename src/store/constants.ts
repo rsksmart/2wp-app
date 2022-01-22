@@ -30,6 +30,8 @@ export const PEGIN_TX_ADD_BITCOIN_WALLET = 'PEGIN_TX_ADD_BITCOIN_WALLET';
 export const PEGIN_TX_ADD_BITCOIN_PRICE = 'PEGIN_TX_ADD_BITCOIN_PRICE';
 export const PEGIN_TX_CLEAR_STATE = 'PEGIN_TX_CLEAR_STATE';
 export const PEGIN_TX_SELECT_ACCOUNT_TYPE = 'PEGIN_TX_SELECT_ACCOUNT_TYPE';
+export const PEGIN_TX_ADD_AMOUNT_TO_TRANSFER = 'PEGIN_TX_ADD_AMOUNT_TO_TRANSFER';
+export const PEGIN_TX_CALCULATE_TX_FEE = 'PEGIN_TX_CALCULATE_TX_FEE';
 // Session actions
 export const WEB3_SESSION_GET_ACCOUNT = 'WEB3_SESSION_GET_ACCOUNT';
 export const SESSION_CONNECT_WEB3 = 'SESSION_CONNECT_WEB3';
@@ -46,6 +48,8 @@ export const PEGIN_TX_SET_BITCOIN_PRICE = 'PEGIN_TX_SET_BITCOIN_PRICE';
 export const PEGIN_TX_INIT = 'PEGIN_TX_INIT';
 export const PEGIN_TX_CLEAR = 'PEGIN_TX_CLEAR';
 export const PEGIN_TX_SET_ACCOUNT_TYPE = 'PEGIN_TX_SET_ACCOUNT_TYPE';
+export const PEGIN_TX_SET_AMOUNT_TO_TRANSFER = 'PEGIN_TX_SET_AMOUNT_TO_TRANSFER';
+export const PEGIN_TX_SET_CALCULATED_TX_FEE = 'PEGIN_TX_SET_CALCULATED_TX_FEE';
 // Session mutations
 export const SESSION_SET_ACCOUNT = 'SESSION_SET_ACCOUNT';
 export const SESSION_SET_WEB3_INSTANCE = 'SESSION_SET_WEB3_INSTANCE';
@@ -107,4 +111,11 @@ export const getClearPeginTxState = (): PegInTxState => ({
   },
   loadingBalance: false,
   selectedAccount: undefined,
+  calculatedFees: {
+    slow: new SatoshiBig(0, 'satoshi'),
+    average: new SatoshiBig(0, 'satoshi'),
+    fast: new SatoshiBig(0, 'satoshi'),
+  },
+  selectedFee: BITCOIN_AVERAGE_FEE_LEVEL,
+  amountToTransfer: new SatoshiBig(0, 'btc'),
 });

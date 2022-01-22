@@ -4,6 +4,8 @@ import {
   BtcAccount,
   PeginConfiguration, PegInTxState, Utxo, WalletAddress,
 } from './types';
+import SatoshiBig from '@/types/SatoshiBig';
+import { FeeAmountData } from '@/types';
 
 export const mutations: MutationTree<PegInTxState> = {
   [constants.PEGIN_TX_SET_ADDRESS_LIST]: (state, addressList: WalletAddress[]) => {
@@ -33,5 +35,11 @@ export const mutations: MutationTree<PegInTxState> = {
   },
   [constants.PEGIN_TX_SET_ACCOUNT_TYPE]: (state, accountType: BtcAccount) => {
     state.selectedAccount = accountType;
+  },
+  [constants.PEGIN_TX_SET_AMOUNT_TO_TRANSFER]: (state, amount: SatoshiBig) => {
+    state.amountToTransfer = amount;
+  },
+  [constants.PEGIN_TX_SET_CALCULATED_TX_FEE]: (state, fee: FeeAmountData) => {
+    state.calculatedFees = fee;
   },
 };

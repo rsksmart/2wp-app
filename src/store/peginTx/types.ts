@@ -1,8 +1,13 @@
-import { AccountBalance } from '@/types';
+import { AccountBalance, FeeAmountData } from '@/types';
+import SatoshiBig from '@/types/SatoshiBig';
 
 export type BtcAccount = 'BITCOIN_LEGACY_ADDRESS' |
   'BITCOIN_SEGWIT_ADDRESS' |
   'BITCOIN_NATIVE_SEGWIT_ADDRESS';
+
+export type MiningSpeedFee = 'BITCOIN_SLOW_FEE_LEVEL' |
+  'BITCOIN_AVERAGE_FEE_LEVEL' |
+  'BITCOIN_FAST_FEE_LEVEL';
 
 export interface WalletAddress {
   address: string;
@@ -41,6 +46,9 @@ export interface PegInTxState {
   bitcoinWallet: string;
   selectedAccount?: BtcAccount;
   bitcoinPrice: number;
+  calculatedFees: FeeAmountData;
+  selectedFee: MiningSpeedFee;
+  amountToTransfer: SatoshiBig;
 }
 
 export interface UnusedWalletAddress {

@@ -7,6 +7,8 @@ import {
 } from './types';
 import { RootState } from '../types';
 import ApiService from '@/services/ApiService';
+import SatoshiBig from '@/types/SatoshiBig';
+import { FeeAmountData } from '@/types';
 
 export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_ADD_ADDRESSES]: ({ commit }, addressList: WalletAddress[]) => {
@@ -46,7 +48,29 @@ export const actions: ActionTree<PegInTxState, RootState> = {
     Promise<void> => dispatch(constants.PEGIN_TX_ADD_BITCOIN_PRICE)
     .then(() => dispatch(constants.PEGIN_TX_ADD_PEGIN_CONFIGURATION)),
 
-  [constants.PEGIN_TX_SELECT_ACCOUNT_TYPE]: ({ commit }, accountType: BtcAccount):void => {
+  [constants.PEGIN_TX_SELECT_ACCOUNT_TYPE]: ({ commit }, accountType: BtcAccount): void => {
     commit(constants.PEGIN_TX_SET_ACCOUNT_TYPE, accountType);
   },
+  [constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER]: ({ commit }, amount: SatoshiBig): void => {
+    commit(constants.PEGIN_TX_SET_AMOUNT_TO_TRANSFER, amount);
+  },
+  [constants.PEGIN_TX_CALCULATE_TX_FEE]: ({ commit, state }):
+    Promise<void> => new Promise<void>((resolve, reject) => {
+      if (!state.selectedAccount) reject(new Error('There are no selected account'));
+      ApiService.getTxFee(
+        state.sessionId,
+        Number(state.amountToTransfer.toSatoshiString()),
+        state.selectedAccount ?? '',
+      )
+        .then((txFee) => {
+          const fees: FeeAmountData = {
+            slow: new SatoshiBig(txFee.slow, 'satoshi'),
+            average: new SatoshiBig(txFee.average, 'satoshi'),
+            fast: new SatoshiBig(txFee.fast, 'satoshi'),
+          };
+          commit(constants.PEGIN_TX_SET_CALCULATED_TX_FEE, fees);
+          resolve();
+        })
+        .catch(reject);
+    }),
 };

@@ -15,7 +15,11 @@
         <v-col id="options-col" cols="8" lg="7" class="pa-0">
           <peg-in-account-select @accountChanged="accountSelected"/>
           <v-divider color="#C4C4C4"/>
-
+          <btc-input-amount/>
+          <v-divider color="#C4C4C4"/>
+          <rsk-address-input/>
+          <v-divider color="#C4C4C4"/>
+          <btc-fee-select/>
         </v-col>
       </v-row>
     </v-col>
@@ -25,10 +29,18 @@
 <script lang="ts">
 import { Component, Emit, Vue } from 'vue-property-decorator';
 import PegInAccountSelect from '@/components/create/PegInAccountSelect.vue';
+import BtcInputAmount from '@/components/create/BtcInputAmount.vue';
+import RskAddressInput from '@/components/create/RskAddressInput.vue';
+import BtcFeeSelect from '@/components/create/BtcFeeSelect.vue';
 import { BtcAccount } from '@/store/peginTx/types';
 
 @Component({
-  components: { PegInAccountSelect },
+  components: {
+    PegInAccountSelect,
+    BtcInputAmount,
+    RskAddressInput,
+    BtcFeeSelect,
+  },
 })
 export default class BitcoinForm extends Vue {
   @Emit()
