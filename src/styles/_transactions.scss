@@ -1,0 +1,80 @@
+.transactions {
+  h1 {
+    font-weight: bold;
+    font-size: 36px;
+    line-height: 45px;
+    display: flex;
+    align-items: center;
+    color: #00B520;
+  }
+
+  h2 {
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 25px;
+    display: flex;
+    align-items: center;
+    color: #10B848;
+  }
+
+  h3 {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 17px;
+    display: flex;
+    align-items: center;
+    color: #00B520;
+  }
+
+  h4 {
+    font-weight: 500;
+    font-size: 19px;
+    line-height: 25px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #000;
+  }
+
+  div {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 17px;
+    color: #000;
+  }
+
+  p {
+    margin: 0 !important;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 25px;
+    color: #000000;
+  }
+
+  a {
+    color: #000 !important;
+    text-decoration: none;
+  }
+
+  .subtitle {
+    margin: 0px 0px 16px 0px !important;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 23px;
+    color: #000000;
+  }
+
+  .box {
+    border: 0.5px solid #BFBFBF;
+    box-sizing: border-box;
+    border-radius: 30px;
+  }
+  .confirmation-box {
+    border-radius: 30px;
+    border: 0.5px solid #BFBFBF;
+    box-sizing: border-box;
+    legend {
+      color: #C4C4C4;
+    }
+  }
+}

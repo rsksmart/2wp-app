@@ -1,0 +1,93 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/all.css');
+.footer-rsk {
+  z-index: 1;
+
+  .footer-info {
+    a {
+      text-decoration: none;
+    }
+    p {
+      font-size: 15px;
+      font-weight: 200;
+      line-height: 28px;
+      color: white;
+    }
+  }
+  .footer-info-strong {
+    a {
+      text-decoration: none;
+    }
+    p {
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 28px;
+      color: white;
+    }
+  }
+
+  .footer-button {
+    span{
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+    }
+  }
+  .rsk-copyright p {
+    font-size: 12px;
+    font-weight: 300;
+    color: white;
+  }
+  .rsk-pk p {
+    font-size: 12px;
+    font-weight: 300;
+  }
+
+  p {
+    font-family: 'Objective', 'Quicksand', sans-serif;;
+    font-size: 6px;
+    line-height: 24px;
+    color: black !important;
+    opacity: 0.5;
+    margin: 0;
+  }
+
+  .footer-logo {
+    span {
+      font-family: 'Objective', 'Quicksand', sans-serif;;
+      font-size: 10px;
+      line-height: 10px;
+      color: black !important;
+      opacity: 0.5;
+      margin: 0;
+      user-select: none;
+      &:hover {
+        cursor: default;
+      }
+    }
+  }
+
+  .footer-links {
+    a {
+      font-family: 'Objective', 'Quicksand', sans-serif;;
+      font-size: 10px;
+      line-height: 10px;
+      color: black !important;
+      opacity: 0.5;
+      margin: 0 10px;
+      text-decoration: none;
+      cursor: pointer;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .footer-icons {
+    a {
+      color: black !important;
+      margin: 0 10px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+  }
+}

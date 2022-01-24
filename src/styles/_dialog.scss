@@ -1,0 +1,68 @@
+.dialog {
+  .container-extra {
+    padding: 51px 81px 51px 81px;
+  }
+  .close-btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+  .button {
+    width: 141px !important;
+    height: 50px !important;
+    background: #00B520 !important;
+    border-radius: 30px !important;
+    span {
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 20px;
+      display: flex;
+      align-items: center;
+      text-align: center;
+      color: #fff !important;
+    }
+  }
+
+  h1 {
+    font-weight: bold;
+    font-size: 26px;
+    line-height: 30px;
+    display: flex;
+    align-items: center;
+    color: #00B520;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 25px;
+    color: #00B520;
+  }
+
+  h3 {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 17px;
+    color: #00B520;
+  }
+
+  p {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 140%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #000;
+  }
+
+  .green-box {
+    padding: 10px 0 0 10px;
+    border: 0.5px solid #00B43C;
+    box-sizing: border-box;
+    border-radius: 20px;
+  }
+}

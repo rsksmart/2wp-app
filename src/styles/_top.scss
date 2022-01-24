@@ -1,0 +1,62 @@
+.v-toolbar__content, .v-toolbar__extension {
+  padding: 4px 0px;
+}
+
+.top {
+  flex: none;
+
+  a {
+    font-weight: normal;
+    font-size: 20px;
+    line-height: 23px;
+    text-align: center;
+    color: #000 !important;
+    text-decoration: none !important;
+  }
+
+  p {
+    font-weight: normal;
+    font-size: 20px;
+    line-height: 23px;
+    text-align: center;
+    text-decoration: none !important;
+    margin: 0;
+    color: #B5CAB8;
+    cursor: not-allowed;
+  }
+
+  a:hover {
+    font-weight: bold;
+    text-decoration: underline !important;
+  }
+
+  a:focus {
+    font-weight: bold;
+    text-decoration: underline !important;
+  }
+
+  .rsk-main-logo:hover {
+    cursor: pointer;
+  }
+
+  .top-logo {
+    padding: 40px 0 0 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-end;
+
+    span {
+      font-family: 'Objective', 'Quicksand', sans-serif;;
+      font-size: 10px;
+      line-height: 10px;
+      color: black !important;
+      opacity: 0.5;
+      margin: 0;
+      user-select: none;
+      &:hover {
+        cursor: default;
+      }
+    }
+  }
+}
