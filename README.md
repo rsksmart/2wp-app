@@ -22,3 +22,7 @@ npm run serve
 ```shell
 docker-compose up
 ```
+
+## Report Security Vulnerabilities
+
+To report a vulnerability, please use the [vulnerability reporting guideline](./SECURITY.md) for details on how to do it.
