@@ -27,7 +27,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Emit, Vue } from 'vue-property-decorator';
+import {
+  Component, Emit, Prop, Vue,
+} from 'vue-property-decorator';
 import PegInAccountSelect from '@/components/create/PegInAccountSelect.vue';
 import BtcInputAmount from '@/components/create/BtcInputAmount.vue';
 import RskAddressInput from '@/components/create/RskAddressInput.vue';
@@ -43,6 +45,12 @@ import { BtcAccount } from '@/store/peginTx/types';
   },
 })
 export default class BitcoinForm extends Vue {
+  @Prop() isBackFromConfirm!: boolean;
+
+  @Prop() loadingBalances!: boolean;
+
+  @Prop() unusedAddresses?: [];
+
   @Emit()
   // eslint-disable-next-line class-methods-use-this
   accountSelected(account: BtcAccount) {

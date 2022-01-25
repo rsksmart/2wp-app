@@ -69,7 +69,7 @@ import {
 } from 'vue-property-decorator';
 import { Action, State } from 'vuex-class';
 import SatoshiBig from '@/types/SatoshiBig';
-import { BtcAccount, PegInTxState } from '@/store/peginTx/types';
+import { PegInTxState } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 
 @Component({
@@ -106,7 +106,7 @@ export default class BtcInputAmount extends Vue {
     const minValue: SatoshiBig = new SatoshiBig(this.pegInTxState.peginConfiguration.minValue, 'satoshi');
     const maxValue: SatoshiBig = new SatoshiBig(this.pegInTxState.peginConfiguration.maxValue, 'satoshi');
     if (this.bitcoinAmount.toString() === '') {
-      return '';
+      return 'Please, enter an amount';
     }
     if (!this.isBTCAmountValidNumberRegex) {
       return 'Invalid format, neither letters, big amounts nor more than 8 decimals are allowed';
@@ -184,20 +184,21 @@ export default class BtcInputAmount extends Vue {
     if (e.key === '-') e.preventDefault();
   }
 
-  @Emit('')
+  @Emit()
   updateStore() {
     this.setBtcAmount(this.safeAmount);
+    this.checkStep();
     this.calculateTxFee()
       .then(() => {
-        this.stepState = this.isBTCAmountValidNumberRegex && !this.insufficientAmount
-          ? 'done' : 'error';
-        this.emitState();
+        this.checkStep();
       })
       .catch(console.error);
   }
 
   @Emit('stepState')
-  emitState() {
+  checkStep() {
+    this.stepState = this.isBTCAmountValidNumberRegex && !this.insufficientAmount
+      ? 'done' : 'error';
     return this.stepState;
   }
 

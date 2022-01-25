@@ -8,9 +8,9 @@
     <template v-if="ledgerDataReady">
       <component :is="currentComponent" :balances="balances"
                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
-                 @txFee="getTxFee" :fees="calculatedFees" :tx="createdTx"
-                 :txBuilder="txBuilder" :txData="txData" :price="peginTxState.bitcoinPrice"
-                 :txId="txId" @back="back" :loadingBalances="loadingBalances"
+                 :tx="createdTx" :txBuilder="txBuilder"
+                 :txData="txData" :txId="txId" @back="back"
+                 :walletService="ledgerService" :price="this.peginTxState.bitcoinPrice"
                  @toPegInForm="toPegInForm" :pegInFormData="pegInFormData"
                  :isBackFromConfirm="isBackFromConfirm"/>
     </template>
@@ -34,7 +34,7 @@ import {
   Vue,
 } from 'vue-property-decorator';
 import { Action, Getter, State } from 'vuex-class';
-import SendBitcoinForm from '@/components/exchange/SendBitcoinForm.vue';
+import BitcoinForm from '@/components/create/BitcoinForm.vue';
 import ConfirmLedgerTransaction from '@/components/ledger/ConfirmLedgerTransaction.vue';
 import TrackingId from '@/components/exchange/TrackingId.vue';
 import LedgerService from '@/services/LedgerService';
@@ -54,7 +54,7 @@ import { EnvironmentAccessorService } from '@/services/enviroment-accessor.servi
 @Component({
   components: {
     BtcToRbtcDialog,
-    SendBitcoinForm,
+    BitcoinForm,
     ConfirmLedgerTransaction,
     TrackingId,
     ConnectDevice,
@@ -80,7 +80,7 @@ export default class SendBitcoinLedger extends Vue {
 
   sendBitcoinState: SendBitcoinState = 'idle';
 
-  currentComponent = 'SendBitcoinForm';
+  currentComponent = 'BitcoinForm';
 
   txId = '';
 
@@ -121,6 +121,8 @@ export default class SendBitcoinLedger extends Vue {
   @State('pegInTx') peginTxState!: PegInTxState;
 
   @Action(constants.PEGIN_TX_ADD_ADDRESSES, { namespace: 'pegInTx' }) setPeginTxAddresses !: any;
+
+  @Action(constants.PEGIN_TX_ADD_BALANCE, { namespace: 'pegInTx' }) addBalanceStore !: (balance: AccountBalance) => void;
 
   @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: any;
 
@@ -190,7 +192,7 @@ export default class SendBitcoinLedger extends Vue {
   @Emit()
   toPegInForm() {
     this.isBackFromConfirm = true;
-    this.currentComponent = 'SendBitcoinForm';
+    this.currentComponent = 'BitcoinForm';
   }
 
   @Emit()
@@ -241,6 +243,7 @@ export default class SendBitcoinLedger extends Vue {
   }
 
   addBalance(balanceInformed: AccountBalance) {
+    this.addBalanceStore(balanceInformed);
     this.setInformedBalance(balanceInformed);
     if (!this.ledgerDataReady) {
       this.ledgerDataReady = true;
@@ -279,7 +282,7 @@ export default class SendBitcoinLedger extends Vue {
     this.showTxErrorDialog = false;
     this.deviceError = 'test';
     this.sendBitcoinState = 'idle';
-    this.currentComponent = 'SendBitcoinForm';
+    this.currentComponent = 'BitcoinForm';
     this.txId = '';
     this.txError = '';
     this.createdTx = {

@@ -8,7 +8,7 @@ import {
 import { RootState } from '../types';
 import ApiService from '@/services/ApiService';
 import SatoshiBig from '@/types/SatoshiBig';
-import { FeeAmountData } from '@/types';
+import { AccountBalance, FeeAmountData } from '@/types';
 
 export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_ADD_ADDRESSES]: ({ commit }, addressList: WalletAddress[]) => {
@@ -73,4 +73,7 @@ export const actions: ActionTree<PegInTxState, RootState> = {
         })
         .catch(reject);
     }),
+  [constants.PEGIN_TX_ADD_BALANCE]: ({ commit }, balance: AccountBalance): void => {
+    commit(constants.PEGIN_TX_SET_BALANCE, balance);
+  },
 };

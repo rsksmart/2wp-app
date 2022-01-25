@@ -61,7 +61,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Emit } from 'vue-property-decorator';
+import {
+  Component, Vue, Emit, Watch,
+} from 'vue-property-decorator';
 import { Action, State } from 'vuex-class';
 import * as constants from '@/store/constants';
 import { BtcAccount, PegInTxState } from '@/store/peginTx/types';
@@ -122,6 +124,13 @@ export default class PegInAccountSelect extends Vue {
         break;
     }
     return text;
+  }
+
+  @Watch('pegInTxState.balances')
+  fillAccountBalances() {
+    this.accountBalances.forEach((accountItem, idx) => {
+      this.accountBalances[idx].text = this.getAccountBalanceText(accountItem.value);
+    });
   }
 
   created() {
