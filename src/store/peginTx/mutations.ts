@@ -45,4 +45,7 @@ export const mutations: MutationTree<PegInTxState> = {
   [constants.PEGIN_TX_SET_BALANCE]: (state, balance: AccountBalance) => {
     state.balances = balance;
   },
+  [constants.PEGIN_TX_SET_RSK_ADDRESS]: (state, rskAddress: string) => {
+    state.rskAddressSelected = rskAddress;
+  },
 };

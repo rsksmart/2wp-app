@@ -76,4 +76,7 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_ADD_BALANCE]: ({ commit }, balance: AccountBalance): void => {
     commit(constants.PEGIN_TX_SET_BALANCE, balance);
   },
+  [constants.PEGIN_TX_ADD_RSK_ADDRESS]: ({ commit }, balance: AccountBalance): void => {
+    commit(constants.PEGIN_TX_SET_RSK_ADDRESS, balance);
+  },
 };
