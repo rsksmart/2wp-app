@@ -1,7 +1,7 @@
 import { MutationTree } from 'vuex';
 import * as constants from '@/store/constants';
 import {
-  BtcAccount,
+  BtcAccount, MiningSpeedFee,
   PeginConfiguration, PegInTxState, Utxo, WalletAddress,
 } from './types';
 import SatoshiBig from '@/types/SatoshiBig';
@@ -47,5 +47,8 @@ export const mutations: MutationTree<PegInTxState> = {
   },
   [constants.PEGIN_TX_SET_RSK_ADDRESS]: (state, rskAddress: string) => {
     state.rskAddressSelected = rskAddress;
+  },
+  [constants.PEGIN_TX_SET_SELECTED_FEE_LEVEL]: (state, feeLevel: MiningSpeedFee) => {
+    state.selectedFee = feeLevel;
   },
 };

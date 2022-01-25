@@ -142,10 +142,10 @@ export default class RskAddressInput extends Vue {
 
   @Emit()
   checkStep() {
-    if (this.isValidRskAddress) {
-      this.setRskAddress(this.computedRskAddress);
-    } else {
+    if (!this.isValidPegInAddress) {
       this.setRskAddress('');
+    } else {
+      this.setRskAddress(this.computedRskAddress);
     }
   }
 
@@ -157,6 +157,7 @@ export default class RskAddressInput extends Vue {
     this.connectWeb3()
       .then(() => {
         this.focus = false;
+        this.checkStep();
       });
     this.web3Wallet = true;
   }

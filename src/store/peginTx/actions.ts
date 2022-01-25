@@ -2,7 +2,7 @@ import { ActionTree } from 'vuex';
 import axios from 'axios';
 import * as constants from '@/store/constants';
 import {
-  BtcAccount,
+  BtcAccount, MiningSpeedFee,
   PeginConfiguration, PegInTxState, Utxo, WalletAddress,
 } from './types';
 import { RootState } from '../types';
@@ -78,5 +78,8 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   },
   [constants.PEGIN_TX_ADD_RSK_ADDRESS]: ({ commit }, balance: AccountBalance): void => {
     commit(constants.PEGIN_TX_SET_RSK_ADDRESS, balance);
+  },
+  [constants.PEGIN_TX_SELECT_FEE_LEVEL]: ({ commit }, feeLevel: MiningSpeedFee): void => {
+    commit(constants.PEGIN_TX_SET_SELECTED_FEE_LEVEL, feeLevel);
   },
 };
