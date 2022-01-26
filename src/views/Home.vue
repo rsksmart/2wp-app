@@ -13,7 +13,7 @@
             </v-row>
             <v-row justify="center" class="ma-0">
               <v-col cols="4" class="d-flex justify-end pb-0">
-                <v-btn class="wallet-button mb-0" @click="selectPegIn"
+                <v-btn class="wallet-button mb-0" @click="selectPegIn" :disabled="!isAllowedBrowser"
                        v-bind:class="{ selected: BTC2RBTC }">
                   <div>
                     <v-row class="mx-0 d-flex justify-center">
@@ -72,7 +72,7 @@
             </v-row>
             <v-row class="d-flex justify-center pt-4">
               <v-btn class="wallet-button" @click="toPegInStatus"
-                     v-bind:class="{ selected: STATUS }">
+                     v-bind:class="{ selected: STATUS }" :disabled="!isAllowedBrowser">
                 <div>
                   <v-row class="mx-0 d-flex justify-center">
                     <v-col/>
@@ -87,6 +87,16 @@
                 </div>
               </v-btn>
             </v-row>
+            <v-row v-if="!isAllowedBrowser" class="mx-0 mt-10 d-flex justify-center">
+              <v-alert
+              outlined
+              type="warning"
+              prominent
+              border="left"
+              >
+                Only Chrome browser is allowed
+              </v-alert>
+            </v-row>
           </template>
         </v-col>
       </v-row>
@@ -99,6 +109,7 @@ import {
   Vue, Component, Emit, Prop,
 } from 'vue-property-decorator';
 import { Action, State } from 'vuex-class';
+import * as Bowser from 'bowser';
 import SelectBitcoinWallet from '@/components/exchange/SelectBitcoinWallet.vue';
 import * as constants from '@/store/constants';
 import { PegInTxState } from '@/store/peginTx/types';
@@ -116,6 +127,8 @@ export default class Home extends Vue {
   RBTC2BTC = false;
 
   STATUS = false;
+
+  browser = Bowser.getParser(window.navigator.userAgent);
 
   @State('pegInTx') peginTxState!: PegInTxState;
 
@@ -135,18 +148,12 @@ export default class Home extends Vue {
 
   @Emit()
   selectPegIn(): void {
-    if(!this.isChromeBrowser()) {
-      return alert('Only available in Chrome');
-    }
     this.BTC2RBTC = true;
     this.$router.push({ name: 'PegIn' });
   }
 
   @Emit()
   toPegInStatus(): void {
-    if(!this.isTxStatusAllowedBrowser()) {
-      return alert('Not available in this browser');
-    }
     this.STATUS = true;
     if (this.$route.path !== '/status') this.$router.push('/status');
   }
@@ -159,17 +166,8 @@ export default class Home extends Vue {
     this.RBTC2BTC = this.peg === 'RBTC2BTC';
   }
 
-  isChromeBrowser() {
-    return navigator.userAgent.indexOf('Chrome') !== -1;
-  }
-
-  isTxStatusAllowedBrowser() {
-    const userAgent = navigator.userAgent;
-    if(userAgent.indexOf('Chrome') !== -1 || userAgent.indexOf('Brave') !== -1
-    || userAgent.indexOf('Firefox') !== -1 || userAgent.indexOf('Edg') !== -1) {
-      return true;
-    }
-    return false;
+  get isAllowedBrowser() {
+    return this.browser.getBrowserName() === 'Chrome';
   }
 }
 </script>
