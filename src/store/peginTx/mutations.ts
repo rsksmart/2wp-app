@@ -42,6 +42,9 @@ export const mutations: MutationTree<PegInTxState> = {
   [constants.PEGIN_TX_SET_CALCULATED_TX_FEE]: (state, fee: FeeAmountData) => {
     state.calculatedFees = fee;
   },
+  [constants.PEGIN_TX_SET_LOADING_FEE]: (state, loadingFee: boolean) => {
+    state.loadingFee = loadingFee;
+  },
   [constants.PEGIN_TX_SET_BALANCE]: (state, balance: AccountBalance) => {
     state.balances = balance;
   },

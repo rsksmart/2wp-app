@@ -47,6 +47,7 @@ export interface PegInTxState {
   selectedAccount?: BtcAccount;
   bitcoinPrice: number;
   calculatedFees: FeeAmountData;
+  loadingFee: boolean;
   selectedFee: MiningSpeedFee;
   amountToTransfer: SatoshiBig;
   isValidAmountToTransfer: boolean;

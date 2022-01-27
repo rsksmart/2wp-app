@@ -58,6 +58,7 @@ export const PEGIN_TX_SET_BALANCE = 'PEGIN_TX_SET_BALANCE';
 export const PEGIN_TX_SET_RSK_ADDRESS = 'PEGIN_TX_SET_RSK_ADDRESS';
 export const PEGIN_TX_SET_SELECTED_FEE_LEVEL = 'PEGIN_TX_SET_SELECTED_FEE_LEVEL';
 export const PEGIN_TX_SET_IS_VALID_AMOUNT = 'PEGIN_TX_SET_IS_VALID_AMOUNT';
+export const PEGIN_TX_SET_LOADING_FEE = 'PEGIN_TX_SET_LOADING_FEE';
 // Session mutations
 export const SESSION_SET_ACCOUNT = 'SESSION_SET_ACCOUNT';
 export const SESSION_SET_WEB3_INSTANCE = 'SESSION_SET_WEB3_INSTANCE';
@@ -124,6 +125,7 @@ export const getClearPeginTxState = (): PegInTxState => ({
     average: new SatoshiBig(0, 'satoshi'),
     fast: new SatoshiBig(0, 'satoshi'),
   },
+  loadingFee: false,
   selectedFee: BITCOIN_AVERAGE_FEE_LEVEL,
   amountToTransfer: new SatoshiBig(0, 'btc'),
   isValidAmountToTransfer: false,

@@ -57,6 +57,7 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_CALCULATE_TX_FEE]: ({ commit, state }):
     Promise<void> => new Promise<void>((resolve, reject) => {
       if (!state.selectedAccount) reject(new Error('There are no selected account'));
+      commit(constants.PEGIN_TX_SET_LOADING_FEE, true);
       ApiService.getTxFee(
         state.sessionId,
         Number(state.amountToTransfer.toSatoshiString()),
@@ -69,6 +70,7 @@ export const actions: ActionTree<PegInTxState, RootState> = {
             fast: new SatoshiBig(txFee.fast, 'satoshi'),
           };
           commit(constants.PEGIN_TX_SET_CALCULATED_TX_FEE, fees);
+          commit(constants.PEGIN_TX_SET_LOADING_FEE, false);
           resolve();
         })
         .catch(reject);

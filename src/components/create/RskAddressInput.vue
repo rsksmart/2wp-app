@@ -140,13 +140,14 @@ export default class RskAddressInput extends Vue {
     return message;
   }
 
-  @Emit()
-  checkStep() {
+  @Emit('state')
+  checkStep():string {
     if (!this.isValidPegInAddress) {
       this.setRskAddress('');
-    } else {
-      this.setRskAddress(this.computedRskAddress);
+      return 'invalid';
     }
+    this.setRskAddress(this.computedRskAddress);
+    return this.isValidRskAddress ? 'valid' : 'warning';
   }
 
   @Emit()

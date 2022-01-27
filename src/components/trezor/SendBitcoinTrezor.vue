@@ -36,7 +36,7 @@ import {
 } from 'vue-property-decorator';
 import { Action, Getter, State } from 'vuex-class';
 import TrezorConnect, { DEVICE, DEVICE_EVENT } from 'trezor-connect';
-import SendBitcoinForm from '@/components/exchange/SendBitcoinForm.vue';
+import BitcoinForm from '@/components/create/BitcoinForm.vue';
 import ConfirmTrezorTransaction from '@/components/trezor/ConfirmTrezorTransaction.vue';
 import TrackingId from '@/components/exchange/TrackingId.vue';
 import TrezorService from '@/services/TrezorService';
@@ -56,7 +56,7 @@ import { EnvironmentAccessorService } from '@/services/enviroment-accessor.servi
 @Component({
   components: {
     BtcToRbtcDialog,
-    SendBitcoinForm,
+    BitcoinForm,
     ConfirmTrezorTransaction,
     TrackingId,
     ConnectDevice,
@@ -85,7 +85,7 @@ export default class SendBitcoinTrezor extends Vue {
 
   trezorConnected = false;
 
-  currentComponent = 'SendBitcoinForm';
+  currentComponent = 'BitcoinForm';
 
   unusedAddresses: string[] = [];
 
@@ -203,7 +203,7 @@ export default class SendBitcoinTrezor extends Vue {
   @Emit()
   toPegInForm() {
     this.isBackFromConfirm = true;
-    this.currentComponent = 'SendBitcoinForm';
+    this.currentComponent = 'BitcoinForm';
   }
 
   @Emit()
@@ -311,7 +311,7 @@ export default class SendBitcoinTrezor extends Vue {
     this.deviceError = 'test';
     this.sendBitcoinState = 'idle';
     this.trezorConnected = false;
-    this.currentComponent = 'SendBitcoinForm';
+    this.currentComponent = 'BitcoinForm';
     this.unusedAddresses = [];
     this.txId = '';
     this.txError = '';
