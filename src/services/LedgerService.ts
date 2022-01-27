@@ -31,18 +31,15 @@ export default class LedgerService extends WalletService {
   }
 
   public static splitTransaction(hexTx: string): Promise<LedgerjsTransaction> {
-    return new Promise<LedgerjsTransaction>((resolve, reject) => {
-      LedgerTransportService.getInstance()
-        .getTransport()
-        .then((transport:TransportWebUSB) => {
+    return LedgerTransportService.getInstance()
+      .enqueueRequest(
+        (transport:TransportWebUSB) => new Promise<LedgerjsTransaction>((resolve) => {
           const btc = new AppBtc(transport);
           const bitcoinJsTx = bitcoin.Transaction.fromHex(hexTx);
-          const tx = btc.splitTransaction(hexTx, bitcoinJsTx.hasWitnesses());
-          LedgerTransportService.getInstance().releaseTransport();
-          resolve(tx);
-        })
-        .catch(reject);
-    });
+          resolve(btc.splitTransaction(hexTx, bitcoinJsTx.hasWitnesses()));
+        }),
+      )
+      .then((tx) => tx as LedgerjsTransaction);
   }
 
   static splitTransactionList(txHexList: string[]): Promise<LedgerjsTransaction[]> {
