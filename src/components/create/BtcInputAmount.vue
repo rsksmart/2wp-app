@@ -89,6 +89,8 @@ export default class BtcInputAmount extends Vue {
 
   @Action(constants.PEGIN_TX_CALCULATE_TX_FEE, { namespace: 'pegInTx' }) calculateTxFee !: () => Promise<void>;
 
+  @Action(constants.PEGIN_TX_ADD_IS_VALID_AMOUNT, { namespace: 'pegInTx' }) setIsValidAmount !: (isValid: boolean) => void;
+
   get isBTCAmountValidNumberRegex() {
     return /^[0-9]{1,8}(\.[0-9]{0,8})?$/.test(this.bitcoinAmount.toString());
   }
@@ -199,21 +201,20 @@ export default class BtcInputAmount extends Vue {
   checkStep() {
     this.stepState = this.isBTCAmountValidNumberRegex && !this.insufficientAmount
       ? 'done' : 'error';
+    this.setIsValidAmount(this.stepState === 'done');
     return this.stepState;
   }
 
   @Watch('bitcoinAmount')
   watchBitcoinAmount() {
-    this.stepState = this.isBTCAmountValidNumberRegex && !this.insufficientAmount
-      ? 'done' : 'error';
+    this.checkStep();
     this.amountStyle = this.stepState === 'done' ? 'green-box' : 'yellow-box';
   }
 
   @Watch('btcAccountTypeSelected')
   watchBTCAccountTypeSelected() {
     if (this.stepState !== 'unused') {
-      this.stepState = this.isBTCAmountValidNumberRegex && !this.insufficientAmount
-        ? 'done' : 'error';
+      this.checkStep();
       this.amountStyle = this.stepState === 'done' ? 'green-box' : 'yellow-box';
     }
   }

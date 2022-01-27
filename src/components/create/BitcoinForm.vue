@@ -21,6 +21,9 @@
           <v-divider color="#C4C4C4"/>
           <btc-fee-select/>
         </v-col>
+        <v-col id="summary-col" cols="4" lg="5">
+          <btc-tx-summary-side/>
+        </v-col>
       </v-row>
     </v-col>
   </v-container>
@@ -34,6 +37,7 @@ import PegInAccountSelect from '@/components/create/PegInAccountSelect.vue';
 import BtcInputAmount from '@/components/create/BtcInputAmount.vue';
 import RskAddressInput from '@/components/create/RskAddressInput.vue';
 import BtcFeeSelect from '@/components/create/BtcFeeSelect.vue';
+import BtcTxSummarySide from '@/components/create/BtcTxSummarySide.vue';
 import { BtcAccount } from '@/store/peginTx/types';
 
 @Component({
@@ -42,6 +46,7 @@ import { BtcAccount } from '@/store/peginTx/types';
     BtcInputAmount,
     RskAddressInput,
     BtcFeeSelect,
+    BtcTxSummarySide,
   },
 })
 export default class BitcoinForm extends Vue {

@@ -82,4 +82,7 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_SELECT_FEE_LEVEL]: ({ commit }, feeLevel: MiningSpeedFee): void => {
     commit(constants.PEGIN_TX_SET_SELECTED_FEE_LEVEL, feeLevel);
   },
+  [constants.PEGIN_TX_ADD_IS_VALID_AMOUNT]: ({ commit }, isValid: boolean): void => {
+    commit(constants.PEGIN_TX_SET_IS_VALID_AMOUNT, isValid);
+  },
 };

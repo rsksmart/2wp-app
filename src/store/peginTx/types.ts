@@ -49,6 +49,7 @@ export interface PegInTxState {
   calculatedFees: FeeAmountData;
   selectedFee: MiningSpeedFee;
   amountToTransfer: SatoshiBig;
+  isValidAmountToTransfer: boolean;
   rskAddressSelected: string;
 }
 

@@ -51,4 +51,7 @@ export const mutations: MutationTree<PegInTxState> = {
   [constants.PEGIN_TX_SET_SELECTED_FEE_LEVEL]: (state, feeLevel: MiningSpeedFee) => {
     state.selectedFee = feeLevel;
   },
+  [constants.PEGIN_TX_SET_IS_VALID_AMOUNT]: (state, isValid: boolean) => {
+    state.isValidAmountToTransfer = isValid;
+  },
 };
