@@ -13,19 +13,19 @@
             </v-row>
             <v-row justify="center" class="ma-0">
               <v-col cols="4" class="d-flex justify-end pb-0">
-                <v-btn class="wallet-button mb-0" @click="selectPegIn" :disabled="!isAllowedBrowser"
-                       v-bind:class="{ selected: BTC2RBTC }">
+                <v-btn @click="selectPegIn" :disabled="!isAllowedBrowser" outlined
+                       v-bind:class="[ this.btnWalletClass, BTC2RBTC ? 'selected' : '' ]">
                   <div>
                     <v-row class="mx-0 d-flex justify-center">
                       <v-col/>
                       <v-col class="pa-0 d-flex align-center">
-                        <v-img src="@/assets/exchange/btc.png" height="40" contain/>
+                        <v-img :src="btcIcon" height="40" contain/>
                       </v-col>
                       <v-col class="pa-0 d-flex align-center">
                         <v-icon class="wallet-button-content">mdi-arrow-right</v-icon>
                       </v-col>
                       <v-col class="pa-0 d-flex align-center">
-                        <v-img src="@/assets/exchange/rbtc.png" height="40" contain/>
+                        <v-img :src="rbtcIcon" height="40" contain/>
                       </v-col>
                       <v-col/>
                     </v-row>
@@ -71,13 +71,14 @@
               <p>Or check the status of your transaction</p>
             </v-row>
             <v-row class="d-flex justify-center pt-4">
-              <v-btn class="wallet-button" @click="toPegInStatus"
-                     v-bind:class="{ selected: STATUS }" :disabled="!isAllowedBrowser">
+              <v-btn @click="toPegInStatus" outlined
+                     v-bind:class="[ this.btnWalletClass, STATUS ? 'selected' : '' ]"
+                     :disabled="!isAllowedBrowser">
                 <div>
                   <v-row class="mx-0 d-flex justify-center">
                     <v-col/>
                     <v-col class="pa-0 d-flex align-center mx-3">
-                      <v-img src="@/assets/status/status-icon.svg" width="60" contain/>
+                      <v-img :src="statusIcon" width="60" contain/>
                     </v-col>
                     <v-col/>
                   </v-row>
@@ -122,7 +123,7 @@ import { PegInTxState } from '@/store/peginTx/types';
 export default class Home extends Vue {
   @Prop({ default: '' }) peg!: string;
 
-  BTC2RBTC = false;
+  BTC2RBTC = true;
 
   RBTC2BTC = false;
 
@@ -168,6 +169,25 @@ export default class Home extends Vue {
 
   get isAllowedBrowser() {
     return this.browser.getBrowserName() === 'Chrome';
+  }
+
+  get btnWalletClass() {
+    return this.isAllowedBrowser ? 'wallet-button mb-0' : 'wallet-button-disabled mb-0';
+  }
+
+  get btcIcon() {
+    const btcIcon = this.isAllowedBrowser ? 'btc.png' : 'btc-disable.png';
+    return require(`@/assets/exchange/${btcIcon}`);
+  }
+
+  get rbtcIcon() {
+    const rbtcIcon = this.isAllowedBrowser ? 'rbtc.png' : 'rbtc-disable';
+    return require(`@/assets/exchange/${rbtcIcon}`);
+  }
+
+  get statusIcon() {
+    const statusIcon = this.isAllowedBrowser ? 'status-icon.svg' : 'status-icon-disabled.svg';
+    return require(`@/assets/status/${statusIcon}`);
   }
 }
 </script>
