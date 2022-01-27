@@ -10,7 +10,7 @@ type LedgerResponse = string | string[] | Buffer | WalletAddress[] | {
   publicKey: string;
   bitcoinAddress: string;
   chainCode: string;
-} | LedgerjsTransaction[];
+} | LedgerjsTransaction[] | LedgerjsTransaction;
 type LedgerRequest = (transport: TransportWebUSB) => Promise<LedgerResponse>;
 
 export default class LedgerTransportService {
@@ -50,11 +50,9 @@ export default class LedgerTransportService {
     return new Promise<LedgerResponse>((resolve, reject) => {
       this.getTransport()
         .then((transport :TransportWebUSB) => request(transport))
-        .then((response) => {
-          this.releaseTransport();
-          resolve(response);
-        })
-        .catch(reject);
+        .then(resolve)
+        .catch(reject)
+        .finally(() => this.releaseTransport());
     });
   }
 
