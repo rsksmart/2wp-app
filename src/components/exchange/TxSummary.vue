@@ -91,7 +91,7 @@
               <v-divider/>
               <v-container>
                 <v-row class="mx-0" align="start">
-                  <h3 class="mr-1">Refund {{environmentContext.getBtcTicker()}} address</h3>
+                  <h3 class="mr-1">Refund {{environmentContext.getBtcText()}} address</h3>
                   <v-tooltip right>
                     <template v-slot:activator="{ on, attrs }">
                       <v-icon small color="teal darken-2" v-bind="attrs" v-on="on">
@@ -112,7 +112,7 @@
                 <v-divider/>
                 <div class="container">
                   <v-row class="mx-0">
-                    <h3>{{environmentContext.getBtcTicker()}} transaction id</h3>
+                    <h3>{{environmentContext.getBtcText()}} transaction id</h3>
                   </v-row>
                   <v-row class="mx-0">
                     <span>{{ computedTxId }}</span>
@@ -123,7 +123,7 @@
                 <v-divider/>
                 <v-container class="container">
                   <v-row class="mx-0" align="start">
-                    <h3 class="mr-1">PowPeg {{environmentContext.getBtcTicker()}} Address</h3>
+                    <h3 class="mr-1">PowPeg {{environmentContext.getBtcText()}} Address</h3>
                     <v-tooltip right>
                       <template v-slot:activator="{ on, attrs }">
                         <v-icon small color="teal darken-2" v-bind="attrs" v-on="on">
