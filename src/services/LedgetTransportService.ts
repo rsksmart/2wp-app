@@ -1,17 +1,19 @@
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { WalletAddress } from '@/store/peginTx/types';
-import { LedgerjsTransaction } from '@/types';
+// import { WalletAddress } from '@/store/peginTx/types';
+// import { LedgerjsTransaction } from '@/types';
 
 interface TransportRequest {
   resolve: (value: (PromiseLike<TransportWebUSB> | TransportWebUSB)) => void;
   reject: (reason?: any) => void;
 }
-type LedgerResponse = string | string[] | Buffer | WalletAddress[] | {
-  publicKey: string;
-  bitcoinAddress: string;
-  chainCode: string;
-} | LedgerjsTransaction[] | LedgerjsTransaction;
-type LedgerRequest = (transport: TransportWebUSB) => Promise<LedgerResponse>;
+// type LedgerResponse = string | string[] | Buffer | WalletAddress[] | {
+//   publicKey: string;
+//   bitcoinAddress: string;
+//   chainCode: string;
+// } | LedgerjsTransaction[] | LedgerjsTransaction;
+interface GenericLedgerRequestFn<Type> {
+  (transport: TransportWebUSB): Promise<Type>;
+}
 
 export default class LedgerTransportService {
   private static instance: LedgerTransportService;
@@ -46,8 +48,8 @@ export default class LedgerTransportService {
     });
   }
 
-  public enqueueRequest(request: LedgerRequest): Promise<LedgerResponse> {
-    return new Promise<LedgerResponse>((resolve, reject) => {
+  public enqueueRequest<Type>(request: GenericLedgerRequestFn<Type>): Promise<Type> {
+    return new Promise<Type>((resolve, reject) => {
       this.getTransport()
         .then((transport :TransportWebUSB) => request(transport))
         .then(resolve)
