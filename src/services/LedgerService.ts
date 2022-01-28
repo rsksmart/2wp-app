@@ -38,8 +38,7 @@ export default class LedgerService extends WalletService {
           const bitcoinJsTx = bitcoin.Transaction.fromHex(hexTx);
           resolve(btc.splitTransaction(hexTx, bitcoinJsTx.hasWitnesses()));
         }),
-      )
-      .then((tx) => tx as LedgerjsTransaction);
+      );
   }
 
   static splitTransactionList(txHexList: string[]): Promise<LedgerjsTransaction[]> {
@@ -50,8 +49,7 @@ export default class LedgerService extends WalletService {
           const bitcoinJsTx = bitcoin.Transaction.fromHex(tx);
           return btc.splitTransaction(tx, bitcoinJsTx.hasWitnesses());
         }));
-      })
-      .then((txlist) => txlist as LedgerjsTransaction[]);
+      });
   }
 
   public static serializeTransactionOutputs(splitTx: LedgerjsTransaction): Promise<string> {
@@ -62,8 +60,7 @@ export default class LedgerService extends WalletService {
           const txOutputsBuffer: Buffer = btc.serializeTransactionOutputs(splitTx);
           resolve(txOutputsBuffer.toString('hex'));
         }),
-      )
-      .then((serializedOutputs) => serializedOutputs as string);
+      );
   }
 
   private getAddressesBundle(startFrom: number, batchSize: number, accountIndex = 0):
@@ -115,8 +112,7 @@ export default class LedgerService extends WalletService {
           }
           resolve(walletAddresses);
         }),
-      )
-      .then((response) => response as WalletAddress[]);
+      );
   }
 
   public static getLedgerAddressFormat(accountType: string): 'legacy' | 'p2sh' | 'bech32' {
@@ -156,8 +152,7 @@ export default class LedgerService extends WalletService {
             .then(resolve)
             .catch(reject);
         }),
-      )
-      .then((signature) => signature as string);
+      );
   }
 
   private getRedeem(publicKey: string): Buffer | undefined {
@@ -252,8 +247,7 @@ export default class LedgerService extends WalletService {
             .then(resolve)
             .catch(reject);
         })),
-      )
-      .then((signatures) => signatures as string[]);
+      );
   }
 
   private getLedgerRedeemScript(publicKey: string): string {
