@@ -177,16 +177,19 @@ export default class Home extends Vue {
 
   get btcIcon() {
     const btcIcon = this.isAllowedBrowser ? 'btc.png' : 'btc-disable.png';
+    // eslint-disable-next-line global-require, import/no-dynamic-require
     return require(`@/assets/exchange/${btcIcon}`);
   }
 
   get rbtcIcon() {
     const rbtcIcon = this.isAllowedBrowser ? 'rbtc.png' : 'rbtc-disable';
+    // eslint-disable-next-line global-require, import/no-dynamic-require
     return require(`@/assets/exchange/${rbtcIcon}`);
   }
 
   get statusIcon() {
     const statusIcon = this.isAllowedBrowser ? 'status-icon.svg' : 'status-icon-disabled.svg';
+    // eslint-disable-next-line global-require, import/no-dynamic-require
     return require(`@/assets/status/${statusIcon}`);
   }
 }
