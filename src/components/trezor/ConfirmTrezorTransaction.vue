@@ -273,7 +273,7 @@ export default class ConfirmTrezorTransaction extends Vue {
   }
 
   get rskFederationAddress():string {
-    return this.tx?.outputs[1]?.address?.trim() ?? `${this.environmentContext.getRskText()} Powpeg address not found`;
+    return this.tx?.outputs[1]?.address?.trim() ?? `${this.environmentContext.getBtcText()} Powpeg address not found`;
   }
 
   get changeAddress(): string {
