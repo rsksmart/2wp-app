@@ -1,16 +1,9 @@
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-// import { WalletAddress } from '@/store/peginTx/types';
-// import { LedgerjsTransaction } from '@/types';
 
 interface TransportRequest {
   resolve: (value: (PromiseLike<TransportWebUSB> | TransportWebUSB)) => void;
   reject: (reason?: any) => void;
 }
-// type LedgerResponse = string | string[] | Buffer | WalletAddress[] | {
-//   publicKey: string;
-//   bitcoinAddress: string;
-//   chainCode: string;
-// } | LedgerjsTransaction[] | LedgerjsTransaction;
 interface GenericLedgerRequestFn<Type> {
   (transport: TransportWebUSB): Promise<Type>;
 }
@@ -67,16 +60,12 @@ export default class LedgerTransportService {
     if (this.transportRequestList.length === 0) return;
     this.isTransportBusy = true;
     const request = this.transportRequestList.shift();
-    if (!this.transportWebUsb) {
+    if (!this.transportWebUsb && request) {
       TransportWebUSB.create()
         .then((transport: TransportWebUSB) => {
           this.transportWebUsb = transport;
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
           request.resolve(this.transportWebUsb);
         })
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         .catch(request.reject);
     } else {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
