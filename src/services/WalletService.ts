@@ -131,7 +131,6 @@ export abstract class WalletService {
         await store.dispatch(`pegInTx/${constants.PEGIN_TX_ADD_ADDRESSES}`, addresses);
       }
       // eslint-disable-next-line no-await-in-loop
-      console.log("Before ApiService.getBalances ")
       const balancesFound = await ApiService.getBalances(sessionId, addresses);
       const balances = {
         legacy: new SatoshiBig(balancesFound.legacy || 0, 'satoshi'),
