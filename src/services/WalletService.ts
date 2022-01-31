@@ -140,12 +140,12 @@ export abstract class WalletService {
 
       // eslint-disable-next-line no-extra-boolean-cast
       if (!!balances) {
-          balanceAccumulated = {
-            legacy: new SatoshiBig(balanceAccumulated.legacy.plus(balances.legacy), 'satoshi'),
-            segwit: new SatoshiBig(balanceAccumulated.segwit.plus(balances.segwit), 'satoshi'),
-            nativeSegwit: new SatoshiBig(balanceAccumulated.nativeSegwit.plus(balances.nativeSegwit), 'satoshi'),
-          };
-          this.informSubscribers(balanceAccumulated);
+        balanceAccumulated = {
+          legacy: new SatoshiBig(balanceAccumulated.legacy.plus(balances.legacy), 'satoshi'),
+          segwit: new SatoshiBig(balanceAccumulated.segwit.plus(balances.segwit), 'satoshi'),
+          nativeSegwit: new SatoshiBig(balanceAccumulated.nativeSegwit.plus(balances.nativeSegwit), 'satoshi'),
+        };
+        this.informSubscribers(balanceAccumulated);
       } else {
         throw new Error('Error getting balances');
       }
