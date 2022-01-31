@@ -131,6 +131,7 @@ export abstract class WalletService {
         await store.dispatch(`pegInTx/${constants.PEGIN_TX_ADD_ADDRESSES}`, addresses);
       }
       // eslint-disable-next-line no-await-in-loop
+      console.log("Before ApiService.getBalances ")
       const balancesFound = await ApiService.getBalances(sessionId, addresses);
       const balances = {
         legacy: new SatoshiBig(balancesFound.legacy || 0, 'satoshi'),
@@ -140,23 +141,12 @@ export abstract class WalletService {
 
       // eslint-disable-next-line no-extra-boolean-cast
       if (!!balances) {
-        if (balances.legacy.gt(0)
-          || balances.nativeSegwit.gt(0)
-          || balances.segwit.gt(0)) {
           balanceAccumulated = {
             legacy: new SatoshiBig(balanceAccumulated.legacy.plus(balances.legacy), 'satoshi'),
             segwit: new SatoshiBig(balanceAccumulated.segwit.plus(balances.segwit), 'satoshi'),
             nativeSegwit: new SatoshiBig(balanceAccumulated.nativeSegwit.plus(balances.nativeSegwit), 'satoshi'),
           };
           this.informSubscribers(balanceAccumulated);
-        } else {
-          const listOfAddresses: string[] = [];
-          addresses.forEach((element) => { listOfAddresses.push(element.address); });
-          // eslint-disable-next-line no-await-in-loop
-          if (await ApiService.areUnusedAddresses(listOfAddresses)) {
-            return;
-          }
-        }
       } else {
         throw new Error('Error getting balances');
       }
