@@ -140,12 +140,24 @@ export abstract class WalletService {
 
       // eslint-disable-next-line no-extra-boolean-cast
       if (!!balances) {
-        balanceAccumulated = {
-          legacy: new SatoshiBig(balanceAccumulated.legacy.plus(balances.legacy), 'satoshi'),
-          segwit: new SatoshiBig(balanceAccumulated.segwit.plus(balances.segwit), 'satoshi'),
-          nativeSegwit: new SatoshiBig(balanceAccumulated.nativeSegwit.plus(balances.nativeSegwit), 'satoshi'),
-        };
-        this.informSubscribers(balanceAccumulated);
+        if (balances.legacy.gt(0)
+          || balances.nativeSegwit.gt(0)
+          || balances.segwit.gt(0)) {
+          balanceAccumulated = {
+            legacy: new SatoshiBig(balanceAccumulated.legacy.plus(balances.legacy), 'satoshi'),
+            segwit: new SatoshiBig(balanceAccumulated.segwit.plus(balances.segwit), 'satoshi'),
+            nativeSegwit: new SatoshiBig(balanceAccumulated.nativeSegwit.plus(balances.nativeSegwit), 'satoshi'),
+          };
+          this.informSubscribers(balanceAccumulated);
+        } else {
+          const listOfAddresses: string[] = [];
+          addresses.forEach((element) => { listOfAddresses.push(element.address); });
+          // eslint-disable-next-line no-await-in-loop
+          if (await ApiService.areUnusedAddresses(listOfAddresses)) {
+            this.informSubscribers(balanceAccumulated);
+            return;
+          }
+        }
       } else {
         throw new Error('Error getting balances');
       }
