@@ -154,6 +154,7 @@ export abstract class WalletService {
           addresses.forEach((element) => { listOfAddresses.push(element.address); });
           // eslint-disable-next-line no-await-in-loop
           if (await ApiService.areUnusedAddresses(listOfAddresses)) {
+            this.informSubscribers(balanceAccumulated);
             return;
           }
         }
