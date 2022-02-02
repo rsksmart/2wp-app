@@ -6,7 +6,7 @@
           <v-col cols="auto" class="px-0 pb-1">
             <v-img @click="toExchange" position="center left"
                    src="@/assets/logo-beta.svg"
-                   alt="RSK Two Way Peg"
+                   :alt="`${environmentContext.getRskText()} Two Way Peg`"
                    height="65" width="150" contain class="rsk-main-logo"/>
           </v-col>
           <span v-if="isTestNet">testnet</span>
@@ -20,10 +20,13 @@
 import { Vue, Component, Emit } from 'vue-property-decorator';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import * as constants from '@/store/constants';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
 @Component
 export default class Top extends Vue {
   environmentVariables = EnvironmentAccessorService.getEnvironmentVariables();
+
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
   @Emit()
   toExchange() {

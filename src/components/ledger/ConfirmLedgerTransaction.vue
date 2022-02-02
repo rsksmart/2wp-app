@@ -21,7 +21,10 @@
           <v-img src="@/assets/exchange/trezor/rsk.png" height="40" contain/>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center"><span class="number">1</span>Confirm RSK information</h4>
+          <h4 class="text-center">
+            <span class="number">1</span>
+            Confirm {{environmentContext.getRskText()}} information
+          </h4>
         </v-row>
       </v-col>
       <v-col id="instruction-2" cols="3" xl="3">
@@ -66,7 +69,8 @@
                 </v-icon>
               </template>
               <p class="tooltip-form mb-0">
-                The OP_RETURN is an output with information required for the RSK network.
+                The OP_RETURN is an output with information required for the
+                {{environmentContext.getRskText()}} network.
               </p>
             </v-tooltip>
           </v-row>
@@ -179,6 +183,7 @@ import SatoshiBig from '@/types/SatoshiBig';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
 import { WalletService } from '@/services/WalletService';
 import { Machine } from '@/services/utils';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
 @Component({
   components: {
@@ -210,6 +215,8 @@ export default class ConfirmLedgerTransaction extends Vue {
   @Prop() txData!: TxData;
 
   @Prop() price!: number;
+
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
   get showUnverifiedInputsDialog() {
     return this.txBuilder.accountType === constants.BITCOIN_SEGWIT_ADDRESS && this.confirmTxState.matches(['loading']);
@@ -259,7 +266,7 @@ export default class ConfirmLedgerTransaction extends Vue {
   }
 
   get rskFederationAddress():string {
-    return this.tx?.outputs[1]?.address?.trim() ?? 'RSK Powpeg address not found';
+    return this.tx?.outputs[1]?.address?.trim() ?? `${this.environmentContext.getBtcText()} Powpeg address not found`;
   }
 
   get changeAddress(): string {

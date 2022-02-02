@@ -19,6 +19,8 @@ export class EnvironmentVariables {
 
   public vueAppWalletAddressesPerCallLedger: number;
 
+  public vueAppRskExplorer: string;
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(defaultValues: any = {}) {
     this.vueAppCoin = process.env.VUE_APP_COIN || defaultValues.vueAppCoin;
@@ -43,5 +45,6 @@ export class EnvironmentVariables {
     // eslint-disable-next-line operator-linebreak
       = Number(process.env.VUE_APP_WALLET_ADDRESSES_PER_CALL_LEDGER)
       || defaultValues.vueAppWalletAddressesPerCallLedger;
+    this.vueAppRskExplorer = process.env.VUE_APP_RSK_EXPLORER || defaultValues.vueAppRskExplorer;
   }
 }
