@@ -158,9 +158,6 @@
         </v-row>
       </v-col>
     </v-row>
-    <template v-if="showUnverifiedInputsDialog">
-      <unverified-inputs-dialog :showDialog="showUnverifiedInputsDialog"/>
-    </template>
   </div>
 </template>
 
@@ -172,9 +169,7 @@ import {
 import { NormalizedTx, TxData } from '@/types';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import ApiService from '@/services/ApiService';
-import UnverifiedInputsDialog from '@/components/ledger/UnverifiedInputsDialog.vue';
 import AdvancedData from '@/components/exchange/AdvancedData.vue';
-import * as constants from '@/store/constants';
 import SatoshiBig from '@/types/SatoshiBig';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
 import { WalletService } from '@/services/WalletService';
@@ -183,7 +178,6 @@ import { Machine } from '@/services/utils';
 @Component({
   components: {
     TxSummary,
-    UnverifiedInputsDialog,
     AdvancedData,
   },
 })
@@ -210,10 +204,6 @@ export default class ConfirmLedgerTransaction extends Vue {
   @Prop() txData!: TxData;
 
   @Prop() price!: number;
-
-  get showUnverifiedInputsDialog() {
-    return this.txBuilder.accountType === constants.BITCOIN_SEGWIT_ADDRESS && this.confirmTxState.matches(['loading']);
-  }
 
   @Emit('successConfirmation')
   async toTrackId() {
