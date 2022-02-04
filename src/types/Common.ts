@@ -31,12 +31,6 @@ export interface NormalizedOutput {
   op_return_data?: string;
 }
 
-export interface Signer {
-  network: Network;
-  publicKey: Buffer;
-  sign: (hash: any) => Buffer;
-}
-
 export interface AccountBalance {
   legacy: SatoshiBig;
   segwit: SatoshiBig;
