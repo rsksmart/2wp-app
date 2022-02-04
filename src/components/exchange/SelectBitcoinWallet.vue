@@ -28,17 +28,15 @@
               </v-btn>
             </v-col>
             <v-col cols="3" class="d-flex justify-center">
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                  <div v-bind="attrs" v-on="on">
-                    <v-btn outlined disabled class="wallet-button-thin-disabled">
-                      <v-icon color="#B5CAB8" class="mx-2">fas fa-wallet</v-icon>
-                      <span class="wallet-button-content">Others</span>
-                    </v-btn>
-                  </div>
-                </template>
-                <span>Coming soon</span>
-              </v-tooltip>
+              <div class="custom-tooltip">
+                <div>
+                  <v-btn outlined disabled class="wallet-button-thin-disabled">
+                    <v-icon color="#B5CAB8" class="mx-2">fas fa-wallet</v-icon>
+                    <span class="wallet-button-content">Others</span>
+                  </v-btn>
+                </div>
+                <span class="tooltiptext" style="margin-left:23px;">Coming soon</span>
+              </div>
             </v-col>
           </v-row>
         </template>
