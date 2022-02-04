@@ -36,35 +36,33 @@
                 </v-btn>
               </v-col>
               <v-col cols="4" class="d-flex justify-start pb-0">
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-col  v-bind="attrs" v-on="on" class="ma-0 pa-0" cols="auto">
-                      <v-btn class="wallet-button-disabled mb-0" outlined disabled>
-                        <div>
-                          <v-row class="mx-0 d-flex justify-center">
-                            <v-col/>
-                            <v-col class="pa-0 d-flex align-center">
-                              <v-img src="@/assets/exchange/rbtc-disable.png" height="40" contain/>
-                            </v-col>
-                            <v-col class="pa-0 d-flex align-center">
-                              <v-icon color="#B5CAB8">mdi-arrow-right</v-icon>
-                            </v-col>
-                            <v-col class="pa-0 d-flex align-center">
-                              <v-img src="@/assets/exchange/btc-disable.png" height="40" contain/>
-                            </v-col>
-                            <v-col/>
-                          </v-row>
-                          <v-row class="mx-0 d-flex justify-center">
-                        <span class="gray-greenish">
-                          RBTC to BTC
-                        </span>
-                          </v-row>
-                        </div>
-                      </v-btn>
-                    </v-col>
-                  </template>
-                  <span>Coming soon</span>
-                </v-tooltip>
+                <div class="custom-tooltip">
+                  <v-col class="ma-0 pa-0" cols="auto">
+                    <v-btn class="wallet-button-disabled mb-0" outlined disabled>
+                      <div>
+                        <v-row class="mx-0 d-flex justify-center">
+                          <v-col/>
+                          <v-col class="pa-0 d-flex align-center">
+                            <v-img src="@/assets/exchange/rbtc-disable.png" height="40" contain/>
+                          </v-col>
+                          <v-col class="pa-0 d-flex align-center">
+                            <v-icon color="#B5CAB8">mdi-arrow-right</v-icon>
+                          </v-col>
+                          <v-col class="pa-0 d-flex align-center">
+                            <v-img src="@/assets/exchange/btc-disable.png" height="40" contain/>
+                          </v-col>
+                          <v-col/>
+                        </v-row>
+                        <v-row class="mx-0 d-flex justify-center">
+                      <span class="gray-greenish">
+                        RBTC to BTC
+                      </span>
+                        </v-row>
+                      </div>
+                    </v-btn>
+                  </v-col>
+                  <span class="tooltiptext">Coming soon</span>
+                </div>
               </v-col>
             </v-row>
             <v-row class="mx-0 mt-10 d-flex justify-center">
