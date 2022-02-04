@@ -1,7 +1,7 @@
 import { MutationTree } from 'vuex';
 import * as constants from '@/store/constants';
 import {
-  BtcAccount, MiningSpeedFee,
+  BtcAccount, BtcWallet, MiningSpeedFee,
   PeginConfiguration, PegInTxState, Utxo, WalletAddress,
 } from './types';
 import SatoshiBig from '@/types/SatoshiBig';
@@ -23,7 +23,7 @@ export const mutations: MutationTree<PegInTxState> = {
   [constants.PEGIN_TX_SET_PEGIN_CONFIGURATION]: (state, peginConfiguration: PeginConfiguration) => {
     state.peginConfiguration = peginConfiguration;
   },
-  [constants.PEGIN_TX_SET_BITCOIN_WALLET]: (state, bitcoinWallet: string) => {
+  [constants.PEGIN_TX_SET_BITCOIN_WALLET]: (state, bitcoinWallet: BtcWallet) => {
     state.bitcoinWallet = bitcoinWallet;
   },
   [constants.PEGIN_TX_SET_BITCOIN_PRICE]: (state, btcPrice: number) => {

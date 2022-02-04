@@ -1,1 +1,1 @@
-export const getChunkedValue = (value: string) => `${value.substr(0, 6)}...${value.substr(value.length - 6, value.length)}`;
+export const getChunkedValue = (value: string, maxLength: number) => (value.length < maxLength ? value : `${value.substr(0, maxLength / 2)}...${value.substr(value.length - maxLength / 2, value.length)}`);

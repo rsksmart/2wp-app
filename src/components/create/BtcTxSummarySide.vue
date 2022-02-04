@@ -146,6 +146,8 @@ export default class BtcTxSummarySide extends Vue {
 
   fixedUSDDecimals = 2;
 
+  maxLengthForChunked = 15;
+
   @State('pegInTx') pegInTxState!: PegInTxState;
 
   @Getter(constants.PEGIN_TX_GET_REFUND_ADDRESS, { namespace: 'pegInTx' }) refundAddress!: string;
@@ -177,7 +179,7 @@ export default class BtcTxSummarySide extends Vue {
   }
 
   get croppedComputedRskAddress() {
-    return getChunkedValue(this.computedRskAddress);
+    return getChunkedValue(this.computedRskAddress, this.maxLengthForChunked);
   }
 
   get computedRefundBTCAddress() {
@@ -185,7 +187,7 @@ export default class BtcTxSummarySide extends Vue {
   }
 
   get croppedComputedRefundBTCAddress() {
-    return getChunkedValue(this.computedRefundBTCAddress);
+    return getChunkedValue(this.computedRefundBTCAddress, this.maxLengthForChunked);
   }
 
   get safeFee(): SatoshiBig {

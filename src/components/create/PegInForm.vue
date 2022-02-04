@@ -82,7 +82,7 @@ import EnvironmentContextProviderService from '@/providers/EnvironmentContextPro
     AddressWarningDialog,
   },
 })
-export default class BitcoinForm extends Vue {
+export default class PegInForm extends Vue {
   pegInFormState: Machine<'loading' | 'goingHome' | 'fill'> = new Machine('fill');
 
   showWarningMessage = false;

@@ -61,7 +61,7 @@ import {
 import { Action, State } from 'vuex-class';
 import * as constants from '@/store/constants';
 import { TransactionType } from '@/store/session/types';
-import { PegInTxState } from '@/store/peginTx/types';
+import { BtcWallet, PegInTxState } from '@/store/peginTx/types';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
 @Component
@@ -78,7 +78,7 @@ export default class SelectBitcoinWallet extends Vue {
 
   @Action(constants.SESSION_ADD_TX_TYPE, { namespace: 'web3Session' }) addPeg!: (peg: TransactionType) => void;
 
-  @Action(constants.PEGIN_TX_ADD_BITCOIN_WALLET, { namespace: 'pegInTx' }) addBitcoinWallet !: any;
+  @Action(constants.PEGIN_TX_ADD_BITCOIN_WALLET, { namespace: 'pegInTx' }) addBitcoinWallet !: (wallet: BtcWallet) => void;
 
   // eslint-disable-next-line class-methods-use-this
   get showBack() {
@@ -91,7 +91,7 @@ export default class SelectBitcoinWallet extends Vue {
   }
 
   @Emit()
-  setBitcoinWallet(wallet: string): void {
+  setBitcoinWallet(wallet: BtcWallet): void {
     this.addBitcoinWallet(wallet);
     this.toSendBitcoin();
   }
@@ -100,7 +100,6 @@ export default class SelectBitcoinWallet extends Vue {
   // eslint-disable-next-line class-methods-use-this
   back():void {
     this.reset();
-    this.addBitcoinWallet('');
     this.$router.push({ name: 'Home' });
   }
 
@@ -108,9 +107,9 @@ export default class SelectBitcoinWallet extends Vue {
   toSendBitcoin(): void {
     this.addPeg('PEG_IN');
     if (this.peginTxState.bitcoinWallet === constants
-      .WALLET_LEDGER) this.$router.push({ name: 'Exchange', params: { selectedWallet: 'SendBitcoinLedger' } });
+      .WALLET_LEDGER) this.$router.push({ name: 'Create' });
     if (this.peginTxState.bitcoinWallet === constants
-      .WALLET_TREZOR) this.$router.push({ name: 'Exchange', params: { selectedWallet: 'SendBitcoinTrezor' } });
+      .WALLET_TREZOR) this.$router.push({ name: 'Create' });
   }
 }
 </script>

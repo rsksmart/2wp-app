@@ -34,7 +34,7 @@ import {
   Vue,
 } from 'vue-property-decorator';
 import { Action, Getter, State } from 'vuex-class';
-import BitcoinForm from '@/components/create/BitcoinForm.vue';
+import PegInForm from '@/components/create/PegInForm.vue';
 import ConfirmLedgerTransaction from '@/components/ledger/ConfirmLedgerTransaction.vue';
 import TrackingId from '@/components/exchange/TrackingId.vue';
 import LedgerService from '@/services/LedgerService';
@@ -54,7 +54,7 @@ import { EnvironmentAccessorService } from '@/services/enviroment-accessor.servi
 @Component({
   components: {
     BtcToRbtcDialog,
-    BitcoinForm,
+    PegInForm,
     ConfirmLedgerTransaction,
     TrackingId,
     ConnectDevice,
@@ -80,7 +80,7 @@ export default class SendBitcoinLedger extends Vue {
 
   sendBitcoinState: SendBitcoinState = 'idle';
 
-  currentComponent = 'BitcoinForm';
+  currentComponent = 'PegInForm';
 
   txId = '';
 
@@ -192,7 +192,7 @@ export default class SendBitcoinLedger extends Vue {
   @Emit()
   toPegInForm() {
     this.isBackFromConfirm = true;
-    this.currentComponent = 'BitcoinForm';
+    this.currentComponent = 'PegInForm';
   }
 
   @Emit()
@@ -282,7 +282,7 @@ export default class SendBitcoinLedger extends Vue {
     this.showTxErrorDialog = false;
     this.deviceError = 'test';
     this.sendBitcoinState = 'idle';
-    this.currentComponent = 'BitcoinForm';
+    this.currentComponent = 'PegInForm';
     this.txId = '';
     this.txError = '';
     this.createdTx = {

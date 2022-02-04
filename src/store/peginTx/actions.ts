@@ -2,7 +2,7 @@ import { ActionTree } from 'vuex';
 import axios from 'axios';
 import * as constants from '@/store/constants';
 import {
-  BtcAccount, MiningSpeedFee,
+  BtcAccount, BtcWallet, MiningSpeedFee,
   PeginConfiguration, PegInTxState, Utxo, WalletAddress,
 } from './types';
 import { RootState } from '../types';
@@ -30,7 +30,7 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_ADD_SESSION_ID]: ({ commit }, sessionId: string) => {
     commit(constants.PEGIN_TX_SET_SESSION_ID, sessionId);
   },
-  [constants.PEGIN_TX_ADD_BITCOIN_WALLET]: ({ commit }, bitcoinWallet: string) => {
+  [constants.PEGIN_TX_ADD_BITCOIN_WALLET]: ({ commit }, bitcoinWallet: BtcWallet) => {
     commit(constants.PEGIN_TX_SET_BITCOIN_WALLET, bitcoinWallet);
   },
   [constants.PEGIN_TX_ADD_BITCOIN_PRICE]: ({ commit }) => {

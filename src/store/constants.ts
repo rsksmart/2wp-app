@@ -2,10 +2,7 @@ import { PegInTxState } from '@/store/peginTx/types';
 import SatoshiBig from '@/types/SatoshiBig';
 
 export const WALLET_LEDGER = 'WALLET_LEDGER';
-export const WALLET_ELECTRUM = 'WALLET_ELECTRUM';
 export const WALLET_TREZOR = 'WALLET_TREZOR';
-export const WALLET_RWALLET = 'WALLET_RWALLET';
-export const WALLET_DEFIANT = 'WALLET_DEFIANT';
 
 // devices
 export const IS_TREZOR_CONNECTED = 'IS_TREZOR_CONNECTED';
@@ -111,7 +108,7 @@ export const getClearPeginTxState = (): PegInTxState => ({
   utxoList: undefined,
   addressList: [],
   trezorConnected: false,
-  bitcoinWallet: '',
+  bitcoinWallet: undefined,
   bitcoinPrice: 0,
   balances: {
     legacy: new SatoshiBig(0, 'satoshi'),

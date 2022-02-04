@@ -42,7 +42,7 @@
                     </span>
             </v-tooltip>
           </v-col>
-          <v-col v-if="pegInTxState.loadingBalances" cols="5" class="d-flex align-start pa-0">
+          <v-col v-if="pegInTxState.loadingBalance" cols="5" class="d-flex align-start pa-0">
             <v-row class="d-flex justify-start pt-6 ma-0">
               <span class="d-flex align-center">Loading balances   </span>
               <v-progress-circular

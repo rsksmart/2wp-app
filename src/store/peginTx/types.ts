@@ -5,6 +5,9 @@ export type BtcAccount = 'BITCOIN_LEGACY_ADDRESS' |
   'BITCOIN_SEGWIT_ADDRESS' |
   'BITCOIN_NATIVE_SEGWIT_ADDRESS';
 
+export type BtcWallet = 'WALLET_LEDGER' |
+  'WALLET_TREZOR';
+
 export type MiningSpeedFee = 'BITCOIN_SLOW_FEE_LEVEL' |
   'BITCOIN_AVERAGE_FEE_LEVEL' |
   'BITCOIN_FAST_FEE_LEVEL';
@@ -43,7 +46,7 @@ export interface PegInTxState {
   trezorConnected: boolean;
   peginConfiguration: PeginConfiguration;
   sessionId: string;
-  bitcoinWallet: string;
+  bitcoinWallet?: BtcWallet;
   selectedAccount?: BtcAccount;
   bitcoinPrice: number;
   calculatedFees: FeeAmountData;

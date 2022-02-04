@@ -56,7 +56,7 @@ export default class Exchange extends Vue {
     if (currentComponent === 'ConnectDevice') {
       this.clear();
       this.init();
-      this.$router.replace({ name: 'PegIn', params: { peg: 'BTC2RBTC' } });
+      this.$router.replace({ name: 'PegIn' });
     }
   }
 }
