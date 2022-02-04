@@ -27,7 +27,7 @@
                   <v-img src="@/assets/exchange/btc.png" height="20" contain/>
                 </v-col>
                 <v-col cols="7" class="pa-0 d-flex align-center">
-                  <span>BTC</span>
+                  <span>{{environmentContext.getBtcTicker()}}</span>
                 </v-col>
               </v-row>
             </v-col>
@@ -46,7 +46,7 @@
                   <v-img src="@/assets/exchange/rbtc.png" height="20" contain/>
                 </v-col>
                 <v-col cols="7" class="pa-0 d-flex align-center">
-                  <span>RBTC</span>
+                  <span>{{environmentContext.getRbtcTicker()}}</span>
                 </v-col>
               </v-row>
             </v-col>
@@ -71,10 +71,13 @@ import { Action, State } from 'vuex-class';
 import SatoshiBig from '@/types/SatoshiBig';
 import { PegInTxState } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
 @Component({
 })
 export default class BtcInputAmount extends Vue {
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+
   focus = false;
 
   amountStyle = '';
@@ -114,13 +117,13 @@ export default class BtcInputAmount extends Vue {
       return 'Invalid format, neither letters, big amounts nor more than 8 decimals are allowed';
     }
     if (this.safeAmount.lt(minValue)) {
-      return `You can not send this amount of BTC. You can only send a minimum of ${minValue.toBTCTrimmedString()} BTC`;
+      return `You can not send this amount of ${this.environmentContext.getBtcTicker()}. You can only send a minimum of ${minValue.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
     }
     if (feePlusAmount.gte(this.selectedAccountBalance)) {
       return 'The typed amount, along with the transaction fee, is higher than your current balance';
     }
     if (this.safeAmount.gt(maxValue)) {
-      return `The maximum amount currently allowed by this tool is ${maxValue.toBTCTrimmedString()} BTC`;
+      return `The maximum amount currently allowed by this tool is ${maxValue.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
     }
     return 'Invalid format';
   }

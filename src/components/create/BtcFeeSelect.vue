@@ -20,13 +20,16 @@
             </v-row>
             <v-row class="mx-0">
               <v-col cols="4" class="d-flex justify-start pa-0">
-                <span class="text-left">{{ slowFee }} BTC</span>
+                      <span class="text-left">{{ slowFee }}
+                      {{environmentContext.getBtcTicker()}}</span>
               </v-col>
               <v-col cols="4" class="d-flex justify-center pa-0">
-                <span class="text-center">{{ averageFee }} BTC</span>
+                      <span class="text-center">{{ averageFee }}
+                      {{environmentContext.getBtcTicker()}}</span>
               </v-col>
               <v-col cols="4" class="d-flex justify-end pa-0">
-                <span class="text-right">{{ fastFee }} BTC</span>
+                      <span class="text-right">{{ fastFee }}
+                      {{environmentContext.getBtcTicker()}}</span>
               </v-col>
             </v-row>
             <v-row class="mx-0">
@@ -52,10 +55,13 @@ import { Component, Emit, Vue } from 'vue-property-decorator';
 import { Action, State } from 'vuex-class';
 import * as constants from '@/store/constants';
 import { MiningSpeedFee, PegInTxState } from '@/store/peginTx/types';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
 @Component({
 })
 export default class BtcFeeSelect extends Vue {
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+
   focus = false;
 
   txFeeIndex = 1.0;

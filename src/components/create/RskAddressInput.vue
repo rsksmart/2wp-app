@@ -7,7 +7,8 @@
       </v-col>
       <v-col class="pl-0">
         <p v-bind:class="{'boldie': focus}">
-          Enter or select the RSK address where RBTC will be deposited:
+          Enter or select the {{environmentContext.getRskText()}} address where
+          {{environmentContext.getRbtcTicker()}} will be deposited:
         </p>
         <v-row class="mx-0 mt-4">
           <template v-if="useWeb3Wallet && web3Address">
@@ -35,7 +36,9 @@
           <template v-else>
             <v-col cols="6" class="pl-0 pb-0">
               <v-row class="mx-0 mb-4 d-flex justify-start">
-                <span class="text-center">Use your RSK addresses </span>
+                <span class="text-center">
+                  Use your {{environmentContext.getRskText()}} addresses
+                </span>
               </v-row>
               <v-row :class="[isValidRskAddress || !rskAddressSelected ?
                      'blue-box' : 'yellow-box' ]"
@@ -83,10 +86,13 @@ import * as rskUtils from '@rsksmart/rsk-utils';
 import { SessionState } from '@/store/session/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import * as constants from '@/store/constants';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
 @Component({
 })
 export default class RskAddressInput extends Vue {
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+
   focus = false;
 
   useWeb3Wallet = false;
@@ -136,7 +142,7 @@ export default class RskAddressInput extends Vue {
   get validAddressMessage() {
     let message = '';
     if (!this.isValidPegInAddress) message = 'This is an invalid address';
-    else if (!this.isValidRskAddress) message = 'This may not be a valid address on the RSK network. Please check.';
+    else if (!this.isValidRskAddress) message = `This may not be a valid address on the ${this.environmentContext.getRskText()} network. Please check.`;
     return message;
   }
 

@@ -7,7 +7,7 @@
       </v-col>
       <v-col class="pl-0">
         <p v-bind:class="{'boldie': focus}">
-          Select Bitcoin account to send from:
+          Select {{environmentContext.getBtcText()}} account to send from:
         </p>
         <v-row class="mx-0 mt-4">
           <v-col cols="6" class="pl-0 pb-0">
@@ -68,9 +68,12 @@ import { Action, State } from 'vuex-class';
 import * as constants from '@/store/constants';
 import { BtcAccount, PegInTxState } from '@/store/peginTx/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
 @Component({})
 export default class PegInAccountSelect extends Vue {
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+
   focus = false;
 
   btcAccountTypeSelected = '';
@@ -112,13 +115,13 @@ export default class PegInAccountSelect extends Vue {
     let text = '';
     switch (accountType) {
       case constants.BITCOIN_LEGACY_ADDRESS:
-        text = `Legacy account - ${this.pegInTxState.balances.legacy.toBTCTrimmedString()} BTC`;
+        text = `Legacy account - ${this.pegInTxState.balances.legacy.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
         break;
       case constants.BITCOIN_SEGWIT_ADDRESS:
-        text = `Segwit account - ${this.pegInTxState.balances.segwit.toBTCTrimmedString()} BTC`;
+        text = `Segwit account - ${this.pegInTxState.balances.segwit.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
         break;
       case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
-        text = `Native segwit account - ${this.pegInTxState.balances.nativeSegwit.toBTCTrimmedString()} BTC`;
+        text = `Native segwit account - ${this.pegInTxState.balances.nativeSegwit.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
         break;
       default:
         break;

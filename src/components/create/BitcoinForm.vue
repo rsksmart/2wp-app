@@ -8,7 +8,8 @@
                  src="@/assets/exchange/arrow.png" height="40" contain/>
         </v-col>
         <v-col class="px-0">
-          <h1 class="text-left">Send Bitcoins. Get RBTC.</h1>
+          <h1 class="text-left">Send {{environmentContext.getBtcTicker()}}.
+            Get {{environmentContext.getRbtcTicker()}}.</h1>
         </v-col>
       </v-row>
       <v-row class="mx-0 mt-2">
@@ -69,6 +70,7 @@ import * as constants from '@/store/constants';
 import { Machine } from '@/services/utils';
 import SatoshiBig from '@/types/SatoshiBig';
 import AddressWarningDialog from '@/components/exchange/AddressWarningDialog.vue';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
 @Component({
   components: {
@@ -86,6 +88,8 @@ export default class BitcoinForm extends Vue {
   showWarningMessage = false;
 
   rskAddressState = 'invalid';
+
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
   @Prop() isBackFromConfirm!: boolean;
 

@@ -21,7 +21,7 @@
         <v-divider color="#C4C4C4"/>
         <v-container id="summary-2" class="pb-0 pl-0">
           <v-row class="mx-0">
-            <h1>Bitcoins:</h1>
+            <h1>{{environmentContext.getBtcText()}}s:</h1>
             <v-icon v-if="this.pegInTxState.isValidAmountToTransfer"
                     class="ml-2" small color="#008CFF">
               mdi-check-circle-outline
@@ -39,7 +39,7 @@
         <v-divider color="#C4C4C4"/>
         <v-container id="summary-3" class="pb-0 pl-0">
           <v-row class="mx-0">
-            <h1>Destination RSK address:</h1>
+            <h1>Destination {{environmentContext.getRskText()}} address:</h1>
             <v-icon v-if="pegInTxState.rskAddressSelected !== ''"
                     class="ml-2" small color="#008CFF">
               mdi-check-circle-outline
@@ -61,7 +61,7 @@
         <v-divider color="#C4C4C4"/>
         <v-container id="summary-4" class="pb-0 pl-0">
           <v-row class="mx-0">
-            <h1>Refund BTC address:</h1>
+            <h1>Refund {{environmentContext.getBtcTicker()}} address:</h1>
             <v-icon v-if="pegInTxState.selectedAccount" class="ml-2" small color="#008CFF">
               mdi-check-circle-outline
             </v-icon>
@@ -133,12 +133,15 @@ import { PegInTxState } from '@/store/peginTx/types';
 import { getChunkedValue } from '@/utils';
 import SatoshiBig from '@/types/SatoshiBig';
 import * as constants from '@/store/constants';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
 @Component({
   components: {
   },
 })
 export default class BtcTxSummarySide extends Vue {
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+
   VALUE_INCOMPLETE_MESSAGE = 'Not completed';
 
   fixedUSDDecimals = 2;
@@ -157,7 +160,7 @@ export default class BtcTxSummarySide extends Vue {
     if (!this.pegInTxState.isValidAmountToTransfer) {
       return this.VALUE_INCOMPLETE_MESSAGE;
     }
-    return `${this.pegInTxState.amountToTransfer.toBTCString()} BTC`;
+    return `${this.pegInTxState.amountToTransfer.toBTCString()} ${this.environmentContext.getBtcTicker()}`;
   }
 
   get computedBTCAmountUSD(): string {
@@ -205,7 +208,7 @@ export default class BtcTxSummarySide extends Vue {
   }
 
   get computedTxFee(): string {
-    return `${this.safeFee.toBTCString()} BTC`;
+    return `${this.safeFee.toBTCString()} ${this.environmentContext.getBtcTicker()}`;
   }
 
   get computedTxFeeUSD(): string {
@@ -215,7 +218,7 @@ export default class BtcTxSummarySide extends Vue {
   get computedFeePlusAmount(): string {
     const feePlusAmount: SatoshiBig = this.pegInTxState.amountToTransfer.plus(this.safeFee);
     return this.pegInTxState.isValidAmountToTransfer
-      ? `${feePlusAmount.toBTCString()} BTC` : this.VALUE_INCOMPLETE_MESSAGE;
+      ? `${feePlusAmount.toBTCString()} ${this.environmentContext.getBtcTicker()}` : this.VALUE_INCOMPLETE_MESSAGE;
   }
 
   get computedFeePlusAmountUSD(): string {
@@ -231,13 +234,13 @@ export default class BtcTxSummarySide extends Vue {
     let text = '';
     switch (accountType) {
       case constants.BITCOIN_LEGACY_ADDRESS:
-        text = `Legacy account - ${this.pegInTxState.balances.legacy.toBTCTrimmedString()} BTC`;
+        text = `Legacy account - ${this.pegInTxState.balances.legacy.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
         break;
       case constants.BITCOIN_SEGWIT_ADDRESS:
-        text = `Segwit account - ${this.pegInTxState.balances.segwit.toBTCTrimmedString()} BTC`;
+        text = `Segwit account - ${this.pegInTxState.balances.segwit.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
         break;
       case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
-        text = `Native segwit account - ${this.pegInTxState.balances.nativeSegwit.toBTCTrimmedString()} BTC`;
+        text = `Native segwit account - ${this.pegInTxState.balances.nativeSegwit.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
         break;
       default:
         break;
