@@ -21,7 +21,7 @@
         <v-divider color="#C4C4C4"/>
         <v-container id="summary-2" class="pb-0 pl-0">
           <v-row class="mx-0">
-            <h1>{{environmentContext.getBtcText()}}s:</h1>
+            <h1>{{environmentContext.getBtcTicker()}}s:</h1>
             <v-icon v-if="this.pegInTxState.isValidAmountToTransfer"
                     class="ml-2" small color="#008CFF">
               mdi-check-circle-outline
@@ -61,7 +61,7 @@
         <v-divider color="#C4C4C4"/>
         <v-container id="summary-4" class="pb-0 pl-0">
           <v-row class="mx-0">
-            <h1>Refund {{environmentContext.getBtcTicker()}} address:</h1>
+            <h1>Refund {{environmentContext.getBtcText()}} address:</h1>
             <v-icon v-if="pegInTxState.selectedAccount" class="ml-2" small color="#008CFF">
               mdi-check-circle-outline
             </v-icon>
