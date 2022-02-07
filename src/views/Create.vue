@@ -6,47 +6,50 @@
 
 <script lang="ts">
 import {
-  Vue, Component, Emit, Prop,
+  Component, Emit, Vue,
 } from 'vue-property-decorator';
 import { Action, State } from 'vuex-class';
-import SelectBitcoinWallet from '@/components/exchange/SelectBitcoinWallet.vue';
+import { BtcWallet, PegInTxState } from '@/store/peginTx/types';
+import * as constants from '@/store/constants';
 import SendBitcoinTrezor from '@/components/trezor/SendBitcoinTrezor.vue';
 import SendBitcoinLedger from '@/components/ledger/SendBitcoinLedger.vue';
-import SuccessSend from '@/components/exchange/SuccessSend.vue';
-import TrackingId from '@/components/exchange/TrackingId.vue';
-import * as constants from '@/store/constants';
-import { PegInTxState } from '@/store/peginTx/types';
 
 @Component({
   components: {
-    SelectBitcoinWallet,
     SendBitcoinTrezor,
-    SuccessSend,
-    TrackingId,
     SendBitcoinLedger,
   },
 })
-export default class Exchange extends Vue {
+export default class Create extends Vue {
   currentComponent = '';
 
   bitcoinWallet = '';
 
-  @Prop({ default: 'SendBitcoinTrezor' }) selectedWalletComponent!: string;
+  @State('pegInTx') pegInTxState!: PegInTxState;
 
-  @State('pegInTx') peginTxState!: PegInTxState;
-
-  @Action(constants.PEGIN_TX_ADD_BITCOIN_WALLET, { namespace: 'pegInTx' }) setBitcoinWallet !: any;
+  @Action(constants.PEGIN_TX_ADD_BITCOIN_WALLET, { namespace: 'pegInTx' }) setBitcoinWallet !: (wallet: BtcWallet) => void;
 
   @Action(constants.PEGIN_TX_CLEAR_STATE, { namespace: 'pegInTx' }) clear !: () => void;
 
   @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) init !: () => void;
 
+  get selectedWalletComponent(): 'SendBitcoinTrezor' | 'SendBitcoinLedger' {
+    switch (this.pegInTxState.bitcoinWallet) {
+      case 'WALLET_LEDGER':
+        return 'SendBitcoinLedger';
+      case 'WALLET_TREZOR':
+        return 'SendBitcoinTrezor';
+      default:
+        return 'SendBitcoinTrezor';
+    }
+  }
+
   @Emit('bitcoinWallet')
-  toSendBitcoin(bitcoinWallet: string): string {
+  toSendBitcoin(bitcoinWallet: BtcWallet): string {
     this.setBitcoinWallet(bitcoinWallet);
-    if (this.peginTxState.bitcoinWallet === constants
+    if (this.pegInTxState.bitcoinWallet === constants
       .WALLET_LEDGER) this.currentComponent = 'SendBitcoinLedger';
-    if (this.peginTxState.bitcoinWallet === constants
+    if (this.pegInTxState.bitcoinWallet === constants
       .WALLET_TREZOR) this.currentComponent = 'SendBitcoinTrezor';
     return bitcoinWallet;
   }
