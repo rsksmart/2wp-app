@@ -103,6 +103,7 @@ export default class ApiService {
       axios.get(`${this.baseURL}/pegin-status?txId=${txId}`)
         .then((response) => {
           if (response.data.error) reject(response.data.error);
+          if (response.data || response.data.status) reject(new Error('Empty response from server'));
           resolve(response.data);
         })
         .catch(reject);
