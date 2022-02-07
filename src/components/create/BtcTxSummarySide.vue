@@ -251,7 +251,3 @@ export default class BtcTxSummarySide extends Vue {
   }
 }
 </script>
-
-<style scoped>
-
-</style>
