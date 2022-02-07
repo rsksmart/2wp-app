@@ -36,7 +36,7 @@ import {
 } from 'vue-property-decorator';
 import { Action, Getter, State } from 'vuex-class';
 import TrezorConnect, { DEVICE, DEVICE_EVENT } from 'trezor-connect';
-import SendBitcoinForm from '@/components/exchange/SendBitcoinForm.vue';
+import PegInForm from '@/components/create/PegInForm.vue';
 import ConfirmTrezorTransaction from '@/components/trezor/ConfirmTrezorTransaction.vue';
 import TrackingId from '@/components/exchange/TrackingId.vue';
 import TrezorService from '@/services/TrezorService';
@@ -56,7 +56,7 @@ import { EnvironmentAccessorService } from '@/services/enviroment-accessor.servi
 @Component({
   components: {
     BtcToRbtcDialog,
-    SendBitcoinForm,
+    PegInForm,
     ConfirmTrezorTransaction,
     TrackingId,
     ConnectDevice,
@@ -85,7 +85,7 @@ export default class SendBitcoinTrezor extends Vue {
 
   trezorConnected = false;
 
-  currentComponent = 'SendBitcoinForm';
+  currentComponent = 'PegInForm';
 
   unusedAddresses: string[] = [];
 
@@ -129,7 +129,7 @@ export default class SendBitcoinTrezor extends Vue {
 
   @Action(constants.IS_TREZOR_CONNECTED, { namespace: 'pegInTx' }) setTrezorConnected !: any;
 
-  @Action(constants.PEGIN_TX_ADD_ADDRESSES, { namespace: 'pegInTx' }) setPeginTxAddresses !: any;
+  @Action(constants.PEGIN_TX_ADD_BALANCE, { namespace: 'pegInTx' }) addBalanceStore !: (balance: AccountBalance) => void;
 
   @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: any;
 
@@ -203,7 +203,7 @@ export default class SendBitcoinTrezor extends Vue {
   @Emit()
   toPegInForm() {
     this.isBackFromConfirm = true;
-    this.currentComponent = 'SendBitcoinForm';
+    this.currentComponent = 'PegInForm';
   }
 
   @Emit()
@@ -275,6 +275,7 @@ export default class SendBitcoinTrezor extends Vue {
       this.trezorService.unsubscribe(this.trezorServiceSubscriber);
       this.showErrorDialog = true;
     }
+    this.addBalanceStore(balanceInformed);
     this.balances = balanceInformed;
   }
 
@@ -311,7 +312,7 @@ export default class SendBitcoinTrezor extends Vue {
     this.deviceError = 'test';
     this.sendBitcoinState = 'idle';
     this.trezorConnected = false;
-    this.currentComponent = 'SendBitcoinForm';
+    this.currentComponent = 'PegInForm';
     this.unusedAddresses = [];
     this.txId = '';
     this.txError = '';

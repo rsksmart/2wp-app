@@ -1,11 +1,22 @@
-export interface PegInTxState {
-  utxoList?: Utxo[];
-  addressList?: WalletAddress[];
-  trezorConnected: boolean;
-  peginConfiguration: PeginConfiguration;
-  sessionId: string;
-  bitcoinWallet: string;
-  bitcoinPrice: number;
+import { AccountBalance, FeeAmountData } from '@/types';
+import SatoshiBig from '@/types/SatoshiBig';
+
+export type BtcAccount = 'BITCOIN_LEGACY_ADDRESS' |
+  'BITCOIN_SEGWIT_ADDRESS' |
+  'BITCOIN_NATIVE_SEGWIT_ADDRESS';
+
+export type BtcWallet = 'WALLET_LEDGER' |
+  'WALLET_TREZOR';
+
+export type MiningSpeedFee = 'BITCOIN_SLOW_FEE_LEVEL' |
+  'BITCOIN_AVERAGE_FEE_LEVEL' |
+  'BITCOIN_FAST_FEE_LEVEL';
+
+export interface WalletAddress {
+  address: string;
+  serializedPath: string;
+  path: number[];
+  publicKey?: string;
 }
 
 export interface PeginConfiguration {
@@ -27,11 +38,23 @@ export interface Utxo {
   vout: number;
 }
 
-export interface WalletAddress {
-  address: string;
-  serializedPath: string;
-  path: number[];
-  publicKey?: string;
+export interface PegInTxState {
+  utxoList?: Utxo[];
+  addressList?: WalletAddress[];
+  balances: AccountBalance;
+  loadingBalance: boolean;
+  trezorConnected: boolean;
+  peginConfiguration: PeginConfiguration;
+  sessionId: string;
+  bitcoinWallet?: BtcWallet;
+  selectedAccount?: BtcAccount;
+  bitcoinPrice: number;
+  calculatedFees: FeeAmountData;
+  loadingFee: boolean;
+  selectedFee: MiningSpeedFee;
+  amountToTransfer: SatoshiBig;
+  isValidAmountToTransfer: boolean;
+  rskAddressSelected: string;
 }
 
 export interface UnusedWalletAddress {
