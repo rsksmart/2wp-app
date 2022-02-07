@@ -8,7 +8,7 @@
     <template v-if="ledgerDataReady">
       <component :is="currentComponent" :balances="balances"
                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
-                 @txFee="getTxFee" :fees="calculatedFees" :tx="createdTx"
+                 :tx="createdTx" :walletService="ledgerService"
                  :txBuilder="txBuilder" :txData="txData" :price="peginTxState.bitcoinPrice"
                  :txId="txId" @back="back" :loadingBalances="loadingBalances"
                  @toPegInForm="toPegInForm" :pegInFormData="pegInFormData"
