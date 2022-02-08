@@ -7,12 +7,6 @@ export interface Tx {
   outputs: object[];
 }
 
-export interface NormalizedTx extends Tx {
-  coin: string;
-  inputs: NormalizedInput[];
-  outputs: NormalizedOutput[];
-}
-
 export interface NormalizedInput {
   address: string;
   prev_hash: string;
@@ -29,6 +23,12 @@ export interface NormalizedOutput {
   amount: string;
   serializedValue?: string;
   op_return_data?: string;
+}
+
+export interface NormalizedTx extends Tx {
+  coin: string;
+  inputs: NormalizedInput[];
+  outputs: NormalizedOutput[];
 }
 
 export interface Signer {

@@ -5,7 +5,7 @@ import * as bitcoin from 'bitcoinjs-lib';
 import * as constants from '@/store/constants';
 import { WalletAddress } from '@/store/peginTx/types';
 import {
-  LedgerjsTransaction, LedgerTx, Signer, Tx,
+  LedgerjsTransaction, LedgerSignedTx, LedgerTx, SignedTx, Signer, Tx,
 } from '@/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import { WalletService } from './WalletService';
@@ -14,9 +14,9 @@ import LedgerTransportService from '@/services/LedgetTransportService';
 export default class LedgerService extends WalletService {
   private network: bitcoin.Network;
 
-  constructor(coin: string) {
-    super(coin);
-    this.network = coin === constants.BTC_NETWORK_MAINNET
+  constructor() {
+    super();
+    this.network = this.coin === constants.BTC_NETWORK_MAINNET
       ? bitcoin.networks.bitcoin : bitcoin.networks.testnet;
   }
 
@@ -138,7 +138,7 @@ export default class LedgerService extends WalletService {
     return publicKey.toString('hex');
   }
 
-  public static signTx(tx: Tx): Promise<string> {
+  private static signTx(tx: Tx): Promise<string> {
     const ledgerTx: LedgerTx = tx as LedgerTx;
     return LedgerTransportService.getInstance()
       .enqueueRequest(
@@ -301,6 +301,24 @@ export default class LedgerService extends WalletService {
           else reject(new Error('You are not in the required App. Check your Ledger device and try again'));
         })
         .catch(reject);
+    });
+  }
+
+  sign(tx: Tx): Promise<SignedTx> {
+    const ledgerTx = tx as LedgerTx;
+    return new Promise<LedgerSignedTx>((resolve, reject) => {
+      switch (ledgerTx.accountType) {
+        case constants.BITCOIN_SEGWIT_ADDRESS:
+          this.signSegwitTx(ledgerTx)
+            .then((signedTx) => resolve({ signedTx }))
+            .catch(reject);
+          break;
+        case constants.BITCOIN_LEGACY_ADDRESS:
+        default:
+          LedgerService.signTx(ledgerTx)
+            .then((signedTx) => resolve({ signedTx }))
+            .catch(reject);
+      }
     });
   }
 }

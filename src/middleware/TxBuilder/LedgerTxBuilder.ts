@@ -1,7 +1,6 @@
 import * as bitcoin from 'bitcoinjs-lib';
-import LedgerTxSigner from '@/middleware/TxSigner/LedgerTxSigner';
 import {
-  LedgerjsTransaction,
+  LedgerjsTransaction, LedgerSignedTx,
   LedgerTx, NormalizedInput, NormalizedOutput, NormalizedTx,
 } from '@/types';
 import store from '@/store';
@@ -15,7 +14,7 @@ export default class LedgerTxBuilder extends TxBuilder {
 
   constructor() {
     super();
-    this.signer = new LedgerTxSigner();
+    this.walletService = new LedgerService();
   }
 
   buildTx(): Promise<LedgerTx> {
@@ -139,7 +138,7 @@ export default class LedgerTxBuilder extends TxBuilder {
     });
   }
 
-  public sign(): Promise<{ signedTx: string }> {
-    return this.signer.sign(this.tx) as Promise<{ signedTx: string }>;
+  public sign(): Promise<LedgerSignedTx> {
+    return this.walletService.sign(this.tx) as Promise<LedgerSignedTx>;
   }
 }

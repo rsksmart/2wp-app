@@ -112,9 +112,7 @@ export default class SendBitcoinLedger extends Vue {
 
   ledgerDataReady = false;
 
-  ledgerService: LedgerService = new LedgerService(
-    EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
-  );
+  ledgerService: LedgerService = new LedgerService();
 
   ledgerServiceSubscriber = (balance: AccountBalance) => this.addBalance(balance);
 
@@ -301,9 +299,7 @@ export default class SendBitcoinLedger extends Vue {
       nativeSegwit: new SatoshiBig(0, 'satoshi'),
     };
     this.ledgerDataReady = false;
-    this.ledgerService = new LedgerService(
-      EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
-    );
+    this.ledgerService = new LedgerService();
   }
 
   async beforeDestroy() {
