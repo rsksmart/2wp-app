@@ -1,9 +1,10 @@
 import * as constants from '@/store/constants';
 import SatoshiBig from '@/types/SatoshiBig';
 import ApiService from './ApiService';
-import { AccountBalance } from '@/types';
+import { AccountBalance, SignedTx, Tx } from '@/types';
 import { WalletAddress } from '@/store/peginTx/types';
 import store from '@/store';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 export abstract class WalletService {
   protected coin: string;
@@ -12,8 +13,8 @@ export abstract class WalletService {
 
   private loadingBalances = false;
 
-  constructor(coin: string) {
-    this.coin = coin;
+  constructor() {
+    this.coin = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
   }
 
   abstract getAccountAddresses(batch: number, index: number): Promise<WalletAddress[]>;
@@ -21,6 +22,8 @@ export abstract class WalletService {
   abstract getWalletAddressesPerCall(): number;
 
   abstract getWalletMaxCall(): number;
+
+  abstract sign(tx: Tx): Promise<SignedTx>;
 
   public isLoadingBalances(): boolean {
     return this.loadingBalances;
