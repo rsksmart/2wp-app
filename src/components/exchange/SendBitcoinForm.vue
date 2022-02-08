@@ -982,7 +982,7 @@ export default class SendBitcoinForm extends Vue {
       {
         text: this.getAccountBalanceText(constants.BITCOIN_NATIVE_SEGWIT_ADDRESS),
         value: constants.BITCOIN_NATIVE_SEGWIT_ADDRESS,
-        disabled: this.peginTxState.bitcoinWallet === constants.WALLET_LEDGER,
+        disabled: false,
       },
     ];
     this.fillStoredPegInFormData();
