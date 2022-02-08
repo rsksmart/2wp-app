@@ -1,15 +1,15 @@
 import * as bitcoin from 'bitcoinjs-lib';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
-import TxSigner from '@/middleware/TxSigner/TxSigner';
-import { NormalizedInput, NormalizedTx, Tx } from '@/types';
+import {
+  NormalizedInput, NormalizedTx, SignedTx, Tx,
+} from '@/types';
 import * as constants from '@/store/constants';
 import ApiService from '@/services/ApiService';
 import store from '@/store';
+import { WalletService } from '@/services/WalletService';
 import { WalletAddress } from '@/store/peginTx/types';
 
 export default abstract class TxBuilder {
-  protected signer!: TxSigner;
-
   protected coin!: string;
 
   protected network: bitcoin.Network;
@@ -17,6 +17,8 @@ export default abstract class TxBuilder {
   protected normalizedTx!: NormalizedTx;
 
   protected changeAddr: string;
+
+  protected walletService!: WalletService;
 
   private txAccountType: string;
 
@@ -37,6 +39,8 @@ export default abstract class TxBuilder {
   }
 
   public abstract buildTx(): Promise<Tx>;
+
+  public abstract sign(): Promise<SignedTx>;
 
   get changeAddress(): string {
     return this.changeAddr;

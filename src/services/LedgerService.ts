@@ -5,7 +5,7 @@ import * as bitcoin from 'bitcoinjs-lib';
 import * as constants from '@/store/constants';
 import { WalletAddress } from '@/store/peginTx/types';
 import {
-  LedgerjsTransaction, LedgerTx, Tx,
+  LedgerjsTransaction, LedgerSignedTx, LedgerTx, Tx,
 } from '@/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import { WalletService } from './WalletService';
@@ -14,9 +14,9 @@ import LedgerTransportService from '@/services/LedgetTransportService';
 export default class LedgerService extends WalletService {
   private network: bitcoin.Network;
 
-  constructor(coin: string) {
-    super(coin);
-    this.network = coin === constants.BTC_NETWORK_MAINNET
+  constructor() {
+    super();
+    this.network = this.coin === constants.BTC_NETWORK_MAINNET
       ? bitcoin.networks.bitcoin : bitcoin.networks.testnet;
   }
 
@@ -133,12 +133,13 @@ export default class LedgerService extends WalletService {
     return format;
   }
 
-  public static signTx(tx: Tx): Promise<string> {
+  // eslint-disable-next-line class-methods-use-this
+  sign(tx: Tx): Promise<LedgerSignedTx> {
     const ledgerTx: LedgerTx = tx as LedgerTx;
     const isSegwitTx = ledgerTx.accountType === constants.BITCOIN_SEGWIT_ADDRESS;
     return LedgerTransportService.getInstance()
       .enqueueRequest(
-        (transport: TransportWebUSB) => new Promise<string>((resolve, reject) => {
+        (transport: TransportWebUSB) => new Promise<LedgerSignedTx>((resolve, reject) => {
           const btc = new AppBtc(transport);
           btc.createPaymentTransactionNew({
             inputs: ledgerTx.inputs.map((input) => [input.tx, input.outputIndex, null, null]),
@@ -147,7 +148,7 @@ export default class LedgerService extends WalletService {
             segwit: isSegwitTx,
             useTrustedInputForSegwit: isSegwitTx,
           })
-            .then(resolve)
+            .then((signedTx) => resolve({ signedTx }))
             .catch(reject);
         }),
       );

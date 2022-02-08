@@ -119,9 +119,7 @@ export default class SendBitcoinTrezor extends Vue {
 
   trezorDataReady = false;
 
-  trezorService: TrezorService = new TrezorService(
-    EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
-  );
+  trezorService: TrezorService = new TrezorService();
 
   trezorServiceSubscriber = (balance: AccountBalance) => this.addBalance(balance);
 
@@ -332,9 +330,7 @@ export default class SendBitcoinTrezor extends Vue {
       nativeSegwit: new SatoshiBig(0, 'satoshi'),
     };
     this.trezorDataReady = false;
-    this.trezorService = new TrezorService(
-      EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
-    );
+    this.trezorService = new TrezorService();
   }
 
   async beforeDestroy() {

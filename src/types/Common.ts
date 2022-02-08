@@ -1,16 +1,9 @@
-import { Network } from 'bitcoinjs-lib';
 import SatoshiBig from '@/types/SatoshiBig';
 
 export interface Tx {
   coin: string;
   inputs: object[];
   outputs: object[];
-}
-
-export interface NormalizedTx extends Tx {
-  coin: string;
-  inputs: NormalizedInput[];
-  outputs: NormalizedOutput[];
 }
 
 export interface NormalizedInput {
@@ -29,6 +22,12 @@ export interface NormalizedOutput {
   amount: string;
   serializedValue?: string;
   op_return_data?: string;
+}
+
+export interface NormalizedTx extends Tx {
+  coin: string;
+  inputs: NormalizedInput[];
+  outputs: NormalizedOutput[];
 }
 
 export interface AccountBalance {

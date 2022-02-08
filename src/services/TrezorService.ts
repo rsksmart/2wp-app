@@ -12,9 +12,9 @@ import { EnvironmentAccessorService } from './enviroment-accessor.service';
 export default class TrezorService extends WalletService {
   private network: Network;
 
-  constructor(coin: string) {
-    super(coin);
-    this.network = coin === constants.BTC_NETWORK_MAINNET
+  constructor() {
+    super();
+    this.network = this.coin === constants.BTC_NETWORK_MAINNET
       ? bitcoin.networks.bitcoin : bitcoin.networks.testnet;
     TrezorConnect.manifest({
       email: EnvironmentAccessorService.getEnvironmentVariables().vueAppManifestEmail,

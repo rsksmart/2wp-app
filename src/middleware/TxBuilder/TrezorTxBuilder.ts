@@ -1,5 +1,4 @@
 import { TxInputType, TxOutputType } from 'trezor-connect';
-import TrezorTxSigner from '@/middleware/TxSigner/TrezorTxSigner';
 import { WalletAddress } from '@/store/peginTx/types';
 import {
   InputScriptType,
@@ -9,13 +8,14 @@ import { getAccountType } from '@/services/utils';
 import store from '../../store';
 import * as constants from '@/store/constants';
 import TxBuilder from './TxBuilder';
+import TrezorService from '@/services/TrezorService';
 
 export default class TrezorTxBuilder extends TxBuilder {
   private tx!: TrezorTx;
 
   constructor() {
     super();
-    this.signer = new TrezorTxSigner();
+    this.walletService = new TrezorService();
   }
 
   buildTx(): Promise<TrezorTx> {
@@ -37,7 +37,7 @@ export default class TrezorTxBuilder extends TxBuilder {
   }
 
   public sign(): Promise<TrezorSignedTx> {
-    return this.signer.sign(this.tx) as Promise<TrezorSignedTx>;
+    return this.walletService.sign(this.tx) as Promise<TrezorSignedTx>;
   }
 
   static getOutputs(outputs: NormalizedOutput[]): TxOutputType[] {
