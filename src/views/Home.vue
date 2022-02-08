@@ -134,7 +134,7 @@ export default class Home extends Vue {
   STATUS = false;
 
   browser = Bowser.getParser(window.navigator.userAgent);
-  
+
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
   @State('pegInTx') peginTxState!: PegInTxState;

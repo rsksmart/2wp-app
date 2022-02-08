@@ -125,7 +125,9 @@ export default class PegInForm extends Vue {
   }
 
   get isReadyToCreate(): boolean {
-    return this.pegInTxState.isValidAmountToTransfer && !this.pegInTxState.loadingFee;
+    return this.pegInTxState.isValidAmountToTransfer
+      && !this.pegInTxState.loadingFee
+      && this.pegInTxState.rskAddressSelected !== '';
   }
 
   @Emit()
