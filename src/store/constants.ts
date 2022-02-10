@@ -1,5 +1,8 @@
 import { PegInTxState } from '@/store/peginTx/types';
+
 import SatoshiBig from '@/types/SatoshiBig';
+import { txSummaryState } from './txSummary/types';
+
 
 export const WALLET_LEDGER = 'WALLET_LEDGER';
 export const WALLET_TREZOR = 'WALLET_TREZOR';
@@ -84,6 +87,19 @@ export const BITCOIN_TX_VERSION = 2;
 export const LEDGER_APP_BTC_TEST = 'Bitcoin Test';
 export const LEDGER_APP_BTC = 'Bitcoin';
 
+export const VALUE_INCOMPLETE_MESSAGE = 'Not Found';
+
+export const TX_SUMMARY_SET_AMOUNT = 'TX_SUMMARY_SET_AMOUNT';
+export const TX_SUMMARY_SET_AMOUNT_USD = 'TX_SUMMARY_SET_AMOUNT_USD';
+export const TX_SUMMARY_SET_FEE = 'TX_SUMMARY_SET_FEE';
+export const TX_SUMMARY_SET_FEE_USD = 'TX_SUMMARY_SET_FEE_USD';
+export const TX_SUMMARY_SET_FEE_PLUS_AMOUNT = 'TX_SUMMARY_SET_FEE_PLUS_AMOUNT';
+export const TX_SUMMARY_SET_FEE_PLUS_AMOUNT_USD = 'TX_SUMMARY_SET_FEE_PLUS_AMOUNT_USD';
+export const TX_SUMMARY_SET_CHUNKED_RECIPIENT_ADDRESS = 'TX_SUMMARY_SET_CHUNKED_RECIPIENT_ADDRESS';
+export const TX_SUMMARY_SET_CHUNKED_REFUND_ADDRESS = 'TX_SUMMARY_SET_CHUNKED_REFUND_ADDRESS';
+export const TX_SUMMARY_SET_COMPUTED_TX_ID = 'TX_SUMMARY_SET_COMPUTED_TX_ID';
+export const TX_SUMMARY_SET_REFUND_ADDRESS = 'TX_SUMMARY_SET_REFUND_ADDRESS';
+
 // eslint-disable-next-line no-shadow
 export enum PegStatus {
   WAITING_CONFIRMATIONS = 'WAITING_CONFIRMATIONS',
@@ -128,3 +144,23 @@ export const getClearPeginTxState = (): PegInTxState => ({
   isValidAmountToTransfer: false,
   rskAddressSelected: '',
 });
+
+export function getClearTxSummaryState(): txSummaryState {
+  return {
+    amount: '',
+    amountUSD: '',
+    fee: '',
+    feeUSD: '',
+    feePlusAmount: '',
+    feePlusAmountUSD: '',
+    chunkedRecipientAddress: '',
+    chunkedRefundAddress: '',
+    computedTxId: '',
+    computedRefundAddress: '',
+
+    txIdValue: '',
+    expand: '',
+    expandOver: false,
+    fixedUSDDecimals: 2,
+  };
+}
