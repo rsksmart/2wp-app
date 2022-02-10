@@ -1,4 +1,5 @@
 import * as constants from '@/store/constants';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 export function getAccountType(address: string): string {
   const [legacyTestReg, segwitTestReg, nativeTestReg] = [
@@ -25,5 +26,17 @@ export class Machine<States extends string> {
 
   public send(newValue: States) {
     this.value = newValue;
+  }
+}
+
+export function getMainLogo() {
+  switch (EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin) {
+    case constants.BTC_NETWORK_TESTNET:
+      // eslint-disable-next-line global-require
+      return require('@/assets/logo-beta-testnet.svg');
+    case constants.BTC_NETWORK_MAINNET:
+    default:
+      // eslint-disable-next-line global-require
+      return require('@/assets/logo-beta.svg');
   }
 }
