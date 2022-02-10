@@ -19,6 +19,8 @@ export class EnvironmentVariables {
 
   public vueAppWalletAddressesPerCallLedger: number;
 
+  public vueAppHotjarId: string;
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(defaultValues: any = {}) {
     this.vueAppCoin = process.env.VUE_APP_COIN || defaultValues.vueAppCoin;
@@ -43,5 +45,13 @@ export class EnvironmentVariables {
     // eslint-disable-next-line operator-linebreak
       = Number(process.env.VUE_APP_WALLET_ADDRESSES_PER_CALL_LEDGER)
       || defaultValues.vueAppWalletAddressesPerCallLedger;
+
+    let hotjarID = defaultValues.vueAppHotjarId;
+    if (process.env.VUE_APP_HOTJAR_ID) {
+      const hotjarType = process.env.VUE_APP_HOTJAR_ID;
+      hotjarID = process.env[hotjarType];
+    }
+
+    this.vueAppHotjarId = hotjarID;
   }
 }
