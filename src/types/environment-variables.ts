@@ -19,7 +19,7 @@ export class EnvironmentVariables {
 
   public vueAppWalletAddressesPerCallLedger: number;
 
-  public vueAppHotjarId: string;
+  public vueAppHotjarId: number;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(defaultValues: any = {}) {
@@ -45,8 +45,6 @@ export class EnvironmentVariables {
     // eslint-disable-next-line operator-linebreak
       = Number(process.env.VUE_APP_WALLET_ADDRESSES_PER_CALL_LEDGER)
       || defaultValues.vueAppWalletAddressesPerCallLedger;
-
-
-    this.vueAppHotjarId = process.env.VUE_APP_HOTJAR_ID;
+    this.vueAppHotjarId = process.env.VUE_APP_HOTJAR_ID || defaultValues.vueAppHotjarId;
   }
 }
