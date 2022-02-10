@@ -46,12 +46,7 @@ export class EnvironmentVariables {
       = Number(process.env.VUE_APP_WALLET_ADDRESSES_PER_CALL_LEDGER)
       || defaultValues.vueAppWalletAddressesPerCallLedger;
 
-    let hotjarID = defaultValues.vueAppHotjarId;
-    if (process.env.VUE_APP_HOTJAR_ID) {
-      const hotjarType = process.env.VUE_APP_HOTJAR_ID;
-      hotjarID = process.env[hotjarType];
-    }
 
-    this.vueAppHotjarId = hotjarID;
+    this.vueAppHotjarId = process.env.VUE_APP_HOTJAR_ID;
   }
 }
