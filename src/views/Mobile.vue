@@ -24,25 +24,15 @@
 import {
   Component, Vue,
 } from 'vue-property-decorator';
-import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
-import * as constants from '@/store/constants';
+import { getMainLogo } from '../services/utils';
 
 @Component({
   components: {},
 })
 export default class Mobile extends Vue {
-  vueAppCoin = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
-
+  // eslint-disable-next-line class-methods-use-this
   get logo() {
-    switch (this.vueAppCoin) {
-      case constants.BTC_NETWORK_TESTNET:
-        // eslint-disable-next-line global-require
-        return require('@/assets/logo-beta-testnet.svg');
-      case constants.BTC_NETWORK_MAINNET:
-      default:
-        // eslint-disable-next-line global-require
-        return require('@/assets/logo-beta.svg');
-    }
+    return getMainLogo();
   }
 }
 

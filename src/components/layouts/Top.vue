@@ -5,11 +5,10 @@
         <v-col cols="auto" class="top-logo">
           <v-col cols="auto" class="px-0 pb-1">
             <v-img @click="toExchange" position="center left"
-                   src="@/assets/logo-beta.svg"
+                   :src="log"
                    alt="RSK Two Way Peg"
-                   height="65" width="150" contain class="rsk-main-logo"/>
+                   height="105" width="210" contain class="rsk-main-logo"/>
           </v-col>
-          <span v-if="isTestNet">testnet</span>
         </v-col>
       </v-col>
     </v-row>
@@ -20,6 +19,7 @@
 import { Vue, Component, Emit } from 'vue-property-decorator';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import * as constants from '@/store/constants';
+import { getMainLogo } from '../../services/utils';
 
 @Component
 export default class Top extends Vue {
@@ -32,6 +32,11 @@ export default class Top extends Vue {
 
   get isTestNet() {
     return this.environmentVariables.vueAppCoin === constants.BTC_NETWORK_TESTNET;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  get log() {
+    return getMainLogo();
   }
 }
 </script>
