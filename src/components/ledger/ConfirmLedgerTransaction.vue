@@ -170,7 +170,9 @@ import {
   Component, Emit, Prop,
   Vue,
 } from 'vue-property-decorator';
-import { NormalizedTx, TxData } from '@/types';
+import {
+  NormalizedTx, TxData, LedgerTx, LedgerSignedTx,
+} from '@/types';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import ApiService from '@/services/ApiService';
 import AdvancedData from '@/components/exchange/AdvancedData.vue';
@@ -217,8 +219,8 @@ export default class ConfirmLedgerTransaction extends Vue {
     this.confirmTxState.send('loading');
     await this.walletService.stopAskingForBalance()
       .then(() => this.txBuilder.buildTx())
-      .then(() => this.txBuilder.sign())
-      .then((tx) => ApiService
+      .then((ledgerTx: LedgerTx) => this.walletService.sign(ledgerTx) as Promise<LedgerSignedTx>)
+      .then((tx: LedgerSignedTx) => ApiService
         .broadcast(tx.signedTx))
       .then((txId) => {
         this.txId = txId;
