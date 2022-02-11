@@ -2,21 +2,15 @@ import { TxInputType, TxOutputType } from 'trezor-connect';
 import { WalletAddress } from '@/store/peginTx/types';
 import {
   InputScriptType,
-  NormalizedInput, NormalizedOutput, TrezorSignedTx, TrezorTx,
+  NormalizedInput, NormalizedOutput, TrezorTx,
 } from '@/types';
 import { getAccountType } from '@/services/utils';
 import store from '../../store';
 import * as constants from '@/store/constants';
 import TxBuilder from './TxBuilder';
-import TrezorService from '@/services/TrezorService';
 
 export default class TrezorTxBuilder extends TxBuilder {
   private tx!: TrezorTx;
-
-  constructor() {
-    super();
-    this.walletService = new TrezorService();
-  }
 
   buildTx(): Promise<TrezorTx> {
     return new Promise<TrezorTx>((resolve, reject) => {
@@ -34,10 +28,6 @@ export default class TrezorTxBuilder extends TxBuilder {
         reject(new Error('There is no Normalized transaction created'));
       }
     });
-  }
-
-  public sign(): Promise<TrezorSignedTx> {
-    return this.walletService.sign(this.tx) as Promise<TrezorSignedTx>;
   }
 
   static getOutputs(outputs: NormalizedOutput[]): TxOutputType[] {

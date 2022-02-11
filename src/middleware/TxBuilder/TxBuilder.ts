@@ -1,12 +1,11 @@
 import * as bitcoin from 'bitcoinjs-lib';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import {
-  NormalizedInput, NormalizedTx, SignedTx, Tx,
+  NormalizedInput, NormalizedTx, Tx,
 } from '@/types';
 import * as constants from '@/store/constants';
 import ApiService from '@/services/ApiService';
 import store from '@/store';
-import { WalletService } from '@/services/WalletService';
 import { WalletAddress } from '@/store/peginTx/types';
 
 export default abstract class TxBuilder {
@@ -18,11 +17,9 @@ export default abstract class TxBuilder {
 
   protected changeAddr: string;
 
-  protected walletService!: WalletService;
-
   private txAccountType: string;
 
-  protected constructor() {
+  constructor() {
     this.coin = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
     this.network = this.coin === constants.BTC_NETWORK_MAINNET
       ? bitcoin.networks.bitcoin : bitcoin.networks.testnet;
@@ -39,8 +36,6 @@ export default abstract class TxBuilder {
   }
 
   public abstract buildTx(): Promise<Tx>;
-
-  public abstract sign(): Promise<SignedTx>;
 
   get changeAddress(): string {
     return this.changeAddr;

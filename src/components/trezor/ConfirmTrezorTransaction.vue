@@ -184,7 +184,9 @@ import {
   Vue,
 } from 'vue-property-decorator';
 import TrezorTxBuilder from '@/middleware/TxBuilder/TrezorTxBuilder';
-import { NormalizedTx, TxData } from '@/types';
+import {
+  NormalizedTx, TxData, TrezorSignedTx, TrezorTx,
+} from '@/types';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import ApiService from '@/services/ApiService';
 import SatoshiBig from '@/types/SatoshiBig';
@@ -230,8 +232,8 @@ export default class ConfirmTrezorTransaction extends Vue {
     this.confirmTxState.send('loading');
     await this.walletService.stopAskingForBalance()
       .then(() => this.txBuilder.buildTx())
-      .then(() => this.txBuilder.sign())
-      .then((trezorSignedTx) => ApiService
+      .then((tx: TrezorTx) => this.walletService.sign(tx) as Promise<TrezorSignedTx>)
+      .then((trezorSignedTx: TrezorSignedTx) => ApiService
         .broadcast(trezorSignedTx.payload.serializedTx))
       .then((txId) => {
         this.txId = txId;
