@@ -68,6 +68,6 @@ export type SendBitcoinState = 'idle' | 'loading' | 'error';
 
 declare global {
   interface Navigator {
-      brave: any;
+      brave: unknown;
   }
 }
