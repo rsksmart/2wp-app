@@ -69,8 +69,8 @@
             <v-row v-else class="mx-0 progress-bar">
               <v-col  cols="8" class="pa-0">
                 <div class="d-flex justify-start">
-                  <div style="{ z-index: 5; position: absolute;
-                    margin-left: -75px; margin-top: -30px; }">
+                  <div style="z-index: 5; position: absolute;
+                    margin-left: -75px; margin-top: -30px;">
                     <v-row>
                       <v-img class="d-flex justify-center"
                              src="@/assets/status/btc-green.png" height="78" contain/>
