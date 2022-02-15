@@ -3,6 +3,7 @@ import Vuex, { StoreOptions } from 'vuex';
 import { RootState } from './types';
 import { pegInTx } from './peginTx';
 import { web3Session } from './session';
+import { txSummary } from './txSummary';
 
 Vue.use(Vuex);
 
@@ -13,6 +14,7 @@ const store: StoreOptions<RootState> = {
   modules: {
     pegInTx,
     web3Session,
+    txSummary,
   },
 };
 

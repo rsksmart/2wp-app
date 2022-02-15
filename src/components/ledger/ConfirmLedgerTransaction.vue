@@ -132,8 +132,7 @@
     </v-row>
     <v-divider/>
     <v-row class="mx-0 my-8">
-      <tx-summary :txData="txData" :price="price" :showTxId="false" :initial-expand="true"
-                  :rskFederationAddress="rskFederationAddress"/>
+      <tx-summary />
     </v-row>
     <v-row class="mx-0 my-8">
       <advanced-data :rawTx="rawTx" :initial-expand="false"/>
@@ -169,6 +168,7 @@
 </template>
 
 <script lang="ts">
+import { Action } from 'vuex-class';
 import {
   Component, Emit, Prop,
   Vue,

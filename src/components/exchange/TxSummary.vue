@@ -37,10 +37,10 @@
                       <span>{{ amount }} {{environmentContext.getBtcTicker()}}</span>
                     </v-row>
                     <v-row class="mx-0">
-                      <span class="grayish" id="amount-usd">USD $ {{ amountUSD }}</span>
+                      <span class="grayish" id="amount-usd"> USD $ {{ amountUSD }}</span>
                     </v-row>
                   </v-col>
-                  <v-col class="mb-2">
+                  <!-- <v-col class="mb-2">
                     <v-row class="mx-0">
                       <h3>Transaction fee</h3>
                     </v-row>
@@ -50,7 +50,7 @@
                     <v-row class="mx-0">
                       <span class="grayish" id="fee-usd">USD $ {{ feeUSD }}</span>
                     </v-row>
-                  </v-col>
+                  </v-col> -->
                   <v-col>
                     <v-row class="mx-0">
                       <h3>Transaction total</h3>
@@ -66,7 +66,7 @@
               </v-row>
             </v-col>
             <v-divider inset vertical/>
-            <v-col cols="8" class="px-0 pl-lg-4 pt-0 pb-0">
+            <!-- <v-col cols="8" class="px-0 pl-lg-4 pt-0 pb-0">
               <v-container class="pr-md-0">
                 <v-row class="mx-0" align="start">
                   <h3 class="mr-1">Destination {{environmentContext.getRskText()}} address</h3>
@@ -152,7 +152,7 @@
                   </v-row>
                 </v-container>
               </template>
-            </v-col>
+            </v-col> -->
           </v-row>
         </div>
       </v-expand-transition>
@@ -162,10 +162,9 @@
 
 <script lang="ts">
 import {
-  Component, Emit, Prop,
-  Vue,
+  Component, Emit, Vue,
 } from 'vue-property-decorator';
-import Big from 'big.js';
+import { State, Getter } from 'vuex-class';
 import { TxData } from '@/types';
 import * as constants from '@/store/constants';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
@@ -173,79 +172,44 @@ import EnvironmentContextProviderService from '@/providers/EnvironmentContextPro
 
 @Component
 export default class TxSummary extends Vue {
-  @Prop() txData!: TxData;
-
-  @Prop() price!: number;
-
-  @Prop() txId!: string;
-
-  @Prop() showTxId!: false;
-
-  @Prop() initialExpand!: boolean;
-
-  @Prop() rskFederationAddress!: string;
-
   txIdValue = '';
 
   expanded = false;
+  
+  expandOver = false;
 
-  isMouseOver = false;
+  @State('txData') txData!: TxData;
 
-  fixedUSDDecimals = 2;
+  @State('price') price!: number;
 
-  VALUE_INCOMPLETE_MESSAGE = 'Not Found';
+  @State('txId') txId!: string;
+
+  @State('showTxId') showTxId!: boolean;
+
+  @State('initialExpand') initialExpand!: boolean;
+
+  @State('rskFederationAddress') rskFederationAddress!: string;
+
+  @Getter(constants.TX_SUMMARY_GET_AMOUNT_USD, { namespace: 'txSummary' }) amountUSD!: () => string;
+
+  @Getter(constants.TX_SUMMARY_GET_FEE, { namespace: 'txSummary' }) fee!: () => string;
+
+  @Getter(constants.TX_SUMMARY_GET_FEE_USD, { namespace: 'txSummary' }) feeUSD!: () => string;
+
+  @Getter(constants.TX_SUMMARY_GET_FEE_PLUS_AMOUNT, { namespace: 'txSummary' }) feePlusAmount!: () => string;
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
   get amount(): string {
-    if (!this.txData.amount) return this.VALUE_INCOMPLETE_MESSAGE;
+    if (!this.txData.amount) return constants.VALUE_INCOMPLETE_MESSAGE;
     return this.txData.amount.toBTCString();
   }
 
-  get amountUSD(): string {
-    if (!this.txData.amount || !this.price) return this.VALUE_INCOMPLETE_MESSAGE;
-    return this.txData.amount.toUSDFromBTCString(this.price, this.fixedUSDDecimals);
-  }
+  @Getter(constants.TX_SUMMARY_GET_CHUNKED_REFUND_ADDRESS, { namespace: 'txSummary' }) chunkedRecipientAddress!: () => string;
 
-  get fee() {
-    if (!this.txData.feeBTC) return this.VALUE_INCOMPLETE_MESSAGE;
-    return this.txData.feeBTC.toBTCString();
-  }
-
-  get feeUSD() {
-    if (!this.txData.feeBTC || !this.price) return this.VALUE_INCOMPLETE_MESSAGE;
-    return this.txData.feeBTC.toUSDFromBTCString(this.price, this.fixedUSDDecimals);
-  }
-
-  get feePlusAmount(): string {
-    if (!this.txData.amount || !this.txData.feeBTC) return this.VALUE_INCOMPLETE_MESSAGE;
-    return this.txData.amount.plus(this.txData.feeBTC).toBTCString();
-  }
-
-  get feePlusAmountUSD() {
-    if (!this.txData.amount || !this.txData.feeBTC || !this.price) {
-      return this.VALUE_INCOMPLETE_MESSAGE;
-    }
-    return Big(this.amountUSD).plus(Big(this.feeUSD)).toFixed(this.fixedUSDDecimals);
-  }
-
-  get chunkedRecipientAddress() {
-    return this.txData.recipient ? `${this.txData.recipient.substr(0, 25)}...${this
-      .txData.recipient.substr(38, 42)}` : this.VALUE_INCOMPLETE_MESSAGE;
-  }
-
-  get chunkedRefundAddress() {
-    return this.txData.refundAddress ? `${this.txData.refundAddress.substr(0, 24)}...${this
-      .txData.refundAddress.substr(31, 35)}` : this.VALUE_INCOMPLETE_MESSAGE;
-  }
-
-  get computedTxId() {
-    return this.txIdValue ? `${this.txIdValue.substr(0, 24)}...${this.txIdValue.substr(60, 64)}` : this.VALUE_INCOMPLETE_MESSAGE;
-  }
-
-  get computedRefundAddress() {
-    return this.txData.refundAddress !== '' ? this.txData.refundAddress : this.VALUE_INCOMPLETE_MESSAGE;
-  }
+  @Getter(constants.TX_SUMMARY_GET_COMPUTED_TX_ID, { namespace: 'txSummary' }) computedTxId!: () => string;
+  
+  @Getter(constants.TX_SUMMARY_GET_COMPUTED_REFUND_ADDRESS, { namespace: 'txSummary' }) computedRefundAddress!: () => string;
 
   @Emit()
   switchExpand() {
