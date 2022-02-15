@@ -77,4 +77,22 @@
       color: #C4C4C4;
     }
   }
+  .expand-btn-active {
+    background-color: #00B520 !important;
+    border-color: transparent !important;
+    .content {
+      font-weight: 750;
+      font-size: 15px;
+      color: #FFFFFF !important;
+    }
+  }
+  .expand-btn-inactive {
+    background-color: #FFFFFF !important;
+    border-color: #00B520 !important;
+    .content {
+      font-weight: 750;
+      font-size: 15px;
+      color: #00B520 !important;
+    }
+  }
 }
