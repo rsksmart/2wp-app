@@ -175,6 +175,8 @@ import { PegInTxState } from '@/store/peginTx/types';
 export default class TxSummary extends Vue {
   @Prop() initialExpand!: boolean;
 
+  @Prop() txId!: string;
+
   @Prop() showTxId!: boolean;
 
   txIdValue = '';
@@ -268,7 +270,7 @@ export default class TxSummary extends Vue {
 
   created() {
     this.expanded = this.initialExpand;
-    this.txIdValue = this.peginTxState.sessionId;
+    this.txIdValue = this.txId;
     this.rskFederationAddress = this.peginTxState.peginConfiguration.federationAddress;
   }
 }
