@@ -40,7 +40,7 @@
                       <span class="grayish" id="amount-usd"> USD $ {{ amountUSD }}</span>
                     </v-row>
                   </v-col>
-                  <!-- <v-col class="mb-2">
+                  <v-col class="mb-2">
                     <v-row class="mx-0">
                       <h3>Transaction fee</h3>
                     </v-row>
@@ -50,7 +50,7 @@
                     <v-row class="mx-0">
                       <span class="grayish" id="fee-usd">USD $ {{ feeUSD }}</span>
                     </v-row>
-                  </v-col> -->
+                  </v-col>
                   <v-col>
                     <v-row class="mx-0">
                       <h3>Transaction total</h3>
@@ -66,7 +66,7 @@
               </v-row>
             </v-col>
             <v-divider inset vertical/>
-            <!-- <v-col cols="8" class="px-0 pl-lg-4 pt-0 pb-0">
+            <v-col cols="8" class="px-0 pl-lg-4 pt-0 pb-0">
               <v-container class="pr-md-0">
                 <v-row class="mx-0" align="start">
                   <h3 class="mr-1">Destination {{environmentContext.getRskText()}} address</h3>
@@ -85,7 +85,7 @@
                 <v-row class="mx-0">
                   <v-col cols="auto"
                          class="d-flex flex-column justify-end ma-0 pa-0">
-                    <span class="breakable-address">{{ txData.recipient }}</span>
+                    <span class="breakable-address">{{ peginTxState.rskAddressSelected }}</span>
                   </v-col>
                   <v-col cols="auto"
                          class="d-flex flex-column justify-end ma-0 pa-0 ml-lg-1">
@@ -152,7 +152,7 @@
                   </v-row>
                 </v-container>
               </template>
-            </v-col> -->
+            </v-col>
           </v-row>
         </div>
       </v-expand-transition>
@@ -162,69 +162,109 @@
 
 <script lang="ts">
 import {
-  Component, Emit, Vue,
+  Component, Emit, Vue, Prop,
 } from 'vue-property-decorator';
+import Big from 'big.js';
 import { State, Getter } from 'vuex-class';
-import { TxData } from '@/types';
 import * as constants from '@/store/constants';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
+import { PegInTxState } from '@/store/peginTx/types';
 
 @Component
 export default class TxSummary extends Vue {
+  @Prop() initialExpand!: boolean;
+
+  @Prop() showTxId!: boolean;
+
   txIdValue = '';
 
   expanded = false;
-  
+
   expandOver = false;
 
-  @State('txData') txData!: TxData;
+  fixedUSDDecimals = 2;
 
-  @State('price') price!: number;
+  isMouseOver = true;
 
-  @State('txId') txId!: string;
+  rskFederationAddress = '';
 
-  @State('showTxId') showTxId!: boolean;
-
-  @State('initialExpand') initialExpand!: boolean;
-
-  @State('rskFederationAddress') rskFederationAddress!: string;
-
-  @Getter(constants.TX_SUMMARY_GET_AMOUNT_USD, { namespace: 'txSummary' }) amountUSD!: () => string;
-
-  @Getter(constants.TX_SUMMARY_GET_FEE, { namespace: 'txSummary' }) fee!: () => string;
-
-  @Getter(constants.TX_SUMMARY_GET_FEE_USD, { namespace: 'txSummary' }) feeUSD!: () => string;
-
-  @Getter(constants.TX_SUMMARY_GET_FEE_PLUS_AMOUNT, { namespace: 'txSummary' }) feePlusAmount!: () => string;
+  VALUE_INCOMPLETE_MESSAGE = 'Not Found';
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
-  get amount(): string {
-    if (!this.txData.amount) return constants.VALUE_INCOMPLETE_MESSAGE;
-    return this.txData.amount.toBTCString();
-  }
+  @State('pegInTx') peginTxState!: PegInTxState;
 
-  @Getter(constants.TX_SUMMARY_GET_CHUNKED_REFUND_ADDRESS, { namespace: 'txSummary' }) chunkedRecipientAddress!: () => string;
-
-  @Getter(constants.TX_SUMMARY_GET_COMPUTED_TX_ID, { namespace: 'txSummary' }) computedTxId!: () => string;
-  
-  @Getter(constants.TX_SUMMARY_GET_COMPUTED_REFUND_ADDRESS, { namespace: 'txSummary' }) computedRefundAddress!: () => string;
+  @Getter(constants.PEGIN_TX_GET_REFUND_ADDRESS, { namespace: 'pegInTx' }) refundAddress!: string;
 
   @Emit()
   switchExpand() {
     this.expanded = !this.expanded;
   }
 
+  get amount(): string {
+    if (!this.peginTxState.amountToTransfer) return this.VALUE_INCOMPLETE_MESSAGE;
+    return this.peginTxState.amountToTransfer.toBTCString();
+  }
+
+  get amountUSD(): string {
+    const { amountToTransfer, bitcoinPrice } = this.peginTxState;
+    if (!amountToTransfer || !bitcoinPrice) return this.VALUE_INCOMPLETE_MESSAGE;
+    return amountToTransfer.toUSDFromBTCString(bitcoinPrice, this.fixedUSDDecimals);
+  }
+
+  get fee(): string {
+    const feeBTC = this.peginTxState.calculatedFees.average;
+
+    if (!feeBTC) return this.VALUE_INCOMPLETE_MESSAGE;
+    return feeBTC.toBTCString();
+  }
+
+  get feeUSD(): string {
+    const feeBTC = this.peginTxState.calculatedFees.average;
+
+    if (!feeBTC || !this.peginTxState.bitcoinPrice) return this.VALUE_INCOMPLETE_MESSAGE;
+    return feeBTC.toUSDFromBTCString(this.peginTxState.bitcoinPrice, this.fixedUSDDecimals);
+  }
+
+  get feePlusAmount(): string {
+    const feeBTC = this.peginTxState.calculatedFees.average;
+    if (!this.peginTxState.amountToTransfer || !feeBTC) return this.VALUE_INCOMPLETE_MESSAGE;
+    return this.peginTxState.amountToTransfer.plus(feeBTC).toBTCString();
+  }
+
+  get feePlusAmountUSD(): string {
+    const feeBTC = this.peginTxState.calculatedFees.average.toBTCString();
+
+    if (!this.amount || !feeBTC || !this.peginTxState.bitcoinPrice) {
+      return this.VALUE_INCOMPLETE_MESSAGE;
+    }
+    return Big(this.amountUSD).plus(Big(this.feeUSD)).toFixed(this.fixedUSDDecimals);
+  }
+
+  get chunkedRecipientAddress(): string {
+    const recipient = this.peginTxState.rskAddressSelected;
+    return recipient ? `${recipient.substr(0, 25)}...${recipient.substr(38, 42)}` : this.VALUE_INCOMPLETE_MESSAGE;
+  }
+
+  get computedTxId(): string {
+    return this.txIdValue ? `${this.txIdValue.substr(0, 24)}...${this.txIdValue.substr(60, 64)}` : this.VALUE_INCOMPLETE_MESSAGE;
+  }
+
+  get computedRefundAddress(): string {
+    return this.refundAddress !== '' ? this.refundAddress : this.VALUE_INCOMPLETE_MESSAGE;
+  }
+
   @Emit()
   toRskExplorer() {
     const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_MAINNET ? '' : '.testnet';
-    window.open(`https://explorer${network}.rsk.co/address/${this.txData.recipient}`, '_blank');
+    window.open(`https://explorer${network}.rsk.co/address/${this.peginTxState.rskAddressSelected}`, '_blank');
   }
 
   created() {
     this.expanded = this.initialExpand;
-    this.txIdValue = this.txId;
+    this.txIdValue = this.peginTxState.sessionId;
+    this.rskFederationAddress = this.peginTxState.peginConfiguration.federationAddress;
   }
 }
 </script>
