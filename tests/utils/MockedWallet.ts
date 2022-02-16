@@ -14,7 +14,7 @@ export default class MockedWallet extends WalletService {
   testCase:TestCase;
 
   constructor(testCase: TestCase) {
-    super(constants.BTC_NETWORK_TESTNET);
+    super();
     this.testCase = testCase;
   }
 
