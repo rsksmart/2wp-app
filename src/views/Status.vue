@@ -146,9 +146,7 @@
         </v-row>
       </v-container>
       <v-container fluid class="transactions px-0">
-        <tx-summary v-if="showStatus" :txData="txData" :price="peginTxState.bitcoinPrice"
-                    :txId="txId" :showTxId="true" :initialExpand="true"
-                    :rsk-federation-address="pegInStatus.btc.federationAddress"/>
+        <tx-summary :showTxId="false" :initial-expand="true"/>
         <v-row justify="center" class="mx-0 mt-5">
           <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
             <v-btn rounded outlined color="#00B520" width="110" @click="back">
