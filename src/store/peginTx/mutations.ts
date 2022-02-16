@@ -20,6 +20,9 @@ export const mutations: MutationTree<PegInTxState> = {
   [constants.PEGIN_TX_SET_SESSION_ID]: (state, sessionId: string) => {
     state.sessionId = sessionId;
   },
+  [constants.PEGIN_TX_CLEAR_SESSION_ID]: (state) => {
+    state.sessionId = '';
+  },
   [constants.PEGIN_TX_SET_PEGIN_CONFIGURATION]: (state, peginConfiguration: PeginConfiguration) => {
     state.peginConfiguration = peginConfiguration;
   },

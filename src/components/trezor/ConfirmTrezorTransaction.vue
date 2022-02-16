@@ -184,6 +184,7 @@ import {
   Component, Emit, Prop,
   Vue,
 } from 'vue-property-decorator';
+import { Action } from 'vuex-class';
 import TrezorTxBuilder from '@/middleware/TxBuilder/TrezorTxBuilder';
 import { NormalizedTx, TxData } from '@/types';
 import TxSummary from '@/components/exchange/TxSummary.vue';
@@ -193,6 +194,7 @@ import AdvancedData from '@/components/exchange/AdvancedData.vue';
 import { WalletService } from '@/services/WalletService';
 import { Machine } from '@/services/utils';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
+import * as constants from '@/store/constants';
 
 @Component({
   components: {
@@ -226,6 +228,8 @@ export default class ConfirmTrezorTransaction extends Vue {
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
+  @Action(constants.PEGIN_TX_CLEAR_SESSION_ID, { namespace: 'pegInTx' }) clearSessionId !: () => void;
+
   @Emit('successConfirmation')
   async toTrackId() {
     this.confirmTxState.send('loading');
@@ -236,6 +240,7 @@ export default class ConfirmTrezorTransaction extends Vue {
         .broadcast(trezorSignedTx.payload.serializedTx))
       .then((txId) => {
         this.txId = txId;
+        this.clearSessionId();
       })
       .catch((err) => {
         this.confirmTxState.send('error');

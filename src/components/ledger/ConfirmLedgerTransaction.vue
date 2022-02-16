@@ -173,6 +173,7 @@ import {
   Component, Emit, Prop,
   Vue,
 } from 'vue-property-decorator';
+import { Action } from 'vuex-class';
 import { NormalizedTx, TxData } from '@/types';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import ApiService from '@/services/ApiService';
@@ -218,6 +219,8 @@ export default class ConfirmLedgerTransaction extends Vue {
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
+  @Action(constants.PEGIN_TX_CLEAR_SESSION_ID, { namespace: 'pegInTx' }) clearSessionId !: () => void;
+
   get showUnverifiedInputsDialog() {
     return this.txBuilder.accountType === constants.BITCOIN_SEGWIT_ADDRESS && this.confirmTxState.matches(['loading']);
   }
@@ -232,6 +235,7 @@ export default class ConfirmLedgerTransaction extends Vue {
         .broadcast(tx.signedTx))
       .then((txId) => {
         this.txId = txId;
+        this.clearSessionId();
       })
       .catch((err) => {
         this.confirmTxState.send('error');

@@ -27,6 +27,9 @@ export const actions: ActionTree<PegInTxState, RootState> = {
         commit(constants.PEGIN_TX_SET_SESSION_ID, config.sessionId);
       });
   },
+  [constants.PEGIN_TX_CLEAR_SESSION_ID]: ({ commit }) => {
+    commit(constants.PEGIN_TX_CLEAR_SESSION_ID);
+  },
   [constants.PEGIN_TX_ADD_SESSION_ID]: ({ commit }, sessionId: string) => {
     commit(constants.PEGIN_TX_SET_SESSION_ID, sessionId);
   },
