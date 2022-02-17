@@ -146,8 +146,7 @@
     </v-row>
     <v-divider/>
     <v-row class="mx-0 my-8">
-      <tx-summary :txData="txData" :price="price" :showTxId="false" :initial-expand="true"
-                  :rskFederationAddress="rskFederationAddress"/>
+      <tx-summary :showTxId="false" :initial-expand="true"/>
     </v-row>
     <v-row class="mx-0 my-8">
       <advanced-data :rawTx="rawTx" :initial-expand="false"/>
