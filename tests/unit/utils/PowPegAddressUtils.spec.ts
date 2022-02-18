@@ -47,5 +47,5 @@ describe('function: isValidPowPegAddress', () => {
     const result = isValidPowPegAddress([normalizedOutput1, normalizedOutput2], 'address2');
     expect(result).to.be.true;
   });
-  
+
 });

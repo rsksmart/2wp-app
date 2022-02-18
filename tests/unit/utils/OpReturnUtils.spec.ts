@@ -10,7 +10,7 @@ describe('function: isValidOptReturn', () => {
   });
 
   it('destinationAddress empty', async () => {
-    const opReturn = '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa014a74c48b9e3a5644adb734ab536cab6ae28e85ce';  
+    const opReturn = '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa014a74c48b9e3a5644adb734ab536cab6ae28e85ce';
     const normalizedOutput: NormalizedOutput = {
       amount: '0',
       op_return_data: opReturn,
@@ -20,7 +20,7 @@ describe('function: isValidOptReturn', () => {
   });
 
   it('opReturn is not the first one value in the array', async () => {
-    const opReturn = '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa01ccc198c15d8344c73da67a75509a85a8f4226636';  
+    const opReturn = '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa01ccc198c15d8344c73da67a75509a85a8f4226636';
     const normalizedOutput: NormalizedOutput = {
       amount: '0',
       op_return_data: opReturn,
@@ -34,7 +34,7 @@ describe('function: isValidOptReturn', () => {
   });
 
   it('wrong value for RSK destination address', async () => {
-    const opReturn = '52534b5401224d0b72bab9342f898c633ef187abccccccc0fa01ccc198c15d8344c73da67a75509a85a8f4226636';  
+    const opReturn = '52534b5401224d0b72bab9342f898c633ef187abccccccc0fa01ccc198c15d8344c73da67a75509a85a8f4226636';
     const normalizedOutput: NormalizedOutput = {
       amount: '0',
       op_return_data: opReturn,
