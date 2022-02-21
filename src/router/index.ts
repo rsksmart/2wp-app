@@ -15,12 +15,6 @@ const routes: Array<RouteConfig> = [
     props: (route) => ({ peg: route.params.peg }),
   },
   {
-    path: '/exchange',
-    name: 'Exchange',
-    component: () => import(/* webpackChunkName: "exchange" */ '../views/Exchange.vue'),
-    props: (route) => ({ selectedWalletComponent: route.params.selectedWallet }),
-  },
-  {
     path: '/status/txId/:txId',
     name: 'Status',
     component: () => import(/* webpackChunkName: "transactions" */ '../views/Status.vue'),
@@ -37,9 +31,15 @@ const routes: Array<RouteConfig> = [
     component: () => import(/* webpackChunkName: "transactions" */ '../views/PegIn.vue'),
   },
   {
-    path: '/pegin/create',
+    path: '/pegin/create/:wallet',
     name: 'Create',
     component: () => import(/* webpackChunkName: "transactions" */ '../views/Create.vue'),
+  },
+  {
+    path: '/pegin/exchange',
+    name: 'Exchange',
+    component: () => import(/* webpackChunkName: "exchange" */ '../views/Exchange.vue'),
+    props: (route) => ({ selectedWalletComponent: route.params.selectedWallet }),
   },
 ];
 
