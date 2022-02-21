@@ -8,7 +8,6 @@
     <template v-if="trezorDataReady">
       <component :is="currentComponent" :balances="balances"
                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
-                 @unused="getUnusedAddresses" :unusedAddresses="unusedAddresses"
                  :tx="createdTx" :txBuilder="txBuilder" :txData="txData"
                  :price="peginTxState.bitcoinPrice" :walletService="trezorService"
                  :txId="txId" @back="back" :loadingBalances="loadingBalances"
@@ -86,8 +85,6 @@ export default class SendBitcoinTrezor extends Vue {
   trezorConnected = false;
 
   currentComponent = 'PegInForm';
-
-  unusedAddresses: string[] = [];
 
   txId = '';
 
@@ -275,17 +272,6 @@ export default class SendBitcoinTrezor extends Vue {
     }
     this.addBalanceStore(balanceInformed);
     this.balances = balanceInformed;
-  }
-
-  @Emit()
-  getUnusedAddresses({ flag, accountType }: {flag: boolean; accountType: string}) {
-    if (flag) {
-      this.trezorService.getAccountUnusedAddresses(accountType)
-        .then((ua) => {
-          this.unusedAddresses = ua;
-        })
-        .catch(console.error);
-    }
   }
 
   @Emit('back')

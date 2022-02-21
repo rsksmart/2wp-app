@@ -97,32 +97,6 @@ export default class TrezorService extends WalletService {
     });
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  public getAccountUnusedAddresses(accountType: string): Promise<string[]> {
-    return new Promise((resolve, reject) => {
-      TrezorConnect.getAccountInfo({
-        path: this.getAccountPath(accountType, 0),
-        coin: this.coin,
-        details: 'txs',
-      })
-        .then((result) => {
-          if (!result.success) reject(new Error(result.payload.error));
-          const unusedAddresses: string[] = [];
-          if ('addresses' in result.payload) {
-            const { addresses } = result.payload;
-            if (addresses && 'unused' in addresses) {
-              Object.entries(addresses.unused)
-                .forEach((obj) => {
-                  unusedAddresses.push(obj[1].address);
-                });
-            }
-          }
-          resolve(unusedAddresses);
-        })
-        .catch(reject);
-    });
-  }
-
   public sign(tx: Tx): Promise<TrezorSignedTx> {
     const trezorTx: TrezorTx = tx as TrezorTx;
     return new Promise<TrezorSignedTx>((resolve, reject) => {

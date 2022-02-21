@@ -95,8 +95,6 @@ export default class PegInForm extends Vue {
 
   @Prop() loadingBalances!: boolean;
 
-  @Prop() unusedAddresses?: [];
-
   @State('pegInTx') pegInTxState!: PegInTxState;
 
   @Getter(constants.PEGIN_TX_GET_REFUND_ADDRESS, { namespace: 'pegInTx' }) refundAddress!: string;
