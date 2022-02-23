@@ -297,7 +297,6 @@ export default class SendBitcoinTrezor extends Vue {
     this.sendBitcoinState = 'idle';
     this.trezorConnected = false;
     this.currentComponent = 'PegInForm';
-    this.unusedAddresses = [];
     this.txId = '';
     this.txError = '';
     this.createdTx = {
