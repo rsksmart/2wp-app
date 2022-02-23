@@ -1,5 +1,5 @@
 import {
-  GetAddress, Address, SignTransaction, SignedTransaction,
+  GetAddress, SignTransaction,
 } from 'trezor-connect';
 import { WalletAddress } from '@/store/peginTx/types';
 import { mockedData } from './mockedData';
@@ -84,7 +84,8 @@ export default class TrezorConnect {
     return bundle;
   }
 
-  // eslint-disable-next-line no-inner-declarations,@typescript-eslint/no-empty-function
+  // eslint-disable-next-line max-len
+  // eslint-disable-next-line no-inner-declarations,@typescript-eslint/no-empty-function,@typescript-eslint/no-unused-vars
   static manifest(params: { email: string, appUrl: string }): void {}
 
   static getAddress(params: { bundle: GetAddress[] }):
@@ -108,6 +109,7 @@ export default class TrezorConnect {
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   static signTransaction(params: SignTransaction):
     Promise<signTransactionResponse> {
     return new Promise<signTransactionResponse>((resolve) => {
