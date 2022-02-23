@@ -37,7 +37,7 @@
                       <span>{{ amount }} {{environmentContext.getBtcTicker()}}</span>
                     </v-row>
                     <v-row class="mx-0">
-                      <span class="grayish" id="amount-usd">USD $ {{ amountUSD }}</span>
+                      <span class="grayish" id="amount-usd"> USD $ {{ amountUSD }}</span>
                     </v-row>
                   </v-col>
                   <v-col class="mb-2">
@@ -85,7 +85,7 @@
                 <v-row class="mx-0">
                   <v-col cols="auto"
                          class="d-flex flex-column justify-end ma-0 pa-0">
-                    <span class="breakable-address">{{ txData.recipient }}</span>
+                    <span class="breakable-address">{{ peginTxState.rskAddressSelected }}</span>
                   </v-col>
                   <v-col cols="auto"
                          class="d-flex flex-column justify-end ma-0 pa-0 ml-lg-1">
@@ -162,105 +162,114 @@
 
 <script lang="ts">
 import {
-  Component, Emit, Prop,
-  Vue,
+  Component, Emit, Vue, Prop,
 } from 'vue-property-decorator';
 import Big from 'big.js';
-import { TxData } from '@/types';
+import { State, Getter } from 'vuex-class';
 import * as constants from '@/store/constants';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
+import { PegInTxState } from '@/store/peginTx/types';
 
 @Component
 export default class TxSummary extends Vue {
-  @Prop() txData!: TxData;
-
-  @Prop() price!: number;
+  @Prop() initialExpand!: boolean;
 
   @Prop() txId!: string;
 
-  @Prop() showTxId!: false;
-
-  @Prop() initialExpand!: boolean;
-
-  @Prop() rskFederationAddress!: string;
+  @Prop() showTxId!: boolean;
 
   txIdValue = '';
 
   expanded = false;
 
-  isMouseOver = false;
+  expandOver = false;
 
   fixedUSDDecimals = 2;
+
+  isMouseOver = true;
+
+  rskFederationAddress = '';
 
   VALUE_INCOMPLETE_MESSAGE = 'Not Found';
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
-  get amount(): string {
-    if (!this.txData.amount) return this.VALUE_INCOMPLETE_MESSAGE;
-    return this.txData.amount.toBTCString();
-  }
+  @State('pegInTx') peginTxState!: PegInTxState;
 
-  get amountUSD(): string {
-    if (!this.txData.amount || !this.price) return this.VALUE_INCOMPLETE_MESSAGE;
-    return this.txData.amount.toUSDFromBTCString(this.price, this.fixedUSDDecimals);
-  }
-
-  get fee() {
-    if (!this.txData.feeBTC) return this.VALUE_INCOMPLETE_MESSAGE;
-    return this.txData.feeBTC.toBTCString();
-  }
-
-  get feeUSD() {
-    if (!this.txData.feeBTC || !this.price) return this.VALUE_INCOMPLETE_MESSAGE;
-    return this.txData.feeBTC.toUSDFromBTCString(this.price, this.fixedUSDDecimals);
-  }
-
-  get feePlusAmount(): string {
-    if (!this.txData.amount || !this.txData.feeBTC) return this.VALUE_INCOMPLETE_MESSAGE;
-    return this.txData.amount.plus(this.txData.feeBTC).toBTCString();
-  }
-
-  get feePlusAmountUSD() {
-    if (!this.txData.amount || !this.txData.feeBTC || !this.price) {
-      return this.VALUE_INCOMPLETE_MESSAGE;
-    }
-    return Big(this.amountUSD).plus(Big(this.feeUSD)).toFixed(this.fixedUSDDecimals);
-  }
-
-  get chunkedRecipientAddress() {
-    return this.txData.recipient ? `${this.txData.recipient.substr(0, 25)}...${this
-      .txData.recipient.substr(38, 42)}` : this.VALUE_INCOMPLETE_MESSAGE;
-  }
-
-  get chunkedRefundAddress() {
-    return this.txData.refundAddress ? `${this.txData.refundAddress.substr(0, 24)}...${this
-      .txData.refundAddress.substr(31, 35)}` : this.VALUE_INCOMPLETE_MESSAGE;
-  }
-
-  get computedTxId() {
-    return this.txIdValue ? `${this.txIdValue.substr(0, 24)}...${this.txIdValue.substr(60, 64)}` : this.VALUE_INCOMPLETE_MESSAGE;
-  }
-
-  get computedRefundAddress() {
-    return this.txData.refundAddress !== '' ? this.txData.refundAddress : this.VALUE_INCOMPLETE_MESSAGE;
-  }
+  @Getter(constants.PEGIN_TX_GET_REFUND_ADDRESS, { namespace: 'pegInTx' }) refundAddress!: string;
 
   @Emit()
   switchExpand() {
     this.expanded = !this.expanded;
   }
 
+  get amount(): string {
+    if (!this.peginTxState.amountToTransfer) return this.VALUE_INCOMPLETE_MESSAGE;
+    return this.peginTxState.amountToTransfer.toBTCString();
+  }
+
+  get amountUSD(): string {
+    const { amountToTransfer, bitcoinPrice } = this.peginTxState;
+    if (!amountToTransfer || !bitcoinPrice) return this.VALUE_INCOMPLETE_MESSAGE;
+    return amountToTransfer.toUSDFromBTCString(bitcoinPrice, this.fixedUSDDecimals);
+  }
+
+  get feeBTC() {
+    let feeBTC = this.peginTxState.calculatedFees.average;
+    if (this.peginTxState.selectedFee === constants.BITCOIN_SLOW_FEE_LEVEL) {
+      feeBTC = this.peginTxState.calculatedFees.slow;
+    } else if (this.peginTxState.selectedFee === constants.BITCOIN_FAST_FEE_LEVEL) {
+      feeBTC = this.peginTxState.calculatedFees.fast;
+    }
+    return feeBTC;
+  }
+
+  get fee(): string {
+    if (!this.feeBTC) return this.VALUE_INCOMPLETE_MESSAGE;
+    return this.feeBTC.toBTCString();
+  }
+
+  get feeUSD(): string {
+    if (!this.feeBTC || !this.peginTxState.bitcoinPrice) return this.VALUE_INCOMPLETE_MESSAGE;
+    return this.feeBTC.toUSDFromBTCString(this.peginTxState.bitcoinPrice, this.fixedUSDDecimals);
+  }
+
+  get feePlusAmount(): string {
+    if (!this.peginTxState.amountToTransfer || !this.feeBTC) return this.VALUE_INCOMPLETE_MESSAGE;
+    return this.peginTxState.amountToTransfer.plus(this.feeBTC).toBTCString();
+  }
+
+  get feePlusAmountUSD(): string {
+    if (!this.amount || !this.feeBTC || !this.peginTxState.bitcoinPrice) {
+      return this.VALUE_INCOMPLETE_MESSAGE;
+    }
+    return Big(this.amountUSD).plus(Big(this.feeUSD)).toFixed(this.fixedUSDDecimals);
+  }
+
+  get chunkedRecipientAddress(): string {
+    const recipient = this.peginTxState.rskAddressSelected;
+    return recipient ? `${recipient.substr(0, 25)}...${recipient.substr(38, 42)}` : this.VALUE_INCOMPLETE_MESSAGE;
+  }
+
+  get computedTxId(): string {
+    return this.txIdValue ? `${this.txIdValue.substr(0, 24)}...${this.txIdValue.substr(60, 64)}` : this.VALUE_INCOMPLETE_MESSAGE;
+  }
+
+  get computedRefundAddress(): string {
+    return this.refundAddress !== '' ? this.refundAddress : this.VALUE_INCOMPLETE_MESSAGE;
+  }
+
   @Emit()
   toRskExplorer() {
     const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_MAINNET ? '' : '.testnet';
-    window.open(`https://explorer${network}.rsk.co/address/${this.txData.recipient}`, '_blank');
+    window.open(`https://explorer${network}.rsk.co/address/${this.peginTxState.rskAddressSelected}`, '_blank');
   }
 
   created() {
     this.expanded = this.initialExpand;
     this.txIdValue = this.txId;
+    this.rskFederationAddress = this.peginTxState.peginConfiguration.federationAddress;
   }
 }
 </script>
