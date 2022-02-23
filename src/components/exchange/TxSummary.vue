@@ -219,7 +219,7 @@ export default class TxSummary extends Vue {
     let feeBTC = this.peginTxState.calculatedFees.average;
     if (this.peginTxState.selectedFee === constants.BITCOIN_SLOW_FEE_LEVEL) {
       feeBTC = this.peginTxState.calculatedFees.slow;
-    } else if (this.peginTxState.selectedFee === 'BITCOIN_FAST_FEE_LEVEL') {
+    } else if (this.peginTxState.selectedFee === constants.BITCOIN_FAST_FEE_LEVEL) {
       feeBTC = this.peginTxState.calculatedFees.fast;
     }
     return feeBTC;
