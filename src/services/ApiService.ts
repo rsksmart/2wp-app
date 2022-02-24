@@ -102,8 +102,16 @@ export default class ApiService {
     return new Promise<PeginStatus>((resolve, reject) => {
       axios.get(`${this.baseURL}/pegin-status?txId=${txId}`)
         .then((response) => {
-          if (response.data.error) reject(response.data.error);
-          resolve(response.data);
+          if (!response.data) {
+            return reject(new Error('No data was returned'));
+          }
+          if (response.data.error) {
+            return reject(response.data.error);
+          }
+          if (!response.data.status) {
+            return reject(new Error('Empty response from server'));
+          }
+          return resolve(response.data);
         })
         .catch(reject);
     });

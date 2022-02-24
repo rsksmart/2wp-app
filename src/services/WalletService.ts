@@ -151,7 +151,6 @@ export abstract class WalletService {
             segwit: new SatoshiBig(balanceAccumulated.segwit.plus(balances.segwit), 'satoshi'),
             nativeSegwit: new SatoshiBig(balanceAccumulated.nativeSegwit.plus(balances.nativeSegwit), 'satoshi'),
           };
-          this.informSubscribers(balanceAccumulated);
         } else {
           const listOfAddresses: string[] = [];
           addresses.forEach((element) => { listOfAddresses.push(element.address); });
@@ -161,6 +160,7 @@ export abstract class WalletService {
             return;
           }
         }
+        this.informSubscribers(balanceAccumulated);
       } else {
         throw new Error('Error getting balances');
       }

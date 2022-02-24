@@ -21,6 +21,8 @@ export class EnvironmentVariables {
 
   public vueAppRskExplorer: string;
 
+  public vueAppHotjarId: number;
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(defaultValues: any = {}) {
     this.vueAppCoin = process.env.VUE_APP_COIN || defaultValues.vueAppCoin;
@@ -46,5 +48,6 @@ export class EnvironmentVariables {
       = Number(process.env.VUE_APP_WALLET_ADDRESSES_PER_CALL_LEDGER)
       || defaultValues.vueAppWalletAddressesPerCallLedger;
     this.vueAppRskExplorer = process.env.VUE_APP_RSK_EXPLORER || defaultValues.vueAppRskExplorer;
+    this.vueAppHotjarId = process.env.VUE_APP_HOTJAR_ID || defaultValues.vueAppHotjarId;
   }
 }

@@ -27,6 +27,7 @@ const defaultEnvironmentVariables = {
   vueAppWalletAddressesPerCallTrezor: '10',
   vueAppWalletMaxCallLedger: '2',
   vueAppWalletAddressesPerCallLedger: '2',
+  vueAppHotjarId: '',
 };
 
 EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
