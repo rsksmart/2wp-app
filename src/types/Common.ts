@@ -1,4 +1,3 @@
-import { Network } from 'bitcoinjs-lib';
 import SatoshiBig from '@/types/SatoshiBig';
 
 export interface Tx {
@@ -31,12 +30,6 @@ export interface NormalizedTx extends Tx {
   outputs: NormalizedOutput[];
 }
 
-export interface Signer {
-  network: Network;
-  publicKey: Buffer;
-  sign: (hash: any) => Buffer;
-}
-
 export interface AccountBalance {
   legacy: SatoshiBig;
   segwit: SatoshiBig;
@@ -65,3 +58,9 @@ export interface PegInFormValues {
 }
 
 export type SendBitcoinState = 'idle' | 'loading' | 'error';
+
+declare global {
+  interface Navigator {
+      brave: unknown;
+  }
+}

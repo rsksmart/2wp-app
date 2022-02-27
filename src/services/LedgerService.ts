@@ -5,7 +5,7 @@ import * as bitcoin from 'bitcoinjs-lib';
 import * as constants from '@/store/constants';
 import { WalletAddress } from '@/store/peginTx/types';
 import {
-  LedgerjsTransaction, LedgerSignedTx, LedgerTx, SignedTx, Signer, Tx,
+  LedgerjsTransaction, LedgerSignedTx, LedgerTx, Tx,
 } from '@/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import { WalletService } from './WalletService';
@@ -133,131 +133,25 @@ export default class LedgerService extends WalletService {
     return format;
   }
 
-  static compressPublicKey(pubKey: string): string {
-    const { publicKey } = bitcoin.ECPair.fromPublicKey(Buffer.from(pubKey, 'hex'));
-    return publicKey.toString('hex');
-  }
-
-  private static signTx(tx: Tx): Promise<string> {
+  // eslint-disable-next-line class-methods-use-this
+  sign(tx: Tx): Promise<LedgerSignedTx> {
     const ledgerTx: LedgerTx = tx as LedgerTx;
+    const isSegwitTx = ledgerTx.accountType === constants.BITCOIN_SEGWIT_ADDRESS;
     return LedgerTransportService.getInstance()
       .enqueueRequest(
-        (transport: TransportWebUSB) => new Promise<string>((resolve, reject) => {
+        (transport: TransportWebUSB) => new Promise<LedgerSignedTx>((resolve, reject) => {
           const btc = new AppBtc(transport);
           btc.createPaymentTransactionNew({
             inputs: ledgerTx.inputs.map((input) => [input.tx, input.outputIndex, null, null]),
             associatedKeysets: ledgerTx.associatedKeysets,
             outputScriptHex: ledgerTx.outputScriptHex,
+            segwit: isSegwitTx,
+            useTrustedInputForSegwit: isSegwitTx,
           })
-            .then(resolve)
+            .then((signedTx) => resolve({ signedTx }))
             .catch(reject);
         }),
       );
-  }
-
-  private getRedeem(publicKey: string): Buffer | undefined {
-    const pubkey = LedgerService.compressPublicKey(publicKey);
-    const pair = bitcoin.ECPair.fromPublicKey(Buffer.from(pubkey, 'hex'));
-    const p2wpkh = bitcoin.payments.p2wpkh({ pubkey: pair.publicKey, network: this.network });
-    const p2sh = bitcoin.payments.p2sh({ redeem: p2wpkh, network: this.network });
-    return p2sh.redeem?.output;
-  }
-
-  signSegwitTx(tx: LedgerTx): Promise<string> {
-    const psbt = new bitcoin.Psbt({ network: this.network });
-    return new Promise<string>((resolve, reject) => {
-      tx.inputs.forEach((input) => {
-        const utxo = bitcoin.Transaction.fromHex(input.hex);
-        const redeemScript = this.getRedeem(input.publicKey);
-        psbt.addInput({
-          hash: utxo.getHash(),
-          index: input.outputIndex,
-          nonWitnessUtxo: utxo.toBuffer(),
-          redeemScript,
-        });
-      });
-      tx.outputs.forEach((output) => {
-        if (output.op_return_data) {
-          const buffer = Buffer.from(output.op_return_data, 'hex');
-          const script: bitcoin.Payment = bitcoin.payments.embed({ data: [buffer] });
-          if (script.output) {
-            psbt.addOutput({
-              script: script.output,
-              value: 0,
-            });
-          }
-        } else if (output.address) {
-          psbt.addOutput({
-            address: output.address,
-            value: Number(output.amount),
-          });
-        }
-      });
-      psbt.setVersion(constants.BITCOIN_TX_VERSION);
-      this.signP2SH(tx)
-        .then((signatures) => signatures
-          .map((signature, index) => psbt
-            .signInput(index, this.generateSigner(signature, tx.inputs[index].publicKey))))
-        .then(() => psbt.validateSignaturesOfAllInputs())
-        .then((validatedTx) => {
-          if (!validatedTx) reject(new Error('Invalid Transaction.'));
-          psbt.finalizeAllInputs();
-          const hexTx = psbt.extractTransaction().toHex();
-          resolve(hexTx);
-        })
-        .catch(reject);
-    });
-  }
-
-  private generateSigner(signature: string, publicKey: string): Signer {
-    const pair = bitcoin.ECPair.fromPublicKey(Buffer.from(publicKey, 'hex'));
-    return {
-      network: this.network,
-      publicKey: pair.publicKey,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      sign: ($hash: Buffer) => {
-        const encodedSignature = Buffer.from(signature, 'hex');
-        const decoded = bitcoin.script.signature.decode(encodedSignature);
-        return decoded.signature;
-      },
-    };
-  }
-
-  private signP2SH(tx: LedgerTx): Promise<string[]> {
-    return LedgerTransportService.getInstance()
-      .enqueueRequest(
-        ((transport: TransportWebUSB) => new Promise<string[]>((resolve, reject) => {
-          const LOCK_TIME = 0;
-          const SIGHASH_ALL = 1;
-          const btc = new AppBtc(transport);
-          btc.signP2SHTransaction({
-            inputs: tx.inputs.map((input) => [
-              input.tx,
-              input.outputIndex,
-              this.getLedgerRedeemScript(input.publicKey),
-              null,
-            ]),
-            transactionVersion: constants.BITCOIN_TX_VERSION,
-            associatedKeysets: tx.associatedKeysets,
-            outputScriptHex: tx.outputScriptHex,
-            lockTime: LOCK_TIME,
-            sigHashType: SIGHASH_ALL,
-            segwit: true,
-          })
-            .then(resolve)
-            .catch(reject);
-        })),
-      );
-  }
-
-  private getLedgerRedeemScript(publicKey: string): string {
-    const pubkey = Buffer.from(LedgerService.compressPublicKey(publicKey), 'hex');
-    const p2pkh = bitcoin.payments.p2pkh({ pubkey, network: this.network });
-    if (p2pkh.output) {
-      return p2pkh.output.toString('hex');
-    }
-    console.error('Error getting Redeem script');
-    return '';
   }
 
   public static getApp(transport: TransportWebUSB):
@@ -301,24 +195,6 @@ export default class LedgerService extends WalletService {
           else reject(new Error('You are not in the required App. Check your Ledger device and try again'));
         })
         .catch(reject);
-    });
-  }
-
-  sign(tx: Tx): Promise<SignedTx> {
-    const ledgerTx = tx as LedgerTx;
-    return new Promise<LedgerSignedTx>((resolve, reject) => {
-      switch (ledgerTx.accountType) {
-        case constants.BITCOIN_SEGWIT_ADDRESS:
-          this.signSegwitTx(ledgerTx)
-            .then((signedTx) => resolve({ signedTx }))
-            .catch(reject);
-          break;
-        case constants.BITCOIN_LEGACY_ADDRESS:
-        default:
-          LedgerService.signTx(ledgerTx)
-            .then((signedTx) => resolve({ signedTx }))
-            .catch(reject);
-      }
     });
   }
 }

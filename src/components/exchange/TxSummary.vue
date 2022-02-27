@@ -8,20 +8,13 @@
         <h2 class="text-center tx-text">Transaction summary:</h2>
       </v-row>
       <v-row class="d-flex justify-center mb-n3">
-        <button v-show="expanded" @click="switchExpand"
-                @mouseover="isMouseOver = true" @mouseleave="isMouseOver = false">
-          <v-img v-show="!isMouseOver" src="@/assets/status/collapse-2.png"
-                 contain eager max-width="30" />
-          <v-img v-show="isMouseOver" src="@/assets/status/collapse-2-green.png"
-                 contain eager max-width="30" />
-        </button>
-        <button v-show="!expanded" @click="switchExpand"
-                @mouseover="isMouseOver = true" @mouseleave="isMouseOver = false">
-          <v-img v-show="!isMouseOver" src="@/assets/status/collapse.png"
-                 contain eager max-width="30" />
-          <v-img v-show="isMouseOver" src="@/assets/status/collapse-green.png"
-                 contain eager max-width="30" />
-        </button>
+        <v-btn fab x-small outlined color="green" @click="switchExpand"
+               v-bind:class="[this.over ? 'expand-btn-active' : 'expand-btn-inactive']"
+               @mouseover="over = true" @mouseleave="over = false">
+          <span class="content">
+            {{ expanded ? '-' : '+'}}
+          </span>
+        </v-btn>
       </v-row>
       <v-expand-transition>
         <div class="box" v-show="expanded">
@@ -183,11 +176,9 @@ export default class TxSummary extends Vue {
 
   expanded = false;
 
-  expandOver = false;
+  over = false;
 
   fixedUSDDecimals = 2;
-
-  isMouseOver = true;
 
   rskFederationAddress = '';
 

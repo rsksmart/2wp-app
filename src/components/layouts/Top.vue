@@ -9,7 +9,6 @@
                    :alt="`${environmentContext.getRskText()} Two Way Peg`"
                    height="65" width="150" contain class="rsk-main-logo"/>
           </v-col>
-          <span v-if="isTestNet">testnet</span>
         </v-col>
       </v-col>
     </v-row>
@@ -21,6 +20,7 @@ import { Vue, Component, Emit } from 'vue-property-decorator';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import * as constants from '@/store/constants';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
+import { getMainLogo } from '@/services/utils';
 
 @Component
 export default class Top extends Vue {
@@ -35,6 +35,11 @@ export default class Top extends Vue {
 
   get isTestNet() {
     return this.environmentVariables.vueAppCoin === constants.BTC_NETWORK_TESTNET;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  get log() {
+    return getMainLogo();
   }
 }
 </script>
