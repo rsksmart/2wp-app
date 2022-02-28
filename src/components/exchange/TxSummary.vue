@@ -8,7 +8,7 @@
         <h2 class="text-center tx-text">Transaction summary:</h2>
       </v-row>
       <v-row class="d-flex justify-center mb-n3">
-        <v-btn fab x-small outlined color="green" @click="switchExpand"
+        <v-btn class="btn-focus-out" fab x-small outlined color="green" @click="switchExpand"
                v-bind:class="[this.over ? 'expand-btn-active' : 'expand-btn-inactive']"
                @mouseover="over = true" @mouseleave="over = false">
           <span class="content">
