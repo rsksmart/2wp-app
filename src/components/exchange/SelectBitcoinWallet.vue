@@ -105,9 +105,9 @@ export default class SelectBitcoinWallet extends Vue {
   toSendBitcoin(): void {
     this.addPeg('PEG_IN');
     if (this.peginTxState.bitcoinWallet === constants
-      .WALLET_LEDGER) this.$router.push({ name: 'Create' });
+      .WALLET_LEDGER) this.$router.push({ name: 'Create', params: { wallet: 'ledger' } });
     if (this.peginTxState.bitcoinWallet === constants
-      .WALLET_TREZOR) this.$router.push({ name: 'Create' });
+      .WALLET_TREZOR) this.$router.push({ name: 'Create', params: { wallet: 'trezor' } });
   }
 }
 </script>

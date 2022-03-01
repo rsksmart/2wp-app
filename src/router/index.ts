@@ -37,7 +37,7 @@ const routes: Array<RouteConfig> = [
     component: () => import(/* webpackChunkName: "transactions" */ '../views/PegIn.vue'),
   },
   {
-    path: '/pegin/create',
+    path: '/pegin/:wallet/create',
     name: 'Create',
     component: () => import(/* webpackChunkName: "transactions" */ '../views/Create.vue'),
   },
