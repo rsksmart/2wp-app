@@ -12,7 +12,6 @@ const routes: Array<RouteConfig> = [
     path: '/',
     name: 'Home',
     component: Home,
-    props: (route) => ({ peg: route.params.peg }),
   },
   {
     path: '/status/txId/:txId',

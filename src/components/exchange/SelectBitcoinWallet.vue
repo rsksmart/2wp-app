@@ -54,11 +54,10 @@
 
 <script lang="ts">
 import {
-  Vue, Component, Emit, Prop,
+  Vue, Component, Emit,
 } from 'vue-property-decorator';
 import { Action, State } from 'vuex-class';
 import * as constants from '@/store/constants';
-import { TransactionType } from '@/store/session/types';
 import { BtcWallet, PegInTxState } from '@/store/peginTx/types';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
@@ -70,11 +69,7 @@ export default class SelectBitcoinWallet extends Vue {
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
-  @Prop({ default: '' }) peg!: string;
-
   @State('pegInTx') peginTxState!: PegInTxState;
-
-  @Action(constants.SESSION_ADD_TX_TYPE, { namespace: 'web3Session' }) addPeg!: (peg: TransactionType) => void;
 
   @Action(constants.PEGIN_TX_ADD_BITCOIN_WALLET, { namespace: 'pegInTx' }) addBitcoinWallet !: (wallet: BtcWallet) => void;
 
@@ -95,7 +90,6 @@ export default class SelectBitcoinWallet extends Vue {
   }
 
   @Emit()
-  // eslint-disable-next-line class-methods-use-this
   back():void {
     this.reset();
     this.$router.push({ name: 'Home' });
@@ -103,11 +97,23 @@ export default class SelectBitcoinWallet extends Vue {
 
   @Emit()
   toSendBitcoin(): void {
-    this.addPeg('PEG_IN');
-    if (this.peginTxState.bitcoinWallet === constants
-      .WALLET_LEDGER) this.$router.push({ name: 'Create', params: { wallet: 'ledger' } });
-    if (this.peginTxState.bitcoinWallet === constants
-      .WALLET_TREZOR) this.$router.push({ name: 'Create', params: { wallet: 'trezor' } });
+    let wallet: string;
+    switch (this.peginTxState.bitcoinWallet) {
+      case 'WALLET_TREZOR':
+        wallet = 'trezor';
+        break;
+      case 'WALLET_LEDGER':
+        wallet = 'ledger';
+        break;
+      default:
+        wallet = '';
+        break;
+    }
+    if (wallet) {
+      this.$router.push({ name: 'Create', params: { wallet } });
+    } else {
+      this.$router.push({ name: 'Home' });
+    }
   }
 }
 </script>
