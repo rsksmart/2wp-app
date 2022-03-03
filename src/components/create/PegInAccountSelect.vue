@@ -151,7 +151,7 @@ export default class PegInAccountSelect extends Vue {
       {
         text: this.getAccountBalanceText(constants.BITCOIN_NATIVE_SEGWIT_ADDRESS),
         value: constants.BITCOIN_NATIVE_SEGWIT_ADDRESS,
-        disabled: this.pegInTxState.bitcoinWallet === constants.WALLET_LEDGER,
+        disabled: false,
       },
     ];
   }

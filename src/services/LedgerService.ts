@@ -79,6 +79,11 @@ export default class LedgerService extends WalletService {
             .BITCOIN_SEGWIT_ADDRESS, accountIndex, change, index),
           format: 'p2sh',
         });
+        bundle.push({
+          derivationPath: super.getDerivationPath(constants
+            .BITCOIN_NATIVE_SEGWIT_ADDRESS, accountIndex, change, index),
+          format: 'bech32',
+        });
         change = !change;
       });
     }
@@ -136,7 +141,8 @@ export default class LedgerService extends WalletService {
   // eslint-disable-next-line class-methods-use-this
   sign(tx: Tx): Promise<LedgerSignedTx> {
     const ledgerTx: LedgerTx = tx as LedgerTx;
-    const isSegwitTx = ledgerTx.accountType === constants.BITCOIN_SEGWIT_ADDRESS;
+    const isSegwit = ledgerTx.accountType === constants.BITCOIN_SEGWIT_ADDRESS;
+    const isNativeSegwit = ledgerTx.accountType === constants.BITCOIN_NATIVE_SEGWIT_ADDRESS;
     return LedgerTransportService.getInstance()
       .enqueueRequest(
         (transport: TransportWebUSB) => new Promise<LedgerSignedTx>((resolve, reject) => {
@@ -145,8 +151,9 @@ export default class LedgerService extends WalletService {
             inputs: ledgerTx.inputs.map((input) => [input.tx, input.outputIndex, null, null]),
             associatedKeysets: ledgerTx.associatedKeysets,
             outputScriptHex: ledgerTx.outputScriptHex,
-            segwit: isSegwitTx,
-            useTrustedInputForSegwit: isSegwitTx,
+            segwit: isSegwit || isNativeSegwit,
+            useTrustedInputForSegwit: isSegwit || isNativeSegwit,
+            additionals: isNativeSegwit ? ['bech32'] : [],
           })
             .then((signedTx) => resolve({ signedTx }))
             .catch(reject);
