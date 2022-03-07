@@ -93,7 +93,7 @@
           <legend align="center" class="px-4">See on Trezor</legend>
           <v-row justify="center" class="mt-5 mx-0">Confirm sending</v-row>
           <v-row justify="center" class="mt-5 mx-0 text-center" >
-            Amount: {{txData.amount.toBTCTrimmedString()}}
+            Amount: {{pegInTxState.amountToTransfer.toBTCTrimmedString()}}
           </v-row>
           <v-row justify="center" class="mt-5 mx-0 d-none d-lg-block">
             <v-col class="pa-0 d-flex flex-column align-center">
@@ -138,7 +138,7 @@
             Amount: {{computedFullAmount}}
           </v-row>
           <v-row justify="center" class="mt-5 mx-0 text-center">
-            Fee: {{txData.feeBTC.toBTCTrimmedString()}}
+            Fee: {{safeFee.toBTCTrimmedString()}}
           </v-row>
           <v-row justify="center" class="mt-5 mb-3 mx-0">Confirm</v-row>
         </fieldset>
@@ -183,9 +183,10 @@ import {
   Component, Emit, Prop,
   Vue,
 } from 'vue-property-decorator';
+import { State } from 'vuex-class';
 import TrezorTxBuilder from '@/middleware/TxBuilder/TrezorTxBuilder';
 import {
-  NormalizedTx, TxData, TrezorSignedTx, TrezorTx,
+  TrezorSignedTx, TrezorTx,
 } from '@/types';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import ApiService from '@/services/ApiService';
@@ -194,6 +195,7 @@ import AdvancedData from '@/components/exchange/AdvancedData.vue';
 import { WalletService } from '@/services/WalletService';
 import { Machine } from '@/services/utils';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
+import { PegInTxState } from '@/store/peginTx/types';
 
 @Component({
   components: {
@@ -215,15 +217,11 @@ export default class ConfirmTrezorTransaction extends Vue {
 
   rawTx = '';
 
-  @Prop() tx!: NormalizedTx;
-
   @Prop() txBuilder!: TrezorTxBuilder;
 
   @Prop() walletService!: WalletService;
 
-  @Prop() txData!: TxData;
-
-  @Prop() price!: number;
+  @State('pegInTx') pegInTxState!: PegInTxState;
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
@@ -267,14 +265,14 @@ export default class ConfirmTrezorTransaction extends Vue {
   }
 
   get opReturnData(): string {
-    const opReturnDataOutput = this.tx?.outputs[0] ?? { script_type: '' };
+    const opReturnDataOutput = this.pegInTxState.normalizedTx.outputs[0] ?? { script_type: '' };
     return opReturnDataOutput.op_return_data
       ? `${opReturnDataOutput.op_return_data.substr(0, 45)}...`
       : 'OP_RETURN data not found';
   }
 
   get rskFederationAddress():string {
-    return this.tx?.outputs[1]?.address?.trim() ?? `${this.environmentContext.getBtcText()} Powpeg address not found`;
+    return this.pegInTxState.normalizedTx.outputs[1]?.address?.trim() ?? `${this.environmentContext.getBtcText()} Powpeg address not found`;
   }
 
   get changeAddress(): string {
@@ -284,13 +282,32 @@ export default class ConfirmTrezorTransaction extends Vue {
   }
 
   get changeAmount(): string {
-    const changeAmount = new SatoshiBig(this.tx?.outputs[2]?.amount ?? 0, 'satoshi');
+    const changeAmount = new SatoshiBig(this.pegInTxState.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
     return changeAmount.toBTCTrimmedString();
   }
 
+  get safeFee(): SatoshiBig {
+    let fee: SatoshiBig;
+    switch (this.pegInTxState.selectedFee) {
+      case 'BITCOIN_SLOW_FEE_LEVEL':
+        fee = this.pegInTxState.calculatedFees.slow;
+        break;
+      case 'BITCOIN_FAST_FEE_LEVEL':
+        fee = this.pegInTxState.calculatedFees.fast;
+        break;
+      case 'BITCOIN_AVERAGE_FEE_LEVEL':
+        fee = this.pegInTxState.calculatedFees.average;
+        break;
+      default:
+        fee = this.pegInTxState.calculatedFees.average;
+        break;
+    }
+    return fee;
+  }
+
   get computedFullAmount(): string {
-    const changeAmount = new SatoshiBig(this.tx?.outputs[2]?.amount ?? 0, 'satoshi');
-    return this.txData.amount.plus(this.txData.feeBTC)
+    const changeAmount = new SatoshiBig(this.pegInTxState.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
+    return this.pegInTxState.amountToTransfer.plus(this.safeFee)
       .plus(changeAmount)
       .toBTCTrimmedString();
   }

@@ -1,4 +1,4 @@
-import { AccountBalance, FeeAmountData } from '@/types';
+import { AccountBalance, FeeAmountData, NormalizedTx } from '@/types';
 import SatoshiBig from '@/types/SatoshiBig';
 
 export type BtcAccount = 'BITCOIN_LEGACY_ADDRESS' |
@@ -55,6 +55,7 @@ export interface PegInTxState {
   amountToTransfer: SatoshiBig;
   isValidAmountToTransfer: boolean;
   rskAddressSelected: string;
+  normalizedTx: NormalizedTx;
 }
 
 export interface UnusedWalletAddress {

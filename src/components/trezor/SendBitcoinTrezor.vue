@@ -9,7 +9,7 @@
       <component :is="currentComponent" :balances="balances"
                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
                  @unused="getUnusedAddresses" :unusedAddresses="unusedAddresses"
-                 :tx="createdTx" :txBuilder="txBuilder" :txData="txData"
+                 :tx="createdTx" :txBuilder="txBuilder"
                  :price="peginTxState.bitcoinPrice" :walletService="trezorService"
                  :txId="txId" @back="back" :loadingBalances="loadingBalances"
                  @toPegInForm="toPegInForm" :pegInFormData="pegInFormData"
@@ -43,7 +43,7 @@ import TrezorService from '@/services/TrezorService';
 import { PegInTxState } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import {
-  AccountBalance, NormalizedTx, PegInFormValues, SendBitcoinState, TxData,
+  AccountBalance, NormalizedTx, PegInFormValues, SendBitcoinState,
 } from '@/types';
 import TrezorTxBuilder from '@/middleware/TxBuilder/TrezorTxBuilder';
 import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
@@ -129,22 +129,14 @@ export default class SendBitcoinTrezor extends Vue {
 
   @Action(constants.PEGIN_TX_ADD_BALANCE, { namespace: 'pegInTx' }) addBalanceStore !: (balance: AccountBalance) => void;
 
+  @Action(constants.PEGIN_TX_ADD_NORMALIZED_TX, { namespace: 'pegInTx' }) addNormalizedTx !: (tx: NormalizedTx) => void;
+
   @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: any;
 
   @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: (accountType: string) => string;
 
   beforeMount() {
     this.showDialog = localStorage.getItem('BTRD_COOKIE_DISABLED') !== 'true';
-  }
-
-  get txData(): TxData {
-    return {
-      amount: this.amount,
-      refundAddress: this.refundAddress,
-      recipient: this.recipient,
-      feeBTC: this.feeBTC,
-      change: '',
-    };
   }
 
   get change() {
@@ -188,6 +180,7 @@ export default class SendBitcoinTrezor extends Vue {
       sessionId: this.peginTxState.sessionId,
     })
       .then((tx: NormalizedTx) => {
+        this.addNormalizedTx(tx);
         this.createdTx = tx;
         this.currentComponent = 'ConfirmTrezorTransaction';
         return tx;

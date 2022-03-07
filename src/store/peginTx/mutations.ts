@@ -5,7 +5,7 @@ import {
   PeginConfiguration, PegInTxState, Utxo, WalletAddress,
 } from './types';
 import SatoshiBig from '@/types/SatoshiBig';
-import { AccountBalance, FeeAmountData } from '@/types';
+import { AccountBalance, FeeAmountData, NormalizedTx } from '@/types';
 
 export const mutations: MutationTree<PegInTxState> = {
   [constants.PEGIN_TX_SET_ADDRESS_LIST]: (state, addressList: WalletAddress[]) => {
@@ -56,5 +56,8 @@ export const mutations: MutationTree<PegInTxState> = {
   },
   [constants.PEGIN_TX_SET_IS_VALID_AMOUNT]: (state, isValid: boolean) => {
     state.isValidAmountToTransfer = isValid;
+  },
+  [constants.PEGIN_TX_SET_NORMALIZED_TX]: (state, tx: NormalizedTx) => {
+    state.normalizedTx = tx;
   },
 };

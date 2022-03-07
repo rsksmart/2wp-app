@@ -9,8 +9,8 @@ import {
 import { RootState } from '../types';
 import ApiService from '@/services/ApiService';
 import SatoshiBig from '@/types/SatoshiBig';
-import { AccountBalance, FeeAmountData } from '@/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import { AccountBalance, FeeAmountData, NormalizedTx } from '@/types';
 
 export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_ADD_ADDRESSES]: ({ commit }, addressList: WalletAddress[]) => {
@@ -91,5 +91,8 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   },
   [constants.PEGIN_TX_ADD_IS_VALID_AMOUNT]: ({ commit }, isValid: boolean): void => {
     commit(constants.PEGIN_TX_SET_IS_VALID_AMOUNT, isValid);
+  },
+  [constants.PEGIN_TX_ADD_NORMALIZED_TX]: ({ commit }, tx: NormalizedTx): void => {
+    commit(constants.PEGIN_TX_SET_NORMALIZED_TX, tx);
   },
 };

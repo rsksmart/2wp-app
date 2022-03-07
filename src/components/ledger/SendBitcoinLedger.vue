@@ -9,7 +9,7 @@
       <component :is="currentComponent" :balances="balances"
                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
                  :tx="createdTx" :txBuilder="txBuilder"
-                 :txData="txData" :txId="txId" @back="back"
+                 :txId="txId" @back="back"
                  :walletService="ledgerService" :price="this.peginTxState.bitcoinPrice"
                  @toPegInForm="toPegInForm" :pegInFormData="pegInFormData"
                  :isBackFromConfirm="isBackFromConfirm"/>
@@ -41,7 +41,7 @@ import LedgerService from '@/services/LedgerService';
 import { PegInTxState } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import {
-  AccountBalance, NormalizedTx, PegInFormValues, SendBitcoinState, TxData,
+  AccountBalance, NormalizedTx, PegInFormValues, SendBitcoinState,
 } from '@/types';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
 import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
@@ -122,22 +122,14 @@ export default class SendBitcoinLedger extends Vue {
 
   @Action(constants.PEGIN_TX_ADD_BALANCE, { namespace: 'pegInTx' }) addBalanceStore !: (balance: AccountBalance) => void;
 
+  @Action(constants.PEGIN_TX_ADD_NORMALIZED_TX, { namespace: 'pegInTx' }) addNormalizedTx !: (tx: NormalizedTx) => void;
+
   @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: any;
 
   @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: (accountType: string) => Promise<string>;
 
   beforeMount() {
     this.showDialog = localStorage.getItem('BTRD_COOKIE_DISABLED') !== 'true';
-  }
-
-  get txData(): TxData {
-    return {
-      amount: this.amount,
-      refundAddress: this.refundAddress,
-      recipient: this.recipient,
-      feeBTC: this.feeBTC,
-      change: '',
-    };
   }
 
   get loadingBalances(): boolean {
@@ -177,6 +169,7 @@ export default class SendBitcoinLedger extends Vue {
       sessionId: this.peginTxState.sessionId,
     })
       .then((tx: NormalizedTx) => {
+        this.addNormalizedTx(tx);
         this.createdTx = tx;
         this.currentComponent = 'ConfirmLedgerTransaction';
         return tx;

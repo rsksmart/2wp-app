@@ -37,6 +37,7 @@ export const PEGIN_TX_ADD_BALANCE = 'PEGIN_TX_ADD_BALANCE';
 export const PEGIN_TX_ADD_RSK_ADDRESS = 'PEGIN_TX_ADD_RSK_ADDRESS';
 export const PEGIN_TX_SELECT_FEE_LEVEL = 'PEGIN_TX_SELECT_FEE_LEVEL';
 export const PEGIN_TX_ADD_IS_VALID_AMOUNT = 'PEGIN_TX_ADD_IS_VALID_AMOUNT';
+export const PEGIN_TX_ADD_NORMALIZED_TX = 'PEGIN_TX_ADD_NORMALIZED_TX';
 // Session actions
 export const WEB3_SESSION_GET_ACCOUNT = 'WEB3_SESSION_GET_ACCOUNT';
 export const SESSION_CONNECT_WEB3 = 'SESSION_CONNECT_WEB3';
@@ -60,6 +61,7 @@ export const PEGIN_TX_SET_RSK_ADDRESS = 'PEGIN_TX_SET_RSK_ADDRESS';
 export const PEGIN_TX_SET_SELECTED_FEE_LEVEL = 'PEGIN_TX_SET_SELECTED_FEE_LEVEL';
 export const PEGIN_TX_SET_IS_VALID_AMOUNT = 'PEGIN_TX_SET_IS_VALID_AMOUNT';
 export const PEGIN_TX_SET_LOADING_FEE = 'PEGIN_TX_SET_LOADING_FEE';
+export const PEGIN_TX_SET_NORMALIZED_TX = 'PEGIN_TX_SET_NORMALIZED_TX';
 // Session mutations
 export const SESSION_SET_ACCOUNT = 'SESSION_SET_ACCOUNT';
 export const SESSION_SET_WEB3_INSTANCE = 'SESSION_SET_WEB3_INSTANCE';
@@ -131,4 +133,9 @@ export const getClearPeginTxState = (): PegInTxState => ({
   amountToTransfer: new SatoshiBig(0, 'btc'),
   isValidAmountToTransfer: false,
   rskAddressSelected: '',
+  normalizedTx: {
+    coin: '',
+    inputs: [],
+    outputs: [],
+  },
 });
