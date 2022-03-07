@@ -35,12 +35,6 @@ const routes: Array<RouteConfig> = [
     name: 'Create',
     component: () => import(/* webpackChunkName: "transactions" */ '../views/Create.vue'),
   },
-  {
-    path: '/pegin/exchange',
-    name: 'Exchange',
-    component: () => import(/* webpackChunkName: "exchange" */ '../views/Exchange.vue'),
-    props: (route) => ({ selectedWalletComponent: route.params.selectedWallet }),
-  },
 ];
 
 const router = new VueRouter({
