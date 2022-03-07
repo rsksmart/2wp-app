@@ -82,7 +82,7 @@
           <legend align="center" class="px-4">See on Ledger</legend>
           <v-row justify="center" class="mt-5 mx-0 text-center">Review output #2</v-row>
           <v-row justify="center" class="mt-5 mx-0 text-center">
-            Amount: {{txData.amount.toBTCTrimmedString()}}
+            Amount: {{pegInTxState.amountToTransfer.toBTCTrimmedString()}}
           </v-row>
           <v-row justify="center" class="mt-5 mx-0 d-none d-lg-block">
             <v-col class="pa-0 d-flex flex-column align-center">
@@ -124,7 +124,7 @@
           <legend align="center" class="px-4">See on Ledger</legend>
           <v-row justify="center" class="mt-5 mx-0 text-center">Confirm transaction</v-row>
           <v-row justify="center" class="mt-5 mx-0 text-center" >
-            Fees: {{txData.feeBTC.toBTCTrimmedString()}}
+            Fees: {{safeFee.toBTCTrimmedString()}}
           </v-row>
           <v-row justify="center" class="mt-5 mb-3 mx-0">Accept and send</v-row>
         </fieldset>
@@ -169,8 +169,9 @@ import {
   Component, Emit, Prop,
   Vue,
 } from 'vue-property-decorator';
+import { State } from 'vuex-class';
 import {
-  NormalizedTx, TxData, LedgerTx, LedgerSignedTx,
+  LedgerTx, LedgerSignedTx,
 } from '@/types';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import ApiService from '@/services/ApiService';
@@ -180,6 +181,7 @@ import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
 import { WalletService } from '@/services/WalletService';
 import { Machine } from '@/services/utils';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
+import { PegInTxState } from '@/store/peginTx/types';
 
 @Component({
   components: {
@@ -201,17 +203,32 @@ export default class ConfirmLedgerTransaction extends Vue {
 
   rawTx = '';
 
-  @Prop() tx!: NormalizedTx;
-
   @Prop() txBuilder!: LedgerTxBuilder;
 
   @Prop() walletService!: WalletService;
 
-  @Prop() txData!: TxData;
-
-  @Prop() price!: number;
+  @State('pegInTx') pegInTxState!: PegInTxState;
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+
+  get safeFee(): SatoshiBig {
+    let fee: SatoshiBig;
+    switch (this.pegInTxState.selectedFee) {
+      case 'BITCOIN_SLOW_FEE_LEVEL':
+        fee = this.pegInTxState.calculatedFees.slow;
+        break;
+      case 'BITCOIN_FAST_FEE_LEVEL':
+        fee = this.pegInTxState.calculatedFees.fast;
+        break;
+      case 'BITCOIN_AVERAGE_FEE_LEVEL':
+        fee = this.pegInTxState.calculatedFees.average;
+        break;
+      default:
+        fee = this.pegInTxState.calculatedFees.average;
+        break;
+    }
+    return fee;
+  }
 
   @Emit('successConfirmation')
   async toTrackId() {
@@ -257,7 +274,7 @@ export default class ConfirmLedgerTransaction extends Vue {
   }
 
   get rskFederationAddress():string {
-    return this.tx?.outputs[1]?.address?.trim() ?? `${this.environmentContext.getBtcText()} Powpeg address not found`;
+    return this.pegInTxState.normalizedTx.outputs[1]?.address?.trim() ?? `${this.environmentContext.getBtcText()} Powpeg address not found`;
   }
 
   get changeAddress(): string {
@@ -267,7 +284,7 @@ export default class ConfirmLedgerTransaction extends Vue {
   }
 
   get changeAmount() {
-    const changeAmount = new SatoshiBig(this.tx?.outputs[2]?.amount ?? 0, 'satoshi');
+    const changeAmount = new SatoshiBig(this.pegInTxState.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
     return changeAmount.toBTCTrimmedString();
   }
 
