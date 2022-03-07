@@ -178,6 +178,7 @@ import { PegInTxState } from '@/store/peginTx/types';
 import { TxData } from '@/types';
 import SatoshiBig from '@/types/SatoshiBig';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 @Component({
   components: {
@@ -338,7 +339,7 @@ export default class Status extends Vue {
   @Emit()
   // eslint-disable-next-line class-methods-use-this
   openExplorer() {
-    window.open('https://explorer.testnet.rsk.co/', '_blank');
+    window.open(EnvironmentAccessorService.getEnvironmentVariables().vueAppRskExplorer, '_blank');
   }
 
   @Emit()
