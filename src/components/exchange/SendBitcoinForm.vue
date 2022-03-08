@@ -875,10 +875,12 @@ export default class SendBitcoinForm extends Vue {
         selectedFee = constants.BITCOIN_AVERAGE_FEE_LEVEL;
         break;
     }
+    const chainId = EnvironmentAccessorService
+      .getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_MAINNET ? 30 : 31;
     return {
       amountToTransferInSatoshi: this.safeAmount,
       refundAddress: this.refundAddress,
-      recipient: this.computedRskAddress,
+      recipient: rskUtils.toChecksumAddress(this.computedRskAddress, chainId),
       feeLevel: selectedFee,
       feeBTC: this.safeTxFee,
       accountType: this.btcAccountTypeSelected,
