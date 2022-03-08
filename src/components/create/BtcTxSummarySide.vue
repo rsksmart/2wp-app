@@ -152,6 +152,8 @@ export default class BtcTxSummarySide extends Vue {
 
   @Getter(constants.PEGIN_TX_GET_REFUND_ADDRESS, { namespace: 'pegInTx' }) refundAddress!: string;
 
+  @Getter(constants.PEGIN_TX_GET_SAFE_TX_FEE, { namespace: 'pegInTx' }) safeFee!: SatoshiBig;
+
   get computedBTCAddress() {
     return this.pegInTxState.selectedAccount
       ? this.getAccountBalanceText(this.pegInTxState.selectedAccount)
@@ -188,25 +190,6 @@ export default class BtcTxSummarySide extends Vue {
 
   get croppedComputedRefundBTCAddress() {
     return getChunkedValue(this.computedRefundBTCAddress, this.maxLengthForChunked);
-  }
-
-  get safeFee(): SatoshiBig {
-    let fee: SatoshiBig;
-    switch (this.pegInTxState.selectedFee) {
-      case 'BITCOIN_SLOW_FEE_LEVEL':
-        fee = this.pegInTxState.calculatedFees.slow;
-        break;
-      case 'BITCOIN_FAST_FEE_LEVEL':
-        fee = this.pegInTxState.calculatedFees.fast;
-        break;
-      case 'BITCOIN_AVERAGE_FEE_LEVEL':
-        fee = this.pegInTxState.calculatedFees.average;
-        break;
-      default:
-        fee = this.pegInTxState.calculatedFees.average;
-        break;
-    }
-    return fee;
   }
 
   get computedTxFee(): string {
