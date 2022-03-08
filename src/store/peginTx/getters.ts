@@ -4,6 +4,7 @@ import { PegInTxState } from './types';
 import { RootState } from '../types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import ApiService from '@/services/ApiService';
+import SatoshiBig from '@/types/SatoshiBig';
 
 export const getters: GetterTree<PegInTxState, RootState> = {
   [constants.WALLET_NAME]: (state) => {
@@ -82,5 +83,21 @@ export const getters: GetterTree<PegInTxState, RootState> = {
         }
       });
       return publicKey;
+    },
+  [constants.PEGIN_TX_GET_SAFE_TX_FEE]:
+    (state: PegInTxState): SatoshiBig => {
+      let fee: SatoshiBig;
+      switch (state.selectedFee) {
+        case constants.BITCOIN_SLOW_FEE_LEVEL:
+          fee = state.calculatedFees.slow;
+          break;
+        case constants.BITCOIN_FAST_FEE_LEVEL:
+          fee = state.calculatedFees.fast;
+          break;
+        default:
+          fee = state.calculatedFees.average;
+          break;
+      }
+      return fee;
     },
 };

@@ -183,7 +183,7 @@ import {
   Component, Emit, Prop,
   Vue,
 } from 'vue-property-decorator';
-import { State } from 'vuex-class';
+import { Getter, State } from 'vuex-class';
 import TrezorTxBuilder from '@/middleware/TxBuilder/TrezorTxBuilder';
 import {
   TrezorSignedTx, TrezorTx,
@@ -196,6 +196,7 @@ import { WalletService } from '@/services/WalletService';
 import { Machine } from '@/services/utils';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import { PegInTxState } from '@/store/peginTx/types';
+import * as constants from '@/store/constants';
 
 @Component({
   components: {
@@ -222,6 +223,8 @@ export default class ConfirmTrezorTransaction extends Vue {
   @Prop() walletService!: WalletService;
 
   @State('pegInTx') pegInTxState!: PegInTxState;
+
+  @Getter(constants.PEGIN_TX_GET_SAFE_TX_FEE, { namespace: 'pegInTx' }) safeFee!: SatoshiBig;
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
@@ -284,25 +287,6 @@ export default class ConfirmTrezorTransaction extends Vue {
   get changeAmount(): string {
     const changeAmount = new SatoshiBig(this.pegInTxState.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
     return changeAmount.toBTCTrimmedString();
-  }
-
-  get safeFee(): SatoshiBig {
-    let fee: SatoshiBig;
-    switch (this.pegInTxState.selectedFee) {
-      case 'BITCOIN_SLOW_FEE_LEVEL':
-        fee = this.pegInTxState.calculatedFees.slow;
-        break;
-      case 'BITCOIN_FAST_FEE_LEVEL':
-        fee = this.pegInTxState.calculatedFees.fast;
-        break;
-      case 'BITCOIN_AVERAGE_FEE_LEVEL':
-        fee = this.pegInTxState.calculatedFees.average;
-        break;
-      default:
-        fee = this.pegInTxState.calculatedFees.average;
-        break;
-    }
-    return fee;
   }
 
   get computedFullAmount(): string {

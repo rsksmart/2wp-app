@@ -169,7 +169,7 @@ import {
   Component, Emit, Prop,
   Vue,
 } from 'vue-property-decorator';
-import { State } from 'vuex-class';
+import { Getter, State } from 'vuex-class';
 import {
   LedgerTx, LedgerSignedTx,
 } from '@/types';
@@ -182,6 +182,7 @@ import { WalletService } from '@/services/WalletService';
 import { Machine } from '@/services/utils';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import { PegInTxState } from '@/store/peginTx/types';
+import * as constants from '@/store/constants';
 
 @Component({
   components: {
@@ -209,26 +210,9 @@ export default class ConfirmLedgerTransaction extends Vue {
 
   @State('pegInTx') pegInTxState!: PegInTxState;
 
-  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+  @Getter(constants.PEGIN_TX_GET_SAFE_TX_FEE, { namespace: 'pegInTx' }) safeFee!: SatoshiBig;
 
-  get safeFee(): SatoshiBig {
-    let fee: SatoshiBig;
-    switch (this.pegInTxState.selectedFee) {
-      case 'BITCOIN_SLOW_FEE_LEVEL':
-        fee = this.pegInTxState.calculatedFees.slow;
-        break;
-      case 'BITCOIN_FAST_FEE_LEVEL':
-        fee = this.pegInTxState.calculatedFees.fast;
-        break;
-      case 'BITCOIN_AVERAGE_FEE_LEVEL':
-        fee = this.pegInTxState.calculatedFees.average;
-        break;
-      default:
-        fee = this.pegInTxState.calculatedFees.average;
-        break;
-    }
-    return fee;
-  }
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
   @Emit('successConfirmation')
   async toTrackId() {
