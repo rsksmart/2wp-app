@@ -1,5 +1,6 @@
 import { ActionTree } from 'vuex';
 import axios from 'axios';
+import * as rskUtils from '@rsksmart/rsk-utils';
 import * as constants from '@/store/constants';
 import {
   BtcAccount, BtcWallet, MiningSpeedFee,
@@ -9,6 +10,7 @@ import { RootState } from '../types';
 import ApiService from '@/services/ApiService';
 import SatoshiBig from '@/types/SatoshiBig';
 import { AccountBalance, FeeAmountData } from '@/types';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_ADD_ADDRESSES]: ({ commit }, addressList: WalletAddress[]) => {
@@ -78,8 +80,11 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_ADD_BALANCE]: ({ commit }, balance: AccountBalance): void => {
     commit(constants.PEGIN_TX_SET_BALANCE, balance);
   },
-  [constants.PEGIN_TX_ADD_RSK_ADDRESS]: ({ commit }, balance: AccountBalance): void => {
-    commit(constants.PEGIN_TX_SET_RSK_ADDRESS, balance);
+  [constants.PEGIN_TX_ADD_RSK_ADDRESS]: ({ commit }, address: string): void => {
+    const chainId = EnvironmentAccessorService
+      .getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_MAINNET ? 30 : 31;
+    const rskChecksumAddress = rskUtils.toChecksumAddress(address, chainId);
+    commit(constants.PEGIN_TX_SET_RSK_ADDRESS, rskChecksumAddress);
   },
   [constants.PEGIN_TX_SELECT_FEE_LEVEL]: ({ commit }, feeLevel: MiningSpeedFee): void => {
     commit(constants.PEGIN_TX_SET_SELECTED_FEE_LEVEL, feeLevel);
