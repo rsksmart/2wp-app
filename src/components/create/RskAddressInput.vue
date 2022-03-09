@@ -165,6 +165,10 @@ export default class RskAddressInput extends Vue {
       .then(() => {
         this.focus = false;
         this.checkStep();
+      }).catch(() => {
+        if (this.web3Address) {
+          this.disconnectWallet();
+        }
       });
     this.web3Wallet = true;
   }
