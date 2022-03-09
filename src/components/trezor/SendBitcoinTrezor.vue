@@ -40,7 +40,7 @@ import PegInForm from '@/components/create/PegInForm.vue';
 import ConfirmTrezorTransaction from '@/components/trezor/ConfirmTrezorTransaction.vue';
 import TrackingId from '@/components/exchange/TrackingId.vue';
 import TrezorService from '@/services/TrezorService';
-import { PegInTxState } from '@/store/peginTx/types';
+import { PegInTxState, WalletAddress } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import {
   AccountBalance, NormalizedTx, PegInFormValues, SendBitcoinState,
@@ -121,9 +121,14 @@ export default class SendBitcoinTrezor extends Vue {
 
   trezorService: TrezorService = new TrezorService();
 
-  trezorServiceSubscriber = (balance: AccountBalance) => this.addBalance(balance);
+  trezorServiceSubscriber = (
+    balance: AccountBalance,
+    addressList: WalletAddress[],
+  ) => this.addBalance(balance, addressList);
 
   @State('pegInTx') peginTxState!: PegInTxState;
+
+  @Action(constants.PEGIN_TX_ADD_ADDRESSES, { namespace: 'pegInTx' }) addAddressListStore !: (addressList: WalletAddress[]) => void;
 
   @Action(constants.IS_TREZOR_CONNECTED, { namespace: 'pegInTx' }) setTrezorConnected !: any;
 
@@ -251,8 +256,9 @@ export default class SendBitcoinTrezor extends Vue {
       });
   }
 
-  addBalance(balanceInformed: AccountBalance) {
+  addBalance(balanceInformed: AccountBalance, addressList: WalletAddress[]) {
     this.setInformedBalance(balanceInformed);
+    this.addAddressListStore(addressList);
     if (!this.trezorDataReady) {
       this.trezorDataReady = true;
     }

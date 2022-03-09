@@ -38,7 +38,7 @@ import PegInForm from '@/components/create/PegInForm.vue';
 import ConfirmLedgerTransaction from '@/components/ledger/ConfirmLedgerTransaction.vue';
 import TrackingId from '@/components/exchange/TrackingId.vue';
 import LedgerService from '@/services/LedgerService';
-import { PegInTxState } from '@/store/peginTx/types';
+import { PegInTxState, WalletAddress } from '@/store/peginTx/types';
 import * as constants from '@/store/constants';
 import {
   AccountBalance, NormalizedTx, PegInFormValues, SendBitcoinState,
@@ -114,11 +114,14 @@ export default class SendBitcoinLedger extends Vue {
 
   ledgerService: LedgerService = new LedgerService();
 
-  ledgerServiceSubscriber = (balance: AccountBalance) => this.addBalance(balance);
+  ledgerServiceSubscriber = (
+    balance: AccountBalance,
+    addressList: WalletAddress[],
+  ) => this.addBalance(balance, addressList);
 
   @State('pegInTx') peginTxState!: PegInTxState;
 
-  @Action(constants.PEGIN_TX_ADD_ADDRESSES, { namespace: 'pegInTx' }) setPeginTxAddresses !: any;
+  @Action(constants.PEGIN_TX_ADD_ADDRESSES, { namespace: 'pegInTx' }) addAddressListStore !: (addressList: WalletAddress[]) => void;
 
   @Action(constants.PEGIN_TX_ADD_BALANCE, { namespace: 'pegInTx' }) addBalanceStore !: (balance: AccountBalance) => void;
 
@@ -233,8 +236,9 @@ export default class SendBitcoinLedger extends Vue {
       });
   }
 
-  addBalance(balanceInformed: AccountBalance) {
+  addBalance(balanceInformed: AccountBalance, addressList: WalletAddress[]) {
     this.addBalanceStore(balanceInformed);
+    this.addAddressListStore(addressList);
     this.setInformedBalance(balanceInformed);
     if (!this.ledgerDataReady) {
       this.ledgerDataReady = true;

@@ -3,13 +3,13 @@ import SatoshiBig from '@/types/SatoshiBig';
 import ApiService from './ApiService';
 import { AccountBalance, SignedTx, Tx } from '@/types';
 import { WalletAddress } from '@/store/peginTx/types';
-import store from '@/store';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 export abstract class WalletService {
   protected coin: string;
 
-  protected subscribers: Array<(balance: AccountBalance) => void > = [];
+  protected subscribers:
+    Array<(balance: AccountBalance, addressList: WalletAddress[]) => void > = [];
 
   private loadingBalances = false;
 
@@ -66,11 +66,13 @@ export abstract class WalletService {
       (+accountIdx.substring(0, 1) | 0x80000000) >>> 0, +change, +addressIdx];
   }
 
-  public subscribe(subscriber: (balance: AccountBalance) => void): void {
+  public subscribe(subscriber: (balance: AccountBalance, addressList: WalletAddress[]) => void):
+    void {
     this.subscribers.push(subscriber);
   }
 
-  public unsubscribe(subscriber: (balance: AccountBalance) => void): void {
+  public unsubscribe(subscriber: (balance: AccountBalance, addressList: WalletAddress[]) => void):
+    void {
     const idx = this.subscribers.findIndex((s) => s === subscriber);
     if (idx !== -1) {
       this.subscribers.splice(idx, 1);
@@ -101,8 +103,8 @@ export abstract class WalletService {
     });
   }
 
-  protected informSubscribers(balance: AccountBalance): void {
-    this.subscribers.forEach((s) => s(balance));
+  protected informSubscribers(balance: AccountBalance, addressList:WalletAddress[]): void {
+    this.subscribers.forEach((s) => s(balance, addressList));
   }
 
   private hasSubscribers(): boolean {
@@ -129,10 +131,6 @@ export abstract class WalletService {
       if (addresses.length === 0) {
         throw new Error('Error getting list of addresses - List of addresses is empty');
       }
-      if (this.subscribers.length !== 0) {
-        // eslint-disable-next-line no-await-in-loop
-        await store.dispatch(`pegInTx/${constants.PEGIN_TX_ADD_ADDRESSES}`, addresses);
-      }
       // eslint-disable-next-line no-await-in-loop
       const balancesFound = await ApiService.getBalances(sessionId, addresses);
       const balances = {
@@ -156,11 +154,11 @@ export abstract class WalletService {
           addresses.forEach((element) => { listOfAddresses.push(element.address); });
           // eslint-disable-next-line no-await-in-loop
           if (await ApiService.areUnusedAddresses(listOfAddresses)) {
-            this.informSubscribers(balanceAccumulated);
+            this.informSubscribers(balanceAccumulated, addresses);
             return;
           }
         }
-        this.informSubscribers(balanceAccumulated);
+        this.informSubscribers(balanceAccumulated, addresses);
       } else {
         throw new Error('Error getting balances');
       }
