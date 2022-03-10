@@ -172,11 +172,10 @@ import {
 import { State } from 'vuex-class';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import { PegStatus } from '@/store/constants';
-import ApiService from '@/services/ApiService';
-import { PeginStatus } from '@/types/store';
-import { PegInTxState } from '@/types/pegInTx';
-import { TxData } from '@/types';
-import SatoshiBig from '@/types/SatoshiBig';
+import { ApiService } from '@/services';
+import {
+  PeginStatus, TxData, PegInTxState, SatoshiBig,
+} from '@/types';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
 @Component({

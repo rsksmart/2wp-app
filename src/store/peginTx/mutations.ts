@@ -3,10 +3,10 @@ import * as constants from '@/store/constants';
 import {
   BtcAccount, BtcWallet, MiningSpeedFee,
   PeginConfiguration, PegInTxState, Utxo, WalletAddress,
-} from '../../types/pegInTx';
-import SatoshiBig from '@/types/SatoshiBig';
-import { AccountBalance, FeeAmountData, NormalizedTx } from '@/types';
-import { getClearPeginTxState } from '@/utils/common';
+  AccountBalance, FeeAmountData, NormalizedTx,
+  SatoshiBig,
+} from '@/types';
+import { getClearPeginTxState } from '@/utils';
 import { WalletService } from '@/services';
 
 export const mutations: MutationTree<PegInTxState> = {
