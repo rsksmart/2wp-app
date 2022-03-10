@@ -10,7 +10,7 @@
                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
                  :tx="createdTx" :txBuilder="txBuilder"
                  :txId="txId" @back="back"
-                 :walletService="ledgerService" :price="this.peginTxState.bitcoinPrice"
+                 :price="this.peginTxState.bitcoinPrice"
                  @toPegInForm="toPegInForm" :pegInFormData="pegInFormData"
                  :isBackFromConfirm="isBackFromConfirm"/>
     </template>
@@ -112,8 +112,6 @@ export default class SendBitcoinLedger extends Vue {
 
   ledgerDataReady = false;
 
-  ledgerService: LedgerService = new LedgerService();
-
   ledgerServiceSubscriber = (
     balance: AccountBalance,
     addressList: WalletAddress[],
@@ -130,6 +128,8 @@ export default class SendBitcoinLedger extends Vue {
   @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: any;
 
   @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: (accountType: string) => Promise<string>;
+
+  @Getter(constants.PEGIN_TX_GET_WALLET_SERVICE, { namespace: 'pegInTx' }) ledgerService!: LedgerService;
 
   beforeMount() {
     this.showDialog = localStorage.getItem('BTRD_COOKIE_DISABLED') !== 'true';

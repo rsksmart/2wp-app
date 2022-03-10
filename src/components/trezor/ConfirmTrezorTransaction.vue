@@ -220,11 +220,11 @@ export default class ConfirmTrezorTransaction extends Vue {
 
   @Prop() txBuilder!: TrezorTxBuilder;
 
-  @Prop() walletService!: WalletService;
-
   @State('pegInTx') pegInTxState!: PegInTxState;
 
   @Getter(constants.PEGIN_TX_GET_SAFE_TX_FEE, { namespace: 'pegInTx' }) safeFee!: SatoshiBig;
+
+  @Getter(constants.PEGIN_TX_GET_WALLET_SERVICE, { namespace: 'pegInTx' }) walletService!: WalletService;
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 

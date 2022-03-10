@@ -10,7 +10,7 @@
                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
                  @unused="getUnusedAddresses" :unusedAddresses="unusedAddresses"
                  :tx="createdTx" :txBuilder="txBuilder"
-                 :price="peginTxState.bitcoinPrice" :walletService="trezorService"
+                 :price="peginTxState.bitcoinPrice"
                  :txId="txId" @back="back" :loadingBalances="loadingBalances"
                  @toPegInForm="toPegInForm" :pegInFormData="pegInFormData"
                  :isBackFromConfirm="isBackFromConfirm"/>
@@ -119,8 +119,6 @@ export default class SendBitcoinTrezor extends Vue {
 
   trezorDataReady = false;
 
-  trezorService: TrezorService = new TrezorService();
-
   trezorServiceSubscriber = (
     balance: AccountBalance,
     addressList: WalletAddress[],
@@ -139,6 +137,8 @@ export default class SendBitcoinTrezor extends Vue {
   @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: any;
 
   @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: (accountType: string) => string;
+
+  @Getter(constants.PEGIN_TX_GET_WALLET_SERVICE, { namespace: 'pegInTx' }) trezorService!: TrezorService;
 
   beforeMount() {
     this.showDialog = localStorage.getItem('BTRD_COOKIE_DISABLED') !== 'true';
