@@ -178,10 +178,10 @@ import ApiService from '@/services/ApiService';
 import AdvancedData from '@/components/exchange/AdvancedData.vue';
 import SatoshiBig from '@/types/SatoshiBig';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
-import { WalletService } from '@/services/WalletService';
+import { WalletService } from '@/services';
 import { Machine } from '@/services/utils';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
-import { PegInTxState } from '@/store/peginTx/types';
+import { PegInTxState } from '@/types/pegInTx';
 import * as constants from '@/store/constants';
 
 @Component({

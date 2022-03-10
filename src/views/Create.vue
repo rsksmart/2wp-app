@@ -9,7 +9,7 @@ import {
   Component, Emit, Vue,
 } from 'vue-property-decorator';
 import { Action, State } from 'vuex-class';
-import { BtcWallet, PegInTxState } from '@/store/peginTx/types';
+import { BtcWallet, PegInTxState } from '@/types/pegInTx';
 import * as constants from '@/store/constants';
 import SendBitcoinTrezor from '@/components/trezor/SendBitcoinTrezor.vue';
 import SendBitcoinLedger from '@/components/ledger/SendBitcoinLedger.vue';

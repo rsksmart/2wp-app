@@ -3,9 +3,11 @@ import * as constants from '@/store/constants';
 import {
   BtcAccount, BtcWallet, MiningSpeedFee,
   PeginConfiguration, PegInTxState, Utxo, WalletAddress,
-} from './types';
+} from '../../types/pegInTx';
 import SatoshiBig from '@/types/SatoshiBig';
 import { AccountBalance, FeeAmountData, NormalizedTx } from '@/types';
+import { getClearPeginTxState } from '@/utils/common';
+import { WalletService } from '@/services';
 
 export const mutations: MutationTree<PegInTxState> = {
   [constants.PEGIN_TX_SET_ADDRESS_LIST]: (state, addressList: WalletAddress[]) => {
@@ -30,7 +32,7 @@ export const mutations: MutationTree<PegInTxState> = {
     state.bitcoinPrice = btcPrice;
   },
   [constants.PEGIN_TX_CLEAR]: (state) => {
-    const clearState = constants.getClearPeginTxState();
+    const clearState = getClearPeginTxState();
     Object.assign(state, clearState);
   },
   [constants.PEGIN_TX_SET_ACCOUNT_TYPE]: (state, accountType: BtcAccount) => {
@@ -59,5 +61,8 @@ export const mutations: MutationTree<PegInTxState> = {
   },
   [constants.PEGIN_TX_SET_NORMALIZED_TX]: (state, tx: NormalizedTx) => {
     state.normalizedTx = tx;
+  },
+  [constants.PEGIN_TX_SET_WALLET_SERVICE]: (state, walletService: WalletService) => {
+    state.walletService = walletService;
   },
 };

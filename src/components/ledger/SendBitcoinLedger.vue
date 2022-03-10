@@ -37,8 +37,8 @@ import { Action, Getter, State } from 'vuex-class';
 import PegInForm from '@/components/create/PegInForm.vue';
 import ConfirmLedgerTransaction from '@/components/ledger/ConfirmLedgerTransaction.vue';
 import TrackingId from '@/components/exchange/TrackingId.vue';
-import LedgerService from '@/services/LedgerService';
-import { PegInTxState, WalletAddress } from '@/store/peginTx/types';
+import { LedgerService } from '@/services';
+import { PegInTxState, WalletAddress } from '@/types/pegInTx';
 import * as constants from '@/store/constants';
 import {
   AccountBalance, NormalizedTx, PegInFormValues, SendBitcoinState,

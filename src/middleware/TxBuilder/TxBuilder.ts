@@ -6,7 +6,7 @@ import {
 import * as constants from '@/store/constants';
 import ApiService from '@/services/ApiService';
 import store from '@/store';
-import { WalletAddress } from '@/store/peginTx/types';
+import { WalletAddress } from '@/types/pegInTx';
 
 export default abstract class TxBuilder {
   protected coin!: string;

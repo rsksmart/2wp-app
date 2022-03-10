@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { NormalizedOutput } from '@/types';
-import { isValidPowPegAddress } from '@/services/PowPegAddressUtils';
+import { isValidPowPegAddress } from '@/utils/PowPegAddressUtils';
 /* eslint-disable */
 
 describe('function: isValidPowPegAddress', () => {
@@ -47,5 +47,5 @@ describe('function: isValidPowPegAddress', () => {
     const result = isValidPowPegAddress([normalizedOutput1, normalizedOutput2], 'address2');
     expect(result).to.be.true;
   });
-  
+
 });

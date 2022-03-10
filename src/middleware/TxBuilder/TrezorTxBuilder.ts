@@ -1,5 +1,5 @@
 import { TxInputType, TxOutputType } from 'trezor-connect';
-import { WalletAddress } from '@/store/peginTx/types';
+import { WalletAddress } from '@/types/pegInTx';
 import {
   InputScriptType,
   NormalizedInput, NormalizedOutput, TrezorTx,

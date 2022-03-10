@@ -162,7 +162,7 @@ import { State, Getter } from 'vuex-class';
 import * as constants from '@/store/constants';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
-import { PegInTxState } from '@/store/peginTx/types';
+import { PegInTxState } from '@/types/pegInTx';
 
 @Component
 export default class TxSummary extends Vue {

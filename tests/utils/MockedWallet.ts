@@ -1,6 +1,5 @@
-import { WalletService } from '@/services/WalletService';
-import * as constants from '@/store/constants';
-import { WalletAddress } from '@/store/peginTx/types';
+import { WalletService } from '@/services';
+import { WalletAddress } from '@/types/pegInTx';
 import { LedgerSignedTx, TrezorSignedTx, Tx } from '@/types';
 
 interface TestCase {

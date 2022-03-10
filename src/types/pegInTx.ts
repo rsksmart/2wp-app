@@ -1,5 +1,6 @@
-import { AccountBalance, FeeAmountData, NormalizedTx } from '@/types';
+import { AccountBalance, FeeAmountData, NormalizedTx } from '@/types/Common';
 import SatoshiBig from '@/types/SatoshiBig';
+import { WalletService } from '@/services';
 
 export type BtcAccount = 'BITCOIN_LEGACY_ADDRESS' |
   'BITCOIN_SEGWIT_ADDRESS' |
@@ -56,18 +57,11 @@ export interface PegInTxState {
   isValidAmountToTransfer: boolean;
   rskAddressSelected: string;
   normalizedTx: NormalizedTx;
+  walletService?: WalletService,
 }
 
 export interface UnusedWalletAddress {
   address: string;
   path: number[];
   transfer: number;
-}
-
-export interface TransactionSummary {
-  amount: number;
-  destinationAddress: string;
-  fee: number;
-  totalAmount: number;
-  refundAddress: string;
 }
