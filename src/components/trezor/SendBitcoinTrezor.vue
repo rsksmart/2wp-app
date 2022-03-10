@@ -39,8 +39,8 @@ import TrezorConnect, { DEVICE, DEVICE_EVENT } from 'trezor-connect';
 import PegInForm from '@/components/create/PegInForm.vue';
 import ConfirmTrezorTransaction from '@/components/trezor/ConfirmTrezorTransaction.vue';
 import TrackingId from '@/components/exchange/TrackingId.vue';
-import TrezorService from '@/services/TrezorService';
-import { PegInTxState, WalletAddress } from '@/store/peginTx/types';
+import { TrezorService } from '@/services';
+import { PegInTxState, WalletAddress } from '@/types/pegInTx';
 import * as constants from '@/store/constants';
 import {
   AccountBalance, NormalizedTx, PegInFormValues, SendBitcoinState,

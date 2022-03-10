@@ -5,8 +5,8 @@ import axios, { AxiosResponse } from 'axios';
 import sinon from 'sinon';
 import { expect } from 'chai';
 import { BridgeService } from '@/services/BridgeService';
-import * as PowPegAddressUtils from '@/services/PowPegAddressUtils';
-import * as OpReturnUtils from '@/services/OpReturnUtils';
+import * as PowPegAddressUtils from '@/utils/PowPegAddressUtils';
+import * as OpReturnUtils from '@/utils/OpReturnUtils';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import * as constants from '@/store/constants';
 

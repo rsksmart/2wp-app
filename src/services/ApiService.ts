@@ -1,9 +1,8 @@
 import axios from 'axios';
-import { WalletAddress, PeginConfiguration } from '@/store/peginTx/types';
+import { WalletAddress, PeginConfiguration } from '@/types/pegInTx';
 import { AccountBalance, FeeAmountData, NormalizedTx } from '@/types';
-import { PeginStatus } from '@/store/types';
-import { isValidOpReturn } from './OpReturnUtils';
-import { isValidPowPegAddress } from './PowPegAddressUtils';
+import { PeginStatus } from '@/types/store';
+import { isValidOpReturn, isValidPowPegAddress } from '@/utils';
 import { BridgeService } from '@/services/BridgeService';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 

@@ -1,10 +1,11 @@
 import { GetterTree } from 'vuex';
 import * as constants from '@/store/constants';
-import { PegInTxState } from './types';
-import { RootState } from '../types';
+import { PegInTxState } from '../../types/pegInTx';
+import { RootState } from '../../types/store';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import ApiService from '@/services/ApiService';
 import SatoshiBig from '@/types/SatoshiBig';
+import { WalletService } from '@/services';
 
 export const getters: GetterTree<PegInTxState, RootState> = {
   [constants.WALLET_NAME]: (state) => {
@@ -100,4 +101,6 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       }
       return fee;
     },
+  [constants.PEGIN_TX_GET_WALLET_SERVICE]:
+    (state: PegInTxState): WalletService | undefined => state.walletService,
 };

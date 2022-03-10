@@ -1,6 +1,3 @@
-import { PegInTxState } from '@/store/peginTx/types';
-import SatoshiBig from '@/types/SatoshiBig';
-
 export const WALLET_LEDGER = 'WALLET_LEDGER';
 export const WALLET_TREZOR = 'WALLET_TREZOR';
 
@@ -62,6 +59,7 @@ export const PEGIN_TX_SET_SELECTED_FEE_LEVEL = 'PEGIN_TX_SET_SELECTED_FEE_LEVEL'
 export const PEGIN_TX_SET_IS_VALID_AMOUNT = 'PEGIN_TX_SET_IS_VALID_AMOUNT';
 export const PEGIN_TX_SET_LOADING_FEE = 'PEGIN_TX_SET_LOADING_FEE';
 export const PEGIN_TX_SET_NORMALIZED_TX = 'PEGIN_TX_SET_NORMALIZED_TX';
+export const PEGIN_TX_SET_WALLET_SERVICE = 'PEGIN_TX_SET_WALLET_SERVICE';
 // Session mutations
 export const SESSION_SET_ACCOUNT = 'SESSION_SET_ACCOUNT';
 export const SESSION_SET_WEB3_INSTANCE = 'SESSION_SET_WEB3_INSTANCE';
@@ -79,6 +77,7 @@ export const PEGIN_TX_GET_BIP44_DERIVATION_PATH_FROM_ADDRESS = 'PEGIN_TX_GET_BIP
 export const PEGIN_TX_GET_REFUND_ADDRESS = 'PEGIN_TX_GET_REFUND_ADDRESS';
 export const PEGIN_TX_GET_ADDRESS_PUBLIC_KEY = 'PEGIN_TX_GET_ADDRESS_PUBLIC_KEY';
 export const PEGIN_TX_GET_SAFE_TX_FEE = 'PEGIN_TX_GET_SAFE_TX_FEE';
+export const PEGIN_TX_GET_WALLET_SERVICE = 'PEGIN_TX_GET_WALLET_SERVICE';
 
 // Session getters
 export const SESSION_IN_TX_FLOW = 'SESSION_IN_TX_FLOW';
@@ -103,40 +102,3 @@ export enum PegStatus {
   ERROR_BELOW_MIN = 'ERROR_BELOW_MIN',
   ERROR_UNEXPECTED = 'ERROR_UNEXPECTED',
 }
-
-export const getClearPeginTxState = (): PegInTxState => ({
-  peginConfiguration: {
-    minValue: 0,
-    maxValue: 0,
-    federationAddress: '',
-    btcConfirmations: 100,
-  },
-  sessionId: '',
-  utxoList: undefined,
-  addressList: [],
-  trezorConnected: false,
-  bitcoinWallet: undefined,
-  bitcoinPrice: 0,
-  balances: {
-    legacy: new SatoshiBig(0, 'satoshi'),
-    segwit: new SatoshiBig(0, 'satoshi'),
-    nativeSegwit: new SatoshiBig(0, 'satoshi'),
-  },
-  loadingBalance: false,
-  selectedAccount: undefined,
-  calculatedFees: {
-    slow: new SatoshiBig(0, 'satoshi'),
-    average: new SatoshiBig(0, 'satoshi'),
-    fast: new SatoshiBig(0, 'satoshi'),
-  },
-  loadingFee: false,
-  selectedFee: BITCOIN_AVERAGE_FEE_LEVEL,
-  amountToTransfer: new SatoshiBig(0, 'btc'),
-  isValidAmountToTransfer: false,
-  rskAddressSelected: '',
-  normalizedTx: {
-    coin: '',
-    inputs: [],
-    outputs: [],
-  },
-});

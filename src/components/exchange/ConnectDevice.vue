@@ -71,7 +71,7 @@ import {
 } from 'vue-property-decorator';
 import { Getter, State } from 'vuex-class';
 import * as constants from '@/store/constants';
-import { PegInTxState } from '@/store/peginTx/types';
+import { PegInTxState } from '@/types/pegInTx';
 import LedgerConnect from '@/assets/exchange/ledger/connect_ledger.png';
 import TrezorConnect from '@/assets/exchange/trezor/connect_trezor.png';
 import Connect from '@/assets/exchange/wallet.png';

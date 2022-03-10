@@ -66,7 +66,7 @@ import {
 } from 'vue-property-decorator';
 import { Action, State } from 'vuex-class';
 import * as constants from '@/store/constants';
-import { BtcAccount, PegInTxState } from '@/store/peginTx/types';
+import { BtcAccount, PegInTxState } from '@/types/pegInTx';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 

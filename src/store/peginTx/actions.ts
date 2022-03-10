@@ -2,15 +2,14 @@ import { ActionTree } from 'vuex';
 import axios from 'axios';
 import * as rskUtils from '@rsksmart/rsk-utils';
 import * as constants from '@/store/constants';
-import {
-  BtcAccount, BtcWallet, MiningSpeedFee,
-  PeginConfiguration, PegInTxState, Utxo, WalletAddress,
-} from './types';
-import { RootState } from '../types';
-import ApiService from '@/services/ApiService';
+import { ApiService, LedgerService, TrezorService } from '@/services';
 import SatoshiBig from '@/types/SatoshiBig';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
-import { AccountBalance, FeeAmountData, NormalizedTx } from '@/types';
+import {
+  AccountBalance, FeeAmountData, NormalizedTx, RootState,
+  PeginConfiguration, PegInTxState, Utxo, WalletAddress,
+  BtcAccount, BtcWallet, MiningSpeedFee,
+} from '@/types';
 
 export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_ADD_ADDRESSES]: ({ commit }, addressList: WalletAddress[]) => {
@@ -34,6 +33,17 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   },
   [constants.PEGIN_TX_ADD_BITCOIN_WALLET]: ({ commit }, bitcoinWallet: BtcWallet) => {
     commit(constants.PEGIN_TX_SET_BITCOIN_WALLET, bitcoinWallet);
+    switch (bitcoinWallet) {
+      case constants.WALLET_TREZOR:
+        commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new TrezorService());
+        break;
+      case constants.WALLET_LEDGER:
+        commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new LedgerService());
+        break;
+      default:
+        commit(constants.PEGIN_TX_SET_WALLET_SERVICE, undefined);
+        break;
+    }
   },
   [constants.PEGIN_TX_ADD_BITCOIN_PRICE]: ({ commit }) => {
     axios.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin&order=market_cap_desc&per_page=100&page=1&sparkline=false')

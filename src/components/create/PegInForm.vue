@@ -65,7 +65,7 @@ import BtcInputAmount from '@/components/create/BtcInputAmount.vue';
 import RskAddressInput from '@/components/create/RskAddressInput.vue';
 import BtcFeeSelect from '@/components/create/BtcFeeSelect.vue';
 import BtcTxSummarySide from '@/components/create/BtcTxSummarySide.vue';
-import { PegInTxState } from '@/store/peginTx/types';
+import { PegInTxState } from '@/types/pegInTx';
 import * as constants from '@/store/constants';
 import { Machine } from '@/services/utils';
 import SatoshiBig from '@/types/SatoshiBig';
