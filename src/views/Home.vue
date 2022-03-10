@@ -169,7 +169,7 @@ export default class Home extends Vue {
   }
 
   get isAllowedBrowser() {
-    return this.browser.getBrowserName() === 'Chrome' && window.navigator.brave;
+    return this.browser.getBrowserName() === 'Chrome' || window.navigator.brave;
   }
 
   get btnWalletClass() {
