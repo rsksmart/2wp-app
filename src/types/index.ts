@@ -4,3 +4,4 @@ export * from './Ledger';
 export * from './Wallets';
 export * from './pegInTx';
 export * from './store';
+export { default as SatoshiBig } from './SatoshiBig';

@@ -37,7 +37,7 @@ import { Action, Getter, State } from 'vuex-class';
 import PegInForm from '@/components/create/PegInForm.vue';
 import ConfirmLedgerTransaction from '@/components/ledger/ConfirmLedgerTransaction.vue';
 import TrackingId from '@/components/exchange/TrackingId.vue';
-import { LedgerService } from '@/services';
+import { WalletService } from '@/services';
 import { PegInTxState, WalletAddress } from '@/types/pegInTx';
 import * as constants from '@/store/constants';
 import {
@@ -129,14 +129,14 @@ export default class SendBitcoinLedger extends Vue {
 
   @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: (accountType: string) => Promise<string>;
 
-  @Getter(constants.PEGIN_TX_GET_WALLET_SERVICE, { namespace: 'pegInTx' }) ledgerService!: LedgerService;
+  @Getter(constants.PEGIN_TX_GET_WALLET_SERVICE, { namespace: 'pegInTx' }) walletService!: WalletService;
 
   beforeMount() {
     this.showDialog = localStorage.getItem('BTRD_COOKIE_DISABLED') !== 'true';
   }
 
   get loadingBalances(): boolean {
-    return this.ledgerService.isLoadingBalances();
+    return this.walletService.isLoadingBalances();
   }
 
   @Emit()
@@ -220,8 +220,8 @@ export default class SendBitcoinLedger extends Vue {
   startAskingForBalance() {
     this.sendBitcoinState = 'loading';
     this.ledgerDataReady = false;
-    this.ledgerService.subscribe(this.ledgerServiceSubscriber);
-    this.ledgerService.startAskingForBalance(
+    this.walletService.subscribe(this.ledgerServiceSubscriber);
+    this.walletService.startAskingForBalance(
       this.peginTxState.sessionId,
       this.peginTxState.peginConfiguration.maxValue,
     )
@@ -250,7 +250,7 @@ export default class SendBitcoinLedger extends Vue {
     if (balanceInformed === undefined) {
       this.deviceError = 'Balance was not found.';
       this.sendBitcoinState = 'error';
-      this.ledgerService.unsubscribe(this.ledgerServiceSubscriber);
+      this.walletService.unsubscribe(this.ledgerServiceSubscriber);
       this.showErrorDialog = true;
     }
     this.balances = balanceInformed;
@@ -265,7 +265,7 @@ export default class SendBitcoinLedger extends Vue {
 
   @Emit()
   async clear(): Promise<void> {
-    await this.ledgerService.stopAskingForBalance();
+    await this.walletService.stopAskingForBalance();
     this.pegInFormData = {
       accountType: '',
       amount: new SatoshiBig('0', 'satoshi'),
@@ -296,11 +296,10 @@ export default class SendBitcoinLedger extends Vue {
       nativeSegwit: new SatoshiBig(0, 'satoshi'),
     };
     this.ledgerDataReady = false;
-    this.ledgerService = new LedgerService();
   }
 
   async beforeDestroy() {
-    await this.ledgerService.stopAskingForBalance();
+    await this.walletService.stopAskingForBalance();
     this.clearAccount();
   }
 }
