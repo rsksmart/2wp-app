@@ -142,6 +142,7 @@ export default class TrezorService extends WalletService {
         inputs: trezorTx.inputs,
         outputs: trezorTx.outputs,
         coin: this.trezorCoin,
+        version: trezorTx.version,
         push: false,
       })
         .then((res) => {
