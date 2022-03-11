@@ -65,6 +65,11 @@ export interface PegInFormValues {
   txFeeIndex: number;
 }
 
+export interface AddressStatus {
+  address: string;
+  unused: boolean;
+}
+
 export type SendBitcoinState = 'idle' | 'loading' | 'error';
 
 declare global {

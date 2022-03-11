@@ -118,7 +118,8 @@ export default abstract class TxBuilder {
         throw new Error('Error: invalid account type. ');
     }
     if ((walletAddress.serializedPath.startsWith(`m/${accountTypePath}${coinPath}/0'/1/`))) {
-      return (ApiService.areUnusedAddresses([walletAddress.address]));
+      return ApiService.areUnusedAddresses([walletAddress.address])
+        .then(([addressStatus]) => addressStatus.unused);
     }
     return Promise.resolve(false);
   }

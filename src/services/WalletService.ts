@@ -2,7 +2,7 @@ import * as constants from '@/store/constants';
 import SatoshiBig from '@/types/SatoshiBig';
 import ApiService from './ApiService';
 import { SignedTx } from '@/types/Wallets';
-import { AccountBalance, Tx } from '@/types/Common';
+import { AccountBalance, AddressStatus, Tx } from '@/types/Common';
 import { WalletAddress } from '@/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
@@ -132,10 +132,12 @@ export default abstract class WalletService {
       startFrom += maxAddressPerCall
     ) {
       // eslint-disable-next-line no-await-in-loop
-      const addresses = await this.getAccountAddresses(maxAddressPerCall, startFrom);
+      let addresses = await this.getAccountAddresses(maxAddressPerCall, startFrom);
       if (addresses.length === 0) {
         throw new Error('Error getting list of addresses - List of addresses is empty');
       }
+      // eslint-disable-next-line no-await-in-loop
+      addresses = await WalletService.getUnusedValue(addresses);
       // eslint-disable-next-line no-await-in-loop
       const balancesFound = await ApiService.getBalances(sessionId, addresses);
       const balances = {
@@ -157,13 +159,9 @@ export default abstract class WalletService {
             nativeSegwit: new SatoshiBig(balanceAccumulated.nativeSegwit.plus(balances.nativeSegwit), 'satoshi'),
           };
         } else {
-          const listOfAddresses: string[] = [];
-          addresses.forEach((element) => { listOfAddresses.push(element.address); });
-          // eslint-disable-next-line no-await-in-loop
-          if (await ApiService.areUnusedAddresses(listOfAddresses)) {
-            this.informSubscribers(balanceAccumulated, addresses);
-            return;
-          }
+          const isSomeAddressUnused = addresses
+            .some((walletAddressItem) => walletAddressItem.unused);
+          if (isSomeAddressUnused) return;
         }
         this.informSubscribers(balanceAccumulated, addresses);
       } else {
@@ -177,5 +175,21 @@ export default abstract class WalletService {
         return;
       }
     }
+  }
+
+  private static getUnusedValue(addressList: WalletAddress[]): Promise<WalletAddress[]> {
+    return new Promise<WalletAddress[]>((resolve, reject) => {
+      ApiService.areUnusedAddresses(addressList.map((walletAddress) => walletAddress.address))
+        .then((addressStatusList: AddressStatus[]) => {
+          addressList.forEach((walletAddressItem) => {
+            const status : AddressStatus | undefined = addressStatusList
+              .find((statusItem) => walletAddressItem.address === statusItem.address);
+            // eslint-disable-next-line no-param-reassign
+            walletAddressItem.unused = status ? status.unused : false;
+          });
+          resolve(addressList);
+        })
+        .catch(reject);
+    });
   }
 }

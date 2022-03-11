@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { WalletAddress, PeginConfiguration } from '@/types/pegInTx';
-import { AccountBalance, FeeAmountData, NormalizedTx } from '@/types';
+import {
+  AccountBalance, AddressStatus, FeeAmountData, NormalizedTx,
+} from '@/types';
 import { PeginStatus } from '@/types/store';
 import { isValidOpReturn, isValidPowPegAddress } from '@/utils';
 import { BridgeService } from '@/services/BridgeService';
@@ -116,8 +118,8 @@ export default class ApiService {
     });
   }
 
-  public static areUnusedAddresses(addressList: string[]): Promise<boolean> {
-    return new Promise((resolve, reject) => {
+  public static areUnusedAddresses(addressList: string[]): Promise<AddressStatus[]> {
+    return new Promise<AddressStatus[]>((resolve, reject) => {
       axios.post(`${this.baseURL}/unusedAddreses`, {
         addressList,
       })

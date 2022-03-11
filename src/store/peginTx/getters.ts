@@ -2,7 +2,6 @@ import { GetterTree } from 'vuex';
 import * as constants from '@/store/constants';
 import { PegInTxState, RootState } from '@/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
-import ApiService from '@/services/ApiService';
 import SatoshiBig from '@/types/SatoshiBig';
 import { WalletService } from '@/services';
 
@@ -43,8 +42,7 @@ export const getters: GetterTree<PegInTxState, RootState> = {
         // eslint-disable-next-line no-restricted-syntax
         for (const walletAddress of state.addressList) {
           if ((walletAddress.serializedPath.startsWith(`m/${accountTypePath}${coinPath}/0'/1`)
-              // eslint-disable-next-line no-await-in-loop
-              && (await ApiService.areUnusedAddresses([walletAddress.address])))) {
+              && walletAddress.unused)) {
             address = walletAddress.address;
             break;
           }
