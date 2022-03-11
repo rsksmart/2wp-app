@@ -8,6 +8,7 @@ import { getAccountType } from '@/services/utils';
 import store from '../../store';
 import * as constants from '@/store/constants';
 import TxBuilder from './TxBuilder';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 export default class TrezorTxBuilder extends TxBuilder {
   private tx!: TrezorTx;
@@ -76,7 +77,10 @@ export default class TrezorTxBuilder extends TxBuilder {
   }
 
   private static getScriptType(address: string): 'SPENDP2SHWITNESS' | 'SPENDADDRESS' | 'SPENDWITNESS' {
-    const accType = getAccountType(address);
+    const accType = getAccountType(
+      address,
+      EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
+    );
     switch (accType) {
       case constants.BITCOIN_SEGWIT_ADDRESS:
         return 'SPENDP2SHWITNESS';
