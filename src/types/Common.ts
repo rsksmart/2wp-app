@@ -60,6 +60,8 @@ export interface PegInFormValues {
 
 export type SendBitcoinState = 'idle' | 'loading' | 'error';
 
+export type AppNetwork = 'main' | 'test';
+
 declare global {
   interface Navigator {
       brave: unknown;
