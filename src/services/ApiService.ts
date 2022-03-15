@@ -123,7 +123,7 @@ export default class ApiService {
       axios.post(`${this.baseURL}/unusedAddreses`, {
         addressList,
       })
-        .then((response) => resolve(response.data))
+        .then((response) => resolve(response.data.data))
         .catch(reject);
     });
   }
