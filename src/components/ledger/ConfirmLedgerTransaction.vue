@@ -195,7 +195,12 @@ export default class ConfirmLedgerTransaction extends Vue {
 
   rawTx = '';
 
-  @Prop() confirmTxState!: any;
+  @Prop() confirmTxState!: Machine<
+    'idle'
+    | 'loading'
+    | 'error'
+    | 'goingHome'
+  >;
 
   @Prop() txBuilder!: LedgerTxBuilder;
 
@@ -229,7 +234,6 @@ export default class ConfirmLedgerTransaction extends Vue {
           case 27013:
             txError = 'Transaction cancelled by user.';
             break;
-        
           default:
             txError = err.message;
             break;
