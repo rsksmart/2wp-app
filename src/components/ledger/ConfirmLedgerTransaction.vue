@@ -193,16 +193,9 @@ import * as constants from '@/store/constants';
 export default class ConfirmLedgerTransaction extends Vue {
   txId = '';
 
-  txError = '';
-
-  confirmTxState: Machine<
-    'idle'
-    | 'loading'
-    | 'error'
-    | 'goingHome'
-    > = new Machine('idle');
-
   rawTx = '';
+
+  @Prop() confirmTxState!: any;
 
   @Prop() txBuilder!: LedgerTxBuilder;
 
@@ -216,6 +209,7 @@ export default class ConfirmLedgerTransaction extends Vue {
 
   @Emit('successConfirmation')
   async toTrackId() {
+    let txError = '';
     this.confirmTxState.send('loading');
     await this.walletService.stopAskingForBalance()
       .then(() => this.txBuilder.buildTx())
@@ -227,13 +221,21 @@ export default class ConfirmLedgerTransaction extends Vue {
       })
       .catch((err) => {
         this.confirmTxState.send('error');
-        if (err.statusCode === 27013) {
-          this.txError = 'Transaction cancelled by user.';
-        } else {
-          this.txError = err.message;
+
+        switch (err.statusCode) {
+          case 27010:
+            txError = 'Please unlock your Ledger device.';
+            break;
+          case 27013:
+            txError = 'Transaction cancelled by user.';
+            break;
+        
+          default:
+            txError = err.message;
+            break;
         }
       });
-    return [this.txError, this.txId];
+    return [txError, this.txId];
   }
 
   backHome() {
