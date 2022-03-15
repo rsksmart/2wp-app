@@ -207,16 +207,9 @@ import * as constants from '@/store/constants';
 export default class ConfirmTrezorTransaction extends Vue {
   txId = '';
 
-  txError = '';
-
-  confirmTxState: Machine<
-    'idle'
-    | 'loading'
-    | 'error'
-    | 'goingHome'
-    > = new Machine('idle');
-
   rawTx = '';
+
+  @Prop() confirmTxState!: any;
 
   @Prop() txBuilder!: TrezorTxBuilder;
 
@@ -230,6 +223,7 @@ export default class ConfirmTrezorTransaction extends Vue {
 
   @Emit('successConfirmation')
   async toTrackId() {
+    let txError = '';
     this.confirmTxState.send('loading');
     await this.walletService.stopAskingForBalance()
       .then(() => this.txBuilder.buildTx())
@@ -241,9 +235,9 @@ export default class ConfirmTrezorTransaction extends Vue {
       })
       .catch((err) => {
         this.confirmTxState.send('error');
-        this.txError = err.message;
+        txError = err.message;
       });
-    return [this.txError, this.txId];
+    return [txError, this.txId];
   }
 
   backHome() {

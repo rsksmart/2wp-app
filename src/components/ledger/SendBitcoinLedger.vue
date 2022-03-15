@@ -12,6 +12,7 @@
                  :txId="txId" @back="back"
                  :price="this.peginTxState.bitcoinPrice"
                  @toPegInForm="toPegInForm" :pegInFormData="pegInFormData"
+                 :confirmTxState="confirmTxState"
                  :isBackFromConfirm="isBackFromConfirm"/>
     </template>
     <template v-if="showDialog">
@@ -49,6 +50,7 @@ import DeviceErrorDialog from '@/components/exchange/DeviceErrorDialog.vue';
 import ConnectDevice from '@/components/exchange/ConnectDevice.vue';
 import TxErrorDialog from '@/components/exchange/TxErrorDialog.vue';
 import SatoshiBig from '@/types/SatoshiBig';
+import { Machine } from '@/services/utils';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 @Component({
@@ -87,6 +89,15 @@ export default class SendBitcoinLedger extends Vue {
   txError = '';
 
   isBackFromConfirm = false;
+
+  confirmTxState: Machine<
+    'idle'
+    | 'loading'
+    | 'error'
+    | 'goingHome'
+    > = new Machine('idle');
+
+  rawTx = '';
 
   createdTx: NormalizedTx = {
     coin: EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
@@ -194,7 +205,7 @@ export default class SendBitcoinLedger extends Vue {
     if (txError !== '') {
       this.txError = txError;
       this.showTxErrorDialog = true;
-    } else {
+    } else if (txId !== '') {
       this.currentComponent = 'TrackingId';
     }
     this.txId = txId;
@@ -212,8 +223,10 @@ export default class SendBitcoinLedger extends Vue {
   }
 
   @Emit()
-  closeTxErrorDialog() {
+  async closeTxErrorDialog() {
     this.showTxErrorDialog = false;
+    this.sendBitcoinState = 'idle';
+    this.confirmTxState.send('idle');
   }
 
   @Emit()
