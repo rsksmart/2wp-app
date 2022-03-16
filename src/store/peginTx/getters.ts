@@ -117,4 +117,7 @@ export const getters: GetterTree<PegInTxState, RootState> = {
     },
   [constants.PEGIN_TX_GET_WALLET_SERVICE]:
     (state: PegInTxState): WalletService | undefined => state.walletService,
+  [constants.PEGIN_TX_IS_LOADING_BALANCE]:
+    (state: PegInTxState): boolean => <boolean>(state.walletService
+      ? state.walletService.isLoadingBalances : false),
 };

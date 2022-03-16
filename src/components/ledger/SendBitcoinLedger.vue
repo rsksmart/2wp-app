@@ -1,16 +1,15 @@
 <template>
   <v-container fluid class="px-md-0">
-    <template v-if="!ledgerDataReady">
+    <template v-if="!peginTxState.walletDataReady">
       <connect-device @continueToForm="startAskingForBalance"
                       @back="back"
                       :sendBitcoinState="sendBitcoinState"/>
     </template>
-    <template v-if="ledgerDataReady">
-      <component :is="currentComponent" :balances="balances"
+    <template v-if="peginTxState.walletDataReady">
+      <component :is="currentComponent"
                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
-                 :tx="createdTx" :txBuilder="txBuilder"
+                 :txBuilder="txBuilder"
                  :txId="txId" @back="back"
-                 :price="this.peginTxState.bitcoinPrice"
                  @toPegInForm="toPegInForm" :pegInFormData="pegInFormData"
                  :isBackFromConfirm="isBackFromConfirm"/>
     </template>
@@ -38,10 +37,10 @@ import PegInForm from '@/components/create/PegInForm.vue';
 import ConfirmLedgerTransaction from '@/components/ledger/ConfirmLedgerTransaction.vue';
 import TrackingId from '@/components/exchange/TrackingId.vue';
 import { WalletService } from '@/services';
-import { PegInTxState, WalletAddress } from '@/types/pegInTx';
+import { PegInTxState } from '@/types/pegInTx';
 import * as constants from '@/store/constants';
 import {
-  AccountBalance, NormalizedTx, PegInFormValues, SendBitcoinState,
+  NormalizedTx, PegInFormValues, SendBitcoinState,
 } from '@/types';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
 import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
@@ -104,24 +103,9 @@ export default class SendBitcoinLedger extends Vue {
 
   txBuilder: LedgerTxBuilder = new LedgerTxBuilder();
 
-  balances: AccountBalance = {
-    legacy: new SatoshiBig(0, 'satoshi'),
-    segwit: new SatoshiBig(0, 'satoshi'),
-    nativeSegwit: new SatoshiBig(0, 'satoshi'),
-  };
-
-  ledgerDataReady = false;
-
-  ledgerServiceSubscriber = (
-    balance: AccountBalance,
-    addressList: WalletAddress[],
-  ) => this.addBalance(balance, addressList);
-
   @State('pegInTx') peginTxState!: PegInTxState;
 
-  @Action(constants.PEGIN_TX_ADD_ADDRESSES, { namespace: 'pegInTx' }) addAddressListStore !: (addressList: WalletAddress[]) => void;
-
-  @Action(constants.PEGIN_TX_ADD_BALANCE, { namespace: 'pegInTx' }) addBalanceStore !: (balance: AccountBalance) => void;
+  @Action(constants.PEGIN_TX_START_ASKING_FOR_BALANCE, { namespace: 'pegInTx' }) startAskingForBalanceStore !: () => Promise<void>;
 
   @Action(constants.PEGIN_TX_ADD_NORMALIZED_TX, { namespace: 'pegInTx' }) addNormalizedTx !: (tx: NormalizedTx) => void;
 
@@ -219,12 +203,7 @@ export default class SendBitcoinLedger extends Vue {
   @Emit()
   startAskingForBalance() {
     this.sendBitcoinState = 'loading';
-    this.ledgerDataReady = false;
-    this.walletService.subscribe(this.ledgerServiceSubscriber);
-    this.walletService.startAskingForBalance(
-      this.peginTxState.sessionId,
-      this.peginTxState.peginConfiguration.maxValue,
-    )
+    this.startAskingForBalanceStore()
       .catch((e) => {
         if (e.statusCode === 27010) {
           this.deviceError = 'Please unlock your Ledger device.';
@@ -234,26 +213,6 @@ export default class SendBitcoinLedger extends Vue {
         this.sendBitcoinState = 'error';
         this.showErrorDialog = true;
       });
-  }
-
-  addBalance(balanceInformed: AccountBalance, addressList: WalletAddress[]) {
-    this.addBalanceStore(balanceInformed);
-    this.addAddressListStore(addressList);
-    this.setInformedBalance(balanceInformed);
-    if (!this.ledgerDataReady) {
-      this.ledgerDataReady = true;
-    }
-  }
-
-  @Emit()
-  setInformedBalance(balanceInformed: AccountBalance) {
-    if (balanceInformed === undefined) {
-      this.deviceError = 'Balance was not found.';
-      this.sendBitcoinState = 'error';
-      this.walletService.unsubscribe(this.ledgerServiceSubscriber);
-      this.showErrorDialog = true;
-    }
-    this.balances = balanceInformed;
   }
 
   @Emit('back')
@@ -290,12 +249,6 @@ export default class SendBitcoinLedger extends Vue {
     this.recipient = '';
     this.feeBTC = new SatoshiBig('0', 'satoshi');
     this.txBuilder = new LedgerTxBuilder();
-    this.balances = {
-      legacy: new SatoshiBig(0, 'satoshi'),
-      segwit: new SatoshiBig(0, 'satoshi'),
-      nativeSegwit: new SatoshiBig(0, 'satoshi'),
-    };
-    this.ledgerDataReady = false;
   }
 
   async beforeDestroy() {

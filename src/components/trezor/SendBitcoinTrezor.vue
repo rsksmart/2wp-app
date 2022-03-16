@@ -1,16 +1,15 @@
 <template>
   <v-container fluid class="px-md-0">
-    <template v-if="!trezorDataReady">
+    <template v-if="!peginTxState.walletDataReady">
       <connect-device @continueToForm="startAskingForBalance"
                       @back="back"
                       :sendBitcoinState="sendBitcoinState"/>
     </template>
-    <template v-if="trezorDataReady">
-      <component :is="currentComponent" :balances="balances"
+    <template v-if="peginTxState.walletDataReady">
+      <component :is="currentComponent"
                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
-                 :tx="createdTx" :txBuilder="txBuilder"
-                 :price="peginTxState.bitcoinPrice"
-                 :txId="txId" @back="back" :loadingBalances="loadingBalances"
+                 :txBuilder="txBuilder"
+                 :txId="txId" @back="back"
                  @toPegInForm="toPegInForm" :pegInFormData="pegInFormData"
                  :isBackFromConfirm="isBackFromConfirm"/>
     </template>
@@ -39,10 +38,10 @@ import PegInForm from '@/components/create/PegInForm.vue';
 import ConfirmTrezorTransaction from '@/components/trezor/ConfirmTrezorTransaction.vue';
 import TrackingId from '@/components/exchange/TrackingId.vue';
 import { WalletService } from '@/services';
-import { PegInTxState, WalletAddress } from '@/types/pegInTx';
+import { PegInTxState } from '@/types/pegInTx';
 import * as constants from '@/store/constants';
 import {
-  AccountBalance, NormalizedTx, PegInFormValues, SendBitcoinState,
+  NormalizedTx, PegInFormValues, SendBitcoinState,
 } from '@/types';
 import TrezorTxBuilder from '@/middleware/TxBuilder/TrezorTxBuilder';
 import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
@@ -108,26 +107,11 @@ export default class SendBitcoinTrezor extends Vue {
 
   txBuilder: TrezorTxBuilder = new TrezorTxBuilder();
 
-  balances: AccountBalance = {
-    legacy: new SatoshiBig(0, 'satoshi'),
-    segwit: new SatoshiBig(0, 'satoshi'),
-    nativeSegwit: new SatoshiBig(0, 'satoshi'),
-  };
-
-  trezorDataReady = false;
-
-  trezorServiceSubscriber = (
-    balance: AccountBalance,
-    addressList: WalletAddress[],
-  ) => this.addBalance(balance, addressList);
-
   @State('pegInTx') peginTxState!: PegInTxState;
 
-  @Action(constants.PEGIN_TX_ADD_ADDRESSES, { namespace: 'pegInTx' }) addAddressListStore !: (addressList: WalletAddress[]) => void;
+  @Action(constants.PEGIN_TX_START_ASKING_FOR_BALANCE, { namespace: 'pegInTx' }) startAskingForBalanceStore !: () => Promise<void>;
 
   @Action(constants.IS_TREZOR_CONNECTED, { namespace: 'pegInTx' }) setTrezorConnected !: any;
-
-  @Action(constants.PEGIN_TX_ADD_BALANCE, { namespace: 'pegInTx' }) addBalanceStore !: (balance: AccountBalance) => void;
 
   @Action(constants.PEGIN_TX_ADD_NORMALIZED_TX, { namespace: 'pegInTx' }) addNormalizedTx !: (tx: NormalizedTx) => void;
 
@@ -240,37 +224,12 @@ export default class SendBitcoinTrezor extends Vue {
   @Emit()
   startAskingForBalance() {
     this.sendBitcoinState = 'loading';
-    this.walletService.subscribe(this.trezorServiceSubscriber);
-    this.walletService.startAskingForBalance(
-      this.peginTxState.sessionId,
-      this.peginTxState.peginConfiguration.maxValue,
-    )
+    this.startAskingForBalanceStore()
       .catch((e) => {
         this.deviceError = e.message;
         this.sendBitcoinState = 'error';
-        this.walletService.unsubscribe(this.trezorServiceSubscriber);
         this.showErrorDialog = true;
       });
-  }
-
-  addBalance(balanceInformed: AccountBalance, addressList: WalletAddress[]) {
-    this.setInformedBalance(balanceInformed);
-    this.addAddressListStore(addressList);
-    if (!this.trezorDataReady) {
-      this.trezorDataReady = true;
-    }
-  }
-
-  @Emit()
-  setInformedBalance(balanceInformed: AccountBalance) {
-    if (balanceInformed === undefined) {
-      this.deviceError = 'Balance was not found.';
-      this.sendBitcoinState = 'error';
-      this.walletService.unsubscribe(this.trezorServiceSubscriber);
-      this.showErrorDialog = true;
-    }
-    this.addBalanceStore(balanceInformed);
-    this.balances = balanceInformed;
   }
 
   @Emit('back')
@@ -308,12 +267,6 @@ export default class SendBitcoinTrezor extends Vue {
     this.recipient = '';
     this.feeBTC = new SatoshiBig('0', 'satoshi');
     this.txBuilder = new TrezorTxBuilder();
-    this.balances = {
-      legacy: new SatoshiBig(0, 'satoshi'),
-      segwit: new SatoshiBig(0, 'satoshi'),
-      nativeSegwit: new SatoshiBig(0, 'satoshi'),
-    };
-    this.trezorDataReady = false;
   }
 
   async beforeDestroy() {

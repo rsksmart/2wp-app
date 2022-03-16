@@ -10,6 +10,7 @@ export const getClearPeginTxState = (): PegInTxState => ({
     maxValue: 0,
     federationAddress: '',
     btcConfirmations: 100,
+    sessionId: '',
   },
   sessionId: '',
   utxoList: undefined,
@@ -39,4 +40,5 @@ export const getClearPeginTxState = (): PegInTxState => ({
     inputs: [],
     outputs: [],
   },
+  walletDataReady: false,
 });
