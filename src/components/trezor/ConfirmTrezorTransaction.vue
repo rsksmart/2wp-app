@@ -209,7 +209,12 @@ export default class ConfirmTrezorTransaction extends Vue {
 
   rawTx = '';
 
-  @Prop() confirmTxState!: any;
+  @Prop() confirmTxState!: Machine<
+    'idle'
+    | 'loading'
+    | 'error'
+    | 'goingHome'
+  >;
 
   @Prop() txBuilder!: TrezorTxBuilder;
 
