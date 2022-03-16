@@ -214,6 +214,7 @@ export default class ConfirmLedgerTransaction extends Vue {
 
   @Emit('successConfirmation')
   async toTrackId() {
+    const LEDGER_STATUS_CODES = { TRANSACTION_CANCELLED_BY_USER: 27013, DEVICE_LOCKED: 27010 };
     let txError = '';
     this.confirmTxState.send('loading');
     await this.walletService.stopAskingForBalance()
@@ -228,10 +229,10 @@ export default class ConfirmLedgerTransaction extends Vue {
         this.confirmTxState.send('error');
 
         switch (err.statusCode) {
-          case 27010:
+          case LEDGER_STATUS_CODES.DEVICE_LOCKED:
             txError = 'Please unlock your Ledger device.';
             break;
-          case 27013:
+          case LEDGER_STATUS_CODES.TRANSACTION_CANCELLED_BY_USER:
             txError = 'Transaction cancelled by user.';
             break;
           default:
