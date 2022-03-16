@@ -26,7 +26,7 @@ export interface PeginConfiguration {
   federationAddress: string;
   feePerKb?: number; // SatoshiBN
   btcConfirmations: number;
-  sessionId?: string;
+  sessionId: string;
   id?: number;
 }
 
@@ -58,6 +58,7 @@ export interface PegInTxState {
   rskAddressSelected: string;
   normalizedTx: NormalizedTx;
   walletService?: WalletService,
+  walletDataReady: boolean;
 }
 
 export interface UnusedWalletAddress {

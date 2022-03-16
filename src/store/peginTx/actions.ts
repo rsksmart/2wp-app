@@ -12,9 +12,6 @@ import {
 } from '@/types';
 
 export const actions: ActionTree<PegInTxState, RootState> = {
-  [constants.PEGIN_TX_ADD_ADDRESSES]: ({ commit }, addressList: WalletAddress[]) => {
-    commit(constants.PEGIN_TX_SET_ADDRESS_LIST, addressList);
-  },
   [constants.PEGIN_TX_ADD_UTXOS]: ({ commit }, utxoList: Utxo[]) => {
     commit(constants.PEGIN_TX_SET_UTXO_LIST, { utxoList });
   },
@@ -44,6 +41,11 @@ export const actions: ActionTree<PegInTxState, RootState> = {
         commit(constants.PEGIN_TX_SET_WALLET_SERVICE, undefined);
         break;
     }
+    commit(constants.PEGIN_TX_WALLET_SERVICE_SUBSCRIBE,
+      (balance: AccountBalance, addressList: WalletAddress[]) => {
+        commit(constants.PEGIN_TX_SET_BALANCE, balance);
+        commit(constants.PEGIN_TX_SET_ADDRESS_LIST, addressList);
+      });
   },
   [constants.PEGIN_TX_ADD_BITCOIN_PRICE]: ({ commit }) => {
     axios.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin&order=market_cap_desc&per_page=100&page=1&sparkline=false')
@@ -87,9 +89,6 @@ export const actions: ActionTree<PegInTxState, RootState> = {
         })
         .catch(reject);
     }),
-  [constants.PEGIN_TX_ADD_BALANCE]: ({ commit }, balance: AccountBalance): void => {
-    commit(constants.PEGIN_TX_SET_BALANCE, balance);
-  },
   [constants.PEGIN_TX_ADD_RSK_ADDRESS]: ({ commit }, address: string): void => {
     const chainId = EnvironmentAccessorService
       .getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_MAINNET ? 30 : 31;
@@ -104,5 +103,15 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   },
   [constants.PEGIN_TX_ADD_NORMALIZED_TX]: ({ commit }, tx: NormalizedTx): void => {
     commit(constants.PEGIN_TX_SET_NORMALIZED_TX, tx);
+  },
+  [constants.PEGIN_TX_START_ASKING_FOR_BALANCE]: ({ state }): Promise<void> => {
+    if (state.walletService) {
+      return state.walletService
+        .startAskingForBalance(
+          state.peginConfiguration.sessionId,
+          state.peginConfiguration.maxValue,
+        );
+    }
+    return Promise.reject(new Error('Wallet service is not set'));
   },
 };

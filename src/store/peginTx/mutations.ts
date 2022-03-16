@@ -48,6 +48,7 @@ export const mutations: MutationTree<PegInTxState> = {
     state.loadingFee = loadingFee;
   },
   [constants.PEGIN_TX_SET_BALANCE]: (state, balance: AccountBalance) => {
+    if (!state.walletDataReady) state.walletDataReady = true;
     state.balances = balance;
   },
   [constants.PEGIN_TX_SET_RSK_ADDRESS]: (state, rskAddress: string) => {
@@ -64,5 +65,10 @@ export const mutations: MutationTree<PegInTxState> = {
   },
   [constants.PEGIN_TX_SET_WALLET_SERVICE]: (state, walletService: WalletService) => {
     state.walletService = walletService;
+  },
+  [constants.PEGIN_TX_WALLET_SERVICE_SUBSCRIBE]: (
+    state, subscriber: (balance: AccountBalance, addressList: WalletAddress[]) => void,
+  ) => {
+    if (state.walletService) state.walletService.subscribe(subscriber);
   },
 };
