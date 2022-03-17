@@ -67,7 +67,7 @@
 import {
   Component, Emit, Vue, Watch,
 } from 'vue-property-decorator';
-import { Action, State } from 'vuex-class';
+import { Action, Getter, State } from 'vuex-class';
 import SatoshiBig from '@/types/SatoshiBig';
 import { PegInTxState } from '@/types/pegInTx';
 import * as constants from '@/store/constants';
@@ -93,6 +93,8 @@ export default class BtcInputAmount extends Vue {
   @Action(constants.PEGIN_TX_CALCULATE_TX_FEE, { namespace: 'pegInTx' }) calculateTxFee !: () => Promise<void>;
 
   @Action(constants.PEGIN_TX_ADD_IS_VALID_AMOUNT, { namespace: 'pegInTx' }) setIsValidAmount !: (isValid: boolean) => void;
+
+  @Getter(constants.PEGIN_TX_GET_SELECTED_BALANCE, { namespace: 'pegInTx' }) selectedAccountBalance!: SatoshiBig;
 
   get isBTCAmountValidNumberRegex() {
     return /^[0-9]{1,8}(\.[0-9]{0,8})?$/.test(this.bitcoinAmount.toString());
@@ -162,20 +164,6 @@ export default class BtcInputAmount extends Vue {
     return false;
   }
 
-  get selectedAccountBalance(): SatoshiBig {
-    switch (this.pegInTxState.selectedAccount) {
-      case constants.BITCOIN_LEGACY_ADDRESS:
-        return this.pegInTxState.balances.legacy;
-      case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
-        return this.pegInTxState.balances.nativeSegwit;
-      case constants.BITCOIN_SEGWIT_ADDRESS:
-        return this.pegInTxState.balances.segwit;
-      default:
-        break;
-    }
-    return new SatoshiBig('0', 'satoshi');
-  }
-
   blockLetterKeyDown(e: KeyboardEvent) {
     if (this.bitcoinAmount.toString().length > 15
       && !(e.key === 'Backspace'
@@ -214,7 +202,7 @@ export default class BtcInputAmount extends Vue {
     this.amountStyle = this.stepState === 'done' ? 'green-box' : 'yellow-box';
   }
 
-  @Watch('btcAccountTypeSelected')
+  @Watch('selectedAccountBalance')
   watchBTCAccountTypeSelected() {
     if (this.stepState !== 'unused') {
       this.checkStep();

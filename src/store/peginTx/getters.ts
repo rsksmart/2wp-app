@@ -101,6 +101,20 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       }
       return fee;
     },
+  [constants.PEGIN_TX_GET_SELECTED_BALANCE]:
+    (state: PegInTxState): SatoshiBig => {
+      switch (state.selectedAccount) {
+        case constants.BITCOIN_LEGACY_ADDRESS:
+          return state.balances.legacy;
+        case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
+          return state.balances.nativeSegwit;
+        case constants.BITCOIN_SEGWIT_ADDRESS:
+          return state.balances.segwit;
+        default:
+          break;
+      }
+      return new SatoshiBig('0', 'satoshi');
+    },
   [constants.PEGIN_TX_GET_WALLET_SERVICE]:
     (state: PegInTxState): WalletService | undefined => state.walletService,
 };
