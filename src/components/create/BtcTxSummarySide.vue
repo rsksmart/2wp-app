@@ -219,13 +219,13 @@ export default class BtcTxSummarySide extends Vue {
     let text = '';
     switch (accountType) {
       case constants.BITCOIN_LEGACY_ADDRESS:
-        text = `Legacy account - ${this.pegInTxState.balances.legacy.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
+        text = `Legacy - ${this.pegInTxState.balances.legacy.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
         break;
       case constants.BITCOIN_SEGWIT_ADDRESS:
-        text = `Segwit account - ${this.pegInTxState.balances.segwit.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
+        text = `Segwit - ${this.pegInTxState.balances.segwit.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
         break;
       case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
-        text = `Native segwit account - ${this.pegInTxState.balances.nativeSegwit.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
+        text = `Native segwit - ${this.pegInTxState.balances.nativeSegwit.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
         break;
       default:
         break;
