@@ -8,20 +8,13 @@
         <h2 class="text-center tx-text">Transaction summary:</h2>
       </v-row>
       <v-row class="d-flex justify-center mb-n3">
-        <a v-show="expand && !expandOver" @click="switchExpand" @mouseover="switchExpandOver"
-           @mouseleave="switchExpandOver">
-          <v-img src="@/assets/status/collapse-2.png" contain max-width="30"></v-img>
-        </a>
-        <a v-show="!expand && !expandOver" @click="switchExpand" @mouseover="switchExpandOver"
-           @mouseleave="switchExpandOver">
-          <v-img src="@/assets/status/collapse.png" contain max-width="30"></v-img>
-        </a>
-        <a v-show="expand && expandOver" @click="switchExpand">
-          <v-img src="@/assets/status/collapse-2-green.png" contain max-width="30"></v-img>
-        </a>
-        <a v-show="!expand && expandOver" @click="switchExpand">
-          <v-img src="@/assets/status/collapse-green.png" contain max-width="30"></v-img>
-        </a>
+        <v-btn fab x-small outlined color="green" @click="switchExpand"
+               v-bind:class="[this.over ? 'expand-btn-active' : 'expand-btn-inactive']"
+               @mouseover="over = true" @mouseleave="over = false">
+          <span class="content">
+            {{ expand ? '-' : '+'}}
+          </span>
+        </v-btn>
       </v-row>
       <v-expand-transition>
         <div class="box" v-show="expand">
@@ -184,7 +177,7 @@ export default class TxSummary extends Vue {
 
   expand = false;
 
-  expandOver = false;
+  over = false;
 
   fixedUSDDecimals = 2;
 
@@ -243,11 +236,6 @@ export default class TxSummary extends Vue {
   @Emit()
   switchExpand() {
     this.expand = !this.expand;
-  }
-
-  @Emit()
-  switchExpandOver() {
-    this.expandOver = !this.expandOver;
   }
 
   @Emit()

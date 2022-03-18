@@ -9,13 +9,25 @@ import {
 import { WalletService } from '@/services/WalletService';
 import { EnvironmentAccessorService } from './enviroment-accessor.service';
 
+type TrezorCoin = 'TESTNET' | 'BTC';
+
 export default class TrezorService extends WalletService {
-  private network: Network;
+  private bitcoinJsNetwork: Network;
+
+  private trezorCoin: TrezorCoin;
 
   constructor(coin: string) {
     super(coin);
-    this.network = coin === constants.BTC_NETWORK_MAINNET
-      ? bitcoin.networks.bitcoin : bitcoin.networks.testnet;
+    switch (coin) {
+      case constants.BTC_NETWORK_MAINNET:
+        this.bitcoinJsNetwork = bitcoin.networks.bitcoin;
+        this.trezorCoin = 'BTC';
+        break;
+      default:
+        this.bitcoinJsNetwork = bitcoin.networks.testnet;
+        this.trezorCoin = 'TESTNET';
+        break;
+    }
     TrezorConnect.manifest({
       email: EnvironmentAccessorService.getEnvironmentVariables().vueAppManifestEmail,
       appUrl: EnvironmentAccessorService.getEnvironmentVariables().vueAppManifestAppUrl,
@@ -41,37 +53,37 @@ export default class TrezorService extends WalletService {
         path: super.getDerivationPath(constants
           .BITCOIN_LEGACY_ADDRESS, accountIndex, false, index),
         showOnTrezor: false,
-        coin: this.coin,
+        coin: this.trezorCoin,
       });
       bundle.push({
         path: super.getDerivationPath(constants
           .BITCOIN_LEGACY_ADDRESS, accountIndex, true, index),
         showOnTrezor: false,
-        coin: this.coin,
+        coin: this.trezorCoin,
       });
       bundle.push({
         path: super.getDerivationPath(constants
           .BITCOIN_SEGWIT_ADDRESS, accountIndex, false, index),
         showOnTrezor: false,
-        coin: this.coin,
+        coin: this.trezorCoin,
       });
       bundle.push({
         path: super.getDerivationPath(constants
           .BITCOIN_SEGWIT_ADDRESS, accountIndex, true, index),
         showOnTrezor: false,
-        coin: this.coin,
+        coin: this.trezorCoin,
       });
       bundle.push({
         path: super.getDerivationPath(constants
           .BITCOIN_NATIVE_SEGWIT_ADDRESS, accountIndex, false, index),
         showOnTrezor: false,
-        coin: this.coin,
+        coin: this.trezorCoin,
       });
       bundle.push({
         path: super.getDerivationPath(constants
           .BITCOIN_NATIVE_SEGWIT_ADDRESS, accountIndex, true, index),
         showOnTrezor: false,
-        coin: this.coin,
+        coin: this.trezorCoin,
       });
     }
     return bundle;
@@ -102,7 +114,7 @@ export default class TrezorService extends WalletService {
     return new Promise((resolve, reject) => {
       TrezorConnect.getAccountInfo({
         path: this.getAccountPath(accountType, 0),
-        coin: this.coin,
+        coin: this.trezorCoin,
         details: 'txs',
       })
         .then((result) => {
@@ -129,7 +141,8 @@ export default class TrezorService extends WalletService {
       TrezorConnect.signTransaction({
         inputs: trezorTx.inputs,
         outputs: trezorTx.outputs,
-        coin: this.coin,
+        coin: this.trezorCoin,
+        version: trezorTx.version,
         push: false,
       })
         .then((res) => {
@@ -150,7 +163,7 @@ export default class TrezorService extends WalletService {
   }
 
   getUnsignedRawTx(tx: TrezorTx) :string {
-    const txBuilder = new bitcoin.TransactionBuilder(this.network);
+    const txBuilder = new bitcoin.TransactionBuilder(this.bitcoinJsNetwork);
     tx.inputs.forEach((input) => {
       txBuilder.addInput(input.prev_hash, input.prev_index);
     });

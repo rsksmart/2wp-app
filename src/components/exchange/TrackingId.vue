@@ -65,6 +65,8 @@ import {
   Component, Prop, Emit,
   Vue,
 } from 'vue-property-decorator';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import * as constants from '@/store/constants';
 
 @Component
 export default class TrackingId extends Vue {
@@ -73,7 +75,19 @@ export default class TrackingId extends Vue {
   @Prop() txId!: string;
 
   get btcExplorerUrl() {
-    return `https://live.blockcypher.com/btc-testnet/tx/${this.txId}`;
+    let network = '';
+    switch (EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin) {
+      case constants.BTC_NETWORK_TESTNET:
+        network = 'btc-testnet';
+        break;
+      case constants.BTC_NETWORK_MAINNET:
+        network = 'btc';
+        break;
+      default:
+        network = 'btc-testnet';
+        break;
+    }
+    return `https://live.blockcypher.com/${network}/tx/${this.txId}`;
   }
 
   get chunkedBtcExplorerUrl() {

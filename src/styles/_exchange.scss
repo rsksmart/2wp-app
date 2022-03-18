@@ -21,7 +21,6 @@
   .wallet-button-disabled {
     width: 209px !important;
     height: 101px !important;
-    margin: 20px 0 20px 0;
     background-color: #fff !important;
     border-radius: 20px !important;
     border: 1px solid #B5CAB8 !important;
@@ -30,7 +29,7 @@
   .wallet-button {
     width: 209px !important;
     height: 101px !important;
-    margin: 20px 0 20px 0;
+    
     background-color: #fff !important;
     border-radius: 20px !important;
     border: 1px solid #00B520 !important;
@@ -53,7 +52,6 @@
   .wallet-button-thin-disabled {
     width: 166px !important;
     height: 62px !important;
-    margin: 16px 0 16px 0;
     padding: 0 30px 0 30px !important;
     background-color: #fff !important;
     border-radius: 20px !important;
@@ -66,7 +64,6 @@
   .wallet-button-thin {
     width: 166px !important;
     height: 62px !important;
-    margin: 16px 0 16px 0;
     padding: 0 30px 0 30px !important;
     background-color: #fff !important;
     border-radius: 20px !important;
@@ -158,4 +155,30 @@
     flex: none;
     width: 700px;
   }
+}
+
+
+.custom-tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.custom-tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #666666;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  margin-top: 5px;
+  margin-left: 44px;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+}
+
+.custom-tooltip:hover .tooltiptext {
+  visibility: visible;
 }

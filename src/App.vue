@@ -16,6 +16,7 @@ import { Component } from 'vue-property-decorator';
 import Top from '@/components/layouts/Top.vue';
 import FooterRsk from '@/components/layouts/Footer.vue';
 import Mobile from '@/views/Mobile.vue';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 @Component({
   components: {
@@ -25,5 +26,22 @@ import Mobile from '@/views/Mobile.vue';
   },
 })
 export default class App extends Vue {
+  scriptTag?: any;
+
+  mounted() {
+    const hotjarID = EnvironmentAccessorService.getEnvironmentVariables().vueAppHotjarId;
+    this.scriptTag = document.createElement('script');
+    this.scriptTag.type = 'text/javascript';
+    this.scriptTag.text = '(function(h,o,t,j,a,r){'
+      + 'h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};'
+      + `h._hjSettings={hjid:'${hotjarID}',hjsv:6};`
+      + 'a=o.getElementsByTagName("head")[0];'
+      + 'r=o.createElement("script");r.async=1;'
+      + 'r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;'
+      + 'a.appendChild(r);'
+    + '})(window,document,"https://static.hotjar.com/c/hotjar-",".js?sv=");';
+
+    document.body.appendChild(this.scriptTag);
+  }
 }
 </script>

@@ -833,13 +833,10 @@ export default class SendBitcoinForm extends Vue {
           break;
         }
         case 3: {
-          this.thirdDone = this.isValidPegInAddress && !this.insufficientAmount;
+          this.thirdDone = this.isValidPegInAddress;
           break;
         }
-        case 4: {
-          this.fourthDone = !this.insufficientAmount;
-          break;
-        }
+        case 4:
         default: {
           break;
         }
@@ -878,10 +875,12 @@ export default class SendBitcoinForm extends Vue {
         selectedFee = constants.BITCOIN_AVERAGE_FEE_LEVEL;
         break;
     }
+    const chainId = EnvironmentAccessorService
+      .getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_MAINNET ? 30 : 31;
     return {
       amountToTransferInSatoshi: this.safeAmount,
       refundAddress: this.refundAddress,
-      recipient: this.computedRskAddress,
+      recipient: rskUtils.toChecksumAddress(this.computedRskAddress, chainId),
       feeLevel: selectedFee,
       feeBTC: this.safeTxFee,
       accountType: this.btcAccountTypeSelected,

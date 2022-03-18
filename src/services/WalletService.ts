@@ -148,15 +148,16 @@ export abstract class WalletService {
             segwit: new SatoshiBig(balanceAccumulated.segwit.plus(balances.segwit), 'satoshi'),
             nativeSegwit: new SatoshiBig(balanceAccumulated.nativeSegwit.plus(balances.nativeSegwit), 'satoshi'),
           };
-          this.informSubscribers(balanceAccumulated);
         } else {
           const listOfAddresses: string[] = [];
           addresses.forEach((element) => { listOfAddresses.push(element.address); });
           // eslint-disable-next-line no-await-in-loop
           if (await ApiService.areUnusedAddresses(listOfAddresses)) {
+            this.informSubscribers(balanceAccumulated);
             return;
           }
         }
+        this.informSubscribers(balanceAccumulated);
       } else {
         throw new Error('Error getting balances');
       }
