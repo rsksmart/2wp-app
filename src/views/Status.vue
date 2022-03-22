@@ -146,7 +146,7 @@
         </v-row>
       </v-container>
       <v-container fluid class="transactions px-0">
-        <tx-summary :txId="txId" :showTxId="true" :initialExpand="true"/>
+        <tx-summary v-if="txId !== ''" :txId="txId" :showTxId="true" :initialExpand="true"/>
         <v-row justify="center" class="mx-0 mt-5">
           <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
             <v-btn rounded outlined color="#00B520" width="110" @click="back">
