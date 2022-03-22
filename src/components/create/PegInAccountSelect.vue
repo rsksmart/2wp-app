@@ -10,7 +10,7 @@
           Select {{environmentContext.getBtcText()}} account to send from:
         </p>
         <v-row class="mx-0 mt-4">
-          <v-col cols="6" class="pl-0 pb-0">
+          <v-col cols="7" class="pl-0 pb-0">
             <v-select v-model="btcAccountTypeSelected" :items="accountBalances" color="#fff"
                       label="Select the account" solo dense
                       @focus="focus = true"
@@ -42,7 +42,7 @@
                     </span>
             </v-tooltip>
           </v-col>
-          <v-col v-if="pegInTxState.loadingBalance" cols="5" class="d-flex align-start pa-0">
+          <v-col v-if="pegInTxState.loadingBalance" cols="4" class="d-flex align-start pa-0">
             <v-row class="d-flex justify-start pt-6 ma-0">
               <span class="d-flex align-center">Loading balances   </span>
               <v-progress-circular
@@ -115,13 +115,13 @@ export default class PegInAccountSelect extends Vue {
     let text = '';
     switch (accountType) {
       case constants.BITCOIN_LEGACY_ADDRESS:
-        text = `Legacy account - ${this.pegInTxState.balances.legacy.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
+        text = `Legacy - ${this.pegInTxState.balances.legacy.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
         break;
       case constants.BITCOIN_SEGWIT_ADDRESS:
-        text = `Segwit account - ${this.pegInTxState.balances.segwit.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
+        text = `Segwit - ${this.pegInTxState.balances.segwit.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
         break;
       case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
-        text = `Native segwit account - ${this.pegInTxState.balances.nativeSegwit.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
+        text = `Native segwit - ${this.pegInTxState.balances.nativeSegwit.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
         break;
       default:
         break;
