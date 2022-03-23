@@ -1,11 +1,10 @@
 import { TxInputType, TxOutputType } from 'trezor-connect';
 import { WalletAddress } from '@/types/pegInTx';
 import {
-  InputScriptType,
   NormalizedInput, NormalizedOutput, TrezorTx,
 } from '@/types';
 import { getAccountType } from '@/services/utils';
-import store from '../../store';
+import store from '@/store';
 import * as constants from '@/store/constants';
 import TxBuilder from './TxBuilder';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
