@@ -159,9 +159,9 @@ export default abstract class WalletService {
             nativeSegwit: new SatoshiBig(balanceAccumulated.nativeSegwit.plus(balances.nativeSegwit), 'satoshi'),
           };
         } else {
-          const isSomeAddressUnused = addresses
-            .some((walletAddressItem) => walletAddressItem.unused);
-          if (isSomeAddressUnused) return;
+          const areAllAddressUnused = addresses
+            .every((walletAddressItem) => walletAddressItem.unused);
+          if (areAllAddressUnused) return;
         }
         this.informSubscribers(balanceAccumulated, addresses);
       } else {
@@ -178,18 +178,17 @@ export default abstract class WalletService {
   }
 
   private static getUnusedValue(addressList: WalletAddress[]): Promise<WalletAddress[]> {
-    return new Promise<WalletAddress[]>((resolve, reject) => {
-      ApiService.areUnusedAddresses(addressList.map((walletAddress) => walletAddress.address))
-        .then((addressStatusList: AddressStatus[]) => {
-          addressList.forEach((walletAddressItem) => {
-            const status : AddressStatus | undefined = addressStatusList
-              .find((statusItem) => walletAddressItem.address === statusItem.address);
+    const addressListResponse = [...addressList];
+    return ApiService
+      .areUnusedAddresses(addressListResponse.map((walletAddress) => walletAddress.address))
+      .then((addressStatusList: AddressStatus[]) => {
+        addressListResponse.forEach((walletAddressItem) => {
+          const status : AddressStatus | undefined = addressStatusList
+            .find((statusItem) => walletAddressItem.address === statusItem.address);
             // eslint-disable-next-line no-param-reassign
-            walletAddressItem.unused = status ? status.unused : false;
-          });
-          resolve(addressList);
-        })
-        .catch(reject);
-    });
+          walletAddressItem.unused = status ? status.unused : false;
+        });
+        return addressListResponse;
+      });
   }
 }
