@@ -1,4 +1,3 @@
-import { TrezorSignedTx } from '@/types/Trezor';
-import { LedgerSignedTx } from '@/types/Ledger';
+import { TrezorSignedTx, LedgerSignedTx } from '@/types';
 
 export type SignedTx = TrezorSignedTx | LedgerSignedTx;

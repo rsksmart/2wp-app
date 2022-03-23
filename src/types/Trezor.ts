@@ -1,5 +1,5 @@
 import { TxInputType, TxOutputType } from 'trezor-connect';
-import { Tx } from '@/types/Common';
+import { Tx } from '@/types';
 
 export type InputScriptType =
   'SPENDADDRESS' |

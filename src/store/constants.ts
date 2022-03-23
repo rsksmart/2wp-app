@@ -90,7 +90,7 @@ export const SESSION_IN_TX_FLOW = 'SESSION_IN_TX_FLOW';
 // environment
 export const BTC_NETWORK_MAINNET = 'main';
 export const BTC_NETWORK_TESTNET = 'test';
-export const BITCOIN_TX_VERSION = 2;
+export const BITCOIN_TX_VERSION = 1;
 // Ledger Apps
 export const LEDGER_APP_BTC_TEST = 'Bitcoin Test';
 export const LEDGER_APP_BTC = 'Bitcoin';

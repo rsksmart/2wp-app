@@ -1,5 +1,6 @@
-import { AccountBalance, FeeAmountData, NormalizedTx } from '@/types/Common';
-import SatoshiBig from '@/types/SatoshiBig';
+import {
+  AccountBalance, FeeAmountData, NormalizedTx, SatoshiBig,
+} from '@/types';
 import { WalletService } from '@/services';
 
 export type BtcAccount = 'BITCOIN_LEGACY_ADDRESS' |

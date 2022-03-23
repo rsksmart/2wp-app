@@ -1,5 +1,7 @@
+import { AppNetwork } from '@/types';
+
 export class EnvironmentVariables {
-  public vueAppCoin: string;
+  public vueAppCoin: AppNetwork;
 
   public baseUrl: string;
 

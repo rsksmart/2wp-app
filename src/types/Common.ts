@@ -1,4 +1,4 @@
-import SatoshiBig from '@/types/SatoshiBig';
+import { SatoshiBig } from '@/types';
 
 export interface Tx {
   coin: string;
@@ -66,6 +66,8 @@ export interface PegInFormValues {
 }
 
 export type SendBitcoinState = 'idle' | 'loading' | 'error';
+
+export type AppNetwork = 'main' | 'test';
 
 declare global {
   interface Navigator {

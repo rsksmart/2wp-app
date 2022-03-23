@@ -249,7 +249,12 @@ export default class Status extends Vue {
     if (this.txId !== '') {
       this.loading = true;
       this.error = false;
-      if (this.$route.path !== `/status/txId/${this.txId}`) this.$router.push({ name: 'Status', params: { txId: this.txId } });
+      if (this.$route.path !== `/status/txId/${this.txId}`) {
+        this.$router.push({
+          name: 'Status',
+          params: { txId: this.txId },
+        });
+      }
       ApiService.getPegInStatus(this.txId)
         .then((pegInStatus: PeginStatus) => {
           this.pegInStatus = pegInStatus;
@@ -332,12 +337,6 @@ export default class Status extends Vue {
     const minutes = totalMinutes % 60;
     const paddedMinutes = minutes < 10 ? `0${minutes}` : minutes;
     return `${hours}:${paddedMinutes}`;
-  }
-
-  @Emit()
-  // eslint-disable-next-line class-methods-use-this
-  openExplorer() {
-    window.open('https://explorer.testnet.rsk.co/', '_blank');
   }
 
   @Emit()
