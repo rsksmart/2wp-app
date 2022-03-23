@@ -28,7 +28,7 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_ADD_SESSION_ID]: ({ commit }, sessionId: string) => {
     commit(constants.PEGIN_TX_SET_SESSION_ID, sessionId);
   },
-  [constants.PEGIN_TX_ADD_BITCOIN_WALLET]: ({ commit }, bitcoinWallet: BtcWallet) => {
+  [constants.PEGIN_TX_ADD_BITCOIN_WALLET]: ({ commit, state }, bitcoinWallet: BtcWallet) => {
     commit(constants.PEGIN_TX_SET_BITCOIN_WALLET, bitcoinWallet);
     switch (bitcoinWallet) {
       case constants.WALLET_TREZOR:
@@ -43,8 +43,10 @@ export const actions: ActionTree<PegInTxState, RootState> = {
     }
     commit(constants.PEGIN_TX_WALLET_SERVICE_SUBSCRIBE,
       (balance: AccountBalance, addressList: WalletAddress[]) => {
+        const loadingBalance = state.walletService ? state.walletService.isLoadingBalances : false;
         commit(constants.PEGIN_TX_SET_BALANCE, balance);
         commit(constants.PEGIN_TX_SET_ADDRESS_LIST, addressList);
+        commit(constants.PEGIN_TX_SET_LOADING_BALANCE, loadingBalance);
       });
   },
   [constants.PEGIN_TX_ADD_BITCOIN_PRICE]: ({ commit }) => {

@@ -119,10 +119,6 @@ export default class SendBitcoinLedger extends Vue {
     this.showDialog = localStorage.getItem('BTRD_COOKIE_DISABLED') !== 'true';
   }
 
-  get loadingBalances(): boolean {
-    return this.walletService.isLoadingBalances();
-  }
-
   @Emit()
   async toConfirmTx({
     amountToTransferInSatoshi,

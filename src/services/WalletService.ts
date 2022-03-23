@@ -26,7 +26,11 @@ export default abstract class WalletService {
 
   abstract sign(tx: Tx): Promise<SignedTx>;
 
-  public isLoadingBalances(): boolean {
+  public isLoadingBalances2(): boolean {
+    return this.loadingBalances;
+  }
+
+  get isLoadingBalances(): boolean {
     return this.loadingBalances;
   }
 
@@ -90,11 +94,11 @@ export default abstract class WalletService {
     return new Promise<void>((resolve, reject) => {
       this.cleanSubscriptions();
       const askingBalance = setInterval(() => {
-        if (counter === 0 && this.isLoadingBalances()) {
+        if (counter === 0 && this.isLoadingBalances) {
           clearInterval(askingBalance);
           reject(new Error('Can not stop asking for balance'));
         }
-        if (!this.isLoadingBalances()) {
+        if (!this.isLoadingBalances) {
           clearInterval(askingBalance);
           resolve();
         } else {
@@ -120,7 +124,7 @@ export default abstract class WalletService {
       segwit: new SatoshiBig(0, 'satoshi'),
       nativeSegwit: new SatoshiBig(0, 'satoshi'),
     };
-
+    this.loadingBalances = true;
     const maxAddressPerCall: number = this.getWalletAddressesPerCall();
     for (
       let startFrom = 0;
@@ -139,7 +143,9 @@ export default abstract class WalletService {
         segwit: new SatoshiBig(balancesFound.segwit || 0, 'satoshi'),
         nativeSegwit: new SatoshiBig(balancesFound.nativeSegwit || 0, 'satoshi'),
       };
-
+      if (startFrom + maxAddressPerCall >= (this.getWalletMaxCall() * maxAddressPerCall)) {
+        this.loadingBalances = false;
+      }
       // eslint-disable-next-line no-extra-boolean-cast
       if (!!balances) {
         if (balances.legacy.gt(0)

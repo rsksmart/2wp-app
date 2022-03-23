@@ -129,10 +129,6 @@ export default class SendBitcoinTrezor extends Vue {
     return this.getChangeAddress;
   }
 
-  get loadingBalances(): boolean {
-    return this.walletService.isLoadingBalances();
-  }
-
   @Emit()
   async toConfirmTx({
     amountToTransferInSatoshi,

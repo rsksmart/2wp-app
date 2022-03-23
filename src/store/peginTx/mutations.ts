@@ -71,4 +71,7 @@ export const mutations: MutationTree<PegInTxState> = {
   ) => {
     if (state.walletService) state.walletService.subscribe(subscriber);
   },
+  [constants.PEGIN_TX_SET_LOADING_BALANCE]: (state, loadingBalance: boolean) => {
+    state.loadingBalance = loadingBalance;
+  },
 };
