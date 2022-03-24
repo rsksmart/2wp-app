@@ -227,7 +227,6 @@ export default class ConfirmLedgerTransaction extends Vue {
       })
       .catch((err) => {
         this.confirmTxState.send('error');
-
         switch (err.statusCode) {
           case LEDGER_STATUS_CODES.DEVICE_LOCKED:
             txError = 'Please unlock your Ledger device.';

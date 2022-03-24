@@ -193,7 +193,7 @@ export default class SendBitcoinTrezor extends Vue {
     if (txError !== '') {
       this.txError = txError;
       this.showTxErrorDialog = true;
-    } else if (txId !== '') {
+    } else if (txId) {
       this.currentComponent = 'TrackingId';
     }
     this.txId = txId;
