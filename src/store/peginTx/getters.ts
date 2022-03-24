@@ -1,9 +1,8 @@
 import { GetterTree } from 'vuex';
 import * as constants from '@/store/constants';
-import { PegInTxState, RootState } from '@/types';
+import { PegInTxState, RootState, SatoshiBig } from '@/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import ApiService from '@/services/ApiService';
-import SatoshiBig from '@/types/SatoshiBig';
 import { WalletService } from '@/services';
 
 export const getters: GetterTree<PegInTxState, RootState> = {

@@ -3,9 +3,8 @@ import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import _ from 'lodash';
 import * as bitcoin from 'bitcoinjs-lib';
 import * as constants from '@/store/constants';
-import { WalletAddress } from '@/types/pegInTx';
 import {
-  LedgerjsTransaction, LedgerSignedTx, LedgerTx, Tx,
+  LedgerjsTransaction, LedgerSignedTx, LedgerTx, Tx, WalletAddress,
 } from '@/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import { WalletService } from '@/services';

@@ -3,7 +3,7 @@ import { getters } from './getters';
 import { actions } from './actions';
 import { mutations } from './mutations';
 import { SessionState } from './types';
-import { RootState } from '../../types/store';
+import { RootState } from '@/types';
 
 export const state: SessionState = {
   account: undefined,

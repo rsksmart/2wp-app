@@ -1,9 +1,9 @@
 import * as constants from '@/store/constants';
 import SatoshiBig from '@/types/SatoshiBig';
 import ApiService from './ApiService';
-import { SignedTx } from '@/types/Wallets';
-import { AccountBalance, Tx } from '@/types/Common';
-import { WalletAddress } from '@/types';
+import {
+  SignedTx, WalletAddress, AccountBalance, Tx,
+} from '@/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 export default abstract class WalletService {

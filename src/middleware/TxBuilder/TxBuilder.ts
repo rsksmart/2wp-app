@@ -1,12 +1,11 @@
 import * as bitcoin from 'bitcoinjs-lib';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import {
-  NormalizedInput, NormalizedTx, Tx,
+  NormalizedInput, NormalizedTx, Tx, WalletAddress,
 } from '@/types';
 import * as constants from '@/store/constants';
 import ApiService from '@/services/ApiService';
 import store from '@/store';
-import { WalletAddress } from '@/types/pegInTx';
 
 export default abstract class TxBuilder {
   protected coin!: string;

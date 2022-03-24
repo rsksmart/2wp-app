@@ -54,7 +54,7 @@
 import { Component, Emit, Vue } from 'vue-property-decorator';
 import { Action, State } from 'vuex-class';
 import * as constants from '@/store/constants';
-import { MiningSpeedFee, PegInTxState } from '@/types/pegInTx';
+import { MiningSpeedFee, PegInTxState } from '@/types';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
 @Component({

@@ -3,12 +3,11 @@ import axios from 'axios';
 import * as rskUtils from '@rsksmart/rsk-utils';
 import * as constants from '@/store/constants';
 import { ApiService, LedgerService, TrezorService } from '@/services';
-import SatoshiBig from '@/types/SatoshiBig';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import {
   AccountBalance, FeeAmountData, NormalizedTx, RootState,
   PeginConfiguration, PegInTxState, Utxo, WalletAddress,
-  BtcAccount, BtcWallet, MiningSpeedFee,
+  BtcAccount, BtcWallet, MiningSpeedFee, SatoshiBig,
 } from '@/types';
 
 export const actions: ActionTree<PegInTxState, RootState> = {

@@ -1,7 +1,6 @@
 import { TxInputType, TxOutputType } from 'trezor-connect';
-import { WalletAddress } from '@/types/pegInTx';
 import {
-  NormalizedInput, NormalizedOutput, TrezorTx,
+  NormalizedInput, NormalizedOutput, TrezorTx, WalletAddress,
 } from '@/types';
 import { getAccountType } from '@/services/utils';
 import store from '@/store';

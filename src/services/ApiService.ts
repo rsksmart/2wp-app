@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { WalletAddress, PeginConfiguration } from '@/types/pegInTx';
-import { AccountBalance, FeeAmountData, NormalizedTx } from '@/types';
-import { PeginStatus } from '@/types/store';
+import {
+  AccountBalance, FeeAmountData, NormalizedTx, WalletAddress, PeginConfiguration, PeginStatus,
+} from '@/types';
 import { isValidOpReturn, isValidPowPegAddress } from '@/utils';
 import { BridgeService } from '@/services/BridgeService';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';

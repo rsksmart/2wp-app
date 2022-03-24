@@ -129,9 +129,8 @@ import {
 } from 'vue-property-decorator';
 import { Getter, State } from 'vuex-class';
 import Big from 'big.js';
-import { PegInTxState } from '@/types/pegInTx';
+import { PegInTxState, SatoshiBig } from '@/types';
 import { getChunkedValue } from '@/utils/common';
-import SatoshiBig from '@/types/SatoshiBig';
 import * as constants from '@/store/constants';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 

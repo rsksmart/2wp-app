@@ -1,6 +1,6 @@
 import { AppNetwork } from '@/types';
 
-export class EnvironmentVariables {
+export default class EnvironmentVariables {
   public vueAppCoin: AppNetwork;
 
   public baseUrl: string;

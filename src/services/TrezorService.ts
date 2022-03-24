@@ -1,10 +1,9 @@
 import TrezorConnect, { GetAddress } from 'trezor-connect';
 import * as bitcoin from 'bitcoinjs-lib';
 import { Network } from 'bitcoinjs-lib';
-import { WalletAddress } from '@/types/pegInTx';
 import * as constants from '@/store/constants';
 import {
-  TrezorSignedTx, TrezorTx, Tx,
+  TrezorSignedTx, TrezorTx, Tx, WalletAddress,
 } from '@/types';
 import { WalletService } from '@/services';
 import { EnvironmentAccessorService } from './enviroment-accessor.service';

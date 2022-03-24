@@ -38,17 +38,15 @@ import PegInForm from '@/components/create/PegInForm.vue';
 import ConfirmTrezorTransaction from '@/components/trezor/ConfirmTrezorTransaction.vue';
 import TrackingId from '@/components/exchange/TrackingId.vue';
 import { WalletService } from '@/services';
-import { PegInTxState } from '@/types/pegInTx';
 import * as constants from '@/store/constants';
 import {
-  NormalizedTx, PegInFormValues, SendBitcoinState,
+  NormalizedTx, PegInFormValues, SendBitcoinState, PegInTxState, SatoshiBig,
 } from '@/types';
 import TrezorTxBuilder from '@/middleware/TxBuilder/TrezorTxBuilder';
 import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
 import DeviceErrorDialog from '@/components/exchange/DeviceErrorDialog.vue';
 import ConnectDevice from '@/components/exchange/ConnectDevice.vue';
 import TxErrorDialog from '@/components/exchange/TxErrorDialog.vue';
-import SatoshiBig from '@/types/SatoshiBig';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 @Component({

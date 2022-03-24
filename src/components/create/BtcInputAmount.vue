@@ -68,8 +68,7 @@ import {
   Component, Emit, Vue, Watch,
 } from 'vue-property-decorator';
 import { Action, Getter, State } from 'vuex-class';
-import SatoshiBig from '@/types/SatoshiBig';
-import { PegInTxState } from '@/types/pegInTx';
+import { PegInTxState, SatoshiBig } from '@/types';
 import * as constants from '@/store/constants';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
