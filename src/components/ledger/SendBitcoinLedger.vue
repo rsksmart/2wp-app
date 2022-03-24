@@ -205,7 +205,7 @@ export default class SendBitcoinLedger extends Vue {
     if (txError !== '') {
       this.txError = txError;
       this.showTxErrorDialog = true;
-    } else if (txId !== '') {
+    } else if (txId) {
       this.currentComponent = 'TrackingId';
     }
     this.txId = txId;
