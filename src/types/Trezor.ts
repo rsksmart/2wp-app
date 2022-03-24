@@ -1,4 +1,5 @@
 import { TxInputType, TxOutputType } from 'trezor-connect';
+// eslint-disable-next-line import/no-cycle
 import { Tx } from '@/types';
 
 export type InputScriptType =

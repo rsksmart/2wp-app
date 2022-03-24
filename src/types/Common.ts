@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-cycle
 import { SatoshiBig } from '@/types';
 
 export interface Tx {

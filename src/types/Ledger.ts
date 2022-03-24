@@ -1,4 +1,5 @@
 import { Psbt } from 'bitcoinjs-lib';
+// eslint-disable-next-line import/no-cycle
 import { NormalizedOutput, Tx } from '@/types';
 
 export interface LedgerjsTransaction {

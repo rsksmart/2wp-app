@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-cycle
 import {
   AccountBalance, FeeAmountData, NormalizedTx, SatoshiBig,
 } from '@/types';
