@@ -10,7 +10,7 @@
                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
                  :txBuilder="txBuilder"
                  :txId="txId" @back="back"
-                 @toPegInForm="toPegInForm" :pegInFormData="pegInFormData"
+                 @toPegInForm="toPegInForm"
                  :confirmTxState="confirmTxState"
                  :isBackFromConfirm="isBackFromConfirm"/>
     </template>
@@ -18,8 +18,8 @@
       <btc-to-rbtc-dialog :showDialog="showDialog" @closeDialog="closeDialog"/>
     </template>
     <template v-if="showErrorDialog">
-      <device-error-dialog :showErrorDialog="showErrorDialog"
-                           :errorMessage="deviceError" @closeErrorDialog="closeErrorDialog"/>
+      <device-error-dialog :showErrorDialog="showErrorDialog" :errorMessage="deviceError"
+                           @closeErrorDialog="closeErrorDialog"/>
     </template>
     <template v-if="showTxErrorDialog">
       <tx-error-dialog :showTxErrorDialog="showTxErrorDialog"
@@ -35,27 +35,28 @@ import {
 } from 'vue-property-decorator';
 import { Action, Getter, State } from 'vuex-class';
 import PegInForm from '@/components/create/PegInForm.vue';
+import ConfirmTrezorTransaction from '@/components/trezor/ConfirmTrezorTransaction.vue';
 import ConfirmLedgerTransaction from '@/components/ledger/ConfirmLedgerTransaction.vue';
 import TrackingId from '@/components/exchange/TrackingId.vue';
 import { WalletService } from '@/services';
-import { PegInTxState } from '@/types/pegInTx';
 import * as constants from '@/store/constants';
 import {
-  NormalizedTx, PegInFormValues, SendBitcoinState,
+  NormalizedTx, SendBitcoinState, SatoshiBig, PegInTxState,
 } from '@/types';
-import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
+import TrezorTxBuilder from '@/middleware/TxBuilder/TrezorTxBuilder';
 import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
 import DeviceErrorDialog from '@/components/exchange/DeviceErrorDialog.vue';
 import ConnectDevice from '@/components/exchange/ConnectDevice.vue';
 import TxErrorDialog from '@/components/exchange/TxErrorDialog.vue';
-import SatoshiBig from '@/types/SatoshiBig';
 import { Machine } from '@/services/utils';
-import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
+import TxBuilder from '@/middleware/TxBuilder/TxBuilder';
 
 @Component({
   components: {
     BtcToRbtcDialog,
     PegInForm,
+    ConfirmTrezorTransaction,
     ConfirmLedgerTransaction,
     TrackingId,
     ConnectDevice,
@@ -63,14 +64,8 @@ import { EnvironmentAccessorService } from '@/services/enviroment-accessor.servi
     TxErrorDialog,
   },
 })
-export default class SendBitcoinLedger extends Vue {
-  pegInFormData: PegInFormValues ={
-    accountType: '',
-    amount: new SatoshiBig('0', 'satoshi'),
-    rskAddress: '',
-    txFeeIndex: 1.0,
-  };
 
+export default class SendBitcoin extends Vue {
   showDialog = false;
 
   showErrorDialog = false;
@@ -98,21 +93,7 @@ export default class SendBitcoinLedger extends Vue {
 
   rawTx = '';
 
-  createdTx: NormalizedTx = {
-    coin: EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
-    inputs: [],
-    outputs: [],
-  };
-
-  amount: SatoshiBig = new SatoshiBig('0', 'satoshi');
-
-  refundAddress = '';
-
-  recipient = '';
-
-  feeBTC: SatoshiBig = new SatoshiBig('0', 'satoshi');
-
-  txBuilder: LedgerTxBuilder = new LedgerTxBuilder();
+  txBuilder!: TxBuilder;
 
   @State('pegInTx') peginTxState!: PegInTxState;
 
@@ -122,12 +103,16 @@ export default class SendBitcoinLedger extends Vue {
 
   @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: () => void;
 
-  @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: (accountType: string) => Promise<string>;
+  @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: (accountType: string) => string;
 
   @Getter(constants.PEGIN_TX_GET_WALLET_SERVICE, { namespace: 'pegInTx' }) walletService!: WalletService;
 
   beforeMount() {
     this.showDialog = localStorage.getItem('BTRD_COOKIE_DISABLED') !== 'true';
+  }
+
+  get change() {
+    return this.getChangeAddress;
   }
 
   @Emit()
@@ -136,23 +121,14 @@ export default class SendBitcoinLedger extends Vue {
     refundAddress,
     recipient,
     feeLevel,
-    feeBTC,
     accountType,
-    pegInFormData,
   }: {
     amountToTransferInSatoshi: SatoshiBig;
     refundAddress: string;
     recipient: string;
     feeLevel: string;
-    feeBTC: SatoshiBig;
     accountType: string;
-    pegInFormData: PegInFormValues;
   }) {
-    this.pegInFormData = pegInFormData;
-    this.amount = amountToTransferInSatoshi;
-    this.refundAddress = refundAddress;
-    this.recipient = recipient;
-    this.feeBTC = feeBTC;
     this.txBuilder.accountType = accountType;
     this.txBuilder.getNormalizedTx({
       amountToTransferInSatoshi: Number(amountToTransferInSatoshi.toString()),
@@ -164,8 +140,14 @@ export default class SendBitcoinLedger extends Vue {
     })
       .then((tx: NormalizedTx) => {
         this.addNormalizedTx(tx);
-        this.createdTx = tx;
-        this.currentComponent = 'ConfirmLedgerTransaction';
+        switch (this.peginTxState.bitcoinWallet) {
+          case constants.WALLET_LEDGER:
+            this.currentComponent = 'ConfirmLedgerTransaction';
+            break;
+          default:
+            this.currentComponent = 'ConfirmTrezorTransaction';
+            break;
+        }
         return tx;
       })
       .catch((error) => {
@@ -232,37 +214,42 @@ export default class SendBitcoinLedger extends Vue {
   }
 
   @Emit()
+  setTxBuilder():void {
+    switch (this.peginTxState.bitcoinWallet) {
+      case constants.WALLET_TREZOR:
+        this.txBuilder = new TrezorTxBuilder();
+        break;
+      case constants.WALLET_LEDGER:
+        this.txBuilder = new LedgerTxBuilder();
+        break;
+      default:
+        this.txBuilder = new TrezorTxBuilder();
+        break;
+    }
+  }
+
+  @Emit()
   async clear(): Promise<void> {
-    await this.walletService.stopAskingForBalance();
-    this.pegInFormData = {
-      accountType: '',
-      amount: new SatoshiBig('0', 'satoshi'),
-      rskAddress: '',
-      txFeeIndex: 1.0,
-    };
     this.showDialog = false;
     this.showErrorDialog = false;
     this.showTxErrorDialog = false;
     this.deviceError = 'test';
     this.sendBitcoinState = 'idle';
+    this.confirmTxState = new Machine('idle');
     this.currentComponent = 'PegInForm';
     this.txId = '';
     this.txError = '';
-    this.createdTx = {
-      coin: EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
-      inputs: [],
-      outputs: [],
-    };
-    this.amount = new SatoshiBig('0', 'satoshi');
-    this.refundAddress = '';
-    this.recipient = '';
-    this.feeBTC = new SatoshiBig('0', 'satoshi');
-    this.txBuilder = new LedgerTxBuilder();
+    this.setTxBuilder();
+    await this.walletService.stopAskingForBalance();
   }
 
   async beforeDestroy() {
     await this.walletService.stopAskingForBalance();
     this.clearAccount();
+  }
+
+  created() {
+    this.setTxBuilder();
   }
 }
 </script>

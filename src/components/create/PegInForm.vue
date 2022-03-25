@@ -146,15 +146,7 @@ export default class PegInForm extends Vue {
       refundAddress: this.refundAddress,
       recipient: this.pegInTxState.rskAddressSelected,
       feeLevel: this.pegInTxState.selectedFee,
-      feeBTC: this.safeTxFee,
       accountType: this.pegInTxState.selectedAccount,
-      // TODO: delete pegInFormData
-      pegInFormData: {
-        amount: this.pegInTxState.amountToTransfer,
-        accountType: this.pegInTxState.selectedAccount,
-        rskAddress: this.pegInTxState.rskAddressSelected,
-        txFeeIndex: 1,
-      },
     };
   }
 }

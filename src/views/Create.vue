@@ -1,6 +1,6 @@
 <template>
   <v-container fluid class="exchange container max-width mx-6">
-    <component :is="selectedWalletComponent" @back="back"/>
+    <send-bitcoin @back="back"/>
   </v-container>
 </template>
 
@@ -8,51 +8,22 @@
 import {
   Component, Emit, Vue,
 } from 'vue-property-decorator';
-import { Action, State } from 'vuex-class';
-import { BtcWallet, PegInTxState } from '@/types/pegInTx';
+import { Action } from 'vuex-class';
+import { BtcWallet } from '@/types/pegInTx';
 import * as constants from '@/store/constants';
-import SendBitcoinTrezor from '@/components/trezor/SendBitcoinTrezor.vue';
-import SendBitcoinLedger from '@/components/ledger/SendBitcoinLedger.vue';
+import SendBitcoin from '@/components/create/SendBitcoin.vue';
 
 @Component({
   components: {
-    SendBitcoinTrezor,
-    SendBitcoinLedger,
+    SendBitcoin,
   },
 })
 export default class Create extends Vue {
-  currentComponent = '';
-
-  bitcoinWallet = '';
-
-  @State('pegInTx') pegInTxState!: PegInTxState;
-
   @Action(constants.PEGIN_TX_ADD_BITCOIN_WALLET, { namespace: 'pegInTx' }) setBitcoinWallet !: (wallet: BtcWallet) => void;
 
   @Action(constants.PEGIN_TX_CLEAR_STATE, { namespace: 'pegInTx' }) clear !: () => void;
 
   @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) init !: () => void;
-
-  get selectedWalletComponent(): 'SendBitcoinTrezor' | 'SendBitcoinLedger' {
-    switch (this.pegInTxState.bitcoinWallet) {
-      case 'WALLET_LEDGER':
-        return 'SendBitcoinLedger';
-      case 'WALLET_TREZOR':
-        return 'SendBitcoinTrezor';
-      default:
-        return 'SendBitcoinTrezor';
-    }
-  }
-
-  @Emit('bitcoinWallet')
-  toSendBitcoin(bitcoinWallet: BtcWallet): string {
-    this.setBitcoinWallet(bitcoinWallet);
-    if (this.pegInTxState.bitcoinWallet === constants
-      .WALLET_LEDGER) this.currentComponent = 'SendBitcoinLedger';
-    if (this.pegInTxState.bitcoinWallet === constants
-      .WALLET_TREZOR) this.currentComponent = 'SendBitcoinTrezor';
-    return bitcoinWallet;
-  }
 
   @Emit()
   back(currentComponent: 'ConnectDevice' | 'PegInForm') {
