@@ -99,6 +99,8 @@ export default class SendBitcoin extends Vue {
 
   @Action(constants.PEGIN_TX_START_ASKING_FOR_BALANCE, { namespace: 'pegInTx' }) startAskingForBalanceStore !: () => Promise<void>;
 
+  @Action(constants.PEGIN_TX_STOP_ASKING_FOR_BALANCE, { namespace: 'pegInTx' }) stopAskingForBalance !: () => Promise<void>;
+
   @Action(constants.PEGIN_TX_ADD_NORMALIZED_TX, { namespace: 'pegInTx' }) addNormalizedTx !: (tx: NormalizedTx) => void;
 
   @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: () => void;
@@ -240,11 +242,11 @@ export default class SendBitcoin extends Vue {
     this.txId = '';
     this.txError = '';
     this.setTxBuilder();
-    await this.walletService.stopAskingForBalance();
+    await this.stopAskingForBalance();
   }
 
   async beforeDestroy() {
-    await this.walletService.stopAskingForBalance();
+    await this.stopAskingForBalance();
     this.clearAccount();
   }
 

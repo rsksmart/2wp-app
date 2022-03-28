@@ -76,8 +76,6 @@ export default class PegInAccountSelect extends Vue {
 
   focus = false;
 
-  btcAccountTypeSelected = '';
-
   accountBalances: {
     text: string;
     value: string;
@@ -92,6 +90,10 @@ export default class PegInAccountSelect extends Vue {
   get maxAddressesLedger(): number {
     return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletAddressesPerCallLedger
       * EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletMaxCallLedger;
+  }
+
+  get btcAccountTypeSelected () {
+    return this.pegInTxState.selectedAccount ? this.pegInTxState.selectedAccount : '';
   }
 
   // eslint-disable-next-line class-methods-use-this

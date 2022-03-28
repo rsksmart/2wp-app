@@ -139,9 +139,9 @@
     </v-row>
     <v-row v-if="confirmTxState.matches(['idle', 'error', 'goingHome'])" class="ma-0">
       <v-col cols="2" class="d-flex justify-start ma-0 py-0">
-        <v-btn rounded outlined color="#00B520" width="110" @click="backHome"
+        <v-btn rounded outlined color="#00B520" width="110" @click="toPegInForm"
                :disabled="confirmTxState.matches(['error', 'goingHome', 'loading'])">
-          <span>Go home</span>
+          <span>Back</span>
         </v-btn>
       </v-col>
       <v-col cols="10" class="d-flex justify-end ma-0 py-0">

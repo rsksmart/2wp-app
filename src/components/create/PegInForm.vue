@@ -27,10 +27,16 @@
         </v-col>
       </v-row>
       <v-row class="mx-0">
-        <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
+        <!-- <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
           <v-btn rounded outlined color="#00B520" width="110" @click="backHome"
                  :disabled="pegInFormState.matches(['loading', 'goingHome'])">
             <span>Go home</span>
+          </v-btn>
+        </v-col> -->
+        <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
+          <v-btn rounded outlined color="#00B520" width="110" @click="back"
+                 :disabled="pegInFormState.matches(['loading', 'goingHome'])">
+            <span>Back</span>
           </v-btn>
         </v-col>
         <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0">
@@ -59,7 +65,7 @@
 import {
   Component, Emit, Prop, Vue,
 } from 'vue-property-decorator';
-import { Getter, State } from 'vuex-class';
+import { Getter, State, Action } from 'vuex-class';
 import PegInAccountSelect from '@/components/create/PegInAccountSelect.vue';
 import BtcInputAmount from '@/components/create/BtcInputAmount.vue';
 import RskAddressInput from '@/components/create/RskAddressInput.vue';
@@ -68,6 +74,7 @@ import BtcTxSummarySide from '@/components/create/BtcTxSummarySide.vue';
 import { PegInTxState } from '@/types/pegInTx';
 import * as constants from '@/store/constants';
 import { Machine } from '@/services/utils';
+import { WalletService } from '@/services';
 import SatoshiBig from '@/types/SatoshiBig';
 import AddressWarningDialog from '@/components/exchange/AddressWarningDialog.vue';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
@@ -96,6 +103,10 @@ export default class PegInForm extends Vue {
   @State('pegInTx') pegInTxState!: PegInTxState;
 
   @Getter(constants.PEGIN_TX_GET_REFUND_ADDRESS, { namespace: 'pegInTx' }) refundAddress!: string;
+
+  @Getter(constants.PEGIN_TX_GET_WALLET_SERVICE, { namespace: 'pegInTx' }) walletService!: WalletService;
+
+  @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: any;
 
   backHome() {
     this.pegInFormState.send('goingHome');
@@ -135,6 +146,12 @@ export default class PegInForm extends Vue {
   @Emit()
   setRskAddressState(state: string) {
     this.rskAddressState = state;
+  }
+
+  @Emit('back')
+  async back () {
+    this.pegInFormState.send('loading');
+    return 'PegInForm';
   }
 
   @Emit('createTx')
