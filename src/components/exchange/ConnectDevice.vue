@@ -105,10 +105,10 @@ export default class ConnectDevice extends Vue {
     return this.peginTxState.bitcoinWallet;
   }
 
-  @Emit('back')
+  @Emit()
   // eslint-disable-next-line class-methods-use-this
   back() {
-    return 'ConnectDevice';
+    // TODO: Point to Home route
   }
 }
 </script>

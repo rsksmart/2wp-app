@@ -149,9 +149,8 @@ export default class PegInForm extends Vue {
   }
 
   @Emit('back')
-  async back () {
+  async back() {
     this.pegInFormState.send('loading');
-    return 'PegInForm';
   }
 
   @Emit('createTx')

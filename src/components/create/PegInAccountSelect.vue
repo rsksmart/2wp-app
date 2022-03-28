@@ -92,7 +92,7 @@ export default class PegInAccountSelect extends Vue {
       * EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletMaxCallLedger;
   }
 
-  get btcAccountTypeSelected () {
+  get btcAccountTypeSelected() {
     return this.pegInTxState.selectedAccount ? this.pegInTxState.selectedAccount : '';
   }
 
