@@ -17,6 +17,7 @@ export interface WalletAddress {
   address: string;
   serializedPath: string;
   path: number[];
+  unused?: boolean;
   publicKey?: string;
 }
 
