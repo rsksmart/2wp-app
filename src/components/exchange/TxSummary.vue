@@ -155,15 +155,15 @@ import {
   Vue,
 } from 'vue-property-decorator';
 import Big from 'big.js';
+import { State } from 'vuex-class';
 import { TxData } from '@/types';
 import * as constants from '@/store/constants';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import { PegInTxState } from '@/store/peginTx/types';
 
 @Component
 export default class TxSummary extends Vue {
   @Prop() txData!: TxData;
-
-  @Prop() price!: number;
 
   @Prop() txId!: string;
 
@@ -172,6 +172,8 @@ export default class TxSummary extends Vue {
   @Prop() initialExpand!: boolean;
 
   @Prop() rskFederationAddress!: string;
+
+  @State('pegInTx') peginTxState!: PegInTxState;
 
   txIdValue = '';
 
@@ -189,8 +191,11 @@ export default class TxSummary extends Vue {
   }
 
   get amountUSD(): string {
-    if (!this.txData.amount || !this.price) return this.VALUE_INCOMPLETE_MESSAGE;
-    return this.txData.amount.toUSDFromBTCString(this.price, this.fixedUSDDecimals);
+    if (!this.txData.amount || !this.peginTxState.bitcoinPrice) {
+      return this.VALUE_INCOMPLETE_MESSAGE;
+    }
+    return this.txData.amount
+      .toUSDFromBTCString(this.peginTxState.bitcoinPrice, this.fixedUSDDecimals);
   }
 
   get fee() {
@@ -199,8 +204,11 @@ export default class TxSummary extends Vue {
   }
 
   get feeUSD() {
-    if (!this.txData.feeBTC || !this.price) return this.VALUE_INCOMPLETE_MESSAGE;
-    return this.txData.feeBTC.toUSDFromBTCString(this.price, this.fixedUSDDecimals);
+    if (!this.txData.feeBTC || !this.peginTxState.bitcoinPrice) {
+      return this.VALUE_INCOMPLETE_MESSAGE;
+    }
+    return this.txData.feeBTC
+      .toUSDFromBTCString(this.peginTxState.bitcoinPrice, this.fixedUSDDecimals);
   }
 
   get feePlusAmount(): string {
@@ -209,7 +217,7 @@ export default class TxSummary extends Vue {
   }
 
   get feePlusAmountUSD() {
-    if (!this.txData.amount || !this.txData.feeBTC || !this.price) {
+    if (!this.txData.amount || !this.txData.feeBTC || !this.peginTxState.bitcoinPrice) {
       return this.VALUE_INCOMPLETE_MESSAGE;
     }
     return Big(this.amountUSD).plus(Big(this.feeUSD)).toFixed(this.fixedUSDDecimals);
