@@ -82,6 +82,8 @@ export default class PegInAccountSelect extends Vue {
     disabled: boolean;
   }[] = [];
 
+  btcAccountTypeSelected = '';
+
   @State('pegInTx') pegInTxState!: PegInTxState;
 
   @Action(constants.PEGIN_TX_SELECT_ACCOUNT_TYPE, { namespace: 'pegInTx' }) selectAccount !: (accountType: BtcAccount) => void;
@@ -90,10 +92,6 @@ export default class PegInAccountSelect extends Vue {
   get maxAddressesLedger(): number {
     return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletAddressesPerCallLedger
       * EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletMaxCallLedger;
-  }
-
-  get btcAccountTypeSelected() {
-    return this.pegInTxState.selectedAccount ? this.pegInTxState.selectedAccount : '';
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -139,6 +137,10 @@ export default class PegInAccountSelect extends Vue {
   }
 
   created() {
+    if (this.pegInTxState.selectedAccount) {
+      this.btcAccountTypeSelected = this.pegInTxState.selectedAccount;
+    }
+
     this.accountBalances = [
       {
         text: this.getAccountBalanceText(constants.BITCOIN_SEGWIT_ADDRESS),

@@ -20,7 +20,7 @@ export const getters: GetterTree<PegInTxState, RootState> = {
     }
   },
   [constants.PEGIN_TX_GET_CHANGE_ADDRESS]:
-    (state: PegInTxState) => async (accountType: string): Promise<string> => {
+    (state: PegInTxState) => (accountType: string): string => {
       let address = '';
       let accountTypePath = '';
       const coin = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;

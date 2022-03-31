@@ -83,6 +83,7 @@
 import { Component, Emit, Vue } from 'vue-property-decorator';
 import { Action, State } from 'vuex-class';
 import * as rskUtils from '@rsksmart/rsk-utils';
+import { PegInTxState } from '@/types/pegInTx';
 import { SessionState } from '@/store/session/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import * as constants from '@/store/constants';
@@ -108,6 +109,8 @@ export default class RskAddressInput extends Vue {
   rskAddressSelected = '';
 
   @State('web3Session') web3SessionState!: SessionState;
+
+  @State('pegInTx') pegInTxState!: PegInTxState;
 
   @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: () => void;
 
@@ -186,6 +189,16 @@ export default class RskAddressInput extends Vue {
   // eslint-disable-next-line class-methods-use-this
   handleError(e: Error) {
     return e;
+  }
+
+  created() {
+    if (this.pegInTxState.rskAddressSelected) {
+      this.focus = true;
+      this.useWeb3Wallet = true;
+      this.focus = false;
+      this.rskAddressSelected = this.pegInTxState.rskAddressSelected;
+      this.checkStep();
+    }
   }
 }
 </script>

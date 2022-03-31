@@ -169,7 +169,7 @@ import {
   Component, Emit, Prop,
   Vue,
 } from 'vue-property-decorator';
-import { Getter, State } from 'vuex-class';
+import { Getter, State, Action } from 'vuex-class';
 import {
   LedgerTx, LedgerSignedTx,
 } from '@/types';
@@ -208,6 +208,8 @@ export default class ConfirmLedgerTransaction extends Vue {
 
   @Getter(constants.PEGIN_TX_GET_SAFE_TX_FEE, { namespace: 'pegInTx' }) safeFee!: SatoshiBig;
 
+  @Action(constants.PEGIN_TX_STOP_ASKING_FOR_BALANCE, { namespace: 'pegInTx' }) stopAskingForBalance !: () => Promise<void>;
+
   @Getter(constants.PEGIN_TX_GET_WALLET_SERVICE, { namespace: 'pegInTx' }) walletService!: WalletService;
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
@@ -217,7 +219,7 @@ export default class ConfirmLedgerTransaction extends Vue {
     const LEDGER_STATUS_CODES = { TRANSACTION_CANCELLED_BY_USER: 27013, DEVICE_LOCKED: 27010 };
     let txError = '';
     this.confirmTxState.send('loading');
-    await this.walletService.stopAskingForBalance()
+    await this.stopAskingForBalance()
       .then(() => this.txBuilder.buildTx())
       .then((ledgerTx: LedgerTx) => this.walletService.sign(ledgerTx) as Promise<LedgerSignedTx>)
       .then((tx: LedgerSignedTx) => ApiService

@@ -100,7 +100,6 @@ export default abstract class WalletService {
         }
         if (!this.isLoadingBalances) {
           clearInterval(askingBalance);
-          console.log('stopped balance ask');
           resolve();
         } else {
           counter -= 1;
@@ -120,7 +119,6 @@ export default abstract class WalletService {
   // eslint-disable-next-line class-methods-use-this
   public async startAskingForBalance(sessionId: string, maxAmountPegin: number): Promise<void> {
     // eslint-disable-next-line prefer-const
-    console.log(`starting ask for balance ${sessionId} - ${maxAmountPegin} - subscribers : ${this.subscribers.length}`);
     let balanceAccumulated: AccountBalance = {
       legacy: new SatoshiBig(0, 'satoshi'),
       segwit: new SatoshiBig(0, 'satoshi'),

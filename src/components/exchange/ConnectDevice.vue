@@ -69,7 +69,7 @@
 import {
   Component, Prop, Vue, Emit,
 } from 'vue-property-decorator';
-import { Getter, State } from 'vuex-class';
+import { Getter, State, Action } from 'vuex-class';
 import * as constants from '@/store/constants';
 import { PegInTxState } from '@/types/pegInTx';
 import LedgerConnect from '@/assets/exchange/ledger/connect_ledger.png';
@@ -87,6 +87,8 @@ export default class ConnectDevice extends Vue {
   @State('pegInTx') peginTxState!: PegInTxState;
 
   @Getter(constants.WALLET_NAME, { namespace: 'pegInTx' }) walletName!: string;
+
+  @Action(constants.PEGIN_TX_CLEAR_STATE, { namespace: 'pegInTx' }) clearStore !: () => void;
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
@@ -109,6 +111,8 @@ export default class ConnectDevice extends Vue {
   // eslint-disable-next-line class-methods-use-this
   back() {
     // TODO: Point to Home route
+    this.clearStore();
+    this.$router.push({ name: 'PegIn' });
   }
 }
 </script>

@@ -74,7 +74,6 @@ import BtcTxSummarySide from '@/components/create/BtcTxSummarySide.vue';
 import { PegInTxState } from '@/types/pegInTx';
 import * as constants from '@/store/constants';
 import { Machine } from '@/services/utils';
-import { WalletService } from '@/services';
 import SatoshiBig from '@/types/SatoshiBig';
 import AddressWarningDialog from '@/components/exchange/AddressWarningDialog.vue';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
@@ -103,8 +102,6 @@ export default class PegInForm extends Vue {
   @State('pegInTx') pegInTxState!: PegInTxState;
 
   @Getter(constants.PEGIN_TX_GET_REFUND_ADDRESS, { namespace: 'pegInTx' }) refundAddress!: string;
-
-  @Getter(constants.PEGIN_TX_GET_WALLET_SERVICE, { namespace: 'pegInTx' }) walletService!: WalletService;
 
   @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: any;
 
