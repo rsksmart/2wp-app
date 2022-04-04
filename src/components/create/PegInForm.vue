@@ -27,12 +27,6 @@
         </v-col>
       </v-row>
       <v-row class="mx-0">
-        <!-- <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
-          <v-btn rounded outlined color="#00B520" width="110" @click="backHome"
-                 :disabled="pegInFormState.matches(['loading', 'goingHome'])">
-            <span>Go home</span>
-          </v-btn>
-        </v-col> -->
         <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
           <v-btn rounded outlined color="#00B520" width="110" @click="back"
                  :disabled="pegInFormState.matches(['loading', 'goingHome'])">

@@ -156,7 +156,7 @@
               <span>Go home</span>
             </v-btn>
           </v-col>
-          <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0 hola hola">
+          <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0">
             <v-btn v-if="!isRejected && showStatus" class="px-5" width="117" color="#00B520" rounded
                    @click="getPegStatus">
               <span class="whiteish">Refresh</span>

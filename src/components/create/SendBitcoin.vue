@@ -226,9 +226,8 @@ export default class SendBitcoin extends Vue {
   }
 
   @Emit('back')
-  back() {
-    this.stopAskingForBalance()
-      .then(() => this.$router.push({ name: 'Home' }));
+  async back() {
+    await this.stopAskingForBalance();
   }
 
   @Emit()

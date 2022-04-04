@@ -102,6 +102,9 @@ export default class LedgerService extends WalletService {
             const btc = new AppBtc(transport);
             // eslint-disable-next-line no-restricted-syntax
             for (const item of bundle) {
+              if (this.subscribers.length === 0) {
+                break;
+              }
               const { derivationPath, format } = item;
               // eslint-disable-next-line no-await-in-loop
               const walletPublicKey = await btc.getWalletPublicKey(derivationPath, { format });

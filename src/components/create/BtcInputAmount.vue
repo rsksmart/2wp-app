@@ -211,8 +211,8 @@ export default class BtcInputAmount extends Vue {
   }
 
   created() {
-    const isInitalValue = this.pegInTxState.amountToTransfer.toBTCString() === '0.00000000';
-    if (!isInitalValue) {
+    const isInitialValue = this.pegInTxState.amountToTransfer.toBTCString() === '0.00000000';
+    if (!isInitialValue) {
       this.bitcoinAmount = this.pegInTxState.amountToTransfer.toBTCString();
     }
   }
