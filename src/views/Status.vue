@@ -180,7 +180,7 @@ import TxSummary from '@/components/exchange/TxSummary.vue';
 import { ApiService } from '@/services';
 import * as constants from '@/store/constants';
 import {
-  PeginStatus, TxData, PegInTxState, SatoshiBig
+  PeginStatus, TxData, PegInTxState, SatoshiBig,
 } from '@/types';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
@@ -229,7 +229,7 @@ export default class Status extends Vue {
   @State('pegInTx') peginTxState!: PegInTxState;
 
   @Action(constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER, { namespace: 'pegInTx' }) setAmount !: (amount: SatoshiBig) => void;
-  
+
   @Action(constants.PEGIN_TX_ADD_RSK_ADDRESS, { namespace: 'pegInTx' }) setRskAddress !: (address: string) => void;
 
   @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) peginInit !: () => void;
