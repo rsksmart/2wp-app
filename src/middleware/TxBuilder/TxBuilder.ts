@@ -56,9 +56,10 @@ export default abstract class TxBuilder {
       sessionId, feeLevel, changeAddress,
     );
     const walletAddresses: WalletAddress[] = store.state.pegInTx.addressList as WalletAddress[];
-    this.changeAddr = this.normalizedTx.outputs[2].address
+    const hasChange: boolean = this.normalizedTx.outputs[2] !== undefined;
+    this.changeAddr = hasChange && this.normalizedTx.outputs[2].address
       ? this.normalizedTx.outputs[2].address : changeAddress;
-    if (!await this.verifyChangeAddress(
+    if (hasChange && !await this.verifyChangeAddress(
       this.changeAddress,
       await this.getUnsignedRawTx(),
       walletAddresses,
