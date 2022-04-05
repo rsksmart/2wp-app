@@ -147,9 +147,12 @@
       </v-container>
       <v-container fluid class="transactions px-0">
         <tx-summary
-        v-if="!isRejected && showStatus"
-        :txId="txId" :statusData="txData"
-        :showTxId="true" :initialExpand="true"/>
+          v-if="!isRejected && showStatus"
+          :statusFee="currentFee"
+          :statusRefundAddress="currentRefundAddress"
+          :txId="txId"
+          :showTxId="true"
+          :initialExpand="true"/>
         <v-row justify="center" class="mx-0 mt-5">
           <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
             <v-btn rounded outlined color="#00B520" width="110" @click="back">
@@ -172,12 +175,12 @@
 import {
   Component, Emit, Prop, Vue, Watch,
 } from 'vue-property-decorator';
-import { State } from 'vuex-class';
+import { State, Action } from 'vuex-class';
 import TxSummary from '@/components/exchange/TxSummary.vue';
-import { PegStatus } from '@/store/constants';
 import { ApiService } from '@/services';
+import * as constants from '@/store/constants';
 import {
-  PeginStatus, TxData, PegInTxState, SatoshiBig,
+  PeginStatus, TxData, PegInTxState, SatoshiBig
 } from '@/types';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
@@ -215,11 +218,21 @@ export default class Status extends Vue {
 
   btcConfirmationsRequired!: number;
 
+  currentFee = new SatoshiBig('0', 'btc');
+
+  currentRefundAddress = '';
+
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
   @Prop({ default: '' }) txIdProp!: string;
 
   @State('pegInTx') peginTxState!: PegInTxState;
+
+  @Action(constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER, { namespace: 'pegInTx' }) setAmount !: (amount: SatoshiBig) => void;
+  
+  @Action(constants.PEGIN_TX_ADD_RSK_ADDRESS, { namespace: 'pegInTx' }) setRskAddress !: (address: string) => void;
+
+  @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) peginInit !: () => void;
 
   get showStatus() {
     return !this.loading && !this.error && !!this.statusMessage;
@@ -230,7 +243,7 @@ export default class Status extends Vue {
   }
 
   get rskConfirmationsAreDone() {
-    return this.pegInStatus.status === PegStatus.CONFIRMED;
+    return this.pegInStatus.status === constants.PegStatus.CONFIRMED;
   }
 
   @Emit()
@@ -244,7 +257,11 @@ export default class Status extends Vue {
     this.leftBtcTime = this.getTime((this.btcConfirmationsRequired - this.btcConfirmations) * 10);
     this.btcConfirmationsPercentage = this.btcConfirmations <= this.btcConfirmationsRequired
       ? (this.btcConfirmations * 100) / this.btcConfirmationsRequired : 100;
-    this.rskConfirmationsPercentage = this.pegInStatus.status === PegStatus.CONFIRMED ? 100 : 0;
+    if (this.pegInStatus.status === constants.PegStatus.CONFIRMED) {
+      this.rskConfirmationsPercentage = 100;
+    } else {
+      this.rskConfirmationsPercentage = 0;
+    }
   }
 
   @Emit()
@@ -272,45 +289,45 @@ export default class Status extends Vue {
   @Emit()
   setMessage() {
     switch (this.pegInStatus.status) {
-      case PegStatus.CONFIRMED:
+      case constants.PegStatus.CONFIRMED:
         this.statusMessage = 'Your transaction was successfully processed!';
         this.activeMessageStyle = 'statusSuccess';
         this.isRejected = false;
         break;
-      case PegStatus.WAITING_CONFIRMATIONS:
+      case constants.PegStatus.WAITING_CONFIRMATIONS:
         this.statusMessage = `More ${this.environmentContext.getBtcText()} confirmations are yet needed, please wait`;
         this.activeMessageStyle = 'statusProgress';
         this.isRejected = false;
         break;
-      case PegStatus.REJECTED_REFUND:
+      case constants.PegStatus.REJECTED_REFUND:
         this.statusMessage = `Your transaction was declined. \n Your ${this.environmentContext.getBtcTicker()} will be sent to the refund address`;
         this.activeMessageStyle = 'statusRejected';
         this.isRejected = true;
         break;
-      case PegStatus.REJECTED_NO_REFUND:
+      case constants.PegStatus.REJECTED_NO_REFUND:
         this.statusMessage = 'Your transaction was declined.';
         this.activeMessageStyle = 'statusRejected';
         this.isRejected = true;
         break;
-      case PegStatus.NOT_IN_BTC_YET:
+      case constants.PegStatus.NOT_IN_BTC_YET:
         this.statusMessage = `Your transaction is not in ${this.environmentContext.getBtcText()} yet.`;
         this.activeMessageStyle = 'statusRejected';
         this.isRejected = true;
         break;
-      case PegStatus.NOT_IN_RSK_YET:
+      case constants.PegStatus.NOT_IN_RSK_YET:
         this.statusMessage = `Waiting to be processed by the ${this.environmentContext.getRskText()} network`;
         this.activeMessageStyle = 'statusProgress';
         this.isRejected = false;
         break;
-      case PegStatus.ERROR_BELOW_MIN:
+      case constants.PegStatus.ERROR_BELOW_MIN:
         this.error = true;
         this.errorMessage = 'The transaction is below the minimum amount required';
         break;
-      case PegStatus.ERROR_NOT_A_PEGIN:
+      case constants.PegStatus.ERROR_NOT_A_PEGIN:
         this.error = true;
         this.errorMessage = 'Unfortunately this is not recognized as a Peg in transaction, please check it and try again';
         break;
-      case PegStatus.ERROR_UNEXPECTED:
+      case constants.PegStatus.ERROR_UNEXPECTED:
         this.error = true;
         this.errorMessage = 'The input transaction is not valid, please check it and try again';
         break;
@@ -327,6 +344,11 @@ export default class Status extends Vue {
       feeBTC: new SatoshiBig(this.pegInStatus.btc.fees, 'btc'),
       change: '',
     };
+    this.peginInit();
+    this.setAmount(this.txData.amount);
+    this.currentFee = this.txData.feeBTC;
+    this.currentRefundAddress = this.txData.refundAddress;
+    this.setRskAddress(this.txData.recipient);
   }
 
   // eslint-disable-next-line class-methods-use-this
