@@ -133,7 +133,6 @@ export default class SendBitcoin extends Vue {
     feeLevel: string;
     accountType: string;
   }) {
-    this.txBuilder.accountType = accountType;
     this.txBuilder.getNormalizedTx({
       amountToTransferInSatoshi: Number(amountToTransferInSatoshi.toString()),
       refundAddress,
@@ -141,6 +140,7 @@ export default class SendBitcoin extends Vue {
       feeLevel,
       changeAddress: await this.getChangeAddress(accountType),
       sessionId: this.peginTxState.sessionId,
+      accountType,
     })
       .then((tx: NormalizedTx) => {
         this.addNormalizedTx(tx);
