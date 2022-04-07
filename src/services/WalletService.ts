@@ -178,10 +178,10 @@ export default abstract class WalletService {
           return;
         }
       }
-      this.loadingBalances = false;
     } catch (error) {
-      this.loadingBalances = false;
       throw new Error('Error balance');
+    } finally {
+      this.loadingBalances = false;
     }
   }
 
