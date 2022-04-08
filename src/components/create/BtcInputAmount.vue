@@ -38,7 +38,9 @@
           </v-col>
           <v-col cols="4" class="pa-0 input-box-flat">
             <v-col cols="8" class="pa-0 pl-1">
-              <v-text-field solo hide-details full-width single-line flat readonly
+              <v-text-field
+              class="amount-input"
+              solo hide-details full-width single-line flat readonly
                             v-model="rbtcAmount" type="number"/>
             </v-col>
             <v-col cols="4" class="pa-0">
