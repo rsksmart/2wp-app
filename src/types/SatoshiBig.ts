@@ -4,6 +4,8 @@ const numberRegex = /^[0-9]*(\.[0-9]*)?$/;
 
 type BTCCurrency = 'satoshi' | 'mbtc' | 'btc';
 
+const rightZeroPaddedRegex = /^0\.0+$/;
+
 export default class SatoshiBig extends Big {
   constructor(src: number | string | Big, currency: BTCCurrency) {
     const safeSrc = src ? src.toString() : '0';
@@ -63,5 +65,11 @@ export default class SatoshiBig extends Big {
   toUSDFromBTCString(price: number | string | Big, decimals = 2): string {
     const safePrice: Big = Big(numberRegex.test(price.toString()) ? price : '0');
     return Big(this.toBTCString()).mul(safePrice).toFixed(decimals);
+  }
+
+  toBTCStringNotZeroPadded(): string {
+    const btcString = this.toBTCString();
+    const isRightZeroPadded = rightZeroPaddedRegex.test(btcString);
+    return isRightZeroPadded ? '0' : btcString;
   }
 }

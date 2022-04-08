@@ -52,4 +52,10 @@ describe('SatoshiBig', () => {
     const sb3:SatoshiBig = new SatoshiBig(new Big('1000000'), 'mbtc');
     expect(sb3.tomBTCString()).to.be.eql('1000000.00000');
   });
+
+  it('string representation with no right padding 0', () => {
+    const sb1: SatoshiBig = new SatoshiBig(0, 'satoshi');
+    expect(sb1.toBTCString()).to.be.eql('0.00000000');
+    expect(sb1.toBTCStringNotZeroPadded()).to.be.eql('0');
+  });
 });
