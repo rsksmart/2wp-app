@@ -34,10 +34,10 @@
             </div>
           </template>
           <template v-else>
-            <v-col cols="6" class="wallet-label-container pl-0 pb-0">
+            <v-col cols="7" class="wallet-label-container pl-0 pb-0">
               <v-row class="mx-0 mb-4 d-flex justify-start">
-                <span class="text-center">
-                  Use your {{environmentContext.getRskText()}} addresses
+                <span class="label-title text-center">
+                  Type in your {{environmentContext.getRskText()}} address
                 </span>
               </v-row>
               <v-row :class="[isValidRskAddress || !rskAddressSelected ?
@@ -63,13 +63,14 @@
             <v-col cols="1" class="d-flex justify-center pb-0">
               <div class="divider"/>
             </v-col>
-            <v-col cols="5" class="pb-0 px-0">
+            <v-col cols="4" class="pb-0 px-0">
               <v-row class="mx-0 mb-4 d-flex justify-start">
-                <span class="text-center">Choose address from web wallet</span>
+                <span class="text-center">Choose address from a wallet</span>
               </v-row>
               <v-row class="mx-0 d-flex justify-center">
                 <v-btn outlined rounded color="#00B520" width="100%" height="38"
-                       @click="selectRLoginWallet" >
+                  class="select-wallet-button"
+                  @click="selectRLoginWallet" >
                   <span class="greenish">Connect wallet</span>
                 </v-btn>
               </v-row>
