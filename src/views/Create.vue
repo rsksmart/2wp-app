@@ -26,12 +26,10 @@ export default class Create extends Vue {
   @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) init !: () => void;
 
   @Emit()
-  back(currentComponent: 'ConnectDevice' | 'PegInForm') {
-    if (currentComponent === 'ConnectDevice') {
-      this.clear();
-      this.init();
-      this.$router.replace({ name: 'PegIn' });
-    }
+  back() {
+    this.clear();
+    this.init();
+    this.$router.push({ name: 'Home' });
   }
 }
 </script>

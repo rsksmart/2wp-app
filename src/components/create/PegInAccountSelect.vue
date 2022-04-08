@@ -76,13 +76,13 @@ export default class PegInAccountSelect extends Vue {
 
   focus = false;
 
-  btcAccountTypeSelected = '';
-
   accountBalances: {
     text: string;
     value: string;
     disabled: boolean;
   }[] = [];
+
+  btcAccountTypeSelected = '';
 
   @State('pegInTx') pegInTxState!: PegInTxState;
 
@@ -137,6 +137,10 @@ export default class PegInAccountSelect extends Vue {
   }
 
   created() {
+    if (this.pegInTxState.selectedAccount) {
+      this.btcAccountTypeSelected = this.pegInTxState.selectedAccount;
+    }
+
     this.accountBalances = [
       {
         text: this.getAccountBalanceText(constants.BITCOIN_SEGWIT_ADDRESS),

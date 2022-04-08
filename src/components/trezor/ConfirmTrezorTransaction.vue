@@ -153,9 +153,9 @@
     </v-row>
     <v-row v-if="confirmTxState.matches(['idle', 'error', 'goingHome'])" class="ma-0">
       <v-col cols="2" class="d-flex justify-start ma-0 py-0">
-        <v-btn rounded outlined color="#00B520" width="110" @click="backHome"
+        <v-btn rounded outlined color="#00B520" width="110" @click="toPegInForm"
                :disabled="confirmTxState.matches(['error', 'goingHome', 'loading'])">
-          <span>Go home</span>
+          <span>Back</span>
         </v-btn>
       </v-col>
       <v-col cols="10" class="d-flex justify-end ma-0 py-0">
@@ -183,7 +183,7 @@ import {
   Component, Emit, Prop,
   Vue,
 } from 'vue-property-decorator';
-import { Getter, State } from 'vuex-class';
+import { Getter, State, Action } from 'vuex-class';
 import TrezorTxBuilder from '@/middleware/TxBuilder/TrezorTxBuilder';
 import {
   TrezorSignedTx, TrezorTx,
@@ -220,6 +220,8 @@ export default class ConfirmTrezorTransaction extends Vue {
 
   @State('pegInTx') pegInTxState!: PegInTxState;
 
+  @Action(constants.PEGIN_TX_STOP_ASKING_FOR_BALANCE, { namespace: 'pegInTx' }) stopAskingForBalance !: () => Promise<void>;
+
   @Getter(constants.PEGIN_TX_GET_SAFE_TX_FEE, { namespace: 'pegInTx' }) safeFee!: SatoshiBig;
 
   @Getter(constants.PEGIN_TX_GET_WALLET_SERVICE, { namespace: 'pegInTx' }) walletService!: WalletService;
@@ -230,7 +232,7 @@ export default class ConfirmTrezorTransaction extends Vue {
   async toTrackId() {
     let txError = '';
     this.confirmTxState.send('loading');
-    await this.walletService.stopAskingForBalance()
+    await this.stopAskingForBalance()
       .then(() => this.txBuilder.buildTx())
       .then((tx: TrezorTx) => this.walletService.sign(tx) as Promise<TrezorSignedTx>)
       .then((trezorSignedTx: TrezorSignedTx) => ApiService

@@ -2,14 +2,13 @@
   <v-container fluid class="px-md-0">
     <template v-if="!peginTxState.walletDataReady">
       <connect-device @continueToForm="startAskingForBalance"
-                      @back="back"
                       :sendBitcoinState="sendBitcoinState"/>
     </template>
     <template v-if="peginTxState.walletDataReady">
       <component :is="currentComponent"
                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
                  :txBuilder="txBuilder"
-                 :txId="txId" @back="back"
+                 :txId="txId" @back="backToConnectDevice"
                  @toPegInForm="toPegInForm"
                  :confirmTxState="confirmTxState"
                  :isBackFromConfirm="isBackFromConfirm"/>
@@ -38,10 +37,9 @@ import PegInForm from '@/components/create/PegInForm.vue';
 import ConfirmTrezorTransaction from '@/components/trezor/ConfirmTrezorTransaction.vue';
 import ConfirmLedgerTransaction from '@/components/ledger/ConfirmLedgerTransaction.vue';
 import TrackingId from '@/components/exchange/TrackingId.vue';
-import { WalletService } from '@/services';
 import * as constants from '@/store/constants';
 import {
-  NormalizedTx, SendBitcoinState, SatoshiBig, PegInTxState,
+  NormalizedTx, SendBitcoinState, SatoshiBig, PegInTxState, BtcWallet,
 } from '@/types';
 import TrezorTxBuilder from '@/middleware/TxBuilder/TrezorTxBuilder';
 import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
@@ -99,13 +97,19 @@ export default class SendBitcoin extends Vue {
 
   @Action(constants.PEGIN_TX_START_ASKING_FOR_BALANCE, { namespace: 'pegInTx' }) startAskingForBalanceStore !: () => Promise<void>;
 
+  @Action(constants.PEGIN_TX_STOP_ASKING_FOR_BALANCE, { namespace: 'pegInTx' }) stopAskingForBalance !: () => Promise<void>;
+
   @Action(constants.PEGIN_TX_ADD_NORMALIZED_TX, { namespace: 'pegInTx' }) addNormalizedTx !: (tx: NormalizedTx) => void;
 
   @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: () => void;
 
-  @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: (accountType: string) => string;
+  @Action(constants.PEGIN_TX_CLEAR_STATE, { namespace: 'pegInTx' }) clearStore !: () => void;
 
-  @Getter(constants.PEGIN_TX_GET_WALLET_SERVICE, { namespace: 'pegInTx' }) walletService!: WalletService;
+  @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) init !: () => Promise<void>;
+
+  @Action(constants.PEGIN_TX_ADD_BITCOIN_WALLET, { namespace: 'pegInTx' }) setBtcWallet !: (wallet: BtcWallet) => Promise<void>;
+
+  @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: (accountType: string) => string;
 
   beforeMount() {
     this.showDialog = localStorage.getItem('BTRD_COOKIE_DISABLED') !== 'true';
@@ -206,11 +210,24 @@ export default class SendBitcoin extends Vue {
       });
   }
 
-  @Emit('back')
-  async back(currentComponent: 'ConnectDevice' | 'PegInForm') {
+  @Emit()
+  async backToConnectDevice() {
     await this.clear();
     this.clearAccount();
-    return currentComponent;
+    let wallet: BtcWallet;
+    if (this.peginTxState.bitcoinWallet) {
+      wallet = this.peginTxState.bitcoinWallet;
+    } else {
+      await this.back();
+    }
+    this.clearStore();
+    this.init()
+      .then(() => this.setBtcWallet(wallet));
+  }
+
+  @Emit('back')
+  async back() {
+    await this.stopAskingForBalance();
   }
 
   @Emit()
@@ -240,12 +257,7 @@ export default class SendBitcoin extends Vue {
     this.txId = '';
     this.txError = '';
     this.setTxBuilder();
-    await this.walletService.stopAskingForBalance();
-  }
-
-  async beforeDestroy() {
-    await this.walletService.stopAskingForBalance();
-    this.clearAccount();
+    await this.stopAskingForBalance();
   }
 
   created() {

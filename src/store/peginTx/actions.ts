@@ -2,7 +2,9 @@ import { ActionTree } from 'vuex';
 import axios from 'axios';
 import * as rskUtils from '@rsksmart/rsk-utils';
 import * as constants from '@/store/constants';
-import { ApiService, LedgerService, TrezorService } from '@/services';
+import {
+  ApiService, LedgerService, TrezorService,
+} from '@/services';
 import SatoshiBig from '@/types/SatoshiBig';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import {
@@ -113,6 +115,12 @@ export const actions: ActionTree<PegInTxState, RootState> = {
           state.peginConfiguration.sessionId,
           state.peginConfiguration.maxValue,
         );
+    }
+    return Promise.reject(new Error('Wallet service is not set'));
+  },
+  [constants.PEGIN_TX_STOP_ASKING_FOR_BALANCE]: ({ state }): Promise<void> => {
+    if (state.walletService) {
+      return state.walletService.stopAskingForBalance();
     }
     return Promise.reject(new Error('Wallet service is not set'));
   },

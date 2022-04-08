@@ -209,5 +209,12 @@ export default class BtcInputAmount extends Vue {
       this.amountStyle = this.stepState === 'done' ? 'green-box' : 'yellow-box';
     }
   }
+
+  created() {
+    const isInitialValue = this.pegInTxState.amountToTransfer.toBTCString() === '0.00000000';
+    if (!isInitialValue) {
+      this.bitcoinAmount = this.pegInTxState.amountToTransfer.toBTCString();
+    }
+  }
 }
 </script>
