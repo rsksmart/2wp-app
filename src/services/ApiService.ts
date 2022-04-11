@@ -6,6 +6,7 @@ import {
 import { isValidOpReturn, isValidPowPegAddress } from '@/utils';
 import { BridgeService } from '@/services/BridgeService';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import { ApiInformation } from '@/types/ApiInformation';
 
 export default class ApiService {
   static baseURL = EnvironmentAccessorService.getEnvironmentVariables().vueAppApiBaseUrl;
@@ -123,6 +124,14 @@ export default class ApiService {
         addressList,
       })
         .then((response) => resolve(response.data.data))
+        .catch(reject);
+    });
+  }
+
+  public static getApiVersion(): Promise<ApiInformation> {
+    return new Promise<ApiInformation>((resolve, reject) => {
+      axios.get(`${this.baseURL}/api`)
+        .then((response) => resolve(response.data))
         .catch(reject);
     });
   }

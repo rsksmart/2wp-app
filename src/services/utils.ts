@@ -1,5 +1,6 @@
 import * as constants from '@/store/constants';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import { ApiService } from '.';
 
 export function getAccountType(address: string): string {
   const [legacyTestReg, segwitTestReg, nativeTestReg] = [
@@ -39,4 +40,8 @@ export function getMainLogo() {
       // eslint-disable-next-line global-require
       return require('@/assets/logo-beta.svg');
   }
+}
+
+export function getApiInfo(): Promise<string> {
+  return ApiService.getApiVersion().then((data) => data.version);
 }
