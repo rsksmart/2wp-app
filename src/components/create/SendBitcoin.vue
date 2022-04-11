@@ -164,6 +164,7 @@ export default class SendBitcoin extends Vue {
   toPegInForm() {
     this.isBackFromConfirm = true;
     this.currentComponent = 'PegInForm';
+    this.confirmTxState.send('idle');
   }
 
   @Emit()

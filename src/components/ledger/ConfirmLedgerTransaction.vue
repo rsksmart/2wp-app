@@ -199,7 +199,6 @@ export default class ConfirmLedgerTransaction extends Vue {
     'idle'
     | 'loading'
     | 'error'
-    | 'goingHome'
   >;
 
   @Prop() txBuilder!: LedgerTxBuilder;
@@ -250,15 +249,9 @@ export default class ConfirmLedgerTransaction extends Vue {
     return [txError, this.txId];
   }
 
-  backHome() {
-    this.confirmTxState.send('goingHome');
-    this.$router.go(0);
-  }
-
   @Emit('toPegInForm')
-  async toPegInForm() {
+  toPegInForm() {
     this.confirmTxState.send('loading');
-    return 'SendBitcoinForm';
   }
 
   // eslint-disable-next-line class-methods-use-this
