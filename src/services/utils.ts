@@ -1,6 +1,5 @@
 import * as constants from '@/store/constants';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
-import { ApiService } from '.';
 
 export function getAccountType(address: string): string {
   const [legacyTestReg, segwitTestReg, nativeTestReg] = [
