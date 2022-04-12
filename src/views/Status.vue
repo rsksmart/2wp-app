@@ -37,8 +37,7 @@
             <v-row v-if="isRejected" class="mx-0 d-flex justify-center progress-bar">
               <v-col cols="8" class="pa-0 d-flex justify-center">
                 <v-row>
-                  <div style="{ z-index: 5; position: absolute;
-                    margin-left: -75px; margin-top: -30px; }">
+                  <div class="rsk-icon-green">
                     <v-row>
                       <v-img class="d-flex justify-center"
                              src="@/assets/status/rsk-yellow.png" height="78" contain/>
@@ -52,8 +51,7 @@
                     color="#F6C61B"
                     height="17"/>
                   <div class="d-flex justify-end">
-                    <div style="{ z-index: 2; position: absolute;
-                    margin-right: -100px; margin-top: -30px; }">
+                    <div class="bitcoin-icon-yellow">
                       <v-row>
                         <v-img class="d-flex justify-center"
                                src="@/assets/status/btc-yellow.png" height="78" contain/>
@@ -69,8 +67,7 @@
             <v-row v-else class="mx-0 progress-bar">
               <v-col  cols="8" class="pa-0">
                 <div class="d-flex justify-start">
-                  <div style="z-index: 5; position: absolute;
-                    margin-left: -75px; margin-top: -30px;">
+                  <div class="bitcoin-icon-green">
                     <v-row>
                       <v-img class="d-flex justify-center"
                              src="@/assets/status/btc-green.png" height="78" contain/>
@@ -116,7 +113,7 @@
                   </v-row>
                 </div>
               </v-col>
-              <v-col class="pa-0" style="{z-index: 0;}">
+              <v-col class="confirm-percentage pa-0">
                 <v-row>
                   <v-progress-linear
                     :value="rskConfirmationsPercentage"
@@ -129,8 +126,7 @@
                   </v-row>
                 </v-row>
                 <div class="d-flex justify-end pa-0 ma-0">
-                  <div style="{ z-index: 5; position: absolute;
-                    margin-right: -75px; margin-top: -75px; }">
+                  <div class="rbtc-icon-green">
                     <v-row>
                       <v-img class="d-flex justify-center"
                              src="@/assets/status/rbtc_green.png" height="78" contain/>
