@@ -41,7 +41,3 @@ export function getMainLogo() {
       return require('@/assets/logo-beta.svg');
   }
 }
-
-export function getApiInfo(): Promise<string> {
-  return ApiService.getApiVersion().then((data) => data.version);
-}

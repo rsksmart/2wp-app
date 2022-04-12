@@ -128,7 +128,7 @@ export default class ApiService {
     });
   }
 
-  public static getApiVersion(): Promise<ApiInformation> {
+  public static getApiInformation(): Promise<ApiInformation> {
     return new Promise<ApiInformation>((resolve, reject) => {
       axios.get(`${this.baseURL}/api`)
         .then((response) => resolve(response.data))

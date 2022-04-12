@@ -48,7 +48,8 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { getApiInfo } from '@/services/utils';
+import { ApiInformation } from '@/types/ApiInformation';
+import { ApiService } from '@/services';
 
 @Component
 export default class FooterRsk extends Vue {
@@ -72,7 +73,8 @@ export default class FooterRsk extends Vue {
 
   // eslint-disable-next-line class-methods-use-this
   get obtainApiVersion() {
-    getApiInfo().then((res) => { this.apiVersion = res; });
+    ApiService.getApiInformation()
+      .then((res: ApiInformation) => { this.apiVersion = res.version; });
     return this.apiVersion;
   }
 }

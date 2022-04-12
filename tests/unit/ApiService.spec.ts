@@ -102,13 +102,12 @@ describe('function: createPeginTx', () => {
 
   it('obtain api version, return promise', async () => {
     setEnvironment(true, true);
-
     try {
-      const result = await ApiService.getApiVersion();
-      expect(result.version).not.to.be.equal('0');
+      const result = await ApiService.getApiInformation();
+      expect(result.version).not.to.be.null;
     } catch (e)
     {
-      expect(e).to.be.a('error', 'Invalid data when obtain API Version');
+      expect(e).to.be.a('error', 'Network Error');
     }
   });
 });
