@@ -23,7 +23,7 @@
               <a href="https://www.rsk.co/terms-conditions" target="_blank">
                 Terms & Conditions
               </a>
-              <a href="#">Api Version: {{obtainApiVersion}}</a>
+              <a :href="urlApi" target="_blank">Api Version: {{obtainApiVersion}}</a>
               <a :href="url" target="_blank">App Version: {{$store.getters.appVersion}}</a>
               <a v-if="false">Documentation</a>
             </v-row>
@@ -57,6 +57,8 @@ export default class FooterRsk extends Vue {
 
   url = `https://github.com/rsksmart/2wp-app/releases/tag/v${this.$store.getters.appVersion}`;
 
+  urlApi = `https://github.com/rsksmart/2wp-api/releases/tag/v${this.apiVersion}`;
+
   socialNetworkButtons: {icon: string; link: string} [] = [
     { icon: 'mdi-slack', link: 'http://developers.rsk.co/slack' },
     { icon: 'mdi-twitter', link: 'https://twitter.com/rsksmart' },
@@ -74,7 +76,10 @@ export default class FooterRsk extends Vue {
   // eslint-disable-next-line class-methods-use-this
   get obtainApiVersion() {
     ApiService.getApiInformation()
-      .then((res: ApiInformation) => { this.apiVersion = res.version; });
+      .then((res: ApiInformation) => {
+        this.apiVersion = res.version;
+        this.urlApi = `https://github.com/rsksmart/2wp-api/releases/tag/v${this.apiVersion}`;
+      });
     return this.apiVersion;
   }
 }
