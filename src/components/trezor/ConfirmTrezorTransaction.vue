@@ -232,8 +232,8 @@ export default class ConfirmTrezorTransaction extends Vue {
   async toTrackId() {
     let txError = '';
     this.confirmTxState.send('loading');
-    await this.stopAskingForBalance()
-      .then(() => this.txBuilder.buildTx())
+    await this.walletService.stopAskingForBalance()
+      .then(() => this.txBuilder.buildTx(this.pegInTxState.normalizedTx))
       .then((tx: TrezorTx) => this.walletService.sign(tx) as Promise<TrezorSignedTx>)
       .then((trezorSignedTx: TrezorSignedTx) => ApiService
         .broadcast(trezorSignedTx.payload.serializedTx))
@@ -280,9 +280,11 @@ export default class ConfirmTrezorTransaction extends Vue {
   }
 
   get changeAddress(): string {
-    return this.txBuilder.changeAddress !== ''
-      ? this.txBuilder.changeAddress
-      : 'Change address not found';
+    const [, , change] = this.pegInTxState.normalizedTx.outputs;
+    if (change && change.address) {
+      return change.address;
+    }
+    return 'Change address not found';
   }
 
   get changeAmount(): string {
@@ -298,7 +300,7 @@ export default class ConfirmTrezorTransaction extends Vue {
   }
 
   async created() {
-    this.rawTx = await this.txBuilder.getUnsignedRawTx();
+    this.rawTx = await this.txBuilder.getUnsignedRawTx(this.pegInTxState.normalizedTx);
   }
 }
 </script>
