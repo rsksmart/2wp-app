@@ -12,6 +12,7 @@
         <v-row class="mx-0 mt-4">
           <v-col cols="7" class="pl-0 pb-0">
             <v-select v-model="btcAccountTypeSelected" :items="accountBalances" color="#fff"
+                      class="account-select"
                       label="Select the account" solo dense
                       @focus="focus = true"
                       @blur="focus = false"

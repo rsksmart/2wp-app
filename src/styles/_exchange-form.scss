@@ -192,6 +192,19 @@
   font-size: 14px;
 }
 
+.account-select {
+  .v-select__selection {
+    font-size: 15px;
+  }
+}
+
+.amount-input {
+  font-size: 15px;
+}
+
 .wallet-address-input {
-  font-size: 10px;;
+  font-size: 11px;
+  .v-input__slot {
+    padding: 0 5px !important;
+  }
 }
