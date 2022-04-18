@@ -18,27 +18,10 @@ VUE_APP_RSK_NODE_HOST=<RSK_NODE_HOST>
 VUE_APP_HOTJAR_ID=<HOT_JAR_ID_FOR_THE_ENVIRONMENT>
 ```
 ## Development mode
+
+### Using npm
 ```
 npm run serve
-```
-
-### Simple flow
-```mermaid
-sequenceDiagram
-Front-end ->> Back-end: getInformation
-Back-end-->>BLOCKCHAIN_NODE: getBalance
-Back-end-->>BLOCKCHAIN_NODE: addTx
-Back-end-->>Data-base: addTx
-```
-#### Interactions
-```mermaid
-graph LR
-A[Front-end] -- Rest --> B{API}
-B --> E((BLOCKCHAIN_NODE))
-
-B --> D((Data-base))
-C{Daemon} --> D
-C --> E
 ```
 
 ### Check npm and node versions
@@ -52,9 +35,19 @@ node -v
 v14.19.1
 ```
 
-## Deployment
+### Deployment
 ```shell
 docker-compose up
+```
+
+### Testing
+```shel
+npm test:unit
+```
+
+### Running Lint
+```shel
+npm run lint 
 ```
 
 ## Report Security Vulnerabilities
