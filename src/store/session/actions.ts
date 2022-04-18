@@ -4,7 +4,7 @@ import { ActionTree } from 'vuex';
 import RLogin from '@rsksmart/rlogin';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import * as constants from '@/store/constants';
-import { TransactionType, SessionState } from './types';
+import { TransactionType, SessionState } from '../../types/session';
 import { RootState } from '../../types/store';
 
 export const actions: ActionTree<SessionState, RootState> = {

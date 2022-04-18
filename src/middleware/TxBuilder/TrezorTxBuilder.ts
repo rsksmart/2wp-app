@@ -17,7 +17,7 @@ export default class TrezorTxBuilder extends TxBuilder {
       const { coin } = this;
       const tx = {
         coin,
-        inputs: TrezorTxBuilder.getInputs(normalizedTx.inputs),
+        inputs: this.getInputs(normalizedTx.inputs),
         outputs: TrezorTxBuilder.getOutputs(normalizedTx.outputs),
         version: constants.BITCOIN_TX_VERSION,
       };
@@ -43,7 +43,7 @@ export default class TrezorTxBuilder extends TxBuilder {
     });
   }
 
-  private static getInputs(inputs: NormalizedInput[]): TxInputType[] {
+  private getInputs(inputs: NormalizedInput[]): TxInputType[] {
     return inputs.map((input) => ({
       address_n: TrezorTxBuilder.getPathFromAddress(input.address),
       prev_hash: input.prev_hash,
@@ -62,8 +62,8 @@ export default class TrezorTxBuilder extends TxBuilder {
     return path;
   }
 
-  private static getScriptType(address: string): InputScriptType {
-    const accType = getAccountType(address);
+  private getScriptType(address: string): InputScriptType {
+    const accType = getAccountType(address, this.coin);
     switch (accType) {
       case constants.BITCOIN_SEGWIT_ADDRESS:
         return 'SPENDP2SHWITNESS';
