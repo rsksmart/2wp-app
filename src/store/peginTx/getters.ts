@@ -14,6 +14,9 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       case constants.WALLET_TREZOR: {
         return 'Trezor';
       }
+      case constants.WALLET_LIQUALITY: {
+        return 'Liquality';
+      }
       default: {
         return 'wallet';
       }

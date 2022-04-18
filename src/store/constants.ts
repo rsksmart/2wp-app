@@ -1,5 +1,6 @@
 export const WALLET_LEDGER = 'WALLET_LEDGER';
 export const WALLET_TREZOR = 'WALLET_TREZOR';
+export const WALLET_LIQUALITY = 'WALLET_LIQUALITY';
 
 // devices
 export const IS_TREZOR_CONNECTED = 'IS_TREZOR_CONNECTED';
