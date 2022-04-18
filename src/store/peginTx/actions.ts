@@ -39,6 +39,9 @@ export const actions: ActionTree<PegInTxState, RootState> = {
       case constants.WALLET_LEDGER:
         commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new LedgerService());
         break;
+      case constants.WALLET_LIQUALITY:
+        commit(constants.PEGIN_TX_SET_WALLET_SERVICE, undefined);
+        break;
       default:
         commit(constants.PEGIN_TX_SET_WALLET_SERVICE, undefined);
         break;
