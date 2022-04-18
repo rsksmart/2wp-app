@@ -51,6 +51,11 @@ npm test:unit
 ```shel
 npm run lint 
 ```
+## Production mode
+To create a production build, run:
+```shel
+npm run build
+```
 
 ## Report Security Vulnerabilities
 
