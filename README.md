@@ -18,6 +18,8 @@ VUE_APP_RSK_NODE_HOST=<RSK_NODE_HOST>
 VUE_APP_HOTJAR_ID=<HOT_JAR_ID_FOR_THE_ENVIRONMENT>
 ```
 ## Development mode
+The **2wp-app** application will run on **8080 port**.
+
 
 ### Using npm
 ```
