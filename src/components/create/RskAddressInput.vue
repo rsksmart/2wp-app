@@ -84,7 +84,7 @@ import { Component, Emit, Vue } from 'vue-property-decorator';
 import { Action, State } from 'vuex-class';
 import * as rskUtils from '@rsksmart/rsk-utils';
 import { PegInTxState } from '@/types/pegInTx';
-import { SessionState } from '@/store/session/types';
+import { SessionState } from '@/types/session';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import * as constants from '@/store/constants';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';

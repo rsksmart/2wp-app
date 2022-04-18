@@ -1,21 +1,18 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
-import Vuex from 'vuex';
 import { expect } from 'chai';
 import Big from 'big.js';
+import Vuex from 'vuex';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import SatoshiBig from '@/types/SatoshiBig';
 import * as constants from '@/store/constants';
 
 const localVue = createLocalVue();
 
-localVue.use(Vuex);
-
 describe('TxSummary', () => {
-  let state:any;
+  let state: any;
   let store: any;
-  let getters: any;
-
   beforeEach(() => {
+    localVue.use(Vuex);
     state = {
       peginConfiguration: {
         minValue: 100000000,
@@ -47,7 +44,7 @@ describe('TxSummary', () => {
         nativeSegwit: new SatoshiBig(0, 'satoshi'),
       },
       loadingBalance: false,
-      selectedAccount: '',
+      selectedAccount: undefined,
       calculatedFees: {
         slow: new SatoshiBig(0.00025400, 'satoshi'),
         average: new SatoshiBig(0.00025400, 'satoshi'),
@@ -60,10 +57,9 @@ describe('TxSummary', () => {
       rskAddressSelected: 'dfgdsg0dgs90h00nhs8996s8as5f76hgel',
     };
 
-    getters = {
+    const getters = {
       [constants.PEGIN_TX_GET_REFUND_ADDRESS]: () => 'n2y1xQBv3cqmRPke7QBWy52F91ZdgrYUgh',
     };
-
     store = new Vuex.Store({
       modules: {
         pegInTx: {

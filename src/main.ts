@@ -7,6 +7,7 @@ import store from './store';
 import vuetify from './plugins/vuetify';
 import '@/styles/main.scss';
 import { EnvironmentAccessorService } from './services/enviroment-accessor.service';
+import { AppNetwork } from '@/types';
 
 Vue.config.productionTip = false;
 Vue.prototype.$web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
@@ -20,7 +21,7 @@ if (window.ethereum) {
 // These environment variables were been set at service/component layer instead of been
 // globally set up. We should consider removing them
 const defaultEnvironmentVariables = {
-  vueAppCoin: constants.BTC_NETWORK_TESTNET,
+  vueAppCoin: constants.BTC_NETWORK_TESTNET as AppNetwork,
   vueAppManifestEmail: '',
   vueAppManifestAppUrl: '',
   vueAppWalletMaxCallTrezor: '1',

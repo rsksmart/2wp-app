@@ -1,6 +1,7 @@
 import * as bitcoin from 'bitcoinjs-lib';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import {
+  AppNetwork,
   NormalizedInput, NormalizedTx, Tx,
 } from '@/types';
 import * as constants from '@/store/constants';
@@ -9,7 +10,7 @@ import store from '@/store';
 import { WalletAddress } from '@/types/pegInTx';
 
 export default abstract class TxBuilder {
-  protected coin!: string;
+  protected coin!: AppNetwork;
 
   protected network: bitcoin.Network;
 

@@ -178,11 +178,11 @@ import {
 import { State, Action } from 'vuex-class';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import { ApiService } from '@/services';
-import * as constants from '@/store/constants';
 import {
   PeginStatus, TxData, PegInTxState, SatoshiBig,
 } from '@/types';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
+import * as constants from '@/store/constants';
 
 @Component({
   components: {
@@ -234,6 +234,8 @@ export default class Status extends Vue {
 
   @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) peginInit !: () => void;
 
+  @Action(constants.PEGIN_TX_ADD_BITCOIN_PRICE, { namespace: 'pegInTx' }) getBtcPrice !: () => Promise<void>;
+
   get showStatus() {
     return !this.loading && !this.error && !!this.statusMessage;
   }
@@ -269,7 +271,12 @@ export default class Status extends Vue {
     if (this.txId !== '') {
       this.loading = true;
       this.error = false;
-      if (this.$route.path !== `/status/txId/${this.txId}`) this.$router.push({ name: 'Status', params: { txId: this.txId } });
+      if (this.$route.path !== `/status/txId/${this.txId}`) {
+        this.$router.push({
+          name: 'Status',
+          params: { txId: this.txId },
+        });
+      }
       ApiService.getPegInStatus(this.txId)
         .then((pegInStatus: PeginStatus) => {
           this.pegInStatus = pegInStatus;
@@ -360,12 +367,6 @@ export default class Status extends Vue {
   }
 
   @Emit()
-  // eslint-disable-next-line class-methods-use-this
-  openExplorer() {
-    window.open('https://explorer.testnet.rsk.co/', '_blank');
-  }
-
-  @Emit()
   clean() {
     this.txId = '';
     this.loading = false;
@@ -386,6 +387,10 @@ export default class Status extends Vue {
   @Emit()
   back() {
     this.$router.replace({ name: 'Home' });
+  }
+
+  async created() {
+    await this.getBtcPrice();
   }
 }
 </script>
