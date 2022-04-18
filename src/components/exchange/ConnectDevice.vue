@@ -14,10 +14,17 @@
               <div class="number">1</div>
             </v-col>
             <v-col cols="11">
-              <p class="ma-0">Plug your {{ walletName }} device into your computer</p>
+              <p v-if="walletName ==='Liquality'"
+              class="ma-0">
+                Connect your {{ walletName }} wallet.
+              </p>
+              <p v-if="walletName !=='Liquality'"
+              class="ma-0">
+                Plug your {{ walletName }} device into your computer
+              </p>
             </v-col>
           </v-row>
-          <v-row class="ma-0">
+          <v-row v-if="walletName !=='Liquality'" class="ma-0">
             <v-col cols="1">
               <div class="number">2</div>
             </v-col>
@@ -74,6 +81,7 @@ import * as constants from '@/store/constants';
 import { PegInTxState } from '@/types/pegInTx';
 import LedgerConnect from '@/assets/exchange/ledger/connect_ledger.png';
 import TrezorConnect from '@/assets/exchange/trezor/connect_trezor.png';
+import LiqualityConnect from '@/assets/exchange/liquality/connect_liquality.png';
 import Connect from '@/assets/exchange/wallet.png';
 import { SendBitcoinState } from '@/types';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
@@ -95,6 +103,7 @@ export default class ConnectDevice extends Vue {
   get deviceImagePath() {
     if (this.peginTxState.bitcoinWallet === constants.WALLET_LEDGER) return LedgerConnect;
     if (this.peginTxState.bitcoinWallet === constants.WALLET_TREZOR) return TrezorConnect;
+    if (this.peginTxState.bitcoinWallet === constants.WALLET_LIQUALITY) return LiqualityConnect;
     return Connect;
   }
 

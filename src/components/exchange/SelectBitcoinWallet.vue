@@ -28,6 +28,14 @@
               </v-btn>
             </v-col>
             <v-col cols="3" class="d-flex justify-center">
+              <v-btn outlined class="wallet-button-thin"
+                @click="setBitcoinWallet(storeConstants.WALLET_LIQUALITY)"
+                v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_LIQUALITY }">
+                <v-icon class="wallet-icon-liquality"></v-icon>
+                <span class="wallet-button-content">Liquality</span>
+              </v-btn>
+            </v-col>
+            <v-col cols="3" class="d-flex justify-center">
               <div class="custom-tooltip">
                 <div>
                   <v-btn outlined disabled class="wallet-button-thin-disabled">
@@ -98,12 +106,16 @@ export default class SelectBitcoinWallet extends Vue {
   @Emit()
   toSendBitcoin(): void {
     let wallet: string;
+    const TYPES_WALLETS = { WALLET_TREZOR: 'WALLET_TREZOR', WALLET_LEDGER: 'WALLET_LEDGER', WALLET_LIQUALITY: 'WALLET_LIQUALITY' };
     switch (this.peginTxState.bitcoinWallet) {
-      case 'WALLET_TREZOR':
+      case TYPES_WALLETS.WALLET_TREZOR:
         wallet = 'trezor';
         break;
-      case 'WALLET_LEDGER':
+      case TYPES_WALLETS.WALLET_LEDGER:
         wallet = 'ledger';
+        break;
+      case TYPES_WALLETS.WALLET_LIQUALITY:
+        wallet = 'liquality';
         break;
       default:
         wallet = '';
