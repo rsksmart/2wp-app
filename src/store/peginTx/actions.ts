@@ -74,7 +74,10 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   },
   [constants.PEGIN_TX_CALCULATE_TX_FEE]: ({ commit, state }):
     Promise<void> => new Promise<void>((resolve, reject) => {
-      if (!state.selectedAccount) reject(new Error('There are no selected account'));
+      if (!state.selectedAccount) {
+        reject(new Error('There are no selected account'));
+        return;
+      }
       commit(constants.PEGIN_TX_SET_LOADING_FEE, true);
       ApiService.getTxFee(
         state.sessionId,

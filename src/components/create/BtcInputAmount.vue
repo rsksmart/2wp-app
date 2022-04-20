@@ -112,6 +112,12 @@ export default class BtcInputAmount extends Vue {
     const feePlusAmount: SatoshiBig = this.safeAmount.plus(this.safeTxFee);
     const minValue: SatoshiBig = new SatoshiBig(this.pegInTxState.peginConfiguration.minValue, 'satoshi');
     const maxValue: SatoshiBig = new SatoshiBig(this.pegInTxState.peginConfiguration.maxValue, 'satoshi');
+    if (!this.selectedAccountBalance) {
+      return 'Please, select account first';
+    }
+    if (!this.pegInTxState.selectedAccount) {
+      return 'Please, select an account first';
+    }
     if (this.bitcoinAmount.toString() === '') {
       return 'Please, enter an amount';
     }
