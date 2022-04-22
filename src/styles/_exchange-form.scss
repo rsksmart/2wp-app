@@ -194,17 +194,20 @@
 
 .account-select {
   .v-select__selection {
-    font-size: 15px;
+    font-size: 11px;
   }
 }
 
 .amount-input {
-  font-size: 15px;
+  font-size: 11px;
 }
 
-.wallet-address-input {
-  font-size: 11px;
-  .v-input__slot {
-    padding: 0 5px !important;
+.wallet-label-container {
+  padding: 12px 6px 12px 12px !important;
+  .wallet-address-input {
+    font-size: 11px;
+    .v-input__slot {
+      padding: 0 5px !important;
+    }
   }
 }
