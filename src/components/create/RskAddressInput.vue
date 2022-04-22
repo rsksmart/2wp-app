@@ -34,7 +34,7 @@
             </div>
           </template>
           <template v-else>
-            <v-col cols="6" class="pl-0 pb-0">
+            <v-col cols="6" class="wallet-label-container pl-0 pb-0">
               <v-row class="mx-0 mb-4 d-flex justify-start">
                 <span class="text-center">
                   Use your {{environmentContext.getRskText()}} addresses
@@ -42,7 +42,7 @@
               </v-row>
               <v-row :class="[isValidRskAddress || !rskAddressSelected ?
                      'blue-box' : 'yellow-box' ]"
-                     class="input-box-outline mx-0 pa-0 pl-1" >
+                     class="input-box-outline mx-0 pa-0 pl-0" >
                 <v-text-field
                   v-model="rskAddressSelected"
                   class="wallet-address-input"
