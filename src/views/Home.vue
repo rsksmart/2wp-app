@@ -164,6 +164,7 @@ export default class Home extends Vue {
 
   async created() {
     this.clear();
+    this.addPeg(undefined);
     await this.init();
     this.STATUS = false;
   }
