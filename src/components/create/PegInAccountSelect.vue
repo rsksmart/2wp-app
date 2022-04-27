@@ -70,7 +70,7 @@ import * as constants from '@/store/constants';
 import { BtcAccount, PegInTxState } from '@/types/pegInTx';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
-import { SatoshiBig } from '@/types';
+import SatoshiBig from '@/types/SatoshiBig';
 
 @Component({})
 export default class PegInAccountSelect extends Vue {
