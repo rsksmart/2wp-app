@@ -199,6 +199,9 @@ export default class BtcInputAmount extends Vue {
     this.stepState = this.isBTCAmountValidNumberRegex && !this.insufficientAmount
       ? 'done' : 'error';
     this.setIsValidAmount(this.stepState === 'done');
+    if (this.stepState === 'done') {
+      this.calculateTxFee();
+    }
     return this.stepState;
   }
 
