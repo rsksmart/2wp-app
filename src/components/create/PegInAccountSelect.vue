@@ -65,12 +65,11 @@
 import {
   Component, Vue, Emit, Watch,
 } from 'vue-property-decorator';
-import { Action, State, Getter } from 'vuex-class';
+import { Action, State } from 'vuex-class';
 import * as constants from '@/store/constants';
 import { BtcAccount, PegInTxState } from '@/types/pegInTx';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
-import SatoshiBig from '@/types/SatoshiBig';
 
 @Component({})
 export default class PegInAccountSelect extends Vue {
@@ -91,10 +90,6 @@ export default class PegInAccountSelect extends Vue {
   @Action(constants.PEGIN_TX_SELECT_ACCOUNT_TYPE, { namespace: 'pegInTx' }) selectAccount !: (accountType: BtcAccount) => void;
 
   @Action(constants.PEGIN_TX_CALCULATE_TX_FEE, { namespace: 'pegInTx' }) calculateTxFee !: () => Promise<void>;
-
-  @Action(constants.PEGIN_TX_ADD_IS_VALID_AMOUNT, { namespace: 'pegInTx' }) setIsValidAmount !: (isValid: boolean) => void;
-
-  @Getter(constants.PEGIN_TX_GET_SELECTED_BALANCE, { namespace: 'pegInTx' }) selectedAccountBalance !: SatoshiBig;
 
   // eslint-disable-next-line class-methods-use-this
   get maxAddressesLedger(): number {
