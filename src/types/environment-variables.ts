@@ -21,6 +21,10 @@ export class EnvironmentVariables {
 
   public vueAppWalletAddressesPerCallLedger: number;
 
+  public vueAppWalletMaxCallLiquality: number;
+
+  public vueAppWalletAddressesPerCallLiquality: number;
+
   public vueAppRskExplorer: string;
 
   public vueAppHotjarId: number;
@@ -51,5 +55,11 @@ export class EnvironmentVariables {
       || defaultValues.vueAppWalletAddressesPerCallLedger;
     this.vueAppRskExplorer = process.env.VUE_APP_RSK_EXPLORER || defaultValues.vueAppRskExplorer;
     this.vueAppHotjarId = process.env.VUE_APP_HOTJAR_ID || defaultValues.vueAppHotjarId;
+    this.vueAppWalletMaxCallLiquality = Number(process.env.VUE_APP_WALLET_MAX_CALLS_LIQUALITY)
+      || defaultValues.vueAppWalletMaxCallLiquality;
+    this.vueAppWalletAddressesPerCallLiquality
+      // eslint-disable-next-line operator-linebreak
+      = Number(process.env.VUE_APP_WALLET_ADDRESSES_PER_CALL_LIQUALITY)
+      || defaultValues.vueAppWalletAddressesPerCallLiquality;
   }
 }
