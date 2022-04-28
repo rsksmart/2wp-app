@@ -6,3 +6,4 @@ export * from './pegInTx';
 export * from './session';
 export * from './store';
 export { default as SatoshiBig } from './SatoshiBig';
+export * from './Liquality';

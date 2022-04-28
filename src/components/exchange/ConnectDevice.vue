@@ -108,7 +108,6 @@ export default class ConnectDevice extends Vue {
   }
 
   @Emit()
-  // eslint-disable-next-line class-methods-use-this
   back() {
     // TODO: Point to Home route
     this.clearStore();
