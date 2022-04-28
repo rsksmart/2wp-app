@@ -70,7 +70,7 @@ import {
 } from 'vue-property-decorator';
 import { Action, Getter, State } from 'vuex-class';
 import SatoshiBig from '@/types/SatoshiBig';
-import { PegInTxState } from '@/types/pegInTx';
+import { BtcAccount, PegInTxState } from '@/types/pegInTx';
 import * as constants from '@/store/constants';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
@@ -97,6 +97,8 @@ export default class BtcInputAmount extends Vue {
 
   @Getter(constants.PEGIN_TX_GET_SELECTED_BALANCE, { namespace: 'pegInTx' }) selectedAccountBalance!: SatoshiBig;
 
+  @Getter(constants.PEGIN_TX_SELECT_ACCOUNT_TYPE, { namespace: 'pegInTx' }) selectAccount !: (accountType: BtcAccount) => void;
+
   get isBTCAmountValidNumberRegex() {
     return /^[0-9]{1,8}(\.[0-9]{0,8})?$/.test(this.bitcoinAmount.toString());
   }
@@ -120,6 +122,9 @@ export default class BtcInputAmount extends Vue {
       return 'Please, select an account first';
     }
     if (this.bitcoinAmount.toString() === '') {
+      return 'Please, enter an amount';
+    }
+    if (this.bitcoinAmount.toString() === '0') {
       return 'Please, enter an amount';
     }
     if (!this.isBTCAmountValidNumberRegex) {
@@ -197,16 +202,9 @@ export default class BtcInputAmount extends Vue {
 
   @Emit('stepState')
   checkStep() {
-    let firstCallTxFee = false;
     this.stepState = this.isBTCAmountValidNumberRegex && !this.insufficientAmount
       ? 'done' : 'error';
     this.setIsValidAmount(this.stepState === 'done');
-
-    if (!firstCallTxFee) {
-      this.calculateTxFee();
-      firstCallTxFee = true;
-    }
-
     return this.stepState;
   }
 
@@ -220,6 +218,15 @@ export default class BtcInputAmount extends Vue {
   watchBTCAccountTypeSelected() {
     if (this.stepState !== 'unused') {
       this.checkStep();
+      this.amountStyle = this.stepState === 'done' ? 'green-box' : 'yellow-box';
+    }
+  }
+
+  @Watch('pegInTxState.selectedAccount')
+  accountChanged() {
+    if (this.stepState !== 'unused') {
+      this.checkStep();
+      this.calculateTxFee();
       this.amountStyle = this.stepState === 'done' ? 'green-box' : 'yellow-box';
     }
   }
