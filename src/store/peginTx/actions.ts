@@ -82,6 +82,12 @@ export const actions: ActionTree<PegInTxState, RootState> = {
         reject(new Error('Invalid amount to transfer, adjust amount to search the fees'));
         return;
       }
+
+      const amount = Number(state.amountToTransfer.toSatoshiString());
+      if (amount === 0) {
+        return;
+      }
+
       commit(constants.PEGIN_TX_SET_LOADING_FEE, true);
       ApiService.getTxFee(
         state.sessionId,
