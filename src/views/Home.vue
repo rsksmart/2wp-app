@@ -105,14 +105,6 @@
         </v-col>
       </v-row>
     </v-container>
-    <v-container>
-      <v-row>
-        <v-btn @click="getAddress">GetAddress batch</v-btn>
-        <v-col>
-          {{addresses}}
-        </v-col>
-      </v-row>
-    </v-container>
   </v-container>
 </template>
 
@@ -124,10 +116,8 @@ import * as Bowser from 'bowser';
 import { Action, State } from 'vuex-class';
 import SelectBitcoinWallet from '@/components/exchange/SelectBitcoinWallet.vue';
 import * as constants from '@/store/constants';
-import { PegInTxState, WalletAddress } from '@/types/pegInTx';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
-import { SessionState, TransactionType } from '@/types/session';
-import LiqualityService from '@/services/LiqualityService';
+import { SessionState, TransactionType, PegInTxState } from '@/types';
 
 @Component({
   components: {
@@ -140,10 +130,6 @@ export default class Home extends Vue {
   browser = Bowser.getParser(window.navigator.userAgent);
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-
-  addresses: WalletAddress[] = [];
-
-  liqualityService: LiqualityService = new LiqualityService();
 
   @State('pegInTx') peginTxState!: PegInTxState;
 
@@ -206,14 +192,6 @@ export default class Home extends Vue {
     const statusIcon = this.isAllowedBrowser ? 'status-icon.svg' : 'status-icon-disabled.svg';
     // eslint-disable-next-line global-require, import/no-dynamic-require
     return require(`@/assets/status/${statusIcon}`);
-  }
-
-  getAddress() {
-    this.liqualityService.getAccountAddresses(10, 0)
-      .then((addr) => {
-        this.addresses = addr;
-      })
-      .catch(console.error);
   }
 }
 </script>
