@@ -12,6 +12,7 @@
         <v-row class="mx-0 mt-4">
           <v-col cols="7" class="pl-0 pb-0">
             <v-select v-model="btcAccountTypeSelected" :items="accountBalances" color="#fff"
+                      class="account-select"
                       label="Select the account" solo dense
                       @focus="focus = true"
                       @blur="focus = false"
@@ -118,13 +119,13 @@ export default class PegInAccountSelect extends Vue {
     let text = '';
     switch (accountType) {
       case constants.BITCOIN_LEGACY_ADDRESS:
-        text = `Legacy - ${this.pegInTxState.balances.legacy.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
+        text = `Legacy - ${this.pegInTxState.balances.legacy.toBTCStringNotZeroPadded()} ${this.environmentContext.getBtcTicker()}`;
         break;
       case constants.BITCOIN_SEGWIT_ADDRESS:
-        text = `Segwit - ${this.pegInTxState.balances.segwit.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
+        text = `Segwit - ${this.pegInTxState.balances.segwit.toBTCStringNotZeroPadded()} ${this.environmentContext.getBtcTicker()}`;
         break;
       case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
-        text = `Native segwit - ${this.pegInTxState.balances.nativeSegwit.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
+        text = `Native segwit - ${this.pegInTxState.balances.nativeSegwit.toBTCStringNotZeroPadded()} ${this.environmentContext.getBtcTicker()}`;
         break;
       default:
         break;

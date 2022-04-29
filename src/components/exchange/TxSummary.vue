@@ -160,6 +160,7 @@ import {
 import Big from 'big.js';
 import { State, Getter } from 'vuex-class';
 import * as constants from '@/store/constants';
+import SatoshiBig from '@/types/SatoshiBig';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import { PegInTxState } from '@/types/pegInTx';
@@ -172,6 +173,10 @@ export default class TxSummary extends Vue {
 
   @Prop() showTxId!: boolean;
 
+  @Prop() statusFee!: SatoshiBig;
+
+  @Prop() statusRefundAddress!: string;
+
   txIdValue = '';
 
   expanded = false;
@@ -179,8 +184,6 @@ export default class TxSummary extends Vue {
   over = false;
 
   fixedUSDDecimals = 2;
-
-  rskFederationAddress = '';
 
   VALUE_INCOMPLETE_MESSAGE = 'Not Found';
 
@@ -208,10 +211,15 @@ export default class TxSummary extends Vue {
 
   get feeBTC() {
     let feeBTC = this.peginTxState.calculatedFees.average;
-    if (this.peginTxState.selectedFee === constants.BITCOIN_SLOW_FEE_LEVEL) {
-      feeBTC = this.peginTxState.calculatedFees.slow;
-    } else if (this.peginTxState.selectedFee === constants.BITCOIN_FAST_FEE_LEVEL) {
-      feeBTC = this.peginTxState.calculatedFees.fast;
+    if (this.statusFee) {
+      feeBTC = this.statusFee;
+    } else {
+      if (this.peginTxState.selectedFee === constants.BITCOIN_SLOW_FEE_LEVEL) {
+        feeBTC = this.peginTxState.calculatedFees.slow;
+      }
+      if (this.peginTxState.selectedFee === constants.BITCOIN_FAST_FEE_LEVEL) {
+        feeBTC = this.peginTxState.calculatedFees.fast;
+      }
     }
     return feeBTC;
   }
@@ -248,7 +256,12 @@ export default class TxSummary extends Vue {
   }
 
   get computedRefundAddress(): string {
+    if (this.statusRefundAddress) return this.statusRefundAddress;
     return this.refundAddress !== '' ? this.refundAddress : this.VALUE_INCOMPLETE_MESSAGE;
+  }
+
+  get rskFederationAddress() {
+    return this.peginTxState.peginConfiguration.federationAddress;
   }
 
   @Emit()
@@ -260,7 +273,6 @@ export default class TxSummary extends Vue {
   created() {
     this.expanded = this.initialExpand;
     this.txIdValue = this.txId;
-    this.rskFederationAddress = this.peginTxState.peginConfiguration.federationAddress;
   }
 }
 </script>

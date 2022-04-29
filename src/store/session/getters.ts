@@ -1,6 +1,6 @@
 import { GetterTree } from 'vuex';
 import * as constants from '@/store/constants';
-import { SessionState } from './types';
+import { SessionState } from '../../types/session';
 import { RootState } from '../../types/store';
 
 export const getters: GetterTree<SessionState, RootState> = {

@@ -199,7 +199,6 @@ export default class ConfirmLedgerTransaction extends Vue {
     'idle'
     | 'loading'
     | 'error'
-    | 'goingHome'
   >;
 
   @Prop() txBuilder!: LedgerTxBuilder;
@@ -219,8 +218,14 @@ export default class ConfirmLedgerTransaction extends Vue {
     const LEDGER_STATUS_CODES = { TRANSACTION_CANCELLED_BY_USER: 27013, DEVICE_LOCKED: 27010 };
     let txError = '';
     this.confirmTxState.send('loading');
-    await this.stopAskingForBalance()
-      .then(() => this.txBuilder.buildTx())
+    await this.walletService.stopAskingForBalance()
+      .then(() => {
+        if (this.pegInTxState.selectedAccount) {
+          return this.txBuilder
+            .buildTx(this.pegInTxState.normalizedTx, this.pegInTxState.selectedAccount);
+        }
+        throw new Error('The account type is not set');
+      })
       .then((ledgerTx: LedgerTx) => this.walletService.sign(ledgerTx) as Promise<LedgerSignedTx>)
       .then((tx: LedgerSignedTx) => ApiService
         .broadcast(tx.signedTx))
@@ -244,15 +249,9 @@ export default class ConfirmLedgerTransaction extends Vue {
     return [txError, this.txId];
   }
 
-  backHome() {
-    this.confirmTxState.send('goingHome');
-    this.$router.go(0);
-  }
-
   @Emit('toPegInForm')
-  async toPegInForm() {
+  toPegInForm() {
     this.confirmTxState.send('loading');
-    return 'SendBitcoinForm';
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -270,9 +269,11 @@ export default class ConfirmLedgerTransaction extends Vue {
   }
 
   get changeAddress(): string {
-    return this.txBuilder.changeAddress !== ''
-      ? this.txBuilder.changeAddress
-      : 'Change address not found';
+    const [, , change] = this.pegInTxState.normalizedTx.outputs;
+    if (change && change.address) {
+      return change.address;
+    }
+    return 'Change address not found';
   }
 
   get changeAmount() {
@@ -281,7 +282,7 @@ export default class ConfirmLedgerTransaction extends Vue {
   }
 
   async created() {
-    this.rawTx = await this.txBuilder.getUnsignedRawTx();
+    this.rawTx = await this.txBuilder.getUnsignedRawTx(this.pegInTxState.normalizedTx);
   }
 }
 </script>

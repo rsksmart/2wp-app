@@ -191,3 +191,23 @@
   color: white;
   font-size: 14px;
 }
+
+.account-select {
+  .v-select__selection {
+    font-size: 11px;
+  }
+}
+
+.amount-input {
+  font-size: 11px;
+}
+
+.wallet-label-container {
+  padding: 12px 6px 12px 12px !important;
+  .wallet-address-input {
+    font-size: 11px;
+    .v-input__slot {
+      padding: 0 5px !important;
+    }
+  }
+}

@@ -118,7 +118,7 @@ import SelectBitcoinWallet from '@/components/exchange/SelectBitcoinWallet.vue';
 import * as constants from '@/store/constants';
 import { PegInTxState } from '@/types/pegInTx';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
-import { SessionState, TransactionType } from '@/store/session/types';
+import { SessionState, TransactionType } from '@/types/session';
 
 @Component({
   components: {

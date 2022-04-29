@@ -100,4 +100,14 @@ describe('function: createPeginTx', () => {
     expect(result.outputs[2].op_return_data).to.be.equal('test1');
   });
 
+  it('obtain api version, return promise', async () => {
+    setEnvironment(true, true);
+    try {
+      const result = await ApiService.getApiInformation();
+      expect(result.version).not.to.be.null;
+    } catch (e)
+    {
+      expect(e).to.be.a('error', 'Network Error');
+    }
+  });
 });

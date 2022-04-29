@@ -200,3 +200,35 @@
   }
 
 }
+
+.bitcoin-icon-yellow {
+  z-index: 2;
+  position: absolute;
+  margin-right: -100px;
+  margin-top: -30px;
+}
+
+.bitcoin-icon-green {
+  z-index: 5;
+  position: absolute;
+  margin-left: -75px;
+  margin-top: -30px;
+}
+
+.rbtc-icon-green {
+  z-index: 5;
+  position: absolute;
+  margin-right: -75px;
+  margin-top: -75px;
+}
+
+.rsk-icon-green {
+  z-index: 5; 
+  position: absolute;
+  margin-left: -75px;
+  margin-top: -30px;
+}
+
+.confirm-percentage {
+  z-index: 0;
+}

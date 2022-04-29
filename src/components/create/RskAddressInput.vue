@@ -34,7 +34,7 @@
             </div>
           </template>
           <template v-else>
-            <v-col cols="6" class="pl-0 pb-0">
+            <v-col cols="6" class="wallet-label-container pl-0 pb-0">
               <v-row class="mx-0 mb-4 d-flex justify-start">
                 <span class="text-center">
                   Use your {{environmentContext.getRskText()}} addresses
@@ -42,14 +42,17 @@
               </v-row>
               <v-row :class="[isValidRskAddress || !rskAddressSelected ?
                      'blue-box' : 'yellow-box' ]"
-                     class="input-box-outline mx-0 pa-0 pl-1" >
-                <v-text-field v-model="rskAddressSelected" solo dense
-                              flat
-                              hide-details
-                    :label="`Select or paste the ${this.environmentContext.getRskText()} address`"
-                              @focus="focus = true"
-                              @blur="focus = false"
-                              @change="checkStep"/>
+                     class="input-box-outline mx-0 pa-0 pl-0" >
+                <v-text-field
+                  v-model="rskAddressSelected"
+                  class="wallet-address-input"
+                  solo dense
+                  flat
+                  hide-details
+                  :label="`Select or paste the ${this.environmentContext.getRskText()} address`"
+                  @focus="focus = true"
+                  @blur="focus = false"
+                  @change="checkStep"/>
               </v-row>
               <v-row v-show="!isValidRskAddress && rskAddressSelected" class="mx-0">
                       <span class="yellowish">
@@ -84,7 +87,7 @@ import { Component, Emit, Vue } from 'vue-property-decorator';
 import { Action, State } from 'vuex-class';
 import * as rskUtils from '@rsksmart/rsk-utils';
 import { PegInTxState } from '@/types/pegInTx';
-import { SessionState } from '@/store/session/types';
+import { SessionState } from '@/types/session';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import * as constants from '@/store/constants';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';

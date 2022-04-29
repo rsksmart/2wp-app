@@ -1,6 +1,7 @@
 import * as bitcoin from 'bitcoinjs-lib';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import {
+  AppNetwork,
   NormalizedInput, NormalizedTx, Tx,
 } from '@/types';
 import * as constants from '@/store/constants';
@@ -9,40 +10,22 @@ import store from '@/store';
 import { WalletAddress } from '@/types/pegInTx';
 
 export default abstract class TxBuilder {
-  protected coin!: string;
+  protected coin!: AppNetwork;
 
   protected network: bitcoin.Network;
-
-  protected normalizedTx!: NormalizedTx;
-
-  protected changeAddr: string;
-
-  private txAccountType: string;
 
   constructor() {
     this.coin = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
     this.network = this.coin === constants.BTC_NETWORK_MAINNET
       ? bitcoin.networks.bitcoin : bitcoin.networks.testnet;
-    this.changeAddr = '';
-    this.txAccountType = '';
   }
 
-  set accountType(accountType: string) {
-    this.txAccountType = accountType;
-  }
-
-  get accountType() {
-    return this.txAccountType;
-  }
-
-  public abstract buildTx(): Promise<Tx>;
-
-  get changeAddress(): string {
-    return this.changeAddr;
-  }
+  public abstract buildTx(normalizedTx:NormalizedTx, accountType?: string):
+    Promise<Tx>;
 
   public async getNormalizedTx({
-    amountToTransferInSatoshi, refundAddress, recipient, feeLevel, changeAddress, sessionId,
+    amountToTransferInSatoshi, refundAddress, recipient,
+    feeLevel, changeAddress, sessionId, accountType,
   }:{
     amountToTransferInSatoshi: number;
     refundAddress: string;
@@ -50,32 +33,33 @@ export default abstract class TxBuilder {
     feeLevel: string;
     changeAddress: string;
     sessionId: string;
+    accountType: string;
   }): Promise<NormalizedTx> {
-    this.normalizedTx = await ApiService.createPeginTx(
+    const normalizedTx = await ApiService.createPeginTx(
       amountToTransferInSatoshi, refundAddress, recipient,
       sessionId, feeLevel, changeAddress,
     );
     const walletAddresses: WalletAddress[] = store.state.pegInTx.addressList as WalletAddress[];
-    const hasChange: boolean = this.normalizedTx.outputs[2] !== undefined;
-    this.changeAddr = hasChange && this.normalizedTx.outputs[2].address
-      ? this.normalizedTx.outputs[2].address : changeAddress;
+    const hasChange: boolean = normalizedTx.outputs[2] !== undefined;
+    const changeAddr = hasChange && normalizedTx.outputs[2].address
+      ? normalizedTx.outputs[2].address : changeAddress;
     if (hasChange && !await this.verifyChangeAddress(
-      this.changeAddress,
-      await this.getUnsignedRawTx(),
+      changeAddr,
+      await this.getUnsignedRawTx(normalizedTx),
       walletAddresses,
-      this.accountType,
-      this.normalizedTx.inputs[0],
+      accountType,
+      normalizedTx.inputs[0],
     )) {
       throw new Error('Error checking the change address');
     }
-    return this.normalizedTx;
+    return normalizedTx;
   }
 
-  public async getUnsignedRawTx(): Promise<string> {
+  public async getUnsignedRawTx(normalizedTx: NormalizedTx): Promise<string> {
     const txBuilder = new bitcoin.TransactionBuilder(this.network);
     txBuilder.setVersion(constants.BITCOIN_TX_VERSION);
     // eslint-disable-next-line no-restricted-syntax
-    for (const input of this.normalizedTx.inputs) {
+    for (const input of normalizedTx.inputs) {
       // eslint-disable-next-line no-await-in-loop
       const hexTx = await ApiService.getTxHex(input.prev_hash);
       const prevTx = bitcoin.Transaction.fromHex(hexTx);
@@ -84,7 +68,7 @@ export default abstract class TxBuilder {
         0, prevTx.outs[input.prev_index].script,
       );
     }
-    this.normalizedTx.outputs.forEach((normalizedOutput) => {
+    normalizedTx.outputs.forEach((normalizedOutput) => {
       if (normalizedOutput.op_return_data) {
         const buffer = Buffer.from(normalizedOutput.op_return_data, 'hex');
         const script: bitcoin.Payment = bitcoin.payments.embed({ data: [buffer] });
@@ -99,8 +83,7 @@ export default abstract class TxBuilder {
       .toHex();
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  private isChangeAddressUnused(walletAddress: WalletAddress, accountType: string):
+  private static isChangeAddressUnused(walletAddress: WalletAddress, accountType: string):
     Promise<boolean> {
     let accountTypePath = '';
     const coin = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
@@ -136,7 +119,7 @@ export default abstract class TxBuilder {
     if (!existChangeAddress) {
       return false;
     }
-    if (await this.isChangeAddressUnused(existChangeAddress, accountType)) {
+    if (await TxBuilder.isChangeAddressUnused(existChangeAddress, accountType)) {
       return true;
     }
     let isUserAddress = false;

@@ -2,7 +2,7 @@ import { TxInputType, TxOutputType } from 'trezor-connect';
 import { WalletAddress } from '@/types/pegInTx';
 import {
   InputScriptType,
-  NormalizedInput, NormalizedOutput, TrezorTx,
+  NormalizedInput, NormalizedOutput, NormalizedTx, TrezorTx,
 } from '@/types';
 import { getAccountType } from '@/services/utils';
 import store from '../../store';
@@ -12,21 +12,17 @@ import TxBuilder from './TxBuilder';
 export default class TrezorTxBuilder extends TxBuilder {
   private tx!: TrezorTx;
 
-  buildTx(): Promise<TrezorTx> {
-    return new Promise<TrezorTx>((resolve, reject) => {
+  buildTx(normalizedTx: NormalizedTx): Promise<TrezorTx> {
+    return new Promise<TrezorTx>((resolve) => {
       const { coin } = this;
-      if (this.normalizedTx) {
-        const tx = {
-          coin,
-          inputs: TrezorTxBuilder.getInputs(this.normalizedTx.inputs),
-          outputs: TrezorTxBuilder.getOutputs(this.normalizedTx.outputs),
-          version: constants.BITCOIN_TX_VERSION,
-        };
-        this.tx = tx;
-        resolve(tx);
-      } else {
-        reject(new Error('There is no Normalized transaction created'));
-      }
+      const tx = {
+        coin,
+        inputs: this.getInputs(normalizedTx.inputs),
+        outputs: TrezorTxBuilder.getOutputs(normalizedTx.outputs),
+        version: constants.BITCOIN_TX_VERSION,
+      };
+      this.tx = tx;
+      resolve(tx);
     });
   }
 
@@ -47,7 +43,7 @@ export default class TrezorTxBuilder extends TxBuilder {
     });
   }
 
-  private static getInputs(inputs: NormalizedInput[]): TxInputType[] {
+  private getInputs(inputs: NormalizedInput[]): TxInputType[] {
     return inputs.map((input) => ({
       address_n: TrezorTxBuilder.getPathFromAddress(input.address),
       prev_hash: input.prev_hash,
@@ -66,8 +62,8 @@ export default class TrezorTxBuilder extends TxBuilder {
     return path;
   }
 
-  private static getScriptType(address: string): InputScriptType {
-    const accType = getAccountType(address);
+  private getScriptType(address: string): InputScriptType {
+    const accType = getAccountType(address, this.coin);
     switch (accType) {
       case constants.BITCOIN_SEGWIT_ADDRESS:
         return 'SPENDP2SHWITNESS';

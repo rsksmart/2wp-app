@@ -1,4 +1,4 @@
-import { EnvironmentVariables } from '../types/environment-variables';
+import { EnvironmentVariables } from '@/types/environment-variables';
 
 let initializedEnvironment: EnvironmentVariables;
 
