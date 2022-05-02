@@ -6,3 +6,5 @@ export { default as ApiService } from './ApiService';
 export { default as TrezorService } from './TrezorService';
 // eslint-disable-next-line import/no-cycle
 export { default as LedgerService } from './LedgerService';
+// eslint-disable-next-line import/no-cycle
+export { default as LiqualityService } from './LiqualityService';
