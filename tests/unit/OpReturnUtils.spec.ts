@@ -3,13 +3,14 @@ import { NormalizedOutput } from '@/types';
 import * as constants from '@/store/constants';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
+const initEnvironment = () => {
+  const defaultEnvironmentVariables = {
+    vueAppCoin: constants.BTC_NETWORK_TESTNET,
+  };
+  EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
+};
 describe('function: isValidOptReturn', () => {
-  beforeEach(() => {
-    const defaultEnvironmentVariables = {
-      vueAppCoin: constants.BTC_NETWORK_TESTNET,
-    };
-    EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
-  });
+  beforeEach(initEnvironment);
   it('opReturn empty', async () => {
     const result = isValidOpReturn([], 'destinationAddress', 'refundAddress');
     expect(result).toBe(false);
