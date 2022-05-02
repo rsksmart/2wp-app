@@ -10,7 +10,7 @@ import {
   LiqualityResponse,
 } from '@/types';
 import { mockedData } from '../../utils/mockedData';
-import MockedBtcProvider from '../../utils/BtcProvider';
+import MockedBtcProvider from '../../utils/MockedBtcProvider';
 
 const initEnvironment = () => {
   const defaultEnvironmentVariables = {
