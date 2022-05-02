@@ -64,50 +64,52 @@ function setEnvironment(isValidOpReturn: boolean, isValidPowPegAddress?: boolean
   }
 };
 
-describe('function: createPeginTx', () => {
+describe( 'Api Service:',() => {
+  describe('function: createPeginTx', () => {
 
-  afterEach(function () {
-    sinon.restore();
-  });
+    afterEach(function () {
+      sinon.restore();
+    });
 
-  it('opReturn validation returns false, function reject', async () => {
-    setEnvironment(false);
+    it('opReturn validation returns false, function reject', async () => {
+      setEnvironment(false);
 
-    try {
-      await ApiService.createPeginTx(1,'refundBtcAddress', 'recipientRsKAddress', 'sessionId', 'feeLevel', 'changeBtcAddress');
-    } catch (e)
-    {
-      expect(e).to.be.a('error', 'Invalid data when parsing OpReturn');
-    }
-  });
+      try {
+        await ApiService.createPeginTx(1,'refundBtcAddress', 'recipientRsKAddress', 'sessionId', 'feeLevel', 'changeBtcAddress');
+      } catch (e)
+      {
+        expect(e).to.be.a('error', 'Invalid data when parsing OpReturn');
+      }
+    });
 
-  it('opReturn validation returns true, powpeg validation returns false, function reject', async () => {
-    setEnvironment(true, false);
+    it('opReturn validation returns true, powpeg validation returns false, function reject', async () => {
+      setEnvironment(true, false);
 
-    try {
-      await ApiService.createPeginTx(1,'refundBtcAddress', 'recipientRsKAddress', 'sessionId', 'feeLevel', 'changeBtcAddress');
-    } catch (e)
-    {
-      expect(e).to.be.a('error', 'Invalid data when comparing Powpeg Address');
-    }
-  });
+      try {
+        await ApiService.createPeginTx(1,'refundBtcAddress', 'recipientRsKAddress', 'sessionId', 'feeLevel', 'changeBtcAddress');
+      } catch (e)
+      {
+        expect(e).to.be.a('error', 'Invalid data when comparing Powpeg Address');
+      }
+    });
 
-  it('opReturn validation returns true, powpeg validation returns true, return promise', async () => {
-    setEnvironment(true, true);
+    it('opReturn validation returns true, powpeg validation returns true, return promise', async () => {
+      setEnvironment(true, true);
 
-    const result = await ApiService.createPeginTx(1,'refundBtcAddress', 'recipientRsKAddress', 'sessionId', 'feeLevel', 'changeBtcAddress');
-    expect(result.coin).to.be.equal('0');
-    expect(result.outputs[2].op_return_data).to.be.equal('test1');
-  });
+      const result = await ApiService.createPeginTx(1,'refundBtcAddress', 'recipientRsKAddress', 'sessionId', 'feeLevel', 'changeBtcAddress');
+      expect(result.coin).to.be.equal('0');
+      expect(result.outputs[2].op_return_data).to.be.equal('test1');
+    });
 
-  it('obtain api version, return promise', async () => {
-    setEnvironment(true, true);
-    try {
-      const result = await ApiService.getApiInformation();
-      expect(result.version).not.to.be.null;
-    } catch (e)
-    {
-      expect(e).to.be.a('error', 'Network Error');
-    }
+    it('obtain api version, return promise', async () => {
+      setEnvironment(true, true);
+      try {
+        const result = await ApiService.getApiInformation();
+        expect(result.version).not.to.be.null;
+      } catch (e)
+      {
+        expect(e).to.be.a('error', 'Network Error');
+      }
+    });
   });
 });
