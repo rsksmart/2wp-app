@@ -79,3 +79,11 @@ declare global {
       brave: unknown;
   }
 }
+export interface PsbtExtendedInput {
+  hash: string;
+  index: number;
+  witnessUtxo: {
+    value: number;
+    script: Buffer;
+  };
+}

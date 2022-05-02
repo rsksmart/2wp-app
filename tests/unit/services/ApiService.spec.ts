@@ -54,6 +54,7 @@ function setEnvironment(isValidOpReturn: boolean, isValidPowPegAddress?: boolean
   let defaultEnvironmentVariables = {
     vueAppCoin: constants.BTC_NETWORK_TESTNET,
     vueAppRskNodeHost: '',
+    vueAppApiBaseUrl: 'https://2wp-api.testnet.rsk.co',
   };
   EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
   sinon.stub(BridgeService.prototype, 'getFederationAddress').resolves('powPegAddress');
@@ -65,6 +66,8 @@ function setEnvironment(isValidOpReturn: boolean, isValidPowPegAddress?: boolean
 };
 
 describe( 'Api Service:',() => {
+  // TODO: Remove the static variable assignment when workflow set .env file
+  ApiService.baseURL = 'https://2wp-api.testnet.rsk.co';
   describe('function: createPeginTx', () => {
 
     afterEach(function () {
