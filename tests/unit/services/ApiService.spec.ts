@@ -55,6 +55,7 @@ function setEnvironment(isValidOpReturn: boolean, isValidPowPegAddress: boolean)
   const defaultEnvironmentVariables = {
     vueAppCoin: constants.BTC_NETWORK_TESTNET,
     vueAppRskNodeHost: '',
+    vueAppApiBaseUrl: 'https://2wp-api.testnet.rsk.co',
   };
   EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
   sinon.stub(BridgeService.prototype, 'getFederationAddress').resolves('powPegAddress');
