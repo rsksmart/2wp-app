@@ -2,10 +2,8 @@ import * as bitcoin from 'bitcoinjs-lib';
 import {
   LiqualityAddress,
   LiqualityGetAddressesResponse,
-  LiqualityMethods,
+  LiqualityMethods, LiqualitySignedTx,
   LiqualityTx,
-  SignedTx,
-  Tx,
   WalletAddress,
   WindowBitcoinProvider,
 } from '@/types';
@@ -13,9 +11,17 @@ import { WalletService } from '@/services';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 export default class LiqualityService extends WalletService {
-  bitcoinProvider!: WindowBitcoinProvider;
+  private bitcoinProvider!: WindowBitcoinProvider;
 
-  enabled = false;
+  private enabled = false;
+
+  constructor(testBitcoinProvider?: WindowBitcoinProvider) {
+    super();
+    if (testBitcoinProvider) {
+      this.bitcoinProvider = testBitcoinProvider;
+      this.enabled = true;
+    }
+  }
 
   private enable(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
@@ -81,10 +87,9 @@ export default class LiqualityService extends WalletService {
     return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletMaxCallLiquality;
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  sign(tx: Tx): Promise<SignedTx> {
+  sign(tx: LiqualityTx): Promise<LiqualitySignedTx> {
     const liqualityTx = tx as LiqualityTx;
-    return new Promise<SignedTx>((resolve, reject) => {
+    return new Promise<LiqualitySignedTx>((resolve, reject) => {
       this.bitcoinProvider.request({
         method: LiqualityMethods.SIGN_PSBT,
         params: [
@@ -94,12 +99,11 @@ export default class LiqualityService extends WalletService {
       })
         .then((signedBase64Psbt) => {
           const signedPsbt = bitcoin.Psbt.fromBase64(signedBase64Psbt as string);
-          signedPsbt.finalizeAllInputs();
           if (!signedPsbt.validateSignaturesOfAllInputs()) {
             reject(new Error('Invalid signature provided'));
           } else {
             resolve({
-              signedTx: signedPsbt.extractTransaction().toHex(),
+              signedTx: signedPsbt.finalizeAllInputs().extractTransaction().toHex(),
             });
           }
         })
