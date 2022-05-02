@@ -7,6 +7,7 @@ import * as PowPegAddressUtils from '@/utils/PowPegAddressUtils';
 import * as OpReturnUtils from '@/utils/OpReturnUtils';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import * as constants from '@/store/constants';
+import { ApiInformation } from '../../../src/types/ApiInformation';
 
 function getNormalizedTx(): Promise<AxiosResponse> {
   return new Promise<AxiosResponse>((resolve) => {
@@ -92,9 +93,20 @@ describe('Api Service', () => {
       }
     });
 
-    it('obtain api version, return promise', () => {
-      sinon.stub(axios, 'get').resolves({ version: '1.1.0' });
+    it('obtain api version, return promise', async () => {
+      sinon.stub(axios, 'get').resolves({ data: { version: '1.1.0' } });
       return expect(ApiService.getApiInformation()).resolves.not.toBeNull();
+
+      const result = await ApiService.createPeginTx(1, 'refundBtcAddress', 'recipientRsKAddress', 'sessionId', 'feeLevel', 'changeBtcAddress');
+      expect(result.coin).toEqual('0');
+      expect(result.outputs[2].op_return_data).toEqual('test1');
+    });
+
+    it('obtain api version, return promise', () => {
+      sinon.stub(axios, 'get').resolves({ data: { version: '1.1.0' } });
+      setEnvironment(true, true);
+      return ApiService.getApiInformation()
+        .then((apiInfo: ApiInformation) => expect(apiInfo.version).toEqual('1.1.0'));
     });
   });
 });
