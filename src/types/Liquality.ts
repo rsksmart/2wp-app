@@ -19,16 +19,10 @@ export interface LiqualityInput {
   derivationPath: string;
 }
 
-declare interface LiqualityRequestArgs {
+export interface LiqualityRequestArgs {
   method: LiqualityMethods;
   // eslint-disable-next-line max-len
   params: Array<number | boolean> | Array<walletSendTransactionParams> | Array<string | Array<LiqualityInput>>;
-}
-
-declare global {
-  interface Window {
-    bitcoin:any;
-  }
 }
 
 export interface LiqualityAddress {
@@ -54,4 +48,13 @@ export interface LiqualityTx extends Tx {
 export interface WindowBitcoinProvider {
   request(args:LiqualityRequestArgs): Promise<LiqualityResponse>;
   enable(): Promise<Array<LiqualityAddress>>;
+}
+export interface LiqualitySignedTx {
+  signedTx: string;
+}
+
+declare global {
+  interface Window {
+    bitcoin: WindowBitcoinProvider;
+  }
 }
