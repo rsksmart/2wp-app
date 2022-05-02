@@ -74,6 +74,18 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       });
       return path;
     },
+  [constants.PEGIN_TX_GET_DERIVATION_PATH_FROM_ADDRESS]:
+    (state: PegInTxState) => (address: string): string => {
+      let derivationPath = '';
+      if (state.addressList) {
+        state.addressList.forEach((walletAddress) => {
+          if (walletAddress.address === address) {
+            derivationPath = walletAddress.serializedPath;
+          }
+        });
+      }
+      return derivationPath;
+    },
   [constants.PEGIN_TX_GET_ADDRESS_PUBLIC_KEY]:
     (state: PegInTxState) => (address: string): string => {
       let publicKey = '';
