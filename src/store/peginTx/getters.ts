@@ -104,8 +104,6 @@ export const getters: GetterTree<PegInTxState, RootState> = {
         const outputsAmount = state.normalizedTx.outputs
           .map((output) => Number(output.amount))
           .reduce((prevAmount, currAmount) => prevAmount + currAmount);
-        console.log('Fee updated');
-        console.log(`inputsAmount: ${inputsAmonut} - outputsAmount: ${outputsAmount}`);
         fee = new SatoshiBig(inputsAmonut - outputsAmount, 'satoshi');
       }
       return fee;
