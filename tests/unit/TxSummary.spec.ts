@@ -59,6 +59,7 @@ describe('TxSummary', () => {
 
     const getters = {
       [constants.PEGIN_TX_GET_REFUND_ADDRESS]: () => 'n2y1xQBv3cqmRPke7QBWy52F91ZdgrYUgh',
+      [constants.PEGIN_TX_GET_SAFE_TX_FEE]: () => new SatoshiBig(0.00025400, 'satoshi'),
     };
     store = new Vuex.Store({
       modules: {

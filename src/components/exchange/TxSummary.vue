@@ -193,6 +193,8 @@ export default class TxSummary extends Vue {
 
   @Getter(constants.PEGIN_TX_GET_REFUND_ADDRESS, { namespace: 'pegInTx' }) refundAddress!: string;
 
+  @Getter(constants.PEGIN_TX_GET_SAFE_TX_FEE, { namespace: 'pegInTx' }) safeFee!: SatoshiBig;
+
   @Emit()
   switchExpand() {
     this.expanded = !this.expanded;
@@ -209,17 +211,10 @@ export default class TxSummary extends Vue {
     return amountToTransfer.toUSDFromBTCString(bitcoinPrice, this.fixedUSDDecimals);
   }
 
-  get feeBTC() {
-    let feeBTC = this.peginTxState.calculatedFees.average;
+  get feeBTC():SatoshiBig {
+    let feeBTC = this.safeFee;
     if (this.statusFee) {
       feeBTC = this.statusFee;
-    } else {
-      if (this.peginTxState.selectedFee === constants.BITCOIN_SLOW_FEE_LEVEL) {
-        feeBTC = this.peginTxState.calculatedFees.slow;
-      }
-      if (this.peginTxState.selectedFee === constants.BITCOIN_FAST_FEE_LEVEL) {
-        feeBTC = this.peginTxState.calculatedFees.fast;
-      }
     }
     return feeBTC;
   }

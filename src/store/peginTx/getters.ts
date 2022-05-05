@@ -85,16 +85,28 @@ export const getters: GetterTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_GET_SAFE_TX_FEE]:
     (state: PegInTxState): SatoshiBig => {
       let fee: SatoshiBig;
-      switch (state.selectedFee) {
-        case constants.BITCOIN_SLOW_FEE_LEVEL:
-          fee = state.calculatedFees.slow;
-          break;
-        case constants.BITCOIN_FAST_FEE_LEVEL:
-          fee = state.calculatedFees.fast;
-          break;
-        default:
-          fee = state.calculatedFees.average;
-          break;
+      if (!state.normalizedTx.inputs.length) {
+        switch (state.selectedFee) {
+          case constants.BITCOIN_SLOW_FEE_LEVEL:
+            fee = state.calculatedFees.slow;
+            break;
+          case constants.BITCOIN_FAST_FEE_LEVEL:
+            fee = state.calculatedFees.fast;
+            break;
+          default:
+            fee = state.calculatedFees.average;
+            break;
+        }
+      } else {
+        const inputsAmonut = state.normalizedTx.inputs
+          .map((input) => Number(input.amount))
+          .reduce((prevAmount, currAmount) => prevAmount + currAmount);
+        const outputsAmount = state.normalizedTx.outputs
+          .map((output) => Number(output.amount))
+          .reduce((prevAmount, currAmount) => prevAmount + currAmount);
+        console.log('Fee updated');
+        console.log(`inputsAmount: ${inputsAmonut} - outputsAmount: ${outputsAmount}`);
+        fee = new SatoshiBig(inputsAmonut - outputsAmount, 'satoshi');
       }
       return fee;
     },
