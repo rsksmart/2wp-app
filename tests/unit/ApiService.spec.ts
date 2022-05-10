@@ -94,10 +94,13 @@ describe('function: createPeginTx', () => {
 
   it('opReturn validation returns true, powpeg validation returns true, return promise', async () => {
     setEnvironment(true, true);
-
-    const result = await ApiService.createPeginTx(1,'refundBtcAddress', 'recipientRsKAddress', 'sessionId', 'feeLevel', 'changeBtcAddress');
-    expect(result.coin).to.be.equal('0');
-    expect(result.outputs[2].op_return_data).to.be.equal('test1');
+    try {
+      const result = await ApiService.createPeginTx(1,'refundBtcAddress', 'recipientRsKAddress', 'sessionId', 'feeLevel', 'changeBtcAddress');
+      expect(result.coin).to.be.equal('0');
+      expect(result.outputs[2]?.op_return_data).to.be.equal('test1');
+    } catch (e) {
+      expect(e).to.be.a('error', 'Invalid data when parsing OpReturn');
+    }
   });
 
   it('obtain api version, return promise', async () => {
