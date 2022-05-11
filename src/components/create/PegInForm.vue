@@ -57,7 +57,7 @@
 
 <script lang="ts">
 import {
-  Component, Emit, Prop, Vue,
+  Component, Emit, Vue,
 } from 'vue-property-decorator';
 import { Getter, State, Action } from 'vuex-class';
 import PegInAccountSelect from '@/components/create/PegInAccountSelect.vue';
@@ -90,8 +90,6 @@ export default class PegInForm extends Vue {
   rskAddressState = 'invalid';
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-
-  @Prop() isBackFromConfirm!: boolean;
 
   @State('pegInTx') pegInTxState!: PegInTxState;
 

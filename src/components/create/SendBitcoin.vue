@@ -10,8 +10,7 @@
                  :txBuilder="txBuilder"
                  :txId="txId" @back="backToConnectDevice"
                  @toPegInForm="toPegInForm"
-                 :confirmTxState="confirmTxState"
-                 :isBackFromConfirm="isBackFromConfirm"/>
+                 :confirmTxState="confirmTxState"/>
     </template>
     <template v-if="showDialog">
       <btc-to-rbtc-dialog :showDialog="showDialog" @closeDialog="closeDialog"/>
@@ -49,6 +48,7 @@ import TxErrorDialog from '@/components/exchange/TxErrorDialog.vue';
 import { Machine } from '@/services/utils';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
 import TxBuilder from '@/middleware/TxBuilder/TxBuilder';
+import { getClearPeginTxState } from '@/utils';
 
 @Component({
   components: {
@@ -79,8 +79,6 @@ export default class SendBitcoin extends Vue {
   txId = '';
 
   txError = '';
-
-  isBackFromConfirm = false;
 
   confirmTxState: Machine<
     'idle'
@@ -162,9 +160,9 @@ export default class SendBitcoin extends Vue {
 
   @Emit()
   toPegInForm() {
-    this.isBackFromConfirm = true;
     this.currentComponent = 'PegInForm';
     this.confirmTxState.send('idle');
+    this.addNormalizedTx(getClearPeginTxState().normalizedTx);
   }
 
   @Emit()
