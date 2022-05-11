@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Web3 from 'web3';
+import { AppNetwork } from '@/types';
 import * as constants from './store/constants';
 import App from './App.vue';
 import router from './router';
@@ -7,7 +8,6 @@ import store from './store';
 import vuetify from './plugins/vuetify';
 import '@/styles/main.scss';
 import { EnvironmentAccessorService } from './services/enviroment-accessor.service';
-import { AppNetwork } from '@/types';
 
 Vue.config.productionTip = false;
 Vue.prototype.$web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');

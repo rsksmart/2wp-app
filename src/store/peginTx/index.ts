@@ -1,9 +1,9 @@
 import { Module } from 'vuex';
+import { PegInTxState, RootState } from '@/types';
+import { getClearPeginTxState } from '@/utils/common';
 import { getters } from './getters';
 import { actions } from './actions';
 import { mutations } from './mutations';
-import { PegInTxState, RootState } from '@/types';
-import { getClearPeginTxState } from '@/utils/common';
 
 export const state: PegInTxState = getClearPeginTxState();
 
