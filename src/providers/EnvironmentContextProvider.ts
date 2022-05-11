@@ -1,8 +1,8 @@
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import { BTC_NETWORK_MAINNET, BTC_NETWORK_TESTNET } from '@/store/constants';
 import EnvironmentContextImpl from './EnvironmentContextImplMainnet';
 import EnvironmentContextImplTestnet from './EnvironmentContextImplTestnet';
 import { EnvironmentContext } from './types';
-import { BTC_NETWORK_MAINNET, BTC_NETWORK_TESTNET } from '@/store/constants';
 
 export default class EnvironmentContextProviderService {
   static getEnvironmentContext(): EnvironmentContext {
