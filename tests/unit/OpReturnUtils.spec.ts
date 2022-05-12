@@ -19,7 +19,7 @@ describe('function: isValidOptReturn', () => {
     expect(result).to.be.false;
   });
 
-  it('opReturn is not the first one value in the array', async () => {
+  it('opReturn is not the first one value in the array', () => {
     const opReturn = '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa01ccc198c15d8344c73da67a75509a85a8f4226636';
     const normalizedOutput: NormalizedOutput = {
       amount: '0',
