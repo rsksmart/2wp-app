@@ -48,6 +48,7 @@ import ConnectDevice from '@/components/exchange/ConnectDevice.vue';
 import TxErrorDialog from '@/components/exchange/TxErrorDialog.vue';
 import { Machine } from '@/services/utils';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
+import LiqualityTxBuilder from '@/middleware/TxBuilder/LiqualityTxBuilder';
 import TxBuilder from '@/middleware/TxBuilder/TxBuilder';
 
 @Component({
@@ -239,6 +240,9 @@ export default class SendBitcoin extends Vue {
         break;
       case constants.WALLET_LEDGER:
         this.txBuilder = new LedgerTxBuilder();
+        break;
+      case constants.WALLET_LIQUALITY:
+        this.txBuilder = new LiqualityTxBuilder();
         break;
       default:
         this.txBuilder = new TrezorTxBuilder();
