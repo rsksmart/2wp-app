@@ -3,7 +3,7 @@ import axios from 'axios';
 import * as rskUtils from '@rsksmart/rsk-utils';
 import * as constants from '@/store/constants';
 import {
-  ApiService, LedgerService, TrezorService,
+  ApiService, LedgerService, LiqualityService, TrezorService,
 } from '@/services';
 import SatoshiBig from '@/types/SatoshiBig';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
@@ -40,7 +40,7 @@ export const actions: ActionTree<PegInTxState, RootState> = {
         commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new LedgerService());
         break;
       case constants.WALLET_LIQUALITY:
-        commit(constants.PEGIN_TX_SET_WALLET_SERVICE, undefined);
+        commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new LiqualityService());
         break;
       default:
         commit(constants.PEGIN_TX_SET_WALLET_SERVICE, undefined);

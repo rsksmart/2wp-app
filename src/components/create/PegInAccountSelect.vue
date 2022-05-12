@@ -144,17 +144,17 @@ export default class PegInAccountSelect extends Vue {
     if (this.pegInTxState.selectedAccount) {
       this.btcAccountTypeSelected = this.pegInTxState.selectedAccount;
     }
-
+    const isLiquality = this.pegInTxState.bitcoinWallet === constants.WALLET_LIQUALITY;
     this.accountBalances = [
       {
         text: this.getAccountBalanceText(constants.BITCOIN_SEGWIT_ADDRESS),
         value: constants.BITCOIN_SEGWIT_ADDRESS,
-        disabled: false,
+        disabled: isLiquality,
       },
       {
         text: this.getAccountBalanceText(constants.BITCOIN_LEGACY_ADDRESS),
         value: constants.BITCOIN_LEGACY_ADDRESS,
-        disabled: false,
+        disabled: isLiquality,
       },
       {
         text: this.getAccountBalanceText(constants.BITCOIN_NATIVE_SEGWIT_ADDRESS),
