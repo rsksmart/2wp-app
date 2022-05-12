@@ -27,7 +27,7 @@ describe('function: isValidOptReturn', () => {
     };
     const normalizedOutputNoOpReturn: NormalizedOutput = {
       amount: '1',
-      op_return_data: "",
+      op_return_data: undefined,
     };
     const result = isValidOpReturn([normalizedOutputNoOpReturn, normalizedOutput], '0x224d0b72bab9342f898c633ef187abff8a96c0fa', 'mzBc4XEFSdzCDcTxAgf6EZXgsZWpztRhef');
     expect(result).to.be.true;
