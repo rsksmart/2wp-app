@@ -61,8 +61,7 @@ export function isValidOpReturn(
   destinationRskAddress: string,
   refundBtcAddress: string,
 ): boolean {
-
-  for (let i = 0; outputs && i < outputs.length; i++) {
+  for (let i = 0; outputs && i < outputs.length; i += 1) {
     const output: NormalizedOutput = outputs[i];
 
     if (output.op_return_data
