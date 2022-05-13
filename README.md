@@ -11,10 +11,15 @@ Create a `.env.local` file in order to store locally the required variables for 
 ```dotenv
 VUE_APP_COIN='test' ## or main
 VUE_APP_MANIFEST_EMAIL= <EMAIL_FOR_TREZOR_MANIFEST>
-VUE_APP_MANIFEST_APP_URL= <URL_FOR_TREZOR_MANIFEST> ## 'https://2waypeg.rsk.co/'
+VUE_APP_MANIFEST_APP_URL= <URL_FOR_TREZOR_MANIFEST> ## 'https://2wp-app.rsk.co/'
 VUE_APP_API_BASE_URL= <API_URL>
 VUE_APP_RSK_NODE_HOST=<RSK_NODE_HOST>
-
+## Address Calls for specific wallet
+VUE_APP_WALLET_ADDRESSES_PER_CALL_TREZOR=10
+VUE_APP_WALLET_MAX_CALLS_TREZOR=1
+VUE_APP_WALLET_ADDRESSES_PER_CALL_LEDGER=2
+VUE_APP_WALLET_MAX_CALLS_LEDGER=8
+## Analitycs tool
 VUE_APP_HOTJAR_ID=<HOT_JAR_ID_FOR_THE_ENVIRONMENT>
 ```
 ## Development mode
