@@ -62,55 +62,59 @@ function setEnvironment(isValidOpReturn: boolean, isValidPowPegAddress?: boolean
   if (isValidPowPegAddress) {
     sinon.stub(PowPegAddressUtils, 'isValidPowPegAddress').returns(isValidPowPegAddress);
   }
+  // TODO: Remove the static variable assignment when a mocked API endpoint were set
+  ApiService.baseURL = 'https://2wp-api.testnet.rsk.co';
 };
+describe('Api Service',() => {
 
-describe('function: createPeginTx', () => {
+  describe('function: createPeginTx', () => {
 
-  afterEach(function () {
-    sinon.restore();
-  });
+    afterEach(function () {
+      sinon.restore();
+    });
 
-  it('opReturn validation returns false, function reject', async () => {
-    setEnvironment(false);
+    it('opReturn validation returns false, function reject', async () => {
+      setEnvironment(false);
 
-    try {
-      await ApiService.createPeginTx(1,'refundBtcAddress', 'recipientRsKAddress', 'sessionId', 'feeLevel', 'changeBtcAddress');
-    } catch (e)
-    {
-      expect(e).to.be.a('error', 'Invalid data when parsing OpReturn');
-    }
-  });
+      try {
+        await ApiService.createPeginTx(1,'refundBtcAddress', 'recipientRsKAddress', 'sessionId', 'feeLevel', 'changeBtcAddress');
+      } catch (e)
+      {
+        expect(e).to.be.a('error', 'Invalid data when parsing OpReturn');
+      }
+    });
 
-  it('opReturn validation returns true, powpeg validation returns false, function reject', async () => {
-    setEnvironment(true, false);
+    it('opReturn validation returns true, powpeg validation returns false, function reject', async () => {
+      setEnvironment(true, false);
 
-    try {
-      await ApiService.createPeginTx(1,'refundBtcAddress', 'recipientRsKAddress', 'sessionId', 'feeLevel', 'changeBtcAddress');
-    } catch (e)
-    {
-      expect(e).to.be.a('error', 'Invalid data when comparing Powpeg Address');
-    }
-  });
+      try {
+        await ApiService.createPeginTx(1,'refundBtcAddress', 'recipientRsKAddress', 'sessionId', 'feeLevel', 'changeBtcAddress');
+      } catch (e)
+      {
+        expect(e).to.be.a('error', 'Invalid data when comparing Powpeg Address');
+      }
+    });
 
-  it('opReturn validation returns true, powpeg validation returns true, return promise', async () => {
-    setEnvironment(true, true);
-    try {
-      const result = await ApiService.createPeginTx(1,'refundBtcAddress', 'recipientRsKAddress', 'sessionId', 'feeLevel', 'changeBtcAddress');
-      expect(result.coin).to.be.equal('0');
-      expect(result.outputs[2]?.op_return_data).to.be.equal('test1');
-    } catch (e) {
-      expect(e).to.be.a('error', 'Invalid data when parsing OpReturn');
-    }
-  });
+    it('opReturn validation returns true, powpeg validation returns true, return promise', async () => {
+      setEnvironment(true, true);
+      try {
+        const result = await ApiService.createPeginTx(1,'refundBtcAddress', 'recipientRsKAddress', 'sessionId', 'feeLevel', 'changeBtcAddress');
+        expect(result.coin).to.be.equal('0');
+        expect(result.outputs[2]?.op_return_data).to.be.equal('test1');
+      } catch (e) {
+        expect(e).to.be.a('error', 'Invalid data when parsing OpReturn');
+      }
+    });
 
-  it('obtain api version, return promise', async () => {
-    setEnvironment(true, true);
-    try {
-      const result = await ApiService.getApiInformation();
-      expect(result.version).not.to.be.null;
-    } catch (e)
-    {
-      expect(e).to.be.a('error', 'Network Error');
-    }
+    it('obtain api version, return promise', async () => {
+      setEnvironment(true, true);
+      try {
+        const result = await ApiService.getApiInformation();
+        expect(result.version).not.to.be.null;
+      } catch (e)
+      {
+        expect(e).to.be.a('error', 'Network Error');
+      }
+    });
   });
 });

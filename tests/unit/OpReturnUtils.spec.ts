@@ -1,9 +1,17 @@
 import { expect } from 'chai';
 import { isValidOpReturn } from '@/utils/OpReturnUtils';
 import { NormalizedOutput } from '@/types';
+import * as constants from '../../src/store/constants';
+import { EnvironmentAccessorService } from '../../src/services/enviroment-accessor.service';
 /* eslint-disable */
 
 describe('function: isValidOptReturn', () => {
+  beforeEach(() => {
+    let defaultEnvironmentVariables = {
+      vueAppCoin: constants.BTC_NETWORK_TESTNET,
+    };
+    EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
+  });
   it('opReturn empty', async () => {
     const result = isValidOpReturn([], 'destinationAddress', 'refundAddress');
     expect(result).to.be.false;
