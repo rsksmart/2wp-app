@@ -5,13 +5,18 @@ import Vuetify from 'vuetify';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import SatoshiBig from '@/types/SatoshiBig';
 import * as constants from '@/store/constants';
+import { EnvironmentAccessorService } from '../../src/services/enviroment-accessor.service';
 
 const localVue = createLocalVue();
 let vuetify:any;
 
 describe('TxSummary', () => {
+  const defaultEnvironmentVariables = {
+    vueAppCoin: constants.BTC_NETWORK_TESTNET,
+  };
   beforeEach(() => {
     vuetify = new Vuetify();
+    EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
   });
   localVue.use(Vuex);
   const state = {
