@@ -61,6 +61,7 @@ describe('TxSummary', () => {
 
   const getters = {
     [constants.PEGIN_TX_GET_REFUND_ADDRESS]: () => 'n2y1xQBv3cqmRPke7QBWy52F91ZdgrYUgh',
+    [constants.PEGIN_TX_GET_SAFE_TX_FEE]: () => state.calculatedFees.average,
   };
   const store = new Vuex.Store({
     modules: {
@@ -85,7 +86,6 @@ describe('TxSummary', () => {
 
     const totalUSD = Big(feeUSD).plus(Big(amountUSD))
       .toFixed(2);
-
     expect(wrapper.find('#amount-usd').text()).toEqual(`USD $ ${amountUSD}`);
     expect(wrapper.find('#fee-usd').text()).toEqual(`USD $ ${feeUSD}`);
     expect(wrapper.find('#total-usd').text()).toEqual(`USD $ ${totalUSD}`);
