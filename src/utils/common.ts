@@ -41,4 +41,9 @@ export const getClearPeginTxState = (): PegInTxState => ({
     outputs: [],
   },
   walletDataReady: false,
+  statusInfo: {
+    txId: '',
+    refundAddress: '',
+    safeFee: new SatoshiBig(0, 'btc'),
+  },
 });

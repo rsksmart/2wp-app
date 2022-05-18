@@ -60,6 +60,11 @@ export interface PegInTxState {
   normalizedTx: NormalizedTx;
   walletService?: WalletService,
   walletDataReady: boolean;
+  statusInfo: {
+    txId: string;
+    refundAddress: string;
+    safeFee: SatoshiBig;
+  }
 }
 
 export interface UnusedWalletAddress {

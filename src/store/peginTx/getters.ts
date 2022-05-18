@@ -52,12 +52,16 @@ export const getters: GetterTree<PegInTxState, RootState> = {
     },
   [constants.PEGIN_TX_GET_REFUND_ADDRESS]: (state: PegInTxState) => {
     let address = '';
-    const coin = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
-    const coinPath = coin === 'main' ? "/0'" : "/1'";
-    // eslint-disable-next-line no-unused-expressions
-    state.addressList?.forEach((walletAddress) => {
-      if (walletAddress.serializedPath === `m/44'${coinPath}/0'/0/0`) address = walletAddress.address;
-    });
+    if (!state.selectedAccount) {
+      address = state.statusInfo.refundAddress;
+    } else {
+      const coin = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
+      const coinPath = coin === 'main' ? "/0'" : "/1'";
+      // eslint-disable-next-line no-unused-expressions
+      state.addressList?.forEach((walletAddress) => {
+        if (walletAddress.serializedPath === `m/44'${coinPath}/0'/0/0`) address = walletAddress.address;
+      });
+    }
     return address;
   },
   [constants.PEGIN_TX_GET_BIP44_DERIVATION_PATH_FROM_ADDRESS]:
@@ -86,16 +90,20 @@ export const getters: GetterTree<PegInTxState, RootState> = {
     (state: PegInTxState): SatoshiBig => {
       let fee: SatoshiBig;
       if (!state.normalizedTx.inputs.length) {
-        switch (state.selectedFee) {
-          case constants.BITCOIN_SLOW_FEE_LEVEL:
-            fee = state.calculatedFees.slow;
-            break;
-          case constants.BITCOIN_FAST_FEE_LEVEL:
-            fee = state.calculatedFees.fast;
-            break;
-          default:
-            fee = state.calculatedFees.average;
-            break;
+        if (!state.selectedAccount) {
+          fee = state.statusInfo.safeFee;
+        } else {
+          switch (state.selectedFee) {
+            case constants.BITCOIN_SLOW_FEE_LEVEL:
+              fee = state.calculatedFees.slow;
+              break;
+            case constants.BITCOIN_FAST_FEE_LEVEL:
+              fee = state.calculatedFees.fast;
+              break;
+            default:
+              fee = state.calculatedFees.average;
+              break;
+          }
         }
       } else {
         const inputsAmonut = state.normalizedTx.inputs
@@ -122,6 +130,8 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       }
       return new SatoshiBig('0', 'satoshi');
     },
+  [constants.PEGIN_TX_GET_STATUS_TX_ID]:
+    (state: PegInTxState) => state.statusInfo.txId,
   [constants.PEGIN_TX_GET_WALLET_SERVICE]:
     (state: PegInTxState): WalletService | undefined => state.walletService,
 };

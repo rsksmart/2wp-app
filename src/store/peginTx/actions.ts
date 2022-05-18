@@ -133,4 +133,13 @@ export const actions: ActionTree<PegInTxState, RootState> = {
     }
     return Promise.reject(new Error('Wallet service is not set'));
   },
+  [constants.PEGIN_TX_ADD_STATUS_SAFE_FEE]: ({ commit }, fee: string): void => {
+    commit(constants.PEGIN_TX_SET_STATUS_SAFE_FEE, fee);
+  },
+  [constants.PEGIN_TX_ADD_STATUS_REFUND_ADDRESS]: ({ commit }, refaundAddress: string): void => {
+    commit(constants.PEGIN_TX_SET_STATUS_REFUND_ADDRESS, refaundAddress);
+  },
+  [constants.PEGIN_TX_ADD_STATUS_TX_ID]: ({ commit }, txId: string): void => {
+    commit(constants.PEGIN_TX_SET_STATUS_TX_ID, txId);
+  },
 };
