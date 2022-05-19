@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import * as constants from '@/store/constants';
 import { getAccountType } from '@/services/utils';
 
@@ -33,7 +32,7 @@ describe('Utils', () => {
       ];
       testCase.forEach((test) => {
         expect(getAccountType(test.address, constants.BTC_NETWORK_TESTNET))
-          .to.be.eql(test.addressTypeExpected);
+          .toEqual(test.addressTypeExpected);
       });
     });
     it('should get account type on mainNet', () => {
@@ -65,7 +64,7 @@ describe('Utils', () => {
       ];
       testCase.forEach((test) => {
         expect(getAccountType(test.address, constants.BTC_NETWORK_MAINNET))
-          .to.be.eql(test.addressTypeExpected);
+          .toEqual(test.addressTypeExpected);
       });
     });
   });

@@ -5,7 +5,7 @@ import Vuetify from 'vuetify';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import SatoshiBig from '@/types/SatoshiBig';
 import * as constants from '@/store/constants';
-import { EnvironmentAccessorService } from '../../src/services/enviroment-accessor.service';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 const localVue = createLocalVue();
 let vuetify:any;

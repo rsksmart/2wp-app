@@ -1,6 +1,7 @@
+import {
+  LedgerSignedTx, TrezorSignedTx, Tx, WalletAddress,
+} from '@/types';
 import { WalletService } from '../../src/services';
-import { WalletAddress } from '../../src/types/pegInTx';
-import { LedgerSignedTx, TrezorSignedTx, Tx } from '../../src/types';
 
 interface TestCase {
   accountAddresses: WalletAddress[];
