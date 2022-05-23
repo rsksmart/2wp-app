@@ -137,26 +137,41 @@ export default class PegInAccountSelect extends Vue {
     });
   }
 
+  @Emit()
+  isAccountEnabled(accountType:BtcAccount): boolean {
+    let enabled:boolean;
+    switch (accountType) {
+      case constants.BITCOIN_SEGWIT_ADDRESS:
+        enabled = this.pegInTxState.bitcoinWallet !== constants.WALLET_LIQUALITY;
+        break;
+      case constants.BITCOIN_LEGACY_ADDRESS:
+        enabled = this.pegInTxState.bitcoinWallet !== constants.WALLET_LIQUALITY;
+        break;
+      default:
+        enabled = true;
+    }
+    return enabled;
+  }
+
   created() {
     if (this.pegInTxState.selectedAccount) {
       this.btcAccountTypeSelected = this.pegInTxState.selectedAccount;
     }
-    const isLiquality = this.pegInTxState.bitcoinWallet === constants.WALLET_LIQUALITY;
     this.accountBalances = [
       {
         text: this.getAccountBalanceText(constants.BITCOIN_SEGWIT_ADDRESS),
         value: constants.BITCOIN_SEGWIT_ADDRESS,
-        disabled: isLiquality,
+        disabled: !this.isAccountEnabled(constants.BITCOIN_SEGWIT_ADDRESS),
       },
       {
         text: this.getAccountBalanceText(constants.BITCOIN_LEGACY_ADDRESS),
         value: constants.BITCOIN_LEGACY_ADDRESS,
-        disabled: isLiquality,
+        disabled: !this.isAccountEnabled(constants.BITCOIN_LEGACY_ADDRESS),
       },
       {
         text: this.getAccountBalanceText(constants.BITCOIN_NATIVE_SEGWIT_ADDRESS),
         value: constants.BITCOIN_NATIVE_SEGWIT_ADDRESS,
-        disabled: false,
+        disabled: !this.isAccountEnabled(constants.BITCOIN_NATIVE_SEGWIT_ADDRESS),
       },
     ];
   }
