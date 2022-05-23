@@ -35,20 +35,12 @@
           <h4 class="text-center"><span class="number">2</span>Confirm funds transfer</h4>
         </v-row>
       </v-col>
-      <v-col id="instruction-3" cols="3" xl="3">
-        <v-row justify="center" class="mx-0">
-          <v-img src="@/assets/exchange/trezor/change.png" height="40" contain/>
-        </v-row>
-        <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center"><span class="number">3</span>Confirm change address</h4>
-        </v-row>
-      </v-col>
       <v-col id="instruction-4" cols="3" xl="3">
         <v-row justify="center" class="mx-0">
           <v-img src="@/assets/exchange/trezor/fee.png" height="40" contain/>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center"><span class="number">4</span>Confirm transaction fee</h4>
+          <h4 class="text-center"><span class="number">3</span>Confirm transaction fee</h4>
         </v-row>
       </v-col>
     </v-row>
@@ -94,26 +86,6 @@
           <v-row justify="center" class="mt-5 mx-0 d-lg-none">
             <span>
               {{cropAddress(rskFederationAddress)}}
-            </span>
-          </v-row>
-          <v-row justify="center" class="mt-5 mb-3 mx-0">Accept</v-row>
-        </fieldset>
-      </v-col>
-      <v-col cols="3" >
-        <fieldset class="confirmation-box">
-          <legend align="center" class="px-4">See on Ledger</legend>
-          <v-row justify="center" class="mt-5 mx-0 text-center">Review output #3</v-row>
-          <v-row justify="center" class="mt-5 mx-0 text-center">Amount: {{changeAmount}}</v-row>
-          <v-row justify="center" class="mt-5 mx-0 d-none d-lg-block">
-            <v-col class="pa-0 d-flex flex-column align-center">
-              <span v-for="value in splitString(changeAddress)" :key="value">
-                {{ value }}
-              </span>
-            </v-col>
-          </v-row>
-          <v-row justify="center" class="mt-5 mx-0 d-lg-none">
-            <span>
-              {{cropAddress(changeAddress)}}
             </span>
           </v-row>
           <v-row justify="center" class="mt-5 mb-3 mx-0">Accept</v-row>
