@@ -83,4 +83,7 @@ export const mutations: MutationTree<PegInTxState> = {
   [constants.PEGIN_TX_SET_STATUS_TX_ID]: (state, txId: string) => {
     state.statusInfo.txId = txId;
   },
+  [constants.PEGIN_TX_SET_CURRENT_VIEW]: (state, view: string) => {
+    state.currentView = view;
+  },
 };

@@ -41,6 +41,7 @@ export const getClearPeginTxState = (): PegInTxState => ({
     outputs: [],
   },
   walletDataReady: false,
+  currentView: '',
   statusInfo: {
     txId: '',
     refundAddress: '',

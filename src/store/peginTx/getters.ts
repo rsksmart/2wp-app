@@ -52,8 +52,9 @@ export const getters: GetterTree<PegInTxState, RootState> = {
     },
   [constants.PEGIN_TX_GET_REFUND_ADDRESS]: (state: PegInTxState) => {
     let address = '';
-    if (!state.selectedAccount) {
+    if (state.currentView === 'Status') {
       address = state.statusInfo.refundAddress;
+      console.log('>>>>>>>>');
     } else {
       const coin = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
       const coinPath = coin === 'main' ? "/0'" : "/1'";
@@ -90,7 +91,7 @@ export const getters: GetterTree<PegInTxState, RootState> = {
     (state: PegInTxState): SatoshiBig => {
       let fee: SatoshiBig;
       if (!state.normalizedTx.inputs.length) {
-        if (!state.selectedAccount) {
+        if (state.currentView === 'Status') {
           fee = state.statusInfo.safeFee;
         } else {
           switch (state.selectedFee) {

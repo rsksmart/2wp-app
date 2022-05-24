@@ -60,6 +60,7 @@ export interface PegInTxState {
   normalizedTx: NormalizedTx;
   walletService?: WalletService,
   walletDataReady: boolean;
+  currentView: string;
   statusInfo: {
     txId: string;
     refundAddress: string;
