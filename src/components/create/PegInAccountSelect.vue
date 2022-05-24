@@ -145,8 +145,6 @@ export default class PegInAccountSelect extends Vue {
     let enabled:boolean;
     switch (accountType) {
       case constants.BITCOIN_SEGWIT_ADDRESS:
-        enabled = this.pegInTxState.bitcoinWallet !== constants.WALLET_LIQUALITY;
-        break;
       case constants.BITCOIN_LEGACY_ADDRESS:
         enabled = this.pegInTxState.bitcoinWallet !== constants.WALLET_LIQUALITY;
         break;
