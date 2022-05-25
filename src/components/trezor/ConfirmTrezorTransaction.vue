@@ -33,12 +33,25 @@
           <h4 class="text-center"><div class="number">2</div>Confirm funds transfer</h4>
         </v-row>
       </v-col>
+      <v-col v-if="changeAmount === 0" cols="3">
+        <v-row class="mx-0">
+          <v-img src="@/assets/exchange/trezor/change.png" height="40" contain/>
+        </v-row>
+        <v-row class="mx-0 d-flex justify-center">
+          <h4 class="text-center"><div class="number">3</div>Confirm change address</h4>
+        </v-row>
+      </v-col>
       <v-col cols="3">
         <v-row class="mx-0">
           <v-img src="@/assets/exchange/trezor/fee.png" height="40" contain/>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center"><div class="number">3</div>Confirm transaction fee</h4>
+          <h4 class="text-center">
+            <div class="number">
+              {{ changeAmount === 0 ? 4 : 3 }}
+            </div>
+            Confirm transaction fee
+          </h4>
         </v-row>
       </v-col>
     </v-row>
@@ -97,6 +110,26 @@
           <v-row justify="center" class="mt-5 mx-0 d-lg-none">
             <span>
               {{cropAddress(rskFederationAddress)}}
+            </span>
+          </v-row>
+          <v-row justify="center" class="mt-5 mb-3 mx-0">Confirm</v-row>
+        </fieldset>
+      </v-col>
+      <v-col v-if="changeAmount === 0" cols="3">
+        <fieldset class="confirmation-box">
+          <legend align="center" class="px-4">See on Trezor</legend>
+          <v-row justify="center" class="mt-5 mx-0">Confirm sending</v-row>
+          <v-row justify="center" class="mt-5 mx-0 text-center">Amount: {{changeAmount}}</v-row>
+          <v-row justify="center" class="mt-5 mx-0 d-none d-lg-block">
+            <v-col class="pa-0 d-flex flex-column align-center">
+              <span v-for="value in splitString(changeAddress)" :key="value">
+                {{ value }}
+              </span>
+            </v-col>
+          </v-row>
+          <v-row justify="center" class="mt-5 mx-0 d-lg-none">
+            <span>
+              {{cropAddress(changeAddress)}}
             </span>
           </v-row>
           <v-row justify="center" class="mt-5 mb-3 mx-0">Confirm</v-row>
