@@ -136,13 +136,10 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_ADD_STATUS_SAFE_FEE]: ({ commit }, fee: string): void => {
     commit(constants.PEGIN_TX_SET_STATUS_SAFE_FEE, fee);
   },
-  [constants.PEGIN_TX_ADD_STATUS_REFUND_ADDRESS]: ({ commit }, refaundAddress: string): void => {
-    commit(constants.PEGIN_TX_SET_STATUS_REFUND_ADDRESS, refaundAddress);
+  [constants.PEGIN_TX_ADD_STATUS_REFUND_ADDRESS]: ({ commit }, refundAddress: string): void => {
+    commit(constants.PEGIN_TX_SET_STATUS_REFUND_ADDRESS, refundAddress);
   },
   [constants.PEGIN_TX_ADD_STATUS_TX_ID]: ({ commit }, txId: string): void => {
     commit(constants.PEGIN_TX_SET_STATUS_TX_ID, txId);
-  },
-  [constants.PEGIN_TX_ADD_CURRENT_VIEW]: ({ commit }, view: string): void => {
-    commit(constants.PEGIN_TX_SET_CURRENT_VIEW, view);
   },
 };

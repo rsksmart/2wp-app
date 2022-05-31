@@ -50,11 +50,12 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       }
       return address;
     },
-  [constants.PEGIN_TX_GET_REFUND_ADDRESS]: (state: PegInTxState) => {
+  [constants.PEGIN_TX_GET_REFUND_ADDRESS]:
+  (state: PegInTxState, getters:any, rootState:RootState, rootGetters: any) => {
     let address = '';
-    if (state.currentView === 'Status') {
+    const currentView = rootGetters[constants.VIEW_GET_CURRENT_VIEW];
+    if (currentView && currentView === 'Status') {
       address = state.statusInfo.refundAddress;
-      console.log('>>>>>>>>');
     } else {
       const coin = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
       const coinPath = coin === 'main' ? "/0'" : "/1'";
@@ -88,10 +89,11 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       return publicKey;
     },
   [constants.PEGIN_TX_GET_SAFE_TX_FEE]:
-    (state: PegInTxState): SatoshiBig => {
+    (state: PegInTxState, getters:any, rootState: RootState, rootGetters: any): SatoshiBig => {
       let fee: SatoshiBig;
       if (!state.normalizedTx.inputs.length) {
-        if (state.currentView === 'Status') {
+        const currentView = rootGetters[`view/${constants.VIEW_GET_CURRENT_VIEW}`];
+        if (currentView && currentView === 'Status') {
           fee = state.statusInfo.safeFee;
         } else {
           switch (state.selectedFee) {

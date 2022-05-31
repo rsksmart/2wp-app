@@ -77,13 +77,10 @@ export const mutations: MutationTree<PegInTxState> = {
   [constants.PEGIN_TX_SET_STATUS_SAFE_FEE]: (state, fee: string) => {
     state.statusInfo.safeFee = new SatoshiBig(fee, 'satoshi');
   },
-  [constants.PEGIN_TX_SET_STATUS_REFUND_ADDRESS]: (state, refoundAddress: string) => {
-    state.statusInfo.refundAddress = refoundAddress;
+  [constants.PEGIN_TX_SET_STATUS_REFUND_ADDRESS]: (state, refundAddress: string) => {
+    state.statusInfo.refundAddress = refundAddress;
   },
   [constants.PEGIN_TX_SET_STATUS_TX_ID]: (state, txId: string) => {
     state.statusInfo.txId = txId;
-  },
-  [constants.PEGIN_TX_SET_CURRENT_VIEW]: (state, view: string) => {
-    state.currentView = view;
   },
 };
