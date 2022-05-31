@@ -33,7 +33,7 @@
           <h4 class="text-center"><div class="number">2</div>Confirm funds transfer</h4>
         </v-row>
       </v-col>
-      <v-col v-if="changeAmount === 0" cols="3">
+      <v-col v-if="parseFloat(changeAmount) > 0" cols="3">
         <v-row class="mx-0">
           <v-img src="@/assets/exchange/trezor/change.png" height="40" contain/>
         </v-row>
@@ -48,7 +48,7 @@
         <v-row class="mx-0 d-flex justify-center">
           <h4 class="text-center">
             <div class="number">
-              {{ changeAmount === 0 ? 4 : 3 }}
+              {{ parseFloat(changeAmount) > 0 ? 4 : 3 }}
             </div>
             Confirm transaction fee
           </h4>
@@ -115,7 +115,7 @@
           <v-row justify="center" class="mt-5 mb-3 mx-0">Confirm</v-row>
         </fieldset>
       </v-col>
-      <v-col v-if="changeAmount === 0" cols="3">
+      <v-col v-if="parseFloat(changeAmount) > 0" cols="3">
         <fieldset class="confirmation-box">
           <legend align="center" class="px-4">See on Trezor</legend>
           <v-row justify="center" class="mt-5 mx-0">Confirm sending</v-row>
