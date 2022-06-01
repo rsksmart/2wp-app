@@ -111,4 +111,13 @@ describe('function: isValidOptReturn', () => {
     const result = isValidOpReturn([normalizedOutput], '0x224d0b72bab9342f898c633ef187abff8a96c0fa', '2MxKEf2su6FGAUfCEAHreGFQvEYrfYNHvL7');
     expect(result).to.be.false;
   });
+  it('opReturn without refund address', async () => {
+    const opReturn = '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa';
+    const normalizedOutput: NormalizedOutput = {
+      amount: '0',
+      op_return_data: opReturn,
+    };
+    const result = isValidOpReturn([normalizedOutput], '0x224d0b72bab9342f898c633ef187abff8a96c0fa', '');
+    expect(result).to.be.true;
+  });
 });
