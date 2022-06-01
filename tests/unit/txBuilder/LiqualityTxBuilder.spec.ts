@@ -13,9 +13,9 @@ const initEnvironment = () => {
 };
 describe('Liquality TxBuilder', () => {
   beforeEach(initEnvironment);
-  it('should extends TxBuilder class');
-  it('should ensure enable before each call');
-  it('should  get the specified # of address');
-  it('should sign a psbt in base64 format');
-  it('should return an error if the sign can not be verified');
+  test.todo('should extends TxBuilder class');
+  test.todo('should ensure enable before each call');
+  test.todo('should  get the specified # of address');
+  test.todo('should sign a psbt in base64 format');
+  test.todo('should return an error if the sign can not be verified');
 });

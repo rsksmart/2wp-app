@@ -49,7 +49,11 @@ import { Machine } from '@/services/utils';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
 import LiqualityTxBuilder from '@/middleware/TxBuilder/LiqualityTxBuilder';
 import TxBuilder from '@/middleware/TxBuilder/TxBuilder';
+<<<<<<< HEAD
 import { getClearPeginTxState } from '@/utils';
+=======
+import ConfirmLiqualityTransaction from '@/components/liquality/ConfirmLiqualityTransaction.vue';
+>>>>>>> Updating OpReturn verifications for outputs
 
 @Component({
   components: {
@@ -57,6 +61,7 @@ import { getClearPeginTxState } from '@/utils';
     PegInForm,
     ConfirmTrezorTransaction,
     ConfirmLedgerTransaction,
+    ConfirmLiqualityTransaction,
     TrackingId,
     ConnectDevice,
     DeviceErrorDialog,
@@ -146,6 +151,9 @@ export default class SendBitcoin extends Vue {
         switch (this.peginTxState.bitcoinWallet) {
           case constants.WALLET_LEDGER:
             this.currentComponent = 'ConfirmLedgerTransaction';
+            break;
+          case constants.WALLET_LIQUALITY:
+            this.currentComponent = 'ConfirmLiqualityTransaction';
             break;
           default:
             this.currentComponent = 'ConfirmTrezorTransaction';
