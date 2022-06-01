@@ -67,6 +67,7 @@ export default class LiqualityTxBuilder extends TxBuilder {
               },
             });
           });
+          resolve(psbtExtendedInputs);
         })
         .catch(reject);
     });
