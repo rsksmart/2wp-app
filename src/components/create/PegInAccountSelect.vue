@@ -35,11 +35,11 @@
               </p>
               <p v-if="isLedgerWallet" class="tooltip-form mb-0">
                 Listed amounts represent the balance up to the first {{maxAddressesLedger}}
-                addresses from Legacy and Segwit accounts including change.
+                addresses from your accounts including change.
               </p>
               <span v-if="!isLedgerWallet">
                       Listed amounts represent the balance up to the first {{maxAddressesTrezor}}
-                      addresses from Legacy, Segwit and Native segwit accounts including change.
+                      addresses from your accounts including change.
                     </span>
             </v-tooltip>
           </v-col>
