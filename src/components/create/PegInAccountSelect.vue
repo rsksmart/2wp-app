@@ -30,17 +30,14 @@
                   mdi-information
                 </v-icon>
               </template>
+              <span>
+                Listed amounts represent the balance up to the first
+                {{ isLedgerWallet ? maxAddressesLedger : maxAddressesTrezor }}
+                addresses from your accounts including change.
+              </span>
               <p v-if="isLedgerWallet" class="tooltip-form mb-0">
                 Native segwit is coming soon for Ledger devices!
               </p>
-              <p v-if="isLedgerWallet" class="tooltip-form mb-0">
-                Listed amounts represent the balance up to the first {{maxAddressesLedger}}
-                addresses from your accounts including change.
-              </p>
-              <span v-if="!isLedgerWallet">
-                      Listed amounts represent the balance up to the first {{maxAddressesTrezor}}
-                      addresses from your accounts including change.
-                    </span>
             </v-tooltip>
           </v-col>
           <v-col v-if="pegInTxState.loadingBalance" cols="4" class="d-flex align-start pa-0">
