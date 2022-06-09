@@ -150,6 +150,7 @@ export default class RskAddressInput extends Vue {
     let message = '';
     if (!this.isValidPegInAddress) message = 'This is an invalid address';
     else if (!this.isValidRskAddress) message = `This may not be a valid address on the ${this.environmentContext.getRskText()} network. Please check.`;
+    this.checkStep();
     return message;
   }
 
