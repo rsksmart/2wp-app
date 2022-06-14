@@ -4,21 +4,15 @@ import Big from 'big.js';
 import Vuex from 'vuex';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import SatoshiBig from '@/types/SatoshiBig';
-import { PegInTxState } from '@/store/peginTx/types';
+import * as constants from '@/store/constants';
 
 const localVue = createLocalVue();
 
-localVue.use(Vuex);
-
 describe('TxSummary', () => {
-  let state: PegInTxState;
+  let state: any;
   let store: any;
-  const factory = (values = {}) => shallowMount(TxSummary, {
-    propsData: { ...values },
-    store,
-    localVue,
-  });
   beforeEach(() => {
+    localVue.use(Vuex);
     state = {
       peginConfiguration: {
         minValue: 100000000,
@@ -44,89 +38,56 @@ describe('TxSummary', () => {
       trezorConnected: false,
       bitcoinWallet: 'WALLET_LEDGER',
       bitcoinPrice: 40537,
+      balances: {
+        legacy: new SatoshiBig(0, 'satoshi'),
+        segwit: new SatoshiBig(0, 'satoshi'),
+        nativeSegwit: new SatoshiBig(0, 'satoshi'),
+      },
+      loadingBalance: false,
+      selectedAccount: undefined,
+      calculatedFees: {
+        slow: new SatoshiBig(0.00025400, 'satoshi'),
+        average: new SatoshiBig(0.00025400, 'satoshi'),
+        fast: new SatoshiBig(0.00025400, 'satoshi'),
+      },
+      loadingFee: false,
+      selectedFee: 'BITCOIN_AVERAGE_FEE_LEVEL',
+      amountToTransfer: new SatoshiBig(0.00500000, 'btc'),
+      isValidAmountToTransfer: true,
+      rskAddressSelected: 'dfgdsg0dgs90h00nhs8996s8as5f76hgel',
     };
 
+    const getters = {
+      [constants.PEGIN_TX_GET_REFUND_ADDRESS]: () => 'n2y1xQBv3cqmRPke7QBWy52F91ZdgrYUgh',
+      [constants.PEGIN_TX_GET_SAFE_TX_FEE]: () => new SatoshiBig(0.00025400, 'satoshi'),
+    };
     store = new Vuex.Store({
       modules: {
         pegInTx: {
           state,
+          getters,
           namespaced: true,
         },
       },
     });
   });
+
   it('Check summary overflow values USD', () => {
-    const testCases = [
-      {
-        txData: {
-          amount: new SatoshiBig(500000, 'satoshi'),
-          refundAddress: 'refundAddress',
-          recipient: 'recipiendAddress',
-          feeBTC: new SatoshiBig(338, 'satoshi'),
-          change: 'ChangeAaddress',
-        },
-        price: 41671,
-        txId: '',
-        showTxId: false,
-        initialExpand: false,
-        rskFederationAddress: 'addr',
-      },
-      {
-        txData: {
-          amount: new SatoshiBig(196300000, 'satoshi'),
-          refundAddress: 'refundAddress',
-          recipient: 'recipiendAddress',
-          feeBTC: new SatoshiBig(4338, 'satoshi'),
-          change: 'ChangeAaddress',
-        },
-        price: 41671,
-        txId: '',
-        showTxId: false,
-        initialExpand: false,
-        rskFederationAddress: 'addr',
-      },
-      {
-        txData: {
-          amount: new SatoshiBig(38000000, 'satoshi'),
-          refundAddress: 'refundAddress',
-          recipient: 'recipiendAddress',
-          feeBTC: new SatoshiBig(380, 'satoshi'),
-          change: 'ChangeAaddress',
-        },
-        price: 41671,
-        txId: '',
-        showTxId: false,
-        initialExpand: false,
-        rskFederationAddress: 'addr',
-      },
-      {
-        txData: {
-          amount: new SatoshiBig(380000000, 'satoshi'),
-          refundAddress: 'refundAddress',
-          recipient: 'recipiendAddress',
-          feeBTC: new SatoshiBig(383000, 'satoshi'),
-          change: 'ChangeAaddress',
-        },
-        price: 41671,
-        txId: '',
-        showTxId: false,
-        initialExpand: false,
-        rskFederationAddress: 'addr',
-      },
-    ];
-    testCases.forEach((txSummaryProps) => {
-      const wrapper = factory(txSummaryProps);
-      const amountUSD = Big(txSummaryProps.txData.amount.toBTCString())
-        .mul(Big(state.bitcoinPrice))
-        .toFixed(2);
-      const feeUSD = Big(txSummaryProps.txData.feeBTC.toBTCString())
-        .mul(Big(state.bitcoinPrice))
-        .toFixed(2);
-      const totalUSD = Big(feeUSD).plus(Big(amountUSD))
-        .toFixed(2);
-      expect(wrapper.find('#amount-usd').text()).to.eql(`USD $ ${amountUSD}`);
-      expect(wrapper.find('#fee-usd').text()).to.eql(`USD $ ${feeUSD}`);
-      expect(wrapper.find('#total-usd').text()).to.eql(`USD $ ${totalUSD}`);
-    });
+    const wrapper = shallowMount(TxSummary, { store, localVue });
+
+    const amountUSD = Big(state.amountToTransfer.toBTCString())
+      .mul(Big(state.bitcoinPrice))
+      .toFixed(2);
+
+    const feeUSD = Big(state.calculatedFees.average.toBTCString())
+      .mul(Big(state.bitcoinPrice))
+      .toFixed(2);
+
+    const totalUSD = Big(feeUSD).plus(Big(amountUSD))
+      .toFixed(2);
+
+    expect(wrapper.find('#amount-usd').text()).to.eql(`USD $ ${amountUSD}`);
+    expect(wrapper.find('#fee-usd').text()).to.eql(`USD $ ${feeUSD}`);
+    expect(wrapper.find('#total-usd').text()).to.eql(`USD $ ${totalUSD}`);
   });
 });

@@ -21,7 +21,8 @@
           <v-img src="@/assets/exchange/trezor/rsk.png" height="40" contain/>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center"><div class="number">1</div>Confirm RSK information</h4>
+          <h4 class="text-center">
+          <div class="number">1</div>Confirm {{environmentContext.getRskText()}} information</h4>
         </v-row>
       </v-col>
       <v-col cols="3">
@@ -65,7 +66,8 @@
                 </v-icon>
               </template>
               <p class="tooltip-form mb-0">
-                The OP_RETURN is an output with information required for the RSK network.
+                The OP_RETURN is an output with information
+                required for the {{environmentContext.getRskText()}} network.
               </p>
             </v-tooltip>
           </v-row>
@@ -91,7 +93,7 @@
           <legend align="center" class="px-4">See on Trezor</legend>
           <v-row justify="center" class="mt-5 mx-0">Confirm sending</v-row>
           <v-row justify="center" class="mt-5 mx-0 text-center" >
-            Amount: {{txData.amount.toBTCTrimmedString()}}
+            Amount: {{pegInTxState.amountToTransfer.toBTCTrimmedString()}}
           </v-row>
           <v-row justify="center" class="mt-5 mx-0 d-none d-lg-block">
             <v-col class="pa-0 d-flex flex-column align-center">
@@ -136,7 +138,7 @@
             Amount: {{computedFullAmount}}
           </v-row>
           <v-row justify="center" class="mt-5 mx-0 text-center">
-            Fee: {{txData.feeBTC.toBTCTrimmedString()}}
+            Fee: {{safeFee.toBTCTrimmedString()}}
           </v-row>
           <v-row justify="center" class="mt-5 mb-3 mx-0">Confirm</v-row>
         </fieldset>
@@ -144,17 +146,16 @@
     </v-row>
     <v-divider/>
     <v-row class="mx-0 my-8">
-      <tx-summary :txData="txData" :price="price" :showTxId="false" :initial-expand="true"
-                  :rskFederationAddress="rskFederationAddress"/>
+      <tx-summary :showTxId="false" :initial-expand="true"/>
     </v-row>
     <v-row class="mx-0 my-8">
       <advanced-data :rawTx="rawTx" :initial-expand="false"/>
     </v-row>
     <v-row v-if="confirmTxState.matches(['idle', 'error', 'goingHome'])" class="ma-0">
       <v-col cols="2" class="d-flex justify-start ma-0 py-0">
-        <v-btn rounded outlined color="#00B520" width="110" @click="backHome"
+        <v-btn rounded outlined color="#00B520" width="110" @click="toPegInForm"
                :disabled="confirmTxState.matches(['error', 'goingHome', 'loading'])">
-          <span>Go home</span>
+          <span>Back</span>
         </v-btn>
       </v-col>
       <v-col cols="10" class="d-flex justify-end ma-0 py-0">
@@ -182,14 +183,20 @@ import {
   Component, Emit, Prop,
   Vue,
 } from 'vue-property-decorator';
+import { Getter, State, Action } from 'vuex-class';
 import TrezorTxBuilder from '@/middleware/TxBuilder/TrezorTxBuilder';
-import { NormalizedTx, TxData } from '@/types';
+import {
+  TrezorSignedTx, TrezorTx,
+} from '@/types';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import ApiService from '@/services/ApiService';
 import SatoshiBig from '@/types/SatoshiBig';
 import AdvancedData from '@/components/exchange/AdvancedData.vue';
-import { WalletService } from '@/services/WalletService';
+import { WalletService } from '@/services';
 import { Machine } from '@/services/utils';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
+import { PegInTxState } from '@/types/pegInTx';
+import * as constants from '@/store/constants';
 
 @Component({
   components: {
@@ -197,46 +204,47 @@ import { Machine } from '@/services/utils';
     AdvancedData,
   },
 })
-export default class ConfirmTransaction extends Vue {
+export default class ConfirmTrezorTransaction extends Vue {
   txId = '';
 
-  txError = '';
+  rawTx = '';
 
-  confirmTxState: Machine<
+  @Prop() confirmTxState!: Machine<
     'idle'
     | 'loading'
     | 'error'
     | 'goingHome'
-    > = new Machine('idle');
-
-  rawTx = '';
-
-  @Prop() tx!: NormalizedTx;
+  >;
 
   @Prop() txBuilder!: TrezorTxBuilder;
 
-  @Prop() walletService!: WalletService;
+  @State('pegInTx') pegInTxState!: PegInTxState;
 
-  @Prop() txData!: TxData;
+  @Action(constants.PEGIN_TX_STOP_ASKING_FOR_BALANCE, { namespace: 'pegInTx' }) stopAskingForBalance !: () => Promise<void>;
 
-  @Prop() price!: number;
+  @Getter(constants.PEGIN_TX_GET_SAFE_TX_FEE, { namespace: 'pegInTx' }) safeFee!: SatoshiBig;
+
+  @Getter(constants.PEGIN_TX_GET_WALLET_SERVICE, { namespace: 'pegInTx' }) walletService!: WalletService;
+
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
   @Emit('successConfirmation')
   async toTrackId() {
+    let txError = '';
     this.confirmTxState.send('loading');
     await this.walletService.stopAskingForBalance()
-      .then(() => this.txBuilder.buildTx())
-      .then(() => this.txBuilder.sign())
-      .then((trezorSignedTx) => ApiService
+      .then(() => this.txBuilder.buildTx(this.pegInTxState.normalizedTx))
+      .then((tx: TrezorTx) => this.walletService.sign(tx) as Promise<TrezorSignedTx>)
+      .then((trezorSignedTx: TrezorSignedTx) => ApiService
         .broadcast(trezorSignedTx.payload.serializedTx))
       .then((txId) => {
         this.txId = txId;
       })
       .catch((err) => {
         this.confirmTxState.send('error');
-        this.txError = err.message;
+        txError = err.message;
       });
-    return [this.txError, this.txId];
+    return [txError, this.txId];
   }
 
   backHome() {
@@ -261,36 +269,38 @@ export default class ConfirmTransaction extends Vue {
   }
 
   get opReturnData(): string {
-    const opReturnDataOutput = this.tx?.outputs[0] ?? { script_type: '' };
+    const opReturnDataOutput = this.pegInTxState.normalizedTx.outputs[0] ?? { script_type: '' };
     return opReturnDataOutput.op_return_data
       ? `${opReturnDataOutput.op_return_data.substr(0, 45)}...`
       : 'OP_RETURN data not found';
   }
 
   get rskFederationAddress():string {
-    return this.tx?.outputs[1]?.address?.trim() ?? 'RSK Powpeg address not found';
+    return this.pegInTxState.normalizedTx.outputs[1]?.address?.trim() ?? `${this.environmentContext.getBtcText()} Powpeg address not found`;
   }
 
   get changeAddress(): string {
-    return this.txBuilder.changeAddress !== ''
-      ? this.txBuilder.changeAddress
-      : 'Change address not found';
+    const [, , change] = this.pegInTxState.normalizedTx.outputs;
+    if (change && change.address) {
+      return change.address;
+    }
+    return 'Change address not found';
   }
 
   get changeAmount(): string {
-    const changeAmount = new SatoshiBig(this.tx?.outputs[2]?.amount ?? 0, 'satoshi');
+    const changeAmount = new SatoshiBig(this.pegInTxState.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
     return changeAmount.toBTCTrimmedString();
   }
 
   get computedFullAmount(): string {
-    const changeAmount = new SatoshiBig(this.tx?.outputs[2]?.amount ?? 0, 'satoshi');
-    return this.txData.amount.plus(this.txData.feeBTC)
+    const changeAmount = new SatoshiBig(this.pegInTxState.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
+    return this.pegInTxState.amountToTransfer.plus(this.safeFee)
       .plus(changeAmount)
       .toBTCTrimmedString();
   }
 
   async created() {
-    this.rawTx = await this.txBuilder.getUnsignedRawTx();
+    this.rawTx = await this.txBuilder.getUnsignedRawTx(this.pegInTxState.normalizedTx);
   }
 }
 </script>

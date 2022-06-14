@@ -5,7 +5,8 @@
       <v-row justify="center" class="mx-0">
         <v-col>
           <v-row class="mx-0 mb-5 d-flex justify-center">
-            <h2>Bridging BTC and RBTC</h2>
+            <h2>Bridging {{environmentContext.getBtcTicker()}} and
+            {{environmentContext.getRbtcTicker()}}</h2>
           </v-row>
           <template>
             <v-row class="mx-0 mt-10 d-flex justify-center">
@@ -14,7 +15,7 @@
             <v-row justify="center" class="ma-0">
               <v-col cols="4" class="d-flex justify-end pb-0">
                 <v-btn @click="selectPegIn" :disabled="!isAllowedBrowser" outlined
-                       v-bind:class="[ this.btnWalletClass, BTC2RBTC ? 'selected' : '' ]">
+                       v-bind:class="[ this.btnWalletClass, btcToRbtc ? 'selected' : '' ]">
                   <div>
                     <v-row class="mx-0 d-flex justify-center">
                       <v-col/>
@@ -30,39 +31,43 @@
                       <v-col/>
                     </v-row>
                     <v-row class="mx-0 d-flex justify-center">
-                      <span class="wallet-button-content">BTC to RBTC</span>
+                      <span class="wallet-button-content">{{environmentContext.getBtcTicker()}} to
+                      {{environmentContext.getRbtcTicker()}}</span>
                     </v-row>
                   </div>
                 </v-btn>
               </v-col>
               <v-col cols="4" class="d-flex justify-start pb-0">
-                <div class="custom-tooltip">
-                  <v-col class="ma-0 pa-0" cols="auto">
-                    <v-btn class="wallet-button-disabled mb-0" outlined disabled>
-                      <div>
-                        <v-row class="mx-0 d-flex justify-center">
-                          <v-col/>
-                          <v-col class="pa-0 d-flex align-center">
-                            <v-img src="@/assets/exchange/rbtc-disable.png" height="40" contain/>
-                          </v-col>
-                          <v-col class="pa-0 d-flex align-center">
-                            <v-icon color="#B5CAB8">mdi-arrow-right</v-icon>
-                          </v-col>
-                          <v-col class="pa-0 d-flex align-center">
-                            <v-img src="@/assets/exchange/btc-disable.png" height="40" contain/>
-                          </v-col>
-                          <v-col/>
-                        </v-row>
-                        <v-row class="mx-0 d-flex justify-center">
-                      <span class="gray-greenish">
-                        RBTC to BTC
-                      </span>
-                        </v-row>
-                      </div>
-                    </v-btn>
-                  </v-col>
-                  <span class="tooltiptext">Coming soon</span>
-                </div>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-col  v-bind="attrs" v-on="on" class="ma-0 pa-0" cols="auto">
+                      <v-btn class="wallet-button-disabled mb-0" outlined disabled>
+                        <div>
+                          <v-row class="mx-0 d-flex justify-center">
+                            <v-col/>
+                            <v-col class="pa-0 d-flex align-center">
+                              <v-img src="@/assets/exchange/rbtc-disable.png" height="40" contain/>
+                            </v-col>
+                            <v-col class="pa-0 d-flex align-center">
+                              <v-icon color="#B5CAB8">mdi-arrow-right</v-icon>
+                            </v-col>
+                            <v-col class="pa-0 d-flex align-center">
+                              <v-img src="@/assets/exchange/btc-disable.png" height="40" contain/>
+                            </v-col>
+                            <v-col/>
+                          </v-row>
+                          <v-row class="mx-0 d-flex justify-center">
+                        <span class="gray-greenish">
+                          {{environmentContext.getRbtcTicker()}} to
+                          {{environmentContext.getBtcTicker()}}
+                        </span>
+                          </v-row>
+                        </div>
+                      </v-btn>
+                    </v-col>
+                  </template>
+                  <span>Coming soon</span>
+                </v-tooltip>
               </v-col>
             </v-row>
             <v-row class="mx-0 mt-10 d-flex justify-center">
@@ -105,13 +110,15 @@
 
 <script lang="ts">
 import {
-  Vue, Component, Emit, Prop,
+  Vue, Component, Emit,
 } from 'vue-property-decorator';
 import * as Bowser from 'bowser';
 import { Action, State } from 'vuex-class';
 import SelectBitcoinWallet from '@/components/exchange/SelectBitcoinWallet.vue';
 import * as constants from '@/store/constants';
-import { PegInTxState } from '@/store/peginTx/types';
+import { PegInTxState } from '@/types/pegInTx';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
+import { SessionState, TransactionType } from '@/types/session';
 
 @Component({
   components: {
@@ -119,35 +126,33 @@ import { PegInTxState } from '@/store/peginTx/types';
   },
 })
 export default class Home extends Vue {
-  @Prop({ default: '' }) peg!: string;
-
-  BTC2RBTC = false;
-
-  RBTC2BTC = false;
-
   STATUS = false;
 
   browser = Bowser.getParser(window.navigator.userAgent);
 
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+
   @State('pegInTx') peginTxState!: PegInTxState;
+
+  @State('web3Session') sessionState!: SessionState;
 
   @Action(constants.PEGIN_TX_CLEAR_STATE, { namespace: 'pegInTx' }) clear !: () => void;
 
   @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) init !: () => Promise<void>;
 
-  get showWallet(): boolean {
-    return this.RBTC2BTC || this.BTC2RBTC;
+  @Action(constants.SESSION_ADD_TX_TYPE, { namespace: 'web3Session' }) addPeg!: (peg: TransactionType) => void;
+
+  get btcToRbtc(): boolean {
+    return this.sessionState.txType === constants.PEG_IN_TRANSACTION_TYPE;
   }
 
-  @Emit()
-  reset(): void {
-    this.BTC2RBTC = false;
-    this.RBTC2BTC = false;
+  get rbtcToBtc(): boolean {
+    return this.sessionState.txType === constants.PEG_OUT_TRANSACTION_TYPE;
   }
 
   @Emit()
   selectPegIn(): void {
-    this.BTC2RBTC = true;
+    this.addPeg(constants.PEG_IN_TRANSACTION_TYPE);
     this.$router.push({ name: 'PegIn' });
   }
 
@@ -159,14 +164,13 @@ export default class Home extends Vue {
 
   async created() {
     this.clear();
+    this.addPeg(undefined);
     await this.init();
     this.STATUS = false;
-    this.BTC2RBTC = this.peg === 'BTC2RBTC';
-    this.RBTC2BTC = this.peg === 'RBTC2BTC';
   }
 
   get isAllowedBrowser() {
-    return this.browser.getBrowserName() === 'Chrome' && !window.navigator.brave;
+    return this.browser.getBrowserName() === 'Chrome' || window.navigator.brave;
   }
 
   get btnWalletClass() {

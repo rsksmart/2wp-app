@@ -6,14 +6,13 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
-    "test:e2e": "vue-cli-service test:e2e",
     "lint": "vue-cli-service lint",
     "scanner": "npx sonar-scanner"
   },
   "dependencies": {
     "@ledgerhq/hw-app-btc": "^5.51.1",
     "@ledgerhq/hw-transport-webusb": "^5.46.0",
-    "@rsksmart/rlogin": "^1.1.1",
+    "@rsksmart/rlogin": "^1.3.0",
     "@rsksmart/rsk-precompiled-abis": "^4.0.2-IRIS",
     "@rsksmart/rsk-utils": "^1.1.0",
     "@types/big.js": "^6.1.1",

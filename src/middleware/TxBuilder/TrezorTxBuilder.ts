@@ -1,43 +1,29 @@
 import { TxInputType, TxOutputType } from 'trezor-connect';
-import TrezorTxSigner from '@/middleware/TxSigner/TrezorTxSigner';
-import { WalletAddress } from '@/store/peginTx/types';
+import { WalletAddress } from '@/types/pegInTx';
 import {
-  NormalizedInput, NormalizedOutput, TrezorSignedTx, TrezorTx,
+  InputScriptType,
+  NormalizedInput, NormalizedOutput, NormalizedTx, TrezorTx,
 } from '@/types';
 import { getAccountType } from '@/services/utils';
 import store from '../../store';
 import * as constants from '@/store/constants';
 import TxBuilder from './TxBuilder';
-import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 export default class TrezorTxBuilder extends TxBuilder {
   private tx!: TrezorTx;
 
-  constructor() {
-    super();
-    this.signer = new TrezorTxSigner();
-  }
-
-  buildTx(): Promise<TrezorTx> {
-    return new Promise<TrezorTx>((resolve, reject) => {
+  buildTx(normalizedTx: NormalizedTx): Promise<TrezorTx> {
+    return new Promise<TrezorTx>((resolve) => {
       const { coin } = this;
-      if (this.normalizedTx) {
-        const tx = {
-          coin,
-          inputs: TrezorTxBuilder.getInputs(this.normalizedTx.inputs),
-          outputs: TrezorTxBuilder.getOutputs(this.normalizedTx.outputs),
-          version: constants.BITCOIN_TX_VERSION,
-        };
-        this.tx = tx;
-        resolve(tx);
-      } else {
-        reject(new Error('There is no Normalized transaction created'));
-      }
+      const tx = {
+        coin,
+        inputs: this.getInputs(normalizedTx.inputs),
+        outputs: TrezorTxBuilder.getOutputs(normalizedTx.outputs),
+        version: constants.BITCOIN_TX_VERSION,
+      };
+      this.tx = tx;
+      resolve(tx);
     });
-  }
-
-  public sign(): Promise<TrezorSignedTx> {
-    return this.signer.sign(this.tx) as Promise<TrezorSignedTx>;
   }
 
   static getOutputs(outputs: NormalizedOutput[]): TxOutputType[] {
@@ -57,7 +43,7 @@ export default class TrezorTxBuilder extends TxBuilder {
     });
   }
 
-  private static getInputs(inputs: NormalizedInput[]): TxInputType[] {
+  private getInputs(inputs: NormalizedInput[]): TxInputType[] {
     return inputs.map((input) => ({
       address_n: TrezorTxBuilder.getPathFromAddress(input.address),
       prev_hash: input.prev_hash,
@@ -76,11 +62,8 @@ export default class TrezorTxBuilder extends TxBuilder {
     return path;
   }
 
-  private static getScriptType(address: string): 'SPENDP2SHWITNESS' | 'SPENDADDRESS' | 'SPENDWITNESS' {
-    const accType = getAccountType(
-      address,
-      EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
-    );
+  private getScriptType(address: string): InputScriptType {
+    const accType = getAccountType(address, this.coin);
     switch (accType) {
       case constants.BITCOIN_SEGWIT_ADDRESS:
         return 'SPENDP2SHWITNESS';

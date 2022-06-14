@@ -5,8 +5,8 @@ import axios, { AxiosResponse } from 'axios';
 import sinon from 'sinon';
 import { expect } from 'chai';
 import { BridgeService } from '@/services/BridgeService';
-import * as PowPegAddressUtils from '@/services/PowPegAddressUtils';
-import * as OpReturnUtils from '@/services/OpReturnUtils';
+import * as PowPegAddressUtils from '@/utils/PowPegAddressUtils';
+import * as OpReturnUtils from '@/utils/OpReturnUtils';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import * as constants from '@/store/constants';
 
@@ -100,4 +100,14 @@ describe('function: createPeginTx', () => {
     expect(result.outputs[2].op_return_data).to.be.equal('test1');
   });
 
+  it('obtain api version, return promise', async () => {
+    setEnvironment(true, true);
+    try {
+      const result = await ApiService.getApiInformation();
+      expect(result.version).not.to.be.null;
+    } catch (e)
+    {
+      expect(e).to.be.a('error', 'Network Error');
+    }
+  });
 });

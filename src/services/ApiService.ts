@@ -1,11 +1,12 @@
 import axios from 'axios';
-import { WalletAddress, PeginConfiguration } from '@/store/peginTx/types';
-import { AccountBalance, FeeAmountData, NormalizedTx } from '@/types';
-import { PeginStatus } from '@/store/types';
-import { isValidOpReturn } from './OpReturnUtils';
-import { isValidPowPegAddress } from './PowPegAddressUtils';
+import { WalletAddress, PeginConfiguration } from '@/types/pegInTx';
+import {
+  AccountBalance, AddressStatus, FeeAmountData, NormalizedTx, PeginStatus,
+} from '@/types';
+import { isValidOpReturn, isValidPowPegAddress } from '@/utils';
 import { BridgeService } from '@/services/BridgeService';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import { ApiInformation } from '@/types/ApiInformation';
 
 export default class ApiService {
   static baseURL = EnvironmentAccessorService.getEnvironmentVariables().vueAppApiBaseUrl;
@@ -117,11 +118,19 @@ export default class ApiService {
     });
   }
 
-  public static areUnusedAddresses(addressList: string[]): Promise<boolean> {
-    return new Promise((resolve, reject) => {
+  public static areUnusedAddresses(addressList: string[]): Promise<AddressStatus[]> {
+    return new Promise<AddressStatus[]>((resolve, reject) => {
       axios.post(`${this.baseURL}/unusedAddreses`, {
         addressList,
       })
+        .then((response) => resolve(response.data.data))
+        .catch(reject);
+    });
+  }
+
+  public static getApiInformation(): Promise<ApiInformation> {
+    return new Promise<ApiInformation>((resolve, reject) => {
+      axios.get(`${this.baseURL}/api`)
         .then((response) => resolve(response.data))
         .catch(reject);
     });

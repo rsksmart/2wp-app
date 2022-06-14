@@ -21,7 +21,10 @@
           <v-img src="@/assets/exchange/trezor/rsk.png" height="40" contain/>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center"><span class="number">1</span>Confirm RSK information</h4>
+          <h4 class="text-center">
+            <span class="number">1</span>
+            Confirm {{environmentContext.getRskText()}} information
+          </h4>
         </v-row>
       </v-col>
       <v-col id="instruction-2" cols="3" xl="3">
@@ -66,7 +69,8 @@
                 </v-icon>
               </template>
               <p class="tooltip-form mb-0">
-                The OP_RETURN is an output with information required for the RSK network.
+                The OP_RETURN is an output with information required for the
+                {{environmentContext.getRskText()}} network.
               </p>
             </v-tooltip>
           </v-row>
@@ -78,7 +82,7 @@
           <legend align="center" class="px-4">See on Ledger</legend>
           <v-row justify="center" class="mt-5 mx-0 text-center">Review output #2</v-row>
           <v-row justify="center" class="mt-5 mx-0 text-center">
-            Amount: {{txData.amount.toBTCTrimmedString()}}
+            Amount: {{pegInTxState.amountToTransfer.toBTCTrimmedString()}}
           </v-row>
           <v-row justify="center" class="mt-5 mx-0 d-none d-lg-block">
             <v-col class="pa-0 d-flex flex-column align-center">
@@ -120,7 +124,7 @@
           <legend align="center" class="px-4">See on Ledger</legend>
           <v-row justify="center" class="mt-5 mx-0 text-center">Confirm transaction</v-row>
           <v-row justify="center" class="mt-5 mx-0 text-center" >
-            Fees: {{txData.feeBTC.toBTCTrimmedString()}}
+            Fees: {{safeFee.toBTCTrimmedString()}}
           </v-row>
           <v-row justify="center" class="mt-5 mb-3 mx-0">Accept and send</v-row>
         </fieldset>
@@ -128,17 +132,16 @@
     </v-row>
     <v-divider/>
     <v-row class="mx-0 my-8">
-      <tx-summary :txData="txData" :price="price" :showTxId="false" :initial-expand="true"
-                  :rskFederationAddress="rskFederationAddress"/>
+      <tx-summary :showTxId="false" :initial-expand="true"/>
     </v-row>
     <v-row class="mx-0 my-8">
       <advanced-data :rawTx="rawTx" :initial-expand="false"/>
     </v-row>
     <v-row v-if="confirmTxState.matches(['idle', 'error', 'goingHome'])" class="ma-0">
       <v-col cols="2" class="d-flex justify-start ma-0 py-0">
-        <v-btn rounded outlined color="#00B520" width="110" @click="backHome"
+        <v-btn rounded outlined color="#00B520" width="110" @click="toPegInForm"
                :disabled="confirmTxState.matches(['error', 'goingHome', 'loading'])">
-          <span>Go home</span>
+          <span>Back</span>
         </v-btn>
       </v-col>
       <v-col cols="10" class="d-flex justify-end ma-0 py-0">
@@ -166,14 +169,20 @@ import {
   Component, Emit, Prop,
   Vue,
 } from 'vue-property-decorator';
-import { NormalizedTx, TxData } from '@/types';
+import { Getter, State, Action } from 'vuex-class';
+import {
+  LedgerTx, LedgerSignedTx,
+} from '@/types';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import ApiService from '@/services/ApiService';
 import AdvancedData from '@/components/exchange/AdvancedData.vue';
 import SatoshiBig from '@/types/SatoshiBig';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
-import { WalletService } from '@/services/WalletService';
+import { WalletService } from '@/services';
 import { Machine } from '@/services/utils';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
+import { PegInTxState } from '@/types/pegInTx';
+import * as constants from '@/store/constants';
 
 @Component({
   components: {
@@ -184,58 +193,65 @@ import { Machine } from '@/services/utils';
 export default class ConfirmLedgerTransaction extends Vue {
   txId = '';
 
-  txError = '';
+  rawTx = '';
 
-  confirmTxState: Machine<
+  @Prop() confirmTxState!: Machine<
     'idle'
     | 'loading'
     | 'error'
-    | 'goingHome'
-    > = new Machine('idle');
-
-  rawTx = '';
-
-  @Prop() tx!: NormalizedTx;
+  >;
 
   @Prop() txBuilder!: LedgerTxBuilder;
 
-  @Prop() walletService!: WalletService;
+  @State('pegInTx') pegInTxState!: PegInTxState;
 
-  @Prop() txData!: TxData;
+  @Getter(constants.PEGIN_TX_GET_SAFE_TX_FEE, { namespace: 'pegInTx' }) safeFee!: SatoshiBig;
 
-  @Prop() price!: number;
+  @Action(constants.PEGIN_TX_STOP_ASKING_FOR_BALANCE, { namespace: 'pegInTx' }) stopAskingForBalance !: () => Promise<void>;
+
+  @Getter(constants.PEGIN_TX_GET_WALLET_SERVICE, { namespace: 'pegInTx' }) walletService!: WalletService;
+
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
   @Emit('successConfirmation')
   async toTrackId() {
+    const LEDGER_STATUS_CODES = { TRANSACTION_CANCELLED_BY_USER: 27013, DEVICE_LOCKED: 27010 };
+    let txError = '';
     this.confirmTxState.send('loading');
     await this.walletService.stopAskingForBalance()
-      .then(() => this.txBuilder.buildTx())
-      .then(() => this.txBuilder.sign())
-      .then((tx) => ApiService
+      .then(() => {
+        if (this.pegInTxState.selectedAccount) {
+          return this.txBuilder
+            .buildTx(this.pegInTxState.normalizedTx, this.pegInTxState.selectedAccount);
+        }
+        throw new Error('The account type is not set');
+      })
+      .then((ledgerTx: LedgerTx) => this.walletService.sign(ledgerTx) as Promise<LedgerSignedTx>)
+      .then((tx: LedgerSignedTx) => ApiService
         .broadcast(tx.signedTx))
       .then((txId) => {
         this.txId = txId;
       })
       .catch((err) => {
         this.confirmTxState.send('error');
-        if (err.statusCode === 27013) {
-          this.txError = 'Transaction cancelled by user.';
-        } else {
-          this.txError = err.message;
+        switch (err.statusCode) {
+          case LEDGER_STATUS_CODES.DEVICE_LOCKED:
+            txError = 'Please unlock your Ledger device.';
+            break;
+          case LEDGER_STATUS_CODES.TRANSACTION_CANCELLED_BY_USER:
+            txError = 'Transaction cancelled by user.';
+            break;
+          default:
+            txError = err.message;
+            break;
         }
       });
-    return [this.txError, this.txId];
-  }
-
-  backHome() {
-    this.confirmTxState.send('goingHome');
-    this.$router.go(0);
+    return [txError, this.txId];
   }
 
   @Emit('toPegInForm')
-  async toPegInForm() {
+  toPegInForm() {
     this.confirmTxState.send('loading');
-    return 'SendBitcoinForm';
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -249,22 +265,24 @@ export default class ConfirmLedgerTransaction extends Vue {
   }
 
   get rskFederationAddress():string {
-    return this.tx?.outputs[1]?.address?.trim() ?? 'RSK Powpeg address not found';
+    return this.pegInTxState.normalizedTx.outputs[1]?.address?.trim() ?? `${this.environmentContext.getBtcText()} Powpeg address not found`;
   }
 
   get changeAddress(): string {
-    return this.txBuilder.changeAddress !== ''
-      ? this.txBuilder.changeAddress
-      : 'Change address not found';
+    const [, , change] = this.pegInTxState.normalizedTx.outputs;
+    if (change && change.address) {
+      return change.address;
+    }
+    return 'Change address not found';
   }
 
   get changeAmount() {
-    const changeAmount = new SatoshiBig(this.tx?.outputs[2]?.amount ?? 0, 'satoshi');
+    const changeAmount = new SatoshiBig(this.pegInTxState.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
     return changeAmount.toBTCTrimmedString();
   }
 
   async created() {
-    this.rawTx = await this.txBuilder.getUnsignedRawTx();
+    this.rawTx = await this.txBuilder.getUnsignedRawTx(this.pegInTxState.normalizedTx);
   }
 }
 </script>

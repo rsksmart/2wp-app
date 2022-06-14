@@ -12,13 +12,6 @@ const routes: Array<RouteConfig> = [
     path: '/',
     name: 'Home',
     component: Home,
-    props: (route) => ({ peg: route.params.peg }),
-  },
-  {
-    path: '/exchange',
-    name: 'Exchange',
-    component: () => import(/* webpackChunkName: "exchange" */ '../views/Exchange.vue'),
-    props: (route) => ({ selectedWalletComponent: route.params.selectedWallet }),
   },
   {
     path: '/status/txId/:txId',
@@ -36,6 +29,11 @@ const routes: Array<RouteConfig> = [
     name: 'PegIn',
     component: () => import(/* webpackChunkName: "transactions" */ '../views/PegIn.vue'),
   },
+  {
+    path: '/pegin/:wallet/create',
+    name: 'Create',
+    component: () => import(/* webpackChunkName: "transactions" */ '../views/Create.vue'),
+  },
 ];
 
 const router = new VueRouter({
@@ -45,7 +43,7 @@ const router = new VueRouter({
 });
 router.beforeResolve((to, from, next) => {
   const inTxFlow = store.getters[`web3Session/${constants.SESSION_IN_TX_FLOW}`];
-  if (to.name === 'Exchange' && !inTxFlow) next({ name: 'Home' });
+  if (to.name === 'Create' && !inTxFlow) next({ name: 'Home' });
   else next();
 });
 

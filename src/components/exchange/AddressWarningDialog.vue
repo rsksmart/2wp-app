@@ -10,7 +10,8 @@
         </v-row>
         <v-col offset="1" cols="10">
           <p class="justify-center">
-            {{address}} may not be a valid address on the RSK network.
+            {{address}} may not be a valid address on the
+            {{environmentContext.getRskText()}} network.
             Do you want to continue?
           </p>
         </v-col>
@@ -37,6 +38,7 @@ import {
   Component, Prop, Emit, Vue,
 } from 'vue-property-decorator';
 import WarningImage from '@/assets/warning.png';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
 @Component
 export default class AddressWarningDialog extends Vue {
@@ -45,6 +47,8 @@ export default class AddressWarningDialog extends Vue {
   @Prop() address!: string;
 
   iconPath = WarningImage;
+
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
   @Emit('continue')
   send() {

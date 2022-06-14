@@ -414,11 +414,11 @@ import { Action, Getter, State } from 'vuex-class';
 import * as rskUtils from '@rsksmart/rsk-utils';
 import Big from 'big.js';
 import * as constants from '@/store/constants';
-import { AccountBalance, FeeAmountData, PegInFormValues } from '@/types';
+import {
+  AccountBalance, FeeAmountData, PegInFormValues, PegInTxState, SessionState,
+} from '@/types';
 import Wallet from '@/components/web3/Wallet.vue';
 import AddressWarningDialog from '@/components/exchange/AddressWarningDialog.vue';
-import { SessionState } from '@/store/session/types';
-import { PegInTxState } from '@/store/peginTx/types';
 import { Machine } from '@/services/utils';
 import SatoshiBig from '@/types/SatoshiBig';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';

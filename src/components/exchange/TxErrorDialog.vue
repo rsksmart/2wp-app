@@ -15,6 +15,9 @@
           <v-btn width="200" height="50" dense outlined rounded color="#00B520" @click="toExchange">
             <span class="greenish">Return to home</span>
           </v-btn>
+          <v-btn width="145" height="50" dense rounded color="#00B520" @click="closeErrorDialog">
+            <span class="whiteish">Retry</span>
+          </v-btn>
         </v-row>
       </v-col>
     </v-card>
@@ -37,8 +40,8 @@ export default class TxErrorDialog extends Vue {
 
   @Emit()
   toExchange() {
-    if (this.$router.currentRoute.name === 'Exchange') this.$router.go(0);
-    this.$router.push({ name: 'Exchange' });
+    if (this.$router.currentRoute.name === 'Create') this.$router.go(0);
+    this.$router.push({ name: 'Home' });
   }
 
   @Emit('closeErrorDialog')

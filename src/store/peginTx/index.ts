@@ -2,11 +2,10 @@ import { Module } from 'vuex';
 import { getters } from './getters';
 import { actions } from './actions';
 import { mutations } from './mutations';
-import { PegInTxState } from './types';
-import { RootState } from '../types';
-import * as constants from '@/store/constants';
+import { PegInTxState, RootState } from '@/types';
+import { getClearPeginTxState } from '@/utils/common';
 
-export const state: PegInTxState = constants.getClearPeginTxState();
+export const state: PegInTxState = getClearPeginTxState();
 
 const namespaced = true;
 

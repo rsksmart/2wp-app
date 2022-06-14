@@ -21,7 +21,7 @@
   }
 
   span {
-    font-size: 14px;
+    font-size: 13px;
     line-height: 17px;
     color: #737778;
   }
@@ -190,4 +190,34 @@
   padding: 0px 0px;
   color: white;
   font-size: 14px;
+}
+
+.account-select {
+  .v-select__selection {
+    font-size: 13px;
+  }
+}
+
+.amount-input {
+  font-size: 13px;
+}
+
+.wallet-label-container {
+  padding: 12px 6px 12px 12px !important;
+  label {
+    font-size: 13px !important;
+  }
+  .label-title {
+    font-size: 13px;
+  }
+  .wallet-address-input {
+    font-size: 13px;
+    .v-input__slot {
+      padding: 0 5px !important;
+    }
+  }
+}
+
+.select-wallet-button {
+  font-size: 13px;
 }

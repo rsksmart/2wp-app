@@ -5,9 +5,9 @@
         <v-col cols="auto" class="top-logo">
           <v-col cols="auto" class="px-0 pb-1">
             <v-img @click="toExchange" position="center left"
-                   :src="log"
-                   alt="RSK Two Way Peg"
-                   height="105" width="210" contain class="rsk-main-logo"/>
+                   :src="logo"
+                   :alt="`${environmentContext.getRskText()} Two Way Peg`"
+                   height="65" width="150" contain class="rsk-main-logo"/>
           </v-col>
         </v-col>
       </v-col>
@@ -19,11 +19,14 @@
 import { Vue, Component, Emit } from 'vue-property-decorator';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import * as constants from '@/store/constants';
-import { getMainLogo } from '../../services/utils';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
+import { getMainLogo } from '@/services/utils';
 
 @Component
 export default class Top extends Vue {
   environmentVariables = EnvironmentAccessorService.getEnvironmentVariables();
+
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
   @Emit()
   toExchange() {
@@ -35,7 +38,7 @@ export default class Top extends Vue {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  get log() {
+  get logo() {
     return getMainLogo();
   }
 }

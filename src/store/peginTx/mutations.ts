@@ -1,8 +1,13 @@
 import { MutationTree } from 'vuex';
 import * as constants from '@/store/constants';
 import {
+  BtcAccount, BtcWallet, MiningSpeedFee,
   PeginConfiguration, PegInTxState, Utxo, WalletAddress,
-} from './types';
+  AccountBalance, FeeAmountData, NormalizedTx,
+  SatoshiBig,
+} from '@/types';
+import { getClearPeginTxState } from '@/utils';
+import { WalletService } from '@/services';
 
 export const mutations: MutationTree<PegInTxState> = {
   [constants.PEGIN_TX_SET_ADDRESS_LIST]: (state, addressList: WalletAddress[]) => {
@@ -20,14 +25,53 @@ export const mutations: MutationTree<PegInTxState> = {
   [constants.PEGIN_TX_SET_PEGIN_CONFIGURATION]: (state, peginConfiguration: PeginConfiguration) => {
     state.peginConfiguration = peginConfiguration;
   },
-  [constants.PEGIN_TX_SET_BITCOIN_WALLET]: (state, bitcoinWallet: string) => {
+  [constants.PEGIN_TX_SET_BITCOIN_WALLET]: (state, bitcoinWallet: BtcWallet) => {
     state.bitcoinWallet = bitcoinWallet;
   },
   [constants.PEGIN_TX_SET_BITCOIN_PRICE]: (state, btcPrice: number) => {
     state.bitcoinPrice = btcPrice;
   },
   [constants.PEGIN_TX_CLEAR]: (state) => {
-    const clearState = constants.getClearPeginTxState();
+    const clearState = getClearPeginTxState();
     Object.assign(state, clearState);
+  },
+  [constants.PEGIN_TX_SET_ACCOUNT_TYPE]: (state, accountType: BtcAccount) => {
+    state.selectedAccount = accountType;
+  },
+  [constants.PEGIN_TX_SET_AMOUNT_TO_TRANSFER]: (state, amount: SatoshiBig) => {
+    state.amountToTransfer = amount;
+  },
+  [constants.PEGIN_TX_SET_CALCULATED_TX_FEE]: (state, fee: FeeAmountData) => {
+    state.calculatedFees = fee;
+  },
+  [constants.PEGIN_TX_SET_LOADING_FEE]: (state, loadingFee: boolean) => {
+    state.loadingFee = loadingFee;
+  },
+  [constants.PEGIN_TX_SET_BALANCE]: (state, balance: AccountBalance) => {
+    if (!state.walletDataReady) state.walletDataReady = true;
+    state.balances = balance;
+  },
+  [constants.PEGIN_TX_SET_RSK_ADDRESS]: (state, rskAddress: string) => {
+    state.rskAddressSelected = rskAddress;
+  },
+  [constants.PEGIN_TX_SET_SELECTED_FEE_LEVEL]: (state, feeLevel: MiningSpeedFee) => {
+    state.selectedFee = feeLevel;
+  },
+  [constants.PEGIN_TX_SET_IS_VALID_AMOUNT]: (state, isValid: boolean) => {
+    state.isValidAmountToTransfer = isValid;
+  },
+  [constants.PEGIN_TX_SET_NORMALIZED_TX]: (state, tx: NormalizedTx) => {
+    state.normalizedTx = tx;
+  },
+  [constants.PEGIN_TX_SET_WALLET_SERVICE]: (state, walletService: WalletService) => {
+    state.walletService = walletService;
+  },
+  [constants.PEGIN_TX_WALLET_SERVICE_SUBSCRIBE]: (
+    state, subscriber: (balance: AccountBalance, addressList: WalletAddress[]) => void,
+  ) => {
+    if (state.walletService) state.walletService.subscribe(subscriber);
+  },
+  [constants.PEGIN_TX_SET_LOADING_BALANCE]: (state, loadingBalance: boolean) => {
+    state.loadingBalance = loadingBalance;
   },
 };

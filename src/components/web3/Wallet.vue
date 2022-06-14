@@ -111,19 +111,25 @@
                 <p class="text-justify mb-0">Fill in the enabled fields like below:</p>
                 <div class="green-box">
                   <v-row class="mx-0">
-                    <p class="mx-0">Network Name: <strong class="ml-1">RSK Mainnet</strong></p>
-                  </v-row>
-                  <v-row class="mx-0">
-                    <p class="mx-0">New RPC URL:
-                      <strong class="ml-1">https://public-node.testnet.rsk.co</strong>
+                    <p class="mx-0">Network Name:
+                      <strong class="ml-1">
+                        {{environmentContext.getRskText()}}
+                      </strong>
                     </p>
                   </v-row>
                   <v-row class="mx-0">
-                    <p class="mx-0">Symbol: <strong class="ml-1">RBTC</strong></p>
+                    <p class="mx-0">New RPC URL:
+                      <strong class="ml-1">{{vueAppRskNodeHost}}</strong>
+                    </p>
+                  </v-row>
+                  <v-row class="mx-0">
+                    <p class="mx-0">Symbol: <strong class="ml-1">
+                    {{environmentContext.getRbtcTicker()}}</strong></p>
+
                   </v-row>
                   <v-row class="mx-0">
                     <p class="mx-0">Block Explorer URL:
-                      <strong class="ml-1">https://public-node.testnet.rsk.co</strong>
+                      <strong class="ml-1">{{rskBlockExplorer}}</strong>
                     </p>
                   </v-row>
                 </div>
@@ -157,6 +163,8 @@ import { Action } from 'vuex-class';
 import * as constants from '@/store/constants';
 import MetaMask from '@/assets/web3/metamask.png';
 import MetaMaskDisabled from '@/assets/web3/metamask-disabled.png';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 @Component
 export default class Wallet extends Vue {
@@ -171,6 +179,12 @@ export default class Wallet extends Vue {
   metamaskConf = false;
 
   isMetamask = null;
+
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+
+  vueAppRskNodeHost = EnvironmentAccessorService.getEnvironmentVariables().vueAppRskNodeHost;
+
+  rskBlockExplorer = EnvironmentAccessorService.getEnvironmentVariables().vueAppRskExplorer;
 
   get metamaskImg() {
     return this.isMetamask ? MetaMask : MetaMaskDisabled;

@@ -1,5 +1,4 @@
 import * as bitcoin from 'bitcoinjs-lib';
-import LedgerTxSigner from '@/middleware/TxSigner/LedgerTxSigner';
 import {
   LedgerjsTransaction,
   LedgerTx, NormalizedInput, NormalizedOutput, NormalizedTx,
@@ -13,36 +12,28 @@ import TxBuilder from './TxBuilder';
 export default class LedgerTxBuilder extends TxBuilder {
   private tx!: LedgerTx;
 
-  private ledgerService: LedgerService;
-
-  constructor() {
-    super();
-    this.signer = new LedgerTxSigner();
-    this.ledgerService = new LedgerService(this.coin);
-  }
-
-  buildTx(): Promise<LedgerTx> {
+  buildTx(normalizedTx: NormalizedTx, accountType: string):
+    Promise<LedgerTx> {
     return new Promise<LedgerTx>((resolve, reject) => {
       const { coin } = this;
-      if (this.normalizedTx) {
-        this.getLedgerTxData(this.normalizedTx)
-          .then(({ inputs, associatedKeysets, outputScriptHex }) => {
-            const tx: LedgerTx = {
-              outputs: this.normalizedTx.outputs,
-              outputScriptHex,
-              changePath: this.changeAddress,
-              coin,
-              inputs,
-              associatedKeysets,
-              accountType: this.accountType,
-            };
-            this.tx = tx;
-            resolve(tx);
-          })
-          .catch(reject);
-      } else {
-        reject(new Error('There is no Normalized transaction created'));
-      }
+      const [, , change] = normalizedTx.outputs;
+      const changeAddress = change && change.address
+        ? change.address : '';
+      this.getLedgerTxData(normalizedTx)
+        .then(({ inputs, associatedKeysets, outputScriptHex }) => {
+          const tx: LedgerTx = {
+            outputs: normalizedTx.outputs,
+            outputScriptHex,
+            changePath: changeAddress,
+            coin,
+            inputs,
+            associatedKeysets,
+            accountType,
+          };
+          this.tx = tx;
+          resolve(tx);
+        })
+        .catch(reject);
     });
   }
 
@@ -140,9 +131,5 @@ export default class LedgerTxBuilder extends TxBuilder {
         .then(resolve)
         .catch(reject);
     });
-  }
-
-  public sign(): Promise<{ signedTx: string }> {
-    return this.signer.sign(this.tx) as Promise<{ signedTx: string }>;
   }
 }

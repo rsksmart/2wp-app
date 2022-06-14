@@ -30,7 +30,10 @@
               <div class="number">3</div>
             </v-col>
             <v-col cols="11">
-              <p class="ma-0">Select the Bitcoin app in your device</p>
+
+              <p class="ma-0">
+                Select the {{environmentContext.getBtcLedgerAppName()}} app in your device
+              </p>
             </v-col>
           </v-row>
         </v-col>
@@ -66,13 +69,14 @@
 import {
   Component, Prop, Vue, Emit,
 } from 'vue-property-decorator';
-import { Getter, State } from 'vuex-class';
+import { Getter, State, Action } from 'vuex-class';
 import * as constants from '@/store/constants';
-import { PegInTxState } from '@/store/peginTx/types';
+import { PegInTxState } from '@/types/pegInTx';
 import LedgerConnect from '@/assets/exchange/ledger/connect_ledger.png';
 import TrezorConnect from '@/assets/exchange/trezor/connect_trezor.png';
 import Connect from '@/assets/exchange/wallet.png';
 import { SendBitcoinState } from '@/types';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
 @Component
 export default class ConnectDevice extends Vue {
@@ -83,6 +87,10 @@ export default class ConnectDevice extends Vue {
   @State('pegInTx') peginTxState!: PegInTxState;
 
   @Getter(constants.WALLET_NAME, { namespace: 'pegInTx' }) walletName!: string;
+
+  @Action(constants.PEGIN_TX_CLEAR_STATE, { namespace: 'pegInTx' }) clearStore !: () => void;
+
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
   get deviceImagePath() {
     if (this.peginTxState.bitcoinWallet === constants.WALLET_LEDGER) return LedgerConnect;
@@ -99,10 +107,10 @@ export default class ConnectDevice extends Vue {
     return this.peginTxState.bitcoinWallet;
   }
 
-  @Emit('back')
+  @Emit()
   // eslint-disable-next-line class-methods-use-this
   back() {
-    return 'ConnectDevice';
+    this.$router.push({ name: 'PegIn' });
   }
 }
 </script>

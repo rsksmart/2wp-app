@@ -1,12 +1,12 @@
 import TrezorConnect, { GetAddress } from 'trezor-connect';
 import * as bitcoin from 'bitcoinjs-lib';
 import { Network } from 'bitcoinjs-lib';
-import { WalletAddress } from '@/store/peginTx/types';
+import { WalletAddress } from '@/types/pegInTx';
 import * as constants from '@/store/constants';
 import {
   TrezorSignedTx, TrezorTx, Tx,
 } from '@/types';
-import { WalletService } from '@/services/WalletService';
+import { WalletService } from '@/services';
 import { EnvironmentAccessorService } from './enviroment-accessor.service';
 
 type TrezorCoin = 'TESTNET' | 'BTC';
@@ -16,9 +16,9 @@ export default class TrezorService extends WalletService {
 
   private trezorCoin: TrezorCoin;
 
-  constructor(coin: string) {
-    super(coin);
-    switch (coin) {
+  constructor() {
+    super();
+    switch (this.coin) {
       case constants.BTC_NETWORK_MAINNET:
         this.bitcoinJsNetwork = bitcoin.networks.bitcoin;
         this.trezorCoin = 'BTC';
@@ -135,7 +135,7 @@ export default class TrezorService extends WalletService {
     });
   }
 
-  sign(tx: Tx): Promise<TrezorSignedTx> {
+  public sign(tx: Tx): Promise<TrezorSignedTx> {
     const trezorTx: TrezorTx = tx as TrezorTx;
     return new Promise<TrezorSignedTx>((resolve, reject) => {
       TrezorConnect.signTransaction({
@@ -160,24 +160,5 @@ export default class TrezorService extends WalletService {
         })
         .catch(reject);
     });
-  }
-
-  getUnsignedRawTx(tx: TrezorTx) :string {
-    const txBuilder = new bitcoin.TransactionBuilder(this.bitcoinJsNetwork);
-    tx.inputs.forEach((input) => {
-      txBuilder.addInput(input.prev_hash, input.prev_index);
-    });
-    tx.outputs.forEach((normalizedOutput) => {
-      if (normalizedOutput.script_type === 'PAYTOOPRETURN') {
-        const buffer = Buffer.from(normalizedOutput.op_return_data, 'hex');
-        const script: bitcoin.Payment = bitcoin.payments.embed({ data: [buffer] });
-        if (script.output) {
-          txBuilder.addOutput(script.output, 0);
-        }
-      } else if (normalizedOutput.address) {
-        txBuilder.addOutput(normalizedOutput.address, Number(normalizedOutput.amount));
-      }
-    });
-    return txBuilder.buildIncomplete().toHex();
   }
 }
