@@ -148,10 +148,16 @@ export default class RskAddressInput extends Vue {
 
   get validAddressMessage() {
     let message = '';
-    if (!this.isValidPegInAddress) message = 'This is an invalid address';
+    if (!this.regexValidationAddress()) message = 'The RSK recipient address must be a valid RSK address';
+    else if (!this.isValidPegInAddress) message = 'This is an invalid address';
     else if (!this.isValidRskAddress) message = `This may not be a valid address on the ${this.environmentContext.getRskText()} network. Please check.`;
     this.checkStep();
     return message;
+  }
+
+  regexValidationAddress() {
+    const regx = new RegExp('\\b0x[0-9A-Fa-f]{40}$');
+    return regx.test(this.rskAddressSelected);
   }
 
   @Emit('state')
