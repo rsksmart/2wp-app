@@ -4,7 +4,7 @@
       <v-row justify="center" class="mx-0">
         <h1>Connect your {{ walletName }}</h1>
       </v-row>
-      <v-row justify="center" class="ma-0 mb-10">
+      <v-row v-if="walletName !=='Liquality'" justify="center" class="ma-0 mb-10">
         <p class="ma-0">(Keep your {{ walletName }} close so you can authorize access)</p>
       </v-row>
       <v-row justify="center">
@@ -16,7 +16,7 @@
             <v-col cols="11">
               <p v-if="walletName ==='Liquality'"
               class="ma-0">
-                Connect your {{ walletName }} wallet.
+                Make sure Liquality is installed and enabled in your browser.
               </p>
               <p v-if="walletName !=='Liquality'"
               class="ma-0">
@@ -24,12 +24,15 @@
               </p>
             </v-col>
           </v-row>
-          <v-row v-if="walletName !=='Liquality'" class="ma-0">
+          <v-row class="ma-0">
             <v-col cols="1">
               <div class="number">2</div>
             </v-col>
-            <v-col cols="11">
+            <v-col v-if="walletName !=='Liquality'" cols="11">
               <p class="ma-0">Insert {{ walletName }} device PIN code</p>
+            </v-col>
+            <v-col v-if="walletName ==='Liquality'" cols="11">
+              <p class="ma-0">Unlock your wallet.</p>
             </v-col>
           </v-row>
           <v-row v-if="isLedgerWallet" class="ma-0">
