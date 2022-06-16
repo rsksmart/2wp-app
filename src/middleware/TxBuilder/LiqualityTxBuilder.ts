@@ -33,8 +33,8 @@ export default class LiqualityTxBuilder extends TxBuilder {
             }
           });
           const inputs: Array<LiqualityInput> = normalizedTx.inputs
-            .map((input) => ({
-              index: input.prev_index,
+            .map((input, index) => ({
+              index,
               derivationPath: LiqualityTxBuilder.getDerivationPathFromAddress(input.address),
             }));
           resolve({
