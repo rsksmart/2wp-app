@@ -68,20 +68,14 @@
               <p class="tooltip-form mb-0">
                 The OP_RETURN is an output with information
                 required for the {{environmentContext.getRskText()}} network.
+                It spends 0 {{environmentContext.getBtcTicker()}}
               </p>
             </v-tooltip>
           </v-row>
-          <v-row justify="center" class="mt-5 mx-0 d-none d-lg-block">
+          <v-row justify="center" class="mt-5 mx-0">
             <v-col class="pa-0 d-flex flex-column align-center">
-              <span v-for="value in splitString(opReturnData)" :key="value">
-                {{ value }}
-              </span>
-            </v-col>
-          </v-row>
-          <v-row justify="center" class="mt-5 mx-0 d-lg-none">
-            <v-col class="pa-0 px-4 d-flex flex-column align-center">
-              <span class="breakable-address">
-                {{ opReturnData }}
+              <span>
+                0 {{environmentContext.getRbtcTicker()}}
               </span>
             </v-col>
           </v-row>
@@ -168,7 +162,7 @@
     <v-row v-if="confirmTxState.matches(['loading'])" class="mx-0 d-flex justify-center">
       <v-col>
         <v-row class="mx-0 mb-5 d-flex justify-center">
-          See your Trezor device to confirm your transaction!
+          See Liquality wallet to confirm your transaction!
         </v-row>
         <v-row class="mx-0 mb-5 mt-10 d-flex justify-center">
           <v-progress-circular indeterminate :size="60" :width="8" color="#00B520" />
@@ -236,12 +230,17 @@ export default class ConfirmLiqualityTransaction extends Vue {
     await this.walletService.stopAskingForBalance()
       .then(() => this.txBuilder.buildTx(this.pegInTxState.normalizedTx))
       .then((tx: LiqualityTx) => this.walletService.sign(tx) as Promise<LiqualitySignedTx>)
-      .then((liqualitySignedTx: LiqualitySignedTx) => ApiService
-        .broadcast(liqualitySignedTx.signedTx))
+      .then((liqualitySignedTx: LiqualitySignedTx) => {
+        console.log(liqualitySignedTx);
+        return 'testTxId';
+        // ApiService
+        //   .broadcast(liqualitySignedTx.signedTx);
+      })
       .then((txId) => {
         this.txId = txId;
       })
       .catch((err) => {
+        console.log(err);
         this.confirmTxState.send('error');
         txError = err.message;
       });
