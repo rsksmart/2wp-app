@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { WalletAddress, PeginConfiguration } from '@/types/pegInTx';
 import {
-  AccountBalance, AddressStatus, FeeAmountData, NormalizedTx, PeginStatus,
+  AccountBalance, AddressStatus, FeeAmountData, NormalizedTx, TxStatus,
 } from '@/types';
 import { isValidOpReturn, isValidPowPegAddress } from '@/utils';
 import { BridgeService } from '@/services/BridgeService';
@@ -99,18 +99,21 @@ export default class ApiService {
     });
   }
 
-  public static getPegInStatus(txId: string): Promise<PeginStatus> {
-    return new Promise<PeginStatus>((resolve, reject) => {
-      axios.get(`${this.baseURL}/pegin-status?txId=${txId}`)
+  public static getTxStatus(txId: string): Promise<TxStatus> {
+    return new Promise<TxStatus>((resolve, reject) => {
+      axios.get(`${this.baseURL}/tx-status/${txId}`)
         .then((response) => {
           if (!response.data) {
             return reject(new Error('No data was returned'));
           }
-          if (response.data.error) {
-            return reject(response.data.error);
-          }
-          if (!response.data.status) {
+          if (!response.data.type) {
             return reject(new Error('Empty response from server'));
+          }
+          if (response.data.type === 'INVALID_DATA') {
+            return reject(new Error('Invalid data was provided. Check the transaction id and try again'));
+          }
+          if (response.data.type === 'UNEXPECTED_ERROR') {
+            return reject(new Error('There was an unexpected error. Try again later.'));
           }
           return resolve(response.data);
         })

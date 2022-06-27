@@ -6,7 +6,7 @@
           <h1 class="text-center">Transaction status</h1>
         </v-row>
         <v-row class="mx-0 mt-10 mb-8" justify="center">
-          <p class="subtitle">Enter your {{environmentContext.getBtcText()}}
+          <p class="subtitle">Enter your
             transaction hash in the textbox below
             to check the status of your operation</p>
         </v-row>
@@ -18,7 +18,7 @@
                           v-model="txId"
                           @keyup.enter="getPegStatus"
                           v-bind:color="error ? '#F6C61B': '#C4C4C4'"
-                          :label="`${environmentContext.getBtcText()} transaction id`"
+                          :label="'Transaction id'"
                           v-bind:class="error ? 'status-text-field-error' : ''"/>
             <v-row class="mx-0 pl-1 pt-1" v-if="error">
                 <span class="yellowish">
@@ -32,119 +32,22 @@
             {{ statusMessage }}
           </div>
         </v-row>
-        <v-row justify="center" v-if="showStatus" class="mt-6">
-          <v-col cols="7">
-            <v-row v-if="isRejected" class="mx-0 d-flex justify-center progress-bar">
-              <v-col cols="8" class="pa-0 d-flex justify-center">
-                <v-row>
-                  <div class="rsk-icon-green">
-                    <v-row>
-                      <v-img class="d-flex justify-center"
-                             src="@/assets/status/rsk-yellow.png" height="78" contain/>
-                    </v-row>
-                    <v-row class="mt-4">
-                      <h1>{{environmentContext.getRskText()}} Network</h1>
-                    </v-row>
-                  </div>
-                  <v-progress-linear
-                    :value="btcConfirmationsPercentage"
-                    color="#F6C61B"
-                    height="17"/>
-                  <div class="d-flex justify-end">
-                    <div class="bitcoin-icon-yellow">
-                      <v-row>
-                        <v-img class="d-flex justify-center"
-                               src="@/assets/status/btc-yellow.png" height="78" contain/>
-                      </v-row>
-                      <v-row class="mt-4">
-                        <h1>Refund {{environmentContext.getBtcText()}} address</h1>
-                      </v-row>
-                    </div>
-                  </div>
-                </v-row>
-              </v-col>
-            </v-row>
-            <v-row v-else class="mx-0 progress-bar">
-              <v-col  cols="8" class="pa-0">
-                <div class="d-flex justify-start">
-                  <div class="bitcoin-icon-green">
-                    <v-row>
-                      <v-img class="d-flex justify-center"
-                             src="@/assets/status/btc-green.png" height="78" contain/>
-                    </v-row>
-                    <v-row class="mt-4">
-                      <h1>{{environmentContext.getBtcText()}} Network</h1>
-                    </v-row>
-                  </div>
-                </div>
-                <v-progress-linear
-                  :value="btcConfirmationsPercentage"
-                  color="#00B43C"
-                  height="17" />
-                <v-row v-if="!btcConfirmationsAreDone" justify="center" class="mt-4 pa-0">
-                  <h5>
-                    {{btcConfirmations}}/{{btcConfirmationsRequired}} confirmations
-                  </h5>
-                  <v-tooltip right>
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-icon x-small color="teal darken-2" v-bind="attrs" v-on="on">
-                        mdi-information
-                      </v-icon>
-                    </template>
-                    <p class="tooltip-form mb-0">
-                      The estimated time is calculated based on a 10-minute block time.
-                    </p>
-                  </v-tooltip>
-                </v-row>
-                <v-row v-if="!btcConfirmationsAreDone" justify="center" class="mt-2 pa-0">
-                  <h5>
-                    Estimated time left: {{leftBtcTime}} hours
-                  </h5>
-                </v-row>
-              </v-col>
-              <v-col cols="auto" class="pa-0 d-flex justify-center">
-                <div class="img-progress-bar">
-                  <v-row>
-                    <v-img class="d-flex justify-center"
-                           src="@/assets/status/rsk-green.png" height="78" contain/>
-                  </v-row>
-                  <v-row class="mt-4">
-                    <h1>{{environmentContext.getRskText()}} Network</h1>
-                  </v-row>
-                </div>
-              </v-col>
-              <v-col class="confirm-percentage pa-0">
-                <v-row>
-                  <v-progress-linear
-                    :value="rskConfirmationsPercentage"
-                    color="#00B43C"
-                    height="17"/>
-                  <v-row   justify="center" class="mt-4 mx-0 pa-0 mb-0 confirmations-message" >
-                    <h6 v-if="!rskConfirmationsAreDone">
-                      Usually takes around 20 minutes
-                    </h6>
-                  </v-row>
-                </v-row>
-                <div class="d-flex justify-end pa-0 ma-0">
-                  <div class="rbtc-icon-green">
-                    <v-row>
-                      <v-img class="d-flex justify-center"
-                             src="@/assets/status/rbtc_green.png" height="78" contain/>
-                    </v-row>
-                    <v-row class="mt-4">
-                      <h1>{{environmentContext.getRbtcTicker()}} delivered</h1>
-                    </v-row>
-                  </div>
-                </div>
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
       </v-container>
       <v-container fluid class="transactions px-0">
-        <tx-summary
-          :initial-expand="true"
-          v-if="!isRejected && showStatus"/>
+        <!--  TODO: create a pegin-tx-summary component-->
+        <tx-pegin
+          v-if="!isRejected && showStatus && isPegIn"
+          :txId ="txId"
+          @setMessage="setMessage"
+          :pegInStatus='pegInStatus'
+          />
+         <!--  TODO: create a pegout-tx-summary component-->
+        <tx-pegout
+          v-if="!isRejected && showStatus && isPegOut"
+          :txId ="txId"
+          @setMessage="setMessage"
+          :pegStatus="pegOutStatus"
+        />
         <v-row justify="center" class="mx-0 mt-5">
           <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
             <v-btn rounded outlined color="#00B520" width="110" @click="back">
@@ -168,22 +71,20 @@ import {
   Component, Emit, Prop, Vue, Watch,
 } from 'vue-property-decorator';
 import { State, Action } from 'vuex-class';
-import TxSummary from '@/components/exchange/TxSummary.vue';
+import TxPegout from '@/components/status/TxPegout.vue';
+import TxPegin from '@/components/status/TxPegin.vue';
 import { ApiService } from '@/services';
 import {
-  PeginStatus,
-  TxData,
-  PegInTxState,
-  SatoshiBig,
-  MiningSpeedFee,
+  MiningSpeedFee, PeginStatus, TxData, PegInTxState,
+  TxStatus, TxStatusType, PegoutStatusDataModel, TxStatusMessage,
 } from '@/types';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import * as constants from '@/store/constants';
-import { setStatusMessage, getTime } from '@/services/utils';
 
 @Component({
   components: {
-    TxSummary,
+    TxPegout,
+    TxPegin,
   },
 })
 export default class Status extends Vue {
@@ -191,7 +92,15 @@ export default class Status extends Vue {
 
   txId = '';
 
+  txType = TxStatusType.PEGIN;
+
   pegInStatus!: PeginStatus;
+
+  pegOutStatus!: PegoutStatusDataModel;
+
+  isPegIn = false;
+
+  isPegOut = false;
 
   statusMessage = '';
 
@@ -203,10 +112,6 @@ export default class Status extends Vue {
 
   activeMessageStyle = 'statusRejected';
 
-  btcConfirmationsPercentage = 0;
-
-  btcConfirmations = 0;
-
   rskConfirmationsPercentage = 0;
 
   isRejected = false;
@@ -215,8 +120,6 @@ export default class Status extends Vue {
 
   btcConfirmationsRequired!: number;
 
-  currentFee = new SatoshiBig('0', 'btc');
-
   currentRefundAddress = '';
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
@@ -224,12 +127,6 @@ export default class Status extends Vue {
   @Prop({ default: '' }) txIdProp!: string;
 
   @State('pegInTx') peginTxState!: PegInTxState;
-
-  @Action(constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER, { namespace: 'pegInTx' }) setAmount !: (amount: SatoshiBig) => void;
-
-  @Action(constants.PEGIN_TX_ADD_RSK_ADDRESS, { namespace: 'pegInTx' }) setRskAddress !: (address: string) => void;
-
-  @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) peginInit !: () => void;
 
   @Action(constants.PEGIN_TX_ADD_BITCOIN_PRICE, { namespace: 'pegInTx' }) getBtcPrice !: () => Promise<void>;
 
@@ -242,52 +139,31 @@ export default class Status extends Vue {
   @Action(constants.PEGIN_TX_ADD_STATUS_TX_ID, { namespace: 'pegInTx' }) setTxId !: (txId: string) => void;
 
   get showStatus() {
-    return !this.loading && !this.error && !!this.statusMessage;
-  }
-
-  get btcConfirmationsAreDone() {
-    return this.btcConfirmations >= this.btcConfirmationsRequired;
-  }
-
-  get rskConfirmationsAreDone() {
-    return this.pegInStatus.status === constants.PegStatus.CONFIRMED;
-  }
-
-  @Emit()
-  refreshPercentage() {
-    if (this.pegInStatus) {
-      this.btcConfirmationsRequired = this.pegInStatus.btc.requiredConfirmation;
-      this.btcConfirmations = this.pegInStatus.btc.confirmations ?? 0;
-      this.btcConfirmations = this.btcConfirmations > this.btcConfirmationsRequired
-        ? this.btcConfirmationsRequired : this.btcConfirmations;
-    }
-    this.leftBtcTime = getTime((this.btcConfirmationsRequired - this.btcConfirmations) * 10);
-    this.btcConfirmationsPercentage = this.btcConfirmations <= this.btcConfirmationsRequired
-      ? (this.btcConfirmations * 100) / this.btcConfirmationsRequired : 100;
-    if (this.pegInStatus.status === constants.PegStatus.CONFIRMED) {
-      this.rskConfirmationsPercentage = 100;
-    } else {
-      this.rskConfirmationsPercentage = 0;
-    }
+    return !this.loading && !this.error && !this.statusMessage;
   }
 
   @Emit()
   getPegStatus() {
     if (this.txId !== '') {
       this.loading = true;
-      this.error = false;
       if (this.$route.path !== `/status/txId/${this.txId}`) {
         this.$router.push({
           name: 'Status',
           params: { txId: this.txId },
         });
       }
-      ApiService.getPegInStatus(this.txId)
-        .then((pegInStatus: PeginStatus) => {
-          this.pegInStatus = pegInStatus;
-          this.setMessage();
-          this.setSummary();
-          this.refreshPercentage();
+      ApiService.getTxStatus(this.txId)
+        .then((txStatus: TxStatus) => {
+          this.txType = txStatus.type;
+          this.isPegIn = txStatus.type === TxStatusType.PEGIN;
+          this.isPegOut = txStatus.type === TxStatusType.PEGOUT;
+          if (this.isPegIn) {
+            this.pegInStatus = txStatus.txDetails as PeginStatus;
+          }
+          if (this.isPegOut) {
+            // TODO: Setup pegout view
+            this.pegOutStatus = txStatus.txDetails as PegoutStatusDataModel;
+          }
           this.loading = false;
         })
         .catch((e: Error) => {
@@ -301,37 +177,23 @@ export default class Status extends Vue {
   }
 
   @Emit()
-  setMessage() {
-    const statusMsg = setStatusMessage(this.pegInStatus.status);
-    if (statusMsg?.isError) {
-      this.error = statusMsg?.isError;
-      this.errorMessage = statusMsg.errorMessage;
-    } else {
-      this.statusMessage = statusMsg?.statusMessage || '';
-      this.activeMessageStyle = statusMsg?.activeMessageStyle || '';
-      this.isRejected = statusMsg?.isRejected || false;
-    }
+  setMessage(msg: TxStatusMessage) {
+    const {
+      statusMessage,
+      activeMessageStyle,
+      isRejected,
+      error,
+      errorMessage,
+    } = msg;
+
+    this.statusMessage = statusMessage;
+    this.activeMessageStyle = activeMessageStyle;
+    this.isRejected = isRejected;
+    this.error = error;
+    this.errorMessage = errorMessage;
   }
 
   @Emit()
-  setSummary() {
-    this.txData = {
-      amount: new SatoshiBig(this.pegInStatus.btc.amountTransferred, 'btc'),
-      refundAddress: this.pegInStatus.btc.refundAddress,
-      recipient: this.pegInStatus.rsk.recipientAddress,
-      feeBTC: new SatoshiBig(this.pegInStatus.btc.fees, 'btc'),
-      change: '',
-    };
-    this.peginInit();
-    this.setAmount(this.txData.amount);
-    this.currentFee = this.txData.feeBTC;
-    this.currentRefundAddress = this.txData.refundAddress;
-    this.setRskAddress(this.txData.recipient);
-    this.setSafeFee(this.txData.feeBTC.toSatoshiString());
-    this.setRefundAddress(this.txData.refundAddress);
-    this.setTxId(this.pegInStatus.btc.txId);
-  }
-
   clean() {
     this.txId = '';
     this.loading = false;
