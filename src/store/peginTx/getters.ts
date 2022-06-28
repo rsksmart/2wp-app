@@ -153,4 +153,22 @@ export const getters: GetterTree<PegInTxState, RootState> = {
     (state: PegInTxState) => state.statusInfo.txId,
   [constants.PEGIN_TX_GET_WALLET_SERVICE]:
     (state: PegInTxState): WalletService | undefined => state.walletService,
+  [constants.PEGIN_TX_IS_HD_WALLET]: (state: PegInTxState): boolean => {
+    let isHdWallet = false;
+    switch (state.bitcoinWallet) {
+      case constants.WALLET_TREZOR:
+        isHdWallet = true;
+        break;
+      case constants.WALLET_LEDGER:
+        isHdWallet = true;
+        break;
+      case constants.WALLET_LIQUALITY:
+        isHdWallet = false;
+        break;
+      default:
+        isHdWallet = false;
+        break;
+    }
+    return isHdWallet;
+  },
 };

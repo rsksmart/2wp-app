@@ -31,7 +31,7 @@
               <v-btn outlined class="wallet-button-thin"
                 @click="setBitcoinWallet(storeConstants.WALLET_LIQUALITY)"
                 v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_LIQUALITY }">
-                <v-icon class="wallet-icon-liquality"></v-icon>
+                <div class="wallet-icon-liquality"></div>
                 <span class="wallet-button-content">Liquality</span>
               </v-btn>
             </v-col>
