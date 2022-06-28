@@ -4,7 +4,7 @@
       <v-row justify="center" class="mx-0">
         <h1>Connect your {{ walletName }}</h1>
       </v-row>
-      <v-row v-if="walletName !=='Liquality'" justify="center" class="ma-0 mb-10">
+      <v-row v-if="isHdWallet" justify="center" class="ma-0 mb-10">
         <p class="ma-0">(Keep your {{ walletName }} close so you can authorize access)</p>
       </v-row>
       <v-row justify="center">
@@ -98,6 +98,8 @@ export default class ConnectDevice extends Vue {
   @State('pegInTx') peginTxState!: PegInTxState;
 
   @Getter(constants.WALLET_NAME, { namespace: 'pegInTx' }) walletName!: string;
+
+  @Getter(constants.PEGIN_TX_IS_HD_WALLET, { namespace: 'pegInTx' }) isHdWallet!: boolean;
 
   @Action(constants.PEGIN_TX_CLEAR_STATE, { namespace: 'pegInTx' }) clearStore !: () => void;
 
