@@ -104,6 +104,7 @@ export const PEGIN_TX_GET_STATUS_TX_ID = 'PEGIN_TX_GET_STATUS_TX_ID';
 
 // View getters
 export const VIEW_GET_CURRENT_VIEW = 'VIEW_GET_CURRENT_VIEW';
+export const PEGIN_TX_IS_HD_WALLET = 'PEGIN_TX_IS_HD_WALLET';
 
 // Session getters
 export const SESSION_IN_TX_FLOW = 'SESSION_IN_TX_FLOW';

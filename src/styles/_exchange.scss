@@ -29,7 +29,7 @@
   .wallet-button {
     width: 209px !important;
     height: 101px !important;
-    
+
     background-color: #fff !important;
     border-radius: 20px !important;
     border: 1px solid #00B520 !important;
@@ -83,7 +83,7 @@
         background-image: url('../assets/wallet-icons/ledger-white.png');
       }
       .wallet-icon-liquality {
-        background-color: #ffffff;
+        background-image: url('../assets/wallet-icons/liquality-white.png');
       }
     }
     &:focus {
@@ -97,7 +97,7 @@
         background-image: url('../assets/wallet-icons/ledger-white.png');
       }
       .wallet-icon-liquality {
-        background-color: #ffffff;
+        background-image: url('../assets/wallet-icons/liquality-white.png');
       }
     }
     .wallet-icon {
@@ -119,13 +119,10 @@
     .wallet-icon-liquality {
       background-repeat: no-repeat;
       position: relative;
-      width: 70px;
-      height: 25px;
-      padding: 5px 0 0 60px;
-      margin-right: 10px;
-      background-color: #00B520;
-      -webkit-mask-image: url('../assets/wallet-icons/liquality.png');
-      mask-image: url('../assets/wallet-icons/liquality.png');
+      max-width: 80px;
+      max-height: 25px;
+      padding: 25px 0 0 80px;
+      background-image: url('../assets/wallet-icons/liquality.png');
     }
   }
 
@@ -153,6 +150,9 @@
     }
     .wallet-icon-ledger{
       background-image: url('../assets/wallet-icons/ledger-white.png');
+    }
+    .wallet-icon-liquality {
+      background-image: url('../assets/wallet-icons/liquality-white.png');
     }
   }
 
