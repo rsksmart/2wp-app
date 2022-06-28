@@ -230,17 +230,12 @@ export default class ConfirmLiqualityTransaction extends Vue {
     await this.walletService.stopAskingForBalance()
       .then(() => this.txBuilder.buildTx(this.pegInTxState.normalizedTx))
       .then((tx: LiqualityTx) => this.walletService.sign(tx) as Promise<LiqualitySignedTx>)
-      .then((liqualitySignedTx: LiqualitySignedTx) => {
-        console.log(liqualitySignedTx);
-        return 'testTxId';
-        // ApiService
-        //   .broadcast(liqualitySignedTx.signedTx);
-      })
+      .then((liqualitySignedTx: LiqualitySignedTx) => ApiService
+        .broadcast(liqualitySignedTx.signedTx))
       .then((txId) => {
         this.txId = txId;
       })
       .catch((err) => {
-        console.log(err);
         this.confirmTxState.send('error');
         txError = err.message;
       });
