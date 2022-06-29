@@ -27,3 +27,37 @@ export interface PeginStatus {
   rsk: RskPeginStatus;
   status: PegStatus;
 }
+
+export enum PegoutStatus {
+  RECEIVED = 'RECEIVED',
+  REJECTED = 'REJECTED',
+  WAITING_FOR_CONFIRMATION = 'WAITING_FOR_CONFIRMATION',
+  WAITING_FOR_SIGNATURE = 'WAITING_FOR_SIGNATURE',
+  SIGNED = 'SIGNED',
+  NOT_FOUND = 'NOT_FOUND',
+  NOT_PEGOUT_TX = 'NOT_PEGOUT_TX'
+}
+
+export interface PegoutStatusDataModel {
+  originatingRskTxHash: string;
+  rskTxHash: string;
+  rskSenderAddress: string;
+  btcRecipientAddress: string;
+  valueRequestedInSatoshis: number;
+  valueInSatoshisToBeReceived: number;
+  feeInSatoshisToBePaid: number;
+  status: PegoutStatus;
+  btcRawTransaction: string;
+}
+
+export enum TxStatusType {
+  PEGIN = 'PEGIN',
+  PEGOUT = 'PEGOUT',
+  INVALID_DATA = 'INVALID_DATA',
+  UNEXPECTED_ERROR = 'UNEXPECTED_ERROR',
+}
+
+export interface TxStatus {
+  txDetails: PeginStatus | PegoutStatusDataModel;
+  type: TxStatusType;
+}

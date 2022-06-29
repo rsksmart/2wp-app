@@ -6,7 +6,7 @@
           <h1 class="text-center">Transaction status</h1>
         </v-row>
         <v-row class="mx-0 mt-10 mb-8" justify="center">
-          <p class="subtitle">Enter your {{environmentContext.getBtcText()}}
+          <p class="subtitle">Enter your
             transaction hash in the textbox below
             to check the status of your operation</p>
         </v-row>
@@ -18,7 +18,7 @@
                           v-model="txId"
                           @keyup.enter="getPegStatus"
                           v-bind:color="error ? '#F6C61B': '#C4C4C4'"
-                          :label="`${environmentContext.getBtcText()} transaction id`"
+                          :label="'Transaction id'"
                           v-bind:class="error ? 'status-text-field-error' : ''"/>
             <v-row class="mx-0 pl-1 pt-1" v-if="error">
                 <span class="yellowish">
@@ -32,7 +32,8 @@
             {{ statusMessage }}
           </div>
         </v-row>
-        <v-row justify="center" v-if="showStatus" class="mt-6">
+        <!--  TODO: move this v-row component to another component-->
+        <v-row justify="center" v-if="showStatus && isPegIn" class="mt-6">
           <v-col cols="7">
             <v-row v-if="isRejected" class="mx-0 d-flex justify-center progress-bar">
               <v-col cols="8" class="pa-0 d-flex justify-center">
@@ -141,14 +142,22 @@
           </v-col>
         </v-row>
       </v-container>
+      <v-row justify="center" v-if="isPegOut" class="mt-6">
+        <div>Pegout status: {{pegOutStatus.status}}</div>
+      </v-row>
+
       <v-container fluid class="transactions px-0">
+        <!--  TODO: create a pegin-tx-summary component-->
         <tx-summary
-          v-if="!isRejected && showStatus"
+          v-if="!isRejected && showStatus && isPegIn"
           :statusFee="currentFee"
           :statusRefundAddress="currentRefundAddress"
           :txId="txId"
           :showTxId="true"
           :initialExpand="true"/>
+        <!--  TODO: create a pegout-tx-summary component-->
+        <p v-if="isPegOut">Pegout tx summary...</p>
+
         <v-row justify="center" class="mx-0 mt-5">
           <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
             <v-btn rounded outlined color="#00B520" width="110" @click="back">
@@ -175,7 +184,7 @@ import { State, Action } from 'vuex-class';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import { ApiService } from '@/services';
 import {
-  PeginStatus, TxData, PegInTxState, SatoshiBig,
+  PeginStatus, TxData, PegInTxState, SatoshiBig, TxStatus, TxStatusType, PegoutStatusDataModel,
 } from '@/types';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import * as constants from '@/store/constants';
@@ -191,6 +200,12 @@ export default class Status extends Vue {
   txId = '';
 
   pegInStatus!: PeginStatus;
+
+  pegOutStatus!: PegoutStatusDataModel;
+
+  isPegIn = false;
+
+  isPegOut = false;
 
   statusMessage = '';
 
@@ -273,12 +288,20 @@ export default class Status extends Vue {
           params: { txId: this.txId },
         });
       }
-      ApiService.getPegInStatus(this.txId)
-        .then((pegInStatus: PeginStatus) => {
-          this.pegInStatus = pegInStatus;
-          this.setMessage();
-          this.setSummary();
-          this.refreshPercentage();
+      ApiService.getTxStatus(this.txId)
+        .then((txStatus: TxStatus) => {
+          this.isPegIn = txStatus.type === TxStatusType.PEGIN;
+          this.isPegOut = txStatus.type === TxStatusType.PEGOUT;
+          if (this.isPegIn) {
+            this.pegInStatus = txStatus.txDetails as PeginStatus;
+            this.setMessage();
+            this.setSummary();
+            this.refreshPercentage();
+          }
+          if (this.isPegOut) {
+            // TODO: Setup pegout view
+            this.pegOutStatus = txStatus.txDetails as PegoutStatusDataModel;
+          }
           this.loading = false;
         })
         .catch((e: Error) => {
