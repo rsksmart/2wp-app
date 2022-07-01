@@ -117,6 +117,9 @@ export const BITCOIN_TX_VERSION = 1;
 // Ledger Apps
 export const LEDGER_APP_BTC_TEST = 'Bitcoin Test';
 export const LEDGER_APP_BTC = 'Bitcoin';
+// xpub versions. (source @ledgerhq/currencies)
+export const LEDGER_BTC_MAIN_XPUB_VERSION = 0x0488b21e;
+export const LEDGER_BTC_TEST_XPUB_VERSION = 0x043587cf;
 
 // Status actions
 export const STATUS_GET_TX_STATUS = 'STATUS_GET_TX_STATUS';

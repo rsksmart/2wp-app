@@ -1,15 +1,15 @@
-import AppBtc from '@ledgerhq/hw-app-btc';
+import Btc from '@ledgerhq/hw-app-btc';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import _ from 'lodash';
 import * as bitcoin from 'bitcoinjs-lib';
 import * as constants from '@/store/constants';
-import { WalletAddress } from '@/types/pegInTx';
+import { BtcAccount, WalletAddress } from '@/types/pegInTx';
 import {
   LedgerjsTransaction, LedgerSignedTx, LedgerTx, Tx,
 } from '@/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import { WalletService } from '@/services';
-import LedgerTransportService from '@/services/LedgetTransportService';
+import LedgerTransportService from '@/services/LedgerTransportService';
 
 export default class LedgerService extends WalletService {
   private network: bitcoin.Network;
@@ -62,7 +62,7 @@ export default class LedgerService extends WalletService {
     return LedgerTransportService.getInstance()
       .enqueueRequest(
         (transport:TransportWebUSB) => new Promise<LedgerjsTransaction>((resolve) => {
-          const btc = new AppBtc(transport);
+          const btc = new Btc(transport);
           const bitcoinJsTx = bitcoin.Transaction.fromHex(hexTx);
           resolve(btc.splitTransaction(hexTx, bitcoinJsTx.hasWitnesses()));
         }),
@@ -72,7 +72,7 @@ export default class LedgerService extends WalletService {
   static splitTransactionList(txHexList: string[]): Promise<LedgerjsTransaction[]> {
     return LedgerTransportService.getInstance()
       .enqueueRequest((transport: TransportWebUSB) => {
-        const btc = new AppBtc(transport);
+        const btc = new Btc(transport);
         return Promise.all(txHexList.map((tx) => {
           const bitcoinJsTx = bitcoin.Transaction.fromHex(tx);
           return btc.splitTransaction(tx, bitcoinJsTx.hasWitnesses());
@@ -84,7 +84,7 @@ export default class LedgerService extends WalletService {
     return LedgerTransportService.getInstance()
       .enqueueRequest(
         (transport: TransportWebUSB) => new Promise<string>((resolve) => {
-          const btc = new AppBtc(transport);
+          const btc = new Btc(transport);
           const txOutputsBuffer: Buffer = btc.serializeTransactionOutputs(splitTx);
           resolve(txOutputsBuffer.toString('hex'));
         }),
@@ -127,7 +127,7 @@ export default class LedgerService extends WalletService {
           const walletAddresses: WalletAddress[] = [];
           try {
             await this.checkApp(transport);
-            const btc = new AppBtc(transport);
+            const btc = new Btc(transport);
             // eslint-disable-next-line no-restricted-syntax
             for (const item of bundle) {
               if (this.subscribers.length === 0) {
@@ -177,7 +177,7 @@ export default class LedgerService extends WalletService {
     return LedgerTransportService.getInstance()
       .enqueueRequest(
         (transport: TransportWebUSB) => new Promise<LedgerSignedTx>((resolve, reject) => {
-          const btc = new AppBtc(transport);
+          const btc = new Btc(transport);
           btc.createPaymentTransactionNew({
             inputs: ledgerTx.inputs.map((input) => [input.tx, input.outputIndex, null, null]),
             associatedKeysets: ledgerTx.associatedKeysets,
@@ -235,5 +235,19 @@ export default class LedgerService extends WalletService {
         })
         .catch(reject);
     });
+  }
+
+  getXpub(accountType: BtcAccount, accountNumber: number): Promise<string> {
+    return LedgerTransportService.getInstance()
+      .enqueueRequest((transport: TransportWebUSB) => {
+        const btc = new Btc(transport);
+        const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
+        const xpubVersion = network === constants.BTC_NETWORK_MAINNET
+          ? constants.LEDGER_BTC_MAIN_XPUB_VERSION : constants.LEDGER_BTC_TEST_XPUB_VERSION;
+        return btc.getWalletXpub({
+          path: super.getAccountPath(accountType, accountNumber),
+          xpubVersion,
+        });
+      });
   }
 }
