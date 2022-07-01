@@ -3,7 +3,7 @@ import SatoshiBig from '@/types/SatoshiBig';
 import { ApiService } from '@/services';
 import { SignedTx } from '@/types/Wallets';
 import {
-  WalletAddress, AccountBalance, Tx, AddressStatus,
+  WalletAddress, AccountBalance, Tx, AddressStatus, BtcAccount,
 } from '@/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
@@ -26,6 +26,8 @@ export default abstract class WalletService {
   abstract getWalletMaxCall(): number;
 
   abstract sign(tx: Tx): Promise<SignedTx>;
+
+  abstract getXpub(accountType: BtcAccount, accountNumber: number): Promise<string>;
 
   public isLoadingBalances2(): boolean {
     return this.loadingBalances;
