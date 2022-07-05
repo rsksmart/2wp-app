@@ -112,7 +112,6 @@
 import {
   Vue, Component, Emit,
 } from 'vue-property-decorator';
-import * as Bowser from 'bowser';
 import { Action, State } from 'vuex-class';
 import SelectBitcoinWallet from '@/components/exchange/SelectBitcoinWallet.vue';
 import * as constants from '@/store/constants';
@@ -129,7 +128,7 @@ import { isAllowedCurrentBrowser } from '@/services/utils';
 export default class Home extends Vue {
   STATUS = false;
 
-  browser = Bowser.getParser(window.navigator.userAgent);
+  isAllowedBrowser = isAllowedCurrentBrowser();
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
@@ -169,10 +168,6 @@ export default class Home extends Vue {
     await this.init();
     this.STATUS = false;
   }
-
-  get isAllowedBrowser() {
-   return isAllowedCurrentBrowser();
-  } 
 
   get btnWalletClass() {
     return this.isAllowedBrowser ? 'wallet-button mb-0' : 'wallet-button-disabled mb-0';

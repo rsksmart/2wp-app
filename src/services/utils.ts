@@ -50,32 +50,29 @@ export function getMainLogo() {
   }
 }
 
-export const getTime = (totalMinutes: number) => {
+export function getTime(totalMinutes: number): string {
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
   const paddedMinutes = minutes < 10 ? `0${minutes}` : minutes;
   return `${hours}:${paddedMinutes}`;
 }
 
-export const isAllowedCurrentBrowser = () => {
+export function isAllowedCurrentBrowser() {
   const browser = Bowser.getParser(window.navigator.userAgent);
   return browser.getBrowserName() === 'Chrome' || window.navigator.brave;
 }
 
-export const isBTCAmountValidRegex = (bitcoinAmount: string) => {
+export function isBTCAmountValidRegex(bitcoinAmount: string):boolean {
   return /^[0-9]{1,8}(\.[0-9]{0,8})?$/.test(bitcoinAmount.toString());
 }
 
-export const setStatusMessage = (currentStatus:string) => {
+export function setStatusMessage(currentStatus:string) {
   let statusMessage = '';
   let activeMessageStyle = '';
   let isRejected = false;
-
   let isError = false;
   let errorMessage = '';
-
   const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-  
   switch (currentStatus) {
     case constants.PegStatus.CONFIRMED:
       statusMessage = 'Your transaction was successfully processed!';
@@ -83,7 +80,7 @@ export const setStatusMessage = (currentStatus:string) => {
       isRejected = false;
       break;
     case constants.PegStatus.WAITING_CONFIRMATIONS:
-      statusMessage = `More confirmations are yet needed, please wait`;
+      statusMessage = 'More confirmations are yet needed, please wait';
       activeMessageStyle = 'statusProgress';
       isRejected = false;
       break;
@@ -114,19 +111,18 @@ export const setStatusMessage = (currentStatus:string) => {
     case constants.PegStatus.ERROR_NOT_A_PEGIN:
       isError = true;
       errorMessage = 'Unfortunately this is not recognized as a Peg in transaction, please check it and try again';
-        break;
+      break;
     case constants.PegStatus.ERROR_UNEXPECTED:
       isError = true;
       errorMessage = 'The input transaction is not valid, please check it and try again';
       break;
     default:
-
-    return {
-      statusMessage,
-      activeMessageStyle,
-      isRejected,
-      isError,
-      errorMessage
-    }
   }
+  return {
+    statusMessage,
+    activeMessageStyle,
+    isRejected,
+    isError,
+    errorMessage,
+  };
 }
