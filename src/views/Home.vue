@@ -119,6 +119,7 @@ import * as constants from '@/store/constants';
 import { PegInTxState } from '@/types/pegInTx';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import { SessionState, TransactionType } from '@/types/session';
+import { isAllowedCurrentBrowser } from '@/services/utils';
 
 @Component({
   components: {
@@ -170,8 +171,8 @@ export default class Home extends Vue {
   }
 
   get isAllowedBrowser() {
-    return this.browser.getBrowserName() === 'Chrome' || window.navigator.brave;
-  }
+   return isAllowedCurrentBrowser();
+  } 
 
   get btnWalletClass() {
     return this.isAllowedBrowser ? 'wallet-button mb-0' : 'wallet-button-disabled mb-0';
