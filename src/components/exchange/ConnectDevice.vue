@@ -28,7 +28,7 @@
             <v-col cols="1">
               <div class="number">2</div>
             </v-col>
-            <v-col v-if="walletName !=='Liquality'" cols="11">
+            <v-col v-if="isHdWallet" cols="11">
               <p class="ma-0">Insert {{ walletName }} device PIN code</p>
             </v-col>
             <v-col v-if="walletName ==='Liquality'" cols="11">
