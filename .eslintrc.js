@@ -19,6 +19,10 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     'no-shadow': 'off',
     '@typescript-eslint/no-shadow': ['error'],
+    camelcase: 'off',
+    'no-use-before-define': 'off',
+    '@typescript-eslint/ban-types': 'off',
+    '@typescript-eslint/no-unused-vars': 'off',
   },
   overrides: [
     {
