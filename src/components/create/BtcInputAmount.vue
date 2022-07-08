@@ -75,6 +75,7 @@ import SatoshiBig from '@/types/SatoshiBig';
 import { BtcAccount, PegInTxState } from '@/types/pegInTx';
 import * as constants from '@/store/constants';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
+import { isBTCAmountValidRegex } from '@/services/utils';
 
 @Component({
 })
@@ -102,7 +103,7 @@ export default class BtcInputAmount extends Vue {
   @Getter(constants.PEGIN_TX_SELECT_ACCOUNT_TYPE, { namespace: 'pegInTx' }) selectAccount !: (accountType: BtcAccount) => void;
 
   get isBTCAmountValidNumberRegex() {
-    return /^[0-9]{1,8}(\.[0-9]{0,8})?$/.test(this.bitcoinAmount.toString());
+    return isBTCAmountValidRegex(this.bitcoinAmount);
   }
 
   get rbtcAmount() {
