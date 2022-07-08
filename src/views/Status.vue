@@ -179,6 +179,7 @@ import {
 } from '@/types';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import * as constants from '@/store/constants';
+import { setStatusMessage, getTime } from '@/services/utils';
 
 @Component({
   components: {
@@ -260,7 +261,7 @@ export default class Status extends Vue {
       this.btcConfirmations = this.btcConfirmations > this.btcConfirmationsRequired
         ? this.btcConfirmationsRequired : this.btcConfirmations;
     }
-    this.leftBtcTime = this.getTime((this.btcConfirmationsRequired - this.btcConfirmations) * 10);
+    this.leftBtcTime = getTime((this.btcConfirmationsRequired - this.btcConfirmations) * 10);
     this.btcConfirmationsPercentage = this.btcConfirmations <= this.btcConfirmationsRequired
       ? (this.btcConfirmations * 100) / this.btcConfirmationsRequired : 100;
     if (this.pegInStatus.status === constants.PegStatus.CONFIRMED) {
@@ -301,50 +302,14 @@ export default class Status extends Vue {
 
   @Emit()
   setMessage() {
-    switch (this.pegInStatus.status) {
-      case constants.PegStatus.CONFIRMED:
-        this.statusMessage = 'Your transaction was successfully processed!';
-        this.activeMessageStyle = 'statusSuccess';
-        this.isRejected = false;
-        break;
-      case constants.PegStatus.WAITING_CONFIRMATIONS:
-        this.statusMessage = `More ${this.environmentContext.getBtcText()} confirmations are yet needed, please wait`;
-        this.activeMessageStyle = 'statusProgress';
-        this.isRejected = false;
-        break;
-      case constants.PegStatus.REJECTED_REFUND:
-        this.statusMessage = `Your transaction was declined. \n Your ${this.environmentContext.getBtcTicker()} will be sent to the refund address`;
-        this.activeMessageStyle = 'statusRejected';
-        this.isRejected = true;
-        break;
-      case constants.PegStatus.REJECTED_NO_REFUND:
-        this.statusMessage = 'Your transaction was declined.';
-        this.activeMessageStyle = 'statusRejected';
-        this.isRejected = true;
-        break;
-      case constants.PegStatus.NOT_IN_BTC_YET:
-        this.statusMessage = `Your transaction is not in ${this.environmentContext.getBtcText()} yet.`;
-        this.activeMessageStyle = 'statusRejected';
-        this.isRejected = true;
-        break;
-      case constants.PegStatus.NOT_IN_RSK_YET:
-        this.statusMessage = `Waiting to be processed by the ${this.environmentContext.getRskText()} network`;
-        this.activeMessageStyle = 'statusProgress';
-        this.isRejected = false;
-        break;
-      case constants.PegStatus.ERROR_BELOW_MIN:
-        this.error = true;
-        this.errorMessage = 'The transaction is below the minimum amount required';
-        break;
-      case constants.PegStatus.ERROR_NOT_A_PEGIN:
-        this.error = true;
-        this.errorMessage = 'Unfortunately this is not recognized as a Peg in transaction, please check it and try again';
-        break;
-      case constants.PegStatus.ERROR_UNEXPECTED:
-        this.error = true;
-        this.errorMessage = 'The input transaction is not valid, please check it and try again';
-        break;
-      default:
+    const statusMsg = setStatusMessage(this.pegInStatus.status);
+    if (statusMsg?.isError) {
+      this.error = statusMsg?.isError;
+      this.errorMessage = statusMsg.errorMessage;
+    } else {
+      this.statusMessage = statusMsg?.statusMessage || '';
+      this.activeMessageStyle = statusMsg?.activeMessageStyle || '';
+      this.isRejected = statusMsg?.isRejected || false;
     }
   }
 
@@ -367,15 +332,6 @@ export default class Status extends Vue {
     this.setTxId(this.pegInStatus.btc.txId);
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  getTime(totalMinutes: number): string {
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    const paddedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-    return `${hours}:${paddedMinutes}`;
-  }
-
-  @Emit()
   clean() {
     this.txId = '';
     this.loading = false;
