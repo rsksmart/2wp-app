@@ -138,8 +138,7 @@ export default class LedgerService extends WalletService {
               const walletPublicKey = await btc.getWalletPublicKey(derivationPath, { format });
               walletAddresses.push({
                 address: walletPublicKey.bitcoinAddress,
-                serializedPath: derivationPath,
-                path: this.getSerializedPath(derivationPath),
+                derivationPath,
                 publicKey: walletPublicKey.publicKey,
               });
             }
