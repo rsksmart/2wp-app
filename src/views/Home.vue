@@ -109,9 +109,7 @@
 </template>
 
 <script lang="ts">
-import {
-  Vue, Component, Emit,
-} from 'vue-property-decorator';
+import { Component, Emit, Vue } from 'vue-property-decorator';
 import * as Bowser from 'bowser';
 import { Action, State } from 'vuex-class';
 import SelectBitcoinWallet from '@/components/exchange/SelectBitcoinWallet.vue';
