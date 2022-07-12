@@ -262,6 +262,7 @@ export default class Status extends Vue {
           this.loading = false;
         })
         .catch((e: Error) => {
+          console.log('>>>>>', e);
           this.errorMessage = e.message;
           this.error = true;
           this.loading = false;

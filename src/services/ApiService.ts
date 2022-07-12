@@ -100,7 +100,7 @@ export default class ApiService {
 
   public static getPegInStatus(txId: string): Promise<PeginStatus> {
     return new Promise<PeginStatus>((resolve, reject) => {
-      axios.get(`${this.baseURL}/pegin-status?txId=${txId}`)
+      axios.get(`${this.baseURL}/tx-status/${txId}`)
         .then((response) => {
           if (response.data.error) reject(response.data.error);
           resolve(response.data);
