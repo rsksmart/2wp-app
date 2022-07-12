@@ -1,6 +1,9 @@
 import { expect } from 'chai';
 import * as constants from '@/store/constants';
 import { getAccountType } from '@/services/utils';
+import { deriveBatchAddresses } from '@/utils';
+import { Purpose, WalletAddress } from '@/types';
+import { utilsTestData } from '../utils/testData';
 
 describe('Utils', () => {
   describe('getAccountType:', () => {
@@ -66,6 +69,22 @@ describe('Utils', () => {
       testCase.forEach((test) => {
         expect(getAccountType(test.address, constants.BTC_NETWORK_MAINNET))
           .to.be.eql(test.addressTypeExpected);
+      });
+    });
+  });
+  describe('Xpub derivation', () => {
+    it('should derive bech32 address from xpub', () => {
+      const walletAddresses: WalletAddress[] = deriveBatchAddresses(
+        'tpubDDsmvc8wDVeE9nzhg256fMSNjeT5GKtkTCRtFMypH9kHt4hvJobTB7YuLC1SM6JZSzbfmpgwXF5oXGNX2qS8MVd2dhCy2tfrMb85T8wpY9b',
+        Purpose.P2WPKH,
+        0,
+        10,
+      );
+      walletAddresses.forEach((walletAddress, idx) => {
+        const testData = utilsTestData[idx];
+        expect(walletAddress.publicKey).to.be.eql(testData.publicKey);
+        expect(walletAddress.address).to.be.eql(testData.address);
+        expect(walletAddress.derivationPath).to.be.eql(testData.derivationPath);
       });
     });
   });
