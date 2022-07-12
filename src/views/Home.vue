@@ -118,8 +118,9 @@ import EnvironmentContextProviderService from '@/providers/EnvironmentContextPro
 import { isAllowedCurrentBrowser } from '@/services/utils';
 import LiqualityService from '@/services/LiqualityService';
 import {
-  SessionState, TransactionType, PegInTxState, WalletAddress,
+  SessionState, TransactionType, PegInTxState, WalletAddress, Purpose,
 } from '@/types';
+import { deriveBatchAddresses } from '@/utils';
 
 @Component({
   components: {
@@ -174,6 +175,12 @@ export default class Home extends Vue {
     this.addPeg(undefined);
     await this.init();
     this.STATUS = false;
+    console.log(deriveBatchAddresses(
+      'tpubDDsmvc8wDVeE9nzhg256fMSNjeT5GKtkTCRtFMypH9kHt4hvJobTB7YuLC1SM6JZSzbfmpgwXF5oXGNX2qS8MVd2dhCy2tfrMb85T8wpY9b',
+      Purpose.P2WPKH,
+      0,
+      5,
+    ));
   }
 
   get btnWalletClass() {
