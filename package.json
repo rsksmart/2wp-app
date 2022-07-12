@@ -65,7 +65,7 @@
     "eslint-plugin-vue": "^6.2.2",
     "geckodriver": "^2.0.4",
     "jest": "^28.1.0",
-    "node-sass": "^6.0.1",
+    "node-sass": "^7.0.0",
     "sass": "^1.49.4",
     "sass-loader": "^10.2.0",
     "sinon": "^11.1.2",
