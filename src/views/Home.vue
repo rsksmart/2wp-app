@@ -117,8 +117,6 @@ import * as constants from '@/store/constants';
 import { PegInTxState } from '@/types/pegInTx';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import { SessionState, TransactionType } from '@/types/session';
-import { deriveBatchAddresses } from '@/utils';
-import { Purpose } from '@/types';
 
 @Component({
   components: {
@@ -167,12 +165,6 @@ export default class Home extends Vue {
     this.addPeg(undefined);
     await this.init();
     this.STATUS = false;
-    console.log(deriveBatchAddresses(
-      'tpubDDsmvc8wDVeE9nzhg256fMSNjeT5GKtkTCRtFMypH9kHt4hvJobTB7YuLC1SM6JZSzbfmpgwXF5oXGNX2qS8MVd2dhCy2tfrMb85T8wpY9b',
-      Purpose.P2WPKH,
-      0,
-      5,
-    ));
   }
 
   get isAllowedBrowser() {
