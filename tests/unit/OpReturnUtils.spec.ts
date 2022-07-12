@@ -1,12 +1,18 @@
-import { expect } from 'chai';
 import { isValidOpReturn } from '@/utils/OpReturnUtils';
 import { NormalizedOutput } from '@/types';
-/* eslint-disable */
+import * as constants from '@/store/constants';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 describe('function: isValidOptReturn', () => {
+  beforeEach(() => {
+    const defaultEnvironmentVariables = {
+      vueAppCoin: constants.BTC_NETWORK_TESTNET,
+    };
+    EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
+  });
   it('opReturn empty', async () => {
     const result = isValidOpReturn([], 'destinationAddress', 'refundAddress');
-    expect(result).to.be.false;
+    expect(result).toBe(false);
   });
 
   it('destinationAddress empty', async () => {
@@ -16,10 +22,10 @@ describe('function: isValidOptReturn', () => {
       op_return_data: opReturn,
     };
     const result = isValidOpReturn([normalizedOutput], '', 'mzBc4XEFSdzCDcTxAgf6EZXgsZWpztRhef');
-    expect(result).to.be.false;
+    expect(result).toBe(false);
   });
 
-  it('opReturn is not the first one value in the array', async () => {
+  it('opReturn is not the first one value in the array', () => {
     const opReturn = '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa01ccc198c15d8344c73da67a75509a85a8f4226636';
     const normalizedOutput: NormalizedOutput = {
       amount: '0',
@@ -27,10 +33,10 @@ describe('function: isValidOptReturn', () => {
     };
     const normalizedOutputNoOpReturn: NormalizedOutput = {
       amount: '1',
-      op_return_data: "",
+      op_return_data: undefined,
     };
-    const result = isValidOpReturn([normalizedOutputNoOpReturn, normalizedOutput], '0x224d0b72bab9342f898c633ef187abff8a96c0fa', 'mzBc4XEFSdzCDcTxAgf6EZXgsZWpztRhef');
-    expect(result).to.be.true;
+    const result = isValidOpReturn([normalizedOutput, normalizedOutputNoOpReturn], '0x224d0b72bab9342f898c633ef187abff8a96c0fa', 'mzBc4XEFSdzCDcTxAgf6EZXgsZWpztRhef');
+    expect(result).toBe(true);
   });
 
   it('wrong value for RSK destination address', async () => {
@@ -40,7 +46,7 @@ describe('function: isValidOptReturn', () => {
       op_return_data: opReturn,
     };
     const result = isValidOpReturn([normalizedOutput], '0x224d0b72bab9342f898c633ef187abff8a96c0fa', 'mzBc4XEFSdzCDcTxAgf6EZXgsZWpztRhef');
-    expect(result).to.be.false;
+    expect(result).toBe(false);
   });
 
   it('opReturn wrong length', async () => {
@@ -49,8 +55,8 @@ describe('function: isValidOptReturn', () => {
       amount: '0',
       op_return_data: opReturn,
     };
-    const result = isValidOpReturn([normalizedOutput], '', '') ;
-    expect(result).to.be.false;
+    const result = isValidOpReturn([normalizedOutput], '', '');
+    expect(result).toBe(false);
   });
 
   it('opReturn dont have RSK value', async () => {
@@ -59,8 +65,8 @@ describe('function: isValidOptReturn', () => {
       amount: '0',
       op_return_data: opReturn,
     };
-    const result = isValidOpReturn([normalizedOutput], '', '') ;
-    expect(result).to.be.false;
+    const result = isValidOpReturn([normalizedOutput], '', '');
+    expect(result).toBe(false);
   });
 
   it('opReturn can parse destination Address but not refund address', async () => {
@@ -69,8 +75,8 @@ describe('function: isValidOptReturn', () => {
       amount: '0',
       op_return_data: opReturn,
     };
-    const result = isValidOpReturn([normalizedOutput], '0x224d0b72bab9342f898c633ef187abff8a96c0fa', '') ;
-    expect(result).to.be.false;
+    const result = isValidOpReturn([normalizedOutput], '0x224d0b72bab9342f898c633ef187abff8a96c0fa', '');
+    expect(result).toBe(false);
   });
 
   it('opReturn can parse P2PKH', async () => {
@@ -80,7 +86,7 @@ describe('function: isValidOptReturn', () => {
       op_return_data: opReturn,
     };
     const result = isValidOpReturn([normalizedOutput], '0x224d0b72bab9342f898c633ef187abff8a96c0fa', 'mzBc4XEFSdzCDcTxAgf6EZXgsZWpztRhef');
-    expect(result).to.be.true;
+    expect(result).toBe(true);
   });
 
   it('opReturn can parse P2SH', async () => {
@@ -90,7 +96,7 @@ describe('function: isValidOptReturn', () => {
       op_return_data: opReturn,
     };
     const result = isValidOpReturn([normalizedOutput], '0x224d0b72bab9342f898c633ef187abff8a96c0fa', '2MxKEf2su6FGAUfCEAHreGFQvEYrfYNHvL7');
-    expect(result).to.be.true;
+    expect(result).toBe(true);
   });
 
   it('opReturn wrong type of refund address', async () => {
@@ -100,6 +106,6 @@ describe('function: isValidOptReturn', () => {
       op_return_data: opReturn,
     };
     const result = isValidOpReturn([normalizedOutput], '0x224d0b72bab9342f898c633ef187abff8a96c0fa', '2MxKEf2su6FGAUfCEAHreGFQvEYrfYNHvL7');
-    expect(result).to.be.false;
+    expect(result).toBe(false);
   });
 });

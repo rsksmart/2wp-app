@@ -5,8 +5,8 @@ import {
   NormalizedInput, NormalizedOutput, NormalizedTx, TrezorTx,
 } from '@/types';
 import { getAccountType } from '@/services/utils';
-import store from '../../store';
 import * as constants from '@/store/constants';
+import store from '../../store';
 import TxBuilder from './TxBuilder';
 
 export default class TrezorTxBuilder extends TxBuilder {

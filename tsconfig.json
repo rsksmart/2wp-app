@@ -19,8 +19,7 @@
     ],
     "types": [
       "webpack-env",
-      "mocha",
-      "chai",
+      "jest",
       "vuetify"
     ],
     "paths": {
@@ -39,8 +38,8 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "tests/**/*.ts",
-    "tests/**/*.tsx"
+    "tests2/**/*.ts",
+    "tests2/**/*.tsx"
   ],
   "exclude": [
     "node_modules"
