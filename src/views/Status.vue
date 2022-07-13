@@ -180,7 +180,7 @@ import { PegStatus } from '@/store/constants';
 import ApiService from '@/services/ApiService';
 import { PeginStatus } from '@/store/types';
 import { PegInTxState } from '@/store/peginTx/types';
-import { TxData } from '@/types';
+import { TxData, TxStatus, PegoutStatus, TxStatusType } from '@/types';
 import SatoshiBig from '@/types/SatoshiBig';
 
 @Component({
@@ -194,6 +194,10 @@ export default class Status extends Vue {
   txId = '';
 
   pegInStatus!: PeginStatus;
+  
+  pegOutStatus!: PegoutStatus;
+
+  txType!: TxStatusType;
 
   statusMessage = '';
 
@@ -253,16 +257,21 @@ export default class Status extends Vue {
       this.loading = true;
       this.error = false;
       if (this.$route.path !== `/status/txId/${this.txId}`) this.$router.push({ name: 'Status', params: { txId: this.txId } });
-      ApiService.getPegInStatus(this.txId)
-        .then((pegInStatus: PeginStatus) => {
-          this.pegInStatus = pegInStatus;
-          this.setMessage();
-          this.setSummary();
-          this.refreshPercentage();
+      ApiService.getTxStatus(this.txId)
+        .then((txStatus: TxStatus) => {
+          this.txType = txStatus.type;
+          if (txStatus.type === 'PEGIN') {
+            this.pegInStatus =<PeginStatus> txStatus.txDetails;
+            this.setMessage();
+            this.setSummary();
+            this.refreshPercentage();
+          } else {
+            this.pegOutStatus =<PegoutStatus> txStatus.txDetails;
+            this.setMessage();
+          }
           this.loading = false;
         })
         .catch((e: Error) => {
-          console.log('>>>>>', e);
           this.errorMessage = e.message;
           this.error = true;
           this.loading = false;
@@ -272,50 +281,55 @@ export default class Status extends Vue {
 
   @Emit()
   setMessage() {
-    switch (this.pegInStatus.status) {
-      case PegStatus.CONFIRMED:
-        this.statusMessage = 'Your transaction was successfully processed!';
-        this.activeMessageStyle = 'statusSuccess';
-        this.isRejected = false;
-        break;
-      case PegStatus.WAITING_CONFIRMATIONS:
-        this.statusMessage = 'More Bitcoin confirmations are yet needed, please wait';
-        this.activeMessageStyle = 'statusProgress';
-        this.isRejected = false;
-        break;
-      case PegStatus.REJECTED_REFUND:
-        this.statusMessage = 'Your transaction was declined. \n Your BTC will be sent to the refund address';
-        this.activeMessageStyle = 'statusRejected';
-        this.isRejected = true;
-        break;
-      case PegStatus.REJECTED_NO_REFUND:
-        this.statusMessage = 'Your transaction was declined.';
-        this.activeMessageStyle = 'statusRejected';
-        this.isRejected = true;
-        break;
-      case PegStatus.NOT_IN_BTC_YET:
-        this.statusMessage = 'Your transaction is not in BTC yet.';
-        this.activeMessageStyle = 'statusRejected';
-        this.isRejected = true;
-        break;
-      case PegStatus.NOT_IN_RSK_YET:
-        this.statusMessage = 'Waiting to be processed by the RSK network';
-        this.activeMessageStyle = 'statusProgress';
-        this.isRejected = false;
-        break;
-      case PegStatus.ERROR_BELOW_MIN:
-        this.error = true;
-        this.errorMessage = 'The transaction is below the minimum amount required';
-        break;
-      case PegStatus.ERROR_NOT_A_PEGIN:
-        this.error = true;
-        this.errorMessage = 'Unfortunately this is not recognized as a Peg in transaction, please check it and try again';
-        break;
-      case PegStatus.ERROR_UNEXPECTED:
-        this.error = true;
-        this.errorMessage = 'The input transaction is not valid, please check it and try again';
-        break;
-      default:
+    if (this.txType === 'PEGIN') {
+      switch (this.pegInStatus.status) {
+        case PegStatus.CONFIRMED:
+          this.statusMessage = 'Your transaction was successfully processed!';
+          this.activeMessageStyle = 'statusSuccess';
+          this.isRejected = false;
+          break;
+        case PegStatus.WAITING_CONFIRMATIONS:
+          this.statusMessage = 'More Bitcoin confirmations are yet needed, please wait';
+          this.activeMessageStyle = 'statusProgress';
+          this.isRejected = false;
+          break;
+        case PegStatus.REJECTED_REFUND:
+          this.statusMessage = 'Your transaction was declined. \n Your BTC will be sent to the refund address';
+          this.activeMessageStyle = 'statusRejected';
+          this.isRejected = true;
+          break;
+        case PegStatus.REJECTED_NO_REFUND:
+          this.statusMessage = 'Your transaction was declined.';
+          this.activeMessageStyle = 'statusRejected';
+          this.isRejected = true;
+          break;
+        case PegStatus.NOT_IN_BTC_YET:
+          this.statusMessage = 'Your transaction is not in BTC yet.';
+          this.activeMessageStyle = 'statusRejected';
+          this.isRejected = true;
+          break;
+        case PegStatus.NOT_IN_RSK_YET:
+          this.statusMessage = 'Waiting to be processed by the RSK network';
+          this.activeMessageStyle = 'statusProgress';
+          this.isRejected = false;
+          break;
+        case PegStatus.ERROR_BELOW_MIN:
+          this.error = true;
+          this.errorMessage = 'The transaction is below the minimum amount required';
+          break;
+        case PegStatus.ERROR_NOT_A_PEGIN:
+          this.error = true;
+          this.errorMessage = 'Unfortunately this is not recognized as a Peg in transaction, please check it and try again';
+          break;
+        case PegStatus.ERROR_UNEXPECTED:
+          this.error = true;
+          this.errorMessage = 'The input transaction is not valid, please check it and try again';
+          break;
+        default:
+      }
+    } else if (this.txType === 'PEGOUT') {
+      this.error = true;
+      this.errorMessage = 'Current transaction is not valid.';
     }
   }
 
