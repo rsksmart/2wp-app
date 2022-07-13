@@ -180,7 +180,9 @@ import { PegStatus } from '@/store/constants';
 import ApiService from '@/services/ApiService';
 import { PeginStatus } from '@/store/types';
 import { PegInTxState } from '@/store/peginTx/types';
-import { TxData, TxStatus, PegoutStatus, TxStatusType } from '@/types';
+import {
+  PegoutStatus, TxData, TxStatus, TxStatusType,
+} from '@/types';
 import SatoshiBig from '@/types/SatoshiBig';
 
 @Component({
@@ -194,7 +196,7 @@ export default class Status extends Vue {
   txId = '';
 
   pegInStatus!: PeginStatus;
-  
+
   pegOutStatus!: PegoutStatus;
 
   txType!: TxStatusType;
@@ -260,13 +262,13 @@ export default class Status extends Vue {
       ApiService.getTxStatus(this.txId)
         .then((txStatus: TxStatus) => {
           this.txType = txStatus.type;
-          if (txStatus.type === 'PEGIN') {
-            this.pegInStatus =<PeginStatus> txStatus.txDetails;
+          if (txStatus.type === TxStatusType.PEGIN) {
+            this.pegInStatus = txStatus.txDetails as PeginStatus;
             this.setMessage();
             this.setSummary();
             this.refreshPercentage();
           } else {
-            this.pegOutStatus =<PegoutStatus> txStatus.txDetails;
+            this.pegOutStatus = txStatus.txDetails as PegoutStatus;
             this.setMessage();
           }
           this.loading = false;
