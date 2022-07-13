@@ -81,7 +81,35 @@ describe('Utils', () => {
         10,
       );
       walletAddresses.forEach((walletAddress, idx) => {
-        const testData = utilsTestData[idx];
+        const testData = utilsTestData.bech32[idx];
+        expect(walletAddress.publicKey).to.be.eql(testData.publicKey);
+        expect(walletAddress.address).to.be.eql(testData.address);
+        expect(walletAddress.derivationPath).to.be.eql(testData.derivationPath);
+      });
+    });
+    it('should derive P2SH address from xpub', () => {
+      const walletAddresses: WalletAddress[] = deriveBatchAddresses(
+        'tpubDCpdqtWZuFMLHi3k82eMsxCQj3V2PPRfMDEs9yVrenVqfNpmeb69tDqcXRyc6krZJWLqnTePuK3BRCrjQ7nwQrZ2LtPxDLdBLrvRgjVfaTF',
+        Purpose.P2SH,
+        0,
+        10,
+      );
+      walletAddresses.forEach((walletAddress, idx) => {
+        const testData = utilsTestData.p2sh[idx];
+        expect(walletAddress.publicKey).to.be.eql(testData.publicKey);
+        expect(walletAddress.address).to.be.eql(testData.address);
+        expect(walletAddress.derivationPath).to.be.eql(testData.derivationPath);
+      });
+    });
+    it('should derive P2PKH address from xpub', () => {
+      const walletAddresses: WalletAddress[] = deriveBatchAddresses(
+        'tpubDCNCQfGTtVzaoQtb7GnYSBKbpE8KeZFB3RuaNM5W51gKjy541iuuZFNf7mUjDiByj3cvMxUxySs1hHeL1kXvNPRDqCHFNW8cpNaqGwpWpUU',
+        Purpose.P2PKH,
+        0,
+        10,
+      );
+      walletAddresses.forEach((walletAddress, idx) => {
+        const testData = utilsTestData.p2pkh[idx];
         expect(walletAddress.publicKey).to.be.eql(testData.publicKey);
         expect(walletAddress.address).to.be.eql(testData.address);
         expect(walletAddress.derivationPath).to.be.eql(testData.derivationPath);
