@@ -62,11 +62,15 @@ describe('TxSummary', () => {
     amountToTransfer: new SatoshiBig(0.00500000, 'btc'),
     isValidAmountToTransfer: true,
     rskAddressSelected: 'dfgdsg0dgs90h00nhs8996s8as5f76hgel',
+    statusInfo: {
+      txId: '0x626aa59df0ddd31b3cd42612df7885213693f5ff0364ee88ed2eae87abce30a5',
+    },
   };
 
   const getters = {
     [constants.PEGIN_TX_GET_REFUND_ADDRESS]: () => 'n2y1xQBv3cqmRPke7QBWy52F91ZdgrYUgh',
     [constants.PEGIN_TX_GET_SAFE_TX_FEE]: () => state.calculatedFees.average,
+    [constants.PEGIN_TX_GET_STATUS_TX_ID]: () => state.statusInfo.txId,
   };
   const store = new Vuex.Store({
     modules: {

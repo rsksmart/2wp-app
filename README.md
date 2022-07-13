@@ -43,8 +43,25 @@ docker-compose up
 ```
 
 ### Testing
+To execute unit tests, run:
 ```shel
-npm test:unit
+npm run test:unit
+```
+It should execute 6 test suites with 28 tests in total.
+
+Like this example:
+```
+ PASS  tests/unit/PowPegAddressUtils.spec.ts
+ PASS  tests/unit/SatoshiBig.spec.ts
+ PASS  tests/unit/utils.spec.ts
+ PASS  tests/unit/OpReturnUtils.spec.ts
+ PASS  tests/unit/txSummary.spec.ts
+ PASS  tests/unit/ApiService.spec.ts
+
+Test Suites: 6 passed, 6 total
+Tests:       28 passed, 28 total
+Snapshots:   0 total
+Time:        2.809s
 ```
 
 ### Running Lint
