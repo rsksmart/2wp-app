@@ -34,7 +34,6 @@
         </v-row>
       </v-container>
       <v-row justify="center" v-if="isPegOut" class="mt-6">
-        <div>Pegout status: {{pegOutStatus.status}}</div>
       </v-row>
 
       <v-container fluid class="transactions px-0">
