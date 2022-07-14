@@ -33,7 +33,6 @@
           </div>
         </v-row>
       </v-container>
-
       <v-container fluid class="transactions px-0">
         <!--  TODO: create a pegin-tx-summary component-->
         <tx-pegin
