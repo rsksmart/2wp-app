@@ -1,6 +1,14 @@
 import axios from 'axios';
-import { WalletAddress, PeginConfiguration } from '@/store/peginTx/types';
-import { AccountBalance, FeeAmountData, NormalizedTx, TxStatus } from '@/types';
+import {
+  WalletAddress,
+  PeginConfiguration,
+} from '@/store/peginTx/types';
+import {
+  AccountBalance,
+  FeeAmountData,
+  NormalizedTx,
+  TxStatus,
+} from '@/types';
 import { PeginStatus } from '@/store/types';
 import { isValidOpReturn } from './OpReturnUtils';
 import { isValidPowPegAddress } from './PowPegAddressUtils';
