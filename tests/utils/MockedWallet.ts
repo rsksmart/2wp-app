@@ -1,4 +1,5 @@
 import {
+  BtcAccount,
   LedgerSignedTx, TrezorSignedTx, Tx, WalletAddress,
 } from '@/types';
 import { WalletService } from '@/services';
