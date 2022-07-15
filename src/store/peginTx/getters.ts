@@ -86,7 +86,7 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       if (state.addressList) {
         state.addressList.forEach((walletAddress) => {
           if (walletAddress.address === address) {
-            derivationPath = walletAddress.serializedPath;
+            derivationPath = walletAddress.derivationPath;
           }
         });
       }
