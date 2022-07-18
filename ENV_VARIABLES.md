@@ -21,6 +21,8 @@ The value of these variables are used in **environment-variables.ts** file.
 
 
 ##Example for .env.local.test file
+
+```dotenv
 VUE_APP_COIN=test
 VUE_APP_MANIFEST_EMAIL=
 VUE_APP_MANIFEST_APP_URL=
@@ -35,3 +37,5 @@ VUE_APP_WALLET_MAX_CALLS_LEDGER=2
 VUE_APP_WALLET_ADDRESSES_PER_CALL_LEDGER=4
 VUE_APP_WALLET_MAX_CALLS_LIQUALITY=10
 VUE_APP_WALLET_ADDRESSES_PER_CALL_LIQUALITY=1
+
+```
