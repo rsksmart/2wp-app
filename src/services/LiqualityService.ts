@@ -26,21 +26,19 @@ export default class LiqualityService extends WalletService {
   private enable(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       const w = window as Window;
-      if (!this.enabled) {
-        try {
-          if (w.bitcoin) {
-            this.bitcoinProvider = window.bitcoin;
-            this.bitcoinProvider.enable()
-              .then(([address]: LiqualityAddress[]) => {
-                this.enabled = !!address;
-                resolve();
-              });
-          }
-        } catch (e) {
-          reject(e);
+      try {
+        if (!this.enabled && w.bitcoin) {
+          this.bitcoinProvider = window.bitcoin;
+          window.bitcoin.enable()
+            .then(([address]: LiqualityAddress[]) => {
+              this.enabled = !!address;
+              resolve();
+            });
+        } else {
+          reject(new Error('Liquality software wallet not installed on your browser'));
         }
-      } else {
-        resolve();
+      } catch (e) {
+        reject(e);
       }
     });
   }
@@ -48,31 +46,35 @@ export default class LiqualityService extends WalletService {
   getAccountAddresses(batch: number, index: number): Promise<WalletAddress[]> {
     return new Promise<WalletAddress[]>((resolve, reject) => {
       const walletAddresses: WalletAddress[] = [];
-      this.enable()
-        .then(() => Promise.all([
-          this.bitcoinProvider.request({
-            method: LiqualityMethods.GET_ADDRESS,
-            params: [index, batch, true],
-          }),
-          this.bitcoinProvider.request({
-            method: LiqualityMethods.GET_ADDRESS,
-            params: [index, batch, false],
-          }),
-        ]))
-        .then(([changeAddreses, noChangeAddresses]) => {
-          const addresses = noChangeAddresses as LiqualityGetAddressesResponse[];
-          addresses.concat(changeAddreses as LiqualityGetAddressesResponse[])
-            .forEach((liqualityAddress: LiqualityGetAddressesResponse) => {
-              walletAddresses.push({
-                address: liqualityAddress.address,
-                serializedPath: liqualityAddress.derivationPath,
-                publicKey: liqualityAddress.publicKey,
-                path: [0],
+      try {
+        this.enable()
+          .then(() => Promise.all([
+            this.bitcoinProvider.request({
+              method: LiqualityMethods.GET_ADDRESS,
+              params: [index, batch, true],
+            }),
+            this.bitcoinProvider.request({
+              method: LiqualityMethods.GET_ADDRESS,
+              params: [index, batch, false],
+            }),
+          ]))
+          .then(([changeAddreses, noChangeAddresses]) => {
+            const addresses = noChangeAddresses as LiqualityGetAddressesResponse[];
+            addresses.concat(changeAddreses as LiqualityGetAddressesResponse[])
+              .forEach((liqualityAddress: LiqualityGetAddressesResponse) => {
+                walletAddresses.push({
+                  address: liqualityAddress.address,
+                  serializedPath: liqualityAddress.derivationPath,
+                  publicKey: liqualityAddress.publicKey,
+                  path: [0],
+                });
               });
-            });
-          resolve(walletAddresses);
-        })
-        .catch(reject);
+            resolve(walletAddresses);
+          }).catch(reject);
+      } catch (e) {
+        console.log(e);
+        reject(e);
+      }
     });
   }
 
