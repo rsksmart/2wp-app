@@ -2,7 +2,7 @@
 This table was created to guide and centralize the **environment variables** necessary for correct execution.
 The value of these variables are used in **environment-variables.ts** file.
 
-|NAM                                         |DEV VALUE                      |DETAILS                                                  |
+|NAME                                        |DEV VALUE                      |DETAILS                                                  |
 |--------------------------------------------|-------------------------------|---------------------------------------------------------|
 |VUE_APP_COIN                                |`test or main`                 |'testnet or mainnet'                                     |
 |VUE_APP_MANIFEST_EMAIL                      |``                             |                                                         |
