@@ -73,7 +73,7 @@ describe('Liquality Service:', () => {
         expect(mockedBitcoinProvider.enable.notCalled).to.be.true;
         // eslint-disable-next-line no-unused-expressions
         expect(request.calledTwice).to.be.true;
-      });
+      }).catch((e) => expect(e.message).to.be.eql('Liquality software wallet not installed on your browser'));
   });
   it('should return a wallet signed tx', () => {
     mockedBitcoinProvider = sinon.createStubInstance(MockedBtcProvider);

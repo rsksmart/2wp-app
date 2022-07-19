@@ -46,35 +46,30 @@ export default class LiqualityService extends WalletService {
   getAccountAddresses(batch: number, index: number): Promise<WalletAddress[]> {
     return new Promise<WalletAddress[]>((resolve, reject) => {
       const walletAddresses: WalletAddress[] = [];
-      try {
-        this.enable()
-          .then(() => Promise.all([
-            this.bitcoinProvider.request({
-              method: LiqualityMethods.GET_ADDRESS,
-              params: [index, batch, true],
-            }),
-            this.bitcoinProvider.request({
-              method: LiqualityMethods.GET_ADDRESS,
-              params: [index, batch, false],
-            }),
-          ]))
-          .then(([changeAddreses, noChangeAddresses]) => {
-            const addresses = noChangeAddresses as LiqualityGetAddressesResponse[];
-            addresses.concat(changeAddreses as LiqualityGetAddressesResponse[])
-              .forEach((liqualityAddress: LiqualityGetAddressesResponse) => {
-                walletAddresses.push({
-                  address: liqualityAddress.address,
-                  serializedPath: liqualityAddress.derivationPath,
-                  publicKey: liqualityAddress.publicKey,
-                  path: [0],
-                });
+      this.enable()
+        .then(() => Promise.all([
+          this.bitcoinProvider.request({
+            method: LiqualityMethods.GET_ADDRESS,
+            params: [index, batch, true],
+          }),
+          this.bitcoinProvider.request({
+            method: LiqualityMethods.GET_ADDRESS,
+            params: [index, batch, false],
+          }),
+        ]))
+        .then(([changeAddreses, noChangeAddresses]) => {
+          const addresses = noChangeAddresses as LiqualityGetAddressesResponse[];
+          addresses.concat(changeAddreses as LiqualityGetAddressesResponse[])
+            .forEach((liqualityAddress: LiqualityGetAddressesResponse) => {
+              walletAddresses.push({
+                address: liqualityAddress.address,
+                serializedPath: liqualityAddress.derivationPath,
+                publicKey: liqualityAddress.publicKey,
+                path: [0],
               });
-            resolve(walletAddresses);
-          }).catch(reject);
-      } catch (e) {
-        console.log(e);
-        reject(e);
-      }
+            });
+          resolve(walletAddresses);
+        }).catch(reject);
     });
   }
 
