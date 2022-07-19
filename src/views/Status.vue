@@ -198,7 +198,7 @@ export default class Status extends Vue {
 
   txId = '';
 
-  txType = 'PEGIN';
+  txType = TxStatusType.PEGIN;
 
   pegInStatus!: PeginStatus;
 
@@ -326,7 +326,7 @@ export default class Status extends Vue {
 
   @Emit()
   setMessage() {
-    if (this.txType === 'PEGIN') {
+    if (this.txType === TxStatusType.PEGIN) {
       switch (this.pegInStatus.status) {
         case constants.PegStatus.CONFIRMED:
           this.statusMessage = 'Your transaction was successfully processed!';
