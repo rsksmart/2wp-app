@@ -162,8 +162,20 @@ export default class TrezorService extends WalletService {
     });
   }
 
-  // eslint-disable-next-line class-methods-use-this
   getXpub(accountType: string, accountNumber: number): Promise<string> {
-    throw new Error('Method not implemented.');
+    return new Promise<string>((resolve, reject) => {
+      TrezorConnect.getAccountInfo({
+        path: this.getAccountPath(accountType, accountNumber),
+        coin: this.trezorCoin,
+      })
+        .then((accountInfo) => {
+          if (accountInfo.success) {
+            resolve(accountInfo.payload.descriptor);
+          } else {
+            reject(new Error(`Error getting account info: ${accountInfo.payload.error}`));
+          }
+        })
+        .catch(reject);
+    });
   }
 }
