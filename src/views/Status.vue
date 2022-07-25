@@ -33,8 +33,6 @@
           </div>
         </v-row>
       </v-container>
-      <v-row justify="center" v-if="isPegOut" class="mt-6">
-      </v-row>
 
       <v-container fluid class="transactions px-0">
         <!--  TODO: create a pegin-tx-summary component-->
