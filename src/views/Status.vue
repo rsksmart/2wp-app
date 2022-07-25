@@ -133,7 +133,7 @@ export default class Status extends Vue {
   @Action(constants.PEGIN_TX_ADD_BITCOIN_PRICE, { namespace: 'pegInTx' }) getBtcPrice !: () => Promise<void>;
 
   get showStatus() {
-    return !this.loading && !this.error && !!this.statusMessage;
+    return !this.loading && !this.error && !this.statusMessage;
   }
 
   @Emit()
