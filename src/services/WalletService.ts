@@ -7,7 +7,6 @@ import {
 } from '@/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import { deriveBatchAddresses } from '@/utils';
-import store from '@/store';
 
 export default abstract class WalletService {
   protected coin: string;
@@ -17,6 +16,8 @@ export default abstract class WalletService {
     p2sh: string;
     p2wpkh: string;
   };
+
+  protected currentAccount = 0;
 
   protected subscribers:
     Array<(balance: AccountBalance, addressList: WalletAddress[]) => void > = [];
@@ -142,22 +143,14 @@ export default abstract class WalletService {
     };
     this.loadingBalances = true;
     const maxAddressPerCall: number = this.getWalletAddressesPerCall();
-    const isHdWallet: boolean = store.getters[`pegInTx/${constants.PEGIN_TX_IS_HD_WALLET}`];
-    const currentAccount = 0;
-    if (isHdWallet) await this.getAccountsXpub(currentAccount);
     try {
       for (
         let startFrom = 0;
         startFrom < (this.getWalletMaxCall() * maxAddressPerCall) && this.subscribers.length !== 0;
         startFrom += maxAddressPerCall
       ) {
-        let addresses: WalletAddress[] = [];
-        if (isHdWallet) {
-          addresses = this.getDerivedAddresses(maxAddressPerCall, startFrom);
-        } else {
-          // eslint-disable-next-line no-await-in-loop
-          addresses = await this.getAccountAddresses(maxAddressPerCall, startFrom);
-        }
+        // eslint-disable-next-line no-await-in-loop
+        let addresses = await this.getAccountAddresses(maxAddressPerCall, startFrom);
         if (addresses.length === 0) {
           throw new Error('Error getting list of addresses - List of addresses is empty');
         }
@@ -223,7 +216,7 @@ export default abstract class WalletService {
       });
   }
 
-  private async getAccountsXpub(accountIdx: number): Promise<void> {
+  protected async getAccountsXpub(accountIdx: number): Promise<void> {
     this.extendedPubKeys = {
       p2pkh: await this.getXpub(constants.BITCOIN_LEGACY_ADDRESS, accountIdx),
       p2sh: await this.getXpub(constants.BITCOIN_SEGWIT_ADDRESS, accountIdx),
@@ -231,7 +224,7 @@ export default abstract class WalletService {
     };
   }
 
-  private getDerivedAddresses(batch: number, startFrom: number) : Array<WalletAddress> {
+  protected getDerivedAddresses(batch: number, startFrom: number) : Array<WalletAddress> {
     const batchPerAccount = Math.ceil(batch / 3);
     return deriveBatchAddresses(
       this.extendedPubKeys.p2wpkh,
