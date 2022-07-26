@@ -5,13 +5,12 @@ The value of these variables are used in **environment-variables.ts** file.
 |NAME                                        |DEV VALUE                      |DETAILS                                                  |
 |--------------------------------------------|-------------------------------|---------------------------------------------------------|
 |VUE_APP_COIN                                |`test or main`                 |'testnet or mainnet'                                     |
-|VUE_APP_MANIFEST_EMAIL                      |``                             |                                                         |
-|VUE_APP_MANIFEST_APP_URL                    |``                             |<URL_FOR_TREZOR_MANIFEST> ## 'https://2waypeg.rsk.co/'   |
+|VUE_APP_MANIFEST_EMAIL                      |                               |                                                         |
+|VUE_APP_MANIFEST_APP_URL                    |                               |<URL_FOR_TREZOR_MANIFEST> ## 'https://2waypeg.rsk.co/'   |
 |VUE_APP_API_BASE_URL                        |                               |API Back-end URL                                         |
 |VUE_APP_RSK_NODE_HOST                       |                               |NODE RSK URL                                             | 
 |VUE_APP_HOTJAR_ID                           |                               |<HOT_JAR_ID_FOR_THE_ENVIRONMENT>                         |
 |VUE_APP_RSK_EXPLORER                        |                               |RSK EXPLORER URL                                         |
-|BASE_URL                                    | /                             |APP BASE URL                                             |  
 |VUE_APP_WALLET_MAX_CALLS_TREZOR             | 10                            |MAX CALLS TREZOR                                         |
 |VUE_APP_WALLET_ADDRESSES_PER_CALL_TREZOR    | 1                             |ADDRESSES PER_CALL                                       |
 |VUE_APP_WALLET_MAX_CALLS_LEDGER             | 2                             |MAX CALLS LEDGER                                         |
@@ -20,13 +19,12 @@ The value of these variables are used in **environment-variables.ts** file.
 |VUE_APP_WALLET_ADDRESSES_PER_CALL_LIQUALITY | 1                             |ADDRESSES PER CALL                                       |
 
 
-##Example for .env.local.test file
+## Example for .env.local.test file
 
 ```dotenv
 VUE_APP_COIN=test
 VUE_APP_MANIFEST_EMAIL=
 VUE_APP_MANIFEST_APP_URL=
-BASE_URL=/
 VUE_APP_API_BASE_URL=http://localhost:3000
 VUE_APP_RSK_NODE_HOST=
 VUE_APP_HOTJAR_ID=
