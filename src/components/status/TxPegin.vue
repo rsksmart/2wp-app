@@ -1,7 +1,6 @@
 <template>
-  <v-container fluid class="px-0 mx-0 max-width">
-    <v-col>
-      <!--
+  <v-col>
+    <v-container fluid class="px-0 mb-10 max-width">
       <v-row justify="center" class="mt-6">
         <v-col cols="7">
           <v-row v-if="isRejected" class="mx-0 d-flex justify-center progress-bar">
@@ -110,18 +109,16 @@
           </v-row>
         </v-col>
       </v-row>
-
-      -->
-      <v-row>
-        <tx-summary
-          :statusFee="currentFee"
-          :statusRefundAddress="currentRefundAddress"
-          :txId="txId"
-          :showTxId="true"
-          :initialExpand="true"/>
-      </v-row>
-    </v-col>
-  </v-container>
+    </v-container>
+    <v-row>
+      <tx-summary
+        :statusFee="currentFee"
+        :statusRefundAddress="currentRefundAddress"
+        :txId="txId"
+        :showTxId="true"
+        :initialExpand="true"/>
+    </v-row>
+  </v-col>
 </template>
 
 <script lang="ts">
@@ -147,7 +144,7 @@ import * as constants from '@/store/constants';
   },
 })
 
-export default class TxPeginStatus extends Vue {
+export default class TxPegin extends Vue {
   txData!: TxData;
 
   currentFee = new SatoshiBig('0', 'btc');
@@ -164,11 +161,13 @@ export default class TxPeginStatus extends Vue {
 
   leftBtcTime = '';
 
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+
+  @Prop() txId!: string;
+
   @Prop() pegInStatus!: PeginStatus;
 
   @Prop() isRejected!: boolean;
-
-  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
   @Action(constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER, { namespace: 'pegInTx' }) setAmount!: (amount: SatoshiBig) => void;
 
@@ -210,9 +209,8 @@ export default class TxPeginStatus extends Vue {
     }
   }
 
-  @Emit()
-  setSummary() {
-    this.txData = {
+  setSummaryData() {
+    const txData = {
       amount: new SatoshiBig(this.pegInStatus.btc.amountTransferred, 'btc'),
       refundAddress: this.pegInStatus.btc.refundAddress,
       recipient: this.pegInStatus.rsk.recipientAddress,
@@ -220,10 +218,15 @@ export default class TxPeginStatus extends Vue {
       change: '',
     };
     this.peginInit();
-    this.setAmount(this.txData.amount);
-    this.currentFee = this.txData.feeBTC;
-    this.currentRefundAddress = this.txData.refundAddress;
-    this.setRskAddress(this.txData.recipient);
+    this.setAmount(txData.amount);
+    this.currentFee = txData.feeBTC;
+    this.currentRefundAddress = txData.refundAddress;
+    this.setRskAddress(txData.recipient);
+  }
+
+  created() {
+    this.setSummaryData();
+    this.refreshPercentage();
   }
 }
 </script>

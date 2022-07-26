@@ -19,9 +19,5 @@ import {
 @Component({})
 export default class TxPegout extends Vue {
   @Prop() pegStatus!: PegoutStatusDataModel;
-
-  created() {
-    console.log('>>>>>', this.pegStatus);
-  }
 }
 </script>
