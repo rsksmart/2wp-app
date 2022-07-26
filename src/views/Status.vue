@@ -140,7 +140,7 @@ export default class Status extends Vue {
   @Action(constants.PEGIN_TX_ADD_STATUS_TX_ID, { namespace: 'pegInTx' }) setTxId !: (txId: string) => void;
 
   get showStatus() {
-    return !this.loading && !this.error && !this.statusMessage;
+    return !this.loading && !this.error && !!this.statusMessage;
   }
 
   @Emit()
