@@ -130,12 +130,6 @@ export default class Status extends Vue {
 
   @State('pegInTx') peginTxState!: PegInTxState;
 
-  @Action(constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER, { namespace: 'pegInTx' }) setAmount !: (amount: SatoshiBig) => void;
-
-  @Action(constants.PEGIN_TX_ADD_RSK_ADDRESS, { namespace: 'pegInTx' }) setRskAddress !: (address: string) => void;
-
-  @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) peginInit !: () => void;
-
   @Action(constants.PEGIN_TX_ADD_BITCOIN_PRICE, { namespace: 'pegInTx' }) getBtcPrice !: () => Promise<void>;
 
   get showStatus() {
