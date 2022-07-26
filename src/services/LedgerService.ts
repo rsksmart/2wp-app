@@ -118,7 +118,7 @@ export default class LedgerService extends WalletService {
     return bundle;
   }
 
-  public getAccountAddresses(batch: number, index: number): Promise<WalletAddress[]> {
+  private getAccountAddressesFromWallet(batch: number, index: number): Promise<WalletAddress[]> {
     const bundle = this.getAddressesBundle(index, batch);
     return LedgerTransportService.getInstance()
       .enqueueRequest(
@@ -148,6 +148,25 @@ export default class LedgerService extends WalletService {
           resolve(walletAddresses);
         }),
       );
+  }
+
+  public getAccountAddresses(batch: number, index: number): Promise<WalletAddress[]> {
+    return new Promise<WalletAddress[]>((resolve, reject) => {
+      const { p2pkh, p2sh, p2wpkh } = this.extendedPubKeys;
+      const enabledXpub = true;
+      if (p2pkh && p2sh && p2wpkh) {
+        resolve(this.getDerivedAddresses(batch, index));
+      } else if (enabledXpub) {
+        this.getAccountsXpub(this.currentAccount)
+          .then(() => this.getDerivedAddresses(batch, index))
+          .then(resolve)
+          .catch(reject);
+      } else {
+        this.getAccountAddressesFromWallet(batch, index)
+          .then(resolve)
+          .catch(reject);
+      }
+    });
   }
 
   public static getLedgerAddressFormat(accountType: string): 'legacy' | 'p2sh' | 'bech32' {
