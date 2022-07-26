@@ -35,11 +35,16 @@
       </v-container>
 
       <v-container fluid class="transactions px-0">
-          Rejected {{ isRejected }}
-          show status {{ showStatus }}
-
+        <!--  TODO: create a pegin-tx-summary component-->
+        <tx-pegin
+          v-if="!isRejected && showStatus && isPegIn"
+          :txId ="txId"
+          :pegInStatus='pegInStatus'
+          />
+         <!--  TODO: create a pegout-tx-summary component-->
         <tx-pegout
           v-if="!isRejected && showStatus && isPegOut"
+          :txId ="txId"
           :pegStatus="pegOutStatus"
         />
         <v-row justify="center" class="mx-0 mt-5">
@@ -66,6 +71,7 @@ import {
 } from 'vue-property-decorator';
 import { State, Action } from 'vuex-class';
 import TxPegout from '@/components/status/TxPegout.vue';
+import TxPegin from '@/components/status/TxPegin.vue';
 import { ApiService } from '@/services';
 import {
   MiningSpeedFee, PeginStatus, TxData, PegInTxState,
@@ -77,6 +83,7 @@ import * as constants from '@/store/constants';
 @Component({
   components: {
     TxPegout,
+    TxPegin,
   },
 })
 export default class Status extends Vue {
@@ -137,7 +144,7 @@ export default class Status extends Vue {
   @Action(constants.PEGIN_TX_ADD_STATUS_TX_ID, { namespace: 'pegInTx' }) setTxId !: (txId: string) => void;
 
   get showStatus() {
-    return !this.loading && !this.error && !this.statusMessage;
+    return !this.loading && !this.error && !!this.statusMessage;
   }
 
   @Emit()
