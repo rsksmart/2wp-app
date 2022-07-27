@@ -157,7 +157,7 @@ export default class LedgerService extends WalletService {
       if (p2pkh && p2sh && p2wpkh) {
         resolve(this.getDerivedAddresses(batch, index));
       } else if (enabledXpub) {
-        this.getAccountsXpub(this.currentAccount)
+        this.setAccountsXpub(this.currentAccount)
           .then(() => this.getDerivedAddresses(batch, index))
           .then(resolve)
           .catch(reject);
