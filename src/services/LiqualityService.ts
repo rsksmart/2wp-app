@@ -25,20 +25,15 @@ export default class LiqualityService extends WalletService {
 
   private enable(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      const w = window as Window;
       try {
-        if (!this.enabled && w.bitcoin) {
-          this.bitcoinProvider = window.bitcoin;
-          window.bitcoin.enable()
-            .then(([address]: LiqualityAddress[]) => {
-              this.enabled = !!address;
-              resolve();
-            });
-        } else {
-          reject(new Error('Liquality software wallet not installed on your browser'));
-        }
+        this.bitcoinProvider = window.bitcoin;
+        window.bitcoin.enable()
+          .then(([address]: LiqualityAddress[]) => {
+            this.enabled = !!address;
+            resolve();
+          });
       } catch (e) {
-        reject(e);
+        reject(new Error('Liquality software wallet not installed on your browser'));
       }
     });
   }
