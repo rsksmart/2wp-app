@@ -13,13 +13,10 @@ import { EnvironmentAccessorService } from '@/services/enviroment-accessor.servi
 export default class LiqualityService extends WalletService {
   private bitcoinProvider!: WindowBitcoinProvider;
 
-  private enabled = false;
-
   constructor(testBitcoinProvider?: WindowBitcoinProvider) {
     super();
     if (testBitcoinProvider) {
       this.bitcoinProvider = testBitcoinProvider;
-      this.enabled = true;
     }
   }
 
@@ -28,8 +25,7 @@ export default class LiqualityService extends WalletService {
       try {
         this.bitcoinProvider = window.bitcoin;
         window.bitcoin.enable()
-          .then(([address]: LiqualityAddress[]) => {
-            this.enabled = !!address;
+          .then(() => {
             resolve();
           });
       } catch (e) {
