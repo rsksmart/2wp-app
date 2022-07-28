@@ -4,7 +4,7 @@ The value of these variables are used in **environment-variables.ts** file.
 
 |NAME                                        |DEV VALUE    |DETAILS                                                                                                     |
 |--------------------------------------------|-------------|------------------------------------------------------------------------------------------------------------|
-|VUE_APP_COIN                                |`test / main`|The network that will be used 'testnet or mainnet'                                                          |
+|VUE_APP_COIN                                |`test / main`|The network that will be used for the bitcoin library. Accepted values are `test` or `main`                                                          |
 |VUE_APP_MANIFEST_EMAIL                      |             |                                                                                                            |
 |VUE_APP_MANIFEST_APP_URL                    |             |Trezor connect Manifest is described [here](https://github.com/trezor/connect/blob/develop/docs/index.md)   |
 |VUE_APP_API_BASE_URL                        |             |URL of the API (2wp-api) which is the BackEnd                                                               |
