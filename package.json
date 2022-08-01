@@ -5,7 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "test:unit": "vue-cli-service test:unit --setupTestFrameworkScriptFile=./tests/setup.js",
+    "test:unit": "vue-cli-service test:unit --setupTestFrameworkScriptFile=./tests/setup.js --collect-coverage",
     "lint": "vue-cli-service lint",
     "scanner": "npx sonar-scanner"
   },
