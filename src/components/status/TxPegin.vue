@@ -134,9 +134,11 @@ import {
   PeginStatus,
   TxData,
   SatoshiBig,
+  TxStatusType,
 } from '@/types';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import * as constants from '@/store/constants';
+import { getTime, setStatusMessage } from '@/services/utils';
 
 @Component({
   components: {
@@ -183,14 +185,6 @@ export default class TxPegin extends Vue {
     return this.pegInStatus.status === constants.PegStatus.CONFIRMED;
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  getTime(totalMinutes: number): string {
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    const paddedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-    return `${hours}:${paddedMinutes}`;
-  }
-
   @Emit()
   refreshPercentage() {
     if (this.pegInStatus) {
@@ -199,7 +193,7 @@ export default class TxPegin extends Vue {
       this.btcConfirmations = this.btcConfirmations > this.btcConfirmationsRequired
         ? this.btcConfirmationsRequired : this.btcConfirmations;
     }
-    this.leftBtcTime = this.getTime((this.btcConfirmationsRequired - this.btcConfirmations) * 10);
+    this.leftBtcTime = getTime((this.btcConfirmationsRequired - this.btcConfirmations) * 10);
     this.btcConfirmationsPercentage = this.btcConfirmations <= this.btcConfirmationsRequired
       ? (this.btcConfirmations * 100) / this.btcConfirmationsRequired : 100;
     if (this.pegInStatus.status === constants.PegStatus.CONFIRMED) {
@@ -224,9 +218,15 @@ export default class TxPegin extends Vue {
     this.setRskAddress(txData.recipient);
   }
 
+  @Emit('setMessage')
+  setMessage() {
+    return setStatusMessage(TxStatusType.PEGIN, this.pegInStatus.status);
+  }
+
   created() {
     this.setSummaryData();
     this.refreshPercentage();
+    this.setMessage();
   }
 }
 </script>
