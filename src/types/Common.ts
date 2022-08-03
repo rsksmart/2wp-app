@@ -65,6 +65,14 @@ export interface PegInFormValues {
   txFeeIndex: number;
 }
 
+export interface TxStatusMessage {
+  statusMessage: string,
+  activeMessageStyle: string,
+  isRejected: boolean,
+  error: boolean,
+  errorMessage: string;
+}
+
 export interface AddressStatus {
   address: string;
   unused: boolean;
