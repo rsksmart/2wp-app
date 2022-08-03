@@ -1,6 +1,7 @@
 import * as constants from '@/store/constants';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
-import { AppNetwork } from '@/types';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
+import { AppNetwork, TxStatusType, TxStatusMessage } from '@/types';
 
 export function getAccountType(address: string, network: AppNetwork): string {
   const [legacyTestReg, segwitTestReg, nativeTestReg] = network === constants.BTC_NETWORK_MAINNET
@@ -46,4 +47,83 @@ export function getMainLogo() {
       // eslint-disable-next-line global-require
       return require('@/assets/logo-beta.svg');
   }
+}
+
+// eslint-disable-next-line class-methods-use-this
+export function getTime(totalMinutes: number): string {
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  const paddedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+  return `${hours}:${paddedMinutes}`;
+}
+
+export function setStatusMessage(txType: string, status: string): TxStatusMessage {
+  const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+
+  let statusMessage = '';
+  let activeMessageStyle = '';
+  let isRejected = false;
+
+  let error = false;
+  let errorMessage = '';
+
+  if (txType === TxStatusType.PEGIN) {
+    switch (status) {
+      case constants.PegStatus.CONFIRMED:
+        statusMessage = 'Your transaction was successfully processed!';
+        activeMessageStyle = 'statusSuccess';
+        isRejected = false;
+        break;
+      case constants.PegStatus.WAITING_CONFIRMATIONS:
+        statusMessage = `More ${environmentContext.getBtcText()} confirmations are yet needed, please wait`;
+        activeMessageStyle = 'statusProgress';
+        isRejected = false;
+        break;
+      case constants.PegStatus.REJECTED_REFUND:
+        statusMessage = `Your transaction was declined. \n Your ${environmentContext.getBtcTicker()} will be sent to the refund address`;
+        activeMessageStyle = 'statusRejected';
+        isRejected = true;
+        break;
+      case constants.PegStatus.REJECTED_NO_REFUND:
+        statusMessage = 'Your transaction was declined.';
+        activeMessageStyle = 'statusRejected';
+        isRejected = true;
+        break;
+      case constants.PegStatus.NOT_IN_BTC_YET:
+        statusMessage = `Your transaction is not in ${environmentContext.getBtcText()} yet.`;
+        activeMessageStyle = 'statusRejected';
+        isRejected = true;
+        break;
+      case constants.PegStatus.NOT_IN_RSK_YET:
+        statusMessage = `Waiting to be processed by the ${environmentContext.getRskText()} network`;
+        activeMessageStyle = 'statusProgress';
+        isRejected = false;
+        break;
+      case constants.PegStatus.ERROR_BELOW_MIN:
+        error = true;
+        errorMessage = 'The transaction is below the minimum amount required';
+        break;
+      case constants.PegStatus.ERROR_NOT_A_PEGIN:
+        error = true;
+        errorMessage = 'Unfortunately this is not recognized as a Peg in transaction, please check it and try again';
+        break;
+      case constants.PegStatus.ERROR_UNEXPECTED:
+        error = true;
+        errorMessage = 'The input transaction is not valid, please check it and try again';
+        break;
+      default:
+    }
+  } else if (txType === TxStatusType.PEGOUT) {
+    statusMessage = 'Current transaction is not valid.';
+    activeMessageStyle = 'statusRejected';
+    isRejected = true;
+  }
+
+  return {
+    statusMessage,
+    activeMessageStyle,
+    isRejected,
+    error,
+    errorMessage,
+  };
 }
