@@ -8,20 +8,9 @@ npm install
 ```
 ### Environment variables
 Create a `.env.local` file in order to store locally the required variables for the app with the following fields:
-```dotenv
-VUE_APP_COIN='test' ## or main
-VUE_APP_MANIFEST_EMAIL= <EMAIL_FOR_TREZOR_MANIFEST>
-VUE_APP_MANIFEST_APP_URL= <URL_FOR_TREZOR_MANIFEST> ## 'https://2wp-app.rsk.co/'
-VUE_APP_API_BASE_URL= <API_URL>
-VUE_APP_RSK_NODE_HOST=<RSK_NODE_HOST>
-## Address Calls for specific wallet
-VUE_APP_WALLET_ADDRESSES_PER_CALL_TREZOR=10
-VUE_APP_WALLET_MAX_CALLS_TREZOR=1
-VUE_APP_WALLET_ADDRESSES_PER_CALL_LEDGER=2
-VUE_APP_WALLET_MAX_CALLS_LEDGER=8
-## Analitycs tool
-VUE_APP_HOTJAR_ID=<HOT_JAR_ID_FOR_THE_ENVIRONMENT>
-```
+
+All environment variables are listed in this [here](./ENV_VARIABLES.md).
+
 ## Development mode
 The **2wp-app** application will run on **8080 port**.
 
@@ -48,8 +37,25 @@ docker-compose up
 ```
 
 ### Testing
+To execute unit tests, run:
 ```shel
-npm test:unit
+npm run test:unit
+```
+It should execute 6 test suites with 28 tests in total.
+
+Like this example:
+```
+ PASS  tests/unit/PowPegAddressUtils.spec.ts
+ PASS  tests/unit/SatoshiBig.spec.ts
+ PASS  tests/unit/utils.spec.ts
+ PASS  tests/unit/OpReturnUtils.spec.ts
+ PASS  tests/unit/txSummary.spec.ts
+ PASS  tests/unit/ApiService.spec.ts
+
+Test Suites: 6 passed, 6 total
+Tests:       28 passed, 28 total
+Snapshots:   0 total
+Time:        2.809s
 ```
 
 ### Running Lint

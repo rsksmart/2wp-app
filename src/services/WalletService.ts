@@ -178,7 +178,7 @@ export default abstract class WalletService {
           return;
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(`Balance Error: ${error.message}`);
     } finally {
       this.loadingBalances = false;
