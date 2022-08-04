@@ -49,11 +49,8 @@ import { Machine } from '@/services/utils';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
 import LiqualityTxBuilder from '@/middleware/TxBuilder/LiqualityTxBuilder';
 import TxBuilder from '@/middleware/TxBuilder/TxBuilder';
-<<<<<<< HEAD
 import { getClearPeginTxState } from '@/utils';
-=======
 import ConfirmLiqualityTransaction from '@/components/liquality/ConfirmLiqualityTransaction.vue';
->>>>>>> Updating OpReturn verifications for outputs
 
 @Component({
   components: {
