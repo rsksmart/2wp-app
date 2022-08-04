@@ -18,7 +18,7 @@ export default class TrezorService extends WalletService {
 
   constructor() {
     super();
-    switch (this.coin) {
+    switch (this.network) {
       case constants.BTC_NETWORK_MAINNET:
         this.bitcoinJsNetwork = bitcoin.networks.bitcoin;
         this.trezorCoin = 'BTC';
@@ -32,16 +32,6 @@ export default class TrezorService extends WalletService {
       email: EnvironmentAccessorService.getEnvironmentVariables().vueAppManifestEmail,
       appUrl: EnvironmentAccessorService.getEnvironmentVariables().vueAppManifestAppUrl,
     });
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  public getWalletAddressesPerCall(): number {
-    return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletAddressesPerCallTrezor;
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  public getWalletMaxCall(): number {
-    return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletMaxCallTrezor;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-inferrable-types
@@ -162,7 +152,7 @@ export default class TrezorService extends WalletService {
     });
   }
 
-  // eslint-disable-next-line class-methods-use-this
+  // eslint-disable-next-line class-methods-use-this,@typescript-eslint/no-unused-vars
   getXpub(accountType: string, accountNumber: number): Promise<string> {
     throw new Error('Method not implemented.');
   }
