@@ -520,18 +520,6 @@ export default class SendBitcoinForm extends Vue {
 
   @Action(constants.SESSION_CONNECT_WEB3, { namespace: 'web3Session' }) connectWeb3 !: any;
 
-  // eslint-disable-next-line class-methods-use-this
-  get maxAddressesLedger(): number {
-    return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletAddressesPerCallLedger
-      * EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletMaxCallLedger;
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  get maxAddressesTrezor(): number {
-    return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletAddressesPerCallTrezor
-      * EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletMaxCallTrezor;
-  }
-
   get safeAmount(): SatoshiBig {
     return new SatoshiBig(this.bitcoinAmount, 'btc');
   }
