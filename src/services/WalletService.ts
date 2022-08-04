@@ -197,8 +197,11 @@ export default abstract class WalletService {
       }
       this.loadingBalances = false;
       this.informSubscribers(this.balanceAccumulated, []);
-    } catch (error: any) {
-      throw new Error(`Balance Error: ${error.message}`);
+    } catch (error) {
+      if (!error.message) {
+        error.message = 'Error fetching balance';
+      }
+      throw error;
     } finally {
       this.loadingBalances = false;
     }
