@@ -13,17 +13,9 @@ export class EnvironmentVariables {
 
   public vueAppManifestAppUrl: string;
 
-  public vueAppWalletMaxCallTrezor: number;
+  public vueAppWalletAddressHardStop: number;
 
-  public vueAppWalletAddressesPerCallTrezor: number;
-
-  public vueAppWalletMaxCallLedger: number;
-
-  public vueAppWalletAddressesPerCallLedger: number;
-
-  public vueAppWalletMaxCallLiquality: number;
-
-  public vueAppWalletAddressesPerCallLiquality: number;
+  public vueAppWalletAddressPerCall: number;
 
   public vueAppRskExplorer: string;
 
@@ -41,25 +33,11 @@ export class EnvironmentVariables {
       || defaultValues.vueAppManifestEmail;
     this.vueAppManifestAppUrl = process.env.VUE_APP_MANIFEST_APP_URL
       || defaultValues.vueAppManifestAppUrl;
-    this.vueAppWalletMaxCallTrezor = Number(process.env.VUE_APP_WALLET_MAX_CALLS_TREZOR)
-      || defaultValues.vueAppWalletMaxCallTrezor;
-    this.vueAppWalletAddressesPerCallTrezor
-    // eslint-disable-next-line operator-linebreak
-      = Number(process.env.VUE_APP_WALLET_ADDRESSES_PER_CALL_TREZOR)
-      || defaultValues.vueAppWalletAddressesPerCallTrezor;
-    this.vueAppWalletMaxCallLedger = Number(process.env.VUE_APP_WALLET_MAX_CALLS_LEDGER)
-      || defaultValues.vueAppWalletMaxCallLedger;
-    this.vueAppWalletAddressesPerCallLedger
-    // eslint-disable-next-line operator-linebreak
-      = Number(process.env.VUE_APP_WALLET_ADDRESSES_PER_CALL_LEDGER)
-      || defaultValues.vueAppWalletAddressesPerCallLedger;
+    this.vueAppWalletAddressHardStop = Number(process.env.VUE_APP_WALLET_ADDRESSES_HARD_STOP)
+      || defaultValues.vueAppWalletAddressHardStop;
+    this.vueAppWalletAddressPerCall = Number(process.env.VUE_APP_WALLET_ADDRESS_PER_CALL)
+      || defaultValues.vueAppWalletAddressPerCall;
     this.vueAppRskExplorer = process.env.VUE_APP_RSK_EXPLORER || defaultValues.vueAppRskExplorer;
     this.vueAppHotjarId = process.env.VUE_APP_HOTJAR_ID || defaultValues.vueAppHotjarId;
-    this.vueAppWalletMaxCallLiquality = Number(process.env.VUE_APP_WALLET_MAX_CALLS_LIQUALITY)
-      || defaultValues.vueAppWalletMaxCallLiquality;
-    this.vueAppWalletAddressesPerCallLiquality
-      // eslint-disable-next-line operator-linebreak
-      = Number(process.env.VUE_APP_WALLET_ADDRESSES_PER_CALL_LIQUALITY)
-      || defaultValues.vueAppWalletAddressesPerCallLiquality;
   }
 }

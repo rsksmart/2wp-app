@@ -12,11 +12,11 @@ import { WalletService } from '@/services';
 import LedgerTransportService from '@/services/LedgerTransportService';
 
 export default class LedgerService extends WalletService {
-  private network: bitcoin.Network;
+  private bitcoinJsNetwork: bitcoin.Network;
 
   constructor() {
     super();
-    this.network = this.coin === constants.BTC_NETWORK_MAINNET
+    this.bitcoinJsNetwork = this.network === constants.BTC_NETWORK_MAINNET
       ? bitcoin.networks.bitcoin : bitcoin.networks.testnet;
   }
 
@@ -46,16 +46,6 @@ export default class LedgerService extends WalletService {
           }
         }),
       );
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  public getWalletAddressesPerCall(): number {
-    return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletAddressesPerCallLedger;
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  public getWalletMaxCall(): number {
-    return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletMaxCallLedger;
   }
 
   public static splitTransaction(hexTx: string): Promise<LedgerjsTransaction> {
