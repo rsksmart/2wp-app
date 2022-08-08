@@ -2,7 +2,8 @@
   <v-container fluid class="px-md-0">
     <template v-if="!peginTxState.walletDataReady">
       <connect-device @continueToForm="startAskingForBalance"
-                      :sendBitcoinState="sendBitcoinState"/>
+                      :sendBitcoinState="sendBitcoinState"
+                      :showDialog="showDialog"/>
     </template>
     <template v-if="peginTxState.walletDataReady">
       <component :is="currentComponent"
@@ -185,6 +186,7 @@ export default class SendBitcoin extends Vue {
   @Emit()
   closeDialog() {
     this.showDialog = false;
+    console.log(this.showDialog);
   }
 
   @Emit()
