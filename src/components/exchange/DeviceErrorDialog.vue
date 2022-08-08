@@ -9,7 +9,7 @@
       </v-row>
       <v-col cols="12" align-self="center" class="pt-0">
         <v-col offset="3" cols="6">
-          <p class="justify-center">{{ errorMessage }}</p>
+          <p class="justify-center"><span v-html="errorMessage"></span></p>
         </v-col>
         <v-row class="mx-0 mb-10" justify="space-around">
           <v-btn width="200" height="50" dense outlined rounded color="#00B520" @click="toExchange">
