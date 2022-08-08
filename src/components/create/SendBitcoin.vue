@@ -186,7 +186,6 @@ export default class SendBitcoin extends Vue {
   @Emit()
   closeDialog() {
     this.showDialog = false;
-    console.log(this.showDialog);
   }
 
   @Emit()
