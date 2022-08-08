@@ -60,10 +60,10 @@
             <span>Back</span>
           </v-btn>
         </v-col>
-        <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0">
-          <v-btn v-if="sendBitcoinState === 'idle' || sendBitcoinState === 'error'"
+        <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0" v-if="isHdWallet">
+          <v-btn v-if="(sendBitcoinState === 'idle' || sendBitcoinState === 'error') && isHdWallet"
                  rounded color="#00B520" width="110"
-                 :disabled="sendBitcoinState === 'error' || walletName ==='Liquality'"
+                 :disabled="sendBitcoinState === 'error'"
                  @click="continueToForm">
             <span class="whiteish">Continue</span>
           </v-btn>
@@ -124,12 +124,14 @@ export default class ConnectDevice extends Vue {
   }
 
   beforeMount() {
+    console.log(`Liquality is showing dialog ${this.showDialog}`);
     this.connectLiquality();
   }
 
   @Watch('showDialog')
   connectLiquality() {
     if (this.walletName === 'Liquality' && !this.showDialog) {
+      console.log(this.showDialog);
       this.continueToForm();
     }
   }
