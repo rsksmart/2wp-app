@@ -63,7 +63,7 @@
         <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0">
           <v-btn v-if="sendBitcoinState === 'idle' || sendBitcoinState === 'error'"
                  rounded color="#00B520" width="110"
-                 :disabled="sendBitcoinState === 'error'"
+                 :disabled="sendBitcoinState === 'error' || walletName ==='Liquality'"
                  @click="continueToForm">
             <span class="whiteish">Continue</span>
           </v-btn>
@@ -77,7 +77,7 @@
 
 <script lang="ts">
 import {
-  Component, Prop, Vue, Emit,
+  Component, Prop, Vue, Emit, Watch,
 } from 'vue-property-decorator';
 import { Getter, State, Action } from 'vuex-class';
 import * as constants from '@/store/constants';
@@ -94,6 +94,8 @@ export default class ConnectDevice extends Vue {
   @Prop() device!: string;
 
   @Prop() sendBitcoinState!: SendBitcoinState;
+
+  @Prop() showDialog!: boolean;
 
   @State('pegInTx') peginTxState!: PegInTxState;
 
@@ -119,6 +121,17 @@ export default class ConnectDevice extends Vue {
   @Emit('continueToForm')
   continueToForm() {
     return this.peginTxState.bitcoinWallet;
+  }
+
+  beforeMount() {
+    this.connectLiquality();
+  }
+
+  @Watch('showDialog')
+  connectLiquality() {
+    if (this.walletName === 'Liquality' && !this.showDialog) {
+      this.continueToForm();
+    }
   }
 
   @Emit()

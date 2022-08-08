@@ -179,7 +179,12 @@ export default abstract class WalletService {
         }
       }
     } catch (error) {
-      throw new Error('Error balance');
+      let { message } = error;
+
+      if (!message) {
+        message = 'Error balance';
+      }
+      throw new Error(message);
     } finally {
       this.loadingBalances = false;
     }
