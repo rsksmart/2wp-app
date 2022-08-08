@@ -182,7 +182,7 @@ export default abstract class WalletService {
       let { message } = error;
 
       if (!message) {
-        message = 'Error balance';
+        message = 'Error fetching balance';
       }
       throw new Error(message);
     } finally {

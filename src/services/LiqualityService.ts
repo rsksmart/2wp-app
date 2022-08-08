@@ -1,5 +1,6 @@
 import * as bitcoin from 'bitcoinjs-lib';
 import {
+  LiqualityError,
   LiqualityGetAddressesResponse,
   LiqualityMethods, LiqualitySignedTx,
   LiqualityTx,
@@ -28,7 +29,7 @@ export default class LiqualityService extends WalletService {
             resolve();
           });
       } catch (e) {
-        reject(new Error('Liquality software wallet not installed on your browser </br> <a target=\'_blank\' href=\'https://developers.rsk.co/solutions/liquality/\'/>Click here to know how to enable liquality.</a>'));
+        reject(new Error());
       }
     });
   }

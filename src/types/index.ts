@@ -8,3 +8,4 @@ export * from './store';
 export * from './view';
 export { default as SatoshiBig } from './SatoshiBig';
 export * from './Liquality';
+export * from './exception/LiqualityError';
