@@ -1,6 +1,5 @@
 import * as bitcoin from 'bitcoinjs-lib';
 import {
-  LiqualityAddress,
   LiqualityGetAddressesResponse,
   LiqualityMethods, LiqualitySignedTx,
   LiqualityTx,
