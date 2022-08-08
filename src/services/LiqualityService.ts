@@ -29,7 +29,7 @@ export default class LiqualityService extends WalletService {
             resolve();
           });
       } catch (e) {
-        reject(new Error());
+        reject(new LiqualityError());
       }
     });
   }
