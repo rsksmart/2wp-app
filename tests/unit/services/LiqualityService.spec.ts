@@ -66,6 +66,8 @@ describe('Liquality Service:', () => {
       })));
     enable.resolves();
     const liqualityService = new LiqualityService(mockedBitcoinProvider);
+    sinon.stub(LiqualityService.prototype, 'enable' as any).returns(Promise.resolve({}));
+
     return liqualityService.getAccountAddresses(batch, startFrom)
       .then((walletAddresses) => {
         expect(walletAddresses.length).to.be.eql(batch * 2);
@@ -74,6 +76,43 @@ describe('Liquality Service:', () => {
         // eslint-disable-next-line no-unused-expressions
         expect(request.calledTwice).to.be.true;
       });
+  });
+  it('should return exception when Liquality plugin is not installed', () => {
+    mockedBitcoinProvider = sinon.createStubInstance(MockedBtcProvider);
+    enable = mockedBitcoinProvider.enable;
+    request = mockedBitcoinProvider.request;
+    const batch = 2;
+    const startFrom = 0;
+    request.withArgs({
+      method: LiqualityMethods.GET_ADDRESS,
+      params: [startFrom, batch, true],
+    }).resolves(mockedData.addressList
+      .filter((addressItem) => addressItem.serializedPath
+        .split('/')[4] === '1')
+      .slice(startFrom, startFrom + batch)
+      .map((addressItem, index) => ({
+        address: addressItem.address,
+        derivationPath: addressItem.serializedPath,
+        publicKey: 'testPublicKey',
+        index,
+      })));
+    request.withArgs({
+      method: LiqualityMethods.GET_ADDRESS,
+      params: [startFrom, batch, false],
+    }).resolves(mockedData.addressList
+      .filter((addressItem) => addressItem.serializedPath
+        .split('/')[4] === '0')
+      .slice(startFrom, startFrom + batch)
+      .map((addressItem, index) => ({
+        address: addressItem.address,
+        derivationPath: addressItem.serializedPath,
+        publicKey: 'testPublicKey',
+        index,
+      })));
+    enable.resolves();
+    const liqualityService = new LiqualityService(mockedBitcoinProvider);
+    return liqualityService.getAccountAddresses(batch, startFrom)
+      .then().catch((e) => expect(e.message).to.be.eql('Liquality software wallet not installed on your browser'));
   });
   it('should return a wallet signed tx', () => {
     mockedBitcoinProvider = sinon.createStubInstance(MockedBtcProvider);
