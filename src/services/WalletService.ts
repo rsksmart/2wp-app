@@ -143,6 +143,7 @@ export default abstract class WalletService {
     };
     this.loadingBalances = true;
     const maxAddressPerCall: number = this.getWalletAddressesPerCall();
+    let addresses: Array<WalletAddress> = [];
     try {
       for (
         let startFrom = 0;
@@ -150,7 +151,7 @@ export default abstract class WalletService {
         startFrom += maxAddressPerCall
       ) {
         // eslint-disable-next-line no-await-in-loop
-        let addresses = await this.getAccountAddresses(maxAddressPerCall, startFrom);
+        addresses = await this.getAccountAddresses(maxAddressPerCall, startFrom);
         if (addresses.length === 0) {
           throw new Error('Error getting list of addresses - List of addresses is empty');
         }
@@ -197,6 +198,7 @@ export default abstract class WalletService {
       throw new Error(`Balance Error: ${error.message}`);
     } finally {
       this.loadingBalances = false;
+      this.informSubscribers(balanceAccumulated, addresses);
     }
   }
 
