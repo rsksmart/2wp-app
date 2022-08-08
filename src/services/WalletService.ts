@@ -178,6 +178,7 @@ export default abstract class WalletService {
           return;
         }
       }
+      this.informSubscribers(balanceAccumulated, addresses);
     } catch (error) {
       let { message } = error;
 
@@ -187,7 +188,6 @@ export default abstract class WalletService {
       throw new Error(message);
     } finally {
       this.loadingBalances = false;
-      this.informSubscribers(balanceAccumulated, addresses);
     }
   }
 
