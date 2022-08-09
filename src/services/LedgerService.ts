@@ -1,6 +1,5 @@
 import Btc from '@ledgerhq/hw-app-btc';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import _ from 'lodash';
 import * as bitcoin from 'bitcoinjs-lib';
 import * as constants from '@/store/constants';
 import { BtcAccount, WalletAddress } from '@/types/pegInTx';
@@ -81,82 +80,39 @@ export default class LedgerService extends WalletService {
       );
   }
 
-  private getAddressesBundle(startFrom: number, batchSize: number, accountIndex = 0):
-    { derivationPath: string; format: 'legacy' | 'p2sh' | 'bech32' | undefined }[] {
-    const bundle: { derivationPath: string; format: 'legacy' | 'p2sh' | 'bech32' | undefined }[] = [];
-    for (let index: number = startFrom; index < (startFrom + batchSize); index += 1) {
-      let change = true;
-      _.range(2).forEach(() => {
-        bundle.push({
-          derivationPath: super.getDerivationPath(constants
-            .BITCOIN_LEGACY_ADDRESS, accountIndex, change, index),
-          format: 'legacy',
-        });
-        bundle.push({
-          derivationPath: super.getDerivationPath(constants
-            .BITCOIN_SEGWIT_ADDRESS, accountIndex, change, index),
-          format: 'p2sh',
-        });
-        bundle.push({
-          derivationPath: super.getDerivationPath(constants
-            .BITCOIN_NATIVE_SEGWIT_ADDRESS, accountIndex, change, index),
-          format: 'bech32',
-        });
-        change = !change;
-      });
-    }
-    return bundle;
-  }
-
-  private getAccountAddressesFromWallet(batch: number, index: number): Promise<WalletAddress[]> {
-    const bundle = this.getAddressesBundle(index, batch);
-    return LedgerTransportService.getInstance()
-      .enqueueRequest(
-        // eslint-disable-next-line no-async-promise-executor
-        (transport: TransportWebUSB) => new Promise<WalletAddress[]>(async (resolve, reject) => {
-          const walletAddresses: WalletAddress[] = [];
-          try {
-            await this.checkApp(transport);
-            const btc = new Btc(transport);
-            // eslint-disable-next-line no-restricted-syntax
-            for (const item of bundle) {
-              if (this.subscribers.length === 0) {
-                break;
-              }
-              const { derivationPath, format } = item;
-              // eslint-disable-next-line no-await-in-loop
-              const walletPublicKey = await btc.getWalletPublicKey(derivationPath, { format });
-              walletAddresses.push({
-                address: walletPublicKey.bitcoinAddress,
-                derivationPath,
-                publicKey: walletPublicKey.publicKey,
-              });
-            }
-          } catch (e) {
-            reject(e);
-          }
-          resolve(walletAddresses);
-        }),
-      );
-  }
-
-  public getAccountAddresses(batch: number, index: number): Promise<WalletAddress[]> {
+  public getAccountAddresses(): Promise<WalletAddress[]> {
+    console.log(this);
     return new Promise<WalletAddress[]>((resolve, reject) => {
       const { p2pkh, p2sh, p2wpkh } = this.extendedPubKeys;
       const enabledXpub = true;
       if (p2pkh && p2sh && p2wpkh) {
-        resolve(this.getDerivedAddresses(batch, index));
+        resolve(this.getFullBatchAddresses());
       } else if (enabledXpub) {
         this.setAccountsXpub(this.currentAccount)
-          .then(() => this.getDerivedAddresses(batch, index))
-          .then(resolve)
-          .catch(reject);
-      } else {
-        this.getAccountAddressesFromWallet(batch, index)
+          .then(() => this.getFullBatchAddresses())
           .then(resolve)
           .catch(reject);
       }
     });
+  }
+
+  private getFullBatchAddresses(): Array<WalletAddress> {
+    let addressList: Array<WalletAddress> = [];
+    const { legacy, segwit, nativeSegwit } = this.addressesToFetch;
+    addressList = addressList.concat(
+      this.getDerivedAddresses(
+        legacy.count, legacy.lastIndex, constants.BITCOIN_LEGACY_ADDRESS,
+      ),
+    ).concat(
+      this.getDerivedAddresses(
+        segwit.count, segwit.lastIndex, constants.BITCOIN_SEGWIT_ADDRESS,
+      ),
+    ).concat(
+      this.getDerivedAddresses(
+        nativeSegwit.count, nativeSegwit.lastIndex, constants.BITCOIN_NATIVE_SEGWIT_ADDRESS,
+      ),
+    );
+    return addressList;
   }
 
   public static getLedgerAddressFormat(accountType: string): 'legacy' | 'p2sh' | 'bech32' {

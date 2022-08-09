@@ -121,6 +121,8 @@ export const LEDGER_APP_BTC = 'Bitcoin';
 export const LEDGER_BTC_MAIN_XPUB_VERSION = 0x0488b21e;
 export const LEDGER_BTC_TEST_XPUB_VERSION = 0x043587cf;
 
+export const MAX_ADJACENT_UNUSED_ADDRESSES = 20;
+
 // eslint-disable-next-line no-shadow
 export enum PegStatus {
   WAITING_CONFIRMATIONS = 'WAITING_CONFIRMATIONS',
