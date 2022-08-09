@@ -62,8 +62,6 @@ export default abstract class WalletService {
     };
   }
 
-  // abstract isWalletEnabled(): Promise<boolean>;
-
   abstract getAccountAddresses(): Promise<WalletAddress[]>;
 
   abstract sign(tx: Tx): Promise<SignedTx>;
