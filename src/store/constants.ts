@@ -134,6 +134,8 @@ export const STATUS_SET_CLEAR = 'STATUS_SET_CLEAR';
 export const STATUS_IS_REJECTED = 'STATUS_IS_REJECTED';
 export const STATUS_GET_ACTIVE_MESSAGE = 'STATUS_GET_ACTIVE_MESSAGE';
 
+export const MAX_ADJACENT_UNUSED_ADDRESSES = 20;
+
 // eslint-disable-next-line no-shadow
 export enum PegStatus {
   WAITING_CONFIRMATIONS = 'WAITING_CONFIRMATIONS',

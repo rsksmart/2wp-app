@@ -30,6 +30,26 @@ export const mockedData = {
       serializedPath: "m/84'/1'/0'/1/0",
       address: 'tb1qfuk3j0l4qn4uzstc47uwk68kedmjwuucl7avqr',
     },
+    {
+      path: [2147483697, 2147483649, 2147483648, 0, 0],
+      serializedPath: "m/49'/1'/0'/0/0",
+      address: '2NC4DCae9HdL6vjWMDbQwTkYEAB22MF3TPs',
+    },
+    {
+      path: [2147483697, 2147483649, 2147483648, 1, 0],
+      serializedPath: "m/49'/1'/0'/1/0",
+      address: '2NCZ2CNYiz4rrHq3miUHerUMcLyeWU4gw9C',
+    },
+    {
+      path: [2147483732, 2147483649, 2147483648, 0, 0],
+      serializedPath: "m/84'/1'/0'/0/0",
+      address: 'tb1qtanvhhl8ve32tcdxkrsamyy6vq5p62ctdv89l0',
+    },
+    {
+      path: [2147483732, 2147483649, 2147483648, 1, 0],
+      serializedPath: "m/84'/1'/0'/1/0",
+      address: 'tb1qfuk3j0l4qn4uzstc47uwk68kedmjwuucl7avqr',
+    },
   ],
   unsignedPsbtTx: 'cHNidP8BAIwCAAAAAb6hieXASwYwnR8XbmcDgNUkjVOTeAzNiPGYh/aPD+EsAQAAAAD/////AoA4AQAAAAAAF6kUKjE7kWeo9a+5LB7KLZfnMDJpd6yHAAAAAAAAAAAwai5SU0tUAaRLlla6QWPQyCF0Z/ZJypfHXcbHAZIQ1LWM+Y5emhWCSoFcMPqPEFTFAAAAAAABAR+ghgEAAAAAABYAFCuE1USu0/U1nfid4HYu4LSLAdIBAAAA',
   signedPsbtTx: 'cHNidP8BAIwCAAAAAb6hieXASwYwnR8XbmcDgNUkjVOTeAzNiPGYh/aPD+EsAQAAAAD/////AoA4AQAAAAAAF6kUKjE7kWeo9a+5LB7KLZfnMDJpd6yHAAAAAAAAAAAwai5SU0tUAaRLlla6QWPQyCF0Z/ZJypfHXcbHAZIQ1LWM+Y5emhWCSoFcMPqPEFTFAAAAAAABAR+ghgEAAAAAABYAFCuE1USu0/U1nfid4HYu4LSLAdIBIgIDznCbCr01vtJ8huWKHp/zpeZ7SToDjJxRrIIWRkvfciBIMEUCIQDvZFfApV2+VWkGCicRZrL1MUVSR6OuH1wcFEMbn5iNUQIgWWBgr4VP3TG5ajPq9fy3cuz+QDmkekIRF5NZVXs3VNsBAAAA',
