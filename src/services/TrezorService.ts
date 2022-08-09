@@ -34,44 +34,54 @@ export default class TrezorService extends WalletService {
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
-  private getAddressesBundle(startFrom: number, batchSize: number, accountIndex: number = 0):
-      GetAddress[] {
+  private getAddressesBundle(): GetAddress[] {
     const bundle: GetAddress[] = [];
-    for (let index: number = startFrom; index < (startFrom + batchSize); index += 1) {
+    const { legacy, segwit, nativeSegwit } = this.addressesToFetch;
+    for (
+      let index: number = legacy.lastIndex; index < (legacy.lastIndex + legacy.count); index += 1
+    ) {
       bundle.push({
         path: super.getDerivationPath(constants
-          .BITCOIN_LEGACY_ADDRESS, accountIndex, false, index),
+          .BITCOIN_LEGACY_ADDRESS, this.currentAccount, false, index),
         showOnTrezor: false,
         coin: this.trezorCoin,
       });
       bundle.push({
         path: super.getDerivationPath(constants
-          .BITCOIN_LEGACY_ADDRESS, accountIndex, true, index),
+          .BITCOIN_LEGACY_ADDRESS, this.currentAccount, true, index),
+        showOnTrezor: false,
+        coin: this.trezorCoin,
+      });
+    }
+    for (
+      let index: number = segwit.lastIndex; index < (segwit.lastIndex + segwit.count); index += 1
+    ) {
+      bundle.push({
+        path: super.getDerivationPath(constants
+          .BITCOIN_SEGWIT_ADDRESS, this.currentAccount, false, index),
         showOnTrezor: false,
         coin: this.trezorCoin,
       });
       bundle.push({
         path: super.getDerivationPath(constants
-          .BITCOIN_SEGWIT_ADDRESS, accountIndex, false, index),
+          .BITCOIN_SEGWIT_ADDRESS, this.currentAccount, true, index),
+        showOnTrezor: false,
+        coin: this.trezorCoin,
+      });
+    }
+    for (
+      let index: number = nativeSegwit.lastIndex;
+      index < (nativeSegwit.lastIndex + nativeSegwit.count); index += 1
+    ) {
+      bundle.push({
+        path: super.getDerivationPath(constants
+          .BITCOIN_NATIVE_SEGWIT_ADDRESS, this.currentAccount, false, index),
         showOnTrezor: false,
         coin: this.trezorCoin,
       });
       bundle.push({
         path: super.getDerivationPath(constants
-          .BITCOIN_SEGWIT_ADDRESS, accountIndex, true, index),
-        showOnTrezor: false,
-        coin: this.trezorCoin,
-      });
-      bundle.push({
-        path: super.getDerivationPath(constants
-          .BITCOIN_NATIVE_SEGWIT_ADDRESS, accountIndex, false, index),
-        showOnTrezor: false,
-        coin: this.trezorCoin,
-      });
-      bundle.push({
-        path: super.getDerivationPath(constants
-          .BITCOIN_NATIVE_SEGWIT_ADDRESS, accountIndex, true, index),
+          .BITCOIN_NATIVE_SEGWIT_ADDRESS, this.currentAccount, true, index),
         showOnTrezor: false,
         coin: this.trezorCoin,
       });
@@ -79,11 +89,10 @@ export default class TrezorService extends WalletService {
     return bundle;
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  public getAccountAddresses(batch: number, startFrom: number):
+  public getAccountAddresses():
     Promise<WalletAddress[]> {
     return new Promise((resolve, reject) => {
-      const bundle = this.getAddressesBundle(startFrom, batch);
+      const bundle = this.getAddressesBundle();
       TrezorConnect.getAddress({
         bundle,
       })
