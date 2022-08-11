@@ -189,11 +189,12 @@ export default abstract class WalletService {
           return;
         }
       }
+      this.loadingBalances = false;
+      this.informSubscribers(this.balanceAccumulated, []);
     } catch (error: any) {
       throw new Error(`Balance Error: ${error.message}`);
     } finally {
       this.loadingBalances = false;
-      this.informSubscribers(this.balanceAccumulated, []);
     }
   }
 

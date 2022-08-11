@@ -53,7 +53,6 @@ export default class LedgerService extends WalletService {
   }
 
   public getAccountAddresses(): Promise<WalletAddress[]> {
-    console.log(this);
     return new Promise<WalletAddress[]>((resolve, reject) => {
       const { p2pkh, p2sh, p2wpkh } = this.extendedPubKeys;
       const enabledXpub = true;
