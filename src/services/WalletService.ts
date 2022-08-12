@@ -62,6 +62,8 @@ export default abstract class WalletService {
     };
   }
 
+  // abstract isWalletEnabled(): Promise<boolean>;
+
   abstract getAccountAddresses(): Promise<WalletAddress[]>;
 
   abstract sign(tx: Tx): Promise<SignedTx>;
@@ -177,7 +179,7 @@ export default abstract class WalletService {
           && this.balanceAccumulated.segwit.gte(maxAmountPeginCompare)
           && this.balanceAccumulated.nativeSegwit.gte(maxAmountPeginCompare)
         ) {
-          return;
+          break;
         }
         this.setAddressesToFetch();
         const maxIndexReached = Math.max(
@@ -186,7 +188,7 @@ export default abstract class WalletService {
           this.addressesToFetch.nativeSegwit.lastIndex,
         );
         if (maxIndexReached >= maxAddressesHardStop) {
-          return;
+          break;
         }
       }
       this.loadingBalances = false;
