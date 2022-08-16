@@ -34,6 +34,10 @@ jobs:
           VUE_APP_MANIFEST_APP_URL=${{ secrets.TESTNET_VUE_APP_MANIFEST_APP_URL }}
           VUE_APP_API_BASE_URL=${{ secrets.TESTNET_VUE_APP_API_BASE_URL }}
           VUE_APP_RSK_NODE_HOST=${{ secrets.TESTNET_VUE_APP_NODE_HOST }}
+          VUE_APP_WALLET_ADDRESSES_PER_CALL_TREZOR=10
+          VUE_APP_WALLET_MAX_CALLS_TREZOR=1
+          VUE_APP_WALLET_ADDRESSES_PER_CALL_LEDGER=2
+          VUE_APP_WALLET_MAX_CALLS_LEDGER=8
           npm run-script build
 
       - name: Configure AWS credentials
