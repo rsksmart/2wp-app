@@ -16,126 +16,35 @@
       </p>
     </v-row>
     <v-row id="instructions-trezor" justify="center" class="mx-0">
-      <v-col cols="3">
-        <v-row class="mx-0 d-flex justify-center">
-          <v-img src="@/assets/exchange/trezor/rsk.png" height="40" contain/>
-        </v-row>
+      <v-col cols="6">
         <v-row class="mx-0 d-flex justify-center">
           <h4 class="text-center">
-            <div class="number">1</div>Confirm {{environmentContext.getRskText()}} information</h4>
+            Transaction information
+          </h4>
         </v-row>
       </v-col>
       <v-col cols="3">
-        <v-row class="mx-0">
-          <v-img src="@/assets/exchange/trezor/transfer.png" height="40" contain/>
-        </v-row>
-        <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center"><div class="number">2</div>Confirm funds transfer</h4>
-        </v-row>
       </v-col>
       <v-col cols="3">
-        <v-row class="mx-0">
-          <v-img src="@/assets/exchange/trezor/change.png" height="40" contain/>
-        </v-row>
-        <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center"><div class="number">3</div>Confirm change address</h4>
-        </v-row>
-      </v-col>
-      <v-col cols="3">
-        <v-row class="mx-0">
-          <v-img src="@/assets/exchange/trezor/fee.png" height="40" contain/>
-        </v-row>
-        <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center"><div class="number">4</div>Confirm transaction fee</h4>
-        </v-row>
       </v-col>
     </v-row>
     <v-row justify="center" class="mx-0">
-      <v-col cols="3">
+      <v-col cols="6">
         <fieldset class="confirmation-box">
           <legend align="center" class="px-4">See on liquality</legend>
-          <v-row justify="center" class="mt-5 mx-0"><span>Confirm</span></v-row>
-          <v-row justify="center" align="start" class="mt-5 mx-0 text-center">
-            <span>
-            OP_RETURN
-            </span>
-            <v-tooltip right>
-              <template v-slot:activator="{ on, attrs }">
-                <v-icon small color="black" v-bind="attrs" v-on="on" class="ml-2">
-                  mdi-information
-                </v-icon>
-              </template>
-              <p class="tooltip-form mb-0">
-                The OP_RETURN is an output with information
-                required for the {{environmentContext.getRskText()}} network.
-                It spends 0 {{environmentContext.getBtcTicker()}}
-              </p>
-            </v-tooltip>
-          </v-row>
-          <v-row justify="center" class="mt-5 mx-0">
-            <v-col class="pa-0 d-flex flex-column align-center">
-              <span>
-                0 {{environmentContext.getRbtcTicker()}}
-              </span>
-            </v-col>
-          </v-row>
-          <v-row justify="center" class="mt-5 mb-3 mx-0">Confirm</v-row>
+          {{ this.pegInTxState.normalizedTx.outputs.forEach(output => {
+              return '<v-row justify="center" class="mt-5 mx-0">' + 
+                '<v-col class="pa-0 d-flex flex-column align-center">' + 
+                  output +
+                '</v-col>' +
+                '</v-row>';
+            }) 
+          }}
         </fieldset>
       </v-col>
       <v-col cols="3">
-        <fieldset class="confirmation-box">
-          <legend align="center" class="px-4">See on Liquality</legend>
-          <v-row justify="center" class="mt-5 mx-0">Confirm sending</v-row>
-          <v-row justify="center" class="mt-5 mx-0 text-center" >
-            Amount: {{pegInTxState.amountToTransfer.toBTCTrimmedString()}}
-          </v-row>
-          <v-row justify="center" class="mt-5 mx-0 d-none d-lg-block">
-            <v-col class="pa-0 d-flex flex-column align-center">
-              <span v-for="value in splitString(rskFederationAddress)" :key="value">
-                {{ value }}
-              </span>
-            </v-col>
-          </v-row>
-          <v-row justify="center" class="mt-5 mx-0 d-lg-none">
-            <span>
-              {{cropAddress(rskFederationAddress)}}
-            </span>
-          </v-row>
-          <v-row justify="center" class="mt-5 mb-3 mx-0">Confirm</v-row>
-        </fieldset>
       </v-col>
       <v-col cols="3">
-        <fieldset class="confirmation-box">
-          <legend align="center" class="px-4">See on Liquality</legend>
-          <v-row justify="center" class="mt-5 mx-0">Confirm sending</v-row>
-          <v-row justify="center" class="mt-5 mx-0 text-center">Amount: {{changeAmount}}</v-row>
-          <v-row justify="center" class="mt-5 mx-0 d-none d-lg-block">
-            <v-col class="pa-0 d-flex flex-column align-center">
-              <span v-for="value in splitString(changeAddress)" :key="value">
-                {{ value }}
-              </span>
-            </v-col>
-          </v-row>
-          <v-row justify="center" class="mt-5 mx-0 d-lg-none">
-            <span>
-              {{cropAddress(changeAddress)}}
-            </span>
-          </v-row>
-          <v-row justify="center" class="mt-5 mb-3 mx-0">Confirm</v-row>
-        </fieldset>
-      </v-col>
-      <v-col cols="3">
-        <fieldset class="confirmation-box">
-          <legend align="center" class="px-4">See on Liquality</legend>
-          <v-row justify="center" class="mt-5 mx-0">Really send</v-row>
-          <v-row justify="center" class="mt-5 mx-0 text-center">
-            Amount: {{computedFullAmount}}
-          </v-row>
-          <v-row justify="center" class="mt-5 mx-0 text-center">
-            Fee: {{safeFee.toBTCTrimmedString()}}
-          </v-row>
-          <v-row justify="center" class="mt-5 mb-3 mx-0">Confirm</v-row>
-        </fieldset>
       </v-col>
     </v-row>
     <v-divider/>
