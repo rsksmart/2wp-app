@@ -32,14 +32,47 @@
       <v-col cols="6">
         <fieldset class="confirmation-box">
           <legend align="center" class="px-4">See on liquality</legend>
-          {{ this.pegInTxState.normalizedTx.outputs.forEach(output => {
-              return '<v-row justify="center" class="mt-5 mx-0">' + 
-                '<v-col class="pa-0 d-flex flex-column align-center">' + 
-                  output +
-                '</v-col>' +
-                '</v-row>';
-            }) 
-          }}
+          <v-row justify="left" class="mt-5 mx-10" style="border-bottom: 1px solid #c4c4c4;">
+            <v-col class="pa-0 pb-5 d-flex flex-column align-left">
+              <p style="color:#00B520;">
+                {{
+                this.pegInTxState.normalizedTx.outputs[0].amount
+                + ' ' +
+                environmentContext.getBtcTicker()
+                }}
+              </p>
+            </v-col>
+          </v-row>
+          <v-row justify="left" class="mt-5 mx-0">
+            <v-col class="pa-0 pb-2 d-flex flex-column align-left">
+              <p style="color:#00B520;">
+                {{ this.pegInTxState.normalizedTx.outputs[1].amount +
+                ' '
+                + environmentContext.getBtcTicker()
+                }}
+              </p>
+             </v-col>
+          </v-row>
+          <v-row justify="left" class="mt-5 mx-10" style="border-bottom: 1px solid #c4c4c4;">
+            <v-col class="pa-0 pb-2 d-flex flex-column align-left">
+              {{ this.pegInTxState.normalizedTx.outputs[1].address }}
+            </v-col>
+          </v-row>
+          <v-row justify="left" v-if="this.pegInTxState.normalizedTx.outputs[2]" class="mt-5 mx-0">
+            <v-col class="pa-0 pb-2 d-flex flex-column align-left">
+              <p style="color:#00B520;">
+                {{
+                  this.pegInTxState.normalizedTx.outputs[2].amount + 
+                  ' ' + environmentContext.getBtcTicker()
+                }}
+              </p>
+             </v-col>
+          </v-row>
+          <v-row justify="left" v-if="this.pegInTxState.normalizedTx.outputs[2]" class="mt-5 mx-0">
+            <v-col class="pa-0 pb-2 d-flex flex-column align-left">
+              {{ this.pegInTxState.normalizedTx.outputs[2].address }}
+            </v-col>
+          </v-row>
         </fieldset>
       </v-col>
       <v-col cols="3">
