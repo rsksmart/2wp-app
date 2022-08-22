@@ -257,7 +257,6 @@ export default class ConfirmLiqualityTransaction extends Vue {
 
   async created() {
     this.rawTx = await this.txBuilder.getUnsignedRawTx(this.pegInTxState.normalizedTx);
-    console.log('>>>>>>>>>>', this.pegInTxState.normalizedTx);
   }
 }
 </script>
