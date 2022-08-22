@@ -32,45 +32,53 @@
       <v-col cols="6">
         <fieldset class="confirmation-box">
           <legend align="center" class="px-4">See on liquality</legend>
-          <v-row justify="left" class="mt-5 mx-10" style="border-bottom: 1px solid #c4c4c4;">
+
+          <v-row justify="left" class="mt-5 mx-5" style="border-bottom: 1px solid #c4c4c4;">
             <v-col class="pa-0 pb-5 d-flex flex-column align-left">
-              <p style="color:#00B520;">
+              <h3>
                 {{
                 this.pegInTxState.normalizedTx.outputs[0].amount
                 + ' ' +
                 environmentContext.getBtcTicker()
                 }}
-              </p>
+              </h3>
             </v-col>
           </v-row>
-          <v-row justify="left" class="mt-5 mx-0">
+
+           <v-row justify="left" class="mx-5" style="border-bottom: 1px solid #c4c4c4;">
             <v-col class="pa-0 pb-2 d-flex flex-column align-left">
-              <p style="color:#00B520;">
+              <span class="breakable-address my-5">
+                {{ this.pegInTxState.normalizedTx.outputs[1].address }}
+              </span>
+              <h3>
                 {{ this.pegInTxState.normalizedTx.outputs[1].amount +
                 ' '
                 + environmentContext.getBtcTicker()
                 }}
-              </p>
-             </v-col>
-          </v-row>
-          <v-row justify="left" class="mt-5 mx-10" style="border-bottom: 1px solid #c4c4c4;">
-            <v-col class="pa-0 pb-2 d-flex flex-column align-left">
-              {{ this.pegInTxState.normalizedTx.outputs[1].address }}
+              </h3>
             </v-col>
           </v-row>
-          <v-row justify="left" v-if="this.pegInTxState.normalizedTx.outputs[2]" class="mt-5 mx-0">
+
+          <v-row v-if="this.pegInTxState.normalizedTx.outputs[2]"
+          justify="left" class="mx-5" style="border-bottom: 1px solid #c4c4c4;">
             <v-col class="pa-0 pb-2 d-flex flex-column align-left">
-              <p style="color:#00B520;">
-                {{
-                  this.pegInTxState.normalizedTx.outputs[2].amount + 
-                  ' ' + environmentContext.getBtcTicker()
+              <span class="breakable-address my-5">
+                {{ this.pegInTxState.normalizedTx.outputs[2].address }}
+              </span>
+              <h3>
+                {{ this.pegInTxState.normalizedTx.outputs[2].amount +
+                ' '
+                + environmentContext.getBtcTicker()
                 }}
-              </p>
-             </v-col>
+              </h3>
+            </v-col>
           </v-row>
-          <v-row justify="left" v-if="this.pegInTxState.normalizedTx.outputs[2]" class="mt-5 mx-0">
+
+          <v-row justify="left" class="mx-5 my-3">
             <v-col class="pa-0 pb-2 d-flex flex-column align-left">
-              {{ this.pegInTxState.normalizedTx.outputs[2].address }}
+              <span class="grayish">
+                Fee: {{ fee + ' ' + environmentContext.getBtcTicker() }}
+              </span>
             </v-col>
           </v-row>
         </fieldset>
@@ -153,6 +161,8 @@ export default class ConfirmLiqualityTransaction extends Vue {
     | 'goingHome'
     >;
 
+  VALUE_INCOMPLETE_MESSAGE = 'Not Found';
+
   @Prop() txBuilder!: LiqualityTxBuilder;
 
   @State('pegInTx') pegInTxState!: PegInTxState;
@@ -182,6 +192,15 @@ export default class ConfirmLiqualityTransaction extends Vue {
         txError = err.message;
       });
     return [txError, this.txId];
+  }
+
+  get feeBTC():SatoshiBig {
+    return this.safeFee;
+  }
+
+  get fee(): string {
+    if (!this.feeBTC) return this.VALUE_INCOMPLETE_MESSAGE;
+    return this.feeBTC.toBTCString();
   }
 
   backHome() {
@@ -238,6 +257,7 @@ export default class ConfirmLiqualityTransaction extends Vue {
 
   async created() {
     this.rawTx = await this.txBuilder.getUnsignedRawTx(this.pegInTxState.normalizedTx);
+    console.log('>>>>>>>>>>', this.pegInTxState.normalizedTx);
   }
 }
 </script>
