@@ -124,11 +124,13 @@ export default class ConnectDevice extends Vue {
   }
 
   beforeMount() {
-    this.connectLiquality();
+    if (this.walletName === 'Liquality' && !this.showDialog) {
+      this.tryConnectLiquality();
+    }
   }
 
   @Watch('showDialog')
-  connectLiquality() {
+  tryConnectLiquality() {
     if (this.walletName === 'Liquality' && !this.showDialog) {
       this.continueToForm();
     }
