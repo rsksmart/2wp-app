@@ -42,6 +42,7 @@ const router = new VueRouter({
   routes,
 });
 router.beforeResolve((to, from, next) => {
+  store.dispatch(`view/${constants.VIEW_ADD_CURRENT_VIEW}`, to.name);
   const inTxFlow = store.getters[`web3Session/${constants.SESSION_IN_TX_FLOW}`];
   if (to.name === 'Create' && !inTxFlow) next({ name: 'Home' });
   else next();

@@ -1,3 +1,4 @@
+import * as Bowser from 'bowser';
 import * as constants from '@/store/constants';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
@@ -57,6 +58,15 @@ export function getTime(totalMinutes: number): string {
   return `${hours}:${paddedMinutes}`;
 }
 
+export function isAllowedCurrentBrowser() {
+  const browser = Bowser.getParser(window.navigator.userAgent);
+  return browser.getBrowserName() === 'Chrome' || window.navigator.brave;
+}
+
+export function isBTCAmountValidRegex(bitcoinAmount: string) {
+  return /^[0-9]{1,8}(\.[0-9]{0,8})?$/.test(bitcoinAmount.toString());
+}
+
 export function setStatusMessage(txType: string, status: string): TxStatusMessage {
   const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
@@ -75,7 +85,7 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
         isRejected = false;
         break;
       case constants.PegStatus.WAITING_CONFIRMATIONS:
-        statusMessage = `More ${environmentContext.getBtcText()} confirmations are yet needed, please wait`;
+        statusMessage = 'More confirmations are yet needed, please wait';
         activeMessageStyle = 'statusProgress';
         isRejected = false;
         break;

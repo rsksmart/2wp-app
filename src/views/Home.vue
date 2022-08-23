@@ -119,6 +119,7 @@ import * as constants from '@/store/constants';
 import { PegInTxState } from '@/types/pegInTx';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import { SessionState, TransactionType } from '@/types/session';
+import { isAllowedCurrentBrowser } from '@/services/utils';
 
 @Component({
   components: {
@@ -131,6 +132,8 @@ export default class Home extends Vue {
   browser = Bowser.getParser(window.navigator.userAgent);
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+
+  isAllowedBrowser = isAllowedCurrentBrowser();
 
   @State('pegInTx') peginTxState!: PegInTxState;
 
@@ -167,10 +170,6 @@ export default class Home extends Vue {
     this.addPeg(undefined);
     await this.init();
     this.STATUS = false;
-  }
-
-  get isAllowedBrowser() {
-    return this.browser.getBrowserName() === 'Chrome' || window.navigator.brave;
   }
 
   get btnWalletClass() {

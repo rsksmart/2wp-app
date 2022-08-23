@@ -169,17 +169,9 @@ import { PegInTxState } from '@/types/pegInTx';
 export default class TxSummary extends Vue {
   @Prop() initialExpand!: boolean;
 
-  @Prop() txId!: string;
+  showTxId = true;
 
-  @Prop() showTxId!: boolean;
-
-  @Prop() statusFee!: SatoshiBig;
-
-  @Prop() statusRefundAddress!: string;
-
-  txIdValue = '';
-
-  expanded = false;
+  expanded = true;
 
   over = false;
 
@@ -194,6 +186,8 @@ export default class TxSummary extends Vue {
   @Getter(constants.PEGIN_TX_GET_REFUND_ADDRESS, { namespace: 'pegInTx' }) refundAddress!: string;
 
   @Getter(constants.PEGIN_TX_GET_SAFE_TX_FEE, { namespace: 'pegInTx' }) safeFee!: SatoshiBig;
+
+  @Getter(constants.PEGIN_TX_GET_STATUS_TX_ID, { namespace: 'pegInTx' }) txIdValue!: string;
 
   @Emit()
   switchExpand() {
@@ -212,11 +206,7 @@ export default class TxSummary extends Vue {
   }
 
   get feeBTC():SatoshiBig {
-    let feeBTC = this.safeFee;
-    if (this.statusFee) {
-      feeBTC = this.statusFee;
-    }
-    return feeBTC;
+    return this.safeFee;
   }
 
   get fee(): string {
@@ -247,11 +237,17 @@ export default class TxSummary extends Vue {
   }
 
   get computedTxId(): string {
-    return this.txIdValue ? `${this.txIdValue.substr(0, 24)}...${this.txIdValue.substr(60, 64)}` : this.VALUE_INCOMPLETE_MESSAGE;
+    let result;
+    if (this.txIdValue) {
+      result = `${this.txIdValue.substr(0, 24)}...${this.txIdValue.substr(60, 64)}`;
+    } else {
+      this.showTxId = false;
+      result = this.VALUE_INCOMPLETE_MESSAGE;
+    }
+    return result;
   }
 
   get computedRefundAddress(): string {
-    if (this.statusRefundAddress) return this.statusRefundAddress;
     return this.refundAddress !== '' ? this.refundAddress : this.VALUE_INCOMPLETE_MESSAGE;
   }
 
@@ -267,7 +263,6 @@ export default class TxSummary extends Vue {
 
   created() {
     this.expanded = this.initialExpand;
-    this.txIdValue = this.txId;
   }
 }
 </script>
