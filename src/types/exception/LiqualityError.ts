@@ -1,6 +1,11 @@
 export class LiqualityError extends Error {
+  public urlToMoreInformation = 'https://developers.rsk.co/solutions/liquality';
+
+  public errorType = 'Liquality';
+
+  public messageToUserOnLink = 'Click here to know how to enable Liquality';
+
   constructor() {
-    const message = 'Liquality software wallet not installed on your browser </br> <a target=\'_blank\' href=\'https://developers.rsk.co/solutions/liquality/\'/>Click here to know how to enable liquality.</a>';
-    super(message);
+    super('Liquality software wallet not installed on your browser');
   }
 }
