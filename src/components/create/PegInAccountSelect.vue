@@ -35,9 +35,6 @@
                 {{ isLedgerWallet ? maxAddressesLedger : maxAddressesTrezor }}
                 addresses from your accounts including change.
               </span>
-              <p v-if="isLedgerWallet" class="tooltip-form mb-0">
-                Native segwit is coming soon for Ledger devices!
-              </p>
             </v-tooltip>
           </v-col>
           <v-col v-if="pegInTxState.loadingBalance" cols="4" class="d-flex align-start pa-0">
