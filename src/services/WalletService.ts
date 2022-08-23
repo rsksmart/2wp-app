@@ -180,12 +180,10 @@ export default abstract class WalletService {
       }
       this.informSubscribers(balanceAccumulated, addresses);
     } catch (error) {
-      let { message } = error;
-
-      if (!message) {
-        message = 'Error fetching balance';
+      if (!error.message) {
+        error.message = 'Error fetching balance';
       }
-      throw new Error(message);
+      throw error;
     } finally {
       this.loadingBalances = false;
     }

@@ -17,7 +17,11 @@
       <btc-to-rbtc-dialog :showDialog="showDialog" @closeDialog="closeDialog"/>
     </template>
     <template v-if="showErrorDialog">
-      <device-error-dialog :showErrorDialog="showErrorDialog" :errorMessage="deviceError"
+      <device-error-dialog :showErrorDialog="showErrorDialog"
+                           :errorMessage="deviceError"
+                           :errorType="errorType"
+                           :urlToMoreInformation="urlToMoreInformation"
+                           :messageToUserOnLink="messageToUserOnLink"
                            @closeErrorDialog="closeErrorDialog"/>
     </template>
     <template v-if="showTxErrorDialog">
@@ -39,7 +43,7 @@ import ConfirmLedgerTransaction from '@/components/ledger/ConfirmLedgerTransacti
 import TrackingId from '@/components/exchange/TrackingId.vue';
 import * as constants from '@/store/constants';
 import {
-  NormalizedTx, SendBitcoinState, SatoshiBig, PegInTxState, BtcWallet,
+  NormalizedTx, SendBitcoinState, SatoshiBig, PegInTxState, BtcWallet, LiqualityError,
 } from '@/types';
 import TrezorTxBuilder from '@/middleware/TxBuilder/TrezorTxBuilder';
 import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
@@ -75,6 +79,12 @@ export default class SendBitcoin extends Vue {
   showTxErrorDialog = false;
 
   deviceError = 'test';
+
+  errorType = '';
+
+  urlToMoreInformation = '';
+
+  messageToUserOnLink = '';
 
   sendBitcoinState: SendBitcoinState = 'idle';
 
@@ -210,6 +220,11 @@ export default class SendBitcoin extends Vue {
           this.deviceError = 'Please unlock your Ledger device.';
         } else {
           this.deviceError = e.message;
+        }
+        if (e instanceof LiqualityError) {
+          this.errorType = e.errorType;
+          this.urlToMoreInformation = e.urlToMoreInformation;
+          this.messageToUserOnLink = e.messageToUserOnLink;
         }
         this.sendBitcoinState = 'error';
         this.showErrorDialog = true;
