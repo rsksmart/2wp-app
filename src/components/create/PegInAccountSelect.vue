@@ -12,6 +12,7 @@
         <v-row class="mx-0 mt-4">
           <v-col cols="7" class="pl-0 pb-0">
             <v-select
+              v-if="!isLiquality"
               v-model="btcAccountTypeSelected" :items="accountBalances" color="#fff"
               class="account-select"
               label="Select the account" solo dense
@@ -19,8 +20,11 @@
               @blur="focus = false"
               :disabled="isLiquality"
               @change="accountChanged"/>
+            <p class="label-liquality" v-if="isLiquality">
+              {{ btcAccountTypeSelected }}
+            <p/>
           </v-col>
-          <v-col cols="1" class="pb-0 pt-5">
+          <v-col v-if="!isLiquality" cols="1" class="pb-0 pt-5">
             <v-tooltip right>
               <template v-slot:activator="{ on, attrs }">
                 <v-icon
@@ -175,7 +179,7 @@ export default class PegInAccountSelect extends Vue {
     ];
 
     if (this.pegInTxState.bitcoinWallet === constants.WALLET_LIQUALITY) {
-      this.btcAccountTypeSelected = constants.BITCOIN_NATIVE_SEGWIT_ADDRESS;
+      this.btcAccountTypeSelected = this.accountBalances[2].text;
       this.accountChanged(constants.BITCOIN_NATIVE_SEGWIT_ADDRESS);
       this.isLiquality = true;
     }
