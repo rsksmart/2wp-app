@@ -10,8 +10,10 @@
     "scanner": "npx sonar-scanner"
   },
   "dependencies": {
-    "@ledgerhq/hw-app-btc": "^6.27.1",
-    "@ledgerhq/hw-transport-webusb": "^6.27.1",
+    "@ledgerhq/devices": "6.27.1",
+    "@ledgerhq/hw-app-btc": "6.27.1",
+    "@ledgerhq/hw-transport": "6.27.1",
+    "@ledgerhq/hw-transport-webusb": "6.27.1",
     "@rsksmart/rlogin": "^1.3.0",
     "@rsksmart/rsk-precompiled-abis": "^4.0.2-IRIS",
     "@rsksmart/rsk-utils": "^1.1.0",
