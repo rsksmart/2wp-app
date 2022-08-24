@@ -35,7 +35,7 @@
               </p>
               <p class="tooltip-form mb-0">
                 Listed amounts represent the balance up to {{maxAddresses}}
-                addresses from Legacy and Segwit accounts including change.
+                addresses from Legacy, Segwit and Native segwit accounts including change.
               </p>
             </v-tooltip>
           </v-col>
