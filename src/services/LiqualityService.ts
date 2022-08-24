@@ -1,6 +1,6 @@
 import * as bitcoin from 'bitcoinjs-lib';
 import {
-  LiqualityAddress,
+  LiqualityError,
   LiqualityGetAddressesResponse,
   LiqualityMethods, LiqualitySignedTx,
   LiqualityTx,
@@ -13,34 +13,23 @@ import { EnvironmentAccessorService } from '@/services/enviroment-accessor.servi
 export default class LiqualityService extends WalletService {
   private bitcoinProvider!: WindowBitcoinProvider;
 
-  private enabled = false;
-
   constructor(testBitcoinProvider?: WindowBitcoinProvider) {
     super();
     if (testBitcoinProvider) {
       this.bitcoinProvider = testBitcoinProvider;
-      this.enabled = true;
     }
   }
 
   private enable(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      const w = window as Window;
-      if (!this.enabled) {
-        try {
-          if (w.bitcoin) {
-            this.bitcoinProvider = window.bitcoin;
-            this.bitcoinProvider.enable()
-              .then(([address]: LiqualityAddress[]) => {
-                this.enabled = !!address;
-                resolve();
-              });
-          }
-        } catch (e) {
-          reject(e);
-        }
-      } else {
-        resolve();
+      try {
+        this.bitcoinProvider = window.bitcoin;
+        window.bitcoin.enable()
+          .then(() => {
+            resolve();
+          });
+      } catch (e) {
+        reject(new LiqualityError());
       }
     });
   }
