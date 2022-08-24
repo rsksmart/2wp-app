@@ -11,13 +11,8 @@ The value of these variables are used in **environment-variables.ts** file.
 |VUE_APP_RSK_NODE_HOST                       |             |RSK node URL to verify RSK data (e.g. POWpeg address| 
 |VUE_APP_HOTJAR_ID                           |             |A Hotjar ID is uniquely generated identification, and is described [here](https://help.hotjar.com/hc/en-us/articles/360033640653-Identify-API-Reference)|
 |VUE_APP_RSK_EXPLORER                        |             |RSK EXPLORER URL used to verify the transaction status                                                      |
-|VUE_APP_WALLET_MAX_CALLS_TREZOR             | `10`          |Maximum number of calls on Trezor hardware wallet to obtain address information                             |
-|VUE_APP_WALLET_ADDRESSES_PER_CALL_TREZOR    | `1`          |Number of addresses obtained per call on Trezor                                                                       |
-|VUE_APP_WALLET_MAX_CALLS_LEDGER             | `2`           |Maximum number of calls on Ledger hardware wallet to obtain address information                             |
-|VUE_APP_WALLET_ADDRESSES_PER_CALL_LEDGER    | `4`           |Number of addresses obtained per call on Ledger                                                             |
-|VUE_APP_WALLET_MAX_CALLS_LIQUALITY          | `10`          |Maximum number of calls on Liquality software wallet to obtain address information                          |
-|VUE_APP_WALLET_ADDRESSES_PER_CALL_LIQUALITY | `1`           |ANumber of addresses obtained per call on Liquality                                                         |
-
+|VUE_APP_WALLET_ADDRESSES_HARD_STOP          | `100`       |Maximum number of addresses derived from wallet                             |
+|VUE_APP_WALLET_ADDRESS_PER_CALL             | `5`         |Number of addresses obtained per derivation call                                                                       |
 
 ## Example for .env.local.test file
 
@@ -29,11 +24,7 @@ VUE_APP_API_BASE_URL=http://localhost:3000
 VUE_APP_RSK_NODE_HOST=
 VUE_APP_HOTJAR_ID=
 VUE_APP_RSK_EXPLORER=https://explorer.testnet.rsk.co/
-VUE_APP_WALLET_MAX_CALLS_TREZOR=10
-VUE_APP_WALLET_ADDRESSES_PER_CALL_TREZOR=1
-VUE_APP_WALLET_MAX_CALLS_LEDGER=2
-VUE_APP_WALLET_ADDRESSES_PER_CALL_LEDGER=4
-VUE_APP_WALLET_MAX_CALLS_LIQUALITY=10
-VUE_APP_WALLET_ADDRESSES_PER_CALL_LIQUALITY=1
+VUE_APP_WALLET_ADDRESSES_HARD_STOP=100
+VUE_APP_WALLET_ADDRESS_PER_CALL=5
 
 ```
