@@ -10,7 +10,7 @@
       <v-col cols="12" align-self="center" class="pt-0" v-if="errorType">
         <v-col offset="3" cols="6">
           <p class="justify-center"><span v-html="errorMessage"></span></p>
-          <p class="justify-center">
+          <p class="justify-center" v-if="urlToMoreInformation">
             <a target='_blank' :href='urlToMoreInformation'>{{messageToUserOnLink}}</a>
           </p>
         </v-col>
