@@ -16,25 +16,26 @@
       </p>
     </v-row>
     <v-row id="instructions-trezor" justify="center" class="mx-0">
-      <v-col cols="6">
+      <v-col cols="4">
+      </v-col>
+      <v-col cols="4">
         <v-row class="mx-0 d-flex justify-center">
           <h4 class="text-center">
             Transaction information
           </h4>
         </v-row>
       </v-col>
-      <v-col cols="3">
-      </v-col>
-      <v-col cols="3">
+      <v-col cols="4">
       </v-col>
     </v-row>
     <v-row justify="center" class="mx-0">
-      <v-col cols="6">
+       <v-col cols="4">
+      </v-col>
+      <v-col cols="4">
         <fieldset class="confirmation-box">
           <legend align="center" class="px-4">See on liquality</legend>
-
-          <v-row justify="left" class="mt-5 mx-5" style="border-bottom: 1px solid #c4c4c4;">
-            <v-col class="pa-0 pb-5 d-flex flex-column align-left">
+          <v-row justify="left" class="mt-5 mx-5 line-box-bottom">
+            <v-col cols="3" class="d-flex flex-column align-left">
               <h3>
                 {{
                 this.pegInTxState.normalizedTx.outputs[0].amount
@@ -43,9 +44,29 @@
                 }}
               </h3>
             </v-col>
+            <v-col cols="9" class="d-flex flex-column align-left">
+              <v-tooltip right>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-icon
+                    small
+                    class="icon-left"
+                    color="teal darken-2"
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    mdi-information
+                  </v-icon>
+                </template>
+                <p class="tooltip-form mb-0">
+                 This output only contains metadata required by
+                 RSK to process the peg-in, therefore it doesn't
+                 include any value.
+                </p>
+              </v-tooltip>
+            </v-col>
           </v-row>
 
-           <v-row justify="left" class="mx-5" style="border-bottom: 1px solid #c4c4c4;">
+           <v-row justify="left" class="mx-4 line-box-bottom">
             <v-col class="pa-0 pb-2 d-flex flex-column align-left">
               <span class="breakable-address my-5">
                 {{ this.pegInTxState.normalizedTx.outputs[1].address }}
@@ -60,7 +81,7 @@
           </v-row>
 
           <v-row v-if="this.pegInTxState.normalizedTx.outputs[2]"
-          justify="left" class="mx-5" style="border-bottom: 1px solid #c4c4c4;">
+          justify="left" class="mx-4 line-box-bottom">
             <v-col class="pa-0 pb-2 d-flex flex-column align-left">
               <span class="breakable-address my-5">
                 {{ this.pegInTxState.normalizedTx.outputs[2].address }}
@@ -83,9 +104,7 @@
           </v-row>
         </fieldset>
       </v-col>
-      <v-col cols="3">
-      </v-col>
-      <v-col cols="3">
+      <v-col cols="4">
       </v-col>
     </v-row>
     <v-divider/>
