@@ -33,14 +33,10 @@
               <p v-if="isLedgerWallet" class="tooltip-form mb-0">
                 Native segwit is coming soon for Ledger devices!
               </p>
-              <p v-if="isLedgerWallet" class="tooltip-form mb-0">
-                Listed amounts represent the balance up to the first {{maxAddressesLedger}}
-                addresses from Legacy and Segwit accounts including change.
+              <p class="tooltip-form mb-0">
+                Listed amounts represent the balance up to {{maxAddresses}}
+                addresses from Legacy, Segwit and Native segwit accounts including change.
               </p>
-              <span v-if="!isLedgerWallet">
-                      Listed amounts represent the balance up to the first {{maxAddressesTrezor}}
-                      addresses from Legacy, Segwit and Native segwit accounts including change.
-                    </span>
             </v-tooltip>
           </v-col>
           <v-col v-if="pegInTxState.loadingBalance" cols="4" class="d-flex align-start pa-0">
@@ -92,15 +88,8 @@ export default class PegInAccountSelect extends Vue {
   @Action(constants.PEGIN_TX_CALCULATE_TX_FEE, { namespace: 'pegInTx' }) calculateTxFee !: () => Promise<void>;
 
   // eslint-disable-next-line class-methods-use-this
-  get maxAddressesLedger(): number {
-    return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletAddressesPerCallLedger
-      * EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletMaxCallLedger;
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  get maxAddressesTrezor(): number {
-    return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletAddressesPerCallTrezor
-      * EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletMaxCallTrezor;
+  get maxAddresses(): number {
+    return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletAddressHardStop;
   }
 
   get isLedgerWallet() {
