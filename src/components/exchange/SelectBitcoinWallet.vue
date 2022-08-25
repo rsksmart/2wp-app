@@ -11,7 +11,7 @@
             <p class="text-center">Select your {{environmentContext.getBtcText()}} wallet</p>
           </v-row>
           <v-row justify="center" class="ma-0">
-            <v-col cols="3" class="d-flex justify-center">
+            <v-col cols="4" class="d-flex justify-center">
               <v-btn outlined class="wallet-button-thin"
                      @click="setBitcoinWallet(storeConstants.WALLET_LEDGER)"
                      v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_LEDGER }">
@@ -19,7 +19,7 @@
                 <span class="wallet-button-content">Ledger</span>
               </v-btn>
             </v-col>
-            <v-col cols="3" class="d-flex justify-center">
+            <v-col cols="4" class="d-flex justify-center">
               <v-btn outlined class="wallet-button-thin"
                      @click="setBitcoinWallet(storeConstants.WALLET_TREZOR)"
                      v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_TREZOR }">
@@ -27,24 +27,13 @@
                 <span class="wallet-button-content">Trezor</span>
               </v-btn>
             </v-col>
-            <v-col cols="3" class="d-flex justify-center">
+            <v-col cols="4" class="d-flex justify-center">
               <v-btn outlined class="wallet-button-thin"
                 @click="setBitcoinWallet(storeConstants.WALLET_LIQUALITY)"
                 v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_LIQUALITY }">
                 <div class="wallet-icon-liquality"></div>
                 <span class="wallet-button-content">Liquality</span>
               </v-btn>
-            </v-col>
-            <v-col cols="3" class="d-flex justify-center">
-              <div class="custom-tooltip">
-                <div>
-                  <v-btn outlined disabled class="wallet-button-thin-disabled">
-                    <v-icon color="#B5CAB8" class="mx-2">fas fa-wallet</v-icon>
-                    <span class="wallet-button-content">Others</span>
-                  </v-btn>
-                </div>
-                <span class="tooltiptext" style="margin-left:23px;">Coming soon</span>
-              </div>
             </v-col>
           </v-row>
         </template>
