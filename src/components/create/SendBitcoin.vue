@@ -13,9 +13,6 @@
                  @toPegInForm="toPegInForm"
                  :confirmTxState="confirmTxState"/>
     </template>
-    <template v-if="showDialog">
-      <btc-to-rbtc-dialog :showDialog="showDialog" @closeDialog="closeDialog"/>
-    </template>
     <template v-if="showErrorDialog">
       <device-error-dialog :showErrorDialog="showErrorDialog"
                            :errorMessage="deviceError"
@@ -46,7 +43,6 @@ import {
   NormalizedTx, SendBitcoinState, SatoshiBig, PegInTxState, BtcWallet, LiqualityError,
 } from '@/types';
 import TrezorTxBuilder from '@/middleware/TxBuilder/TrezorTxBuilder';
-import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
 import DeviceErrorDialog from '@/components/exchange/DeviceErrorDialog.vue';
 import ConnectDevice from '@/components/exchange/ConnectDevice.vue';
 import TxErrorDialog from '@/components/exchange/TxErrorDialog.vue';
@@ -59,7 +55,6 @@ import ConfirmLiqualityTransaction from '@/components/liquality/ConfirmLiquality
 
 @Component({
   components: {
-    BtcToRbtcDialog,
     PegInForm,
     ConfirmTrezorTransaction,
     ConfirmLedgerTransaction,
@@ -72,8 +67,6 @@ import ConfirmLiqualityTransaction from '@/components/liquality/ConfirmLiquality
 })
 
 export default class SendBitcoin extends Vue {
-  showDialog = false;
-
   showErrorDialog = false;
 
   showTxErrorDialog = false;
@@ -122,10 +115,6 @@ export default class SendBitcoin extends Vue {
   @Action(constants.PEGIN_TX_ADD_BITCOIN_WALLET, { namespace: 'pegInTx' }) setBtcWallet !: (wallet: BtcWallet) => Promise<void>;
 
   @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: (accountType: string) => string;
-
-  beforeMount() {
-    this.showDialog = localStorage.getItem('BTRD_COOKIE_DISABLED') !== 'true';
-  }
 
   get change() {
     return this.getChangeAddress;
@@ -191,11 +180,6 @@ export default class SendBitcoin extends Vue {
       this.currentComponent = 'TrackingId';
     }
     this.txId = txId;
-  }
-
-  @Emit()
-  closeDialog() {
-    this.showDialog = false;
   }
 
   @Emit()
@@ -271,7 +255,6 @@ export default class SendBitcoin extends Vue {
 
   @Emit()
   async clear(): Promise<void> {
-    this.showDialog = false;
     this.showErrorDialog = false;
     this.showTxErrorDialog = false;
     this.deviceError = 'test';
