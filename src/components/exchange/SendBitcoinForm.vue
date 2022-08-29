@@ -551,16 +551,16 @@ export default class SendBitcoinForm extends Vue {
       return 'Please, enter an amount';
     }
     if (!this.isBTCAmountValidNumberRegex) {
-      return 'Invalid format, neither letters, big amounts nor more than 8 decimals are allowed';
+      return 'The amount must to be a valid Bitcoin value';
     }
     if (this.safeAmount.lt(minValue)) {
-      return `You can not send this amount of BTC. You can only send a minimum of ${minValue.toBTCTrimmedString()} BTC`;
+      return `The minimum accepted value is ${minValue.toBTCTrimmedString()} BTC`;
     }
     if (feePlusAmount.gte(this.selectedAccountBalance)) {
-      return 'The typed amount, along with the transaction fee, is higher than your current balance';
+      return 'You don\'t have the balance for this amount';
     }
     if (this.safeAmount.gt(maxValue)) {
-      return `The maximum amount currently allowed by this tool is ${maxValue.toBTCTrimmedString()} BTC`;
+      return `The maximum accepted value is ${maxValue.toBTCTrimmedString()} BTC`;
     }
     return 'Invalid format';
   }
