@@ -18,9 +18,6 @@
           <v-btn width="200" height="50" dense outlined rounded color="#00B520" @click="toExchange">
             <span class="greenish">Return to home</span>
           </v-btn>
-          <v-btn width="145" height="50" dense rounded color="#00B520" @click="closeErrorDialog">
-            <span class="whiteish">Retry</span>
-          </v-btn>
         </v-row>
       </v-col>
       <v-col v-else cols="12" align-self="center" class="pt-0">
@@ -32,7 +29,7 @@
             <span class="greenish">Return to home</span>
           </v-btn>
           <v-btn width="145" height="50" dense rounded color="#00B520" @click="closeErrorDialog">
-            <span class="whiteish">Retry</span>
+            <span class="whiteish">Close</span>
           </v-btn>
         </v-row>
       </v-col>
