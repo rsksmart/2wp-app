@@ -130,16 +130,16 @@ export default class BtcInputAmount extends Vue {
       return 'Please, enter an amount';
     }
     if (!this.isBTCAmountValidNumberRegex) {
-      return 'Invalid format, neither letters, big amounts nor more than 8 decimals are allowed';
+      return 'The amount must to be a valid Bitcoin value';
     }
     if (this.safeAmount.lt(minValue)) {
-      return `You can not send this amount of ${this.environmentContext.getBtcTicker()}. You can only send a minimum of ${minValue.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
+      return `The minimum accepted is ${minValue.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
     }
     if (feePlusAmount.gte(this.selectedAccountBalance)) {
-      return 'The typed amount, along with the transaction fee, is higher than your current balance';
+      return 'You don\'t have the balance for this amount';
     }
     if (this.safeAmount.gt(maxValue)) {
-      return `The maximum amount currently allowed by this tool is ${maxValue.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
+      return `The maximum accepted is ${maxValue.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
     }
     return 'Invalid format';
   }
