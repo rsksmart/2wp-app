@@ -186,6 +186,8 @@ export default class Status extends Vue {
       errorMessage,
     } = msg;
 
+    console.log('>>>>>', msg);
+
     this.statusMessage = statusMessage;
     this.activeMessageStyle = activeMessageStyle;
     this.isRejected = isRejected;
