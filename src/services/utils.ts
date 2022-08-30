@@ -123,9 +123,12 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
       default:
     }
   } else if (txType === TxStatusType.PEGOUT) {
-    statusMessage = 'Current transaction is not valid.';
-    activeMessageStyle = 'statusRejected';
-    isRejected = true;
+    switch (status) {
+      default:
+        error = true;
+        errorMessage = 'The input transaction is not valid, please check it and try again';
+        break;
+    }
   }
 
   return {
