@@ -46,6 +46,7 @@
         <tx-pegout
           v-if="!isRejected && showStatus && isPegOut"
           :txId ="txId"
+          @setMessage="setMessage"
           :pegStatus="pegOutStatus"
         />
         <v-row justify="center" class="mx-0 mt-5">
@@ -187,6 +188,8 @@ export default class Status extends Vue {
       error,
       errorMessage,
     } = msg;
+
+    console.log('>>>>>', msg);
 
     this.statusMessage = statusMessage;
     this.activeMessageStyle = activeMessageStyle;
