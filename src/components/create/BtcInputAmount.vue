@@ -131,7 +131,7 @@ export default class BtcInputAmount extends Vue {
       return 'Please, enter an amount';
     }
     if (!this.isBTCAmountValidNumberRegex) {
-      return 'The amount must to be a valid Bitcoin value';
+      return 'The amount must be a valid Bitcoin value';
     }
     if (this.safeAmount.lt(minValue)) {
       return `The minimum accepted is ${minValue.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
