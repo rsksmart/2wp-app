@@ -2,8 +2,7 @@
   <v-container fluid class="px-md-0">
     <template v-if="!peginTxState.walletDataReady">
       <connect-device @continueToForm="startAskingForBalance"
-                      :sendBitcoinState="sendBitcoinState"
-                      :showDialog="showDialog"/>
+                      :sendBitcoinState="sendBitcoinState"/>
     </template>
     <template v-if="peginTxState.walletDataReady">
       <component :is="currentComponent"

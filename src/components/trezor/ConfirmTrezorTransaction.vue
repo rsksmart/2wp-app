@@ -260,7 +260,7 @@ export default class ConfirmTrezorTransaction extends Vue {
   @Emit('toPegInForm')
   async toPegInForm() {
     this.confirmTxState.send('loading');
-    return 'SendBitcoinForm';
+    return 'PegInForm';
   }
 
   // eslint-disable-next-line class-methods-use-this
