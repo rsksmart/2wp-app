@@ -82,16 +82,25 @@
 
           <v-row v-if="this.pegInTxState.normalizedTx.outputs[2]"
           justify="left" class="mx-3 line-box-bottom">
-            <v-col class="pa-0 pb-2 d-flex flex-column align-left">
+            <v-col class="pa-0 pb-4 d-flex flex-column align-left">
               <span class="breakable-address my-5">
                 {{ this.pegInTxState.normalizedTx.outputs[2].address }}
               </span>
-              <h3>
-                {{ this.pegInTxState.normalizedTx.outputs[2].amount +
-                ' '
-                + environmentContext.getBtcTicker()
-                }}
-              </h3>
+              <div class="d-flex">
+                <div style="width:100%;">
+                  <h3 style="position:relative;top:25%;">
+                    {{ this.pegInTxState.normalizedTx.outputs[2].amount +
+                    ' '
+                    + environmentContext.getBtcTicker()
+                    }}
+                  </h3>
+                </div>
+                <div style="width:100%;">
+                  <span style="float:right;border-radius:5px;padding:8px;background-color:green;color:white;font-weight:bold;">
+                    My Wallet
+                  </span>
+                </div>
+              </div>
             </v-col>
           </v-row>
 
