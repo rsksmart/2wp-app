@@ -38,7 +38,6 @@ import { Action, Getter, State } from 'vuex-class';
 import PegInForm from '@/components/create/PegInForm.vue';
 import ConfirmTrezorTransaction from '@/components/trezor/ConfirmTrezorTransaction.vue';
 import ConfirmLedgerTransaction from '@/components/ledger/ConfirmLedgerTransaction.vue';
-import TrackingId from '@/components/exchange/TrackingId.vue';
 import * as constants from '@/store/constants';
 import {
   NormalizedTx, SendBitcoinState, SatoshiBig, PegInTxState, BtcWallet, LiqualityError,
@@ -60,7 +59,6 @@ import ConfirmLiqualityTransaction from '@/components/liquality/ConfirmLiquality
     ConfirmTrezorTransaction,
     ConfirmLedgerTransaction,
     ConfirmLiqualityTransaction,
-    TrackingId,
     ConnectDevice,
     DeviceErrorDialog,
     TxErrorDialog,
@@ -181,10 +179,10 @@ export default class SendBitcoin extends Vue {
     if (txError !== '') {
       this.txError = txError;
       this.showTxErrorDialog = true;
+      this.txId = txId;
     } else if (txId) {
-      this.currentComponent = 'TrackingId';
+      this.$router.push({ name: 'Success', params: { txId } });
     }
-    this.txId = txId;
   }
 
   @Emit()

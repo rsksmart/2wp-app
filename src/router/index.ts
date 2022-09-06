@@ -34,6 +34,11 @@ const routes: Array<RouteConfig> = [
     name: 'Create',
     component: () => import(/* webpackChunkName: "transactions" */ '../views/Create.vue'),
   },
+  {
+    path: '/pegin/success/:txId',
+    name: 'Success',
+    component: () => import(/* webpackChunkName: "transactions" */ '../views/Success.vue'),
+  },
 ];
 
 const router = new VueRouter({
