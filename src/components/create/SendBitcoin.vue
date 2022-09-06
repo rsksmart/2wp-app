@@ -58,7 +58,10 @@ import ConfirmLiqualityTransaction from '@/components/liquality/ConfirmLiquality
     PegInForm,
     ConfirmTrezorTransaction,
     ConfirmLedgerTransaction,
+<<<<<<< HEAD
     ConfirmLiqualityTransaction,
+=======
+>>>>>>> change trackingId component
     ConnectDevice,
     DeviceErrorDialog,
     TxErrorDialog,
