@@ -62,17 +62,17 @@
 
 <script lang="ts">
 import {
-  Component, Prop, Emit,
+  Component, Emit,
   Vue,
 } from 'vue-property-decorator';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import * as constants from '@/store/constants';
 
 @Component
-export default class TrackingId extends Vue {
+export default class Success extends Vue {
   email = '';
 
-  @Prop() txId!: string;
+  txId = '';
 
   get btcExplorerUrl() {
     let network = '';
@@ -111,6 +111,10 @@ export default class TrackingId extends Vue {
   @Emit()
   copyTxId() {
     navigator.clipboard.writeText(this.txId);
+  }
+
+  created() {
+    this.txId = this.$route.params.txId;
   }
 }
 </script>
