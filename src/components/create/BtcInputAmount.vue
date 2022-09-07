@@ -134,13 +134,13 @@ export default class BtcInputAmount extends Vue {
       return 'The amount must be a valid Bitcoin value';
     }
     if (this.safeAmount.lt(minValue)) {
-      return `The minimum accepted is ${minValue.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
+      return `The minimum accepted value is ${minValue.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
     }
     if (feePlusAmount.gte(this.selectedAccountBalance)) {
       return 'You don\'t have the balance for this amount';
     }
     if (this.safeAmount.gt(maxValue)) {
-      return `The maximum accepted is ${maxValue.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
+      return `The maximum accepted value is ${maxValue.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
     }
     return 'Invalid format';
   }
