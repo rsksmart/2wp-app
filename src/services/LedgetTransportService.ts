@@ -30,6 +30,22 @@ export default class LedgerTransportService {
     return LedgerTransportService.instance;
   }
 
+  public static newInstance() {
+    LedgerTransportService.instance = new LedgerTransportService();
+  }
+
+  public isConnected():boolean {
+    this.isTransportBusy = false;
+    let isConnected = false;
+    try {
+      this.processNext();
+      isConnected = true;
+    // eslint-disable-next-line no-empty
+    } catch (e) { }
+
+    return isConnected;
+  }
+
   getTransport(): Promise<TransportWebUSB> {
     return new Promise<TransportWebUSB>((resolve, reject) => {
       if (this.transportRequestList.length === 0 && !this.isTransportBusy) {
