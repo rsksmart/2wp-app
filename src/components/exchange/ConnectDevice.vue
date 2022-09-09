@@ -4,7 +4,7 @@
       <v-row justify="center" class="mx-0">
         <h1>Connect your {{ walletName }}</h1>
       </v-row>
-      <v-row justify="center" class="ma-0 mb-10">
+      <v-row v-if="isHdWallet" justify="center" class="ma-0 mb-10">
         <p class="ma-0">(Keep your {{ walletName }} close so you can authorize access)</p>
       </v-row>
       <v-row justify="center">
@@ -14,15 +14,25 @@
               <div class="number">1</div>
             </v-col>
             <v-col cols="11">
-              <p class="ma-0">Plug your {{ walletName }} device into your computer</p>
+              <p v-if="walletName ==='Liquality'"
+              class="ma-0">
+                Make sure Liquality is installed and enabled in your browser.
+              </p>
+              <p v-if="walletName !=='Liquality'"
+              class="ma-0">
+                Plug your {{ walletName }} device into your computer
+              </p>
             </v-col>
           </v-row>
           <v-row class="ma-0">
             <v-col cols="1">
               <div class="number">2</div>
             </v-col>
-            <v-col cols="11">
+            <v-col v-if="isHdWallet" cols="11">
               <p class="ma-0">Insert {{ walletName }} device PIN code</p>
+            </v-col>
+            <v-col v-if="walletName ==='Liquality'" cols="11">
+              <p class="ma-0">Unlock your wallet.</p>
             </v-col>
           </v-row>
           <v-row v-if="isLedgerWallet" class="ma-0">
@@ -51,7 +61,7 @@
           </v-btn>
         </v-col>
         <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0">
-          <v-btn v-if="sendBitcoinState === 'idle' || sendBitcoinState === 'error'"
+          <v-btn v-if="(sendBitcoinState === 'idle' || sendBitcoinState === 'error') && isHdWallet"
                  rounded color="#00B520" width="110"
                  :disabled="sendBitcoinState === 'error'"
                  @click="continueToForm">
@@ -67,13 +77,14 @@
 
 <script lang="ts">
 import {
-  Component, Prop, Vue, Emit,
+  Component, Prop, Vue, Emit, Watch,
 } from 'vue-property-decorator';
 import { Getter, State, Action } from 'vuex-class';
 import * as constants from '@/store/constants';
 import { PegInTxState } from '@/types/pegInTx';
 import LedgerConnect from '@/assets/exchange/ledger/connect_ledger.png';
 import TrezorConnect from '@/assets/exchange/trezor/connect_trezor.png';
+import LiqualityConnect from '@/assets/exchange/liquality/connect_liquality.png';
 import Connect from '@/assets/exchange/wallet.png';
 import { SendBitcoinState } from '@/types';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
@@ -84,9 +95,13 @@ export default class ConnectDevice extends Vue {
 
   @Prop() sendBitcoinState!: SendBitcoinState;
 
+  @Prop() showDialog!: boolean;
+
   @State('pegInTx') peginTxState!: PegInTxState;
 
   @Getter(constants.WALLET_NAME, { namespace: 'pegInTx' }) walletName!: string;
+
+  @Getter(constants.PEGIN_TX_IS_HD_WALLET, { namespace: 'pegInTx' }) isHdWallet!: boolean;
 
   @Action(constants.PEGIN_TX_CLEAR_STATE, { namespace: 'pegInTx' }) clearStore !: () => void;
 
@@ -95,6 +110,7 @@ export default class ConnectDevice extends Vue {
   get deviceImagePath() {
     if (this.peginTxState.bitcoinWallet === constants.WALLET_LEDGER) return LedgerConnect;
     if (this.peginTxState.bitcoinWallet === constants.WALLET_TREZOR) return TrezorConnect;
+    if (this.peginTxState.bitcoinWallet === constants.WALLET_LIQUALITY) return LiqualityConnect;
     return Connect;
   }
 
@@ -107,9 +123,22 @@ export default class ConnectDevice extends Vue {
     return this.peginTxState.bitcoinWallet;
   }
 
+  beforeMount() {
+    if (this.walletName === 'Liquality' && !this.showDialog) {
+      this.tryConnectLiquality();
+    }
+  }
+
+  @Watch('showDialog')
+  tryConnectLiquality() {
+    if (this.walletName === 'Liquality' && !this.showDialog) {
+      this.continueToForm();
+    }
+  }
+
   @Emit()
-  // eslint-disable-next-line class-methods-use-this
   back() {
+    this.clearStore();
     this.$router.push({ name: 'PegIn' });
   }
 }

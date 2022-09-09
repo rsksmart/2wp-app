@@ -12,11 +12,12 @@
                  @toPegInForm="toPegInForm"
                  :confirmTxState="confirmTxState"/>
     </template>
-    <template v-if="showDialog">
-      <btc-to-rbtc-dialog :showDialog="showDialog" @closeDialog="closeDialog"/>
-    </template>
     <template v-if="showErrorDialog">
-      <device-error-dialog :showErrorDialog="showErrorDialog" :errorMessage="deviceError"
+      <device-error-dialog :showErrorDialog="showErrorDialog"
+                           :errorMessage="deviceError"
+                           :errorType="errorType"
+                           :urlToMoreInformation="urlToMoreInformation"
+                           :messageToUserOnLink="messageToUserOnLink"
                            @closeErrorDialog="closeErrorDialog"/>
     </template>
     <template v-if="showTxErrorDialog">
@@ -37,24 +38,25 @@ import ConfirmTrezorTransaction from '@/components/trezor/ConfirmTrezorTransacti
 import ConfirmLedgerTransaction from '@/components/ledger/ConfirmLedgerTransaction.vue';
 import * as constants from '@/store/constants';
 import {
-  NormalizedTx, SendBitcoinState, SatoshiBig, PegInTxState, BtcWallet,
+  NormalizedTx, SendBitcoinState, SatoshiBig, PegInTxState, BtcWallet, LiqualityError,
 } from '@/types';
 import TrezorTxBuilder from '@/middleware/TxBuilder/TrezorTxBuilder';
-import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
 import DeviceErrorDialog from '@/components/exchange/DeviceErrorDialog.vue';
 import ConnectDevice from '@/components/exchange/ConnectDevice.vue';
 import TxErrorDialog from '@/components/exchange/TxErrorDialog.vue';
 import { Machine } from '@/services/utils';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
+import LiqualityTxBuilder from '@/middleware/TxBuilder/LiqualityTxBuilder';
 import TxBuilder from '@/middleware/TxBuilder/TxBuilder';
 import { getClearPeginTxState } from '@/utils';
+import ConfirmLiqualityTransaction from '@/components/liquality/ConfirmLiqualityTransaction.vue';
 
 @Component({
   components: {
-    BtcToRbtcDialog,
     PegInForm,
     ConfirmTrezorTransaction,
     ConfirmLedgerTransaction,
+    ConfirmLiqualityTransaction,
     ConnectDevice,
     DeviceErrorDialog,
     TxErrorDialog,
@@ -62,13 +64,17 @@ import { getClearPeginTxState } from '@/utils';
 })
 
 export default class SendBitcoin extends Vue {
-  showDialog = false;
-
   showErrorDialog = false;
 
   showTxErrorDialog = false;
 
   deviceError = 'test';
+
+  errorType = '';
+
+  urlToMoreInformation = '';
+
+  messageToUserOnLink = '';
 
   sendBitcoinState: SendBitcoinState = 'idle';
 
@@ -107,10 +113,6 @@ export default class SendBitcoin extends Vue {
 
   @Getter(constants.PEGIN_TX_GET_CHANGE_ADDRESS, { namespace: 'pegInTx' }) getChangeAddress!: (accountType: string) => string;
 
-  beforeMount() {
-    this.showDialog = localStorage.getItem('BTRD_COOKIE_DISABLED') !== 'true';
-  }
-
   get change() {
     return this.getChangeAddress;
   }
@@ -144,6 +146,9 @@ export default class SendBitcoin extends Vue {
           case constants.WALLET_LEDGER:
             this.currentComponent = 'ConfirmLedgerTransaction';
             break;
+          case constants.WALLET_LIQUALITY:
+            this.currentComponent = 'ConfirmLiqualityTransaction';
+            break;
           default:
             this.currentComponent = 'ConfirmTrezorTransaction';
             break;
@@ -175,11 +180,6 @@ export default class SendBitcoin extends Vue {
   }
 
   @Emit()
-  closeDialog() {
-    this.showDialog = false;
-  }
-
-  @Emit()
   closeErrorDialog() {
     this.showErrorDialog = false;
     this.sendBitcoinState = 'idle';
@@ -201,6 +201,11 @@ export default class SendBitcoin extends Vue {
           this.deviceError = 'Please unlock your Ledger device.';
         } else {
           this.deviceError = e.message;
+        }
+        if (e instanceof LiqualityError) {
+          this.errorType = e.errorType;
+          this.urlToMoreInformation = e.urlToMoreInformation;
+          this.messageToUserOnLink = e.messageToUserOnLink;
         }
         this.sendBitcoinState = 'error';
         this.showErrorDialog = true;
@@ -236,6 +241,9 @@ export default class SendBitcoin extends Vue {
       case constants.WALLET_LEDGER:
         this.txBuilder = new LedgerTxBuilder();
         break;
+      case constants.WALLET_LIQUALITY:
+        this.txBuilder = new LiqualityTxBuilder();
+        break;
       default:
         this.txBuilder = new TrezorTxBuilder();
         break;
@@ -244,7 +252,6 @@ export default class SendBitcoin extends Vue {
 
   @Emit()
   async clear(): Promise<void> {
-    this.showDialog = false;
     this.showErrorDialog = false;
     this.showTxErrorDialog = false;
     this.deviceError = 'test';

@@ -40,6 +40,8 @@ jobs:
           VUE_APP_WALLET_MAX_CALLS_TREZOR=1
           VUE_APP_WALLET_ADDRESSES_PER_CALL_LEDGER=2
           VUE_APP_WALLET_MAX_CALLS_LEDGER=8
+          VUE_APP_WALLET_ADDRESSES_PER_CALL_LIQUALITY=10
+          VUE_APP_WALLET_MAX_CALLS_LIQUALITY=1
           npm run-script build
 
       - name: Configure AWS credentials

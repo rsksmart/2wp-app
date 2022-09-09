@@ -65,13 +65,16 @@ export function isValidOpReturn(
     const output: NormalizedOutput = outputs[i];
 
     if (output.op_return_data
-      && output.op_return_data.length === 92
-      && output.op_return_data.startsWith('52534b5401')
+      && (output.op_return_data.length === 50 || output.op_return_data.length === 92)
+      && output.op_return_data.substr(0, 10).startsWith('52534b5401')
     ) { // Includes version 01 in the same if
       const opReturnDestAddress = output.op_return_data.substring(10, 50);
       const destinationRskAddressFound = opReturnDestAddress.startsWith('0x') ? opReturnDestAddress : `0x${opReturnDestAddress}`;
       if (destinationRskAddress === destinationRskAddressFound) {
         try {
+          if (!refundBtcAddress && output.op_return_data.length === 50) {
+            return true;
+          }
           const refundBtcAddressFound = getRefundAddress(output.op_return_data.substring(50, 92));
           return (refundBtcAddress === refundBtcAddressFound);
         } catch {

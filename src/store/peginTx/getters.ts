@@ -14,6 +14,9 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       case constants.WALLET_TREZOR: {
         return 'Trezor';
       }
+      case constants.WALLET_LIQUALITY: {
+        return 'Liquality';
+      }
       default: {
         return 'wallet';
       }
@@ -77,6 +80,18 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       });
       return path;
     },
+  [constants.PEGIN_TX_GET_DERIVATION_PATH_FROM_ADDRESS]:
+    (state: PegInTxState) => (address: string): string => {
+      let derivationPath = '';
+      if (state.addressList) {
+        state.addressList.forEach((walletAddress) => {
+          if (walletAddress.address === address) {
+            derivationPath = walletAddress.serializedPath;
+          }
+        });
+      }
+      return derivationPath;
+    },
   [constants.PEGIN_TX_GET_ADDRESS_PUBLIC_KEY]:
     (state: PegInTxState) => (address: string): string => {
       let publicKey = '';
@@ -138,4 +153,22 @@ export const getters: GetterTree<PegInTxState, RootState> = {
     (state: PegInTxState) => state.statusInfo.txId,
   [constants.PEGIN_TX_GET_WALLET_SERVICE]:
     (state: PegInTxState): WalletService | undefined => state.walletService,
+  [constants.PEGIN_TX_IS_HD_WALLET]: (state: PegInTxState): boolean => {
+    let isHdWallet = false;
+    switch (state.bitcoinWallet) {
+      case constants.WALLET_TREZOR:
+        isHdWallet = true;
+        break;
+      case constants.WALLET_LEDGER:
+        isHdWallet = true;
+        break;
+      case constants.WALLET_LIQUALITY:
+        isHdWallet = false;
+        break;
+      default:
+        isHdWallet = false;
+        break;
+    }
+    return isHdWallet;
+  },
 };

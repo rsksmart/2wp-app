@@ -3,13 +3,14 @@ import { NormalizedOutput } from '@/types';
 import * as constants from '@/store/constants';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
+const initEnvironment = () => {
+  const defaultEnvironmentVariables = {
+    vueAppCoin: constants.BTC_NETWORK_TESTNET,
+  };
+  EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
+};
 describe('function: isValidOptReturn', () => {
-  beforeEach(() => {
-    const defaultEnvironmentVariables = {
-      vueAppCoin: constants.BTC_NETWORK_TESTNET,
-    };
-    EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
-  });
+  beforeEach(initEnvironment);
   it('opReturn empty', async () => {
     const result = isValidOpReturn([], 'destinationAddress', 'refundAddress');
     expect(result).toBe(false);
@@ -107,5 +108,14 @@ describe('function: isValidOptReturn', () => {
     };
     const result = isValidOpReturn([normalizedOutput], '0x224d0b72bab9342f898c633ef187abff8a96c0fa', '2MxKEf2su6FGAUfCEAHreGFQvEYrfYNHvL7');
     expect(result).toBe(false);
+  });
+  it('opReturn without refund address', async () => {
+    const opReturn = '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa';
+    const normalizedOutput: NormalizedOutput = {
+      amount: '0',
+      op_return_data: opReturn,
+    };
+    const result = isValidOpReturn([normalizedOutput], '0x224d0b72bab9342f898c633ef187abff8a96c0fa', '');
+    expect(result).toBeTruthy();
   });
 });

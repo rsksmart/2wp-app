@@ -116,10 +116,12 @@ import * as Bowser from 'bowser';
 import { Action, State } from 'vuex-class';
 import SelectBitcoinWallet from '@/components/exchange/SelectBitcoinWallet.vue';
 import * as constants from '@/store/constants';
-import { PegInTxState } from '@/types/pegInTx';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
-import { SessionState, TransactionType } from '@/types/session';
 import { isAllowedCurrentBrowser } from '@/services/utils';
+import LiqualityService from '@/services/LiqualityService';
+import {
+  SessionState, TransactionType, PegInTxState, WalletAddress,
+} from '@/types';
 
 @Component({
   components: {
@@ -134,6 +136,10 @@ export default class Home extends Vue {
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
   isAllowedBrowser = isAllowedCurrentBrowser();
+
+  addresses: WalletAddress[] = [];
+
+  liqualityService: LiqualityService = new LiqualityService();
 
   @State('pegInTx') peginTxState!: PegInTxState;
 
