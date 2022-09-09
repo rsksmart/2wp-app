@@ -27,6 +27,10 @@ export default abstract class WalletService {
 
   abstract sign(tx: Tx): Promise<SignedTx>;
 
+  abstract isConnected(): Promise<boolean>;
+
+  abstract reconnect(): Promise<void>;
+
   public isLoadingBalances2(): boolean {
     return this.loadingBalances;
   }
@@ -129,6 +133,12 @@ export default abstract class WalletService {
     const maxAddressPerCall: number = this.getWalletAddressesPerCall();
     let addresses: WalletAddress[] = [];
     try {
+      const connected = await this.isConnected();
+
+      if (!connected) {
+        await this.reconnect();
+      }
+
       for (
         let startFrom = 0;
         startFrom < (this.getWalletMaxCall() * maxAddressPerCall) && this.subscribers.length !== 0;

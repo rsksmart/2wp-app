@@ -35,6 +35,20 @@ export default class TrezorService extends WalletService {
   }
 
   // eslint-disable-next-line class-methods-use-this
+  isConnected(): Promise<boolean> {
+    return new Promise<boolean>((resolve) => {
+      resolve(true);
+    });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  reconnect(): Promise<void> {
+    return new Promise<void>((resolve) => {
+      resolve();
+    });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
   public getWalletAddressesPerCall(): number {
     return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletAddressesPerCallTrezor;
   }
