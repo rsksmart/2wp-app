@@ -21,6 +21,34 @@ export default class LedgerService extends WalletService {
   }
 
   // eslint-disable-next-line class-methods-use-this
+  public reconnect(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      try {
+        LedgerTransportService.newInstance();
+        resolve();
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  // eslint-disable-next-line @typescript-eslint/adjacent-overload-signatures
+  public isConnected(): Promise<boolean> {
+    return LedgerTransportService.getInstance()
+      .enqueueRequest(
+        // eslint-disable-next-line no-async-promise-executor
+        (transport: TransportWebUSB) => new Promise<boolean>(async (resolve) => {
+          try {
+            await this.checkApp(transport);
+            resolve(true);
+          } catch (e) {
+            resolve(false);
+          }
+        }),
+      );
+  }
+
+  // eslint-disable-next-line class-methods-use-this
   public getWalletAddressesPerCall(): number {
     return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletAddressesPerCallLedger;
   }
@@ -98,7 +126,7 @@ export default class LedgerService extends WalletService {
         (transport: TransportWebUSB) => new Promise<WalletAddress[]>(async (resolve, reject) => {
           const walletAddresses: WalletAddress[] = [];
           try {
-            await LedgerService.checkApp(transport);
+            await this.checkApp(transport);
             const btc = new AppBtc(transport);
             // eslint-disable-next-line no-restricted-syntax
             for (const item of bundle) {
@@ -164,7 +192,8 @@ export default class LedgerService extends WalletService {
       );
   }
 
-  public static getApp(transport: TransportWebUSB):
+  // eslint-disable-next-line class-methods-use-this
+  public getApp(transport: TransportWebUSB):
     Promise<{name: string; version: string; flags: Buffer}> {
     return new Promise<{name: string; version: string; flags: Buffer}>((resolve, reject) => {
       transport.send(0xb0, 0x01, 0x00, 0x00)
@@ -185,9 +214,9 @@ export default class LedgerService extends WalletService {
     });
   }
 
-  private static async checkApp(transport: TransportWebUSB): Promise<void> {
+  private async checkApp(transport: TransportWebUSB): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      LedgerService.getApp(transport)
+      this.getApp(transport)
         .then(({ name }) => {
           const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
           let valid: boolean;
