@@ -38,9 +38,7 @@
             <v-col cols="2" class="d-flex px-0 flex-column align-left">
               <h3>
                 {{
-                this.pegInTxState.normalizedTx.outputs[0].amount
-                + ' ' +
-                environmentContext.getBtcTicker()
+                  converAmount(this.pegInTxState.normalizedTx.outputs[0].amount)
                 }}
               </h3>
             </v-col>
@@ -72,9 +70,8 @@
                 {{ this.pegInTxState.normalizedTx.outputs[1].address }}
               </span>
               <h3>
-                {{ this.pegInTxState.normalizedTx.outputs[1].amount +
-                ' '
-                + environmentContext.getBtcTicker()
+                {{
+                  converAmount(this.pegInTxState.normalizedTx.outputs[1].amount)
                 }}
               </h3>
             </v-col>
@@ -87,16 +84,15 @@
                 {{ this.pegInTxState.normalizedTx.outputs[2].address }}
               </span>
               <div class="d-flex">
-                <div style="width:100%;">
-                  <h3 style="position:relative;top:25%;">
-                    {{ this.pegInTxState.normalizedTx.outputs[2].amount +
-                    ' '
-                    + environmentContext.getBtcTicker()
+                <div class="liquality-info">
+                  <h3>
+                    {{
+                      converAmount(this.pegInTxState.normalizedTx.outputs[2].amount)
                     }}
                   </h3>
                 </div>
-                <div style="width:100%;">
-                  <span style="float:right;border-radius:5px;padding:8px;background-color:green;color:white;font-weight:bold;">
+                <div class="liquality-info">
+                  <span class="wallet-tag">
                     My Wallet
                   </span>
                 </div>
@@ -177,6 +173,7 @@ import LiqualityTxBuilder from '@/middleware/TxBuilder/LiqualityTxBuilder';
     AdvancedData,
   },
 })
+
 export default class ConfirmLiqualityTransaction extends Vue {
   txId = '';
 
@@ -184,7 +181,9 @@ export default class ConfirmLiqualityTransaction extends Vue {
 
   bitcoinPrice = 0;
 
-  fixedUSDDecimals = 2;
+  fixedDecimals = 2;
+
+  allOutputs = [];
 
   @Prop() confirmTxState!: Machine<
     'idle'
@@ -254,6 +253,11 @@ export default class ConfirmLiqualityTransaction extends Vue {
   // eslint-disable-next-line class-methods-use-this
   splitString(s: string): string[] {
     return s.match(/.{1,16}/g) ?? [];
+  }
+
+  converAmount(amount: string) {
+    const satoshiAmount = amount === '0' ? 0 : new SatoshiBig(amount, 'satoshi').toBTCString();
+    return `${satoshiAmount} ${this.environmentContext.getBtcTicker()}`;
   }
 
   get opReturnData(): string {
