@@ -34,8 +34,8 @@
       <v-col cols="4">
         <fieldset class="confirmation-box">
           <legend align="center" class="px-4">See on liquality</legend>
-          <v-row justify="left" class="mt-5 mx-5 line-box-bottom">
-            <v-col cols="3" class="d-flex flex-column align-left">
+          <v-row justify="left" class="mt-5 mx-2 line-box-bottom">
+            <v-col cols="2" class="d-flex px-0 flex-column align-left">
               <h3>
                 {{
                 this.pegInTxState.normalizedTx.outputs[0].amount
@@ -44,7 +44,7 @@
                 }}
               </h3>
             </v-col>
-            <v-col cols="9" class="d-flex flex-column align-left">
+            <v-col cols="10" class="d-flex px-0 flex-column align-left">
               <v-tooltip right>
                 <template v-slot:activator="{ on, attrs }">
                   <v-icon
@@ -66,7 +66,7 @@
             </v-col>
           </v-row>
 
-           <v-row justify="left" class="mx-4 line-box-bottom">
+           <v-row justify="left" class="mx-2 line-box-bottom">
             <v-col class="pa-0 pb-2 d-flex flex-column align-left">
               <span class="breakable-address my-5">
                 {{ this.pegInTxState.normalizedTx.outputs[1].address }}
@@ -81,21 +81,30 @@
           </v-row>
 
           <v-row v-if="this.pegInTxState.normalizedTx.outputs[2]"
-          justify="left" class="mx-4 line-box-bottom">
+          justify="left" class="mx-2 line-box-bottom">
             <v-col class="pa-0 pb-2 d-flex flex-column align-left">
               <span class="breakable-address my-5">
                 {{ this.pegInTxState.normalizedTx.outputs[2].address }}
               </span>
-              <h3>
-                {{ this.pegInTxState.normalizedTx.outputs[2].amount +
-                ' '
-                + environmentContext.getBtcTicker()
-                }}
-              </h3>
+              <div class="d-flex">
+                <div style="width:100%;">
+                  <h3 style="position:relative;top:25%;">
+                    {{ this.pegInTxState.normalizedTx.outputs[2].amount +
+                    ' '
+                    + environmentContext.getBtcTicker()
+                    }}
+                  </h3>
+                </div>
+                <div style="width:100%;">
+                  <span style="float:right;border-radius:5px;padding:8px;background-color:green;color:white;font-weight:bold;">
+                    My Wallet
+                  </span>
+                </div>
+              </div>
             </v-col>
           </v-row>
 
-          <v-row justify="left" class="mx-5 my-3">
+          <v-row justify="left" class="mx-2 my-3">
             <v-col class="pa-0 pb-2 d-flex flex-column align-left">
               <span class="grayish">
                 Fee: {{ fee + ' ' + environmentContext.getBtcTicker() }}
@@ -172,6 +181,10 @@ export default class ConfirmLiqualityTransaction extends Vue {
   txId = '';
 
   rawTx = '';
+
+  bitcoinPrice = 0;
+
+  fixedUSDDecimals = 2;
 
   @Prop() confirmTxState!: Machine<
     'idle'
@@ -276,6 +289,7 @@ export default class ConfirmLiqualityTransaction extends Vue {
 
   async created() {
     this.rawTx = await this.txBuilder.getUnsignedRawTx(this.pegInTxState.normalizedTx);
+    this.bitcoinPrice = this.pegInTxState.bitcoinPrice;
   }
 }
 </script>
