@@ -214,3 +214,19 @@
 .line-box-bottom {
   border-bottom: 1px solid #c4c4c4;
 }
+
+.liquality-info {
+  width:100%;
+  h3 {
+    position:relative;
+    top:25%;
+  }
+  .wallet-tag {
+    float:right;
+    border-radius:5px;
+    padding:8px;
+    background-color:green;
+    color:white;
+    font-weight:bold;
+  }
+}

@@ -29,22 +29,20 @@
       </v-col>
     </v-row>
     <v-row justify="center" class="mx-0">
-       <v-col cols="4">
+       <v-col class="pr-0" cols="4">
       </v-col>
-      <v-col cols="4">
+      <v-col class="px-0" cols="4">
         <fieldset class="confirmation-box">
           <legend align="center" class="px-4">See on liquality</legend>
           <v-row justify="left" class="mt-5 mx-3 line-box-bottom">
-            <v-col cols="3" class="d-flex flex-column align-left px-0">
+            <v-col cols="2" class="d-flex flex-column align-left px-0">
               <h3>
                 {{
-                this.pegInTxState.normalizedTx.outputs[0].amount
-                + ' ' +
-                environmentContext.getBtcTicker()
+                  converAmount(this.pegInTxState.normalizedTx.outputs[0].amount)
                 }}
               </h3>
             </v-col>
-            <v-col cols="1" class="d-flex flex-column align-left">
+            <v-col cols="10" class="d-flex px-0 flex-column align-left">
               <v-tooltip right>
                 <template v-slot:activator="{ on, attrs }">
                   <v-icon
@@ -72,9 +70,8 @@
                 {{ this.pegInTxState.normalizedTx.outputs[1].address }}
               </span>
               <h3>
-                {{ this.pegInTxState.normalizedTx.outputs[1].amount +
-                ' '
-                + environmentContext.getBtcTicker()
+                {{
+                  converAmount(this.pegInTxState.normalizedTx.outputs[1].amount)
                 }}
               </h3>
             </v-col>
@@ -87,16 +84,15 @@
                 {{ this.pegInTxState.normalizedTx.outputs[2].address }}
               </span>
               <div class="d-flex">
-                <div class="liquality-info-container">
+                <div class="liquality-info">
                   <h3>
-                    {{ this.pegInTxState.normalizedTx.outputs[2].amount +
-                    ' '
-                    + environmentContext.getBtcTicker()
+                    {{
+                      converAmount(this.pegInTxState.normalizedTx.outputs[2].amount)
                     }}
                   </h3>
                 </div>
-                <div class="liquality-info-container">
-                  <span class="chip">
+                <div class="liquality-info">
+                  <span class="wallet-tag">
                     My Wallet
                   </span>
                 </div>
@@ -104,7 +100,7 @@
             </v-col>
           </v-row>
 
-          <v-row justify="left" class="mx-5 my-3">
+          <v-row justify="left" class="mx-2 my-3">
             <v-col class="pa-0 pb-2 d-flex flex-column align-left">
               <span class="grayish">
                 Fee: {{ fee + ' ' + environmentContext.getBtcTicker() }}
@@ -113,7 +109,7 @@
           </v-row>
         </fieldset>
       </v-col>
-      <v-col cols="4">
+      <v-col class="pl-0" cols="4">
       </v-col>
     </v-row>
     <v-divider/>
@@ -177,10 +173,17 @@ import LiqualityTxBuilder from '@/middleware/TxBuilder/LiqualityTxBuilder';
     AdvancedData,
   },
 })
+
 export default class ConfirmLiqualityTransaction extends Vue {
   txId = '';
 
   rawTx = '';
+
+  bitcoinPrice = 0;
+
+  fixedDecimals = 2;
+
+  allOutputs = [];
 
   @Prop() confirmTxState!: Machine<
     'idle'
@@ -252,6 +255,11 @@ export default class ConfirmLiqualityTransaction extends Vue {
     return s.match(/.{1,16}/g) ?? [];
   }
 
+  converAmount(amount: string) {
+    const satoshiAmount = amount === '0' ? 0 : new SatoshiBig(amount, 'satoshi').toBTCString();
+    return `${satoshiAmount} ${this.environmentContext.getBtcTicker()}`;
+  }
+
   get opReturnData(): string {
     const opReturnDataOutput = this.pegInTxState.normalizedTx.outputs[0] ?? { script_type: '' };
     return opReturnDataOutput.op_return_data
@@ -285,6 +293,7 @@ export default class ConfirmLiqualityTransaction extends Vue {
 
   async created() {
     this.rawTx = await this.txBuilder.getUnsignedRawTx(this.pegInTxState.normalizedTx);
+    this.bitcoinPrice = this.pegInTxState.bitcoinPrice;
   }
 }
 </script>
