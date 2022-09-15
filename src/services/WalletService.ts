@@ -123,6 +123,7 @@ export default abstract class WalletService {
 
   // eslint-disable-next-line class-methods-use-this
   public async startAskingForBalance(sessionId: string, maxAmountPegin: number): Promise<void> {
+    console.log('WalletService::startAskingForBalance');
     // eslint-disable-next-line prefer-const
     let balanceAccumulated: AccountBalance = {
       legacy: new SatoshiBig(0, 'satoshi'),
@@ -133,24 +134,31 @@ export default abstract class WalletService {
     const maxAddressPerCall: number = this.getWalletAddressesPerCall();
     let addresses: WalletAddress[] = [];
     try {
+      console.log('Verifying if is connected...');
       const connected = await this.isConnected();
-
+      console.log(`Is connected .... ${connected}`);
       if (!connected) {
         await this.reconnect();
       }
+
+      console.log('Continue ....');
 
       for (
         let startFrom = 0;
         startFrom < (this.getWalletMaxCall() * maxAddressPerCall) && this.subscribers.length !== 0;
         startFrom += maxAddressPerCall
       ) {
+        console.log('Starting loop...');
+
         // eslint-disable-next-line no-await-in-loop
         addresses = await this.getAccountAddresses(maxAddressPerCall, startFrom);
         if (addresses.length === 0) {
           throw new Error('Error getting list of addresses - List of addresses is empty');
         }
+        console.log('getUnusedValue...');
         // eslint-disable-next-line no-await-in-loop
         addresses = await WalletService.getUnusedValue(addresses);
+        console.log('getBalances...');
         // eslint-disable-next-line no-await-in-loop
         const balancesFound = await ApiService.getBalances(sessionId, addresses);
         const balances = {
@@ -190,6 +198,7 @@ export default abstract class WalletService {
       }
       this.informSubscribers(balanceAccumulated, addresses);
     } catch (error) {
+      console.log('Error on startAskingForBalance');
       if (!error.message) {
         error.message = 'Error fetching balance';
       }

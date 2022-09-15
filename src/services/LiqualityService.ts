@@ -13,6 +13,8 @@ import { EnvironmentAccessorService } from '@/services/enviroment-accessor.servi
 export default class LiqualityService extends WalletService {
   private bitcoinProvider!: WindowBitcoinProvider;
 
+  private recall = false;
+
   constructor(testBitcoinProvider?: WindowBitcoinProvider) {
     super();
     if (testBitcoinProvider) {
@@ -24,7 +26,7 @@ export default class LiqualityService extends WalletService {
     return new Promise<void>((resolve, reject) => {
       try {
         this.bitcoinProvider = window.bitcoin;
-        window.bitcoin.enable()
+        this.bitcoinProvider.enable()
           .then(() => {
             resolve();
           });
@@ -34,23 +36,91 @@ export default class LiqualityService extends WalletService {
     });
   }
 
+  private async verify(): Promise<boolean> {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise<boolean>(async (resolve) => {
+      try {
+        await this.enable();
+        resolve(true);
+      } catch (e) {
+        console.log(`Verify generates error ${e}`);
+        resolve(false);
+      }
+    });
+  }
+
+  private attachErrorListener() {
+    window.addEventListener('unhandledrejection', (event) => {
+      if (!event.reason) {
+        this.recall = true;
+        this.enable();
+      } else {
+        throw new LiqualityError();
+      }
+    });
+  }
+
   // eslint-disable-next-line class-methods-use-this
-  isConnected(): Promise<boolean> {
-    return new Promise<boolean>((resolve) => {
-      resolve(true);
+  async isConnected(): Promise<boolean> {
+    this.attachErrorListener();
+    console.log('isConnected');
+    const verifyed = await this.verify();
+    console.log('Pass verify method..');
+    return new Promise<boolean>((resolve, reject) => {
+      if (!verifyed) {
+        throw new LiqualityError();
+      }
+      console.log(verifyed);
+
+      const walletAddresses: WalletAddress[] = [];
+      console.log('enable()');
+      this.enable()
+        .then(() => Promise.all([
+          this.bitcoinProvider.request({
+            method: LiqualityMethods.GET_ADDRESS,
+            params: [0, 1, true],
+          }),
+          this.bitcoinProvider.request({
+            method: LiqualityMethods.GET_ADDRESS,
+            params: [0, 1, false],
+          }),
+        ]))
+        .then(([changeAddreses, noChangeAddresses]) => {
+          console.log('ChangeAddreses and noChangeAdresses obtained...');
+          const addresses = noChangeAddresses as LiqualityGetAddressesResponse[];
+          console.log(`addresses obtained ${addresses} `);
+          addresses.concat(changeAddreses as LiqualityGetAddressesResponse[])
+            .forEach((liqualityAddress: LiqualityGetAddressesResponse) => {
+              console.log(`forEach ${walletAddresses}`);
+              walletAddresses.push({
+                address: liqualityAddress.address,
+                serializedPath: liqualityAddress.derivationPath,
+                publicKey: liqualityAddress.publicKey,
+                path: [0],
+              });
+            });
+          resolve(true);
+        }).catch(reject);
     });
   }
 
   // eslint-disable-next-line class-methods-use-this
   reconnect(): Promise<void> {
-    return new Promise<void>((resolve) => {
-      resolve();
+    return new Promise<void>((resolve, reject) => {
+      try {
+        this.bitcoinProvider = window.bitcoin;
+        resolve();
+      } catch (e) {
+        reject(new LiqualityError());
+      }
     });
   }
 
   getAccountAddresses(batch: number, index: number): Promise<WalletAddress[]> {
+    console.log('getAccountAddresses');
     return new Promise<WalletAddress[]>((resolve, reject) => {
       const walletAddresses: WalletAddress[] = [];
+      console.log('enable()');
       this.enable()
         .then(() => Promise.all([
           this.bitcoinProvider.request({
@@ -63,9 +133,12 @@ export default class LiqualityService extends WalletService {
           }),
         ]))
         .then(([changeAddreses, noChangeAddresses]) => {
+          console.log('ChangeAddreses and noChangeAdresses obtained...');
           const addresses = noChangeAddresses as LiqualityGetAddressesResponse[];
+          console.log(`addresses obtained ${addresses} `);
           addresses.concat(changeAddreses as LiqualityGetAddressesResponse[])
             .forEach((liqualityAddress: LiqualityGetAddressesResponse) => {
+              console.log(`forEach ${walletAddresses}`);
               walletAddresses.push({
                 address: liqualityAddress.address,
                 serializedPath: liqualityAddress.derivationPath,
@@ -75,7 +148,12 @@ export default class LiqualityService extends WalletService {
             });
           resolve(walletAddresses);
         })
-        .catch(reject);
+        .then(console.log)
+        .catch((error) => {
+          console.log(`Error on LiqualityService::getAccountAddresses ${error}`);
+          console.log(error);
+          reject(new LiqualityError());
+        });
     });
   }
 

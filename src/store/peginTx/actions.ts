@@ -10,7 +10,7 @@ import { EnvironmentAccessorService } from '@/services/enviroment-accessor.servi
 import {
   AccountBalance, FeeAmountData, NormalizedTx, RootState,
   PeginConfiguration, PegInTxState, Utxo, WalletAddress,
-  BtcAccount, BtcWallet, MiningSpeedFee,
+  BtcAccount, BtcWallet, MiningSpeedFee, LiqualityError,
 } from '@/types';
 
 export const actions: ActionTree<PegInTxState, RootState> = {
@@ -130,6 +130,8 @@ export const actions: ActionTree<PegInTxState, RootState> = {
     }
     return Promise.reject(new Error('Wallet service is not set'));
   },
+  // eslint-disable-next-line max-len
+  [constants.ERROR_ON_WALLET_CONNECTION_OR_USER_DENIED]: (): Promise<void> => Promise.reject(new LiqualityError()),
   [constants.PEGIN_TX_STOP_ASKING_FOR_BALANCE]: ({ state }): Promise<void> => {
     if (state.walletService) {
       return state.walletService.stopAskingForBalance();

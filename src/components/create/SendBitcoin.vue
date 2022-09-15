@@ -194,8 +194,18 @@ export default class SendBitcoin extends Vue {
     this.confirmTxState.send('idle');
   }
 
+  private attachErrorListener() {
+    window.addEventListener('unhandledrejection', (event) => {
+      if (event.reason) {
+        this.errorOnConnection();
+      }
+    });
+  }
+
   @Emit()
   startAskingForBalance() {
+    this.attachErrorListener();
+    console.log('Sendbitcoin::startAskingForBalance');
     this.sendBitcoinState = 'loading';
     this.startAskingForBalanceStore()
       .catch((e) => {
@@ -212,6 +222,18 @@ export default class SendBitcoin extends Vue {
         this.sendBitcoinState = 'error';
         this.showErrorDialog = true;
       });
+  }
+
+  @Emit()
+  errorOnConnection() {
+    console.log('Sendbitcoin::errorOnConnection');
+    this.sendBitcoinState = 'error';
+    const error = new LiqualityError();
+    this.errorType = error.errorType;
+    this.urlToMoreInformation = error.urlToMoreInformation;
+    this.messageToUserOnLink = error.messageToUserOnLink;
+    this.sendBitcoinState = 'error';
+    this.showErrorDialog = true;
   }
 
   @Emit()
