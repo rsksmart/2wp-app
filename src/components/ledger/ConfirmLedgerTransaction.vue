@@ -152,7 +152,7 @@
       <v-col cols="10" class="d-flex justify-end ma-0 py-0">
         <v-btn rounded color="#00B520" width="110" @click="toTrackId"
                :disabled="confirmTxState.matches(['error', 'goingHome', 'loading'])">
-          <span class="whiteish">Sign</span>
+          <span class="whiteish">Send</span>
         </v-btn>
       </v-col>
     </v-row>
