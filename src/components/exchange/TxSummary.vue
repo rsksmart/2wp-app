@@ -89,7 +89,7 @@
                 </v-row>
               </v-container>
               <v-divider/>
-              <v-container>
+              <v-container v-if="!isLiquality">
                 <v-row class="mx-0" align="start">
                   <h3 class="mr-1">Refund {{environmentContext.getBtcText()}} address</h3>
                   <v-tooltip right>
@@ -174,6 +174,8 @@ export default class TxSummary extends Vue {
   expanded = true;
 
   over = false;
+
+  isLiquality = false;
 
   fixedUSDDecimals = 2;
 
@@ -263,6 +265,7 @@ export default class TxSummary extends Vue {
 
   created() {
     this.expanded = this.initialExpand;
+    this.isLiquality = this.peginTxState.bitcoinWallet === constants.WALLET_LIQUALITY;
   }
 }
 </script>
