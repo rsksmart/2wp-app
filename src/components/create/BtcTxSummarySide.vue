@@ -59,7 +59,7 @@
           </v-row>
         </v-container>
         <v-divider color="#C4C4C4"/>
-        <v-container id="summary-4" class="pb-0 pl-0">
+        <v-container v-if="!isLiquality" id="summary-4" class="pb-0 pl-0">
           <v-row class="mx-0">
             <h1>Refund {{environmentContext.getBtcText()}} address:</h1>
             <v-icon v-if="pegInTxState.selectedAccount" class="ml-2" small color="#008CFF">
@@ -67,7 +67,7 @@
             </v-icon>
           </v-row>
         </v-container>
-        <v-container class="pt-4 pl-0">
+        <v-container v-if="!isLiquality" class="pt-4 pl-0">
           <v-row class="mx-0 d-none d-lg-block">
             <p v-bind:class="{
                     'grayish': computedRefundBTCAddress === VALUE_INCOMPLETE_MESSAGE
@@ -145,6 +145,8 @@ export default class BtcTxSummarySide extends Vue {
   VALUE_INCOMPLETE_MESSAGE = 'Not completed';
 
   fixedUSDDecimals = 2;
+
+  isLiquality = false;
 
   maxLengthForChunked = 15;
 
@@ -231,6 +233,10 @@ export default class BtcTxSummarySide extends Vue {
         break;
     }
     return text;
+  }
+
+  created() {
+    this.isLiquality = this.pegInTxState.bitcoinWallet === constants.WALLET_LIQUALITY;
   }
 }
 </script>
