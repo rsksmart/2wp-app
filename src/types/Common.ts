@@ -44,6 +44,16 @@ export interface AccountBalance {
   nativeSegwit: SatoshiBig;
 }
 
+export interface Fee {
+  amount: number;
+  enoughBalance: boolean;
+}
+export interface FeeAmountDataResponse {
+  slow: Fee;
+  average: Fee;
+  fast: Fee;
+}
+
 export interface FeeAmountData {
   slow: SatoshiBig;
   average: SatoshiBig;
