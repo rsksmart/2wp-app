@@ -196,7 +196,12 @@ export default class SendBitcoin extends Vue {
 
   private attachErrorListener() {
     window.addEventListener('unhandledrejection', (event) => {
-      if (event.reason) {
+      console.log(event.promise);
+      console.log(event.reason);
+      console.log(event.type);
+      console.log(`Current Component ${this.peginTxState.bitcoinWallet} `);
+      console.log(event.reason.indexOf('denied'));
+      if (this.peginTxState.bitcoinWallet === constants.WALLET_LIQUALITY) {
         this.errorOnConnection();
       }
     });
@@ -234,6 +239,7 @@ export default class SendBitcoin extends Vue {
     this.messageToUserOnLink = error.messageToUserOnLink;
     this.sendBitcoinState = 'error';
     this.showErrorDialog = true;
+    this.deviceError = 'Liquality is closed or Account is not selected';
   }
 
   @Emit()

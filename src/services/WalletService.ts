@@ -158,9 +158,12 @@ export default abstract class WalletService {
         console.log('getUnusedValue...');
         // eslint-disable-next-line no-await-in-loop
         addresses = await WalletService.getUnusedValue(addresses);
-        console.log('getBalances...');
+        console.log(`getBalances... ${addresses}`);
         // eslint-disable-next-line no-await-in-loop
         const balancesFound = await ApiService.getBalances(sessionId, addresses);
+        console.log(`balancesFound... ${balancesFound.legacy}`);
+        console.log(`balancesFound... ${balancesFound.nativeSegwit}`);
+        console.log(`balancesFound... ${balancesFound.segwit}`);
         const balances = {
           legacy: new SatoshiBig(balancesFound.legacy || 0, 'satoshi'),
           segwit: new SatoshiBig(balancesFound.segwit || 0, 'satoshi'),
@@ -169,21 +172,26 @@ export default abstract class WalletService {
         if (startFrom + maxAddressPerCall >= (this.getWalletMaxCall() * maxAddressPerCall)) {
           this.loadingBalances = false;
         }
+        console.log(`if balances ... ${!!balances}`);
         // eslint-disable-next-line no-extra-boolean-cast
         if (!!balances) {
           if (balances.legacy.gt(0)
             || balances.nativeSegwit.gt(0)
             || balances.segwit.gt(0)) {
+            console.log('Inner if ');
             balanceAccumulated = {
               legacy: new SatoshiBig(balanceAccumulated.legacy.plus(balances.legacy), 'satoshi'),
               segwit: new SatoshiBig(balanceAccumulated.segwit.plus(balances.segwit), 'satoshi'),
               nativeSegwit: new SatoshiBig(balanceAccumulated.nativeSegwit.plus(balances.nativeSegwit), 'satoshi'),
             };
           } else {
+            console.log('Inner else ');
             const areAllAddressUnused = addresses
               .every((walletAddressItem) => walletAddressItem.unused);
-            if (areAllAddressUnused) return;
+            console.log(`Inner else returning ? ${areAllAddressUnused} `);
+            if (areAllAddressUnused) break;
           }
+          console.log(`informSubscribers ... ${!!balanceAccumulated}`);
           this.informSubscribers(balanceAccumulated, addresses);
         } else {
           throw new Error('Error getting balances');
@@ -193,9 +201,12 @@ export default abstract class WalletService {
           && balanceAccumulated.segwit.gte(maxAmountPeginCompare)
           && balanceAccumulated.nativeSegwit.gte(maxAmountPeginCompare)
         ) {
+          console.log('Returning...');
           return;
         }
       }
+      console.log(`returning informSubscribers ${addresses}`);
+      console.log(`returning informSubscribers ${balanceAccumulated}`);
       this.informSubscribers(balanceAccumulated, addresses);
     } catch (error) {
       console.log('Error on startAskingForBalance');
@@ -204,6 +215,7 @@ export default abstract class WalletService {
       }
       throw error;
     } finally {
+      console.log('Finally...');
       this.loadingBalances = false;
     }
   }

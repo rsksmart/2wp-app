@@ -25,10 +25,14 @@ export default class LiqualityService extends WalletService {
   private enable(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       try {
+        console.log('enable called');
         this.bitcoinProvider = window.bitcoin;
         this.bitcoinProvider.enable()
           .then(() => {
             resolve();
+          }, (e) => {
+            console.log(`ENABLE TRYING TO CAPTURE ${e}`);
+            reject(LiqualityService.noEnableError());
           });
       } catch (e) {
         reject(new LiqualityError());
@@ -36,42 +40,27 @@ export default class LiqualityService extends WalletService {
     });
   }
 
-  private async verify(): Promise<boolean> {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise<boolean>(async (resolve) => {
-      try {
-        await this.enable();
-        resolve(true);
-      } catch (e) {
-        console.log(`Verify generates error ${e}`);
-        resolve(false);
-      }
-    });
+  private static noEnableError(): LiqualityError {
+    const error = new LiqualityError();
+    error.message = 'Liquality is closed or Account is not selected';
+    return error;
   }
 
-  private attachErrorListener() {
-    window.addEventListener('unhandledrejection', (event) => {
-      if (!event.reason) {
-        this.recall = true;
-        this.enable();
-      } else {
-        throw new LiqualityError();
-      }
-    });
-  }
+  // private attachErrorListener() {
+  //   window.addEventListener('unhandledrejection', (event) => {
+  //     if (!event.reason) {
+  //       this.recall = true;
+  //       this.enable();
+  //     } else {
+  //       throw new LiqualityError();
+  //     }
+  //   });
+  // }
 
   // eslint-disable-next-line class-methods-use-this
   async isConnected(): Promise<boolean> {
-    this.attachErrorListener();
     console.log('isConnected');
-    const verifyed = await this.verify();
-    console.log('Pass verify method..');
     return new Promise<boolean>((resolve, reject) => {
-      if (!verifyed) {
-        throw new LiqualityError();
-      }
-      console.log(verifyed);
-
       const walletAddresses: WalletAddress[] = [];
       console.log('enable()');
       this.enable()
