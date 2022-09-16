@@ -139,7 +139,7 @@ export default class Status extends Vue {
   @Action(constants.PEGIN_TX_ADD_STATUS_TX_ID, { namespace: 'pegInTx' }) setTxId !: (txId: string) => void;
 
   get showStatus() {
-    return !this.loading && !this.error && !this.statusMessage;
+    return !this.loading && !this.error;
   }
 
   @Emit()
@@ -159,8 +159,7 @@ export default class Status extends Vue {
           this.isPegOut = txStatus.type === TxStatusType.PEGOUT;
           if (this.isPegIn) {
             this.pegInStatus = txStatus.txDetails as PeginStatus;
-          }
-          if (this.isPegOut) {
+          } else if (this.isPegOut) {
             // TODO: Setup pegout view
             this.pegOutStatus = txStatus.txDetails as PegoutStatusDataModel;
           }
