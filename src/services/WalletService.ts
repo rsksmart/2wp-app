@@ -123,7 +123,6 @@ export default abstract class WalletService {
 
   // eslint-disable-next-line class-methods-use-this
   public async startAskingForBalance(sessionId: string, maxAmountPegin: number): Promise<void> {
-    console.log('WalletService::startAskingForBalance');
     // eslint-disable-next-line prefer-const
     let balanceAccumulated: AccountBalance = {
       legacy: new SatoshiBig(0, 'satoshi'),
@@ -134,36 +133,25 @@ export default abstract class WalletService {
     const maxAddressPerCall: number = this.getWalletAddressesPerCall();
     let addresses: WalletAddress[] = [];
     try {
-      console.log('Verifying if is connected...');
       const connected = await this.isConnected();
-      console.log(`Is connected .... ${connected}`);
       if (!connected) {
         await this.reconnect();
       }
-
-      console.log('Continue ....');
 
       for (
         let startFrom = 0;
         startFrom < (this.getWalletMaxCall() * maxAddressPerCall) && this.subscribers.length !== 0;
         startFrom += maxAddressPerCall
       ) {
-        console.log('Starting loop...');
-
         // eslint-disable-next-line no-await-in-loop
         addresses = await this.getAccountAddresses(maxAddressPerCall, startFrom);
         if (addresses.length === 0) {
           throw new Error('Error getting list of addresses - List of addresses is empty');
         }
-        console.log('getUnusedValue...');
         // eslint-disable-next-line no-await-in-loop
         addresses = await WalletService.getUnusedValue(addresses);
-        console.log(`getBalances... ${addresses}`);
         // eslint-disable-next-line no-await-in-loop
         const balancesFound = await ApiService.getBalances(sessionId, addresses);
-        console.log(`balancesFound... ${balancesFound.legacy}`);
-        console.log(`balancesFound... ${balancesFound.nativeSegwit}`);
-        console.log(`balancesFound... ${balancesFound.segwit}`);
         const balances = {
           legacy: new SatoshiBig(balancesFound.legacy || 0, 'satoshi'),
           segwit: new SatoshiBig(balancesFound.segwit || 0, 'satoshi'),
@@ -172,26 +160,21 @@ export default abstract class WalletService {
         if (startFrom + maxAddressPerCall >= (this.getWalletMaxCall() * maxAddressPerCall)) {
           this.loadingBalances = false;
         }
-        console.log(`if balances ... ${!!balances}`);
         // eslint-disable-next-line no-extra-boolean-cast
         if (!!balances) {
           if (balances.legacy.gt(0)
             || balances.nativeSegwit.gt(0)
             || balances.segwit.gt(0)) {
-            console.log('Inner if ');
             balanceAccumulated = {
               legacy: new SatoshiBig(balanceAccumulated.legacy.plus(balances.legacy), 'satoshi'),
               segwit: new SatoshiBig(balanceAccumulated.segwit.plus(balances.segwit), 'satoshi'),
               nativeSegwit: new SatoshiBig(balanceAccumulated.nativeSegwit.plus(balances.nativeSegwit), 'satoshi'),
             };
           } else {
-            console.log('Inner else ');
             const areAllAddressUnused = addresses
               .every((walletAddressItem) => walletAddressItem.unused);
-            console.log(`Inner else returning ? ${areAllAddressUnused} `);
             if (areAllAddressUnused) break;
           }
-          console.log(`informSubscribers ... ${!!balanceAccumulated}`);
           this.informSubscribers(balanceAccumulated, addresses);
         } else {
           throw new Error('Error getting balances');
@@ -201,21 +184,16 @@ export default abstract class WalletService {
           && balanceAccumulated.segwit.gte(maxAmountPeginCompare)
           && balanceAccumulated.nativeSegwit.gte(maxAmountPeginCompare)
         ) {
-          console.log('Returning...');
           return;
         }
       }
-      console.log(`returning informSubscribers ${addresses}`);
-      console.log(`returning informSubscribers ${balanceAccumulated}`);
       this.informSubscribers(balanceAccumulated, addresses);
     } catch (error) {
-      console.log('Error on startAskingForBalance');
       if (!error.message) {
         error.message = 'Error fetching balance';
       }
       throw error;
     } finally {
-      console.log('Finally...');
       this.loadingBalances = false;
     }
   }

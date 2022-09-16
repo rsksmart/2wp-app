@@ -25,14 +25,12 @@ export default class LiqualityService extends WalletService {
   private enable(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       try {
-        console.log('enable called');
         this.bitcoinProvider = window.bitcoin;
         this.bitcoinProvider.enable()
           .then(() => {
             resolve();
-          }, (e) => {
-            console.log(`ENABLE TRYING TO CAPTURE ${e}`);
-            reject(LiqualityService.noEnableError());
+          }, () => {
+            reject(LiqualityService.deniedOrPopUpClosed());
           });
       } catch (e) {
         reject(new LiqualityError());
@@ -40,29 +38,16 @@ export default class LiqualityService extends WalletService {
     });
   }
 
-  private static noEnableError(): LiqualityError {
+  private static deniedOrPopUpClosed(): LiqualityError {
     const error = new LiqualityError();
     error.message = 'Liquality is closed or Account is not selected';
     return error;
   }
 
-  // private attachErrorListener() {
-  //   window.addEventListener('unhandledrejection', (event) => {
-  //     if (!event.reason) {
-  //       this.recall = true;
-  //       this.enable();
-  //     } else {
-  //       throw new LiqualityError();
-  //     }
-  //   });
-  // }
-
   // eslint-disable-next-line class-methods-use-this
   async isConnected(): Promise<boolean> {
-    console.log('isConnected');
     return new Promise<boolean>((resolve, reject) => {
       const walletAddresses: WalletAddress[] = [];
-      console.log('enable()');
       this.enable()
         .then(() => Promise.all([
           this.bitcoinProvider.request({
@@ -75,12 +60,9 @@ export default class LiqualityService extends WalletService {
           }),
         ]))
         .then(([changeAddreses, noChangeAddresses]) => {
-          console.log('ChangeAddreses and noChangeAdresses obtained...');
           const addresses = noChangeAddresses as LiqualityGetAddressesResponse[];
-          console.log(`addresses obtained ${addresses} `);
           addresses.concat(changeAddreses as LiqualityGetAddressesResponse[])
             .forEach((liqualityAddress: LiqualityGetAddressesResponse) => {
-              console.log(`forEach ${walletAddresses}`);
               walletAddresses.push({
                 address: liqualityAddress.address,
                 serializedPath: liqualityAddress.derivationPath,
@@ -106,10 +88,8 @@ export default class LiqualityService extends WalletService {
   }
 
   getAccountAddresses(batch: number, index: number): Promise<WalletAddress[]> {
-    console.log('getAccountAddresses');
     return new Promise<WalletAddress[]>((resolve, reject) => {
       const walletAddresses: WalletAddress[] = [];
-      console.log('enable()');
       this.enable()
         .then(() => Promise.all([
           this.bitcoinProvider.request({
@@ -122,12 +102,9 @@ export default class LiqualityService extends WalletService {
           }),
         ]))
         .then(([changeAddreses, noChangeAddresses]) => {
-          console.log('ChangeAddreses and noChangeAdresses obtained...');
           const addresses = noChangeAddresses as LiqualityGetAddressesResponse[];
-          console.log(`addresses obtained ${addresses} `);
           addresses.concat(changeAddreses as LiqualityGetAddressesResponse[])
             .forEach((liqualityAddress: LiqualityGetAddressesResponse) => {
-              console.log(`forEach ${walletAddresses}`);
               walletAddresses.push({
                 address: liqualityAddress.address,
                 serializedPath: liqualityAddress.derivationPath,
@@ -137,10 +114,7 @@ export default class LiqualityService extends WalletService {
             });
           resolve(walletAddresses);
         })
-        .then(console.log)
-        .catch((error) => {
-          console.log(`Error on LiqualityService::getAccountAddresses ${error}`);
-          console.log(error);
+        .catch(() => {
           reject(new LiqualityError());
         });
     });
