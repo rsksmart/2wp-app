@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { WalletAddress, PeginConfiguration } from '@/types/pegInTx';
 import {
-  AccountBalance, AddressStatus, FeeAmountData, NormalizedTx, TxStatus,
+  AccountBalance, AddressStatus, FeeAmountDataResponse, NormalizedTx, TxStatus,
 } from '@/types';
 import { isValidOpReturn, isValidPowPegAddress } from '@/utils';
 import { BridgeService } from '@/services/BridgeService';
@@ -32,8 +32,8 @@ export default class ApiService {
   }
 
   public static getTxFee(sessionId: string, amount: number,
-    accountType: string): Promise<FeeAmountData> {
-    return new Promise<FeeAmountData>((resolve, reject) => {
+    accountType: string): Promise<FeeAmountDataResponse> {
+    return new Promise<FeeAmountDataResponse>((resolve, reject) => {
       axios.post(`${this.baseURL}/tx-fee`, {
         sessionId,
         amount,
