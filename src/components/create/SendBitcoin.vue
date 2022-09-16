@@ -194,23 +194,8 @@ export default class SendBitcoin extends Vue {
     this.confirmTxState.send('idle');
   }
 
-  private attachErrorListener() {
-    window.addEventListener('unhandledrejection', (event) => {
-      console.log(event.promise);
-      console.log(event.reason);
-      console.log(event.type);
-      console.log(`Current Component ${this.peginTxState.bitcoinWallet} `);
-      console.log(event.reason.indexOf('denied'));
-      if (this.peginTxState.bitcoinWallet === constants.WALLET_LIQUALITY) {
-        this.errorOnConnection();
-      }
-    });
-  }
-
   @Emit()
   startAskingForBalance() {
-    this.attachErrorListener();
-    console.log('Sendbitcoin::startAskingForBalance');
     this.sendBitcoinState = 'loading';
     this.startAskingForBalanceStore()
       .catch((e) => {
@@ -231,7 +216,6 @@ export default class SendBitcoin extends Vue {
 
   @Emit()
   errorOnConnection() {
-    console.log('Sendbitcoin::errorOnConnection');
     this.sendBitcoinState = 'error';
     const error = new LiqualityError();
     this.errorType = error.errorType;
