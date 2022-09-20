@@ -108,7 +108,7 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_ADD_RSK_ADDRESS]: ({ commit }, address: string): void => {
     const chainId = EnvironmentAccessorService
       .getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_MAINNET ? 30 : 31;
-    const rskChecksumAddress = rskUtils.toChecksumAddress(address, chainId);
+    const rskChecksumAddress = address ? rskUtils.toChecksumAddress(address, chainId) : '';
     commit(constants.PEGIN_TX_SET_RSK_ADDRESS, rskChecksumAddress);
   },
   [constants.PEGIN_TX_SELECT_FEE_LEVEL]: ({ commit }, feeLevel: MiningSpeedFee): void => {

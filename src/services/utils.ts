@@ -109,8 +109,9 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
         isRejected = false;
         break;
       case constants.PegStatus.ERROR_BELOW_MIN:
-        error = true;
-        errorMessage = 'The transaction is below the minimum amount required';
+        statusMessage = 'The transaction is below the minimum amount required';
+        activeMessageStyle = 'statusRejected';
+        isRejected = true;
         break;
       case constants.PegStatus.ERROR_NOT_A_PEGIN:
         error = true;
