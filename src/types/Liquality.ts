@@ -37,8 +37,15 @@ export interface LiqualityGetAddressesResponse {
   publicKey: string;
   index: number;
 }
+
+export interface LiqualityGetNetworkResponse {
+  isTestnet: boolean;
+}
+
 export type LiqualitySignPsbtResponse = string;
-export type LiqualityResponse = Array<LiqualityGetAddressesResponse> | LiqualitySignPsbtResponse;
+export type LiqualityResponse = Array<LiqualityGetAddressesResponse> |
+                                LiqualitySignPsbtResponse |
+                                LiqualityGetNetworkResponse;
 
 export interface LiqualityTx extends Tx {
   inputs: Array<LiqualityInput>;
