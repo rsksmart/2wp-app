@@ -39,7 +39,8 @@
           v-if="!isRejected && showStatus && isPegIn"
           :txId ="txId"
           @setMessage="setMessage"
-          :pegInStatus='pegInStatus'
+          :pegInStatus="pegInStatus"
+          :isRejected="isRejected"
           />
          <!--  TODO: create a pegout-tx-summary component-->
         <tx-pegout
