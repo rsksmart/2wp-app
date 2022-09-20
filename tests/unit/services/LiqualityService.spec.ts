@@ -25,6 +25,7 @@ const initEnvironment = () => {
 describe('Liquality Service:', () => {
   let request: sinon.SinonStub<[LiqualityRequestArgs], Promise<LiqualityResponse>>;
   let enable: sinon.SinonStub<[], Promise<LiqualityAddress[]>>;
+  let checkApp: sinon.SinonStub<[], Promise<void>>;
   let mockedBitcoinProvider: sinon.SinonStubbedInstance<MockedBtcProvider>;
   beforeEach(initEnvironment);
   it('should create a LiqualityService instance', () => {
@@ -35,6 +36,7 @@ describe('Liquality Service:', () => {
   it('should get the same number of requested addresses', () => {
     mockedBitcoinProvider = sinon.createStubInstance(MockedBtcProvider);
     enable = mockedBitcoinProvider.enable;
+    checkApp = mockedBitcoinProvider.checkApp;
     request = mockedBitcoinProvider.request;
     const batch = 2;
     const startFrom = 0;
@@ -64,9 +66,11 @@ describe('Liquality Service:', () => {
         publicKey: 'testPublicKey',
         index,
       })));
+    checkApp.resolves();
     enable.resolves();
     const liqualityService = new LiqualityService(mockedBitcoinProvider);
     sinon.stub(LiqualityService.prototype, 'enable' as any).returns(Promise.resolve({}));
+    sinon.stub(LiqualityService.prototype, 'checkApp' as any).returns(Promise.resolve({}));
 
     return liqualityService.getAccountAddresses(batch, startFrom)
       .then((walletAddresses) => {
@@ -112,7 +116,7 @@ describe('Liquality Service:', () => {
     enable.resolves();
     const liqualityService = new LiqualityService(mockedBitcoinProvider);
     return liqualityService.getAccountAddresses(batch, startFrom)
-      .then().catch((e) => expect(e.message).to.be.eql('Liquality software wallet not installed on your browser'));
+      .then().catch((e) => expect(e.message).to.be.eql('Liquality software wallet is not installed on your browser'));
   });
   it('should return a wallet signed tx', () => {
     mockedBitcoinProvider = sinon.createStubInstance(MockedBtcProvider);
