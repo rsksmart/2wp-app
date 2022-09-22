@@ -16,6 +16,7 @@
                         :color="txFeeColor" :track-color="txFeeColor" step="1"
                         @focus="focus = true"
                         @blur="focus = false"
+                        :rules="[enoughBalance]"
                         @change="updateStore"/>
             </v-row>
             <v-row class="mx-0">
@@ -52,7 +53,7 @@
 
 <script lang="ts">
 import { Component, Emit, Vue } from 'vue-property-decorator';
-import { Action, State } from 'vuex-class';
+import { Action, Getter, State } from 'vuex-class';
 import * as constants from '@/store/constants';
 import { MiningSpeedFee, PegInTxState } from '@/types/pegInTx';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
@@ -73,6 +74,8 @@ export default class BtcFeeSelect extends Vue {
   @State('pegInTx') pegInTxState!: PegInTxState;
 
   @Action(constants.PEGIN_TX_SELECT_FEE_LEVEL, { namespace: 'pegInTx' }) setSelectedFee !: (feeLevel: MiningSpeedFee) => void;
+
+  @Getter(constants.PEGIN_TX_IS_ENOUGH_BALANCE, { namespace: 'pegInTx' }) isEnoughBalance !: boolean;
 
   get txFeeColor() {
     let color;
@@ -107,6 +110,10 @@ export default class BtcFeeSelect extends Vue {
   get fastFeeUSD() {
     return this.pegInTxState.calculatedFees.fast
       .toUSDFromBTCString(this.pegInTxState.bitcoinPrice, this.fixedUSDDecimals);
+  }
+
+  get enoughBalance(): boolean | string {
+    return this.isEnoughBalance ? this.isEnoughBalance : 'You don\'t have the balance for this fee + amount';
   }
 
   @Emit()

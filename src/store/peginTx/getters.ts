@@ -171,4 +171,22 @@ export const getters: GetterTree<PegInTxState, RootState> = {
     }
     return isHdWallet;
   },
+  [constants.PEGIN_TX_IS_ENOUGH_BALANCE]: (state: PegInTxState, moduleGetters): boolean => {
+    const feePlusAmount: SatoshiBig = state.amountToTransfer
+      .plus(moduleGetters[constants.PEGIN_TX_GET_SAFE_TX_FEE]);
+    const selectedAccountBalance = moduleGetters[constants.PEGIN_TX_GET_SELECTED_BALANCE];
+    const minValue: SatoshiBig = new SatoshiBig(state.peginConfiguration.minValue, 'satoshi');
+    // eslint-disable-next-line max-len
+    const maxValue: SatoshiBig = new SatoshiBig(state.peginConfiguration.maxValue, 'satoshi');
+    if (state.amountToTransfer.lte('0')
+      || feePlusAmount.gt(selectedAccountBalance)
+      || state.amountToTransfer.lt(minValue)
+      || state.amountToTransfer.gt(maxValue)) {
+      return false;
+    }
+    if (state.amountToTransfer.gt('0') && feePlusAmount.lte(selectedAccountBalance)) {
+      return true;
+    }
+    return true;
+  },
 };
