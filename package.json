@@ -38,7 +38,7 @@
     "vuex-class": "^0.3.2",
     "web3": "^1.7.5",
     "web3-eth-contract": "^1.7.0",
-    "webextension-polyfill": "^0.10.0"
+    "webextension-polyfill": "^0.4.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.11",

@@ -171,6 +171,7 @@ import EnvironmentContextProviderService from '@/providers/EnvironmentContextPro
 import { PegInTxState } from '@/types/pegInTx';
 import * as constants from '@/store/constants';
 import LiqualityTxBuilder from '@/middleware/TxBuilder/LiqualityTxBuilder';
+import browser from 'webextension-polyfill';
 
 @Component({
   components: {
@@ -240,6 +241,13 @@ export default class ConfirmLiqualityTransaction extends Vue {
   }
 
   // eslint-disable-next-line class-methods-use-this
+  listenConnection() {
+    browser.runtime.connect().onDisconnect.addListener(() => {
+      console.log('Disconnected=====================================================================');
+    });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
   errorOnConnection() {
     console.log('errorOnConnection');
     console.log('errorOnConnection');
@@ -258,6 +266,7 @@ export default class ConfirmLiqualityTransaction extends Vue {
     try {
       console.log('attaching listener');
       this.attachErrorListener();
+      this.listenConnection();
       console.log('verifying if is connected');
       const connected = await this.walletService.isConnected();
 
