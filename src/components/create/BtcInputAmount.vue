@@ -203,6 +203,7 @@ export default class BtcInputAmount extends Vue {
       .catch(console.error);
   }
 
+  @Watch('pegInTxState.selectedFee')
   @Emit('stepState')
   checkStep() {
     this.stepState = this.isBTCAmountValidNumberRegex && !this.insufficientAmount
