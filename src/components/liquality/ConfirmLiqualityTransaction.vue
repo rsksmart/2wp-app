@@ -29,7 +29,7 @@
       </v-col>
     </v-row>
     <v-row justify="center" class="mx-0">
-       <v-col cols="4">
+      <v-col cols="4">
       </v-col>
       <v-col cols="4">
         <fieldset class="confirmation-box">
@@ -58,15 +58,15 @@
                   </v-icon>
                 </template>
                 <p class="tooltip-form mb-0">
-                 This output only contains metadata required by
-                 RSK to process the peg-in, therefore it doesn't
-                 include any value.
+                This output only contains metadata required by
+                RSK to process the peg-in, therefore it doesn't
+                include any value.
                 </p>
               </v-tooltip>
             </v-col>
           </v-row>
 
-           <v-row justify="left" class="mx-3 line-box-bottom">
+          <v-row justify="left" class="mx-3 line-box-bottom">
             <v-col class="pa-0 pb-2 d-flex flex-column align-left">
               <span class="breakable-address my-5">
                 {{ this.pegInTxState.normalizedTx.outputs[1].address }}
@@ -126,13 +126,13 @@
     <v-row v-if="confirmTxState.matches(['idle', 'error', 'goingHome'])" class="ma-0">
       <v-col cols="2" class="d-flex justify-start ma-0 py-0">
         <v-btn rounded outlined color="#00B520" width="110" @click="toPegInForm"
-               :disabled="confirmTxState.matches(['error', 'goingHome', 'loading'])">
+              :disabled="confirmTxState.matches(['error', 'goingHome', 'loading'])">
           <span>Back</span>
         </v-btn>
       </v-col>
       <v-col cols="10" class="d-flex justify-end ma-0 py-0">
         <v-btn rounded color="#00B520" width="110" @click="toTrackId"
-               :disabled="confirmTxState.matches(['error', 'goingHome', 'loading'])">
+              :disabled="confirmTxState.matches(['error', 'goingHome', 'loading'])">
           <span class="whiteish">Sign</span>
         </v-btn>
       </v-col>
@@ -157,6 +157,7 @@ import {
 } from 'vue-property-decorator';
 import { Getter, State, Action } from 'vuex-class';
 import {
+  LiqualityError,
   LiqualitySignedTx,
   LiqualityTx,
 } from '@/types';
@@ -182,6 +183,18 @@ export default class ConfirmLiqualityTransaction extends Vue {
 
   rawTx = '';
 
+  showErrorDialog = false;
+
+  showTxErrorDialog = false;
+
+  deviceError = 'test';
+
+  errorType = '';
+
+  urlToMoreInformation = '';
+
+  messageToUserOnLink = '';
+
   @Prop() confirmTxState!: Machine<
     'idle'
     | 'loading'
@@ -203,23 +216,79 @@ export default class ConfirmLiqualityTransaction extends Vue {
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
+  private attachErrorListener() {
+    window.addEventListener('unhandledrejection', (event) => {
+      console.log(`Error ocurred unhandledrejection ${event}`);
+      this.errorOnConnection();
+    });
+    window.addEventListener('error', (event) => {
+      console.log(`Error ocurred unhandledrejection ${event}`);
+      this.errorOnConnection();
+    });
+    window.addEventListener('uncaughtException', (event) => {
+      console.log(`Error ocurred unhandledrejection ${event}`);
+      this.errorOnConnection();
+    });
+    // eslint-disable-next-line func-names
+    window.onerror = function (message, source, lineno, colno, error) {
+      console.log(message);
+      console.log(source);
+      console.log(lineno);
+      console.log(colno);
+      console.log(error);
+    };
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  errorOnConnection() {
+    console.log('errorOnConnection');
+    console.log('errorOnConnection');
+    console.log('errorOnConnection');
+    console.log('errorOnConnection');
+    console.log('errorOnConnection');
+    console.log('errorOnConnection');
+    console.log('errorOnConnection');
+    this.confirmTxState.send('idle');
+    throw new LiqualityError();
+  }
+
   @Emit('successConfirmation')
   async toTrackId() {
     let txError = '';
-    this.confirmTxState.send('loading');
-    await this.walletService.stopAskingForBalance()
-      .then(() => this.txBuilder.buildTx(this.pegInTxState.normalizedTx))
-      .then((tx: LiqualityTx) => this.walletService.sign(tx) as Promise<LiqualitySignedTx>)
-      .then((liqualitySignedTx: LiqualitySignedTx) => ApiService
-        .broadcast(liqualitySignedTx.signedTx))
-      .then((txId) => {
-        this.txId = txId;
-      })
-      .catch((err) => {
-        this.confirmTxState.send('error');
-        txError = err.message;
-      });
-    return [txError, this.txId];
+    try {
+      console.log('attaching listener');
+      this.attachErrorListener();
+      console.log('verifying if is connected');
+      const connected = await this.walletService.isConnected();
+
+      if (!connected) {
+        await this.walletService.reconnect();
+      }
+
+      this.confirmTxState.send('loading');
+
+      await this.walletService.stopAskingForBalance()
+        .then(() => this.txBuilder.buildTx(this.pegInTxState.normalizedTx))
+        .then((tx: LiqualityTx) => this.walletService.sign(tx) as Promise<LiqualitySignedTx>)
+        .then((liqualitySignedTx: LiqualitySignedTx) => ApiService
+          .broadcast(liqualitySignedTx.signedTx))
+        .then((txId) => {
+          this.txId = txId;
+        }, () => {
+          console.log('Ferrou manao');
+        })
+        .catch((err) => {
+          console.log('Ocorre um erro foderoso 2');
+          this.confirmTxState.send('error');
+          txError = err.message;
+        });
+      return [txError, this.txId];
+    } catch (e) {
+      console.log(`Ocorreu um erro foderoso ${e}`);
+      const error = new LiqualityError();
+      return [error.message, this.txId, error.urlToMoreInformation,
+        error.errorType, error.messageToUserOnLink];
+    }
   }
 
   get feeBTC():SatoshiBig {

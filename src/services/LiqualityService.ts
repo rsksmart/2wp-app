@@ -7,6 +7,7 @@ import {
   WindowBitcoinProvider,
   LiqualityGetNetworkResponse,
   LiqualityGetAddressesResponse,
+  LiqualityResponse,
 } from '@/types';
 import * as bitcoin from 'bitcoinjs-lib';
 import { WalletService } from '@/services';
@@ -176,7 +177,7 @@ export default class LiqualityService extends WalletService {
     return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletMaxCallLiquality;
   }
 
-  sign(tx: LiqualityTx): Promise<LiqualitySignedTx> {
+  signOld(tx: LiqualityTx): Promise<LiqualitySignedTx> {
     const liqualityTx = tx as LiqualityTx;
     return new Promise<LiqualitySignedTx>((resolve, reject) => {
       this.bitcoinProvider.request({
@@ -197,6 +198,36 @@ export default class LiqualityService extends WalletService {
           }
         })
         .catch(reject);
+    });
+  }
+
+  sign(tx: LiqualityTx): Promise<LiqualitySignedTx> {
+    const liqualityTx = tx as LiqualityTx;
+    return new Promise<LiqualitySignedTx>((resolve, reject) => {
+      this.enable()
+        .then(() => this.checkApp())
+        .then(() => this.liqualitySign(liqualityTx))
+        .then((signedBase64Psbt) => {
+          const signedPsbt = bitcoin.Psbt.fromBase64(signedBase64Psbt as string);
+          if (!signedPsbt.validateSignaturesOfAllInputs()) {
+            reject(new Error('Invalid signature provided'));
+          } else {
+            resolve({
+              signedTx: signedPsbt.finalizeAllInputs().extractTransaction().toHex(),
+            });
+          }
+        })
+        .catch(reject);
+    });
+  }
+
+  liqualitySign(liqualityTx: LiqualityTx): Promise<LiqualityResponse> {
+    return this.bitcoinProvider.request({
+      method: LiqualityMethods.SIGN_PSBT,
+      params: [
+        liqualityTx.base64UnsignedPsbt,
+        liqualityTx.inputs,
+      ],
     });
   }
 }

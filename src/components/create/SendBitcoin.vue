@@ -22,7 +22,11 @@
     </template>
     <template v-if="showTxErrorDialog">
       <tx-error-dialog :showTxErrorDialog="showTxErrorDialog"
-                       :errorMessage="txError" @closeErrorDialog="closeTxErrorDialog"/>
+                       :errorMessage="txError"
+                       :errorType="errorType"
+                       :urlToMoreInformation="urlToMoreInformation"
+                       :messageToUserOnLink="messageToUserOnLink"
+                       @closeErrorDialog="closeTxErrorDialog"/>
     </template>
   </v-container>
 </template>
@@ -119,6 +123,42 @@ export default class SendBitcoin extends Vue {
     return this.getChangeAddress;
   }
 
+  private attachErrorListener() {
+    window.addEventListener('unhandledrejection', (event) => {
+      console.log(`Error ocurred unhandledrejection ${event}`);
+      this.errorOnConnection();
+    });
+    window.addEventListener('error', (event) => {
+      console.log(`Error ocurred unhandledrejection ${event}`);
+      this.errorOnConnection();
+    });
+    window.addEventListener('uncaughtException', (event) => {
+      console.log(`Error ocurred unhandledrejection ${event}`);
+      this.errorOnConnection();
+    });
+    // eslint-disable-next-line func-names
+    window.onerror = function (message, source, lineno, colno, error) {
+      console.log(message);
+      console.log(source);
+      console.log(lineno);
+      console.log(colno);
+      console.log(error);
+    };
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  errorOnConnection() {
+    console.log('errorOnConnection');
+    console.log('errorOnConnection');
+    console.log('errorOnConnection');
+    console.log('errorOnConnection');
+    console.log('errorOnConnection');
+    console.log('errorOnConnection');
+    console.log('errorOnConnection');
+    this.confirmTxState.send('idle');
+    throw new LiqualityError();
+  }
+
   @Emit()
   async toConfirmTx({
     amountToTransferInSatoshi,
@@ -158,6 +198,7 @@ export default class SendBitcoin extends Vue {
         return tx;
       })
       .catch((error) => {
+        console.log('Error em SendBitcoinVue.');
         this.txError = error.message;
         this.showTxErrorDialog = true;
       });
@@ -171,9 +212,17 @@ export default class SendBitcoin extends Vue {
   }
 
   @Emit()
-  toTrackingId([txError, txId]: string[]) {
+  toTrackingId([txError, txId, urlToMoreInformation, errorType, messageToUserOnLink]: string[]) {
     if (txError !== '') {
+      console.log('calling txError toTrackingId===========================================');
+      console.log(`txError ${txError}`);
+      console.log(`urlToMoreInformation ${urlToMoreInformation}`);
+      console.log(`errorType ${errorType}`);
+      console.log(`messageToUserOnLink ${messageToUserOnLink}`);
       this.txError = txError;
+      this.urlToMoreInformation = urlToMoreInformation;
+      this.errorType = errorType;
+      this.messageToUserOnLink = messageToUserOnLink;
       this.showTxErrorDialog = true;
     } else if (txId) {
       this.currentComponent = 'TrackingId';
