@@ -92,6 +92,8 @@ export default class Status extends Vue {
 
   txId = '';
 
+  currentId = ''
+
   txType = TxStatusType.PEGIN;
 
   pegInStatus!: PeginStatus;
@@ -144,7 +146,8 @@ export default class Status extends Vue {
 
   @Emit()
   getPegStatus() {
-    if (this.txId !== '') {
+    if (this.txId !== '' && this.currentId !== this.txId) {
+      this.currentId = this.txId;
       this.loading = true;
       if (this.$route.path !== `/status/txId/${this.txId}`) {
         this.$router.push({
