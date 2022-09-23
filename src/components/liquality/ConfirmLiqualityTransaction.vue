@@ -159,6 +159,7 @@ import { Getter, State, Action } from 'vuex-class';
 import {
   LiqualitySignedTx,
   LiqualityTx,
+  LiqualityError,
 } from '@/types';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import ApiService from '@/services/ApiService';
@@ -182,6 +183,22 @@ export default class ConfirmLiqualityTransaction extends Vue {
 
   rawTx = '';
 
+  showErrorDialog = false;
+
+  showTxErrorDialog = false;
+
+  canShowTimeoutPopup = true;
+
+  readonly SECONDS_TO_WAIT_UNTIL_SHOW_POPUP = 10000;
+
+  deviceError = 'test';
+
+  errorType = '';
+
+  urlToMoreInformation = '';
+
+  messageToUserOnLink = '';
+
   @Prop() confirmTxState!: Machine<
     'idle'
     | 'loading'
@@ -203,23 +220,56 @@ export default class ConfirmLiqualityTransaction extends Vue {
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
+  // eslint-disable-next-line class-methods-use-this
+  @Emit('successConfirmation')
+  errorOnConnection() {
+    this.confirmTxState.send('error');
+    const error = new LiqualityError();
+    return [error.message, this.txId, error.urlToMoreInformation,
+      error.errorType, error.messageToUserOnLink];
+  }
+
+  timeoutAndSendMessage() {
+    setTimeout(() => {
+      if (this.canShowTimeoutPopup) {
+        this.errorOnConnection();
+      }
+    }, this.SECONDS_TO_WAIT_UNTIL_SHOW_POPUP);
+  }
+
   @Emit('successConfirmation')
   async toTrackId() {
     let txError = '';
-    this.confirmTxState.send('loading');
-    await this.walletService.stopAskingForBalance()
-      .then(() => this.txBuilder.buildTx(this.pegInTxState.normalizedTx))
-      .then((tx: LiqualityTx) => this.walletService.sign(tx) as Promise<LiqualitySignedTx>)
-      .then((liqualitySignedTx: LiqualitySignedTx) => ApiService
-        .broadcast(liqualitySignedTx.signedTx))
-      .then((txId) => {
-        this.txId = txId;
-      })
-      .catch((err) => {
-        this.confirmTxState.send('error');
-        txError = err.message;
-      });
-    return [txError, this.txId];
+    try {
+      this.confirmTxState.send('loading');
+      this.timeoutAndSendMessage();
+      const connected = await this.walletService.isConnected();
+      if (!connected) {
+        await this.walletService.reconnect();
+      }
+      await this.walletService.stopAskingForBalance()
+        .then(() => this.txBuilder.buildTx(this.pegInTxState.normalizedTx))
+        .then((tx: LiqualityTx) => this.walletService.sign(tx) as Promise<LiqualitySignedTx>)
+        .then((liqualitySignedTx: LiqualitySignedTx) => ApiService
+          .broadcast(liqualitySignedTx.signedTx))
+        .then((txId) => {
+          this.txId = txId;
+        }, () => {
+          throw new LiqualityError();
+        })
+        .then(() => {
+          this.canShowTimeoutPopup = false;
+        })
+        .catch((err) => {
+          this.confirmTxState.send('error');
+          txError = err.message;
+        });
+      return [txError, this.txId];
+    } catch (e) {
+      const error = new LiqualityError();
+      return [error.message, this.txId, error.urlToMoreInformation,
+        error.errorType, error.messageToUserOnLink];
+    }
   }
 
   get feeBTC():SatoshiBig {

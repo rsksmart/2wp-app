@@ -22,7 +22,11 @@
     </template>
     <template v-if="showTxErrorDialog">
       <tx-error-dialog :showTxErrorDialog="showTxErrorDialog"
-                       :errorMessage="txError" @closeErrorDialog="closeTxErrorDialog"/>
+                       :errorMessage="txError"
+                       :errorType="errorType"
+                       :urlToMoreInformation="urlToMoreInformation"
+                       :messageToUserOnLink="messageToUserOnLink"
+                       @closeErrorDialog="closeTxErrorDialog"/>
     </template>
   </v-container>
 </template>
@@ -171,9 +175,13 @@ export default class SendBitcoin extends Vue {
   }
 
   @Emit()
-  toTrackingId([txError, txId]: string[]) {
+  toTrackingId([txError, txId, urlToMoreInformation, errorType, messageToUserOnLink]: string[]) {
     if (txError !== '') {
       this.txError = txError;
+      this.showTxErrorDialog = true;
+      this.urlToMoreInformation = urlToMoreInformation;
+      this.errorType = errorType;
+      this.messageToUserOnLink = messageToUserOnLink;
       this.showTxErrorDialog = true;
     } else if (txId) {
       this.currentComponent = 'TrackingId';
