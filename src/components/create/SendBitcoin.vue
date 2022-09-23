@@ -123,42 +123,6 @@ export default class SendBitcoin extends Vue {
     return this.getChangeAddress;
   }
 
-  private attachErrorListener() {
-    window.addEventListener('unhandledrejection', (event) => {
-      console.log(`Error ocurred unhandledrejection ${event}`);
-      this.errorOnConnection();
-    });
-    window.addEventListener('error', (event) => {
-      console.log(`Error ocurred unhandledrejection ${event}`);
-      this.errorOnConnection();
-    });
-    window.addEventListener('uncaughtException', (event) => {
-      console.log(`Error ocurred unhandledrejection ${event}`);
-      this.errorOnConnection();
-    });
-    // eslint-disable-next-line func-names
-    window.onerror = function (message, source, lineno, colno, error) {
-      console.log(message);
-      console.log(source);
-      console.log(lineno);
-      console.log(colno);
-      console.log(error);
-    };
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  errorOnConnection() {
-    console.log('errorOnConnection');
-    console.log('errorOnConnection');
-    console.log('errorOnConnection');
-    console.log('errorOnConnection');
-    console.log('errorOnConnection');
-    console.log('errorOnConnection');
-    console.log('errorOnConnection');
-    this.confirmTxState.send('idle');
-    throw new LiqualityError();
-  }
-
   @Emit()
   async toConfirmTx({
     amountToTransferInSatoshi,

@@ -171,7 +171,6 @@ import EnvironmentContextProviderService from '@/providers/EnvironmentContextPro
 import { PegInTxState } from '@/types/pegInTx';
 import * as constants from '@/store/constants';
 import LiqualityTxBuilder from '@/middleware/TxBuilder/LiqualityTxBuilder';
-import browser from 'webextension-polyfill';
 
 @Component({
   components: {
@@ -187,6 +186,10 @@ export default class ConfirmLiqualityTransaction extends Vue {
   showErrorDialog = false;
 
   showTxErrorDialog = false;
+
+  canShowTimeoutPopup = true;
+
+  readonly SECONDS_TO_WAIT_UNTIL_SHOW_POPUP = 10000;
 
   deviceError = 'test';
 
@@ -217,65 +220,34 @@ export default class ConfirmLiqualityTransaction extends Vue {
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
-  private attachErrorListener() {
-    window.addEventListener('unhandledrejection', (event) => {
-      console.log(`Error ocurred unhandledrejection ${event}`);
-      this.errorOnConnection();
-    });
-    window.addEventListener('error', (event) => {
-      console.log(`Error ocurred unhandledrejection ${event}`);
-      this.errorOnConnection();
-    });
-    window.addEventListener('uncaughtException', (event) => {
-      console.log(`Error ocurred unhandledrejection ${event}`);
-      this.errorOnConnection();
-    });
-    // eslint-disable-next-line func-names
-    window.onerror = function (message, source, lineno, colno, error) {
-      console.log(message);
-      console.log(source);
-      console.log(lineno);
-      console.log(colno);
-      console.log(error);
-    };
-  }
-
   // eslint-disable-next-line class-methods-use-this
-  listenConnection() {
-    browser.runtime.connect().onDisconnect.addListener(() => {
-      console.log('Disconnected=====================================================================');
-    });
-  }
-
-  // eslint-disable-next-line class-methods-use-this
+  @Emit('successConfirmation')
   errorOnConnection() {
-    console.log('errorOnConnection');
-    console.log('errorOnConnection');
-    console.log('errorOnConnection');
-    console.log('errorOnConnection');
-    console.log('errorOnConnection');
-    console.log('errorOnConnection');
-    console.log('errorOnConnection');
-    this.confirmTxState.send('idle');
-    throw new LiqualityError();
+    this.confirmTxState.send('error');
+    const error = new LiqualityError();
+    return [error.message, this.txId, error.urlToMoreInformation,
+      error.errorType, error.messageToUserOnLink];
+  }
+
+  timeoutAndSendMessage() {
+    setTimeout(() => {
+      if (this.canShowTimeoutPopup) {
+        this.errorOnConnection();
+      }
+    }, this.SECONDS_TO_WAIT_UNTIL_SHOW_POPUP);
   }
 
   @Emit('successConfirmation')
   async toTrackId() {
     let txError = '';
     try {
-      console.log('attaching listener');
-      this.attachErrorListener();
-      this.listenConnection();
-      console.log('verifying if is connected');
+      this.confirmTxState.send('loading');
+      this.timeoutAndSendMessage();
       const connected = await this.walletService.isConnected();
-
       if (!connected) {
         await this.walletService.reconnect();
       }
-
-      this.confirmTxState.send('loading');
-
+      this.canShowTimeoutPopup = false;
       await this.walletService.stopAskingForBalance()
         .then(() => this.txBuilder.buildTx(this.pegInTxState.normalizedTx))
         .then((tx: LiqualityTx) => this.walletService.sign(tx) as Promise<LiqualitySignedTx>)
@@ -284,16 +256,15 @@ export default class ConfirmLiqualityTransaction extends Vue {
         .then((txId) => {
           this.txId = txId;
         }, () => {
-          console.log('Ferrou manao');
+          throw new LiqualityError();
         })
         .catch((err) => {
-          console.log('Ocorre um erro foderoso 2');
           this.confirmTxState.send('error');
           txError = err.message;
         });
+
       return [txError, this.txId];
     } catch (e) {
-      console.log(`Ocorreu um erro foderoso ${e}`);
       const error = new LiqualityError();
       return [error.message, this.txId, error.urlToMoreInformation,
         error.errorType, error.messageToUserOnLink];
