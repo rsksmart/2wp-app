@@ -40,7 +40,6 @@ export default class LiqualityService extends WalletService {
   async isConnected(): Promise<boolean> {
     let continueCounting = true;
     return new Promise<boolean>((resolve, reject) => {
-      const walletAddresses: WalletAddress[] = [];
       setTimeout(() => {
         if (continueCounting) {
           reject(new LiqualityError());
@@ -58,17 +57,7 @@ export default class LiqualityService extends WalletService {
             params: [0, 1, false],
           }),
         ]))
-        .then(([changeAddreses, noChangeAddresses]) => {
-          const addresses = noChangeAddresses as LiqualityGetAddressesResponse[];
-          addresses.concat(changeAddreses as LiqualityGetAddressesResponse[])
-            .forEach((liqualityAddress: LiqualityGetAddressesResponse) => {
-              walletAddresses.push({
-                address: liqualityAddress.address,
-                serializedPath: liqualityAddress.derivationPath,
-                publicKey: liqualityAddress.publicKey,
-                path: [0],
-              });
-            });
+        .then(() => {
           resolve(true);
         })
         .catch(reject);
