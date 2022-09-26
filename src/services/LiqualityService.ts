@@ -13,6 +13,8 @@ import { EnvironmentAccessorService } from '@/services/enviroment-accessor.servi
 export default class LiqualityService extends WalletService {
   private bitcoinProvider!: WindowBitcoinProvider;
 
+  readonly SECONDS_TO_WAIT_UNTIL_RETURN_PROMISE = 10000;
+
   constructor(testBitcoinProvider?: WindowBitcoinProvider) {
     super();
     if (testBitcoinProvider) {
@@ -35,9 +37,41 @@ export default class LiqualityService extends WalletService {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  isConnected(): Promise<boolean> {
-    return new Promise<boolean>((resolve) => {
-      resolve(true);
+  async isConnected(): Promise<boolean> {
+    let continueCounting = true;
+    return new Promise<boolean>((resolve, reject) => {
+      const walletAddresses: WalletAddress[] = [];
+      setTimeout(() => {
+        if (continueCounting) {
+          reject(new LiqualityError());
+        }
+      }, this.SECONDS_TO_WAIT_UNTIL_RETURN_PROMISE);
+      this.enable()
+        .then(() => { continueCounting = false; })
+        .then(() => Promise.all([
+          this.bitcoinProvider.request({
+            method: LiqualityMethods.GET_ADDRESS,
+            params: [0, 1, true],
+          }),
+          this.bitcoinProvider.request({
+            method: LiqualityMethods.GET_ADDRESS,
+            params: [0, 1, false],
+          }),
+        ]))
+        .then(([changeAddreses, noChangeAddresses]) => {
+          const addresses = noChangeAddresses as LiqualityGetAddressesResponse[];
+          addresses.concat(changeAddreses as LiqualityGetAddressesResponse[])
+            .forEach((liqualityAddress: LiqualityGetAddressesResponse) => {
+              walletAddresses.push({
+                address: liqualityAddress.address,
+                serializedPath: liqualityAddress.derivationPath,
+                publicKey: liqualityAddress.publicKey,
+                path: [0],
+              });
+            });
+          resolve(true);
+        })
+        .catch(reject);
     });
   }
 

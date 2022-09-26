@@ -229,24 +229,16 @@ export default class ConfirmLiqualityTransaction extends Vue {
       error.errorType, error.messageToUserOnLink];
   }
 
-  timeoutAndSendMessage() {
-    setTimeout(() => {
-      if (this.canShowTimeoutPopup) {
-        this.errorOnConnection();
-      }
-    }, this.SECONDS_TO_WAIT_UNTIL_SHOW_POPUP);
-  }
-
   @Emit('successConfirmation')
   async toTrackId() {
     let txError = '';
     try {
       this.confirmTxState.send('loading');
-      this.timeoutAndSendMessage();
       const connected = await this.walletService.isConnected();
       if (!connected) {
         await this.walletService.reconnect();
       }
+      this.canShowTimeoutPopup = false;
       await this.walletService.stopAskingForBalance()
         .then(() => this.txBuilder.buildTx(this.pegInTxState.normalizedTx))
         .then((tx: LiqualityTx) => this.walletService.sign(tx) as Promise<LiqualitySignedTx>)
@@ -255,10 +247,9 @@ export default class ConfirmLiqualityTransaction extends Vue {
         .then((txId) => {
           this.txId = txId;
         }, () => {
-          throw new LiqualityError();
-        })
-        .then(() => {
-          this.canShowTimeoutPopup = false;
+          const error = new LiqualityError();
+          error.message = 'Liquality is closed or Account is not selected';
+          throw error;
         })
         .catch((err) => {
           this.confirmTxState.send('error');
