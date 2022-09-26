@@ -187,10 +187,6 @@ export default class ConfirmLiqualityTransaction extends Vue {
 
   showTxErrorDialog = false;
 
-  canShowTimeoutPopup = true;
-
-  readonly SECONDS_TO_WAIT_UNTIL_SHOW_POPUP = 10000;
-
   deviceError = 'test';
 
   errorType = '';
@@ -238,7 +234,6 @@ export default class ConfirmLiqualityTransaction extends Vue {
       if (!connected) {
         await this.walletService.reconnect();
       }
-      this.canShowTimeoutPopup = false;
       await this.walletService.stopAskingForBalance()
         .then(() => this.txBuilder.buildTx(this.pegInTxState.normalizedTx))
         .then((tx: LiqualityTx) => this.walletService.sign(tx) as Promise<LiqualitySignedTx>)
