@@ -98,7 +98,7 @@
               prominent
               border="left"
               >
-                Only Chrome browser is allowed
+                Only Chrome and Brave browsers are allowed
               </v-alert>
             </v-row>
           </template>
