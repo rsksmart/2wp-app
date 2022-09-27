@@ -1,13 +1,16 @@
-import * as bitcoin from 'bitcoinjs-lib';
 import {
-  LiqualityError,
-  LiqualityGetAddressesResponse,
-  LiqualityMethods, LiqualitySignedTx,
   LiqualityTx,
   WalletAddress,
+  LiqualityError,
+  LiqualityMethods,
+  LiqualitySignedTx,
   WindowBitcoinProvider,
+  LiqualityGetNetworkResponse,
+  LiqualityGetAddressesResponse,
 } from '@/types';
+import * as bitcoin from 'bitcoinjs-lib';
 import { WalletService } from '@/services';
+import * as constants from '@/store/constants';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 export default class LiqualityService extends WalletService {
@@ -26,14 +29,28 @@ export default class LiqualityService extends WalletService {
     return new Promise<void>((resolve, reject) => {
       try {
         this.bitcoinProvider = window.bitcoin;
-        window.bitcoin.enable()
+        this.bitcoinProvider.enable()
           .then(() => {
             resolve();
+          }, () => {
+            reject(LiqualityService.deniedOrPopUpClosed());
           });
       } catch (e) {
         reject(new LiqualityError());
       }
     });
+  }
+
+  private static deniedOrPopUpClosed(): LiqualityError {
+    const error = new LiqualityError();
+    error.message = 'Liquality is closed or Account is not selected';
+    return error;
+  }
+
+  private static wrongNetwork(): LiqualityError {
+    const error = new LiqualityError();
+    error.message = 'You are not in the required Network. Check Liquality and try again';
+    return error;
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -66,8 +83,13 @@ export default class LiqualityService extends WalletService {
 
   // eslint-disable-next-line class-methods-use-this
   reconnect(): Promise<void> {
-    return new Promise<void>((resolve) => {
-      resolve();
+    return new Promise<void>((resolve, reject) => {
+      try {
+        this.bitcoinProvider = window.bitcoin;
+        resolve();
+      } catch (e) {
+        reject(new LiqualityError());
+      }
     });
   }
 
@@ -75,6 +97,7 @@ export default class LiqualityService extends WalletService {
     return new Promise<WalletAddress[]>((resolve, reject) => {
       const walletAddresses: WalletAddress[] = [];
       this.enable()
+        .then(() => this.checkApp())
         .then(() => Promise.all([
           this.bitcoinProvider.request({
             method: LiqualityMethods.GET_ADDRESS,
@@ -98,7 +121,46 @@ export default class LiqualityService extends WalletService {
             });
           resolve(walletAddresses);
         })
-        .catch(reject);
+        .catch((e) => {
+          let error = e;
+          if (!e.errorType) {
+            error = new LiqualityError();
+          }
+          reject(error);
+        });
+    });
+  }
+
+  private async checkApp(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      try {
+        this.bitcoinProvider = window.bitcoin;
+        this.bitcoinProvider.request({
+          method: LiqualityMethods.GET_CONNECTED_NETWORK,
+          params: [],
+        })
+          .then((liqualityResponse) => {
+            const response = liqualityResponse as LiqualityGetNetworkResponse;
+            const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
+            let valid: boolean;
+            switch (response.isTestnet) {
+              case true:
+                valid = network === constants.BTC_NETWORK_TESTNET;
+                break;
+              case false:
+                valid = network === constants.BTC_NETWORK_MAINNET;
+                break;
+              default:
+                valid = false;
+            }
+            if (valid) resolve();
+            else reject(LiqualityService.wrongNetwork());
+          }, () => {
+            reject(LiqualityService.wrongNetwork());
+          });
+      } catch (e) {
+        reject(new LiqualityError());
+      }
     });
   }
 

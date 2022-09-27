@@ -174,7 +174,7 @@ export default abstract class WalletService {
           } else {
             const areAllAddressUnused = addresses
               .every((walletAddressItem) => walletAddressItem.unused);
-            if (areAllAddressUnused) return;
+            if (areAllAddressUnused) break;
           }
           this.informSubscribers(balanceAccumulated, addresses);
         } else {
