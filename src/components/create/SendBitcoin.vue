@@ -182,7 +182,6 @@ export default class SendBitcoin extends Vue {
       this.urlToMoreInformation = urlToMoreInformation;
       this.errorType = errorType;
       this.messageToUserOnLink = messageToUserOnLink;
-      this.showTxErrorDialog = true;
     } else if (txId) {
       this.currentComponent = 'TrackingId';
     }
