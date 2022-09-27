@@ -216,15 +216,6 @@ export default class ConfirmLiqualityTransaction extends Vue {
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
-  // eslint-disable-next-line class-methods-use-this
-  @Emit('successConfirmation')
-  errorOnConnection() {
-    this.confirmTxState.send('error');
-    const error = new LiqualityError();
-    return [error.message, this.txId, error.urlToMoreInformation,
-      error.errorType, error.messageToUserOnLink];
-  }
-
   @Emit('successConfirmation')
   async toTrackId() {
     let txError = '';
