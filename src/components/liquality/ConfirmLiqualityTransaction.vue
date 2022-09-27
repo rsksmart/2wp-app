@@ -244,6 +244,12 @@ export default class ConfirmLiqualityTransaction extends Vue {
       return [txError, this.txId];
     } catch (e) {
       const error = new LiqualityError();
+      if (e instanceof LiqualityError) {
+        error.message = e.message;
+        error.urlToMoreInformation = e.urlToMoreInformation;
+        error.errorType = e.errorType;
+        error.messageToUserOnLink = e.messageToUserOnLink;
+      }
       return [error.message, this.txId, error.urlToMoreInformation,
         error.errorType, error.messageToUserOnLink];
     }
