@@ -100,17 +100,36 @@ export default class LedgerService extends WalletService {
     const { legacy, segwit, nativeSegwit } = this.addressesToFetch;
     addressList = addressList.concat(
       this.getDerivedAddresses(
-        legacy.count, legacy.lastIndex, constants.BITCOIN_LEGACY_ADDRESS,
+        legacy.external.count, legacy.external.lastIndex, constants.BITCOIN_LEGACY_ADDRESS, false,
       ),
-    ).concat(
-      this.getDerivedAddresses(
-        segwit.count, segwit.lastIndex, constants.BITCOIN_SEGWIT_ADDRESS,
-      ),
-    ).concat(
-      this.getDerivedAddresses(
-        nativeSegwit.count, nativeSegwit.lastIndex, constants.BITCOIN_NATIVE_SEGWIT_ADDRESS,
-      ),
-    );
+    )
+      .concat(
+        this.getDerivedAddresses(
+          legacy.change.count, legacy.change.lastIndex, constants.BITCOIN_LEGACY_ADDRESS, true,
+        ),
+      )
+      .concat(
+        this.getDerivedAddresses(
+          segwit.external.count, segwit.external.lastIndex, constants.BITCOIN_SEGWIT_ADDRESS, false,
+        ),
+      )
+      .concat(
+        this.getDerivedAddresses(
+          segwit.change.count, segwit.change.lastIndex, constants.BITCOIN_SEGWIT_ADDRESS, true,
+        ),
+      )
+      .concat(
+        this.getDerivedAddresses(
+          nativeSegwit.external.count, nativeSegwit.external.lastIndex,
+          constants.BITCOIN_NATIVE_SEGWIT_ADDRESS, false,
+        ),
+      )
+      .concat(
+        this.getDerivedAddresses(
+          nativeSegwit.change.count, nativeSegwit.change.lastIndex,
+          constants.BITCOIN_NATIVE_SEGWIT_ADDRESS, true,
+        ),
+      );
     return addressList;
   }
 

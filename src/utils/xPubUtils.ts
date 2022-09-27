@@ -133,27 +133,19 @@ function addressFromExtPubKey({
 }
 
 export const deriveBatchAddresses = (
-  xpub: string, purpose: Purpose, startFrom: number, batchSize: number,
+  xpub: string, purpose: Purpose, startFrom: number, batchSize: number, change: boolean,
 ): Array<WalletAddress> => {
   const addresses: Array<WalletAddress> = [];
   for (let keyIndex = startFrom; keyIndex < startFrom + batchSize; keyIndex += 1) {
     const derivedAddress = addressFromExtPubKey({
       extPubKey: xpub,
-      change: false,
+      change,
       keyIndex,
       purpose,
     });
-    const derivedChangeAddress = addressFromExtPubKey({
-      extPubKey: xpub,
-      change: true,
-      keyIndex,
-      purpose,
-    });
-    if (derivedAddress && derivedChangeAddress) {
+    if (derivedAddress) {
       addresses.push(derivedAddress);
-      addresses.push(derivedChangeAddress);
     }
   }
-
   return addresses;
 };

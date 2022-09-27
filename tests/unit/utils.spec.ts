@@ -3,6 +3,7 @@ import { getAccountType } from '@/services/utils';
 import { deriveBatchAddresses } from '@/utils';
 import { Purpose, WalletAddress } from '@/types';
 import { utilsTestData } from '../utils/testData';
+import { add } from 'lodash';
 
 describe('Utils', () => {
   describe('getAccountType:', () => {
@@ -78,9 +79,12 @@ describe('Utils', () => {
         Purpose.P2WPKH,
         0,
         10,
+        true,
       );
+      const testDataList = utilsTestData.bech32
+        .filter((address) => address.derivationPath.split('/')[4] === '1');
       walletAddresses.forEach((walletAddress, idx) => {
-        const testData = utilsTestData.bech32[idx];
+        const testData = testDataList[idx];
         expect(walletAddress.publicKey).toEqual(testData.publicKey);
         expect(walletAddress.address).toEqual(testData.address);
         expect(walletAddress.derivationPath).toEqual(testData.derivationPath);
@@ -92,9 +96,12 @@ describe('Utils', () => {
         Purpose.P2SH,
         0,
         10,
+        true,
       );
+      const testDataList = utilsTestData.p2sh
+        .filter((address) => address.derivationPath.split('/')[4] === '1');
       walletAddresses.forEach((walletAddress, idx) => {
-        const testData = utilsTestData.p2sh[idx];
+        const testData = testDataList[idx];
         expect(walletAddress.publicKey).toEqual(testData.publicKey);
         expect(walletAddress.address).toEqual(testData.address);
         expect(walletAddress.derivationPath).toEqual(testData.derivationPath);
@@ -106,9 +113,12 @@ describe('Utils', () => {
         Purpose.P2PKH,
         0,
         10,
+        true,
       );
+      const testDataList = utilsTestData.p2pkh
+        .filter((address) => address.derivationPath.split('/')[4] === '1');
       walletAddresses.forEach((walletAddress, idx) => {
-        const testData = utilsTestData.p2pkh[idx];
+        const testData = testDataList[idx];
         expect(walletAddress.publicKey).toEqual(testData.publicKey);
         expect(walletAddress.address).toEqual(testData.address);
         expect(walletAddress.derivationPath).toEqual(testData.derivationPath);

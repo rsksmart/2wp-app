@@ -97,17 +97,17 @@ export default class LiqualityService extends WalletService {
   getAccountAddresses(): Promise<WalletAddress[]> {
     return new Promise<WalletAddress[]>((resolve, reject) => {
       const walletAddresses: WalletAddress[] = [];
-      const { lastIndex, count } = this.addressesToFetch.nativeSegwit;
+      const { external, change } = this.addressesToFetch.nativeSegwit;
       this.enable()
         .then(() => this.checkApp())
         .then(() => Promise.all([
           this.bitcoinProvider.request({
             method: LiqualityMethods.GET_ADDRESS,
-            params: [lastIndex, count, true],
+            params: [change.lastIndex, change.count, true],
           }),
           this.bitcoinProvider.request({
             method: LiqualityMethods.GET_ADDRESS,
-            params: [lastIndex, count, false],
+            params: [external.lastIndex, external.count, false],
           }),
         ]))
         .then(([changeAddreses, noChangeAddresses]) => {

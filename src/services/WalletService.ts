@@ -56,9 +56,18 @@ export default abstract class WalletService {
       nativeSegwit: 0,
     };
     this.addressesToFetch = {
-      legacy: { lastIndex: 0, count: this.maxAddressPerCall },
-      segwit: { lastIndex: 0, count: this.maxAddressPerCall },
-      nativeSegwit: { lastIndex: 0, count: this.maxAddressPerCall },
+      legacy: {
+        external: { lastIndex: 0, count: this.maxAddressPerCall },
+        change: { lastIndex: 0, count: this.maxAddressPerCall },
+      },
+      segwit: {
+        external: { lastIndex: 0, count: this.maxAddressPerCall },
+        change: { lastIndex: 0, count: this.maxAddressPerCall },
+      },
+      nativeSegwit: {
+        external: { lastIndex: 0, count: this.maxAddressPerCall },
+        change: { lastIndex: 0, count: this.maxAddressPerCall },
+      },
     };
   }
 
@@ -185,9 +194,12 @@ export default abstract class WalletService {
         }
         this.setAddressesToFetch();
         const maxIndexReached = Math.max(
-          this.addressesToFetch.legacy.lastIndex,
-          this.addressesToFetch.segwit.lastIndex,
-          this.addressesToFetch.nativeSegwit.lastIndex,
+          this.addressesToFetch.legacy.external.lastIndex,
+          this.addressesToFetch.legacy.change.lastIndex,
+          this.addressesToFetch.segwit.external.lastIndex,
+          this.addressesToFetch.segwit.change.lastIndex,
+          this.addressesToFetch.nativeSegwit.external.lastIndex,
+          this.addressesToFetch.nativeSegwit.change.lastIndex,
         );
         if (maxIndexReached >= maxAddressesHardStop) {
           break;
@@ -274,7 +286,9 @@ export default abstract class WalletService {
     };
   }
 
-  protected getDerivedAddresses(batch: number, startFrom: number, accountType: BtcAccount)
+  protected getDerivedAddresses(
+    batch: number, startFrom: number, accountType: BtcAccount, change: boolean,
+  )
     : Array<WalletAddress> {
     switch (accountType) {
       case constants.BITCOIN_LEGACY_ADDRESS:
@@ -283,6 +297,7 @@ export default abstract class WalletService {
           Purpose.P2PKH,
           startFrom,
           batch,
+          change,
         );
       case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
         return deriveBatchAddresses(
@@ -290,6 +305,7 @@ export default abstract class WalletService {
           Purpose.P2WPKH,
           startFrom,
           batch,
+          change,
         );
       case constants.BITCOIN_SEGWIT_ADDRESS:
         return deriveBatchAddresses(
@@ -297,6 +313,7 @@ export default abstract class WalletService {
           Purpose.P2SH,
           startFrom,
           batch,
+          change,
         );
       default:
         return [];
@@ -319,19 +336,40 @@ export default abstract class WalletService {
     const maxUnusedAddresses = constants.MAX_ADJACENT_UNUSED_ADDRESSES;
     this.addressesToFetch = {
       legacy: {
-        lastIndex: legacy.lastIndex + legacy.count,
-        count: unusedLegacy > maxUnusedAddresses
-          ? 0 : Math.min(this.maxAddressPerCall, maxUnusedAddresses - unusedLegacy),
+        external: {
+          lastIndex: legacy.external.lastIndex + legacy.external.count,
+          count: unusedLegacy > maxUnusedAddresses
+            ? 0 : Math.min(this.maxAddressPerCall, maxUnusedAddresses - unusedLegacy),
+        },
+        change: {
+          lastIndex: legacy.change.lastIndex + legacy.change.count,
+          count: unusedLegacy > maxUnusedAddresses
+            ? 0 : Math.min(this.maxAddressPerCall, maxUnusedAddresses - unusedLegacy),
+        },
       },
       segwit: {
-        lastIndex: segwit.lastIndex + segwit.count,
-        count: unusedSegwit > maxUnusedAddresses
-          ? 0 : Math.min(this.maxAddressPerCall, maxUnusedAddresses - unusedSegwit),
+        external: {
+          lastIndex: segwit.external.lastIndex + segwit.external.count,
+          count: unusedSegwit > maxUnusedAddresses
+            ? 0 : Math.min(this.maxAddressPerCall, maxUnusedAddresses - unusedSegwit),
+        },
+        change: {
+          lastIndex: segwit.change.lastIndex + segwit.change.count,
+          count: unusedSegwit > maxUnusedAddresses
+            ? 0 : Math.min(this.maxAddressPerCall, maxUnusedAddresses - unusedSegwit),
+        },
       },
       nativeSegwit: {
-        lastIndex: nativeSegwit.lastIndex + nativeSegwit.count,
-        count: unusedNativeSegwit > maxUnusedAddresses
-          ? 0 : Math.min(this.maxAddressPerCall, maxUnusedAddresses - unusedNativeSegwit),
+        external: {
+          lastIndex: nativeSegwit.external.lastIndex + nativeSegwit.external.count,
+          count: unusedNativeSegwit > maxUnusedAddresses
+            ? 0 : Math.min(this.maxAddressPerCall, maxUnusedAddresses - unusedNativeSegwit),
+        },
+        change: {
+          lastIndex: nativeSegwit.change.lastIndex + nativeSegwit.change.count,
+          count: unusedNativeSegwit > maxUnusedAddresses
+            ? 0 : Math.min(this.maxAddressPerCall, maxUnusedAddresses - unusedNativeSegwit),
+        },
       },
     };
   }

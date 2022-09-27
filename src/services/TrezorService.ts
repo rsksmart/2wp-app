@@ -52,7 +52,8 @@ export default class TrezorService extends WalletService {
     const bundle: GetAddress[] = [];
     const { legacy, segwit, nativeSegwit } = this.addressesToFetch;
     for (
-      let index: number = legacy.lastIndex; index < (legacy.lastIndex + legacy.count); index += 1
+      let index: number = legacy.external.lastIndex;
+      index < (legacy.external.lastIndex + legacy.external.count); index += 1
     ) {
       bundle.push({
         path: super.getDerivationPath(constants
@@ -60,6 +61,11 @@ export default class TrezorService extends WalletService {
         showOnTrezor: false,
         coin: this.trezorCoin,
       });
+    }
+    for (
+      let index: number = legacy.change.lastIndex;
+      index < (legacy.change.lastIndex + legacy.change.count); index += 1
+    ) {
       bundle.push({
         path: super.getDerivationPath(constants
           .BITCOIN_LEGACY_ADDRESS, this.currentAccount, true, index),
@@ -68,7 +74,8 @@ export default class TrezorService extends WalletService {
       });
     }
     for (
-      let index: number = segwit.lastIndex; index < (segwit.lastIndex + segwit.count); index += 1
+      let index: number = segwit.external.lastIndex;
+      index < (segwit.external.lastIndex + segwit.external.count); index += 1
     ) {
       bundle.push({
         path: super.getDerivationPath(constants
@@ -76,6 +83,11 @@ export default class TrezorService extends WalletService {
         showOnTrezor: false,
         coin: this.trezorCoin,
       });
+    }
+    for (
+      let index: number = segwit.change.lastIndex;
+      index < (segwit.change.lastIndex + segwit.change.count); index += 1
+    ) {
       bundle.push({
         path: super.getDerivationPath(constants
           .BITCOIN_SEGWIT_ADDRESS, this.currentAccount, true, index),
@@ -84,8 +96,8 @@ export default class TrezorService extends WalletService {
       });
     }
     for (
-      let index: number = nativeSegwit.lastIndex;
-      index < (nativeSegwit.lastIndex + nativeSegwit.count); index += 1
+      let index: number = nativeSegwit.external.lastIndex;
+      index < (nativeSegwit.external.lastIndex + nativeSegwit.external.count); index += 1
     ) {
       bundle.push({
         path: super.getDerivationPath(constants
@@ -93,6 +105,11 @@ export default class TrezorService extends WalletService {
         showOnTrezor: false,
         coin: this.trezorCoin,
       });
+    }
+    for (
+      let index: number = nativeSegwit.change.lastIndex;
+      index < (nativeSegwit.change.lastIndex + nativeSegwit.change.count); index += 1
+    ) {
       bundle.push({
         path: super.getDerivationPath(constants
           .BITCOIN_NATIVE_SEGWIT_ADDRESS, this.currentAccount, true, index),

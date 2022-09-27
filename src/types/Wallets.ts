@@ -11,8 +11,12 @@ export enum Purpose {
   P2WPKH = '84',
 }
 
+export interface AddressCount {
+  external: { lastIndex: number; count: number; };
+  change: { lastIndex: number; count: number; };
+}
 export interface WalletCount {
-  legacy: { lastIndex: number; count: number; };
-  segwit: { lastIndex: number; count: number; };
-  nativeSegwit: { lastIndex: number; count: number; };
+  legacy: AddressCount;
+  segwit: AddressCount;
+  nativeSegwit: AddressCount;
 }
