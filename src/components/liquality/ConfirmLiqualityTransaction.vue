@@ -12,7 +12,7 @@
         <br>
         To prevent malware attacks, double-check the address with the recipient.
         <br>
-        Press <strong>sign</strong> when you finish.
+        Press <strong>Send</strong> when you finish.
       </p>
     </v-row>
     <v-row id="instructions-trezor" justify="center" class="mx-0">
