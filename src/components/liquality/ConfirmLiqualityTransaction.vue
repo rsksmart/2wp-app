@@ -179,10 +179,6 @@ export default class ConfirmLiqualityTransaction extends Vue {
 
   rawTx = '';
 
-  fixedDecimals = 2;
-
-  allOutputs = [];
-
   @Prop() confirmTxState!: Machine<
     'idle'
     | 'loading'
