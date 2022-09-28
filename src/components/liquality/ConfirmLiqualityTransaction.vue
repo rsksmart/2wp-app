@@ -179,8 +179,6 @@ export default class ConfirmLiqualityTransaction extends Vue {
 
   rawTx = '';
 
-  bitcoinPrice = 0;
-
   fixedDecimals = 2;
 
   allOutputs = [];
@@ -293,7 +291,6 @@ export default class ConfirmLiqualityTransaction extends Vue {
 
   async created() {
     this.rawTx = await this.txBuilder.getUnsignedRawTx(this.pegInTxState.normalizedTx);
-    this.bitcoinPrice = this.pegInTxState.bitcoinPrice;
   }
 }
 </script>
