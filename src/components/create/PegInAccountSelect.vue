@@ -7,7 +7,11 @@
       </v-col>
       <v-col class="pl-0">
         <p v-bind:class="{'boldie': focus}">
-          {{environmentContext.getBtcText()}} account balance:
+          {{
+            isLiquality ?
+            environmentContext.getBtcText() + ' account balance:' :
+            'Select ' + environmentContext.getBtcText() + ' account to send from:'
+          }}
         </p>
         <v-row class="mx-0 mt-4">
           <v-col cols="7" class="pl-0 pb-0">
