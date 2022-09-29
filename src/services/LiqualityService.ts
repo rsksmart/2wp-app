@@ -42,12 +42,16 @@ export default class LiqualityService extends WalletService {
   private static deniedOrPopUpClosed(): LiqualityError {
     const error = new LiqualityError();
     error.message = 'Liquality is closed or Account is not selected';
+    error.messageInstallationToUser = '';
+    error.installationLink = '';
     return error;
   }
 
   private static wrongNetwork(): LiqualityError {
     const error = new LiqualityError();
     error.message = 'You are not in the required Network. Check Liquality and try again';
+    error.messageInstallationToUser = '';
+    error.installationLink = '';
     return error;
   }
 

@@ -3,6 +3,10 @@ export class LiqualityError extends Error {
 
   public errorType = 'Liquality';
 
+  public installationLink = 'https://liquality.io/';
+
+  public messageInstallationToUser = 'Install Liquality';
+
   public messageToUserOnLink = 'Click here to know how to use Liquality';
 
   constructor() {

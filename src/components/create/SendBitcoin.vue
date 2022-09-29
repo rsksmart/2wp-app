@@ -18,6 +18,8 @@
                            :errorType="errorType"
                            :urlToMoreInformation="urlToMoreInformation"
                            :messageToUserOnLink="messageToUserOnLink"
+                           :installationLink="installationLink"
+                           :messageInstallationToUser="messageInstallationToUser"
                            @closeErrorDialog="closeErrorDialog"/>
     </template>
     <template v-if="showTxErrorDialog">
@@ -77,6 +79,10 @@ export default class SendBitcoin extends Vue {
   urlToMoreInformation = '';
 
   messageToUserOnLink = '';
+
+  installationLink = '';
+
+  messageInstallationToUser = '';
 
   sendBitcoinState: SendBitcoinState = 'idle';
 
@@ -208,6 +214,8 @@ export default class SendBitcoin extends Vue {
           this.errorType = e.errorType;
           this.urlToMoreInformation = e.urlToMoreInformation;
           this.messageToUserOnLink = e.messageToUserOnLink;
+          this.messageInstallationToUser = e.messageInstallationToUser;
+          this.installationLink = e.installationLink;
         }
         this.sendBitcoinState = 'error';
         this.showErrorDialog = true;
