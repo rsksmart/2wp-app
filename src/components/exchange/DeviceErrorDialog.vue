@@ -5,7 +5,7 @@
         <v-img :src="warningIconPath" height="47" contain />
       </v-row>
       <v-row class="mx-0 mt-3 mb-3 d-flex justify-center">
-        <h2>ERROR CONNECTING DEVICE</h2>
+        <h2>ERROR CONNECTING TO WALLET</h2>
       </v-row>
       <v-col cols="12" align-self="center" class="pt-0" v-if="errorType">
         <v-col offset="2" cols="8">
