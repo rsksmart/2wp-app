@@ -3,7 +3,6 @@ import { getAccountType } from '@/services/utils';
 import { deriveBatchAddresses } from '@/utils';
 import { Purpose, WalletAddress } from '@/types';
 import { utilsTestData } from '../utils/testData';
-import { add } from 'lodash';
 
 describe('Utils', () => {
   describe('getAccountType:', () => {

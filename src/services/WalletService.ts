@@ -31,10 +31,19 @@ export default abstract class WalletService {
     nativeSegwit: new SatoshiBig(0, 'satoshi'),
   };
 
-  private adjacentUnusedAddresses: {
-    legacy: number;
-    segwit: number;
-    nativeSegwit: number;
+  protected adjacentUnusedAddresses: {
+    legacy: {
+      external: number;
+      change: number;
+    };
+    segwit: {
+      external: number;
+      change: number;
+    };
+    nativeSegwit: {
+      external: number;
+      change: number;
+    };
   };
 
   protected maxAddressPerCall: number;
@@ -51,9 +60,18 @@ export default abstract class WalletService {
       p2wpkh: '',
     };
     this.adjacentUnusedAddresses = {
-      legacy: 0,
-      segwit: 0,
-      nativeSegwit: 0,
+      legacy: {
+        external: 0,
+        change: 0,
+      },
+      segwit: {
+        external: 0,
+        change: 0,
+      },
+      nativeSegwit: {
+        external: 0,
+        change: 0,
+      },
     };
     this.addressesToFetch = {
       legacy: {
@@ -175,9 +193,18 @@ export default abstract class WalletService {
     };
     this.loadingBalances = true;
     this.adjacentUnusedAddresses = {
-      legacy: 0,
-      segwit: 0,
-      nativeSegwit: 0,
+      legacy: {
+        external: 0,
+        change: 0,
+      },
+      segwit: {
+        external: 0,
+        change: 0,
+      },
+      nativeSegwit: {
+        external: 0,
+        change: 0,
+      },
     };
     const maxAddressesHardStop = EnvironmentAccessorService
       .getEnvironmentVariables().vueAppWalletAddressHardStop;
@@ -258,18 +285,34 @@ export default abstract class WalletService {
             derivationPath, arrayPath, address, publicKey, unused: addressStatus.unused,
           });
           const accountType = getAccountType(address, this.network);
+          const isChange = derivationPath.split('/')[4] === '1';
           switch (accountType) {
             case constants.BITCOIN_LEGACY_ADDRESS:
-              this.adjacentUnusedAddresses.legacy = addressStatus.unused
-                ? this.adjacentUnusedAddresses.legacy + 1 : 0;
+              if (isChange) {
+                this.adjacentUnusedAddresses.legacy.change = addressStatus.unused
+                  ? this.adjacentUnusedAddresses.legacy.change + 1 : 0;
+              } else {
+                this.adjacentUnusedAddresses.legacy.external = addressStatus.unused
+                  ? this.adjacentUnusedAddresses.legacy.external + 1 : 0;
+              }
               break;
             case constants.BITCOIN_SEGWIT_ADDRESS:
-              this.adjacentUnusedAddresses.segwit = addressStatus.unused
-                ? this.adjacentUnusedAddresses.segwit + 1 : 0;
+              if (isChange) {
+                this.adjacentUnusedAddresses.segwit.change = addressStatus.unused
+                  ? this.adjacentUnusedAddresses.segwit.change + 1 : 0;
+              } else {
+                this.adjacentUnusedAddresses.segwit.external = addressStatus.unused
+                  ? this.adjacentUnusedAddresses.segwit.external + 1 : 0;
+              }
               break;
             case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
-              this.adjacentUnusedAddresses.nativeSegwit = addressStatus.unused
-                ? this.adjacentUnusedAddresses.nativeSegwit + 1 : 0;
+              if (isChange) {
+                this.adjacentUnusedAddresses.nativeSegwit.change = addressStatus.unused
+                  ? this.adjacentUnusedAddresses.nativeSegwit.change + 1 : 0;
+              } else {
+                this.adjacentUnusedAddresses.nativeSegwit.external = addressStatus.unused
+                  ? this.adjacentUnusedAddresses.nativeSegwit.external + 1 : 0;
+              }
               break;
             default:
           }
@@ -320,10 +363,15 @@ export default abstract class WalletService {
     }
   }
 
-  private areEnoughUnusedAddresses(): boolean {
-    return (this.adjacentUnusedAddresses.legacy >= constants.MAX_ADJACENT_UNUSED_ADDRESSES
-      && this.adjacentUnusedAddresses.segwit >= constants.MAX_ADJACENT_UNUSED_ADDRESSES
-      && this.adjacentUnusedAddresses.nativeSegwit >= constants.MAX_ADJACENT_UNUSED_ADDRESSES);
+  protected areEnoughUnusedAddresses(): boolean {
+    return (this.adjacentUnusedAddresses.legacy.external >= constants.MAX_ADJACENT_UNUSED_ADDRESSES
+      && this.adjacentUnusedAddresses.legacy.change >= constants.MAX_ADJACENT_UNUSED_ADDRESSES
+      && this.adjacentUnusedAddresses.segwit.external >= constants.MAX_ADJACENT_UNUSED_ADDRESSES
+      && this.adjacentUnusedAddresses.segwit.change >= constants.MAX_ADJACENT_UNUSED_ADDRESSES
+      && this.adjacentUnusedAddresses.nativeSegwit.external
+      >= constants.MAX_ADJACENT_UNUSED_ADDRESSES
+      && this.adjacentUnusedAddresses.nativeSegwit.change
+      >= constants.MAX_ADJACENT_UNUSED_ADDRESSES);
   }
 
   private setAddressesToFetch(): void {
@@ -338,37 +386,38 @@ export default abstract class WalletService {
       legacy: {
         external: {
           lastIndex: legacy.external.lastIndex + legacy.external.count,
-          count: unusedLegacy > maxUnusedAddresses
-            ? 0 : Math.min(this.maxAddressPerCall, maxUnusedAddresses - unusedLegacy),
+          count: unusedLegacy.external > maxUnusedAddresses
+            ? 0 : Math.min(this.maxAddressPerCall, maxUnusedAddresses - unusedLegacy.external),
         },
         change: {
           lastIndex: legacy.change.lastIndex + legacy.change.count,
-          count: unusedLegacy > maxUnusedAddresses
-            ? 0 : Math.min(this.maxAddressPerCall, maxUnusedAddresses - unusedLegacy),
+          count: unusedLegacy.change > maxUnusedAddresses
+            ? 0 : Math.min(this.maxAddressPerCall, maxUnusedAddresses - unusedLegacy.change),
         },
       },
       segwit: {
         external: {
           lastIndex: segwit.external.lastIndex + segwit.external.count,
-          count: unusedSegwit > maxUnusedAddresses
-            ? 0 : Math.min(this.maxAddressPerCall, maxUnusedAddresses - unusedSegwit),
+          count: unusedSegwit.external > maxUnusedAddresses
+            ? 0 : Math.min(this.maxAddressPerCall, maxUnusedAddresses - unusedSegwit.external),
         },
         change: {
           lastIndex: segwit.change.lastIndex + segwit.change.count,
-          count: unusedSegwit > maxUnusedAddresses
-            ? 0 : Math.min(this.maxAddressPerCall, maxUnusedAddresses - unusedSegwit),
+          count: unusedSegwit.change > maxUnusedAddresses
+            ? 0 : Math.min(this.maxAddressPerCall, maxUnusedAddresses - unusedSegwit.change),
         },
       },
       nativeSegwit: {
         external: {
           lastIndex: nativeSegwit.external.lastIndex + nativeSegwit.external.count,
-          count: unusedNativeSegwit > maxUnusedAddresses
-            ? 0 : Math.min(this.maxAddressPerCall, maxUnusedAddresses - unusedNativeSegwit),
+          count: unusedNativeSegwit.external > maxUnusedAddresses
+            ? 0
+            : Math.min(this.maxAddressPerCall, maxUnusedAddresses - unusedNativeSegwit.external),
         },
         change: {
           lastIndex: nativeSegwit.change.lastIndex + nativeSegwit.change.count,
-          count: unusedNativeSegwit > maxUnusedAddresses
-            ? 0 : Math.min(this.maxAddressPerCall, maxUnusedAddresses - unusedNativeSegwit),
+          count: unusedNativeSegwit.change > maxUnusedAddresses
+            ? 0 : Math.min(this.maxAddressPerCall, maxUnusedAddresses - unusedNativeSegwit.change),
         },
       },
     };

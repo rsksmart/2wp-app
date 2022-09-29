@@ -116,7 +116,7 @@ export default class LiqualityService extends WalletService {
             .forEach((liqualityAddress: LiqualityGetAddressesResponse) => {
               walletAddresses.push({
                 address: liqualityAddress.address,
-                derivationPath: liqualityAddress.derivationPath,
+                derivationPath: `m/${liqualityAddress.derivationPath}`,
                 publicKey: liqualityAddress.publicKey,
                 arrayPath: [0],
               });
@@ -193,5 +193,13 @@ export default class LiqualityService extends WalletService {
   // eslint-disable-next-line class-methods-use-this,@typescript-eslint/no-unused-vars
   getXpub(accountType: BtcAccount, accountNumber: number): Promise<string> {
     return Promise.reject(new Error('Liquality does not provide the xpub value yet'));
+  }
+
+  protected areEnoughUnusedAddresses(): boolean {
+    return (
+      this.adjacentUnusedAddresses.nativeSegwit.external
+      >= constants.MAX_ADJACENT_UNUSED_ADDRESSES
+      && this.adjacentUnusedAddresses.nativeSegwit.change
+      >= constants.MAX_ADJACENT_UNUSED_ADDRESSES);
   }
 }
