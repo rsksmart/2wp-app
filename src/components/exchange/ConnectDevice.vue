@@ -1,7 +1,10 @@
 <template>
   <div class="transactions">
     <v-col offset="2" cols="8">
-      <v-row justify="center" class="mx-0">
+      <v-row v-if="isLiqualityWallet" justify="center" class="mx-0">
+        <h1>Enable your {{ walletName }}</h1>
+      </v-row>
+      <v-row v-else justify="center" class="mx-0">
         <h1>Connect your {{ walletName }}</h1>
       </v-row>
       <v-row v-if="isHdWallet" justify="center" class="ma-0 mb-10">
@@ -14,11 +17,11 @@
               <div class="number">1</div>
             </v-col>
             <v-col cols="11">
-              <p v-if="walletName ==='Liquality'"
+              <p v-if="isLiqualityWallet"
               class="ma-0">
                 Make sure Liquality is installed and enabled in your browser.
               </p>
-              <p v-if="walletName !=='Liquality'"
+              <p v-if="!isLiqualityWallet"
               class="ma-0">
                 Plug your {{ walletName }} device into your computer
               </p>
@@ -116,6 +119,10 @@ export default class ConnectDevice extends Vue {
 
   get isLedgerWallet() {
     return this.peginTxState.bitcoinWallet === constants.WALLET_LEDGER;
+  }
+
+  get isLiqualityWallet() {
+    return this.peginTxState.bitcoinWallet === constants.WALLET_LIQUALITY;
   }
 
   @Emit('continueToForm')
