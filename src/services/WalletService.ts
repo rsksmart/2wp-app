@@ -196,6 +196,7 @@ export default abstract class WalletService {
       throw error;
     } finally {
       this.loadingBalances = false;
+      this.informSubscribers(balanceAccumulated, addresses);
     }
   }
 
