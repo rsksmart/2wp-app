@@ -2,7 +2,7 @@
   <div class="transactions">
     <v-col offset="2" cols="8">
       <v-row v-if="isLiqualityWallet" justify="center" class="mx-0">
-        <h1>Enable your {{ walletName }}</h1>
+        <h1>Enable {{ walletName }} wallet</h1>
       </v-row>
       <v-row v-else justify="center" class="mx-0">
         <h1>Connect your {{ walletName }}</h1>
