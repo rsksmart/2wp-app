@@ -171,6 +171,8 @@ export default class TxSummary extends Vue {
 
   @Prop() showTxId!: boolean;
 
+  @Prop() txId!: string;
+
   expanded = true;
 
   over = false;
@@ -239,11 +241,17 @@ export default class TxSummary extends Vue {
   get computedTxId(): string {
     let result;
     if (this.txIdValue) {
-      result = `${this.txIdValue.substr(0, 24)}...${this.txIdValue.substr(60, 64)}`;
+      result = this.formatId(this.txIdValue);
+    } else if (this.txId) {
+      result = this.formatId(this.txId);
     } else {
       result = this.VALUE_INCOMPLETE_MESSAGE;
     }
     return result;
+  }
+
+  formatId (value: string): string {
+    return `${value.substr(0, 24)}...${value.substr(60, 64)}`;
   }
 
   get computedRefundAddress(): string {
