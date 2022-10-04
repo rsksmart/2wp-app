@@ -89,7 +89,7 @@
                 </v-row>
               </v-container>
               <v-divider/>
-              <v-container v-if="!isLiquality">
+              <v-container v-if="!!computedRefundAddress">
                 <v-row class="mx-0" align="start">
                   <h3 class="mr-1">Refund {{environmentContext.getBtcText()}} address</h3>
                   <v-tooltip right>
@@ -169,13 +169,11 @@ import { PegInTxState } from '@/types/pegInTx';
 export default class TxSummary extends Vue {
   @Prop() initialExpand!: boolean;
 
-  showTxId = true;
+  @Prop() showTxId!: boolean;
 
   expanded = true;
 
   over = false;
-
-  isLiquality = false;
 
   fixedUSDDecimals = 2;
 
@@ -243,14 +241,13 @@ export default class TxSummary extends Vue {
     if (this.txIdValue) {
       result = `${this.txIdValue.substr(0, 24)}...${this.txIdValue.substr(60, 64)}`;
     } else {
-      this.showTxId = false;
       result = this.VALUE_INCOMPLETE_MESSAGE;
     }
     return result;
   }
 
   get computedRefundAddress(): string {
-    return this.refundAddress !== '' ? this.refundAddress : this.VALUE_INCOMPLETE_MESSAGE;
+    return this.refundAddress;
   }
 
   get rskFederationAddress() {
@@ -265,7 +262,6 @@ export default class TxSummary extends Vue {
 
   created() {
     this.expanded = this.initialExpand;
-    this.isLiquality = this.peginTxState.bitcoinWallet === constants.WALLET_LIQUALITY;
   }
 }
 </script>
