@@ -75,7 +75,6 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
 
   let error = false;
   let errorMessage = '';
-
   if (txType === TxStatusType.PEGIN) {
     switch (status) {
       case constants.PegStatus.CONFIRMED:

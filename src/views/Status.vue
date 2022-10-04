@@ -36,7 +36,7 @@
       <v-container fluid class="transactions px-0">
         <!--  TODO: create a pegin-tx-summary component-->
         <tx-pegin
-          v-if="!isRejected && showStatus && isPegIn"
+          v-if="!isRejected && isPegIn"
           :txId ="txId"
           @setMessage="setMessage"
           :pegInStatus='pegInStatus'
@@ -139,7 +139,7 @@ export default class Status extends Vue {
   @Action(constants.PEGIN_TX_ADD_STATUS_TX_ID, { namespace: 'pegInTx' }) setTxId !: (txId: string) => void;
 
   get showStatus() {
-    return !this.loading && !this.error && !this.statusMessage;
+    return this.loading && !this.error && !!this.statusMessage;
   }
 
   @Emit()

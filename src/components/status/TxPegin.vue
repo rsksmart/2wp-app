@@ -1,6 +1,6 @@
 <template>
   <v-col>
-    <v-container fluid class="px-0 mb-10 max-width">
+    <v-container v-if="isRejected" fluid class="px-0 mb-10 max-width">
       <v-row justify="center" class="mt-6">
         <v-col cols="7">
           <v-row v-if="isRejected" class="mx-0 d-flex justify-center progress-bar">
@@ -127,6 +127,7 @@ import {
   Vue,
   Prop,
   Emit,
+  Watch,
 } from 'vue-property-decorator';
 import { Action } from 'vuex-class';
 import TxSummary from '@/components/exchange/TxSummary.vue';
@@ -218,6 +219,7 @@ export default class TxPegin extends Vue {
     this.setRskAddress(txData.recipient);
   }
 
+  @Watch('pegInStatus.status')
   @Emit('setMessage')
   setMessage() {
     return setStatusMessage(TxStatusType.PEGIN, this.pegInStatus.status);
