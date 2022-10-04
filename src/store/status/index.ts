@@ -1,24 +1,20 @@
 import { Module } from 'vuex';
-import { StatusState, RootState } from '@/types';
+import { RootState, TxStatus, TxStatusType } from '@/types';
 import { mutations } from './mutations';
 import { actions } from './actions';
 import { getters } from './getters';
 
-export const state: StatusState = {
-  statusMessage: '',
-  activeMessageStyle: '',
-  isRejected: false,
-  error: false,
-  errorMessage: '',
-  txStatus: undefined
+export const state: TxStatus = {
+  txDetails: undefined,
+  type: TxStatusType.UNSET_STATUS,
 };
 
 const namespaced = true;
 
-export const view: Module<StatusState, RootState> = {
+export const status: Module<TxStatus, RootState> = {
   namespaced,
   state,
   actions,
   getters,
-  mutations
+  mutations,
 };

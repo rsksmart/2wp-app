@@ -129,13 +129,12 @@ import {
   Emit,
   Watch,
 } from 'vue-property-decorator';
-import { Action } from 'vuex-class';
+import { Action, State } from 'vuex-class';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import {
   PeginStatus,
-  TxData,
   SatoshiBig,
-  TxStatusType,
+  TxStatusType, TxStatus,
 } from '@/types';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import * as constants from '@/store/constants';
@@ -148,8 +147,6 @@ import { getTime, setStatusMessage } from '@/services/utils';
 })
 
 export default class TxPegin extends Vue {
-  txData!: TxData;
-
   currentFee = new SatoshiBig('0', 'btc');
 
   currentRefundAddress = '';
@@ -166,9 +163,9 @@ export default class TxPegin extends Vue {
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
-  @Prop() txId!: string;
+  @State('status') txStatus!: TxStatus;
 
-  @Prop() pegInStatus!: PeginStatus;
+  @Prop() txId!: string;
 
   @Prop() isRejected!: boolean;
 
@@ -183,21 +180,22 @@ export default class TxPegin extends Vue {
   }
 
   get rskConfirmationsAreDone() {
-    return this.pegInStatus.status === constants.PegStatus.CONFIRMED;
+    return this.txStatus.txDetails?.status === constants.PegStatus.CONFIRMED;
   }
 
   @Emit()
   refreshPercentage() {
-    if (this.pegInStatus) {
-      this.btcConfirmationsRequired = this.pegInStatus.btc.requiredConfirmation;
-      this.btcConfirmations = this.pegInStatus.btc.confirmations ?? 0;
+    if (this.txStatus) {
+      const { btc } = this.txStatus.txDetails as PeginStatus;
+      this.btcConfirmationsRequired = btc.requiredConfirmation;
+      this.btcConfirmations = btc.confirmations ?? 0;
       this.btcConfirmations = this.btcConfirmations > this.btcConfirmationsRequired
         ? this.btcConfirmationsRequired : this.btcConfirmations;
     }
     this.leftBtcTime = getTime((this.btcConfirmationsRequired - this.btcConfirmations) * 10);
     this.btcConfirmationsPercentage = this.btcConfirmations <= this.btcConfirmationsRequired
       ? (this.btcConfirmations * 100) / this.btcConfirmationsRequired : 100;
-    if (this.pegInStatus.status === constants.PegStatus.CONFIRMED) {
+    if (this.txStatus.txDetails?.status === constants.PegStatus.CONFIRMED) {
       this.rskConfirmationsPercentage = 100;
     } else {
       this.rskConfirmationsPercentage = 0;
@@ -205,11 +203,12 @@ export default class TxPegin extends Vue {
   }
 
   setSummaryData() {
+    const { btc, rsk } = this.txStatus?.txDetails as PeginStatus;
     const txData = {
-      amount: new SatoshiBig(this.pegInStatus.btc.amountTransferred, 'btc'),
-      refundAddress: this.pegInStatus.btc.refundAddress,
-      recipient: this.pegInStatus.rsk.recipientAddress,
-      feeBTC: new SatoshiBig(this.pegInStatus.btc.fees, 'btc'),
+      amount: new SatoshiBig(btc.amountTransferred, 'btc'),
+      refundAddress: btc.refundAddress,
+      recipient: rsk.recipientAddress,
+      feeBTC: new SatoshiBig(btc.fees, 'btc'),
       change: '',
     };
     this.peginInit();
@@ -222,7 +221,10 @@ export default class TxPegin extends Vue {
   @Watch('pegInStatus.status')
   @Emit('setMessage')
   setMessage() {
-    return setStatusMessage(TxStatusType.PEGIN, this.pegInStatus.status);
+    if (this.txStatus.txDetails) {
+      return setStatusMessage(TxStatusType.PEGIN, this.txStatus.txDetails.status);
+    }
+    return '';
   }
 
   created() {

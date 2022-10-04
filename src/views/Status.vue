@@ -39,14 +39,12 @@
           v-if="!isRejected && isPegIn"
           :txId ="txId"
           @setMessage="setMessage"
-          :pegInStatus='pegInStatus'
           />
          <!--  TODO: create a pegout-tx-summary component-->
         <tx-pegout
           v-if="!isRejected && showStatus && isPegOut"
           :txId ="txId"
           @setMessage="setMessage"
-          :pegStatus="pegOutStatus"
         />
         <v-row justify="center" class="mx-0 mt-5">
           <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
@@ -73,10 +71,9 @@ import {
 import { State, Action } from 'vuex-class';
 import TxPegout from '@/components/status/TxPegout.vue';
 import TxPegin from '@/components/status/TxPegin.vue';
-import { ApiService } from '@/services';
 import {
   MiningSpeedFee, PeginStatus, TxData, PegInTxState,
-  TxStatus, TxStatusType, PegoutStatusDataModel, TxStatusMessage,
+  TxStatusType, PegoutStatusDataModel, TxStatusMessage, TxStatus,
 } from '@/types';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import * as constants from '@/store/constants';
@@ -97,10 +94,6 @@ export default class Status extends Vue {
   pegInStatus!: PeginStatus;
 
   pegOutStatus!: PegoutStatusDataModel;
-
-  isPegIn = false;
-
-  isPegOut = false;
 
   statusMessage = '';
 
@@ -128,6 +121,10 @@ export default class Status extends Vue {
 
   @State('pegInTx') peginTxState!: PegInTxState;
 
+  @State('status') status!: TxStatus;
+
+  @Action(constants.STATUS_GET_TX_STATUS, { namespace: 'status' }) setTxStatus !: (txId: string) => Promise<void>;
+
   @Action(constants.PEGIN_TX_ADD_BITCOIN_PRICE, { namespace: 'pegInTx' }) getBtcPrice !: () => Promise<void>;
 
   @Action(constants.PEGIN_TX_SELECT_FEE_LEVEL, { namespace: 'pegInTx' }) setSelectedFee !: (feeLevel: MiningSpeedFee) => void;
@@ -142,6 +139,14 @@ export default class Status extends Vue {
     return this.loading && !this.error && !!this.statusMessage;
   }
 
+  get isPegIn(): boolean {
+    return this.status.type === TxStatusType.PEGIN;
+  }
+
+  get isPegOut(): boolean {
+    return this.status.type === TxStatusType.PEGOUT;
+  }
+
   @Emit()
   getPegStatus() {
     if (this.txId !== '') {
@@ -152,18 +157,8 @@ export default class Status extends Vue {
           params: { txId: this.txId },
         });
       }
-      ApiService.getTxStatus(this.txId)
-        .then((txStatus: TxStatus) => {
-          this.txType = txStatus.type;
-          this.isPegIn = txStatus.type === TxStatusType.PEGIN;
-          this.isPegOut = txStatus.type === TxStatusType.PEGOUT;
-          if (this.isPegIn) {
-            this.pegInStatus = txStatus.txDetails as PeginStatus;
-          }
-          if (this.isPegOut) {
-            // TODO: Setup pegout view
-            this.pegOutStatus = txStatus.txDetails as PegoutStatusDataModel;
-          }
+      this.setTxStatus(this.txId)
+        .then(() => {
           this.loading = false;
         })
         .catch((e: Error) => {

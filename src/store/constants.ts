@@ -118,6 +118,15 @@ export const BITCOIN_TX_VERSION = 1;
 export const LEDGER_APP_BTC_TEST = 'Bitcoin Test';
 export const LEDGER_APP_BTC = 'Bitcoin';
 
+// Status actions
+export const STATUS_GET_TX_STATUS = 'STATUS_GET_TX_STATUS';
+
+// Status mutations
+export const STATUS_SET_TX_DETAILS = 'STATUS_SET_TX_DETAILS';
+export const STATUS_SET_TX_TYPE = 'STATUS_SET_TX_TYPE';
+
+// Status getters
+
 // eslint-disable-next-line no-shadow
 export enum PegStatus {
   WAITING_CONFIRMATIONS = 'WAITING_CONFIRMATIONS',
