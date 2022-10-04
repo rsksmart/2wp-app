@@ -138,3 +138,7 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
     errorMessage,
   };
 }
+
+export function formatTxId(value: string) : string {
+  return `${value.substr(0, 24)}...${value.substr(60, 64)}`;
+}
