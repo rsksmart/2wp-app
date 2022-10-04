@@ -35,11 +35,11 @@ jobs:
           VUE_APP_API_BASE_URL='https://api.mainnet.dev.2wp.rskcomputing.net'
           VUE_APP_RSK_NODE_HOST='https://public-node.rsk.co'
           VUE_APP_RSK_EXPLORER='https://explorer.rsk.co/'
-          VUE_APP_WALLET_ADDRESSES_PER_CALL_TREZOR=10
+          VUE_APP_WALLET_ADDRESSES_PER_CALL_TREZOR=6
           VUE_APP_WALLET_MAX_CALLS_TREZOR=1
           VUE_APP_WALLET_ADDRESSES_PER_CALL_LEDGER=2
-          VUE_APP_WALLET_MAX_CALLS_LEDGER=8
-          VUE_APP_WALLET_ADDRESSES_PER_CALL_LIQUALITY=10
+          VUE_APP_WALLET_MAX_CALLS_LEDGER=3
+          VUE_APP_WALLET_ADDRESSES_PER_CALL_LIQUALITY=6
           VUE_APP_WALLET_MAX_CALLS_LIQUALITY=1
           npm run-script build
 
