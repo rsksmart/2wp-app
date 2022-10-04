@@ -78,7 +78,14 @@
                 <v-row class="mx-0">
                   <v-col cols="auto"
                          class="d-flex flex-column justify-end ma-0 pa-0">
-                    <span class="breakable-address">{{ peginTxState.rskAddressSelected }}</span>
+                    <span class="breakable-address">
+                      {{
+                        peginTxState.rskAddressSelected !== '0x'
+                        ?
+                        peginTxState.rskAddressSelected
+                        :
+                        VALUE_INCOMPLETE_MESSAGE
+                      }}</span>
                   </v-col>
                   <v-col cols="auto"
                          class="d-flex flex-column justify-end ma-0 pa-0 ml-lg-1">
@@ -164,6 +171,7 @@ import SatoshiBig from '@/types/SatoshiBig';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import { PegInTxState } from '@/types/pegInTx';
+import { formatTxId } from '@/services/utils';
 
 @Component
 export default class TxSummary extends Vue {
@@ -241,21 +249,23 @@ export default class TxSummary extends Vue {
   get computedTxId(): string {
     let result;
     if (this.txIdValue) {
-      result = this.formatId(this.txIdValue);
+      result = formatTxId(this.txIdValue);
     } else if (this.txId) {
-      result = this.formatId(this.txId);
+      result = formatTxId(this.txId);
     } else {
       result = this.VALUE_INCOMPLETE_MESSAGE;
     }
     return result;
   }
 
-  formatId (value: string): string {
-    return `${value.substr(0, 24)}...${value.substr(60, 64)}`;
-  }
-
   get computedRefundAddress(): string {
-    return this.refundAddress;
+    let result;
+    if (this.refundAddress !== '0x') {
+      result = this.refundAddress;
+    } else {
+      result = this.VALUE_INCOMPLETE_MESSAGE;
+    }
+    return result;
   }
 
   get rskFederationAddress() {

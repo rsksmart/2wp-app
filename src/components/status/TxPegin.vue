@@ -207,7 +207,7 @@ export default class TxPegin extends Vue {
     const txData = {
       amount: new SatoshiBig(btc.amountTransferred, 'btc'),
       refundAddress: btc.refundAddress,
-      recipient: rsk.recipientAddress,
+      recipient: rsk.recipientAddress ? rsk.recipientAddress : '',
       feeBTC: new SatoshiBig(btc.fees, 'btc'),
       change: '',
     };
