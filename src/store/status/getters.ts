@@ -1,6 +1,6 @@
 import { GetterTree } from 'vuex';
-import { StatusState, RootState } from '@/types';
+import { RootState, TxStatus } from '@/types';
 
-export const getters: GetterTree<StatusState, RootState> = {
+export const getters: GetterTree<TxStatus, RootState> = {
 
 };

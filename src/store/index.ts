@@ -4,6 +4,7 @@ import { RootState } from '../types/store';
 import { pegInTx } from './peginTx';
 import { web3Session } from './session';
 import { view } from './view';
+import { status } from './status';
 import { version } from '../../package.json';
 
 Vue.use(Vuex);
@@ -19,6 +20,7 @@ const store: StoreOptions<RootState> = {
     pegInTx,
     web3Session,
     view,
+    status,
   },
 };
 

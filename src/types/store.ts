@@ -55,9 +55,10 @@ export enum TxStatusType {
   PEGOUT = 'PEGOUT',
   INVALID_DATA = 'INVALID_DATA',
   UNEXPECTED_ERROR = 'UNEXPECTED_ERROR',
+  UNSET_STATUS = 'UNSET_STATUS',
 }
 
 export interface TxStatus {
-  txDetails: PeginStatus | PegoutStatusDataModel;
+  txDetails?: PeginStatus | PegoutStatusDataModel;
   type: TxStatusType;
 }
