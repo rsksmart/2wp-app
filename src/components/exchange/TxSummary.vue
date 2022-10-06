@@ -181,6 +181,8 @@ export default class TxSummary extends Vue {
 
   @Prop() txId!: string;
 
+  @Prop() statusRefundAddress!: string;
+
   expanded = true;
 
   over = false;
@@ -260,8 +262,9 @@ export default class TxSummary extends Vue {
 
   get computedRefundAddress(): string {
     let result;
-    if (this.refundAddress !== '0x') {
-      result = this.refundAddress;
+    const refundAddr = this.statusRefundAddress ? this.statusRefundAddress : this.refundAddress;
+    if (refundAddr !== '0x') {
+      result = refundAddr;
     } else {
       result = this.VALUE_INCOMPLETE_MESSAGE;
     }
