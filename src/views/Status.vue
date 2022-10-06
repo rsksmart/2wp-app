@@ -17,34 +17,32 @@
                           @click:append="getPegStatus"
                           v-model="txId"
                           @keyup.enter="getPegStatus"
-                          v-bind:color="error ? '#F6C61B': '#C4C4C4'"
+                          v-bind:color="activeMessage.error ? '#F6C61B': '#C4C4C4'"
                           :label="'Transaction id'"
-                          v-bind:class="error ? 'status-text-field-error' : ''"/>
-            <v-row class="mx-0 pl-1 pt-1" v-if="error">
+                          v-bind:class="activeMessage.error ? 'status-text-field-error' : ''"/>
+            <v-row class="mx-0 pl-1 pt-1" v-if="activeMessage.error">
                 <span class="yellowish">
-                  {{errorMessage}}
+                  {{activeMessage.errorMessage}}
                 </span>
             </v-row>
           </v-col>
         </v-row>
-        <v-row justify="center"  v-if="showStatus" class="mx-0 my-5">
-          <div class="my-4 status" :class="activeMessageStyle">
-            {{ statusMessage }}
+        <v-row justify="center"  v-if="showStatus" class="mx-0 mt-5 mb-0">
+          <div class="mt-4 mb-0 status" :class="activeMessage.activeMessageStyle">
+            {{ activeMessage.statusMessage }}
           </div>
         </v-row>
       </v-container>
       <v-container fluid class="transactions px-0">
         <!--  TODO: create a pegin-tx-summary component-->
         <tx-pegin
-          v-if="!isRejected && isPegIn"
+          v-if="!activeMessage.isRejected && isPegIn"
           :txId ="txId"
-          @setMessage="setMessage"
           />
          <!--  TODO: create a pegout-tx-summary component-->
         <tx-pegout
-          v-if="!isRejected && showStatus && isPegOut"
+          v-if="!activeMessage.isRejected && showStatus && isPegOut"
           :txId ="txId"
-          @setMessage="setMessage"
         />
         <v-row justify="center" class="mx-0 mt-5">
           <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
@@ -53,7 +51,8 @@
             </v-btn>
           </v-col>
           <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0">
-            <v-btn v-if="!isRejected && showStatus" class="px-5" width="117" color="#00B520" rounded
+            <v-btn v-if="!activeMessage.isRejected && showStatus"
+                   class="px-5" width="117" color="#00B520" rounded
                    @click="getPegStatus">
               <span class="whiteish">Refresh</span>
             </v-btn>
@@ -68,12 +67,12 @@
 import {
   Component, Emit, Prop, Vue, Watch,
 } from 'vue-property-decorator';
-import { State, Action } from 'vuex-class';
+import { State, Action, Getter } from 'vuex-class';
 import TxPegout from '@/components/status/TxPegout.vue';
 import TxPegin from '@/components/status/TxPegin.vue';
 import {
   MiningSpeedFee, PeginStatus, TxData, PegInTxState,
-  TxStatusType, PegoutStatusDataModel, TxStatusMessage, TxStatus,
+  TxStatusType, PegoutStatusDataModel, TxStatus, TxStatusMessage,
 } from '@/types';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import * as constants from '@/store/constants';
@@ -95,19 +94,9 @@ export default class Status extends Vue {
 
   pegOutStatus!: PegoutStatusDataModel;
 
-  statusMessage = '';
-
   loading = false;
 
-  error = false;
-
-  errorMessage = '';
-
-  activeMessageStyle = 'statusRejected';
-
   rskConfirmationsPercentage = 0;
-
-  isRejected = false;
 
   leftBtcTime = '';
 
@@ -125,6 +114,8 @@ export default class Status extends Vue {
 
   @Action(constants.STATUS_GET_TX_STATUS, { namespace: 'status' }) setTxStatus !: (txId: string) => Promise<void>;
 
+  @Action(constants.STATUS_CLEAR, { namespace: 'status' }) clearStatus !: () => void;
+
   @Action(constants.PEGIN_TX_ADD_BITCOIN_PRICE, { namespace: 'pegInTx' }) getBtcPrice !: () => Promise<void>;
 
   @Action(constants.PEGIN_TX_SELECT_FEE_LEVEL, { namespace: 'pegInTx' }) setSelectedFee !: (feeLevel: MiningSpeedFee) => void;
@@ -135,8 +126,10 @@ export default class Status extends Vue {
 
   @Action(constants.PEGIN_TX_ADD_STATUS_TX_ID, { namespace: 'pegInTx' }) setTxId !: (txId: string) => void;
 
+  @Getter(constants.STATUS_GET_ACTIVE_MESSAGE, { namespace: 'status' }) activeMessage !: TxStatusMessage;
+
   get showStatus() {
-    return this.loading && !this.error && !!this.statusMessage;
+    return !this.loading && !this.activeMessage.error && !!this.activeMessage.statusMessage;
   }
 
   get isPegIn(): boolean {
@@ -150,6 +143,7 @@ export default class Status extends Vue {
   @Emit()
   getPegStatus() {
     if (this.txId !== '') {
+      this.clean();
       this.loading = true;
       if (this.$route.path !== `/status/txId/${this.txId}`) {
         this.$router.push({
@@ -160,40 +154,14 @@ export default class Status extends Vue {
       this.setTxStatus(this.txId)
         .then(() => {
           this.loading = false;
-        })
-        .catch((e: Error) => {
-          if (!this.errorMessage) {
-            this.errorMessage = e.message;
-          }
-          this.error = true;
-          this.loading = false;
         });
     }
   }
 
   @Emit()
-  setMessage(msg: TxStatusMessage) {
-    const {
-      statusMessage,
-      activeMessageStyle,
-      isRejected,
-      error,
-      errorMessage,
-    } = msg;
-
-    this.statusMessage = statusMessage;
-    this.activeMessageStyle = activeMessageStyle;
-    this.isRejected = isRejected;
-    this.error = error;
-    this.errorMessage = errorMessage;
-  }
-
-  @Emit()
   clean() {
-    this.txId = '';
+    this.clearStatus();
     this.loading = false;
-    this.error = false;
-    this.statusMessage = '';
   }
 
   @Watch('$route', { immediate: true, deep: true })
@@ -212,6 +180,7 @@ export default class Status extends Vue {
   }
 
   async created() {
+    this.clearStatus();
     await this.getBtcPrice();
   }
 }
