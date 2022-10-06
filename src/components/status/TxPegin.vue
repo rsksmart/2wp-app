@@ -1,8 +1,8 @@
 <template>
   <v-col>
-    <v-container v-if="isRejected" fluid class="px-0 mb-10 max-width">
+    <v-container fluid class="pa-0 mb-10 mt-0 max-width">
       <v-row justify="center" class="mt-6">
-        <v-col cols="7">
+        <v-col class="ma-0 pa-0" cols="7">
           <v-row v-if="isRejected" class="mx-0 d-flex justify-center progress-bar">
             <v-col cols="8" class="pa-0 d-flex justify-center">
               <v-row>
@@ -129,7 +129,7 @@ import {
   Emit,
   Watch,
 } from 'vue-property-decorator';
-import { Action, State } from 'vuex-class';
+import { Action, State, Getter } from 'vuex-class';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import {
   PeginStatus,
@@ -167,7 +167,7 @@ export default class TxPegin extends Vue {
 
   @Prop() txId!: string;
 
-  @Prop() isRejected!: boolean;
+  @Getter(constants.STATUS_IS_REJECTED, { namespace: 'status' }) isRejected!: boolean;
 
   @Action(constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER, { namespace: 'pegInTx' }) setAmount!: (amount: SatoshiBig) => void;
 
@@ -181,6 +181,10 @@ export default class TxPegin extends Vue {
 
   get rskConfirmationsAreDone() {
     return this.txStatus.txDetails?.status === constants.PegStatus.CONFIRMED;
+  }
+
+  get showSteps(): boolean {
+    return this.txStatus.type !== TxStatusType.UNSET_STATUS;
   }
 
   @Emit()

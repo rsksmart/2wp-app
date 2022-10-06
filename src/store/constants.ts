@@ -120,12 +120,16 @@ export const LEDGER_APP_BTC = 'Bitcoin';
 
 // Status actions
 export const STATUS_GET_TX_STATUS = 'STATUS_GET_TX_STATUS';
+export const STATUS_CLEAR = 'STATUS_CLEAR';
 
 // Status mutations
 export const STATUS_SET_TX_DETAILS = 'STATUS_SET_TX_DETAILS';
 export const STATUS_SET_TX_TYPE = 'STATUS_SET_TX_TYPE';
+export const STATUS_SET_CLEAR = 'STATUS_SET_CLEAR';
 
 // Status getters
+export const STATUS_IS_REJECTED = 'STATUS_IS_REJECTED';
+export const STATUS_GET_ACTIVE_MESSAGE = 'STATUS_GET_ACTIVE_MESSAGE';
 
 // eslint-disable-next-line no-shadow
 export enum PegStatus {
