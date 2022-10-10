@@ -86,6 +86,8 @@ import * as constants from '@/store/constants';
 export default class Status extends Vue {
   txData?: TxData;
 
+  currentId = '';
+
   txId = '';
 
   txType = TxStatusType.PEGIN;
@@ -142,9 +144,10 @@ export default class Status extends Vue {
 
   @Emit()
   getPegStatus() {
-    if (this.txId !== '') {
+    if (this.txId !== '' && this.currentId !== this.txId) {
       this.clean();
       this.loading = true;
+      this.currentId = this.txId;
       if (this.$route.path !== `/status/txId/${this.txId}`) {
         this.$router.push({
           name: 'Status',
