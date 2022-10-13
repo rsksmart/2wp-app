@@ -71,3 +71,7 @@ npm run build
 ## Report Security Vulnerabilities
 
 To report a vulnerability, please use the [vulnerability reporting guideline](./SECURITY.md) for details on how to do it.
+
+
+## Code coverage
+![Code Coverage](https://img.shields.io/badge/Code%20Coverage-44%25-yellow?style=flat)
