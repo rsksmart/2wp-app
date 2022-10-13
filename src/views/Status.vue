@@ -142,15 +142,14 @@ export default class Status extends Vue {
 
   @Emit()
   getPegStatus() {
-    if (this.txId !== '') {
+    if (this.$route.path !== `/status/txId/${this.txId}`) {
+      this.$router.push({
+        name: 'Status',
+        params: { txId: this.txId },
+      });
+    } else if (this.txId !== '') {
       this.clean();
       this.loading = true;
-      if (this.$route.path !== `/status/txId/${this.txId}`) {
-        this.$router.push({
-          name: 'Status',
-          params: { txId: this.txId },
-        });
-      }
       this.setTxStatus(this.txId)
         .then(() => {
           this.loading = false;
