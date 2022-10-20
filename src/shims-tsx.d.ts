@@ -7,11 +7,15 @@ declare global {
     // tslint:disable no-empty-interface
     interface ElementClass extends Vue {}
     interface IntrinsicElements {
-      [elem: string]: any;
+      [elem: string]: never;
     }
   }
 }
 
 declare global {
-  interface Window { ethereum: any }
+  interface Ethereum {
+    on(eventName: string, cb: () => never);
+    isMetamask: boolean;
+  }
+  interface Window { ethereum: Ethereum }
 }
