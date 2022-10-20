@@ -54,7 +54,7 @@ export default class TrezorTxBuilder extends TxBuilder {
   }
 
   static getPathFromAddress(address: string): number[] {
-    const addressList = store.state.pegInTx.addressList as WalletAddress[];
+    const addressList = store.state.pegInTx?.addressList as WalletAddress[];
     let path: number[] = [];
     addressList.forEach((walletAddress) => {
       if (walletAddress.address === address) path = walletAddress.arrayPath ?? [];

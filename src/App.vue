@@ -29,7 +29,7 @@ import { vuetifyNonce } from '@/common/plugins/vuetify';
   },
 })
 export default class App extends Vue {
-  scriptTag?: any;
+  scriptTag?: HTMLScriptElement;
 
   @Action(constants.SESSION_ADD_BITCOIN_PRICE, { namespace: 'web3Session' }) getBtcPrice!: () => void;
 
