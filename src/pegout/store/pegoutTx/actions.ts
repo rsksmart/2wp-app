@@ -57,7 +57,7 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
       if (web3) {
         Promise.all([
           web3.eth.sendTransaction({
-            from: rootState.web3Session.account,
+            from: rootState.web3Session?.account,
             to: state.pegoutConfiguration.bridgeContractAddress,
             value: state.amountToTransfer.toWeiString(),
           }).on(constants.PEGOUT_TX_EVENT_TRANSACTION_HASH, (hash) => {

@@ -203,7 +203,7 @@ export default abstract class WalletService {
       }
       this.loadingBalances = false;
       this.informSubscribers(this.balanceAccumulated, []);
-    } catch (error: any) {
+    } catch (error) {
       if (!error.message) {
         error.message = 'Error fetching balance';
       }

@@ -68,8 +68,8 @@ describe('Liquality Service:', () => {
     checkApp.resolves();
     enable.resolves();
     const liqualityService = new LiqualityService(mockedBitcoinProvider);
-    sinon.stub(LiqualityService.prototype, 'enable' as any).returns(Promise.resolve({}));
-    sinon.stub(LiqualityService.prototype, 'checkApp' as any).returns(Promise.resolve({}));
+    sinon.stub(LiqualityService.prototype, 'enable' as never).returns(Promise.resolve({}));
+    sinon.stub(LiqualityService.prototype, 'checkApp' as never).returns(Promise.resolve({}));
 
     return liqualityService.getAccountAddresses()
       .then((addresess) => {
