@@ -1,9 +1,12 @@
 import { Duration } from 'moment/moment';
 import { PegStatus } from '@/common/store/constants';
 import SatoshiBig from '@/common/types/SatoshiBig';
+import { PegInTxState } from '@/common/types/pegInTx';
+import { SessionState } from '@/common/types/session';
 
 export interface RootState {
-  [x: string]: any;
+  pegInTx?: PegInTxState,
+  web3Session?: SessionState,
   version: string;
 }
 
@@ -30,6 +33,7 @@ export interface PeginStatus {
   status: PegStatus;
 }
 
+// eslint-disable-next-line no-shadow
 export enum PegoutStatus {
   RECEIVED = 'RECEIVED',
   REJECTED = 'REJECTED',
@@ -54,6 +58,7 @@ export interface PegoutStatusDataModel {
   estimatedFee: SatoshiBig;
 }
 
+// eslint-disable-next-line no-shadow
 export enum TxStatusType {
   PEGIN = 'PEGIN',
   PEGOUT = 'PEGOUT',

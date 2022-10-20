@@ -17,8 +17,8 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
   },
   [constants.PEGOUT_TX_CALCULATE_FEE]: async ({ commit, state, rootState }) => {
     const bridgeService = new BridgeService();
-    const web3 = rootState.web3Session.web3 as Web3;
-    const sender = rootState.web3Session.account as string;
+    const web3 = rootState.web3Session?.web3 as Web3;
+    const sender = rootState.web3Session?.account as string;
     // RSK Fee
     const gas = await web3.eth.estimateGas({
       from: sender,
@@ -56,7 +56,7 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
       if (web3) {
         Promise.all([
           web3.eth.sendTransaction({
-            from: rootState.web3Session.account,
+            from: rootState.web3Session?.account,
             to: state.pegoutConfiguration.bridgeContractAddress,
             value: state.amountToTransfer.toWeiString(),
           }).on(constants.PEGOUT_TX_EVENT_TRANSACTION_HASH, (hash) => {

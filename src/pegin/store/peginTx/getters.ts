@@ -55,7 +55,7 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       return address;
     },
   [constants.PEGIN_TX_GET_REFUND_ADDRESS]:
-  (state: PegInTxState, localGetters?:any, rootState?:RootState, rootGetters?: any):string => {
+  (state: PegInTxState, localGetters, rootState?:RootState, rootGetters?) => {
     let address = '';
     const currentView = rootGetters[constants.VIEW_GET_CURRENT_VIEW];
     if (currentView && currentView === 'Status') {
@@ -105,7 +105,7 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       return publicKey;
     },
   [constants.PEGIN_TX_GET_SAFE_TX_FEE]:
-    (state: PegInTxState, localGetters?:any, rootState?: RootState, rootGetters?: any)
+    (state: PegInTxState, localGetters?, rootState?: RootState, rootGetters?)
       : SatoshiBig => {
       let fee: SatoshiBig;
       if (!state.normalizedTx.inputs.length) {

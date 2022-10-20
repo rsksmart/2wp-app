@@ -10,7 +10,7 @@ import {
 } from '@/common/types';
 
 const localVue = createLocalVue();
-let vuetify:any;
+let vuetify: typeof Vuetify;
 
 describe('TxSummary', () => {
   const defaultEnvironmentVariables = {

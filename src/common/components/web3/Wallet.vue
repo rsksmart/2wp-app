@@ -170,9 +170,9 @@ import { EnvironmentAccessorService } from '@/common/services/enviroment-accesso
 export default class Wallet extends Vue {
   @Prop(Boolean) configure!: boolean;
 
-  @Action(constants.SESSION_CONNECT_WEB3, { namespace: 'web3Session' }) sessionConnect !: any;
+  @Action(constants.SESSION_CONNECT_WEB3, { namespace: 'web3Session' }) sessionConnect !: () => Promise<void>;
 
-  @Action(constants.WEB3_SESSION_GET_ACCOUNT, { namespace: 'web3Session' }) getAccount !: any;
+  @Action(constants.WEB3_SESSION_GET_ACCOUNT, { namespace: 'web3Session' }) getAccount !: () => Promise<void>;
 
   useWeb3Wallet = true;
 
