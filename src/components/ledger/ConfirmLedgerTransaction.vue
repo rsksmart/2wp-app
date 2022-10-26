@@ -220,10 +220,21 @@ export default class ConfirmLedgerTransaction extends Vue {
 
   @Emit('successConfirmation')
   async toTrackId() {
-    const LEDGER_STATUS_CODES = { TRANSACTION_CANCELLED_BY_USER: 27013, DEVICE_LOCKED: 27010 };
+    const LEDGER_STATUS_CODES = {
+      TRANSACTION_CANCELLED_BY_USER: 27013,
+      DEVICE_LOCKED: 27010,
+      USER_EXITED_APP: 27906,
+    };
     let txError = '';
     this.confirmTxState.send('loading');
-    await this.walletService.stopAskingForBalance()
+    await this.walletService.isConnected()
+      .then((isConnected) => {
+        if (!isConnected) {
+          this.walletService.reconnect().then(() => this.walletService.stopAskingForBalance());
+        } else {
+          this.walletService.stopAskingForBalance();
+        }
+      })
       .then(() => {
         if (this.pegInTxState.selectedAccount) {
           return this.txBuilder
@@ -245,6 +256,9 @@ export default class ConfirmLedgerTransaction extends Vue {
             break;
           case LEDGER_STATUS_CODES.TRANSACTION_CANCELLED_BY_USER:
             txError = 'Transaction cancelled by user.';
+            break;
+          case LEDGER_STATUS_CODES.USER_EXITED_APP:
+            txError = 'Please access the correct app and try again.';
             break;
           default:
             txError = err.message;

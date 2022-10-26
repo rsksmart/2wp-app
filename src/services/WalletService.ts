@@ -131,6 +131,7 @@ export default abstract class WalletService {
     };
     this.loadingBalances = true;
     const maxAddressPerCall: number = this.getWalletAddressesPerCall();
+    let notify = true;
     let addresses: WalletAddress[] = [];
     try {
       const connected = await this.isConnected();
@@ -190,13 +191,17 @@ export default abstract class WalletService {
       }
       this.informSubscribers(balanceAccumulated, addresses);
     } catch (error) {
+      notify = false;
       if (!error.message) {
         error.message = 'Error fetching balance';
       }
       throw error;
     } finally {
       this.loadingBalances = false;
-      this.informSubscribers(balanceAccumulated, addresses);
+
+      if (notify) {
+        this.informSubscribers(balanceAccumulated, addresses);
+      }
     }
   }
 
