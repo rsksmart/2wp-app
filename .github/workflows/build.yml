@@ -1,7 +1,6 @@
 name: 2wp-app build
 
-on:
-  push:
+on: [push, pull_request]
 
 jobs:
   checkout-and-build:
