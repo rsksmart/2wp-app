@@ -198,4 +198,8 @@ export default class LiqualityService extends WalletService {
   getXpub(accountType: BtcAccount, accountNumber: number): Promise<string> {
     return Promise.reject(new Error('Liquality does not provide the xpub value yet'));
   }
+
+  areEnoughUnusedAddresses(): boolean {
+    return this.adjacentUnusedAddresses.nativeSegwit >= constants.MAX_ADJACENT_UNUSED_ADDRESSES;
+  }
 }
