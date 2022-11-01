@@ -213,4 +213,10 @@ export default class LedgerService extends WalletService {
         });
       });
   }
+
+  areEnoughUnusedAddresses(): boolean {
+    return (this.adjacentUnusedAddresses.legacy >= constants.MAX_ADJACENT_UNUSED_ADDRESSES
+      && this.adjacentUnusedAddresses.segwit >= constants.MAX_ADJACENT_UNUSED_ADDRESSES
+      && this.adjacentUnusedAddresses.nativeSegwit >= constants.MAX_ADJACENT_UNUSED_ADDRESSES);
+  }
 }
