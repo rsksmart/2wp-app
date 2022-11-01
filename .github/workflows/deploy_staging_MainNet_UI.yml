@@ -35,12 +35,8 @@ jobs:
           VUE_APP_API_BASE_URL='https://api.mainnet.dev.2wp.rskcomputing.net'
           VUE_APP_RSK_NODE_HOST='https://public-node.rsk.co'
           VUE_APP_RSK_EXPLORER='https://explorer.rsk.co/'
-          VUE_APP_WALLET_ADDRESSES_PER_CALL_TREZOR=6
-          VUE_APP_WALLET_MAX_CALLS_TREZOR=1
-          VUE_APP_WALLET_ADDRESSES_PER_CALL_LEDGER=2
-          VUE_APP_WALLET_MAX_CALLS_LEDGER=3
-          VUE_APP_WALLET_ADDRESSES_PER_CALL_LIQUALITY=6
-          VUE_APP_WALLET_MAX_CALLS_LIQUALITY=1
+          VUE_APP_WALLET_ADDRESSES_HARD_STOP=100
+          VUE_APP_WALLET_ADDRESS_PER_CALL=5
           npm run-script build
 
       - name: Configure AWS credentials
@@ -53,7 +49,7 @@ jobs:
       - name: Deploy site to S3
         run: |
           aws s3 sync --delete --only-show-errors dist/ ${{ secrets.STAGING_MAINNET_S3_BUCKET }}
-           
+
       - name: Invalidate CloudFront cache
         run: |
           aws cloudfront create-invalidation --distribution-id ${{ secrets.STAGING_MAINNET_CLOUDFRONT_DISTRIBUTION }} --paths "/*"
