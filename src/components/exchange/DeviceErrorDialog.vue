@@ -67,7 +67,6 @@ export default class DeviceErrorDialog extends Vue {
 
   @Emit()
   toExchange() {
-    if (this.$router.currentRoute.name === 'Create') this.$router.go(0);
     this.$router.push({ name: 'Home' });
   }
 
