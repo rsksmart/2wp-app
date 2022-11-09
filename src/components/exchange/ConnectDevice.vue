@@ -131,9 +131,9 @@ export default class ConnectDevice extends Vue {
   }
 
   beforeMount() {
-    if (this.peginTxState.bitcoinWallet === constants.WALLET_LIQUALITY && !this.showDialog) {
-      this.tryConnect();
-    } else if (this.peginTxState.bitcoinWallet === constants.WALLET_LEDGER && !this.showDialog) {
+    if ((this.peginTxState.bitcoinWallet === constants.WALLET_LIQUALITY ||
+          this.peginTxState.bitcoinWallet === constants.WALLET_LEDGER)
+    && !this.showDialog) {
       this.tryConnect();
     }
   }
