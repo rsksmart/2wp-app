@@ -67,7 +67,7 @@ export default class DeviceErrorDialog extends Vue {
 
   @Emit()
   toExchange() {
-    this.$router.push({ name: 'Home' });
+    window.location.href = '/';
   }
 
   @Emit('closeErrorDialog')
