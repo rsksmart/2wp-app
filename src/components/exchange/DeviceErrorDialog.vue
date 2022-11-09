@@ -66,6 +66,7 @@ export default class DeviceErrorDialog extends Vue {
   warningIconPath = WarningIcon;
 
   @Emit()
+  // eslint-disable-next-line class-methods-use-this
   toExchange() {
     window.location.href = '/';
   }
