@@ -175,9 +175,4 @@ export default class TrezorService extends WalletService {
         .catch(reject);
     });
   }
-
-  // eslint-disable-next-line class-methods-use-this
-  getXpub(accountType: string, accountNumber: number): Promise<string> {
-    throw new Error('Method not implemented.');
-  }
 }

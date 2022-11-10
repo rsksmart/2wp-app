@@ -1,19 +1,13 @@
 import {
   LedgerSignedTx, TrezorSignedTx, Tx, WalletAddress,
 } from '@/types';
-import { WalletService } from '@/services';
-import * as constants from '@/store/constants';
+import { WalletService } from '../../src/services';
 
 interface TestCase {
   accountAddresses: WalletAddress[];
   walletAddressPerCall: number;
   walletMaxCall: number;
   signedTx: TrezorSignedTx | LedgerSignedTx | Error;
-  xpub: {
-    legacy: string;
-    segwit: string;
-    nativeSegwit: string;
-  }
 }
 
 export default class MockedWallet extends WalletService {
@@ -58,19 +52,5 @@ export default class MockedWallet extends WalletService {
         resolve(this.testCase.signedTx);
       }
     });
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getXpub(accountType: BtcAccount, accountNumber: number): Promise<string> {
-    switch (accountType) {
-      case constants.BITCOIN_LEGACY_ADDRESS:
-        return Promise.resolve(this.testCase.xpub.legacy);
-      case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
-        return Promise.resolve(this.testCase.xpub.segwit);
-      case constants.BITCOIN_SEGWIT_ADDRESS:
-        return Promise.resolve(this.testCase.xpub.nativeSegwit);
-      default:
-        return Promise.resolve(this.testCase.xpub.legacy);
-    }
   }
 }
