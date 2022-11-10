@@ -41,8 +41,9 @@
                 </v-icon>
               </template>
               <span>
-                Listed amounts represent the balance using
-                addresses from your first account including change.
+                Listed amounts represent the balance up to the first
+                {{ isLedgerWallet ? maxAddressesLedger : maxAddressesTrezor }}
+                addresses from your accounts including change.
               </span>
             </v-tooltip>
           </v-col>
@@ -97,8 +98,15 @@ export default class PegInAccountSelect extends Vue {
   @Action(constants.PEGIN_TX_CALCULATE_TX_FEE, { namespace: 'pegInTx' }) calculateTxFee !: () => Promise<void>;
 
   // eslint-disable-next-line class-methods-use-this
-  get maxAddresses(): number {
-    return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletAddressHardStop;
+  get maxAddressesLedger(): number {
+    return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletAddressesPerCallLedger
+      * EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletMaxCallLedger;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  get maxAddressesTrezor(): number {
+    return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletAddressesPerCallTrezor
+      * EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletMaxCallTrezor;
   }
 
   get isLedgerWallet() {
