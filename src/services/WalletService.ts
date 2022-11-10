@@ -1,22 +1,14 @@
 import * as constants from '@/store/constants';
 import SatoshiBig from '@/types/SatoshiBig';
 import { ApiService } from '@/services';
-import { Purpose, SignedTx } from '@/types/Wallets';
+import { SignedTx } from '@/types/Wallets';
 import {
-  AccountBalance, AddressStatus, BtcAccount, Tx, WalletAddress,
+  WalletAddress, AccountBalance, Tx, AddressStatus, BtcAccount,
 } from '@/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
-import { deriveBatchAddresses } from '@/utils';
-import store from '@/store';
 
 export default abstract class WalletService {
   protected coin: string;
-
-  protected extendedPubKeys: {
-    p2pkh: string;
-    p2sh: string;
-    p2wpkh: string;
-  };
 
   protected subscribers:
     Array<(balance: AccountBalance, addressList: WalletAddress[]) => void > = [];
@@ -25,11 +17,6 @@ export default abstract class WalletService {
 
   constructor() {
     this.coin = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
-    this.extendedPubKeys = {
-      p2pkh: '',
-      p2sh: '',
-      p2wpkh: '',
-    };
   }
 
   abstract getAccountAddresses(batch: number, index: number): Promise<WalletAddress[]>;
@@ -146,27 +133,21 @@ export default abstract class WalletService {
     };
     this.loadingBalances = true;
     const maxAddressPerCall: number = this.getWalletAddressesPerCall();
-    const isHdWallet: boolean = store.getters[`pegInTx/${constants.PEGIN_TX_IS_HD_WALLET}`];
-    const currentAccount = 0;
-    if (isHdWallet) await this.getAccountsXpub(currentAccount);
+    let addresses: WalletAddress[] = [];
     try {
       const connected = await this.isConnected();
 
       if (!connected) {
         await this.reconnect();
       }
-      let addresses: WalletAddress[] = [];
+
       for (
         let startFrom = 0;
         startFrom < (this.getWalletMaxCall() * maxAddressPerCall) && this.subscribers.length !== 0;
         startFrom += maxAddressPerCall
       ) {
-        if (isHdWallet) {
-          addresses = this.getDerivedAddresses(maxAddressPerCall, startFrom);
-        } else {
-          // eslint-disable-next-line no-await-in-loop
-          addresses = await this.getAccountAddresses(maxAddressPerCall, startFrom);
-        }
+        // eslint-disable-next-line no-await-in-loop
+        addresses = await this.getAccountAddresses(maxAddressPerCall, startFrom);
         if (addresses.length === 0) {
           throw new Error('Error getting list of addresses - List of addresses is empty');
         }
@@ -217,7 +198,7 @@ export default abstract class WalletService {
       throw error;
     } finally {
       this.loadingBalances = false;
-      this.informSubscribers(balanceAccumulated, []);
+      this.informSubscribers(balanceAccumulated, addresses);
     }
   }
 
@@ -234,33 +215,5 @@ export default abstract class WalletService {
         });
         return addressListResponse;
       });
-  }
-
-  private async getAccountsXpub(accountIdx: number): Promise<void> {
-    this.extendedPubKeys = {
-      p2pkh: await this.getXpub(constants.BITCOIN_LEGACY_ADDRESS, accountIdx),
-      p2sh: await this.getXpub(constants.BITCOIN_SEGWIT_ADDRESS, accountIdx),
-      p2wpkh: await this.getXpub(constants.BITCOIN_NATIVE_SEGWIT_ADDRESS, accountIdx),
-    };
-  }
-
-  private getDerivedAddresses(batch: number, startFrom: number) : Array<WalletAddress> {
-    const batchPerAccount = Math.ceil(batch / 3);
-    return deriveBatchAddresses(
-      this.extendedPubKeys.p2wpkh,
-      Purpose.P2WPKH,
-      startFrom,
-      batchPerAccount,
-    ).concat(deriveBatchAddresses(
-      this.extendedPubKeys.p2sh,
-      Purpose.P2SH,
-      startFrom,
-      batchPerAccount,
-    )).concat(deriveBatchAddresses(
-      this.extendedPubKeys.p2pkh,
-      Purpose.P2PKH,
-      startFrom,
-      batchPerAccount,
-    ));
   }
 }
