@@ -1,4 +1,4 @@
-import TrezorConnect, { Address, GetAddress } from 'trezor-connect';
+import TrezorConnect, { GetAddress } from 'trezor-connect';
 import * as bitcoin from 'bitcoinjs-lib';
 import { Network } from 'bitcoinjs-lib';
 import { WalletAddress } from '@/types/pegInTx';
@@ -114,13 +114,7 @@ export default class TrezorService extends WalletService {
           if (!result.success) reject(new Error(result.payload.error));
           const addresses: WalletAddress[] = [];
           Object.entries(result.payload).forEach((obj) => {
-            const address = obj[1] as Address;
-            addresses.push({
-              address: address.address,
-              derivationPath: address.serializedPath,
-              arrayPath: address.path,
-              publicKey: '',
-            });
+            addresses.push(obj[1]);
           });
           resolve(addresses);
         })

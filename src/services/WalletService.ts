@@ -170,8 +170,6 @@ export default abstract class WalletService {
       segwit: 0,
       nativeSegwit: 0,
     };
-    const maxAddressesHardStop = EnvironmentAccessorService
-      .getEnvironmentVariables().vueAppWalletAddressHardStop;
     try {
       while (this.hasSubscribers() && !this.areEnoughUnusedAddresses()) {
         // eslint-disable-next-line no-await-in-loop
@@ -184,14 +182,7 @@ export default abstract class WalletService {
           return;
         }
         this.setAddressesToFetch();
-        const maxIndexReached = Math.max(
-          this.addressesToFetch.legacy.lastIndex,
-          this.addressesToFetch.segwit.lastIndex,
-          this.addressesToFetch.nativeSegwit.lastIndex,
-        );
-        if (maxIndexReached >= maxAddressesHardStop) {
-          return;
-        }
+        // TODO: hard stop mechanism
       }
       this.informSubscribers(this.balanceAccumulated, []);
     } catch (error) {
@@ -232,34 +223,34 @@ export default abstract class WalletService {
     return ApiService
       .areUnusedAddresses(addressList.map((walletAddress) => walletAddress.address))
       .then((addressStatusList: AddressStatus[]) => {
-        addressList.forEach((walletAddressItem: WalletAddress) => {
-          const addressStatus = addressStatusList
-            .find((statusItem) => statusItem.address === walletAddressItem.address);
-          if (!addressStatus) {
-            throw new Error('Unused value from Api not found');
+        addressStatusList.forEach((addressStatus: AddressStatus) => {
+          const walletAddressItem = addressList
+            .find((walletAddress) => walletAddress.address === addressStatus.address);
+          if (walletAddressItem) {
+            walletAddressItem.unused = addressStatus.unused;
+            if (walletAddressItem.unused) {
+              const accountType = getAccountType(addressStatus.address, this.network);
+              switch (accountType) {
+                case constants.BITCOIN_LEGACY_ADDRESS:
+                  this.adjacentUnusedAddresses.legacy += 1;
+                  break;
+                case constants.BITCOIN_SEGWIT_ADDRESS:
+                  this.adjacentUnusedAddresses.segwit += 1;
+                  break;
+                case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
+                  this.adjacentUnusedAddresses.nativeSegwit += 1;
+                  break;
+                default:
+              }
+            }
+            addressListResponse.push(walletAddressItem);
           }
-          const {
-            derivationPath, address, publicKey, arrayPath,
-          } = walletAddressItem;
-          addressListResponse.push({
-            derivationPath, arrayPath, address, publicKey, unused: addressStatus.unused,
-          });
-          const accountType = getAccountType(address, this.network);
-          switch (accountType) {
-            case constants.BITCOIN_LEGACY_ADDRESS:
-              this.adjacentUnusedAddresses.legacy = addressStatus.unused
-                ? this.adjacentUnusedAddresses.legacy + 1 : 0;
-              break;
-            case constants.BITCOIN_SEGWIT_ADDRESS:
-              this.adjacentUnusedAddresses.segwit = addressStatus.unused
-                ? this.adjacentUnusedAddresses.segwit + 1 : 0;
-              break;
-            case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
-              this.adjacentUnusedAddresses.nativeSegwit = addressStatus.unused
-                ? this.adjacentUnusedAddresses.nativeSegwit + 1 : 0;
-              break;
-            default:
-          }
+        });
+        addressListResponse.forEach((walletAddressItem) => {
+          const status : AddressStatus | undefined = addressStatusList
+            .find((statusItem) => walletAddressItem.address === statusItem.address);
+            // eslint-disable-next-line no-param-reassign
+          walletAddressItem.unused = status ? status.unused : false;
         });
         return addressListResponse;
       });
