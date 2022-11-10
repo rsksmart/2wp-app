@@ -1,4 +1,5 @@
 import * as bitcoin from 'bitcoinjs-lib';
+// eslint-disable-next-line max-len
 import { NETWORKS, deriveChildPublicKey, networkData } from 'unchained-bitcoin';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -11,14 +12,14 @@ function deriveAddress(
   { purpose, pubkey, network }
     : {purpose: Purpose; pubkey: Buffer; network: string},
 ): string {
-  let address: string | undefined = '';
+  let address = '';
   switch (purpose) {
     case Purpose.P2PKH: {
       const { address: oneAddress } = bitcoin.payments.p2pkh({
         pubkey,
         network: networkData(network),
       });
-      address = oneAddress;
+      address = oneAddress ?? '';
       break;
     }
     case Purpose.P2SH: {
@@ -28,7 +29,7 @@ function deriveAddress(
           network: networkData(network),
         }),
       });
-      address = threeAddress;
+      address = threeAddress ?? '';
       break;
     }
     case Purpose.P2WPKH: {
@@ -36,24 +37,13 @@ function deriveAddress(
         pubkey,
         network: networkData(network),
       });
-      address = bc1Address;
+      address = bc1Address ?? '';
       break;
     }
     default:
       address = '';
   }
-  if (address) {
-    return address;
-  }
-  return '';
-}
-
-function getAccountFromExtPubKey(extPubKey: string) {
-  const rawAccountNumber = xpubLib.getExtPubKeyMetadata(extPubKey).index;
-  if (rawAccountNumber > 2147483647) {
-    return rawAccountNumber - 2147483648;
-  }
-  return rawAccountNumber;
+  return address;
 }
 
 function addressFromExtPubKey({
@@ -75,18 +65,15 @@ function addressFromExtPubKey({
     return undefined;
   }
   const changeNumber = change ? 1 : 0;
-  const partialPath = `m/${changeNumber}/${keyIndex}`;
+  const partialPath = xpubLib.partialKeyDerivationPath({ change: changeNumber, keyIndex });
   const convertedExtPubKey = xpubLib.convertToXPUB(extPubKey, network);
-  const fullPath = [
-    xpubLib.accountDerivationPath({
-      purpose,
-      accountNumber: getAccountFromExtPubKey(extPubKey),
-      network,
-      coinPrefix: 'm',
-    }),
-    changeNumber,
+  const fullPath = xpubLib.fullDerivationPath({
+    convertedExtPubKey,
+    purpose,
+    change: changeNumber,
     keyIndex,
-  ].join('/');
+    network,
+  });
   const childPubKey = deriveChildPublicKey(
     convertedExtPubKey,
     partialPath,
@@ -105,7 +92,6 @@ export const deriveBatchAddresses = (
   xpub: string, purpose: Purpose, startFrom: number, batchSize: number,
 ): Array<WalletAddress> => {
   const addresses: Array<WalletAddress> = [];
-  console.log(xpubLib.getExtPubKeyMetadata(xpub));
   for (let keyIndex = startFrom; keyIndex < startFrom + batchSize; keyIndex += 1) {
     const derivedAddress = addressFromExtPubKey({
       extPubKey: xpub,
