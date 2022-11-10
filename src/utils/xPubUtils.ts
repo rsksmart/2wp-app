@@ -14,29 +14,29 @@ function deriveAddress(
   let address: string | undefined = '';
   switch (purpose) {
     case Purpose.P2PKH: {
-      const { address: legacyAddress } = bitcoin.payments.p2pkh({
+      const { address: oneAddress } = bitcoin.payments.p2pkh({
         pubkey,
         network: networkData(network),
       });
-      address = legacyAddress;
+      address = oneAddress;
       break;
     }
     case Purpose.P2SH: {
-      const { address: segwitAddress } = bitcoin.payments.p2sh({
+      const { address: threeAddress } = bitcoin.payments.p2sh({
         redeem: bitcoin.payments.p2wpkh({
           pubkey,
           network: networkData(network),
         }),
       });
-      address = segwitAddress;
+      address = threeAddress;
       break;
     }
     case Purpose.P2WPKH: {
-      const { address: bech32Address } = bitcoin.payments.p2wpkh({
+      const { address: bc1Address } = bitcoin.payments.p2wpkh({
         pubkey,
         network: networkData(network),
       });
-      address = bech32Address;
+      address = bc1Address;
       break;
     }
     default:
@@ -105,6 +105,7 @@ export const deriveBatchAddresses = (
   xpub: string, purpose: Purpose, startFrom: number, batchSize: number,
 ): Array<WalletAddress> => {
   const addresses: Array<WalletAddress> = [];
+  console.log(xpubLib.getExtPubKeyMetadata(xpub));
   for (let keyIndex = startFrom; keyIndex < startFrom + batchSize; keyIndex += 1) {
     const derivedAddress = addressFromExtPubKey({
       extPubKey: xpub,
