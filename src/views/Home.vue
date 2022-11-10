@@ -40,24 +40,24 @@
               <v-col cols="4" class="d-flex justify-start pb-0">
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-col  v-bind="attrs" v-on="on" class="ma-0 pa-0" cols="auto">
-                      <v-btn class="wallet-button-disabled mb-0" outlined disabled>
+                    <v-col v-bind="attrs" v-on="on" class="ma-0 pa-0" cols="auto">
+                      <v-btn class="wallet-button mb-0" outlined>
                         <div>
                           <v-row class="mx-0 d-flex justify-center">
                             <v-col/>
                             <v-col class="pa-0 d-flex align-center">
-                              <v-img src="@/assets/exchange/rbtc-disable.png" height="40" contain/>
+                              <v-img src="@/assets/exchange/rbtc.png" height="40" contain/>
                             </v-col>
                             <v-col class="pa-0 d-flex align-center">
-                              <v-icon color="#B5CAB8">mdi-arrow-right</v-icon>
+                              <v-icon class="wallet-button-content">mdi-arrow-right</v-icon>
                             </v-col>
                             <v-col class="pa-0 d-flex align-center">
-                              <v-img src="@/assets/exchange/btc-disable.png" height="40" contain/>
+                              <v-img src="@/assets/exchange/btc.png" height="40" contain/>
                             </v-col>
                             <v-col/>
                           </v-row>
                           <v-row class="mx-0 d-flex justify-center">
-                        <span class="gray-greenish">
+                        <span class="wallet-button-content">
                           {{environmentContext.getRbtcTicker()}} to
                           {{environmentContext.getBtcTicker()}}
                         </span>
