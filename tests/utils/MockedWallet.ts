@@ -29,9 +29,17 @@ export default class MockedWallet extends WalletService {
     this.testCase.accountAddresses = walletAddresses;
   }
 
-  getAccountAddresses(): Promise<WalletAddress[]> {
-    return new Promise<WalletAddress[]>((resolve) => {
-      resolve(this.testCase.accountAddresses);
+  getAccountAddresses(batch: number, startFrom: number): Promise<WalletAddress[]> {
+    return new Promise<WalletAddress[]>((resolve, reject) => {
+      const walletAddresses: WalletAddress[] = [];
+      if (this.testCase.accountAddresses.length >= (startFrom + batch)) {
+        for (let index = startFrom; index < (startFrom + batch); index += 1) {
+          walletAddresses.push(this.testCase.accountAddresses[index]);
+        }
+        resolve(walletAddresses);
+      } else {
+        reject(new Error('Not enough WalletAddresses defined'));
+      }
     });
   }
 

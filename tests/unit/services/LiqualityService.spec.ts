@@ -1,3 +1,4 @@
+import { expect } from 'chai';
 import sinon from 'sinon';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import * as constants from '@/store/constants';
@@ -16,7 +17,8 @@ const initEnvironment = () => {
     vueAppCoin: constants.BTC_NETWORK_TESTNET,
     vueAppManifestAppUrl: '',
     vueAppManifestEmail: '',
-    vueAppWalletAddressPerCall: 5,
+    vueAppWalletMaxCallLiquality: 1,
+    vueAppWalletAddressesPerCallLiquality: 1,
   };
   EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
 };
@@ -28,15 +30,15 @@ describe('Liquality Service:', () => {
   beforeEach(initEnvironment);
   it('should create a LiqualityService instance', () => {
     const liqualityService = new LiqualityService();
-    expect(liqualityService).toBeInstanceOf(LiqualityService);
-    expect(liqualityService).toBeInstanceOf(WalletService);
+    expect(liqualityService).to.be.instanceOf(LiqualityService);
+    expect(liqualityService).to.be.instanceOf(WalletService);
   });
   it('should get the same number of requested addresses', () => {
     mockedBitcoinProvider = sinon.createStubInstance(MockedBtcProvider);
     enable = mockedBitcoinProvider.enable;
     checkApp = mockedBitcoinProvider.checkApp;
     request = mockedBitcoinProvider.request;
-    const batch = EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletAddressPerCall;
+    const batch = 2;
     const startFrom = 0;
     request.withArgs({
       method: LiqualityMethods.GET_ADDRESS,
@@ -70,19 +72,20 @@ describe('Liquality Service:', () => {
     sinon.stub(LiqualityService.prototype, 'enable' as any).returns(Promise.resolve({}));
     sinon.stub(LiqualityService.prototype, 'checkApp' as any).returns(Promise.resolve({}));
 
-    return liqualityService.getAccountAddresses()
-      .then(() => {
+    return liqualityService.getAccountAddresses(batch, startFrom)
+      .then((walletAddresses) => {
+        expect(walletAddresses.length).to.be.eql(batch * 2);
         // eslint-disable-next-line no-unused-expressions
-        expect(mockedBitcoinProvider.enable.notCalled).toBeTruthy();
+        expect(mockedBitcoinProvider.enable.notCalled).to.be.true;
         // eslint-disable-next-line no-unused-expressions
-        expect(request.calledTwice).toBeTruthy();
+        expect(request.calledTwice).to.be.true;
       });
   });
   it('should return exception when Liquality plugin is not installed', () => {
     mockedBitcoinProvider = sinon.createStubInstance(MockedBtcProvider);
     enable = mockedBitcoinProvider.enable;
     request = mockedBitcoinProvider.request;
-    const batch = EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletAddressPerCall;
+    const batch = 2;
     const startFrom = 0;
     request.withArgs({
       method: LiqualityMethods.GET_ADDRESS,
@@ -112,8 +115,8 @@ describe('Liquality Service:', () => {
       })));
     enable.resolves();
     const liqualityService = new LiqualityService(mockedBitcoinProvider);
-    return liqualityService.getAccountAddresses()
-      .then().catch((e) => expect(e.message).toEqual('Liquality software wallet not installed on your browser'));
+    return liqualityService.getAccountAddresses(batch, startFrom)
+      .then().catch((e) => expect(e.message).to.be.eql('Liquality software wallet is not installed on your browser'));
   });
   it('should return a wallet signed tx', () => {
     mockedBitcoinProvider = sinon.createStubInstance(MockedBtcProvider);
@@ -138,6 +141,6 @@ describe('Liquality Service:', () => {
       coin: constants.BTC_NETWORK_TESTNET,
       base64UnsignedPsbt: mockedData.unsignedPsbtTx,
     })
-      .then((signedTx) => expect(signedTx.signedTx).toEqual(mockedData.signedTx));
+      .then((signedTx) => expect(signedTx.signedTx).to.be.eql(mockedData.signedTx));
   });
 });

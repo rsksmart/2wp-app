@@ -1,12 +1,12 @@
 import {
-  BtcAccount,
-  LiqualityError,
-  LiqualityGetAddressesResponse,
-  LiqualityMethods, LiqualitySignedTx,
   LiqualityTx,
   WalletAddress,
+  LiqualityError,
+  LiqualityMethods,
+  LiqualitySignedTx,
   WindowBitcoinProvider,
   LiqualityGetNetworkResponse,
+  LiqualityGetAddressesResponse,
 } from '@/types';
 import * as bitcoin from 'bitcoinjs-lib';
 import { WalletService } from '@/services';
@@ -76,9 +76,9 @@ export default class LiqualityService extends WalletService {
             .forEach((liqualityAddress: LiqualityGetAddressesResponse) => {
               walletAddresses.push({
                 address: liqualityAddress.address,
-                derivationPath: liqualityAddress.derivationPath,
+                serializedPath: liqualityAddress.derivationPath,
                 publicKey: liqualityAddress.publicKey,
-                arrayPath: [0],
+                path: [0],
               });
             });
           resolve(true);
@@ -98,20 +98,19 @@ export default class LiqualityService extends WalletService {
     });
   }
 
-  getAccountAddresses(): Promise<WalletAddress[]> {
+  getAccountAddresses(batch: number, index: number): Promise<WalletAddress[]> {
     return new Promise<WalletAddress[]>((resolve, reject) => {
       const walletAddresses: WalletAddress[] = [];
-      const { lastIndex, count } = this.addressesToFetch.nativeSegwit;
       this.enable()
         .then(() => this.checkApp())
         .then(() => Promise.all([
           this.bitcoinProvider.request({
             method: LiqualityMethods.GET_ADDRESS,
-            params: [lastIndex, count, true],
+            params: [index, batch, true],
           }),
           this.bitcoinProvider.request({
             method: LiqualityMethods.GET_ADDRESS,
-            params: [lastIndex, count, false],
+            params: [index, batch, false],
           }),
         ]))
         .then(([changeAddreses, noChangeAddresses]) => {
@@ -120,9 +119,9 @@ export default class LiqualityService extends WalletService {
             .forEach((liqualityAddress: LiqualityGetAddressesResponse) => {
               walletAddresses.push({
                 address: liqualityAddress.address,
-                derivationPath: liqualityAddress.derivationPath,
+                serializedPath: liqualityAddress.derivationPath,
                 publicKey: liqualityAddress.publicKey,
-                arrayPath: [0],
+                path: [0],
               });
             });
           resolve(walletAddresses);
@@ -170,6 +169,17 @@ export default class LiqualityService extends WalletService {
     });
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  public getWalletAddressesPerCall(): number {
+    return EnvironmentAccessorService
+      .getEnvironmentVariables().vueAppWalletAddressesPerCallLiquality;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  public getWalletMaxCall(): number {
+    return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletMaxCallLiquality;
+  }
+
   sign(tx: LiqualityTx): Promise<LiqualitySignedTx> {
     const liqualityTx = tx as LiqualityTx;
     return new Promise<LiqualitySignedTx>((resolve, reject) => {
@@ -192,10 +202,5 @@ export default class LiqualityService extends WalletService {
         })
         .catch(reject);
     });
-  }
-
-  // eslint-disable-next-line class-methods-use-this,@typescript-eslint/no-unused-vars
-  getXpub(accountType: BtcAccount, accountNumber: number): Promise<string> {
-    return Promise.reject(new Error('Liquality does not provide the xpub value yet'));
   }
 }
