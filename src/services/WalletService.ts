@@ -319,18 +319,16 @@ export default abstract class WalletService {
     this.addressesToFetch = {
       legacy: {
         lastIndex: legacy.lastIndex + legacy.count,
-        count: unusedLegacy > maxUnusedAddresses
-          ? 0 : Math.min(this.maxAddressPerCall, maxUnusedAddresses - unusedLegacy),
+        count: unusedLegacy > maxUnusedAddresses ? 0 : maxUnusedAddresses - unusedLegacy,
       },
       segwit: {
         lastIndex: segwit.lastIndex + segwit.count,
-        count: unusedSegwit > maxUnusedAddresses
-          ? 0 : Math.min(this.maxAddressPerCall, maxUnusedAddresses - unusedSegwit),
+        count: unusedSegwit > maxUnusedAddresses ? 0 : maxUnusedAddresses - unusedSegwit,
       },
       nativeSegwit: {
         lastIndex: nativeSegwit.lastIndex + nativeSegwit.count,
         count: unusedNativeSegwit > maxUnusedAddresses
-          ? 0 : Math.min(this.maxAddressPerCall, maxUnusedAddresses - unusedNativeSegwit),
+          ? 0 : maxUnusedAddresses - unusedNativeSegwit,
       },
     };
   }
