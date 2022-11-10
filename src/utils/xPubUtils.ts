@@ -1,38 +1,22 @@
 import * as bitcoin from 'bitcoinjs-lib';
+import { NETWORKS, deriveChildPublicKey, networkData } from 'unchained-bitcoin';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import * as xpubLib from '@swan-bitcoin/xpub-lib';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import * as ecc from 'tiny-secp256k1';
-import BIP32Factory from 'bip32';
 import { Purpose, WalletAddress } from '@/types';
 import * as constants from '@/store/constants';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
-const bip32 = BIP32Factory(ecc);
-
-// eslint-disable-next-line no-shadow
-enum NETWORKS {
-  MAINNET = 'mainnet',
-  TESTNET = 'testnet',
-}
-
-function bitcoinJsNetwork(network: NETWORKS): bitcoin.networks.Network {
-  return network === NETWORKS.MAINNET
-    ? bitcoin.networks.bitcoin : bitcoin.networks.testnet;
-}
-
 function deriveAddress(
   { purpose, pubkey, network }
-    : {purpose: Purpose; pubkey: Buffer; network: NETWORKS},
+    : {purpose: Purpose; pubkey: Buffer; network: string},
 ): string {
   let address: string | undefined = '';
   switch (purpose) {
     case Purpose.P2PKH: {
       const { address: legacyAddress } = bitcoin.payments.p2pkh({
         pubkey,
-        network: bitcoinJsNetwork(network),
+        network: networkData(network),
       });
       address = legacyAddress;
       break;
@@ -41,7 +25,7 @@ function deriveAddress(
       const { address: segwitAddress } = bitcoin.payments.p2sh({
         redeem: bitcoin.payments.p2wpkh({
           pubkey,
-          network: bitcoinJsNetwork(network),
+          network: networkData(network),
         }),
       });
       address = segwitAddress;
@@ -50,7 +34,7 @@ function deriveAddress(
     case Purpose.P2WPKH: {
       const { address: bech32Address } = bitcoin.payments.p2wpkh({
         pubkey,
-        network: bitcoinJsNetwork(network),
+        network: networkData(network),
       });
       address = bech32Address;
       break;
@@ -70,21 +54,6 @@ function getAccountFromExtPubKey(extPubKey: string) {
     return rawAccountNumber - 2147483648;
   }
   return rawAccountNumber;
-}
-
-export function toHexString(byteArray: Buffer) {
-  // eslint-disable-next-line no-bitwise
-  return Array.prototype.map.call(byteArray, (byte) => (`0${(byte & 0xFF).toString(16)}`).slice(-2)).join('');
-}
-
-function deriveChildPublicKey(extendedPublicKey: string, bip32Path: string, network: NETWORKS)
-  : string {
-  if (bip32Path.slice(0, 2) === 'm/') {
-    return deriveChildPublicKey(extendedPublicKey, bip32Path.slice(2), network);
-  }
-  const node = bip32.fromBase58(extendedPublicKey, bitcoinJsNetwork(network));
-  const child = node.derivePath(bip32Path);
-  return toHexString(child.publicKey);
 }
 
 function addressFromExtPubKey({
