@@ -15,10 +15,10 @@ export type MiningSpeedFee = 'BITCOIN_SLOW_FEE_LEVEL' |
 
 export interface WalletAddress {
   address: string;
-  derivationPath: string;
-  arrayPath?: number[];
+  serializedPath: string;
+  path: number[];
   unused?: boolean;
-  publicKey: string;
+  publicKey?: string;
 }
 
 export interface PeginConfiguration {
