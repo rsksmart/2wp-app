@@ -147,7 +147,6 @@ export default abstract class WalletService {
     };
     this.loadingBalances = true;
     const maxAddressPerCall: number = this.getWalletAddressesPerCall();
-    let addresses: Array<WalletAddress> = [];
     try {
       const connected = await this.isConnected();
 
@@ -212,7 +211,7 @@ export default abstract class WalletService {
       throw error;
     } finally {
       this.loadingBalances = false;
-      this.informSubscribers(balanceAccumulated, addresses);
+      this.informSubscribers(balanceAccumulated, []);
     }
   }
 
