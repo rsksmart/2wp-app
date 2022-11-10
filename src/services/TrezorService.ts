@@ -185,10 +185,4 @@ export default class TrezorService extends WalletService {
   getXpub(accountType: string, accountNumber: number): Promise<string> {
     throw new Error('Method not implemented.');
   }
-
-  areEnoughUnusedAddresses(): boolean {
-    return (this.adjacentUnusedAddresses.legacy >= constants.MAX_ADJACENT_UNUSED_ADDRESSES
-      && this.adjacentUnusedAddresses.segwit >= constants.MAX_ADJACENT_UNUSED_ADDRESSES
-      && this.adjacentUnusedAddresses.nativeSegwit >= constants.MAX_ADJACENT_UNUSED_ADDRESSES);
-  }
 }

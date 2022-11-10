@@ -31,7 +31,7 @@ export default abstract class WalletService {
     nativeSegwit: new SatoshiBig(0, 'satoshi'),
   };
 
-  protected adjacentUnusedAddresses: {
+  private adjacentUnusedAddresses: {
     legacy: number;
     segwit: number;
     nativeSegwit: number;
@@ -73,8 +73,6 @@ export default abstract class WalletService {
   abstract reconnect(): Promise<void>;
 
   abstract getXpub(accountType: BtcAccount, accountNumber: number): Promise<string>;
-
-  abstract areEnoughUnusedAddresses(): boolean;
 
   get isLoadingBalances(): boolean {
     return this.loadingBalances;
@@ -176,7 +174,6 @@ export default abstract class WalletService {
     };
     const maxAddressesHardStop = EnvironmentAccessorService
       .getEnvironmentVariables().vueAppWalletAddressHardStop;
-    this.setAddressesToFetch();
     try {
       while (this.hasSubscribers() && !this.areEnoughUnusedAddresses()) {
         // eslint-disable-next-line no-await-in-loop
@@ -303,6 +300,12 @@ export default abstract class WalletService {
       default:
         return [];
     }
+  }
+
+  private areEnoughUnusedAddresses(): boolean {
+    return (this.adjacentUnusedAddresses.legacy >= constants.MAX_ADJACENT_UNUSED_ADDRESSES
+      && this.adjacentUnusedAddresses.segwit >= constants.MAX_ADJACENT_UNUSED_ADDRESSES
+      && this.adjacentUnusedAddresses.nativeSegwit >= constants.MAX_ADJACENT_UNUSED_ADDRESSES);
   }
 
   private setAddressesToFetch(): void {
