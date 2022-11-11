@@ -176,7 +176,6 @@ export default abstract class WalletService {
     };
     const maxAddressesHardStop = EnvironmentAccessorService
       .getEnvironmentVariables().vueAppWalletAddressHardStop;
-    this.setAddressesToFetch();
     try {
       while (this.hasSubscribers() && !this.areEnoughUnusedAddresses()) {
         // eslint-disable-next-line no-await-in-loop
