@@ -25,7 +25,7 @@
               :disabled="isLiquality"
               @change="accountChanged"/>
             <p class="label-liquality" v-if="isLiquality">
-              {{ btcAccountTypeSelected }}
+              {{ accountBalances[2].text }}
             <p/>
           </v-col>
           <v-col v-if="!isLiquality" cols="1" class="pb-0 pt-5">
@@ -175,7 +175,6 @@ export default class PegInAccountSelect extends Vue {
     ];
 
     if (this.pegInTxState.bitcoinWallet === constants.WALLET_LIQUALITY) {
-      this.btcAccountTypeSelected = this.accountBalances[2].text;
       this.accountChanged(constants.BITCOIN_NATIVE_SEGWIT_ADDRESS);
       this.isLiquality = true;
     }
