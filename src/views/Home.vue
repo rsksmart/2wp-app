@@ -16,10 +16,10 @@
             {{environmentContext.getRbtcTicker()}}</h2>
           </v-row>
           <template>
-            <v-row class="mx-0 mt-10 d-flex justify-center">
+            <v-row class="mx-0 mt-10 d-flex justify-center" id="token-conversion">
               <p>Select your token conversion</p>
             </v-row>
-            <v-row justify="center" class="ma-0">
+            <v-row justify="center" class="ma-0" id="exchange">
               <v-col cols="4" class="d-flex justify-end pb-0">
                 <v-btn @click="selectPegIn" :disabled="!isAllowedBrowser" outlined
                        v-bind:class="[ this.btnWalletClass, btcToRbtc ? 'selected' : '' ]">
@@ -75,7 +75,7 @@
             <v-row class="mx-0 mt-10 d-flex justify-center">
               <p>Or check the status of your transaction</p>
             </v-row>
-                        <v-row class="d-flex justify-center pt-4">
+            <v-row class="d-flex justify-center pt-4" id="status">
               <v-btn @click="toPegInStatus" outlined
                      v-bind:class="[ this.btnWalletClass, STATUS ? 'selected' : '' ]"
                      :disabled="!isAllowedBrowser">
@@ -118,7 +118,6 @@ import SelectBitcoinWallet from '@/components/exchange/SelectBitcoinWallet.vue';
 import * as constants from '@/store/constants';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import { isAllowedCurrentBrowser } from '@/services/utils';
-import LiqualityService from '@/services/LiqualityService';
 import {
   SessionState, TransactionType, PegInTxState, WalletAddress,
 } from '@/types';
@@ -138,8 +137,6 @@ export default class Home extends Vue {
   isAllowedBrowser = isAllowedCurrentBrowser();
 
   addresses: WalletAddress[] = [];
-
-  liqualityService: LiqualityService = new LiqualityService();
 
   @State('pegInTx') peginTxState!: PegInTxState;
 

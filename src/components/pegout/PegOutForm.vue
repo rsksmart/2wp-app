@@ -1,6 +1,10 @@
 <template>
 <v-container fluid class="exchange-form normalized-height container
   max-width mx-6 mt-6">
+  <v-container>
+    <v-tour name="pegOutTour" :steps="tourSteps">
+    </v-tour>
+  </v-container>
   <v-col class="px-0">
     <v-row class="mx-0">
         <v-col cols="1" class="pa-0 d-flex align-center">
@@ -160,6 +164,66 @@ export default class PegOutForm extends Vue {
 
   isReadyToSign = false;
 
+  tourSteps = [
+    {
+      target: '#wallet-connection',
+      content: 'Click to select the rsk wallet where your rbtc are stored',
+      params: {
+        highlight: true,
+        isFirst: true,
+      },
+    },
+    {
+      target: '#amount-field',
+      content: 'Input the required amount!',
+      params: {
+        highlight: true,
+        isFirst: false,
+        isLast: false,
+      },
+    },
+    {
+      target: '#max-btn',
+      content: 'You can check the status of a previous transaction in the PowPeg!',
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#summary-sender-address',
+      content: 'You can check the status of a previous transaction in the PowPeg!',
+      params: {
+        highlight: true,
+        isLast: true,
+      },
+    },
+    {
+      target: '#summary-amount',
+      content: 'You can check the status of a previous transaction in the PowPeg!',
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#summary-tx-fee',
+      content: 'You can check the status of a previous transaction in the PowPeg!',
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#summary-btc-destination',
+      content: 'You can check the status of a previous transaction in the PowPeg!',
+      params: {
+        highlight: true,
+        isLast: true,
+      },
+    },
+  ];
+
   @State('web3Session') session !: SessionState;
 
   @State('pegOutTx') pegOutTxState !: PegOutTxState;
@@ -235,6 +299,10 @@ export default class PegOutForm extends Vue {
   @Emit('changePage')
   changePage() {
     return this.nextPage;
+  }
+
+  mounted() {
+    this.$tours.pegOutTour.start();
   }
 }
 </script>
