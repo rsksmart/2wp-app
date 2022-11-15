@@ -41,7 +41,7 @@
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
                     <v-col v-bind="attrs" v-on="on" class="ma-0 pa-0" cols="auto">
-                      <v-btn class="wallet-button mb-0" outlined>
+                      <v-btn @click="selectPegOut" class="wallet-button mb-0" outlined>
                         <div>
                           <v-row class="mx-0 d-flex justify-center">
                             <v-col/>
@@ -161,6 +161,11 @@ export default class Home extends Vue {
   selectPegIn(): void {
     this.addPeg(constants.PEG_IN_TRANSACTION_TYPE);
     this.$router.push({ name: 'PegIn' });
+  }
+
+  @Emit()
+  selectPegOut(): void {
+    this.$router.push({ name: 'PegOut' });
   }
 
   @Emit()
