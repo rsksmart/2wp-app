@@ -30,6 +30,11 @@ const routes: Array<RouteConfig> = [
     component: () => import(/* webpackChunkName: "transactions" */ '../views/PegIn.vue'),
   },
   {
+    path: '/pegout',
+    name: 'PegOut',
+    component: () => import(/* webpackChunkName: "transactions" */ '../views/PegOut.vue'),
+  },
+  {
     path: '/pegin/:wallet/create',
     name: 'Create',
     component: () => import(/* webpackChunkName: "transactions" */ '../views/Create.vue'),
