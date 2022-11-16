@@ -131,14 +131,16 @@ export default class ConnectDevice extends Vue {
   }
 
   beforeMount() {
-    if (this.walletName === 'Liquality' && !this.showDialog) {
+    if ((this.peginTxState.bitcoinWallet === constants.WALLET_LIQUALITY
+          || this.peginTxState.bitcoinWallet === constants.WALLET_LEDGER) && !this.showDialog) {
       this.tryConnectLiquality();
     }
   }
 
   @Watch('showDialog')
   tryConnectLiquality() {
-    if (this.walletName === 'Liquality' && !this.showDialog) {
+    if ((this.peginTxState.bitcoinWallet === constants.WALLET_LIQUALITY
+         || this.peginTxState.bitcoinWallet === constants.WALLET_LEDGER) && !this.showDialog) {
       this.continueToForm();
     }
   }
