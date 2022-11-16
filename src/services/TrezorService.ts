@@ -103,8 +103,7 @@ export default class TrezorService extends WalletService {
     return bundle;
   }
 
-  public getAccountAddresses():
-    Promise<WalletAddress[]> {
+  public getAccountAddresses(): Promise<WalletAddress[]> {
     return new Promise((resolve, reject) => {
       const bundle = this.getAddressesBundle();
       TrezorConnect.getAddress({
