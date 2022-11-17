@@ -1,22 +1,20 @@
-import * as trezorConnectModule from 'trezor-connect';
-// import MockedTrezorConnect from '../utils/MockedTrezorConnect';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import * as constants from '@/store/constants';
-import TrezorConnect, { BundledResponse, Address, Success, GetAddress } from 'trezor-connect';
+import TrezorConnect, {
+  BundledResponse, Address, Success,
+} from 'trezor-connect';
 import TrezorService from '@/services/TrezorService';
 import sinon from 'sinon';
 import { WalletService } from '../../../src/services';
 import { TrezorServiceMockedData } from '../../utils/TrezorServiceMockedData';
-import getAddress = TrezorConnect.getAddress;
-import { forEach } from 'lodash';
 
 const initEnvironment = () => {
   const defaultEnvironmentVariables = {
     vueAppCoin: constants.BTC_NETWORK_TESTNET,
     vueAppManifestAppUrl: '',
     vueAppManifestEmail: '',
-    vueAppWalletMaxCallTrezor: 1,
-    vueAppWalletAddressesPerCallTrezor: 1,
+    vueAppWalletAddressHardStop: 100,
+    vueAppWalletAddressPerCall: 20,
   };
   EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
 };
