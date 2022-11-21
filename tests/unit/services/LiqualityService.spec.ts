@@ -17,6 +17,7 @@ const initEnvironment = () => {
     vueAppManifestAppUrl: '',
     vueAppManifestEmail: '',
     vueAppWalletAddressPerCall: 5,
+    vueAppWalletAddressHardStop: 100,
   };
   EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
 };
@@ -31,7 +32,7 @@ describe('Liquality Service:', () => {
     expect(liqualityService).toBeInstanceOf(LiqualityService);
     expect(liqualityService).toBeInstanceOf(WalletService);
   });
-  it('should get the same number of requested addresses', () => {
+  it('should get the number of requested addresses based on env variables set', () => {
     mockedBitcoinProvider = sinon.createStubInstance(MockedBtcProvider);
     enable = mockedBitcoinProvider.enable;
     checkApp = mockedBitcoinProvider.checkApp;
@@ -41,7 +42,7 @@ describe('Liquality Service:', () => {
     request.withArgs({
       method: LiqualityMethods.GET_ADDRESS,
       params: [startFrom, batch, true],
-    }).resolves(mockedData.addressList
+    }).resolves(mockedData.liquality.addressList
       .filter((addressItem) => addressItem.serializedPath
         .split('/')[4] === '1')
       .slice(startFrom, startFrom + batch)
@@ -54,7 +55,7 @@ describe('Liquality Service:', () => {
     request.withArgs({
       method: LiqualityMethods.GET_ADDRESS,
       params: [startFrom, batch, false],
-    }).resolves(mockedData.addressList
+    }).resolves(mockedData.liquality.addressList
       .filter((addressItem) => addressItem.serializedPath
         .split('/')[4] === '0')
       .slice(startFrom, startFrom + batch)
@@ -71,7 +72,8 @@ describe('Liquality Service:', () => {
     sinon.stub(LiqualityService.prototype, 'checkApp' as any).returns(Promise.resolve({}));
 
     return liqualityService.getAccountAddresses()
-      .then(() => {
+      .then((addresess) => {
+        expect(addresess.length).toEqual(10);
         // eslint-disable-next-line no-unused-expressions
         expect(mockedBitcoinProvider.enable.notCalled).toBeTruthy();
         // eslint-disable-next-line no-unused-expressions
@@ -87,7 +89,7 @@ describe('Liquality Service:', () => {
     request.withArgs({
       method: LiqualityMethods.GET_ADDRESS,
       params: [startFrom, batch, true],
-    }).resolves(mockedData.addressList
+    }).resolves(mockedData.liquality.addressList
       .filter((addressItem) => addressItem.serializedPath
         .split('/')[4] === '1')
       .slice(startFrom, startFrom + batch)
@@ -100,7 +102,7 @@ describe('Liquality Service:', () => {
     request.withArgs({
       method: LiqualityMethods.GET_ADDRESS,
       params: [startFrom, batch, false],
-    }).resolves(mockedData.addressList
+    }).resolves(mockedData.liquality.addressList
       .filter((addressItem) => addressItem.serializedPath
         .split('/')[4] === '0')
       .slice(startFrom, startFrom + batch)
@@ -119,25 +121,25 @@ describe('Liquality Service:', () => {
     mockedBitcoinProvider = sinon.createStubInstance(MockedBtcProvider);
     enable = mockedBitcoinProvider.enable;
     request = mockedBitcoinProvider.request;
-    const inputs = mockedData.inputs.map((input) => ({
+    const inputs = mockedData.liquality.inputs.map((input) => ({
       index: input.prevIndex,
       derivationPath: input.derivationPath,
     }));
     request.withArgs({
       method: LiqualityMethods.SIGN_PSBT,
       params: [
-        mockedData.unsignedPsbtTx,
+        mockedData.liquality.unsignedPsbtTx,
         inputs,
       ],
-    }).resolves(mockedData.signedPsbtTx);
+    }).resolves(mockedData.liquality.signedPsbtTx);
     enable.resolves();
     const liqualityService = new LiqualityService(mockedBitcoinProvider);
     return liqualityService.sign({
       inputs,
       outputs: [],
       coin: constants.BTC_NETWORK_TESTNET,
-      base64UnsignedPsbt: mockedData.unsignedPsbtTx,
+      base64UnsignedPsbt: mockedData.liquality.unsignedPsbtTx,
     })
-      .then((signedTx) => expect(signedTx.signedTx).toEqual(mockedData.signedTx));
+      .then((signedTx) => expect(signedTx.signedTx).toEqual(mockedData.liquality.signedTx));
   });
 });
