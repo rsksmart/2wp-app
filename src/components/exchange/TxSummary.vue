@@ -33,13 +33,14 @@
                                   <span class="status-subtitle mr-1">Sender</span>
                                   <v-tooltip right>
                                       <template v-slot:activator="{ on, attrs }">
-                                          <v-icon small color="teal darken-2" v-bind="attrs" v-on="on">
+                                          <v-icon small color="teal darken-2"
+                                          v-bind="attrs" v-on="on">
                                           mdi-information
                                           </v-icon>
                                       </template>
                                       <p class="tooltip-form mb-0">
                                           Rejected transactions will be refunded to this
-                                          {{environmentContext.getBtcText()}} address.
+                                           {{environmentContext.getBtcText()}} address.
                                       </p>
                                   </v-tooltip>
                               </v-row>
@@ -54,10 +55,14 @@
                               </v-row>
                               <v-container class="form-field">
                                   <v-row class="mx-0 mb-2">
-                                    <span id="amount">{{ amount }} {{environmentContext.getBtcTicker()}}</span>
+                                    <span id="amount">
+                                      {{ amount }} {{environmentContext.getBtcTicker()}}
+                                    </span>
                                   </v-row>
                                   <v-row class="mx-0">
-                                    <span class="grayish" id="amount-usd"> USD $ {{ amountUSD }}</span>
+                                    <span class="grayish" id="amount-usd">
+                                      USD $ {{ amountUSD }}
+                                    </span>
                                   </v-row>
                               </v-container>
                           </v-col>
@@ -68,22 +73,26 @@
                                     <span class="status-subtitle mr-1">PowPeg Address</span>
                                     <v-tooltip right>
                                         <template v-slot:activator="{ on, attrs }">
-                                          <v-icon small color="teal darken-2" v-bind="attrs" v-on="on">
+                                          <v-icon small color="teal darken-2"
+                                          v-bind="attrs" v-on="on">
                                               mdi-information
                                           </v-icon>
                                         </template>
                                         <p class="tooltip-form mb-0">
                                         This is the {{environmentContext.getBtcText()}}
-                                        address where your {{environmentContext.getBtcTicker()}}s
+                                         address where your {{environmentContext.getBtcTicker()}}s
                                         are sent for conversion.
                                         </p>
                                         <p class="tooltip-form mb-0">
-                                        Validate this in your device before confirming the transaction.
+                                        Validate this in your device before
+                                         confirming the transaction.
                                         </p>
                                     </v-tooltip>
                                   </v-row>
                                   <v-row class="form-field mx-0">
-                                      <span class="status-text-ellipsis">{{ rskFederationAddress }}</span>
+                                      <span class="status-text-ellipsis">
+                                        {{ rskFederationAddress }}
+                                      </span>
                                   </v-row>
                               </v-container>
                           </template>
@@ -98,7 +107,6 @@
                                   </v-row>
                               </v-container>
                           </template>
-
                       </v-col>
                   </v-row>
               </v-col>
@@ -120,12 +128,14 @@
 
                                   <v-tooltip right>
                                       <template v-slot:activator="{ on, attrs }">
-                                          <v-icon small color="teal darken-2" v-bind="attrs" v-on="on">
+                                          <v-icon small color="teal darken-2"
+                                          v-bind="attrs" v-on="on">
                                           mdi-information
                                           </v-icon>
                                       </template>
                                       <p class="tooltip-form mb-0">
-                                          This is the {{environmentContext.getRskText()}} address where the
+                                          This is the {{environmentContext.getRskText()}}
+                                           address where the
                                           {{environmentContext.getRbtcTicker()}} will be delivered.
                                       </p>
                                   </v-tooltip>
@@ -172,10 +182,14 @@
                               </v-row>
                               <v-container class="form-field">
                                   <v-row class="mx-0 mb-2">
-                                    <span>{{ feePlusAmount }} {{environmentContext.getBtcTicker()}}</span>
+                                    <span>
+                                      {{ feePlusAmount }} {{environmentContext.getBtcTicker()}}
+                                    </span>
                                   </v-row>
                                   <v-row class="mx-0">
-                                      <span class="grayish" id="total-usd">USD $ {{ feePlusAmountUSD }}</span>
+                                      <span class="grayish" id="total-usd">
+                                        USD $ {{ feePlusAmountUSD }}
+                                      </span>
                                   </v-row>
                               </v-container>
                           </v-col>
@@ -183,7 +197,7 @@
                   </v-row>
               </v-col>
           </v-row>
-        </div>       
+        </div>
       </v-expand-transition>
     </v-col>
   </v-row>
