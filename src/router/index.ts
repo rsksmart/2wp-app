@@ -44,11 +44,6 @@ const routes: Array<RouteConfig> = [
     name: 'Success',
     component: () => import(/* webpackChunkName: "transactions" */ '../views/Success.vue'),
   },
-  {
-    path: '/summary',
-    name: 'summary',
-    component: () => import(/* webpackChunkName: "transactions" */ '../views/Summary.vue'),
-  },
 ];
 
 const router = new VueRouter({
