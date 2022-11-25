@@ -38,36 +38,31 @@
                 </v-btn>
               </v-col>
               <v-col cols="4" class="d-flex justify-start pb-0">
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-col v-bind="attrs" v-on="on" class="ma-0 pa-0" cols="auto">
-                      <v-btn @click="selectPegOut" class="wallet-button mb-0" outlined>
-                        <div>
-                          <v-row class="mx-0 d-flex justify-center">
-                            <v-col/>
-                            <v-col class="pa-0 d-flex align-center">
-                              <v-img src="@/assets/exchange/rbtc.png" height="40" contain/>
-                            </v-col>
-                            <v-col class="pa-0 d-flex align-center">
-                              <v-icon class="wallet-button-content">mdi-arrow-right</v-icon>
-                            </v-col>
-                            <v-col class="pa-0 d-flex align-center">
-                              <v-img src="@/assets/exchange/btc.png" height="40" contain/>
-                            </v-col>
-                            <v-col/>
-                          </v-row>
-                          <v-row class="mx-0 d-flex justify-center">
+                <v-col class="ma-0 pa-0" cols="auto">
+                  <v-btn @click="selectPegOut" class="wallet-button mb-0" outlined>
+                    <div>
+                      <v-row class="mx-0 d-flex justify-center">
+                        <v-col/>
+                        <v-col class="pa-0 d-flex align-center">
+                          <v-img src="@/assets/exchange/rbtc.png" height="40" contain/>
+                        </v-col>
+                        <v-col class="pa-0 d-flex align-center">
+                          <v-icon class="wallet-button-content">mdi-arrow-right</v-icon>
+                        </v-col>
+                        <v-col class="pa-0 d-flex align-center">
+                          <v-img src="@/assets/exchange/btc.png" height="40" contain/>
+                        </v-col>
+                        <v-col/>
+                      </v-row>
+                      <v-row class="mx-0 d-flex justify-center">
                         <span class="wallet-button-content">
                           {{environmentContext.getRbtcTicker()}} to
                           {{environmentContext.getBtcTicker()}}
                         </span>
-                          </v-row>
-                        </div>
-                      </v-btn>
-                    </v-col>
-                  </template>
-                  <span>Coming soon</span>
-                </v-tooltip>
+                      </v-row>
+                    </div>
+                  </v-btn>
+                </v-col>
               </v-col>
             </v-row>
             <v-row class="mx-0 mt-10 d-flex justify-center">
