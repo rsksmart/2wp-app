@@ -19,142 +19,171 @@
       <v-expand-transition>
         <div class="box" v-show="expanded">
           <v-row class="mx-0 py-2">
-            <v-col cols="4 py-0 ">
-              <v-row class="mx-0">
-                <v-col>
-                  <v-col class="mb-2">
-                    <v-row class="mx-0">
-                      <h3>{{environmentContext.getBtcText()}}s</h3>
-                    </v-row>
-                    <v-row class="mx-0">
-                      <span>{{ amount }} {{environmentContext.getBtcTicker()}}</span>
-                    </v-row>
-                    <v-row class="mx-0">
-                      <span class="grayish" id="amount-usd"> USD $ {{ amountUSD }}</span>
-                    </v-row>
-                  </v-col>
-                  <v-col class="mb-2">
-                    <v-row class="mx-0">
-                      <h3>Transaction fee</h3>
-                    </v-row>
-                    <v-row class="mx-0">
-                      <span>{{ fee }} {{environmentContext.getBtcTicker()}}</span>
-                    </v-row>
-                    <v-row class="mx-0">
-                      <span class="grayish" id="fee-usd">USD $ {{ feeUSD }}</span>
-                    </v-row>
-                  </v-col>
-                  <v-col>
-                    <v-row class="mx-0">
-                      <h3>Transaction total</h3>
-                    </v-row>
-                    <v-row class="mx-0">
-                      <span>{{ feePlusAmount }} {{environmentContext.getBtcTicker()}}</span>
-                    </v-row>
-                    <v-row class="mx-0">
-                      <span class="grayish" id="total-usd">USD $ {{ feePlusAmountUSD }}</span>
-                    </v-row>
-                  </v-col>
-                </v-col>
-              </v-row>
-            </v-col>
-            <v-divider inset vertical/>
-            <v-col cols="8" class="px-0 pl-lg-4 pt-0 pb-0">
-              <v-container class="pr-md-0">
-                <v-row class="mx-0" align="start">
-                  <h3 class="mr-1">Destination {{environmentContext.getRskText()}} address</h3>
-                  <v-tooltip right>
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-icon small color="teal darken-2" v-bind="attrs" v-on="on">
-                        mdi-information
-                      </v-icon>
-                    </template>
-                    <p class="tooltip-form mb-0">
-                      This is the {{environmentContext.getRskText()}} address where the
-                      {{environmentContext.getRbtcTicker()}} will be delivered.
-                    </p>
-                  </v-tooltip>
-                </v-row>
-                <v-row class="mx-0">
-                  <v-col cols="auto"
-                         class="d-flex flex-column justify-end ma-0 pa-0">
-                    <span class="breakable-address">
-                      {{
-                        peginTxState.rskAddressSelected !== '0x'
-                        ?
-                        peginTxState.rskAddressSelected
-                        :
-                        VALUE_INCOMPLETE_MESSAGE
-                      }}</span>
-                  </v-col>
-                  <v-col cols="auto"
-                         class="d-flex flex-column justify-end ma-0 pa-0 ml-lg-1">
-                    <v-btn @click="toRskExplorer" icon color="#C4C4C4" x-small>
-                      <v-icon>mdi-open-in-new</v-icon>
-                    </v-btn>
-                  </v-col>
-                </v-row>
-              </v-container>
-              <v-divider/>
-              <v-container v-if="!!computedRefundAddress">
-                <v-row class="mx-0" align="start">
-                  <h3 class="mr-1">Refund {{environmentContext.getBtcText()}} address</h3>
-                  <v-tooltip right>
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-icon small color="teal darken-2" v-bind="attrs" v-on="on">
-                        mdi-information
-                      </v-icon>
-                    </template>
-                    <p class="tooltip-form mb-0">
-                      Rejected transactions will be refunded to this
-                      {{environmentContext.getBtcText()}} address.
-                    </p>
-                  </v-tooltip>
-                </v-row>
-                <v-row class="mx-0">
-                  <span class="breakable-address">{{ computedRefundAddress }}</span>
-                </v-row>
-              </v-container>
-              <template v-if="showTxId">
-                <v-divider/>
-                <div class="container">
+              <v-col cols="6 px-0">
+                  <v-row>
+                      <v-container>
+                          <span class="status-title">Bitcoin</span>
+                      </v-container>
+                  </v-row>
+
                   <v-row class="mx-0">
-                    <h3>{{environmentContext.getBtcText()}} transaction id</h3>
+                      <v-col>
+                          <v-col v-if="!!computedRefundAddress">
+                              <v-row class="mx-0">
+                                  <span class="status-subtitle mr-1">Sender</span>
+                                  <v-tooltip right>
+                                      <template v-slot:activator="{ on, attrs }">
+                                          <v-icon small color="teal darken-2" v-bind="attrs" v-on="on">
+                                          mdi-information
+                                          </v-icon>
+                                      </template>
+                                      <p class="tooltip-form mb-0">
+                                          Rejected transactions will be refunded to this
+                                          {{environmentContext.getBtcText()}} address.
+                                      </p>
+                                  </v-tooltip>
+                              </v-row>
+                              <v-row class="form-field mx-0">
+                                  <span class="breakable-address">{{ computedRefundAddress }}</span>
+                              </v-row>
+                          </v-col>
+
+                          <v-col>
+                              <v-row class="mx-0">
+                                  <span class="status-subtitle">Sent</span>
+                              </v-row>
+                              <v-container class="form-field">
+                                  <v-row class="mx-0 mb-2">
+                                    <span id="amount">{{ amount }} {{environmentContext.getBtcTicker()}}</span>
+                                  </v-row>
+                                  <v-row class="mx-0">
+                                    <span class="grayish" id="amount-usd"> USD $ {{ amountUSD }}</span>
+                                  </v-row>
+                              </v-container>
+                          </v-col>
+
+                          <template>
+                              <v-container>
+                                  <v-row class="mx-0" align="start">
+                                    <span class="status-subtitle mr-1">PowPeg Address</span>
+                                    <v-tooltip right>
+                                        <template v-slot:activator="{ on, attrs }">
+                                          <v-icon small color="teal darken-2" v-bind="attrs" v-on="on">
+                                              mdi-information
+                                          </v-icon>
+                                        </template>
+                                        <p class="tooltip-form mb-0">
+                                        This is the {{environmentContext.getBtcText()}}
+                                        address where your {{environmentContext.getBtcTicker()}}s
+                                        are sent for conversion.
+                                        </p>
+                                        <p class="tooltip-form mb-0">
+                                        Validate this in your device before confirming the transaction.
+                                        </p>
+                                    </v-tooltip>
+                                  </v-row>
+                                  <v-row class="form-field mx-0">
+                                      <span class="status-text-ellipsis">{{ rskFederationAddress }}</span>
+                                  </v-row>
+                              </v-container>
+                          </template>
+
+                          <template v-if="showTxId">
+                              <v-container>
+                                  <v-row class="mx-0">
+                                      <span class="status-subtitle">Transaction hash</span>
+                                  </v-row>
+                                  <v-row class="form-field mx-0">
+                                      <span class="status-text-ellipsis">{{ computedTxId }}</span>
+                                  </v-row>
+                              </v-container>
+                          </template>
+
+                      </v-col>
                   </v-row>
+              </v-col>
+
+              <v-divider inset vertical/>
+
+              <v-col cols="6 px-0">
+                  <v-row>
+                      <v-container>
+                          <span class="status-title status-rsk">RSK</span>
+                      </v-container>
+                  </v-row>
+
                   <v-row class="mx-0">
-                    <span>{{ computedTxId }}</span>
+                      <v-col>
+                          <v-col>
+                              <v-row class="mx-0" align="start">
+                                  <span class="status-subtitle mr-1">Recipient</span>
+
+                                  <v-tooltip right>
+                                      <template v-slot:activator="{ on, attrs }">
+                                          <v-icon small color="teal darken-2" v-bind="attrs" v-on="on">
+                                          mdi-information
+                                          </v-icon>
+                                      </template>
+                                      <p class="tooltip-form mb-0">
+                                          This is the {{environmentContext.getRskText()}} address where the
+                                          {{environmentContext.getRbtcTicker()}} will be delivered.
+                                      </p>
+                                  </v-tooltip>
+                              </v-row>
+                              <v-row class="form-field mx-0">
+                                  <v-col cols="auto"
+                                          class="d-flex flex-column justify-end ma-0 pa-0">
+                                      <span class="breakable-address">
+                                          {{
+                                          peginTxState.rskAddressSelected !== '0x'
+                                          ?
+                                          peginTxState.rskAddressSelected
+                                          :
+                                          VALUE_INCOMPLETE_MESSAGE
+                                          }}
+                                          </span>
+                                  </v-col>
+                                  <v-col cols="auto"
+                                          class="d-flex flex-column justify-end ma-0 pa-0 ml-lg-1">
+                                      <v-btn @click="toRskExplorer" icon color="#C4C4C4" x-small>
+                                          <v-icon>mdi-open-in-new</v-icon>
+                                      </v-btn>
+                                  </v-col>
+                              </v-row>
+                          </v-col>
+
+                          <v-col>
+                              <v-row class="mx-0">
+                                <span class="status-subtitle">Will receive</span>
+                              </v-row>
+                              <v-container class="form-field">
+                                  <v-row class="mx-0 mb-2">
+                                    <span>{{ fee }} {{environmentContext.getBtcTicker()}}</span>
+                                  </v-row>
+                                  <v-row class="mx-0">
+                                    <span class="grayish" id="fee-usd">USD $ {{ feeUSD }}</span>
+                                  </v-row>
+                              </v-container>
+                          </v-col>
+
+                          <v-col>
+                              <v-row class="mx-0">
+                                  <span class="status-subtitle">Fee to pay</span>
+                              </v-row>
+                              <v-container class="form-field">
+                                  <v-row class="mx-0 mb-2">
+                                    <span>{{ feePlusAmount }} {{environmentContext.getBtcTicker()}}</span>
+                                  </v-row>
+                                  <v-row class="mx-0">
+                                      <span class="grayish" id="total-usd">USD $ {{ feePlusAmountUSD }}</span>
+                                  </v-row>
+                              </v-container>
+                          </v-col>
+                      </v-col>
                   </v-row>
-                </div>
-              </template>
-              <template>
-                <v-divider/>
-                <v-container class="container">
-                  <v-row class="mx-0" align="start">
-                    <h3 class="mr-1">PowPeg {{environmentContext.getBtcText()}} Address</h3>
-                    <v-tooltip right>
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-icon small color="teal darken-2" v-bind="attrs" v-on="on">
-                          mdi-information
-                        </v-icon>
-                      </template>
-                      <p class="tooltip-form mb-0">
-                        This is the {{environmentContext.getBtcText()}}
-                        address where your {{environmentContext.getBtcTicker()}}s
-                        are sent for conversion.
-                      </p>
-                      <p class="tooltip-form mb-0">
-                        Validate this in your device before confirming the transaction.
-                      </p>
-                    </v-tooltip>
-                  </v-row>
-                  <v-row class="mx-0">
-                    <span class="breakable-address">{{ rskFederationAddress }}</span>
-                  </v-row>
-                </v-container>
-              </template>
-            </v-col>
+              </v-col>
           </v-row>
-        </div>
+        </div>       
       </v-expand-transition>
     </v-col>
   </v-row>
