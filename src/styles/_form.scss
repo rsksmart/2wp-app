@@ -14,6 +14,71 @@
     color: #000000;
   }
   .form-step {
-
+    input::-webkit-inner-spin-button {
+      display: none !important;
+      -webkit-appearance: none !important;
+      margin: 0 !important;
+    }
+    .v-input__slot {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+    p {
+      font-style: normal;
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 20px;
+    }
+    span {
+      font-style: normal;
+      font-weight: 500;
+      font-size: 18px;
+      line-height: 22px;
+      text-align: center;
+    }
+    input {
+      font-style: normal;
+      font-weight: 500;
+      font-size: 18px;
+      line-height: 22px;
+    }
+    .input-box {
+      border: 1px solid #000000;
+      padding: 0 !important;
+      height: 40px;
+      border-radius: 2px;
+      box-sizing: border-box;
+      .v-text-field fieldset, .v-text-field .v-input__control, .v-text-field .v-input__slot {
+        margin: 0 !important;
+        height: 33px !important;
+        min-height: 35px !important;
+      }
+    }
+    .amount-input {
+      input {
+        background: transparent;
+        padding-left: 8px;
+        color: #747272;
+      }
+    }
+    .disabled-input {
+      input {
+        background: #F8F5F5;
+        border: 1px solid #000000;
+        border-radius: 2px;
+        padding-left: 8px;
+        height: 40px;
+      }
+    }
+    .fee-label {
+      span {
+        font-style: normal;
+        font-weight: 600;
+        font-size: 12px;
+        line-height: 15px;
+        text-align: center;
+        color: #7B7F80;
+      }
+    }
   }
 }
