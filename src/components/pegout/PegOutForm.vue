@@ -12,25 +12,31 @@
         <v-divider color="#C4C4C4"/>
         <rbtc-input-amount/>
         <v-divider color="#C4C4C4"/>
-        <v-container class="form-step">
+        <v-container class="form-step pb-0 pt-3 mb-3">
           <v-row align="start mx-0">
             <v-col cols="auto" class="pl-0">
               <div v-bind:class="[focus ?
               'number-filled' : 'number']">3</div>
             </v-col>
-            <v-col class="pl-0 mb-4">
+            <v-col class="pl-0 ma-0 pb-0">
               <p v-bind:class="{'boldie': focus}">
                 Recipient address:
               </p>
-              {{recipientAddress}}
+              <v-row class="ma-0 pa-0">
+                <v-col cols="6" class="pa-0" >
+                  <v-text-field class="disabled-input" :value="recipientAddress"
+                                disabled color="#F8F5F5"
+                                solo hide-details full-width single-line flat/>
+                </v-col>
+              </v-row>
             </v-col>
           </v-row>
         </v-container>
         <v-divider color="#C4C4C4"/>
         <rsk-fee-select/>
       </v-col>
-      <v-col cols="4" lg="5" >
-        <btc-tx-summary-side/>
+      <v-col cols="4" lg="5" class="d-flex align-center justify-center">
+        Summary (TO-DO)
       </v-col>
     </v-row>
   </v-col>
