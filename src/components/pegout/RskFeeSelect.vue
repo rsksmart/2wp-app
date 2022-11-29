@@ -19,7 +19,7 @@
                         :rules="[enoughBalance]"
                         @change="updateStore"/>
             </v-row>
-            <v-row class="mx-0">
+            <v-row class="mx-0 fee-label">
               <v-col cols="4" class="d-flex justify-start pa-0">
                       <span class="text-left">{{ slowFee }}
                       {{environmentContext.getRbtcTicker()}}</span>
