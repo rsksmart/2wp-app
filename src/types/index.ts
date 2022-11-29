@@ -3,6 +3,7 @@ export * from './Trezor';
 export * from './Ledger';
 export * from './Wallets';
 export * from './pegInTx';
+export * from './pegOutTx';
 export * from './session';
 export * from './store';
 export * from './view';
