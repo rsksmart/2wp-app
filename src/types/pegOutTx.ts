@@ -12,4 +12,5 @@ export interface PegOutTxState {
   };
   selectedFee: MiningSpeedFee;
   balance: Big;
+  senderAddress?: string;
 }
