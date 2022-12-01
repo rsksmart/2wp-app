@@ -28,8 +28,10 @@
 
 <script lang="ts">
 import { Component, Emit, Vue } from 'vue-property-decorator';
-import { State } from 'vuex-class';
-import { PegOutTxState } from '@/types';
+import { Action, State } from 'vuex-class';
+import { PegOutTxState, SessionState } from '@/types';
+import * as constants from '@/store/constants';
+import { formatTxId } from '@/services/utils';
 
 @Component({})
 export default class RskWalletConnection extends Vue {
@@ -37,14 +39,19 @@ export default class RskWalletConnection extends Vue {
 
   @State('pegOutTx') pegOutTxState!: PegOutTxState;
 
+  @State('web3Session') web3SessionState!: SessionState;
+
+  @Action(constants.SESSION_CONNECT_WEB3, { namespace: 'web3Session' }) connectWeb3 !: () => Promise<void>;
+
+  @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: () => void;
+
   @Emit()
-  // eslint-disable-next-line class-methods-use-this
   connectWallet() {
-    console.log('connecting to wallet');
+    this.connectWeb3();
   }
 
   get address(): string {
-    return this.pegOutTxState.senderAddress ? this.pegOutTxState.senderAddress : 'unset wallet';
+    return this.web3SessionState.account ? formatTxId(this.web3SessionState.account) : 'unset wallet';
   }
 }
 </script>
