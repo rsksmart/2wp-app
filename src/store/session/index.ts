@@ -1,9 +1,8 @@
 import { Module } from 'vuex';
+import { SessionState, RootState } from '@/types';
 import { getters } from './getters';
 import { actions } from './actions';
 import { mutations } from './mutations';
-import { SessionState } from '../../types/session';
-import { RootState } from '../../types/store';
 
 export const state: SessionState = {
   account: undefined,
