@@ -4,25 +4,40 @@ import { ActionTree } from 'vuex';
 import RLogin from '@rsksmart/rlogin';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import * as constants from '@/store/constants';
-import { TransactionType, SessionState } from '../../types/session';
-import { RootState } from '../../types/store';
+import { TransactionType, SessionState, RootState } from '@/types';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 export const actions: ActionTree<SessionState, RootState> = {
   [constants.SESSION_CONNECT_WEB3]: ({ commit, state }): Promise<void> => {
+    let rpcUrls = {};
+    const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
+    if (network === constants.BTC_NETWORK_MAINNET) {
+      console.log('entró');
+      rpcUrls = Object
+        .defineProperty(rpcUrls, constants.SUPPORTED_NETWORKS.RSK_MAINNET.chainId, {
+          value: constants.SUPPORTED_NETWORKS.RSK_MAINNET.rpcUrl,
+          writable: false,
+        });
+    } else {
+      rpcUrls = Object
+        .defineProperty(rpcUrls, constants.SUPPORTED_NETWORKS.RSK_TESTNET.chainId, {
+          value: constants.SUPPORTED_NETWORKS.RSK_TESTNET.rpcUrl,
+          writable: false,
+        });
+    }
+    const supportedChains = Object.keys(rpcUrls).map(Number);
     const rLogin = state.rLoginInstance === undefined ? new RLogin({
       cacheProvider: false,
       providerOptions: {
         walletconnect: {
           package: WalletConnectProvider,
           options: {
-            rpc: {
-              30: 'https://public-node.rsk.co',
-              31: 'https://public-node.testnet.rsk.co',
-            },
+            rpc: rpcUrls,
           },
         },
       },
-      supportedChains: [30, 31],
+      rpcUrls,
+      supportedChains,
     }) : state.rLoginInstance;
     return new Promise<void>((resolve, reject) => {
       rLogin.connect()
