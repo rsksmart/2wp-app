@@ -12,7 +12,6 @@ export const actions: ActionTree<SessionState, RootState> = {
     let rpcUrls = {};
     const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
     if (network === constants.BTC_NETWORK_MAINNET) {
-      console.log('entró');
       rpcUrls = Object
         .defineProperty(rpcUrls, constants.SUPPORTED_NETWORKS.RSK_MAINNET.chainId, {
           value: constants.SUPPORTED_NETWORKS.RSK_MAINNET.rpcUrl,
