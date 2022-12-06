@@ -47,7 +47,10 @@ export default class RskWalletConnection extends Vue {
 
   @Emit()
   connectWallet() {
-    this.connectWeb3();
+    this.connectWeb3()
+      .then(() => {
+        this.$emit('openAddressDialog');
+      });
   }
 
   get address(): string {
