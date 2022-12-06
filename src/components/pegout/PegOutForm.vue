@@ -8,7 +8,7 @@
     </v-row>
     <v-row>
       <v-col cols="8" lg="7" >
-        <rsk-wallet-connection/>
+        <rsk-wallet-connection @openAddressDialog="openAddressDialog"/>
         <v-divider color="#C4C4C4"/>
         <rbtc-input-amount/>
         <v-divider color="#C4C4C4"/>
@@ -39,20 +39,27 @@
         Summary (TO-DO)
       </v-col>
     </v-row>
+    <v-row v-if="showAddressDialog">
+      <address-dialog :showAddressDialog="showAddressDialog"
+      @toSign="signTransaction"
+      @closeDialog="closeAddressDialog"/>
+    </v-row>
   </v-col>
 </v-container>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Emit } from 'vue-property-decorator';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import BtcTxSummarySide from '@/components/create/BtcTxSummarySide.vue';
 import RbtcInputAmount from '@/components/pegout/RbtcInputAmount.vue';
 import RskWalletConnection from '@/components/pegout/RskWalletConnection.vue';
 import RskFeeSelect from '@/components/pegout/RskFeeSelect.vue';
+import AddressDialog from '@/components/pegout/AddressDialog.vue';
 
 @Component({
   components: {
+    AddressDialog,
     BtcTxSummarySide,
     RbtcInputAmount,
     RskWalletConnection,
@@ -62,8 +69,25 @@ import RskFeeSelect from '@/components/pegout/RskFeeSelect.vue';
 export default class PegOutForm extends Vue {
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
-  recipientAddress = '0xtesttesttesttesttest';
+  recipientAddress = '';
+
+  showAddressDialog = false;
 
   focus = false;
+
+  @Emit()
+  closeAddressDialog() {
+    this.showAddressDialog = false;
+  }
+
+  signTransaction() {
+    this.recipientAddress = '0xtesttesttesttesttest';
+    this.showAddressDialog = false;
+  }
+
+  @Emit()
+  openAddressDialog() {
+    this.showAddressDialog = true;
+  }
 }
 </script>
