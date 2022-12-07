@@ -10,4 +10,7 @@ export const mutations: MutationTree<PegOutTxState> = {
   [constants.PEGOUT_TX_SET_AMOUNT]: (state, amountToTransfer: Big) => {
     state.amountToTransfer = amountToTransfer;
   },
+  [constants.PEGOUT_TX_SET_VALID_AMOUNT]: (state, validAmount: boolean) => {
+    state.validAmount = validAmount;
+  },
 };
