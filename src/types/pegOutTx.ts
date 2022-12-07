@@ -5,6 +5,7 @@ export interface PegOutTxState {
   minAmountToTransfer: Big;
   maxAmountToTransfer: Big;
   amountToTransfer: Big;
+  validAmount: boolean;
   calculatedFees: {
     fast: Big;
     average: Big;
