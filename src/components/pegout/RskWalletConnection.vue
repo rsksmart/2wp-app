@@ -1,6 +1,6 @@
 <template>
   <v-container class="form-step mt-5 mb-0 py-0">
-    <v-row align="start mx-0">
+    <v-row class="align-start mx-0">
       <v-col cols="auto" class="pl-0">
         <div v-bind:class="[focus ?
               'number-filled' : 'number']">1</div>

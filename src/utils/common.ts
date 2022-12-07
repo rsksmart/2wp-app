@@ -55,6 +55,7 @@ export const getClearPegoutTxState = (): PegOutTxState => ({
   minAmountToTransfer: new Big(0),
   maxAmountToTransfer: new Big(0),
   amountToTransfer: new Big(0),
+  validAmount: false,
   calculatedFees: {
     slow: new Big(0),
     average: new Big(0),
