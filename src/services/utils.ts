@@ -68,6 +68,10 @@ export function isBTCAmountValidRegex(bitcoinAmount: string) {
   return /^[0-9]{1,8}(\.[0-9]{0,8})?$/.test(bitcoinAmount.toString());
 }
 
+export function isRBTCAmountValidRegex(rbctAmount: string) {
+  return /^[0-9]{1,8}(\.[0-9]{0,18})?$/.test(rbctAmount.toString());
+}
+
 export function setStatusMessage(txType: string, status: string): TxStatusMessage {
   const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
