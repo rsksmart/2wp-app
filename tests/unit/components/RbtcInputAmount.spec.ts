@@ -8,6 +8,7 @@ import * as constants from '@/store/constants';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import { pegOutTx } from '@/store/pegoutTx';
 import EnvironmentContextProviderService from '../../../src/providers/EnvironmentContextProvider';
+import { EnvironmentContext } from '../../../src/providers/types';
 
 const localVue = createLocalVue();
 let vuetify:any;
@@ -18,10 +19,11 @@ describe('RbtcInputAmount', () => {
   const defaultEnvironmentVariables = {
     vueAppCoin: constants.BTC_NETWORK_TESTNET,
   };
-  const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+  let environmentContext: EnvironmentContext;
   beforeEach(() => {
     vuetify = new Vuetify();
     EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
+    environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     localVue.use(Vuex);
     state = {
       amountToTransfer: new Big(0),
