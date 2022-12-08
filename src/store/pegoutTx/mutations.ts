@@ -1,6 +1,8 @@
 import { MutationTree } from 'vuex';
-import { MiningSpeedFee, PegOutTxState, WeiBig } from '@/types';
 import * as constants from '@/store/constants';
+import {
+  MiningSpeedFee, PegoutConfiguration, PegOutTxState, WeiBig,
+} from '@/types';
 
 export const mutations: MutationTree<PegOutTxState> = {
   [constants.PEGOUT_TX_SET_SELECTED_FEE_LEVEL]: (state, feeLevel: MiningSpeedFee) => {
@@ -11,5 +13,9 @@ export const mutations: MutationTree<PegOutTxState> = {
   },
   [constants.PEGOUT_TX_SET_VALID_AMOUNT]: (state, validAmount: boolean) => {
     state.validAmount = validAmount;
+  },
+  [constants.PEGOUT_TX_SET_PEGOUT_CONFIGURATION]:
+  (state, pegoutConfiguration: PegoutConfiguration) => {
+    state.pegoutConfiguration = pegoutConfiguration;
   },
 };

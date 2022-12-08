@@ -29,6 +29,8 @@ const defaultEnvironmentVariables = {
   vueAppWalletMaxCallLedger: '2',
   vueAppWalletAddressesPerCallLedger: '2',
   vueAppHotjarId: '',
+  pegoutMinValue: 0.005,
+  pegoutMaxValue: 1,
 };
 
 EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
