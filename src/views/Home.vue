@@ -175,6 +175,7 @@ export default class Home extends Vue {
     this.clear();
     this.addPeg(undefined);
     await this.init();
+    await this.initPegin();
     this.STATUS = false;
   }
 
