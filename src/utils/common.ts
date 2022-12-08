@@ -51,9 +51,12 @@ export const getClearPeginTxState = (): PegInTxState => ({
 });
 
 export const getClearPegoutTxState = (): PegOutTxState => ({
-  minAmountToTransfer: new WeiBig(0, 'wei'),
-  maxAmountToTransfer: new WeiBig(0, 'wei'),
   amountToTransfer: new WeiBig(0, 'wei'),
+  pegoutConfiguration: {
+    minValue: new WeiBig(0, 'wei'),
+    maxValue: new WeiBig(0, 'wei'),
+    bridgeContractAddress: '',
+  },
   validAmount: false,
   calculatedFees: {
     slow: new WeiBig(0, 'wei'),

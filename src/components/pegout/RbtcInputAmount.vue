@@ -99,24 +99,27 @@ export default class RbtcInputAmount extends Vue {
 
   get amountErrorMessage() {
     const feePlusAmount: WeiBig = this.safeAmount.plus(this.safeTxFee);
-    const { minAmountToTransfer, maxAmountToTransfer, balance } = this.pegOutTxState;
+    const { minValue, maxValue } = this.pegOutTxState.pegoutConfiguration;
     if (this.rbtcAmount.toString() === '') {
       return 'Please, enter an amount';
     }
     if (this.rbtcAmount.toString() === '0') {
       return 'Please, enter an amount';
     }
+    if (this.safeAmount.lt(minValue)) { // remove it
+      return `The minimum accepted value is ${minValue.toRBTCString()} ${this.environmentContext.getRbtcTicker()}`;
+    }
     if (!isRBTCAmountValidRegex(this.rbtcAmount)) {
-      return 'The amount must be a valid Rbtc value';
+      return `The amount must be a valid ${this.environmentContext.getRbtcTicker()} value`;
     }
-    if (this.safeAmount.lt(minAmountToTransfer)) {
-      return `The minimum accepted value is ${minAmountToTransfer.toRBTCString()} ${this.environmentContext.getRbtcTicker()}`;
-    }
-    if (feePlusAmount.gte(balance)) {
+    if (feePlusAmount.gte(this.pegOutTxState.balance)) {
       return 'You don\'t have the balance for this amount';
     }
-    if (this.safeAmount.gt(maxAmountToTransfer)) {
-      return `The maximum accepted value is ${maxAmountToTransfer.toRBTCString()} ${this.environmentContext.getRbtcTicker()}`;
+    if (this.safeAmount.lt(minValue)) {
+      return `The minimum accepted value is ${minValue.toRBTCString()} ${this.environmentContext.getRbtcTicker()}`;
+    }
+    if (this.safeAmount.gt(maxValue)) {
+      return `The maximum accepted value is ${maxValue.toRBTCString()} ${this.environmentContext.getRbtcTicker()}`;
     }
     return '';
   }
@@ -127,11 +130,11 @@ export default class RbtcInputAmount extends Vue {
 
   get insufficientAmount() {
     const feePlusAmount: WeiBig = this.safeAmount.plus(this.safeTxFee);
-    const { minAmountToTransfer, maxAmountToTransfer, balance } = this.pegOutTxState;
+    const { pegoutConfiguration, balance } = this.pegOutTxState;
     if (this.safeAmount.lte('0')
       || feePlusAmount.gt(balance)
-      || this.safeAmount.lt(minAmountToTransfer)
-      || this.safeAmount.gt(maxAmountToTransfer)) {
+      || this.safeAmount.lt(pegoutConfiguration.minValue)
+      || this.safeAmount.gt(pegoutConfiguration.maxValue)) {
       return true;
     }
     if (this.safeAmount.gt('0') && feePlusAmount.lte(balance)) {

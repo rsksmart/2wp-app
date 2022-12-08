@@ -1,7 +1,8 @@
-import { ActionTree } from 'vuex';
-import { MiningSpeedFee, PegOutTxState, RootState } from '@/types';
-import * as constants from '@/store/constants';
 import Big from 'big.js';
+import { ActionTree } from 'vuex';
+import * as constants from '@/store/constants';
+import { MiningSpeedFee, PegOutTxState, RootState } from '@/types';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 export const actions: ActionTree<PegOutTxState, RootState> = {
   [constants.PEGOUT_TX_SELECT_FEE_LEVEL]: ({ commit }, feeLevel: MiningSpeedFee) => {
@@ -13,7 +14,17 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
   [constants.PEGOUT_TX_CALCULATE_FEE]: () => {
     // TODO: calculate fee from bridgeService method
   },
+  [constants.PEGOUT_TX_ADD_PEGOUT_CONFIGURATION]: ({ commit }) => {
+    commit(constants.PEGOUT_TX_SET_PEGOUT_CONFIGURATION, {
+      minValue: EnvironmentAccessorService.getEnvironmentVariables().pegoutMinValue,
+      maxValue: EnvironmentAccessorService.getEnvironmentVariables().pegoutMaxValue,
+      bridgeContractAddress: constants.BRIDGE_CONTRACT_ADDRESS,
+    });
+  },
   [constants.PEGOUT_TX_ADD_VALID_AMOUNT]: ({ commit }, valid: boolean) => {
     commit(constants.PEGOUT_TX_SET_VALID_AMOUNT, valid);
   },
+  [constants.PEGOUT_TX_INIT]: ({ dispatch }):
+    Promise<void> => dispatch(constants.PEGOUT_TX_SELECT_FEE_LEVEL)
+    .then(() => dispatch(constants.PEGOUT_TX_ADD_PEGOUT_CONFIGURATION)),
 };
