@@ -40,7 +40,6 @@ describe('RbtcInputAmount', () => {
         bridgeContractAddress: '',
       },
       selectedFee: constants.BITCOIN_AVERAGE_FEE_LEVEL,
-
     };
 
     const { getters, actions, mutations } = pegOutTx;
@@ -96,26 +95,28 @@ describe('RbtcInputAmount', () => {
       .toEqual(`The maximum accepted value is ${state.pegoutConfiguration.maxValue.toRBTCString()} ${environmentContext.getRbtcTicker()}`);
   });
   it('should show a message when the user balance + fee are not enough', async () => {
+    state.balance = new WeiBig('2', 'rbtc');
     const wrapper = shallowMount(RbtcInputAmount, {
       store,
       localVue,
       vuetify,
     });
     await wrapper.setData({
-      rbtcAmount: '1.4998',
+      rbtcAmount: '2',
     });
     expect(wrapper.find('#rbtc-error-msg')
       .text())
       .toEqual('You don\'t have the balance for this amount');
   });
   it('should not show any message when the input amount are between the balance and bounds', async () => {
+    state.balance = new WeiBig('4', 'rbtc');
     const wrapper = shallowMount(RbtcInputAmount, {
       store,
       localVue,
       vuetify,
     });
     await wrapper.setData({
-      rbtcAmount: '0.05',
+      rbtcAmount: '0.5',
     });
     expect(wrapper.find('#rbtc-error-msg').exists()).toBeFalsy();
   });
