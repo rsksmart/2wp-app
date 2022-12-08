@@ -31,6 +31,7 @@ export default class Create extends Vue {
   back() {
     this.clear();
     this.init();
+    this.initPegin();
     this.$router.push({ name: 'Home' });
   }
 }
