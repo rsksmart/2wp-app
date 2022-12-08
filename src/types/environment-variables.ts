@@ -43,9 +43,9 @@ export class EnvironmentVariables {
       || defaultValues.vueAppWalletAddressPerCall;
     this.vueAppRskExplorer = process.env.VUE_APP_RSK_EXPLORER || defaultValues.vueAppRskExplorer;
     this.vueAppHotjarId = process.env.VUE_APP_HOTJAR_ID || defaultValues.vueAppHotjarId;
-    this.pegoutMinValue = process.env.PEGOUT_MIN_AMOUNT_ALLOWED_IN_WEI
+    this.pegoutMinValue = process.env.PEGOUT_MIN_AMOUNT_ALLOWED_IN_RBTC
       || defaultValues.pegoutMinValue;
-    this.pegoutMaxValue = process.env.PEGOUT_MAX_AMOUNT_ALLOWED_IN_WEI
+    this.pegoutMaxValue = process.env.PEGOUT_MAX_AMOUNT_ALLOWED_IN_RBTC
       || defaultValues.pegoutMaxValue;
   }
 }
