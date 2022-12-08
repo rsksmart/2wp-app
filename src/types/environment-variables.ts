@@ -21,6 +21,10 @@ export class EnvironmentVariables {
 
   public vueAppHotjarId: number;
 
+  public pegoutMinValue: number;
+
+  public pegoutMaxValue: number;
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(defaultValues: any = {}) {
     this.vueAppCoin = process.env.VUE_APP_COIN || defaultValues.vueAppCoin;
@@ -39,5 +43,9 @@ export class EnvironmentVariables {
       || defaultValues.vueAppWalletAddressPerCall;
     this.vueAppRskExplorer = process.env.VUE_APP_RSK_EXPLORER || defaultValues.vueAppRskExplorer;
     this.vueAppHotjarId = process.env.VUE_APP_HOTJAR_ID || defaultValues.vueAppHotjarId;
+    this.pegoutMinValue = process.env.PEGOUT_MIN_AMOUNT_ALLOWED_IN_WEI
+      || defaultValues.pegoutMinValue;
+    this.pegoutMaxValue = process.env.PEGOUT_MAX_AMOUNT_ALLOWED_IN_WEI
+      || defaultValues.pegoutMaxValue;
   }
 }

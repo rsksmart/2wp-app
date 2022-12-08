@@ -140,7 +140,9 @@ export default class Home extends Vue {
 
   @Action(constants.PEGIN_TX_CLEAR_STATE, { namespace: 'pegInTx' }) clear !: () => void;
 
-  @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) init !: () => Promise<void>;
+  @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) initPegin !: () => Promise<void>;
+
+  @Action(constants.PEGOUT_TX_INIT, { namespace: 'pegOutTx' }) init !: () => Promise<void>;
 
   @Action(constants.SESSION_ADD_TX_TYPE, { namespace: 'web3Session' }) addPeg!: (peg: TransactionType) => void;
 
