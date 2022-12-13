@@ -1,11 +1,11 @@
 import { GetterTree } from 'vuex';
-import { PegOutTxState, RootState } from '@/types';
+import { PegOutTxState, RootState, WeiBig } from '@/types';
 import * as constants from '@/store/constants';
 import Big from 'big.js';
 
 export const getters: GetterTree<PegOutTxState, RootState> = {
-  [constants.PEGOUT_TX_GET_SAFE_TX_FEE]: (state): Big => {
-    let fee:Big;
+  [constants.PEGOUT_TX_GET_SAFE_TX_FEE]: (state): WeiBig => {
+    let fee:WeiBig;
     switch (state.selectedFee) {
       case constants.BITCOIN_SLOW_FEE_LEVEL:
         fee = state.calculatedFees.slow;
