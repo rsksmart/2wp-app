@@ -1,8 +1,7 @@
 import { PegInTxState } from '@/types/pegInTx';
 import SatoshiBig from '@/types/SatoshiBig';
 import { BITCOIN_AVERAGE_FEE_LEVEL } from '@/store/constants';
-import { PegOutTxState } from '@/types';
-import Big from 'big.js';
+import { PegOutTxState, WeiBig } from '@/types';
 
 export const getChunkedValue = (value: string, maxLength: number) => (value.length < maxLength ? value : `${value.substr(0, maxLength / 2)}...${value.substr(value.length - maxLength / 2, value.length)}`);
 
@@ -52,15 +51,15 @@ export const getClearPeginTxState = (): PegInTxState => ({
 });
 
 export const getClearPegoutTxState = (): PegOutTxState => ({
-  minAmountToTransfer: new Big(0),
-  maxAmountToTransfer: new Big(0),
-  amountToTransfer: new Big(0),
+  minAmountToTransfer: new WeiBig(0, 'wei'),
+  maxAmountToTransfer: new WeiBig(0, 'wei'),
+  amountToTransfer: new WeiBig(0, 'wei'),
   validAmount: false,
   calculatedFees: {
-    slow: new Big(0),
-    average: new Big(0),
-    fast: new Big(0),
+    slow: new WeiBig(0, 'wei'),
+    average: new WeiBig(0, 'wei'),
+    fast: new WeiBig(0, 'wei'),
   },
   selectedFee: BITCOIN_AVERAGE_FEE_LEVEL,
-  balance: new Big(0),
+  balance: new WeiBig(0, 'wei'),
 });
