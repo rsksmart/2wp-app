@@ -57,7 +57,7 @@ import { Action, Getter, State } from 'vuex-class';
 import * as constants from '@/store/constants';
 import Big from 'big.js';
 import { isRBTCAmountValidRegex } from '@/services/utils';
-import { PegOutTxState } from '@/types';
+import { PegOutTxState, WeiBig } from '@/types';
 
 @Component({})
 export default class RbtcInputAmount extends Vue {
@@ -77,7 +77,7 @@ export default class RbtcInputAmount extends Vue {
 
   @Action(constants.PEGOUT_TX_ADD_VALID_AMOUNT, { namespace: 'pegOutTx' }) setValidAmount !: (valid: boolean) => void;
 
-  @Getter(constants.PEGOUT_TX_GET_SAFE_TX_FEE, { namespace: 'pegOutTx' }) safeTxFee !: Big;
+  @Getter(constants.PEGOUT_TX_GET_SAFE_TX_FEE, { namespace: 'pegOutTx' }) safeTxFee !: WeiBig;
 
   blockLetterKeyDown(e: KeyboardEvent) {
     if (this.rbtcAmount.toString().length > 18
@@ -98,7 +98,7 @@ export default class RbtcInputAmount extends Vue {
   }
 
   get amountErrorMessage() {
-    const feePlusAmount: Big = this.safeAmount.plus(this.safeTxFee);
+    const feePlusAmount: WeiBig = this.safeAmount.plus(this.safeTxFee);
     const { minAmountToTransfer, maxAmountToTransfer, balance } = this.pegOutTxState;
     if (this.rbtcAmount.toString() === '') {
       return 'Please, enter an amount';
@@ -110,23 +110,23 @@ export default class RbtcInputAmount extends Vue {
       return 'The amount must be a valid Rbtc value';
     }
     if (this.safeAmount.lt(minAmountToTransfer)) {
-      return `The minimum accepted value is ${minAmountToTransfer.toString()} ${this.environmentContext.getBtcTicker()}`;
+      return `The minimum accepted value is ${minAmountToTransfer.toRBTCString()} ${this.environmentContext.getRbtcTicker()}`;
     }
     if (feePlusAmount.gte(balance)) {
       return 'You don\'t have the balance for this amount';
     }
     if (this.safeAmount.gt(maxAmountToTransfer)) {
-      return `The maximum accepted value is ${maxAmountToTransfer.toString()} ${this.environmentContext.getBtcTicker()}`;
+      return `The maximum accepted value is ${maxAmountToTransfer.toRBTCString()} ${this.environmentContext.getRbtcTicker()}`;
     }
     return '';
   }
 
-  get safeAmount(): Big {
-    return new Big(this.rbtcAmount ?? '0');
+  get safeAmount(): WeiBig {
+    return new WeiBig(this.rbtcAmount ?? '0', 'rbtc');
   }
 
   get insufficientAmount() {
-    const feePlusAmount: Big = this.safeAmount.plus(this.safeTxFee);
+    const feePlusAmount: WeiBig = this.safeAmount.plus(this.safeTxFee);
     const { minAmountToTransfer, maxAmountToTransfer, balance } = this.pegOutTxState;
     if (this.safeAmount.lte('0')
       || feePlusAmount.gt(balance)

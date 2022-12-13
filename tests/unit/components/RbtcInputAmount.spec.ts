@@ -7,8 +7,9 @@ import { PegOutTxState, RootState } from '@/types';
 import * as constants from '@/store/constants';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import { pegOutTx } from '@/store/pegoutTx';
-import EnvironmentContextProviderService from '../../../src/providers/EnvironmentContextProvider';
-import { EnvironmentContext } from '../../../src/providers/types';
+import WeiBig from '@/types/WeiBig';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
+import { EnvironmentContext } from '@/providers/types';
 
 const localVue = createLocalVue();
 let vuetify:any;
@@ -26,16 +27,16 @@ describe('RbtcInputAmount', () => {
     environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     localVue.use(Vuex);
     state = {
-      amountToTransfer: new Big(0),
-      balance: new Big('1.5'),
+      amountToTransfer: new WeiBig(0, 'wei'),
+      balance: new WeiBig('0.5', 'rbtc'),
       validAmount: false,
       calculatedFees: {
-        average: new Big('0.0003'),
-        fast: new Big('0.0006'),
-        slow: new Big('0.0001'),
+        average: new WeiBig('30000', 'wei'),
+        fast: new WeiBig('60000', 'wei'),
+        slow: new WeiBig('10000', 'wei'),
       },
-      maxAmountToTransfer: new Big('2'),
-      minAmountToTransfer: new Big('0.005'),
+      maxAmountToTransfer: new WeiBig('1', 'rbtc'),
+      minAmountToTransfer: new WeiBig('50000000', 'gwei'),
       selectedFee: constants.BITCOIN_AVERAGE_FEE_LEVEL,
 
     };
@@ -60,14 +61,14 @@ describe('RbtcInputAmount', () => {
       vuetify,
     });
     await wrapper.setData({
-      rbtcAmount: '0.004',
+      rbtcAmount: '0.0009',
     });
     expect(wrapper.find('#rbtc-error-msg')
       .text())
-      .toEqual(`The minimum accepted value is ${state.minAmountToTransfer.toString()} ${environmentContext.getBtcTicker()}`);
+      .toEqual(`The minimum accepted value is ${state.minAmountToTransfer.toRBTCString()} ${environmentContext.getRbtcTicker()}`);
   });
   it('should show a message when the input value is above the maximum', async () => {
-    state.balance = new Big('2.5');
+    state.balance = new WeiBig('2.5', 'rbtc');
     const { getters, actions, mutations } = pegOutTx;
     store = new Vuex.Store({
       modules: {
@@ -90,7 +91,7 @@ describe('RbtcInputAmount', () => {
     });
     expect(wrapper.find('#rbtc-error-msg')
       .text())
-      .toEqual(`The maximum accepted value is ${state.maxAmountToTransfer.toString()} ${environmentContext.getBtcTicker()}`);
+      .toEqual(`The maximum accepted value is ${state.maxAmountToTransfer.toRBTCString()} ${environmentContext.getRbtcTicker()}`);
   });
   it('should show a message when the user balance + fee are not enough', async () => {
     const wrapper = shallowMount(RbtcInputAmount, {
@@ -112,7 +113,7 @@ describe('RbtcInputAmount', () => {
       vuetify,
     });
     await wrapper.setData({
-      rbtcAmount: '1',
+      rbtcAmount: '0.05',
     });
     expect(wrapper.find('#rbtc-error-msg').exists()).toBeFalsy();
   });
