@@ -1,17 +1,17 @@
-import Big from 'big.js';
 import { MiningSpeedFee } from '@/types/pegInTx';
+import WeiBig from '@/types/WeiBig';
 
 export interface PegOutTxState {
-  minAmountToTransfer: Big;
-  maxAmountToTransfer: Big;
-  amountToTransfer: Big;
+  minAmountToTransfer: WeiBig;
+  maxAmountToTransfer: WeiBig;
+  amountToTransfer: WeiBig;
   validAmount: boolean;
   calculatedFees: {
-    fast: Big;
-    average: Big;
-    slow: Big;
+    fast: WeiBig;
+    average: WeiBig;
+    slow: WeiBig;
   };
   selectedFee: MiningSpeedFee;
-  balance: Big;
+  balance: WeiBig;
   senderAddress?: string;
 }
