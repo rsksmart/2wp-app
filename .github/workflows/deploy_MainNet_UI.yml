@@ -32,8 +32,8 @@ jobs:
           VUE_APP_HOTJAR_ID=${{ secrets.MAINNET_VUE_APP_HOTJAR_ID }}
           VUE_APP_COIN='main'
           VUE_APP_MANIFEST_EMAIL='user@rsk.co'
-          VUE_APP_MANIFEST_APP_URL='https://2wp-app.rsk.co'
-          VUE_APP_API_BASE_URL='https://2wp-api.rsk.co'
+          VUE_APP_MANIFEST_APP_URL='https://app.2wp.rootstock.io'
+          VUE_APP_API_BASE_URL='https://api.2wp.rootstock.io'
           VUE_APP_RSK_NODE_HOST='https://public-node.rsk.co'
           VUE_APP_RSK_EXPLORER='https://explorer.rsk.co/'
           VUE_APP_WALLET_ADDRESSES_PER_CALL_TREZOR=10
@@ -54,7 +54,7 @@ jobs:
       - name: Deploy site to S3
         run: |
           aws s3 sync --delete --only-show-errors dist/ ${{ secrets.MAINNET_S3_BUCKET }}
-           
+
       - name: Invalidate CloudFront cache
         run: |
           aws cloudfront create-invalidation --distribution-id ${{ secrets.MAINNET_CLOUDFRONT_DISTRIBUTION }} --paths "/*"
