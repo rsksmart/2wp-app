@@ -9,19 +9,23 @@ import { EnvironmentAccessorService } from '@/services/enviroment-accessor.servi
 
 export const actions: ActionTree<SessionState, RootState> = {
   [constants.SESSION_CONNECT_WEB3]: ({ commit, state }): Promise<void> => {
-    let rpcUrls = {};
+    const rpcUrls = {};
     const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
     if (network === constants.BTC_NETWORK_MAINNET) {
-      rpcUrls = Object
+      Object
         .defineProperty(rpcUrls, constants.SUPPORTED_NETWORKS.RSK_MAINNET.chainId, {
           value: constants.SUPPORTED_NETWORKS.RSK_MAINNET.rpcUrl,
           writable: false,
+          configurable: true,
+          enumerable: true,
         });
     } else {
-      rpcUrls = Object
+      Object
         .defineProperty(rpcUrls, constants.SUPPORTED_NETWORKS.RSK_TESTNET.chainId, {
           value: constants.SUPPORTED_NETWORKS.RSK_TESTNET.rpcUrl,
           writable: false,
+          configurable: true,
+          enumerable: true,
         });
     }
     const supportedChains = Object.keys(rpcUrls).map(Number);
