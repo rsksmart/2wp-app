@@ -1,5 +1,12 @@
 import { NormalizedOutput } from '@/types';
 import { areValidOutputs, isValidPowPegOutput } from '@/utils';
+import * as constants from '@/store/constants';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+
+const defaultEnvironmentVariables = {
+  vueAppCoin: constants.BTC_NETWORK_TESTNET,
+};
+EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
 
 describe('function: isValidPowPegOutput', () => {
   it('outputs empty', async () => {
