@@ -15,6 +15,8 @@
 <script lang="ts">
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import PegOutForm from '@/components/pegout/PegOutForm.vue';
+import { Action } from 'vuex-class';
+import * as constants from '@/store/constants';
 
 @Component({
   components: {
@@ -22,9 +24,15 @@ import PegOutForm from '@/components/pegout/PegOutForm.vue';
   },
 })
 export default class PegOut extends Vue {
+  @Action(constants.PEGOUT_TX_INIT, { namespace: 'pegOutTx' }) init !: () => Promise<void>;
+
   @Emit()
   back():void {
     this.$router.push({ name: 'Home' });
+  }
+
+  created() {
+    this.init();
   }
 }
 </script>

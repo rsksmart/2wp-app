@@ -1,7 +1,8 @@
 import { MutationTree } from 'vuex';
 import Web3 from 'web3';
 import * as constants from '@/store/constants';
-import { TransactionType, SessionState } from '../../types/session';
+import { WeiBig } from '@/types';
+import { TransactionType, SessionState } from '@/types/session';
 
 export const mutations: MutationTree<SessionState> = {
   [constants.SESSION_SET_ACCOUNT]: (state, account: string) => {
@@ -25,5 +26,8 @@ export const mutations: MutationTree<SessionState> = {
   },
   [constants.SESSION_SET_TX_TYPE]: (state, txType: TransactionType) => {
     state.txType = txType;
+  },
+  [constants.WEB3_SESSION_SET_BALANCE]: (state, balance: WeiBig) => {
+    state.balance = balance;
   },
 };

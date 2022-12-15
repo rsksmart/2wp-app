@@ -17,6 +17,5 @@ export interface PegOutTxState {
     slow: WeiBig;
   };
   selectedFee: MiningSpeedFee;
-  balance: WeiBig;
   senderAddress?: string;
 }

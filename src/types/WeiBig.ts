@@ -23,7 +23,7 @@ export default class WeiBig extends Big {
         super(safeBig.mul(100_000_000_0).toFixed(0));
         break;
       case 'rbtc':
-        super(safeBig.mul(100_000_000_000_000_000_00).toFixed(0));
+        super(safeBig.mul(100_000_000_000_000_000_0).toFixed(0));
         break;
       default:
         super(safeBig);
@@ -48,12 +48,12 @@ export default class WeiBig extends Big {
   }
 
   toRBTCString(): string {
-    return super.div(100_000_000_000_000_000_00)
+    return super.div(100_000_000_000_000_000_0)
       .toFixed(18);
   }
 
   toRBTCTrimmedString(): string {
-    return super.div(100_000_000_000_000_000_00)
+    return super.div(100_000_000_000_000_000_0)
       .toString();
   }
 

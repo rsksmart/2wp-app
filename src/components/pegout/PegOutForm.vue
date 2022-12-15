@@ -8,7 +8,7 @@
     </v-row>
     <v-row>
       <v-col cols="8" lg="7" >
-        <rsk-wallet-connection @openAddressDialog="openAddressDialog"/>
+        <rsk-wallet-connection @connectingWallet="openAddressDialog"/>
         <v-divider color="#C4C4C4"/>
         <rbtc-input-amount/>
         <v-divider color="#C4C4C4"/>

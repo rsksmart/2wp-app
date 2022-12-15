@@ -1,5 +1,6 @@
 import RLogin from '@rsksmart/rlogin';
 import Web3 from 'web3';
+import WeiBig from '@/types/WeiBig';
 
 export type TransactionType = 'PEG_IN_TRANSACTION_TYPE' | 'PEG_OUT_TRANSACTION_TYPE' | undefined;
 
@@ -12,4 +13,5 @@ export interface SessionState {
   };
   rLoginInstance?: RLogin;
   txType: TransactionType;
+  balance: WeiBig;
 }
