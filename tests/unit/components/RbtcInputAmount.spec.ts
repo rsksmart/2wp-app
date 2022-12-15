@@ -2,10 +2,11 @@ import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex, { Store } from 'vuex';
 import Vuetify from 'vuetify';
 import RbtcInputAmount from '@/components/pegout/RbtcInputAmount.vue';
-import { PegOutTxState, RootState } from '@/types';
+import { PegOutTxState, RootState, SessionState } from '@/types';
 import * as constants from '@/store/constants';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import { pegOutTx } from '@/store/pegoutTx';
+import { web3Session } from '@/store/session';
 import WeiBig from '@/types/WeiBig';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import { EnvironmentContext } from '@/providers/types';
@@ -14,6 +15,7 @@ const localVue = createLocalVue();
 let vuetify:any;
 let store: Store<RootState>;
 let state:PegOutTxState;
+let sessionState: SessionState;
 
 describe('RbtcInputAmount', () => {
   const defaultEnvironmentVariables = {
@@ -27,7 +29,6 @@ describe('RbtcInputAmount', () => {
     localVue.use(Vuex);
     state = {
       amountToTransfer: new WeiBig(0, 'wei'),
-      balance: new WeiBig('0.5', 'rbtc'),
       validAmount: false,
       calculatedFees: {
         average: new WeiBig('30000', 'wei'),
@@ -41,6 +42,11 @@ describe('RbtcInputAmount', () => {
       },
       selectedFee: constants.BITCOIN_AVERAGE_FEE_LEVEL,
     };
+    sessionState = {
+      balance: new WeiBig('0.5', 'rbtc'),
+      enabled: false,
+      txType: 'PEG_OUT_TRANSACTION_TYPE',
+    };
 
     const { getters, actions, mutations } = pegOutTx;
     store = new Vuex.Store({
@@ -50,6 +56,10 @@ describe('RbtcInputAmount', () => {
           getters,
           actions,
           mutations,
+          namespaced: true,
+        },
+        web3Session: {
+          state: sessionState,
           namespaced: true,
         },
       },
@@ -69,7 +79,7 @@ describe('RbtcInputAmount', () => {
       .toEqual(`The minimum accepted value is ${state.pegoutConfiguration.minValue.toRBTCString()} ${environmentContext.getRbtcTicker()}`);
   });
   it('should show a message when the input value is above the maximum', async () => {
-    state.balance = new WeiBig('2.5', 'rbtc');
+    sessionState.balance = new WeiBig('2.5', 'rbtc');
     const { getters, actions, mutations } = pegOutTx;
     store = new Vuex.Store({
       modules: {
@@ -78,6 +88,10 @@ describe('RbtcInputAmount', () => {
           getters,
           actions,
           mutations,
+          namespaced: true,
+        },
+        web3Session: {
+          state: sessionState,
           namespaced: true,
         },
       },
@@ -95,7 +109,23 @@ describe('RbtcInputAmount', () => {
       .toEqual(`The maximum accepted value is ${state.pegoutConfiguration.maxValue.toRBTCString()} ${environmentContext.getRbtcTicker()}`);
   });
   it('should show a message when the user balance + fee are not enough', async () => {
-    state.balance = new WeiBig('2', 'rbtc');
+    sessionState.balance = new WeiBig('2', 'rbtc');
+    const { getters, actions, mutations } = pegOutTx;
+    store = new Vuex.Store({
+      modules: {
+        pegOutTx: {
+          state,
+          getters,
+          actions,
+          mutations,
+          namespaced: true,
+        },
+        web3Session: {
+          state: sessionState,
+          namespaced: true,
+        },
+      },
+    });
     const wrapper = shallowMount(RbtcInputAmount, {
       store,
       localVue,
@@ -109,7 +139,23 @@ describe('RbtcInputAmount', () => {
       .toEqual('You don\'t have the balance for this amount');
   });
   it('should not show any message when the input amount are between the balance and bounds', async () => {
-    state.balance = new WeiBig('4', 'rbtc');
+    sessionState.balance = new WeiBig('4', 'rbtc');
+    const { getters, actions, mutations } = pegOutTx;
+    store = new Vuex.Store({
+      modules: {
+        pegOutTx: {
+          state,
+          getters,
+          actions,
+          mutations,
+          namespaced: true,
+        },
+        web3Session: {
+          state: sessionState,
+          namespaced: true,
+        },
+      },
+    });
     const wrapper = shallowMount(RbtcInputAmount, {
       store,
       localVue,
