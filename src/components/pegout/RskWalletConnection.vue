@@ -45,12 +45,17 @@ export default class RskWalletConnection extends Vue {
 
   @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: () => void;
 
-  @Emit()
   connectWallet() {
     this.connectWeb3()
       .then(() => {
-        this.$emit('openAddressDialog');
+        // Will get the balance
+        this.openPopUp();
       });
+  }
+
+  @Emit('openAddressDialog')
+  openPopUp() {
+    this.pegOutTxState.senderAddress = '';
   }
 
   get address(): string {
