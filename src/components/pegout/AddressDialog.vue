@@ -7,7 +7,7 @@
         </v-row>
         <v-row class="mx-0 mb-10 justify-center">
             <p class="pop-up-subtitle mb-2">
-              We will the signature to device your Bitcoin address.
+              We will use the signature to derive your Bitcoin address.
             </p>
             <p class="m-0 p-0">
               this does not expose your data not spend your funds.
@@ -40,8 +40,9 @@ import {
 export default class AddressDialog extends Vue {
   @Prop() showAddressDialog!: boolean;
 
+  @Emit('toSign')
   toSign() {
-    this.$emit('toSign');
+    return this.showAddressDialog;
   }
 
   @Emit('closeDialog')
