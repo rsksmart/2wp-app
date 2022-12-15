@@ -45,7 +45,7 @@ It should execute 6 test suites with 28 tests in total.
 
 Like this example:
 ```
- PASS  tests/unit/PowPegAddressUtils.spec.ts
+ PASS  tests/unit/PowPegUtils.spec.ts
  PASS  tests/unit/SatoshiBig.spec.ts
  PASS  tests/unit/utils.spec.ts
  PASS  tests/unit/OpReturnUtils.spec.ts
