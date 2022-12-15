@@ -57,7 +57,7 @@ import { Action, Getter, State } from 'vuex-class';
 import * as constants from '@/store/constants';
 import Big from 'big.js';
 import { isRBTCAmountValidRegex } from '@/services/utils';
-import { PegOutTxState, WeiBig } from '@/types';
+import { PegOutTxState, SessionState, WeiBig } from '@/types';
 
 @Component({})
 export default class RbtcInputAmount extends Vue {
@@ -70,6 +70,8 @@ export default class RbtcInputAmount extends Vue {
   stepState: 'unset' | 'valid' |'error' = 'unset';
 
   @State('pegOutTx') pegOutTxState!: PegOutTxState;
+
+  @State('web3Session') web3SessionState!: SessionState;
 
   @Action(constants.PEGOUT_TX_ADD_AMOUNT, { namespace: 'pegOutTx' }) setRbtcAmount !: (amount: Big) => void;
 
@@ -100,6 +102,7 @@ export default class RbtcInputAmount extends Vue {
   get amountErrorMessage() {
     const feePlusAmount: WeiBig = this.safeAmount.plus(this.safeTxFee);
     const { minValue, maxValue } = this.pegOutTxState.pegoutConfiguration;
+    const { balance } = this.web3SessionState;
     if (this.rbtcAmount.toString() === '') {
       return 'Please, enter an amount';
     }
@@ -112,7 +115,7 @@ export default class RbtcInputAmount extends Vue {
     if (!isRBTCAmountValidRegex(this.rbtcAmount)) {
       return `The amount must be a valid ${this.environmentContext.getRbtcTicker()} value`;
     }
-    if (feePlusAmount.gte(this.pegOutTxState.balance)) {
+    if (feePlusAmount.gte(balance)) {
       return 'You don\'t have the balance for this amount';
     }
     if (this.safeAmount.lt(minValue)) {
@@ -130,7 +133,8 @@ export default class RbtcInputAmount extends Vue {
 
   get insufficientAmount() {
     const feePlusAmount: WeiBig = this.safeAmount.plus(this.safeTxFee);
-    const { pegoutConfiguration, balance } = this.pegOutTxState;
+    const { pegoutConfiguration } = this.pegOutTxState;
+    const { balance } = this.web3SessionState;
     if (this.safeAmount.lte('0')
       || feePlusAmount.gt(balance)
       || this.safeAmount.lt(pegoutConfiguration.minValue)
