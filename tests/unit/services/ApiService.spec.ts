@@ -3,10 +3,10 @@ import ApiService from '@/services/ApiService';
 import axios, { AxiosResponse } from 'axios';
 import sinon from 'sinon';
 import { BridgeService } from '@/services/BridgeService';
-import * as PowPegAddressUtils from '@/utils/PowPegAddressUtils';
 import * as OpReturnUtils from '@/utils/OpReturnUtils';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import * as constants from '@/store/constants';
+import * as PowPegAddressUtils from '../../../src/utils/PowPegUtils';
 import { ApiInformation } from '../../../src/types/ApiInformation';
 
 function getNormalizedTx(): Promise<AxiosResponse> {
@@ -30,7 +30,7 @@ function getNormalizedTx(): Promise<AxiosResponse> {
         address_n: [],
         amount: '0',
         serializedValue: '',
-        op_return_data: 'test1',
+        op_return_data: '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa02379ad9b7ba73bdc1e29e286e014d4e2e1f6884e3',
       },
     ];
     const inputs: NormalizedInput[] = [];
@@ -60,11 +60,14 @@ function setEnvironment(isValidOpReturn: boolean, isValidPowPegAddress: boolean)
   EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
   sinon.stub(BridgeService.prototype, 'getFederationAddress').resolves('powPegAddress');
   sinon.stub(axios, 'post').resolves(getNormalizedTx());
-  sinon.stub(OpReturnUtils, 'isValidOpReturn').returns(isValidOpReturn);
-  sinon.stub(PowPegAddressUtils, 'isValidPowPegAddress').returns(isValidPowPegAddress);
+  // sinon.stub(OpReturnUtils, 'isValidOpReturn').returns(isValidOpReturn);
+  // sinon.stub(PowPegAddressUtils, 'isValidPowPegOutput').returns(isValidPowPegAddress);
 }
 describe('Api Service', () => {
   describe('function: createPeginTx', () => {
+    const userChangeAddress = 'changeAddress';
+    const userRefundAddress = '2MxKEf2su6FGAUfCEAHreGFQvEYrfYNHvL7';
+    const recipientAddress = '0x224d0b72bab9342f898c633ef187abff8a96c0fa';
     afterEach(() => {
       sinon.restore();
     });
@@ -78,7 +81,7 @@ describe('Api Service', () => {
 
     it('opReturn validation returns true, powpeg validation returns false, function reject', () => {
       setEnvironment(true, false);
-      return expect(ApiService.createPeginTx(1, 'refundBtcAddress', 'recipientRsKAddress', 'sessionId', 'feeLevel', 'changeBtcAddress'))
+      return expect(ApiService.createPeginTx(2, userRefundAddress, recipientAddress, 'sessionId', 'feeLevel', userChangeAddress))
         .rejects
         .toEqual(new Error('Invalid data when comparing Powpeg Address'));
     });
