@@ -41,7 +41,7 @@
     </v-row>
     <v-row v-if="showAddressDialog">
       <address-dialog :showAddressDialog="showAddressDialog"
-      @toSign="signTransaction"
+      @toSign="signMessage"
       @closeDialog="closeAddressDialog"/>
     </v-row>
   </v-col>
@@ -80,7 +80,7 @@ export default class PegOutForm extends Vue {
     this.showAddressDialog = false;
   }
 
-  signTransaction() {
+  signMessage() {
     this.recipientAddress = '0xtesttesttesttesttest';
     this.showAddressDialog = false;
   }
