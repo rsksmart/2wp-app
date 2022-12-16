@@ -62,9 +62,11 @@ export default class ApiService {
       ])
         .then(([response, powPegAddress]) => {
           const normalizedTx: NormalizedTx = response.data;
+          const expectedChangeAddress = changeAddress || normalizedTx.inputs[0].address;
           const { valid, reason } = areValidOutputs(
             normalizedTx.outputs, powPegAddress,
-            amountToTransferInSatoshi.toString(), changeAddress, recipient, refundAddress,
+            amountToTransferInSatoshi.toString(),
+            expectedChangeAddress, recipient, refundAddress,
           );
           if (!valid) {
             reject(new Error(reason));

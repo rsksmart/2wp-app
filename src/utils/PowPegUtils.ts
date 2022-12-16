@@ -13,6 +13,16 @@ export function isValidPowPegOutput(
   return false;
 }
 
+export function isValidChangeOutput(outputs: NormalizedOutput[], changeAddress: string): boolean {
+  for (let i = 0; outputs && i < outputs.length; i += 1) {
+    const output: NormalizedOutput = outputs[i];
+    if (output.address === changeAddress) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export function areValidOutputs(
   outputs: NormalizedOutput[], powPegAddress: string,
   amountToTransfer: string, changeAddress: string,
@@ -31,11 +41,11 @@ export function areValidOutputs(
   if (isValidPowPegOutput(outputs, powPegAddress, amountToTransfer)) {
     if (isValidOpReturn(outputs, destinationRskAddress, refundBtcAddress)) {
       if (size === 3) {
-        for (let i = 0; outputs && i < outputs.length; i += 1) {
-          const output: NormalizedOutput = outputs[i];
-          if (output.address === changeAddress) {
-            response.valid = true;
-          }
+        if (isValidChangeOutput(outputs, changeAddress)) {
+          response.valid = true;
+        } else {
+          response.valid = false;
+          response.reason = 'Invalid change address';
         }
       } else {
         response.valid = true;
