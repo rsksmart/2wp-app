@@ -3,7 +3,7 @@ import { WalletAddress, PeginConfiguration } from '@/types/pegInTx';
 import {
   AccountBalance, AddressStatus, FeeAmountDataResponse, NormalizedTx, TxStatus,
 } from '@/types';
-import { areValidOutputs, isValidOpReturn, isValidPowPegOutput } from '@/utils';
+import { areValidOutputs } from '@/utils';
 import { BridgeService } from '@/services/BridgeService';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import { ApiInformation } from '@/types/ApiInformation';

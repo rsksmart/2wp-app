@@ -61,7 +61,7 @@ export function isValidOpReturn(
   destinationRskAddress: string,
   refundBtcAddress: string,
 ): boolean {
-  let valid = false;
+  let validOpReturnOutputs = 0;
   for (let i = 0; outputs && i < outputs.length; i += 1) {
     const output: NormalizedOutput = outputs[i];
     if (output.op_return_data
@@ -74,17 +74,18 @@ export function isValidOpReturn(
       if (destinationRskAddress === destinationRskAddressFound) {
         try {
           if (!refundBtcAddress && output.op_return_data.length === 50) {
-            // Allow only one valid OP_RETURN output
-            valid = !valid;
+            validOpReturnOutputs += 1;
           } else {
             const refundBtcAddressFound = getRefundAddress(output.op_return_data.substring(50, 92));
-            valid = (refundBtcAddress === refundBtcAddressFound) ? !valid : valid;
+            if (refundBtcAddress === refundBtcAddressFound) {
+              validOpReturnOutputs += 1;
+            }
           }
         } catch {
-          valid = false;
+          return false;
         }
       }
     }
   }
-  return valid;
+  return validOpReturnOutputs === 1;
 }
