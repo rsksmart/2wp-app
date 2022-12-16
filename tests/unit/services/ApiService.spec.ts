@@ -60,8 +60,6 @@ function setEnvironment(isValidOpReturn: boolean, isValidPowPegAddress: boolean)
   EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
   sinon.stub(BridgeService.prototype, 'getFederationAddress').resolves('powPegAddress');
   sinon.stub(axios, 'post').resolves(getNormalizedTx());
-  // sinon.stub(OpReturnUtils, 'isValidOpReturn').returns(isValidOpReturn);
-  // sinon.stub(PowPegAddressUtils, 'isValidPowPegOutput').returns(isValidPowPegAddress);
 }
 describe('Api Service', () => {
   describe('function: createPeginTx', () => {
