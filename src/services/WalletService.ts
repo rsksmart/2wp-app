@@ -121,9 +121,7 @@ export default abstract class WalletService {
     return (this.subscribers.length > 0);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   public async startAskingForBalance(sessionId: string, maxAmountPegin: number): Promise<void> {
-    console.log('startAsking for balance....');
     // eslint-disable-next-line prefer-const
     let balanceAccumulated: AccountBalance = {
       legacy: new SatoshiBig(0, 'satoshi'),
@@ -144,11 +142,8 @@ export default abstract class WalletService {
         startFrom < (this.getWalletMaxCall() * maxAddressPerCall) && this.subscribers.length !== 0;
         startFrom += maxAddressPerCall
       ) {
-        console.log('loop');
         // eslint-disable-next-line no-await-in-loop
         addresses = await this.getAccountAddresses(maxAddressPerCall, startFrom);
-        console.log('addresses got');
-        console.log(addresses);
         if (addresses.length === 0) {
           throw new Error('Error getting list of addresses - List of addresses is empty');
         }
