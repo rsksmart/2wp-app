@@ -2,9 +2,9 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [ "main", "1.2.0-rc", "lint-rules-integration", "pegout-status-integration", "xpub-integration", "feature/test-codeql" ]
+    branches: [ "main", "**-rc" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "**-rc", "bugfix/**" ]
   schedule:
     - cron: "59 4 * * 1"
 
