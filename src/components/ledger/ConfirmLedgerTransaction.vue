@@ -131,6 +131,10 @@
           <v-row justify="center" class="mt-5 mx-0 text-center" >
             Fees: {{safeFee.toBTCTrimmedString()}}
           </v-row>
+          <v-row justify="center" class="mt-4 mx-0 text-center">
+            Please make sure to check that the fee this transaction is paying
+            is along your expectations.
+          </v-row>
           <v-row justify="center" class="mt-5 mb-3 mx-0">Accept and send</v-row>
         </fieldset>
       </v-col>
