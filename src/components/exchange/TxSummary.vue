@@ -17,20 +17,18 @@
         </v-btn>
       </v-row>
 
-      <div v-bind:class="[isPegIn ?
-      'box-pegin': 'box-pegout']" class="box">
+      <div class="box-pegin box">
         <v-row>
-          <!-- BITCOIN -->
+         <!-- >>>>>>>>>>>>>> BITCOIN >>>>>>>>>>>>> -->
           <v-col class="box-col bitcoin-col" cols="6">
-            <v-row v-bind:class="[isPegIn ? 'justify-start' : 'justify-end']"
-            class="status-title">
-              <span>Bitcoin</span>
+            <v-row class="status-title">
+              <span>{{ fromTitle }}</span>
             </v-row>
 
             <!-- sender -->
             <v-row v-if="!!computedRefundAddress" class="box-field mx-1">
               <v-col>
-                <v-row v-bind:class="[isPegIn ? 'justify-start' : 'justify-end']">
+                <v-row>
                     <span class="status-subtitle">Sender</span>
                     <v-tooltip right>
                         <template v-slot:activator="{ on, attrs }">
@@ -47,7 +45,14 @@
                 </v-row>
                 <v-row>
                   <v-col class="form-field">
-                    <span class="breakable-address">{{ computedRefundAddress }}</span>
+                    <v-row>
+                      <v-col cols="12"
+                        class="col-address-button d-flex flex-column justify-end">
+                        <span class="breakable-address status-text-ellipsis">
+                          {{ computedRefundAddress }}
+                        </span>
+                      </v-col>
+                    </v-row>
                   </v-col>
                 </v-row>
               </v-col>
@@ -56,14 +61,14 @@
             <!-- sent -->
             <v-row class="box-field mx-1">
               <v-col>
-                <v-row v-bind:class="[isPegIn ? 'justify-start' : 'justify-end']">
+                <v-row>
                   <span class="status-subtitle">Sent</span>
                 </v-row>
                 <v-row>
                   <v-col class="form-field">
                     <v-row class="mx-0 mb-2">
                       <span id="amount">
-                        {{ amount }} {{environmentContext.getBtcTicker()}}
+                        {{ amount }} {{ currencyFromTicker }}
                       </span>
                     </v-row>
                     <v-row class="mx-0">
@@ -79,7 +84,7 @@
             <!-- PowPeg Address -->
             <v-row class="box-field mx-1">
               <v-col>
-                <v-row v-bind:class="[isPegIn ? 'justify-start' : 'justify-end']">
+                <v-row>
                     <span class="status-subtitle">PowPeg Address</span>
                     <v-tooltip right>
                         <template v-slot:activator="{ on, attrs }">
@@ -112,7 +117,7 @@
             <!-- transaction hash -->
             <v-row v-if="showTxId" class="box-field mx-1">
               <v-col>
-                <v-row v-bind:class="[isPegIn ? 'justify-start' : 'justify-end']">
+                <v-row>
                   <span class="status-subtitle">Transaction hash</span>
                 </v-row>
                 <v-row>
@@ -126,17 +131,16 @@
 
           <v-divider inset vertical/>
 
-          <!-- RSK -->
+          <!-- >>>>>>>>>>>>>> RSK >>>>>>>>>>>>> -->
           <v-col class="box-col rsk-col" cols="6">
-            <v-row v-bind:class="[isPegIn ? 'justify-end' : 'justify-start']"
-            class="status-title">
-              <span>RSK</span>
+            <v-row class="status-title justify-end">
+              <span>{{ toTitle }}</span>
             </v-row>
 
             <!-- Recipient -->
             <v-row class="box-field mx-1">
               <v-col>
-                <v-row v-bind:class="[isPegIn ? 'justify-end' : 'justify-start']">
+                <v-row>
                     <span class="status-subtitle">Recipient</span>
                     <v-tooltip right>
                       <template v-slot:activator="{ on, attrs }">
@@ -181,13 +185,13 @@
             <!-- will receibe -->
             <v-row class="box-field mx-1">
               <v-col>
-                <v-row v-bind:class="[isPegIn ? 'justify-end' : 'justify-start']">
+                <v-row>
                   <span class="status-subtitle">Will receive</span>
                 </v-row>
                 <v-row>
                   <v-col class="form-field">
                     <v-row class="mx-0 mb-2">
-                      <span>{{ fee }} {{environmentContext.getBtcTicker()}}</span>
+                      <span>{{ amount }} {{ currencyToTicker }}</span>
                     </v-row>
                     <v-row class="mx-0">
                       <span class="grayish" id="fee-usd">USD $ {{ feeUSD }}</span>
@@ -200,17 +204,17 @@
             <!-- Fee to pay -->
             <v-row class="box-field mx-1">
               <v-col>
-                <v-row v-bind:class="[isPegIn ? 'justify-end' : 'justify-start']">
+                <v-row>
                   <span class="status-subtitle">Fee to pay</span>
                 </v-row>
                 <v-row>
                   <v-col class="form-field">
                     <v-row class="mx-0 mb-2">
                       <span>
-                        {{ feePlusAmount }} {{environmentContext.getBtcTicker()}}
+                        {{ feePlusAmount }} {{ currencyFromTicker }}
                       </span>
                     </v-row>
-                    <v-row class="mx-0">
+                  <v-row class="mx-0">
                       <span class="grayish" id="total-usd">
                         USD $ {{ feePlusAmountUSD }}
                       </span>
@@ -248,7 +252,9 @@ export default class TxSummary extends Vue {
 
   @Prop() txId!: string;
 
-  @Prop() isPegIn!: boolean;
+  // @Prop() isPegIn!: boolean;
+
+  isPegIn = true;
 
   @Prop() statusRefundAddress!: string;
 
@@ -342,6 +348,24 @@ export default class TxSummary extends Vue {
 
   get rskFederationAddress() {
     return this.peginTxState.peginConfiguration.federationAddress;
+  }
+
+  get currencyFromTicker() {
+    return this.isPegIn ? this.environmentContext.getBtcTicker()
+      : this.environmentContext.getRbtcTicker();
+  }
+
+  get currencyToTicker() {
+    return this.isPegIn ? this.environmentContext.getRbtcTicker()
+      : this.environmentContext.getBtcTicker();
+  }
+
+  get fromTitle() {
+    return this.isPegIn ? 'Bitcoin' : 'RSK';
+  }
+
+  get toTitle() {
+    return this.isPegIn ? 'RSK' : 'Bitcoin';
   }
 
   @Emit()
