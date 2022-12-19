@@ -140,7 +140,7 @@
             <!-- Recipient -->
             <v-row class="box-field mx-1">
               <v-col>
-                <v-row>
+                <v-row class="justify-end">
                     <span class="status-subtitle">Recipient</span>
                     <v-tooltip right>
                       <template v-slot:activator="{ on, attrs }">
@@ -158,9 +158,9 @@
                 </v-row>
                 <v-row>
                   <v-col class="form-field">
-                    <v-row>
+                    <v-row class="justify-end">
                       <v-col cols="11"
-                        class="col-address-button d-flex flex-column justify-end">
+                        class="col-address-button d-flex flex-column">
                           <span class="breakable-address status-text-ellipsis">
                             {{
                             peginTxState.rskAddressSelected !== '0x'
@@ -185,15 +185,15 @@
             <!-- will receibe -->
             <v-row class="box-field mx-1">
               <v-col>
-                <v-row>
+                <v-row class="justify-end">
                   <span class="status-subtitle">Will receive</span>
                 </v-row>
                 <v-row>
                   <v-col class="form-field">
-                    <v-row class="mx-0 mb-2">
+                    <v-row class="justify-end mx-0 mb-2">
                       <span>{{ amount }} {{ currencyToTicker }}</span>
                     </v-row>
-                    <v-row class="mx-0">
+                    <v-row class="justify-end mx-0">
                       <span class="grayish" id="fee-usd">USD $ {{ feeUSD }}</span>
                     </v-row>
                   </v-col>
@@ -204,17 +204,17 @@
             <!-- Fee to pay -->
             <v-row class="box-field mx-1">
               <v-col>
-                <v-row>
+                <v-row class="justify-end">
                   <span class="status-subtitle">Fee to pay</span>
                 </v-row>
                 <v-row>
                   <v-col class="form-field">
-                    <v-row class="mx-0 mb-2">
+                    <v-row class="justify-end mx-0 mb-2">
                       <span>
                         {{ feePlusAmount }} {{ currencyFromTicker }}
                       </span>
                     </v-row>
-                  <v-row class="mx-0">
+                  <v-row class="justify-end mx-0">
                       <span class="grayish" id="total-usd">
                         USD $ {{ feePlusAmountUSD }}
                       </span>
@@ -252,9 +252,7 @@ export default class TxSummary extends Vue {
 
   @Prop() txId!: string;
 
-  // @Prop() isPegIn!: boolean;
-
-  isPegIn = true;
+  @Prop() isPegIn!: boolean;
 
   @Prop() statusRefundAddress!: string;
 
