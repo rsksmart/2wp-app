@@ -116,6 +116,7 @@
         :statusRefundAddress="currentRefundAddress"
         :txId="txId"
         :showTxId="true"
+        :isPegIn="true"
         :initialExpand="true"/>
     </v-row>
   </v-col>
