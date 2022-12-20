@@ -1,13 +1,11 @@
-import sinon, { createStubInstance } from 'sinon';
+import sinon from 'sinon';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import * as constants from '../../../src/store/constants';
-import { EnvironmentAccessorService } from '../../../src/services/enviroment-accessor.service';
-import { LedgerService, WalletService } from '../../../src/services';
-import { BtcAccount, LedgerjsTransaction, LedgerTx } from '../../../src/types';
-import { mockedData } from '../../utils/mockedData';
-import LedgerTransportService from '../../../src/services/LedgerTransportService';
 import Transport from '@ledgerhq/hw-transport';
-import { slice } from 'lodash';
+import * as constants from '@/store/constants';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import { LedgerService, WalletService } from '@/services';
+import { BtcAccount, LedgerjsTransaction } from '@/types';
+import { mockedData } from '../../utils/mockedData';
 
 const initEnvironment = () => {
   const defaultEnvironmentVariables = {
