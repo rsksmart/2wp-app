@@ -294,3 +294,50 @@
 .subtitle-progress-status {
   color:#5FDA23;
 }
+
+.icon-status-image::after {
+  content: "";
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+}
+
+.icon-btc-image::after {
+  left: -62px;
+}
+
+
+.icon-rootstock-image::after {
+  left: -11px;
+}
+
+.icon-rbtc-image::after {
+  left: -40px;
+}
+
+.icon-btc-image-reject::after {
+  left: -80px;
+}
+
+.icon-rootstock-image-reject::after {
+  left: -40px;
+}
+
+.icon-status-border-green::after {
+  border: 3px solid #9CE07B !important;
+}
+
+.icon-status-border-blue::after {
+  border: 3px solid #3D7DA1 !important;
+}
+
+.icon-status-border-gray::after {
+  border: 3px solid #D9D9D9 !important;
+}
+
+.icon-status-border-yellow::after {
+  border: 3px solid #F6C61B !important;
+}
+

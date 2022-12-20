@@ -10,8 +10,10 @@
               <v-row>
                 <div class="rsk-icon-green">
                   <v-row>
-                    <v-img class="d-flex justify-center"
-                            src="@/assets/status/rsk-yellow.png" height="78" contain/>
+                    <v-img class="icon-status-image
+                      icon-rootstock-image-reject
+                      icon-status-border-yellow d-flex justify-center"
+                      src="@/assets/status/rootstock.png" height="78" contain/>
                   </v-row>
                   <v-row class="mt-4">
                     <h1>{{environmentContext.getRskText()}} Network</h1>
@@ -24,8 +26,10 @@
                 <div class="d-flex justify-end">
                   <div class="bitcoin-icon-yellow">
                     <v-row>
-                      <v-img class="d-flex justify-center"
-                              src="@/assets/status/btc-yellow.png" height="78" contain/>
+                      <v-img class="icon-status-image
+                        icon-btc-image-reject
+                        icon-status-border-yellow d-flex justify-center"
+                        src="@/assets/status/btc.png" height="78" contain/>
                     </v-row>
                     <v-row class="mt-4">
                       <h1>Refund {{environmentContext.getBtcText()}} address</h1>
@@ -42,15 +46,18 @@
               <div class="d-flex justify-start">
                 <div class="bitcoin-icon-green">
                   <v-row>
-                    <v-img class="d-flex justify-center"
-                      :src="currentBtcIcon" height="78" contain/>
+                    <v-img v-bind:class="bordersStyle.btc"
+                      class="icon-status-image icon-btc-image d-flex justify-center"
+                      src="@/assets/status/btc.png" height="78" contain/>
                   </v-row>
-                  <v-row class="mt-4">
-                    <h1>{{environmentContext.getBtcText()}} Network</h1>
+                  <v-row class="mt-5">
+                    <v-col>
+                      <h1>{{environmentContext.getBtcText()}} Network</h1>
+                    </v-col>
                   </v-row>
                 </div>
               </div>
-              <!-- color="#00B43C" -->
+
               <v-progress-linear
                 class="progress-bar-status"
                 :value="btcConfirmationsPercentage"
@@ -82,16 +89,16 @@
             <v-col cols="auto" class="pa-0 d-flex justify-center">
               <div class="img-progress-bar">
                 <v-row>
-                  <v-img class="d-flex justify-center"
-                    :src="currentRskIcon" height="78" contain/>
+                  <v-img v-bind:class="bordersStyle.rootstock"
+                    class="icon-status-image icon-rootstock-image d-flex justify-center"
+                    src="@/assets/status/rootstock.png" height="78" contain/>
                 </v-row>
-                <v-row class="mt-4">
+                <v-row class="mt-5">
                   <h1>{{environmentContext.getRskText()}} Network</h1>
                 </v-row>
               </div>
             </v-col>
             <v-col class="confirm-percentage pa-0">
-              <!--  color="#00B43C" -->
               <v-row>
                 <v-progress-linear
                 class="progress-bar-status "
@@ -109,10 +116,11 @@
                 <div class="d-flex justify-end pa-0 ma-0">
                   <div class="rbtc-icon-green">
                     <v-row>
-                      <v-img class="d-flex justify-center"
-                              :src="currentRbtcIcon" height="78" contain/>
+                      <v-img v-bind:class="bordersStyle.rbtc"
+                        class="icon-status-image icon-rbtc-image d-flex justify-center"
+                        src="@/assets/status/rbtc.png" height="78" contain/>
                     </v-row>
-                    <v-row class="mt-4">
+                    <v-row class="justify-center mt-5">
                       <h1
                       :style="rskConfirmationsPercentage === 100 ?
                       `color:#00B520;` : ``">
@@ -157,18 +165,6 @@ import EnvironmentContextProviderService from '@/providers/EnvironmentContextPro
 import * as constants from '@/store/constants';
 import { getTime, setStatusMessage } from '@/services/utils';
 
-import rbtcGray from '@/assets/status/rbtc_gray.png';
-import rbtcBlue from '@/assets/status/rbtc_blue.png';
-import rbtcGreen from '@/assets/status/rbtc_green.png';
-
-import rskGray from '@/assets/status/rsk-gray.png';
-import rskBlue from '@/assets/status/rsk-blue.png';
-import rskGreen from '@/assets/status/rsk-green.png';
-
-import btcGray from '@/assets/status/btc-gray.png';
-import btcBlue from '@/assets/status/btc-blue.png';
-import btcGreen from '@/assets/status/btc-green.png';
-
 @Component({
   components: {
     TxSummary,
@@ -196,43 +192,31 @@ export default class TxPegin extends Vue {
     green: '#9CE07B',
   };
 
-  srcIcon = {
-    btc: {
-      blue: btcBlue,
-      green: btcGreen,
-      gray: btcGray,
-    },
-    rbtc: {
-      blue: rbtcBlue,
-      green: rbtcGreen,
-      gray: rbtcGray,
-    },
-    rsk: {
-      blue: rskBlue,
-      green: rskGreen,
-      gray: rskGray,
-    },
-  };
-
   circleColor = {
     blue: 'circle-blue',
     gray: 'circle-gray',
     green: 'circle-green',
   };
 
+  borderColor = {
+    blue: 'icon-status-border-blue',
+    gray: 'icon-status-border-gray',
+    green: 'icon-status-border-green',
+  };
+
   rskCircleColor = this.circleColor.gray;
 
   btcCircleColor = this.circleColor.gray;
 
-  currentBtcIcon = this.srcIcon.btc.gray;
-
-  currentRbtcIcon = this.srcIcon.rbtc.gray;
-
-  currentRskIcon = this.srcIcon.rsk.gray;
-
   currentBtcBarColor = this.colors.gray;
 
   currentRskBarColor = this.colors.gray;
+
+  bordersStyle = {
+    btc: this.borderColor.gray,
+    rootstock: this.borderColor.gray,
+    rbtc: this.borderColor.gray,
+  };
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
@@ -311,30 +295,32 @@ export default class TxPegin extends Vue {
   setProgressColor() {
     if (this.btcConfirmationsPercentage <= 1) {
       this.currentBtcBarColor = this.colors.gray;
-
-      this.currentBtcIcon = this.srcIcon.btc.gray;
-      this.currentRbtcIcon = this.srcIcon.rbtc.gray;
-      this.currentRskIcon = this.srcIcon.rsk.gray;
+      this.bordersStyle.btc = this.borderColor.gray;
+      this.bordersStyle.rootstock = this.borderColor.gray;
+      this.bordersStyle.rbtc = this.borderColor.gray;
     } else if (this.btcConfirmationsPercentage > 1
     && this.btcConfirmationsPercentage < 100) {
       this.currentBtcBarColor = this.colors.blue;
 
-      this.currentBtcIcon = this.srcIcon.btc.blue;
+      this.bordersStyle.btc = this.borderColor.blue;
+      this.bordersStyle.rootstock = this.borderColor.gray;
+      this.bordersStyle.rbtc = this.borderColor.gray;
     } else {
       this.currentBtcBarColor = this.colors.blue;
       this.currentRskBarColor = this.colors.blue;
 
-      this.currentBtcIcon = this.srcIcon.btc.blue;
-      this.currentRskIcon = this.srcIcon.rsk.blue;
+      this.bordersStyle.btc = this.borderColor.blue;
+      this.bordersStyle.rootstock = this.borderColor.blue;
+      this.bordersStyle.rbtc = this.borderColor.gray;
     }
 
     if (this.rskConfirmationsPercentage === 100) {
       this.currentBtcBarColor = this.colors.green;
       this.currentRskBarColor = this.colors.green;
 
-      this.currentBtcIcon = this.srcIcon.btc.green;
-      this.currentRskIcon = this.srcIcon.rsk.green;
-      this.currentRbtcIcon = this.srcIcon.rbtc.green;
+      this.bordersStyle.btc = this.borderColor.green;
+      this.bordersStyle.rootstock = this.borderColor.green;
+      this.bordersStyle.rbtc = this.borderColor.green;
     }
   }
 
