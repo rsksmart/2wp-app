@@ -7,7 +7,7 @@ import {
 } from '@/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import { deriveBatchAddresses } from '@/utils';
-import { getAccountType } from '@/services/utils';
+import { convertToRequestBalance, getAccountType } from '@/services/utils';
 
 export default abstract class WalletService {
   protected network: AppNetwork;
@@ -215,7 +215,8 @@ export default abstract class WalletService {
       throw new Error('Error getting list of addresses - List of addresses is empty');
     }
     addresses = await this.getUnusedValue(addresses);
-    const balancesFound = await ApiService.getBalances(sessionId, addresses);
+    const requestBalance = convertToRequestBalance(addresses);
+    const balancesFound = await ApiService.getBalances(sessionId, requestBalance);
     const balances = {
       legacy: new SatoshiBig(balancesFound.legacy || 0, 'satoshi'),
       segwit: new SatoshiBig(balancesFound.segwit || 0, 'satoshi'),

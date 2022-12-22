@@ -21,6 +21,10 @@ export interface WalletAddress {
   publicKey: string;
 }
 
+export interface RequestBalance {
+  address: string;
+}
+
 export interface PeginConfiguration {
   minValue: number; // SatoshiBN
   maxValue: number; // SatoshiBN

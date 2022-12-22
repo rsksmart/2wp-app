@@ -2,7 +2,9 @@ import * as Bowser from 'bowser';
 import * as constants from '@/store/constants';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
-import { AppNetwork, TxStatusType, TxStatusMessage } from '@/types';
+import {
+  AppNetwork, TxStatusType, TxStatusMessage, WalletAddress, RequestBalance,
+} from '@/types';
 
 export function getAccountType(address: string, network: AppNetwork): string {
   const [legacyTestReg, segwitTestReg, nativeTestReg] = network === constants.BTC_NETWORK_MAINNET
@@ -155,4 +157,16 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
 
 export function formatTxId(value: string) : string {
   return `${value.substr(0, 24)}...${value.substr(60, 64)}`;
+}
+
+export function convertToRequestBalance(walletAddress: WalletAddress[]) : RequestBalance[] {
+  const retorno : RequestBalance[] = [];
+
+  if (walletAddress) {
+    walletAddress.forEach((element) => {
+      retorno.push({ address: element.address });
+    });
+  }
+
+  return retorno;
 }
