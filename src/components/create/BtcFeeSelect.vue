@@ -160,6 +160,5 @@ export default class BtcFeeSelect extends Vue {
     console.log(selectedFee);
     this.txFeeIndex = selectedFee;
   }
-
 }
 </script>
