@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { WalletAddress, PeginConfiguration } from '@/types/pegInTx';
+import { PeginConfiguration, RequestBalance } from '@/types/pegInTx';
 import {
   AccountBalance, AddressStatus, FeeAmountDataResponse, NormalizedTx, TxStatus,
 } from '@/types';
@@ -12,7 +12,7 @@ export default class ApiService {
   static baseURL = EnvironmentAccessorService.getEnvironmentVariables().vueAppApiBaseUrl;
 
   public static getBalances(sessionId: string,
-    addressList?: WalletAddress[]): Promise<AccountBalance> {
+    addressList?: RequestBalance[]): Promise<AccountBalance> {
     return new Promise((resolve, reject) => {
       axios.post(`${this.baseURL}/balance`, {
         sessionId,
