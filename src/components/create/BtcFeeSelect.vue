@@ -120,7 +120,6 @@ export default class BtcFeeSelect extends Vue {
 
   @Emit()
   updateStore() {
-    console.log('updateStore called...');
     let selectedFee: MiningSpeedFee;
     switch (this.txFeeIndex) {
       case 0:
@@ -140,7 +139,6 @@ export default class BtcFeeSelect extends Vue {
   }
 
   beforeMount() {
-    console.log('getSelectedFee called...');
     let selectedFee = 1;
     if (this.pegInTxState && this.pegInTxState.selectedFee) {
       console.log('Verifying switch...');
@@ -156,8 +154,6 @@ export default class BtcFeeSelect extends Vue {
           break;
       }
     }
-    console.log('returning sected fee');
-    console.log(selectedFee);
     this.txFeeIndex = selectedFee;
   }
 }
