@@ -10,7 +10,7 @@
               We will use the signature to derive your Bitcoin address.
             </p>
             <p class="m-0 p-0">
-              this does not expose your data not spend your funds.
+              This does not expose your data nor spend your funds.
             </p>
             <div class="pop-up-sign-field">
               Sign this message to derive your Bitcoin address
