@@ -45,7 +45,6 @@
     </v-row>
     <v-row v-if="showAddressDialog">
       <address-dialog :showAddressDialog="showAddressDialog"
-      @toSign="signMessage"
       @closeDialog="closeAddressDialog"/>
     </v-row>
     <v-row class="mx-0">
@@ -136,11 +135,6 @@ export default class PegOutForm extends Vue {
   @Emit()
   back():void {
     this.$router.push({ name: 'Home' });
-  }
-
-  signMessage() {
-    this.recipientAddress = '0xtesttesttesttesttest';
-    this.showAddressDialog = false;
   }
 
   @Emit()
