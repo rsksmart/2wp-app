@@ -12,7 +12,7 @@ export const state: SessionState = {
   rLoginInstance: undefined,
   txType: undefined,
   balance: new WeiBig('0', 'wei'),
-  btcDerivedAddress: 'test', // TODO: should be an empty string, just for test purpose
+  btcDerivedAddress: '',
 };
 
 const namespaced = true;
