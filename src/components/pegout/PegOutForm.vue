@@ -13,7 +13,7 @@
         <rbtc-input-amount/>
         <v-divider color="#C4C4C4"/>
         <v-container class="form-step pb-0 pt-3 mb-3">
-          <v-row align="start mx-0">
+          <v-row class="mx-0 align-start">
             <v-col cols="auto" class="pl-0">
               <div v-bind:class="[focus ?
               'number-filled' : 'number']">3</div>
@@ -24,7 +24,7 @@
               </p>
               <v-row class="ma-0 pa-0">
                 <v-col cols="6" class="pa-0" >
-                  <v-text-field class="disabled-input" :value="recipientAddress"
+                  <v-text-field class="disabled-input" :value="session.btcDerivedAddress"
                                 disabled color="#F8F5F5"
                                 solo hide-details full-width single-line flat/>
                 </v-col>

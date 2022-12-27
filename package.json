@@ -29,6 +29,7 @@
     "bitcoinjs-lib": "^5.2.0",
     "bowser": "^2.11.0",
     "core-js": "^3.6.5",
+    "ethereumjs-util": "^7.1.5",
     "lodash": "^4.17.21",
     "tiny-secp256k1": "^1.1.6",
     "trezor-connect": "^8.1.19",
