@@ -40,7 +40,7 @@ import * as constants from '@/store/constants';
 
 @Component
 export default class AddressDialog extends Vue {
-  messageToBeSigned = 'Hello world!!!!!';
+  messageToBeSigned = 'Sign this message to derive your Bitcoin address';
 
   @Prop() showAddressDialog!: boolean;
 

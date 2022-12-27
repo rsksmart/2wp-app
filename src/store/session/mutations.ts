@@ -30,4 +30,7 @@ export const mutations: MutationTree<SessionState> = {
   [constants.WEB3_SESSION_SET_BALANCE]: (state, balance: WeiBig) => {
     state.balance = balance;
   },
+  [constants.SESSION_SET_BTC_ACCOUNT]: (state, btcDerivedAddress: string) => {
+    state.btcDerivedAddress = btcDerivedAddress;
+  },
 };

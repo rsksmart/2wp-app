@@ -13,17 +13,17 @@ import { EnvironmentAccessorService } from '@/services/enviroment-accessor.servi
 const bip32 = BIP32Factory(ecc);
 
 // eslint-disable-next-line no-shadow
-enum NETWORKS {
+export enum NETWORKS {
   MAINNET = 'mainnet',
   TESTNET = 'testnet',
 }
 
-function bitcoinJsNetwork(network: NETWORKS): bitcoin.networks.Network {
+export function bitcoinJsNetwork(network: NETWORKS): bitcoin.networks.Network {
   return network === NETWORKS.MAINNET
     ? bitcoin.networks.bitcoin : bitcoin.networks.testnet;
 }
 
-function deriveAddress(
+export function deriveAddress(
   { purpose, pubkey, network }
     : {purpose: Purpose; pubkey: Buffer; network: NETWORKS},
 ): string {
