@@ -76,7 +76,7 @@ describe('RbtcInputAmount', () => {
     });
     expect(wrapper.find('#rbtc-error-msg')
       .text())
-      .toEqual(`The minimum accepted value is ${state.pegoutConfiguration.minValue.toRBTCString()} ${environmentContext.getRbtcTicker()}`);
+      .toEqual(`The minimum accepted value is ${state.pegoutConfiguration.minValue.toRBTCTrimmedString()} ${environmentContext.getRbtcTicker()}`);
   });
   it('should show a message when the input value is above the maximum', async () => {
     sessionState.balance = new WeiBig('2.5', 'rbtc');
@@ -106,7 +106,7 @@ describe('RbtcInputAmount', () => {
     });
     expect(wrapper.find('#rbtc-error-msg')
       .text())
-      .toEqual(`The maximum accepted value is ${state.pegoutConfiguration.maxValue.toRBTCString()} ${environmentContext.getRbtcTicker()}`);
+      .toEqual(`The maximum accepted value is ${state.pegoutConfiguration.maxValue.toRBTCTrimmedString()} ${environmentContext.getRbtcTicker()}`);
   });
   it('should show a message when the user balance + fee are not enough', async () => {
     sessionState.balance = new WeiBig('2', 'rbtc');
