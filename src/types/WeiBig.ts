@@ -4,6 +4,8 @@ const numberRegex = /^[0-9]*(\.[0-9]*)?$/;
 
 type RbtcMultiple = 'wei' | 'kwei' | 'mwei' | 'gwei' | 'rbtc';
 
+const rightZeroPaddedRegex = /^0\.0+$/;
+
 export default class WeiBig extends Big {
   constructor(src: number | string | Big, currency: RbtcMultiple) {
     const safeSrc = src ? src.toString() : '0';
