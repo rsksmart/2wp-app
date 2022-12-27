@@ -55,7 +55,6 @@ import { Component, Vue, Watch } from 'vue-property-decorator';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import { Action, Getter, State } from 'vuex-class';
 import * as constants from '@/store/constants';
-import Big from 'big.js';
 import { isRBTCAmountValidRegex } from '@/services/utils';
 import { PegOutTxState, SessionState, WeiBig } from '@/types';
 
@@ -73,7 +72,7 @@ export default class RbtcInputAmount extends Vue {
 
   @State('web3Session') web3SessionState!: SessionState;
 
-  @Action(constants.PEGOUT_TX_ADD_AMOUNT, { namespace: 'pegOutTx' }) setRbtcAmount !: (amount: Big) => void;
+  @Action(constants.PEGOUT_TX_ADD_AMOUNT, { namespace: 'pegOutTx' }) setRbtcAmount !: (amount: WeiBig) => void;
 
   @Action(constants.PEGOUT_TX_CALCULATE_FEE, { namespace: 'pegOutTx' }) calculateTxFee !: () => void;
 
@@ -95,7 +94,7 @@ export default class RbtcInputAmount extends Vue {
   }
 
   updateStore() {
-    this.setRbtcAmount(new Big(this.rbtcAmount));
+    this.setRbtcAmount(new WeiBig(this.rbtcAmount, 'rbtc'));
     this.calculateTxFee();
   }
 
@@ -110,7 +109,7 @@ export default class RbtcInputAmount extends Vue {
       return 'Please, enter an amount';
     }
     if (this.safeAmount.lt(minValue)) { // remove it
-      return `The minimum accepted value is ${minValue.toRBTCString()} ${this.environmentContext.getRbtcTicker()}`;
+      return `The minimum accepted value is ${minValue.toRBTCTrimmedString()} ${this.environmentContext.getRbtcTicker()}`;
     }
     if (!isRBTCAmountValidRegex(this.rbtcAmount)) {
       return `The amount must be a valid ${this.environmentContext.getRbtcTicker()} value`;
@@ -119,10 +118,10 @@ export default class RbtcInputAmount extends Vue {
       return 'You don\'t have the balance for this amount';
     }
     if (this.safeAmount.lt(minValue)) {
-      return `The minimum accepted value is ${minValue.toRBTCString()} ${this.environmentContext.getRbtcTicker()}`;
+      return `The minimum accepted value is ${minValue.toRBTCTrimmedString()} ${this.environmentContext.getRbtcTicker()}`;
     }
     if (this.safeAmount.gt(maxValue)) {
-      return `The maximum accepted value is ${maxValue.toRBTCString()} ${this.environmentContext.getRbtcTicker()}`;
+      return `The maximum accepted value is ${maxValue.toRBTCTrimmedString()} ${this.environmentContext.getRbtcTicker()}`;
     }
     return '';
   }
