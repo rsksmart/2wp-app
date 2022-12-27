@@ -141,7 +141,6 @@ export default class BtcFeeSelect extends Vue {
   beforeMount() {
     let selectedFee = 1;
     if (this.pegInTxState && this.pegInTxState.selectedFee) {
-      console.log('Verifying switch...');
       switch (this.pegInTxState.selectedFee) {
         case constants.BITCOIN_SLOW_FEE_LEVEL:
           selectedFee = 0;
