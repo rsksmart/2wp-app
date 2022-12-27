@@ -10,9 +10,6 @@
               md="9"
             lg="8"
             xl="7">
-        <v-row justify="center" class="mx-0 pb-4">
-          <h2 class="text-center tx-text">Transaction summary:</h2>
-        </v-row>
         <v-row class="d-flex justify-center mb-n3">
           <v-btn class="btn-focus-out" fab x-small outlined color="green" @click="switchExpand"
                 v-bind:class="[this.over ? 'expand-btn-active' : 'expand-btn-inactive']"
@@ -50,7 +47,7 @@
                       </v-tooltip>
                   </v-row>
                   <v-row>
-                    <v-col class="form-field">
+                    <v-col class="form-field-summary">
                       <v-row>
                         <v-col cols="12"
                           class="col-address-button d-flex flex-column justify-end">
@@ -71,7 +68,7 @@
                     <span class="status-subtitle">Sent</span>
                   </v-row>
                   <v-row>
-                    <v-col class="form-field">
+                    <v-col class="form-field-summary">
                       <v-row class="mx-0 mb-2">
                         <span id="amount">
                           {{ amount }} {{ currencyFromTicker }}
@@ -111,7 +108,7 @@
                       </v-tooltip>
                   </v-row>
                   <v-row>
-                    <v-col class="form-field">
+                    <v-col class="form-field-summary">
                       <span class="status-text-ellipsis">
                         {{ rskFederationAddress }}
                       </span>
@@ -127,7 +124,7 @@
                     <span class="status-subtitle">Transaction hash</span>
                   </v-row>
                   <v-row>
-                    <v-col class="form-field">
+                    <v-col class="form-field-summary">
                     <span class="status-text-ellipsis">{{ computedTxId }}</span>
                     </v-col>
                   </v-row>
@@ -163,7 +160,7 @@
                       </v-tooltip>
                   </v-row>
                   <v-row>
-                    <v-col class="form-field">
+                    <v-col class="form-field-summary">
                       <v-row class="justify-end">
                         <v-col cols="11"
                           class="col-address-button d-flex flex-column">
@@ -195,7 +192,7 @@
                     <span class="status-subtitle">Will receive</span>
                   </v-row>
                   <v-row>
-                    <v-col class="form-field">
+                    <v-col class="form-field-summary">
                       <v-row class="justify-end mx-0 mb-2">
                         <span>{{ amount }} {{ currencyToTicker }}</span>
                       </v-row>
@@ -214,7 +211,7 @@
                     <span class="status-subtitle">Fee to pay</span>
                   </v-row>
                   <v-row>
-                    <v-col class="form-field">
+                    <v-col class="form-field-summary">
                       <v-row class="justify-end mx-0 mb-2">
                         <span>
                           {{ feePlusAmount }} {{ currencyFromTicker }}
@@ -282,7 +279,8 @@
         <v-container id="summary-3" class="pb-0 pl-0">
           <v-row class="mx-0">
             <h1 class="boldie">Destination address:</h1>
-            <v-icon v-if="peginTxState.rskAddressSelected !== ''" class="ml-2" small color="#00B520">
+            <v-icon v-if="peginTxState.rskAddressSelected !== ''"
+              class="ml-2" small color="#00B520">
               mdi-check-circle-outline
             </v-icon>
           </v-row>
