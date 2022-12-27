@@ -1,54 +1,66 @@
 <template>
   <v-col cols="12" offset-xl="1" xl="11" class="pa-0">
-    <v-row class="mx-0 my-4">
-      <h2>Transaction summary:</h2>
+    <v-row class="mx-0 my-4 justify-center">
+      <h2 class="title-transaction-summary">Transaction summary:</h2>
     </v-row>
     <v-row class="mx-0 summary-box">
-      <v-container id="summary-box-container">
+        <v-container>
+         <v-container class="pb-0 pl-0">
+          <v-row class="mx-0">
+            <h2>Bitcoin</h2>
+          </v-row>
+        </v-container>
         <v-container id="summary-1" class="pb-0 pl-0">
           <v-row class="mx-0">
-            <h1>Device account:</h1>
+            <h1 class="boldie">Device account:</h1>
             <v-icon v-if="pegInTxState.selectedAccount" class="ml-2" small color="#008CFF">
               mdi-check-circle-outline
             </v-icon>
           </v-row>
         </v-container>
-        <v-container class="pt-4 pl-0">
-          <p v-bind:class="{'grayish': computedBTCAddress === VALUE_INCOMPLETE_MESSAGE}">
+        <v-container class="form-field pl-0">
+          <p v-bind:class="{'grayish': computedBTCAddress === VALUE_INCOMPLETE_MESSAGE} + ' mark'">
             {{ computedBTCAddress }}
           </p>
         </v-container>
-        <v-divider color="#C4C4C4"/>
         <v-container id="summary-2" class="pb-0 pl-0">
           <v-row class="mx-0">
-            <h1>{{environmentContext.getBtcTicker()}}s:</h1>
+            <h1 class="boldie">{{environmentContext.getBtcTicker()}}s:</h1>
             <v-icon v-if="this.pegInTxState.isValidAmountToTransfer"
                     class="ml-2" small color="#008CFF">
               mdi-check-circle-outline
             </v-icon>
           </v-row>
         </v-container>
-        <v-container class="pt-4 pb-0 pl-0">
-          <p v-bind:class="{'grayish': computedBTCAmount === VALUE_INCOMPLETE_MESSAGE}">
-            {{ computedBTCAmount }}
-          </p>
-        </v-container>
-        <v-container class="pt-0 pl-0">
-          <span>USD $ {{ computedBTCAmountUSD }}</span>
+        <v-container class="form-field pt-2 pb-2 pl-0">
+          <v-container class="mark">
+            <p v-bind:class="{'grayish': computedBTCAmount === VALUE_INCOMPLETE_MESSAGE}">
+              {{ computedBTCAmount }}
+            </p>
+            <span>USD $ {{ computedBTCAmountUSD }}</span>
+          </v-container>
         </v-container>
         <v-divider color="#C4C4C4"/>
+        <v-container class="pb-0 pl-0">
+          <v-row class="mx-0">
+            <h2>RSK</h2>
+          </v-row>
+        </v-container>
         <v-container id="summary-3" class="pb-0 pl-0">
           <v-row class="mx-0">
-            <h1>Destination {{environmentContext.getRskText()}} address:</h1>
+            <h1 class="boldie">Destination address:</h1>
             <v-icon v-if="pegInTxState.rskAddressSelected !== ''"
                     class="ml-2" small color="#008CFF">
               mdi-check-circle-outline
             </v-icon>
           </v-row>
         </v-container>
-        <v-container class="pt-4 pl-0">
+        <v-container class="form-field pt-2 pl-0">
           <v-row class="mx-0 d-none d-lg-block">
-            <p v-bind:class="{'grayish': computedRskAddress === VALUE_INCOMPLETE_MESSAGE}">
+            <p v-bind:class="{
+                'grayish':
+                computedRskAddress === VALUE_INCOMPLETE_MESSAGE
+              } + ' mark short-address'">
               {{ computedRskAddress }}
             </p>
           </v-row>
@@ -58,10 +70,9 @@
             </p>
           </v-row>
         </v-container>
-        <v-divider color="#C4C4C4"/>
         <v-container v-if="!isLiquality" id="summary-4" class="pb-0 pl-0">
           <v-row class="mx-0">
-            <h1>Refund {{environmentContext.getBtcText()}} address:</h1>
+            <h1 class="boldie">Refund {{environmentContext.getBtcText()}} address:</h1>
             <v-icon v-if="pegInTxState.selectedAccount" class="ml-2" small color="#008CFF">
               mdi-check-circle-outline
             </v-icon>
@@ -83,40 +94,39 @@
             </p>
           </v-row>
         </v-container>
-        <v-divider color="#C4C4C4"/>
         <v-container id="summary-5" class="pb-0 pl-0">
           <v-row class="mx-0">
-            <h1>Transaction fee:</h1>
+            <h1 class="boldie">Fees:</h1>
             <v-icon v-if="pegInTxState.rskAddressSelected !== ''"
                     class="ml-2" small color="#008CFF">
               mdi-check-circle-outline
             </v-icon>
           </v-row>
         </v-container>
-        <v-container class="pt-4 pb-0 pl-0">
-          <p v-bind:class="{'grayish': computedTxFee === VALUE_INCOMPLETE_MESSAGE}">
-            {{ computedTxFee }}
-          </p>
-        </v-container>
-        <v-container class="pt-0 pl-0">
-          <span>USD $ {{ computedTxFeeUSD }}</span>
+        <v-container class="form-field pt-2 pb-3 pl-0">
+          <v-container class="mark">
+            <p v-bind:class="{'grayish': computedTxFee === VALUE_INCOMPLETE_MESSAGE}">
+              {{ computedTxFee }}
+            </p>
+            <span>USD $ {{ computedTxFeeUSD }}</span>
+          </v-container>
         </v-container>
         <v-divider color="#C4C4C4"/>
         <v-container id="summary-6" class="pb-0 pl-0">
           <v-row class="mx-0">
-            <h1>Transaction total:</h1>
+            <h1 class="boldie">Transaction total:</h1>
             <v-icon v-if="pegInTxState.isValidAmountToTransfer" class="ml-2" small color="#008CFF">
               mdi-check-circle-outline
             </v-icon>
           </v-row>
         </v-container>
-        <v-container class="pt-4 pb-0 pl-0">
-          <p v-bind:class="{'grayish': computedBTCAmount === VALUE_INCOMPLETE_MESSAGE}">
-            {{ computedFeePlusAmount }}
-          </p>
-        </v-container>
-        <v-container class="pt-0 pl-0">
-          <span>USD $ {{ computedFeePlusAmountUSD }}</span>
+        <v-container class="form-field pt-2 pb-0 pl-0">
+          <v-container class="mark">
+            <p v-bind:class="{'grayish': computedBTCAmount === VALUE_INCOMPLETE_MESSAGE}">
+              {{ computedFeePlusAmount }}
+            </p>
+            <span style="text-overflow: ellipsis;"> USD $ {{ computedFeePlusAmountUSD }}</span>
+          </v-container>
         </v-container>
       </v-container>
     </v-row>

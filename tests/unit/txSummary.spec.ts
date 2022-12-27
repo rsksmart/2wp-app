@@ -6,6 +6,7 @@ import TxSummary from '@/components/exchange/TxSummary.vue';
 import SatoshiBig from '@/types/SatoshiBig';
 import * as constants from '@/store/constants';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+const {Builder, Browser, By, Key, until} = require('selenium-webdriver');
 
 const localVue = createLocalVue();
 let vuetify:any;
@@ -82,7 +83,7 @@ describe('TxSummary', () => {
     },
   });
 
-  it('Check summary overflow values USD', () => {
+  it('Check summary overflow values USD', async () => {
     const wrapper = shallowMount(TxSummary, { store, localVue, vuetify });
 
     const amountUSD = Big(state.amountToTransfer.toBTCString())

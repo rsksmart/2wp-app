@@ -8,3 +8,13 @@ export interface StatusState extends TxStatus{
     errorMessage: string,
     txStatus?: TxStatus,
 }
+
+export enum TxSummaryAction {
+    TRANSACTION = 'TRANSACTION',
+    STATUS = 'STATUS'
+}
+
+export enum TxSummaryOrientation {
+    VERITICAL = 'VERTICAL',
+    HORIZONTAL = 'HORIZONTAL'
+}

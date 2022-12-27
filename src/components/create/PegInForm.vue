@@ -13,7 +13,7 @@
         </v-col>
       </v-row>
       <v-row class="mx-0 mt-2">
-        <v-col id="options-col" cols="8" lg="7" class="pa-0">
+        <v-col id="options-col" cols="8" lg="8" class="px-2">
           <peg-in-account-select/>
           <v-divider color="#C4C4C4"/>
           <btc-input-amount/>
@@ -22,8 +22,13 @@
           <v-divider color="#C4C4C4"/>
           <btc-fee-select/>
         </v-col>
-        <v-col id="summary-col" cols="4" lg="5">
-          <btc-tx-summary-side/>
+        <v-col id="summary-col" cols="4" lg="4">
+          <!-- <btc-tx-summary-side/> -->
+          <tx-summary
+            :showTxId="true"
+            :initialExpand="true"
+            type='PEGIN'
+            orientation='VERTICAL'/>
         </v-col>
       </v-row>
       <v-row class="mx-0">
@@ -71,6 +76,7 @@ import { Machine } from '@/services/utils';
 import SatoshiBig from '@/types/SatoshiBig';
 import AddressWarningDialog from '@/components/exchange/AddressWarningDialog.vue';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
+import TxSummary from '@/components/exchange/TxSummary.vue';
 
 @Component({
   components: {
@@ -80,6 +86,7 @@ import EnvironmentContextProviderService from '@/providers/EnvironmentContextPro
     BtcFeeSelect,
     BtcTxSummarySide,
     AddressWarningDialog,
+    TxSummary
   },
 })
 export default class PegInForm extends Vue {
