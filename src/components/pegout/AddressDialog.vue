@@ -13,7 +13,7 @@
               This does not expose your data nor spend your funds.
             </p>
             <div class="pop-up-sign-field">
-              Sign this message to derive your Bitcoin address
+              {{messageToBeSigned}}
             </div>
         </v-row>
         <v-row class="mx-0 mb-10" justify="space-around">
@@ -35,14 +35,23 @@
 import {
   Component, Prop, Emit, Vue,
 } from 'vue-property-decorator';
+import { Action } from 'vuex-class';
+import * as constants from '@/store/constants';
 
 @Component
 export default class AddressDialog extends Vue {
+  messageToBeSigned = 'Hello world!!!!!';
+
   @Prop() showAddressDialog!: boolean;
 
-  @Emit('toSign')
+  @Action(constants.SESSION_SIGN_MESSAGE, { namespace: 'web3Session' }) signMessage !: (message: string) => Promise<void>;
+
+  @Emit()
   toSign() {
-    return this.showAddressDialog;
+    return this.signMessage(this.messageToBeSigned)
+      .then(() => {
+        this.showAddressDialog = false;
+      });
   }
 
   @Emit('closeDialog')

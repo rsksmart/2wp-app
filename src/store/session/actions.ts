@@ -8,6 +8,7 @@ import {
   TransactionType, SessionState, RootState, WeiBig,
 } from '@/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import { getPubKeyFromRskSignedMessage } from '@/utils';
 
 export const actions: ActionTree<SessionState, RootState> = {
   [constants.SESSION_CONNECT_WEB3]: ({ commit, state }): Promise<void> => {
@@ -80,4 +81,14 @@ export const actions: ActionTree<SessionState, RootState> = {
   [constants.SESSION_ADD_TX_TYPE]: ({ commit }, peg: TransactionType): void => {
     commit(constants.SESSION_SET_TX_TYPE, peg);
   },
+  [constants.SESSION_SIGN_MESSAGE]:
+    async ({ commit, state }, messageToBeSigned: string): Promise<void> => {
+      const web3: Web3 = Vue.prototype.$web3;
+      const messageHex = web3.utils.utf8ToHex(messageToBeSigned);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      const signature = await web3.eth.personal.sign(messageHex, state.account || '0');
+      const publicKey = getPubKeyFromRskSignedMessage(signature);
+      console.log(publicKey);
+    },
 };
