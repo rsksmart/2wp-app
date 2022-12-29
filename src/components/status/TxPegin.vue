@@ -116,8 +116,9 @@
         :statusRefundAddress="currentRefundAddress"
         :txId="txId"
         :showTxId="true"
-        :isPegIn="true"
-        :initialExpand="true"/>
+        :initialExpand="true"
+        type='PEGIN'
+        orientation='HORIZONTAL'/>
     </v-row>
   </v-col>
 </template>
