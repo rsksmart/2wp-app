@@ -1,4 +1,4 @@
-import { ecrecover } from 'ethereumjs-util';
+import { ecdsaRecover } from 'secp256k1';
 import { Purpose } from '@/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import * as constants from '@/store/constants';
@@ -6,11 +6,10 @@ import * as bitcoin from 'bitcoinjs-lib';
 import { deriveAddress, NETWORKS, bitcoinJsNetwork } from './xPubUtils';
 
 export function getPubKeyFromRskSignedMessage(signedMessage:string, hashedMessage: string): Buffer {
-  const r = Buffer.from(signedMessage.substr(0, 66));
-  const s = Buffer.from(`0x${signedMessage.substr(66, 64)}`);
-  const v = `0x${signedMessage.substr(130, 2)}`;
-  const messageBuffer = Buffer.from(hashedMessage.substr(2), 'hex');
-  return Buffer.from(`04${ecrecover(messageBuffer, v, r, s).toString('hex')}`, 'hex');
+  const hashedMessageBuffer = Buffer.from(hashedMessage.substr(2), 'hex');
+  const messageBuffer = Buffer.from(signedMessage.substr(2, 128), 'hex');
+  const recId = 0;
+  return Buffer.from(ecdsaRecover(messageBuffer, recId, hashedMessageBuffer, false));
 }
 
 export function getBtcAddressFromSignedMessage(
