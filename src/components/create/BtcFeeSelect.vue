@@ -52,7 +52,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Emit, Vue } from 'vue-property-decorator';
+import {
+  Component, Emit, Vue, Watch,
+} from 'vue-property-decorator';
 import { Action, Getter, State } from 'vuex-class';
 import * as constants from '@/store/constants';
 import { MiningSpeedFee, PegInTxState } from '@/types/pegInTx';
@@ -61,21 +63,21 @@ import EnvironmentContextProviderService from '@/providers/EnvironmentContextPro
 @Component({
 })
 export default class BtcFeeSelect extends Vue {
-  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-
-  focus = false;
-
-  txFeeIndex = 1.0;
-
-  fixedUSDDecimals = 2;
-
-  transactionFees = ['Slow', 'Average', 'Fast'];
-
   @State('pegInTx') pegInTxState!: PegInTxState;
 
   @Action(constants.PEGIN_TX_SELECT_FEE_LEVEL, { namespace: 'pegInTx' }) setSelectedFee !: (feeLevel: MiningSpeedFee) => void;
 
   @Getter(constants.PEGIN_TX_IS_ENOUGH_BALANCE, { namespace: 'pegInTx' }) isEnoughBalance !: boolean;
+
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+
+  focus = false;
+
+  txFeeIndex = 1;
+
+  fixedUSDDecimals = 2;
+
+  transactionFees = ['Slow', 'Average', 'Fast'];
 
   get txFeeColor() {
     let color;
@@ -134,6 +136,24 @@ export default class BtcFeeSelect extends Vue {
         break;
     }
     this.setSelectedFee(selectedFee);
+  }
+
+  beforeMount() {
+    let selectedFee = 1;
+    if (this.pegInTxState && this.pegInTxState.selectedFee) {
+      switch (this.pegInTxState.selectedFee) {
+        case constants.BITCOIN_SLOW_FEE_LEVEL:
+          selectedFee = 0;
+          break;
+        case constants.BITCOIN_FAST_FEE_LEVEL:
+          selectedFee = 2;
+          break;
+        default:
+          selectedFee = 1;
+          break;
+      }
+    }
+    this.txFeeIndex = selectedFee;
   }
 }
 </script>

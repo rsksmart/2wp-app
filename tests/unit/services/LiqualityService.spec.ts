@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import sinon from 'sinon';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import * as constants from '@/store/constants';
@@ -17,8 +16,8 @@ const initEnvironment = () => {
     vueAppCoin: constants.BTC_NETWORK_TESTNET,
     vueAppManifestAppUrl: '',
     vueAppManifestEmail: '',
-    vueAppWalletMaxCallLiquality: 1,
-    vueAppWalletAddressesPerCallLiquality: 1,
+    vueAppWalletAddressPerCall: 5,
+    vueAppWalletAddressHardStop: 100,
   };
   EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
 };
@@ -30,20 +29,20 @@ describe('Liquality Service:', () => {
   beforeEach(initEnvironment);
   it('should create a LiqualityService instance', () => {
     const liqualityService = new LiqualityService();
-    expect(liqualityService).to.be.instanceOf(LiqualityService);
-    expect(liqualityService).to.be.instanceOf(WalletService);
+    expect(liqualityService).toBeInstanceOf(LiqualityService);
+    expect(liqualityService).toBeInstanceOf(WalletService);
   });
-  it('should get the same number of requested addresses', () => {
+  it('should get the number of requested addresses based on env variables set', () => {
     mockedBitcoinProvider = sinon.createStubInstance(MockedBtcProvider);
     enable = mockedBitcoinProvider.enable;
     checkApp = mockedBitcoinProvider.checkApp;
     request = mockedBitcoinProvider.request;
-    const batch = 2;
+    const batch = EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletAddressPerCall;
     const startFrom = 0;
     request.withArgs({
       method: LiqualityMethods.GET_ADDRESS,
       params: [startFrom, batch, true],
-    }).resolves(mockedData.addressList
+    }).resolves(mockedData.liquality.addressList
       .filter((addressItem) => addressItem.serializedPath
         .split('/')[4] === '1')
       .slice(startFrom, startFrom + batch)
@@ -56,7 +55,7 @@ describe('Liquality Service:', () => {
     request.withArgs({
       method: LiqualityMethods.GET_ADDRESS,
       params: [startFrom, batch, false],
-    }).resolves(mockedData.addressList
+    }).resolves(mockedData.liquality.addressList
       .filter((addressItem) => addressItem.serializedPath
         .split('/')[4] === '0')
       .slice(startFrom, startFrom + batch)
@@ -72,25 +71,25 @@ describe('Liquality Service:', () => {
     sinon.stub(LiqualityService.prototype, 'enable' as any).returns(Promise.resolve({}));
     sinon.stub(LiqualityService.prototype, 'checkApp' as any).returns(Promise.resolve({}));
 
-    return liqualityService.getAccountAddresses(batch, startFrom)
-      .then((walletAddresses) => {
-        expect(walletAddresses.length).to.be.eql(batch * 2);
+    return liqualityService.getAccountAddresses()
+      .then((addresess) => {
+        expect(addresess.length).toEqual(10);
         // eslint-disable-next-line no-unused-expressions
-        expect(mockedBitcoinProvider.enable.notCalled).to.be.true;
+        expect(mockedBitcoinProvider.enable.notCalled).toBeTruthy();
         // eslint-disable-next-line no-unused-expressions
-        expect(request.calledTwice).to.be.true;
+        expect(request.calledTwice).toBeTruthy();
       });
   });
   it('should return exception when Liquality plugin is not installed', () => {
     mockedBitcoinProvider = sinon.createStubInstance(MockedBtcProvider);
     enable = mockedBitcoinProvider.enable;
     request = mockedBitcoinProvider.request;
-    const batch = 2;
+    const batch = EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletAddressPerCall;
     const startFrom = 0;
     request.withArgs({
       method: LiqualityMethods.GET_ADDRESS,
       params: [startFrom, batch, true],
-    }).resolves(mockedData.addressList
+    }).resolves(mockedData.liquality.addressList
       .filter((addressItem) => addressItem.serializedPath
         .split('/')[4] === '1')
       .slice(startFrom, startFrom + batch)
@@ -103,7 +102,7 @@ describe('Liquality Service:', () => {
     request.withArgs({
       method: LiqualityMethods.GET_ADDRESS,
       params: [startFrom, batch, false],
-    }).resolves(mockedData.addressList
+    }).resolves(mockedData.liquality.addressList
       .filter((addressItem) => addressItem.serializedPath
         .split('/')[4] === '0')
       .slice(startFrom, startFrom + batch)
@@ -115,32 +114,32 @@ describe('Liquality Service:', () => {
       })));
     enable.resolves();
     const liqualityService = new LiqualityService(mockedBitcoinProvider);
-    return liqualityService.getAccountAddresses(batch, startFrom)
-      .then().catch((e) => expect(e.message).to.be.eql('Liquality software wallet is not installed on your browser'));
+    return liqualityService.getAccountAddresses()
+      .then().catch((e) => expect(e.message).toEqual('Liquality software wallet not installed on your browser'));
   });
   it('should return a wallet signed tx', () => {
     mockedBitcoinProvider = sinon.createStubInstance(MockedBtcProvider);
     enable = mockedBitcoinProvider.enable;
     request = mockedBitcoinProvider.request;
-    const inputs = mockedData.inputs.map((input) => ({
+    const inputs = mockedData.liquality.inputs.map((input) => ({
       index: input.prevIndex,
       derivationPath: input.derivationPath,
     }));
     request.withArgs({
       method: LiqualityMethods.SIGN_PSBT,
       params: [
-        mockedData.unsignedPsbtTx,
+        mockedData.liquality.unsignedPsbtTx,
         inputs,
       ],
-    }).resolves(mockedData.signedPsbtTx);
+    }).resolves(mockedData.liquality.signedPsbtTx);
     enable.resolves();
     const liqualityService = new LiqualityService(mockedBitcoinProvider);
     return liqualityService.sign({
       inputs,
       outputs: [],
       coin: constants.BTC_NETWORK_TESTNET,
-      base64UnsignedPsbt: mockedData.unsignedPsbtTx,
+      base64UnsignedPsbt: mockedData.liquality.unsignedPsbtTx,
     })
-      .then((signedTx) => expect(signedTx.signedTx).to.be.eql(mockedData.signedTx));
+      .then((signedTx) => expect(signedTx.signedTx).toEqual(mockedData.liquality.signedTx));
   });
 });

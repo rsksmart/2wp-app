@@ -39,9 +39,9 @@ export default class TxErrorDialog extends Vue {
   warningIconPath = WarningIcon;
 
   @Emit()
+  // eslint-disable-next-line class-methods-use-this
   toExchange() {
-    if (this.$router.currentRoute.name === 'Create') this.$router.go(0);
-    this.$router.push({ name: 'Home' });
+    window.location.href = '/';
   }
 
   @Emit('closeErrorDialog')

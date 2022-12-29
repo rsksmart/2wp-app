@@ -1,29 +1,70 @@
 import * as constants from '@/store/constants';
 import SatoshiBig from '@/types/SatoshiBig';
 import { ApiService } from '@/services';
-import { SignedTx } from '@/types/Wallets';
+import { Purpose, SignedTx, WalletCount } from '@/types/Wallets';
 import {
-  WalletAddress, AccountBalance, Tx, AddressStatus,
+  AccountBalance, AddressStatus, AppNetwork, BtcAccount, Tx, WalletAddress,
 } from '@/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import { deriveBatchAddresses } from '@/utils';
+import { convertToRequestBalance, getAccountType } from '@/services/utils';
 
 export default abstract class WalletService {
-  protected coin: string;
+  protected network: AppNetwork;
+
+  protected extendedPubKeys: {
+    p2pkh: string;
+    p2sh: string;
+    p2wpkh: string;
+  };
+
+  protected currentAccount = 0;
 
   protected subscribers:
     Array<(balance: AccountBalance, addressList: WalletAddress[]) => void > = [];
 
   private loadingBalances = false;
 
+  private balanceAccumulated: AccountBalance = {
+    legacy: new SatoshiBig(0, 'satoshi'),
+    segwit: new SatoshiBig(0, 'satoshi'),
+    nativeSegwit: new SatoshiBig(0, 'satoshi'),
+  };
+
+  protected adjacentUnusedAddresses: {
+    legacy: number;
+    segwit: number;
+    nativeSegwit: number;
+  };
+
+  protected maxAddressPerCall: number;
+
+  protected addressesToFetch: WalletCount;
+
   constructor() {
-    this.coin = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
+    this.network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
+    this.maxAddressPerCall = EnvironmentAccessorService
+      .getEnvironmentVariables().vueAppWalletAddressPerCall;
+    this.extendedPubKeys = {
+      p2pkh: '',
+      p2sh: '',
+      p2wpkh: '',
+    };
+    this.adjacentUnusedAddresses = {
+      legacy: 0,
+      segwit: 0,
+      nativeSegwit: 0,
+    };
+    this.addressesToFetch = {
+      legacy: { lastIndex: 0, count: this.maxAddressPerCall },
+      segwit: { lastIndex: 0, count: this.maxAddressPerCall },
+      nativeSegwit: { lastIndex: 0, count: this.maxAddressPerCall },
+    };
   }
 
-  abstract getAccountAddresses(batch: number, index: number): Promise<WalletAddress[]>;
+  // abstract isWalletEnabled(): Promise<boolean>;
 
-  abstract getWalletAddressesPerCall(): number;
-
-  abstract getWalletMaxCall(): number;
+  abstract getAccountAddresses(): Promise<WalletAddress[]>;
 
   abstract sign(tx: Tx): Promise<SignedTx>;
 
@@ -31,16 +72,16 @@ export default abstract class WalletService {
 
   abstract reconnect(): Promise<void>;
 
-  public isLoadingBalances2(): boolean {
-    return this.loadingBalances;
-  }
+  abstract getXpub(accountType: BtcAccount, accountNumber: number): Promise<string>;
+
+  abstract areEnoughUnusedAddresses(): boolean;
 
   get isLoadingBalances(): boolean {
     return this.loadingBalances;
   }
 
   protected getAccountPath(accountType: string, accountIdx: number): string {
-    const coinPath: string = this.coin === constants.BTC_NETWORK_MAINNET ? "/0'" : "/1'";
+    const coinPath: string = this.network === constants.BTC_NETWORK_MAINNET ? "/0'" : "/1'";
     let accountPath = 'm';
     switch (accountType) {
       case constants.BITCOIN_LEGACY_ADDRESS:
@@ -122,94 +163,180 @@ export default abstract class WalletService {
   }
 
   public async startAskingForBalance(sessionId: string, maxAmountPegin: number): Promise<void> {
-    // eslint-disable-next-line prefer-const
-    let balanceAccumulated: AccountBalance = {
+    this.balanceAccumulated = {
       legacy: new SatoshiBig(0, 'satoshi'),
       segwit: new SatoshiBig(0, 'satoshi'),
       nativeSegwit: new SatoshiBig(0, 'satoshi'),
     };
     this.loadingBalances = true;
-    const maxAddressPerCall: number = this.getWalletAddressesPerCall();
-    let addresses: WalletAddress[] = [];
+    this.adjacentUnusedAddresses = {
+      legacy: 0,
+      segwit: 0,
+      nativeSegwit: 0,
+    };
+    const maxAddressesHardStop = EnvironmentAccessorService
+      .getEnvironmentVariables().vueAppWalletAddressHardStop;
     try {
       const connected = await this.isConnected();
 
       if (!connected) {
         await this.reconnect();
       }
-      for (
-        let startFrom = 0;
-        startFrom < (this.getWalletMaxCall() * maxAddressPerCall) && this.subscribers.length !== 0;
-        startFrom += maxAddressPerCall
-      ) {
+      while (this.hasSubscribers() && !this.areEnoughUnusedAddresses()) {
         // eslint-disable-next-line no-await-in-loop
-        addresses = await this.getAccountAddresses(maxAddressPerCall, startFrom);
-        if (addresses.length === 0) {
-          throw new Error('Error getting list of addresses - List of addresses is empty');
-        }
-        // eslint-disable-next-line no-await-in-loop
-        addresses = await WalletService.getUnusedValue(addresses);
-        // eslint-disable-next-line no-await-in-loop
-        const balancesFound = await ApiService.getBalances(sessionId, addresses);
-        const balances = {
-          legacy: new SatoshiBig(balancesFound.legacy || 0, 'satoshi'),
-          segwit: new SatoshiBig(balancesFound.segwit || 0, 'satoshi'),
-          nativeSegwit: new SatoshiBig(balancesFound.nativeSegwit || 0, 'satoshi'),
-        };
-        if (startFrom + maxAddressPerCall >= (this.getWalletMaxCall() * maxAddressPerCall)) {
-          this.loadingBalances = false;
-        }
-        // eslint-disable-next-line no-extra-boolean-cast
-        if (!!balances) {
-          if (balances.legacy.gt(0)
-            || balances.nativeSegwit.gt(0)
-            || balances.segwit.gt(0)) {
-            balanceAccumulated = {
-              legacy: new SatoshiBig(balanceAccumulated.legacy.plus(balances.legacy), 'satoshi'),
-              segwit: new SatoshiBig(balanceAccumulated.segwit.plus(balances.segwit), 'satoshi'),
-              nativeSegwit: new SatoshiBig(balanceAccumulated.nativeSegwit.plus(balances.nativeSegwit), 'satoshi'),
-            };
-          } else {
-            const areAllAddressUnused = addresses
-              .every((walletAddressItem) => walletAddressItem.unused);
-            if (areAllAddressUnused) break;
-          }
-          this.informSubscribers(balanceAccumulated, addresses);
-        } else {
-          throw new Error('Error getting balances');
-        }
+        await this.askForBalance(sessionId);
         const maxAmountPeginCompare = new SatoshiBig(maxAmountPegin, 'satoshi');
-        if (balanceAccumulated.legacy.gte(maxAmountPeginCompare)
-          && balanceAccumulated.segwit.gte(maxAmountPeginCompare)
-          && balanceAccumulated.nativeSegwit.gte(maxAmountPeginCompare)
+        if (this.balanceAccumulated.legacy.gte(maxAmountPeginCompare)
+          && this.balanceAccumulated.segwit.gte(maxAmountPeginCompare)
+          && this.balanceAccumulated.nativeSegwit.gte(maxAmountPeginCompare)
         ) {
-          return;
+          break;
+        }
+        this.setAddressesToFetch();
+        const maxIndexReached = Math.max(
+          this.addressesToFetch.legacy.lastIndex,
+          this.addressesToFetch.segwit.lastIndex,
+          this.addressesToFetch.nativeSegwit.lastIndex,
+        );
+        if (maxIndexReached >= maxAddressesHardStop) {
+          break;
         }
       }
-      this.informSubscribers(balanceAccumulated, addresses);
-    } catch (error) {
+      this.loadingBalances = false;
+      this.informSubscribers(this.balanceAccumulated, []);
+    } catch (error: any) {
       if (!error.message) {
         error.message = 'Error fetching balance';
       }
       throw error;
     } finally {
       this.loadingBalances = false;
-      this.informSubscribers(balanceAccumulated, addresses);
     }
   }
 
-  private static getUnusedValue(addressList: WalletAddress[]): Promise<WalletAddress[]> {
-    const addressListResponse = [...addressList];
+  private async askForBalance(sessionId: string): Promise<void> {
+    let addresses = await this.getAccountAddresses();
+    if (addresses.length === 0) {
+      throw new Error('Error getting list of addresses - List of addresses is empty');
+    }
+    addresses = await this.getUnusedValue(addresses);
+    const requestBalance = convertToRequestBalance(addresses);
+    const balancesFound = await ApiService.getBalances(sessionId, requestBalance);
+    const balances = {
+      legacy: new SatoshiBig(balancesFound.legacy || 0, 'satoshi'),
+      segwit: new SatoshiBig(balancesFound.segwit || 0, 'satoshi'),
+      nativeSegwit: new SatoshiBig(balancesFound.nativeSegwit || 0, 'satoshi'),
+    };
+    if (!balances) {
+      throw new Error('Error getting balances');
+    }
+    this.balanceAccumulated = {
+      legacy: new SatoshiBig(this.balanceAccumulated.legacy.plus(balances.legacy), 'satoshi'),
+      segwit: new SatoshiBig(this.balanceAccumulated.segwit.plus(balances.segwit), 'satoshi'),
+      nativeSegwit: new SatoshiBig(this.balanceAccumulated.nativeSegwit.plus(balances.nativeSegwit), 'satoshi'),
+    };
+    this.informSubscribers(this.balanceAccumulated, addresses);
+  }
+
+  private getUnusedValue(addressList: Array<WalletAddress>): Promise<Array<WalletAddress>> {
+    const addressListResponse: Array<WalletAddress> = [];
     return ApiService
-      .areUnusedAddresses(addressListResponse.map((walletAddress) => walletAddress.address))
+      .areUnusedAddresses(addressList.map((walletAddress) => walletAddress.address))
       .then((addressStatusList: AddressStatus[]) => {
-        addressListResponse.forEach((walletAddressItem) => {
-          const status : AddressStatus | undefined = addressStatusList
-            .find((statusItem) => walletAddressItem.address === statusItem.address);
-            // eslint-disable-next-line no-param-reassign
-          walletAddressItem.unused = status ? status.unused : false;
+        addressList.forEach((walletAddressItem: WalletAddress) => {
+          const addressStatus = addressStatusList
+            .find((statusItem) => statusItem.address === walletAddressItem.address);
+          if (!addressStatus) {
+            throw new Error('Unused value from Api not found');
+          }
+          const {
+            derivationPath, address, publicKey, arrayPath,
+          } = walletAddressItem;
+          addressListResponse.push({
+            derivationPath, arrayPath, address, publicKey, unused: addressStatus.unused,
+          });
+          const accountType = getAccountType(address, this.network);
+          switch (accountType) {
+            case constants.BITCOIN_LEGACY_ADDRESS:
+              this.adjacentUnusedAddresses.legacy = addressStatus.unused
+                ? this.adjacentUnusedAddresses.legacy + 1 : 0;
+              break;
+            case constants.BITCOIN_SEGWIT_ADDRESS:
+              this.adjacentUnusedAddresses.segwit = addressStatus.unused
+                ? this.adjacentUnusedAddresses.segwit + 1 : 0;
+              break;
+            case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
+              this.adjacentUnusedAddresses.nativeSegwit = addressStatus.unused
+                ? this.adjacentUnusedAddresses.nativeSegwit + 1 : 0;
+              break;
+            default:
+          }
         });
         return addressListResponse;
       });
+  }
+
+  protected async setAccountsXpub(accountIdx: number): Promise<void> {
+    this.extendedPubKeys = {
+      p2pkh: await this.getXpub(constants.BITCOIN_LEGACY_ADDRESS, accountIdx),
+      p2sh: await this.getXpub(constants.BITCOIN_SEGWIT_ADDRESS, accountIdx),
+      p2wpkh: await this.getXpub(constants.BITCOIN_NATIVE_SEGWIT_ADDRESS, accountIdx),
+    };
+  }
+
+  protected getDerivedAddresses(batch: number, startFrom: number, accountType: BtcAccount)
+    : Array<WalletAddress> {
+    switch (accountType) {
+      case constants.BITCOIN_LEGACY_ADDRESS:
+        return deriveBatchAddresses(
+          this.extendedPubKeys.p2pkh,
+          Purpose.P2PKH,
+          startFrom,
+          batch,
+        );
+      case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
+        return deriveBatchAddresses(
+          this.extendedPubKeys.p2wpkh,
+          Purpose.P2WPKH,
+          startFrom,
+          batch,
+        );
+      case constants.BITCOIN_SEGWIT_ADDRESS:
+        return deriveBatchAddresses(
+          this.extendedPubKeys.p2sh,
+          Purpose.P2SH,
+          startFrom,
+          batch,
+        );
+      default:
+        return [];
+    }
+  }
+
+  private setAddressesToFetch(): void {
+    const {
+      legacy: unusedLegacy,
+      segwit: unusedSegwit,
+      nativeSegwit: unusedNativeSegwit,
+    } = this.adjacentUnusedAddresses;
+    const { legacy, nativeSegwit, segwit } = this.addressesToFetch;
+    const maxUnusedAddresses = constants.MAX_ADJACENT_UNUSED_ADDRESSES;
+    this.addressesToFetch = {
+      legacy: {
+        lastIndex: legacy.lastIndex + legacy.count,
+        count: unusedLegacy > maxUnusedAddresses
+          ? 0 : Math.min(this.maxAddressPerCall, maxUnusedAddresses - unusedLegacy),
+      },
+      segwit: {
+        lastIndex: segwit.lastIndex + segwit.count,
+        count: unusedSegwit > maxUnusedAddresses
+          ? 0 : Math.min(this.maxAddressPerCall, maxUnusedAddresses - unusedSegwit),
+      },
+      nativeSegwit: {
+        lastIndex: nativeSegwit.lastIndex + nativeSegwit.count,
+        count: unusedNativeSegwit > maxUnusedAddresses
+          ? 0 : Math.min(this.maxAddressPerCall, maxUnusedAddresses - unusedNativeSegwit),
+      },
+    };
   }
 }

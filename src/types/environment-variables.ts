@@ -13,17 +13,9 @@ export class EnvironmentVariables {
 
   public vueAppManifestAppUrl: string;
 
-  public vueAppWalletMaxCallTrezor: number;
+  public vueAppWalletAddressHardStop: number;
 
-  public vueAppWalletAddressesPerCallTrezor: number;
-
-  public vueAppWalletMaxCallLedger: number;
-
-  public vueAppWalletAddressesPerCallLedger: number;
-
-  public vueAppWalletMaxCallLiquality: number;
-
-  public vueAppWalletAddressesPerCallLiquality: number;
+  public vueAppWalletAddressPerCall: number;
 
   public vueAppRskExplorer: string;
 
@@ -31,35 +23,21 @@ export class EnvironmentVariables {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(defaultValues: any = {}) {
-    this.vueAppCoin = process.env.VUE_APP_COIN || defaultValues.vueAppCoin;
-    this.baseUrl = process.env.BASE_URL || defaultValues.baseUrl;
-    this.vueAppApiBaseUrl = process.env.VUE_APP_API_BASE_URL
-      || defaultValues.vueAppApiBaseUrl;
-    this.vueAppRskNodeHost = process.env.VUE_APP_RSK_NODE_HOST
-      || defaultValues.vueAppRskNodeHost;
-    this.vueAppManifestEmail = process.env.VUE_APP_MANIFEST_EMAIL
-      || defaultValues.vueAppManifestEmail;
-    this.vueAppManifestAppUrl = process.env.VUE_APP_MANIFEST_APP_URL
-      || defaultValues.vueAppManifestAppUrl;
-    this.vueAppWalletMaxCallTrezor = Number(process.env.VUE_APP_WALLET_MAX_CALLS_TREZOR)
-      || defaultValues.vueAppWalletMaxCallTrezor;
-    this.vueAppWalletAddressesPerCallTrezor
-    // eslint-disable-next-line operator-linebreak
-      = Number(process.env.VUE_APP_WALLET_ADDRESSES_PER_CALL_TREZOR)
-      || defaultValues.vueAppWalletAddressesPerCallTrezor;
-    this.vueAppWalletMaxCallLedger = Number(process.env.VUE_APP_WALLET_MAX_CALLS_LEDGER)
-      || defaultValues.vueAppWalletMaxCallLedger;
-    this.vueAppWalletAddressesPerCallLedger
-    // eslint-disable-next-line operator-linebreak
-      = Number(process.env.VUE_APP_WALLET_ADDRESSES_PER_CALL_LEDGER)
-      || defaultValues.vueAppWalletAddressesPerCallLedger;
-    this.vueAppRskExplorer = process.env.VUE_APP_RSK_EXPLORER || defaultValues.vueAppRskExplorer;
-    this.vueAppHotjarId = process.env.VUE_APP_HOTJAR_ID || defaultValues.vueAppHotjarId;
-    this.vueAppWalletMaxCallLiquality = Number(process.env.VUE_APP_WALLET_MAX_CALLS_LIQUALITY)
-      || defaultValues.vueAppWalletMaxCallLiquality;
-    this.vueAppWalletAddressesPerCallLiquality
-      // eslint-disable-next-line operator-linebreak
-      = Number(process.env.VUE_APP_WALLET_ADDRESSES_PER_CALL_LIQUALITY)
-      || defaultValues.vueAppWalletAddressesPerCallLiquality;
+    this.vueAppCoin = defaultValues.vueAppCoin || process.env.VUE_APP_COIN;
+    this.baseUrl = defaultValues.baseUrl || process.env.BASE_URL;
+    this.vueAppApiBaseUrl = defaultValues.vueAppApiBaseUrl
+      || process.env.VUE_APP_API_BASE_URL;
+    this.vueAppRskNodeHost = defaultValues.vueAppRskNodeHost
+      || process.env.VUE_APP_RSK_NODE_HOST;
+    this.vueAppManifestEmail = defaultValues.vueAppManifestEmail
+      || process.env.VUE_APP_MANIFEST_EMAIL;
+    this.vueAppManifestAppUrl = defaultValues.vueAppManifestAppUrl
+      || process.env.VUE_APP_MANIFEST_APP_URL;
+    this.vueAppWalletAddressHardStop = defaultValues.vueAppWalletAddressHardStop
+      || Number(process.env.VUE_APP_WALLET_ADDRESSES_HARD_STOP);
+    this.vueAppWalletAddressPerCall = defaultValues.vueAppWalletAddressPerCall
+      || Number(process.env.VUE_APP_WALLET_ADDRESS_PER_CALL);
+    this.vueAppRskExplorer = defaultValues.vueAppRskExplorer || process.env.VUE_APP_RSK_EXPLORER;
+    this.vueAppHotjarId = defaultValues.vueAppHotjarId || process.env.VUE_APP_HOTJAR_ID;
   }
 }

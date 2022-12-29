@@ -77,7 +77,7 @@ export default class LedgerTransportService {
     this.isTransportBusy = true;
     const request = this.transportRequestList.shift();
     if (!this.transportWebUsb && request) {
-      TransportWebUSB.create()
+      TransportWebUSB.request()
         .then((transport: TransportWebUSB) => {
           this.transportWebUsb = transport;
           request.resolve(this.transportWebUsb);

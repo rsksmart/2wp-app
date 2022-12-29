@@ -117,6 +117,9 @@ export const BITCOIN_TX_VERSION = 1;
 // Ledger Apps
 export const LEDGER_APP_BTC_TEST = 'Bitcoin Test';
 export const LEDGER_APP_BTC = 'Bitcoin';
+// xpub versions. (source @ledgerhq/currencies)
+export const LEDGER_BTC_MAIN_XPUB_VERSION = 0x0488b21e;
+export const LEDGER_BTC_TEST_XPUB_VERSION = 0x043587cf;
 
 // Status actions
 export const STATUS_GET_TX_STATUS = 'STATUS_GET_TX_STATUS';
@@ -131,6 +134,8 @@ export const STATUS_SET_CLEAR = 'STATUS_SET_CLEAR';
 export const STATUS_IS_REJECTED = 'STATUS_IS_REJECTED';
 export const STATUS_GET_ACTIVE_MESSAGE = 'STATUS_GET_ACTIVE_MESSAGE';
 
+export const MAX_ADJACENT_UNUSED_ADDRESSES = 20;
+
 // eslint-disable-next-line no-shadow
 export enum PegStatus {
   WAITING_CONFIRMATIONS = 'WAITING_CONFIRMATIONS',
@@ -143,3 +148,9 @@ export enum PegStatus {
   ERROR_BELOW_MIN = 'ERROR_BELOW_MIN',
   ERROR_UNEXPECTED = 'ERROR_UNEXPECTED',
 }
+
+export const LEDGER_STATUS_CODES = {
+  TRANSACTION_CANCELLED_BY_USER: 27013,
+  DEVICE_LOCKED: 27010,
+  USER_EXITED_APP: 27906,
+};

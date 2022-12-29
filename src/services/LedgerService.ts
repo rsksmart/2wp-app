@@ -1,22 +1,21 @@
-import AppBtc from '@ledgerhq/hw-app-btc';
+import Btc from '@ledgerhq/hw-app-btc';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import _ from 'lodash';
 import * as bitcoin from 'bitcoinjs-lib';
 import * as constants from '@/store/constants';
-import { WalletAddress } from '@/types/pegInTx';
+import { BtcAccount, WalletAddress } from '@/types/pegInTx';
 import {
   LedgerjsTransaction, LedgerSignedTx, LedgerTx, Tx,
 } from '@/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import { WalletService } from '@/services';
-import LedgerTransportService from '@/services/LedgetTransportService';
+import LedgerTransportService from '@/services/LedgerTransportService';
 
 export default class LedgerService extends WalletService {
-  private network: bitcoin.Network;
+  private bitcoinJsNetwork: bitcoin.Network;
 
   constructor() {
     super();
-    this.network = this.coin === constants.BTC_NETWORK_MAINNET
+    this.bitcoinJsNetwork = this.network === constants.BTC_NETWORK_MAINNET
       ? bitcoin.networks.bitcoin : bitcoin.networks.testnet;
   }
 
@@ -48,21 +47,11 @@ export default class LedgerService extends WalletService {
       );
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  public getWalletAddressesPerCall(): number {
-    return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletAddressesPerCallLedger;
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  public getWalletMaxCall(): number {
-    return EnvironmentAccessorService.getEnvironmentVariables().vueAppWalletMaxCallLedger;
-  }
-
   public static splitTransaction(hexTx: string): Promise<LedgerjsTransaction> {
     return LedgerTransportService.getInstance()
       .enqueueRequest(
         (transport:TransportWebUSB) => new Promise<LedgerjsTransaction>((resolve) => {
-          const btc = new AppBtc(transport);
+          const btc = new Btc(transport);
           const bitcoinJsTx = bitcoin.Transaction.fromHex(hexTx);
           resolve(btc.splitTransaction(hexTx, bitcoinJsTx.hasWitnesses()));
         }),
@@ -72,7 +61,7 @@ export default class LedgerService extends WalletService {
   static splitTransactionList(txHexList: string[]): Promise<LedgerjsTransaction[]> {
     return LedgerTransportService.getInstance()
       .enqueueRequest((transport: TransportWebUSB) => {
-        const btc = new AppBtc(transport);
+        const btc = new Btc(transport);
         return Promise.all(txHexList.map((tx) => {
           const bitcoinJsTx = bitcoin.Transaction.fromHex(tx);
           return btc.splitTransaction(tx, bitcoinJsTx.hasWitnesses());
@@ -84,71 +73,45 @@ export default class LedgerService extends WalletService {
     return LedgerTransportService.getInstance()
       .enqueueRequest(
         (transport: TransportWebUSB) => new Promise<string>((resolve) => {
-          const btc = new AppBtc(transport);
+          const btc = new Btc(transport);
           const txOutputsBuffer: Buffer = btc.serializeTransactionOutputs(splitTx);
           resolve(txOutputsBuffer.toString('hex'));
         }),
       );
   }
 
-  private getAddressesBundle(startFrom: number, batchSize: number, accountIndex = 0):
-    { derivationPath: string; format: 'legacy' | 'p2sh' | 'bech32' | undefined }[] {
-    const bundle: { derivationPath: string; format: 'legacy' | 'p2sh' | 'bech32' | undefined }[] = [];
-    for (let index: number = startFrom; index < (startFrom + batchSize); index += 1) {
-      let change = true;
-      _.range(2).forEach(() => {
-        bundle.push({
-          derivationPath: super.getDerivationPath(constants
-            .BITCOIN_LEGACY_ADDRESS, accountIndex, change, index),
-          format: 'legacy',
-        });
-        bundle.push({
-          derivationPath: super.getDerivationPath(constants
-            .BITCOIN_SEGWIT_ADDRESS, accountIndex, change, index),
-          format: 'p2sh',
-        });
-        bundle.push({
-          derivationPath: super.getDerivationPath(constants
-            .BITCOIN_NATIVE_SEGWIT_ADDRESS, accountIndex, change, index),
-          format: 'bech32',
-        });
-        change = !change;
-      });
-    }
-    return bundle;
+  public getAccountAddresses(): Promise<WalletAddress[]> {
+    return new Promise<WalletAddress[]>((resolve, reject) => {
+      const { p2pkh, p2sh, p2wpkh } = this.extendedPubKeys;
+      const enabledXpub = true;
+      if (p2pkh && p2sh && p2wpkh) {
+        resolve(this.getFullBatchAddresses());
+      } else if (enabledXpub) {
+        this.setAccountsXpub(this.currentAccount)
+          .then(() => this.getFullBatchAddresses())
+          .then(resolve)
+          .catch(reject);
+      }
+    });
   }
 
-  public getAccountAddresses(batch: number, index: number): Promise<WalletAddress[]> {
-    const bundle = this.getAddressesBundle(index, batch);
-    return LedgerTransportService.getInstance()
-      .enqueueRequest(
-        // eslint-disable-next-line no-async-promise-executor
-        (transport: TransportWebUSB) => new Promise<WalletAddress[]>(async (resolve, reject) => {
-          const walletAddresses: WalletAddress[] = [];
-          try {
-            await this.checkApp(transport);
-            const btc = new AppBtc(transport);
-            // eslint-disable-next-line no-restricted-syntax
-            for (const item of bundle) {
-              if (this.subscribers.length === 0) {
-                break;
-              }
-              const { derivationPath, format } = item;
-              // eslint-disable-next-line no-await-in-loop
-              const walletPublicKey = await btc.getWalletPublicKey(derivationPath, { format });
-              walletAddresses.push({
-                address: walletPublicKey.bitcoinAddress,
-                serializedPath: derivationPath,
-                path: this.getSerializedPath(derivationPath),
-                publicKey: walletPublicKey.publicKey,
-              });
-            }
-          } catch (e) {
-            reject(e);
-          }
-          resolve(walletAddresses);
-        }),
-      );
+  private getFullBatchAddresses(): Array<WalletAddress> {
+    let addressList: Array<WalletAddress> = [];
+    const { legacy, segwit, nativeSegwit } = this.addressesToFetch;
+    addressList = addressList.concat(
+      this.getDerivedAddresses(
+        legacy.count, legacy.lastIndex, constants.BITCOIN_LEGACY_ADDRESS,
+      ),
+    ).concat(
+      this.getDerivedAddresses(
+        segwit.count, segwit.lastIndex, constants.BITCOIN_SEGWIT_ADDRESS,
+      ),
+    ).concat(
+      this.getDerivedAddresses(
+        nativeSegwit.count, nativeSegwit.lastIndex, constants.BITCOIN_NATIVE_SEGWIT_ADDRESS,
+      ),
+    );
+    return addressList;
   }
 
   public static getLedgerAddressFormat(accountType: string): 'legacy' | 'p2sh' | 'bech32' {
@@ -177,7 +140,7 @@ export default class LedgerService extends WalletService {
     return LedgerTransportService.getInstance()
       .enqueueRequest(
         (transport: TransportWebUSB) => new Promise<LedgerSignedTx>((resolve, reject) => {
-          const btc = new AppBtc(transport);
+          const btc = new Btc(transport);
           btc.createPaymentTransactionNew({
             inputs: ledgerTx.inputs.map((input) => [input.tx, input.outputIndex, null, null]),
             associatedKeysets: ledgerTx.associatedKeysets,
@@ -235,5 +198,25 @@ export default class LedgerService extends WalletService {
         })
         .catch(reject);
     });
+  }
+
+  getXpub(accountType: BtcAccount, accountNumber: number): Promise<string> {
+    return LedgerTransportService.getInstance()
+      .enqueueRequest((transport: TransportWebUSB) => {
+        const btc = new Btc(transport);
+        const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
+        const xpubVersion = network === constants.BTC_NETWORK_MAINNET
+          ? constants.LEDGER_BTC_MAIN_XPUB_VERSION : constants.LEDGER_BTC_TEST_XPUB_VERSION;
+        return btc.getWalletXpub({
+          path: super.getAccountPath(accountType, accountNumber),
+          xpubVersion,
+        });
+      });
+  }
+
+  areEnoughUnusedAddresses(): boolean {
+    return (this.adjacentUnusedAddresses.legacy >= constants.MAX_ADJACENT_UNUSED_ADDRESSES
+      && this.adjacentUnusedAddresses.segwit >= constants.MAX_ADJACENT_UNUSED_ADDRESSES
+      && this.adjacentUnusedAddresses.nativeSegwit >= constants.MAX_ADJACENT_UNUSED_ADDRESSES);
   }
 }

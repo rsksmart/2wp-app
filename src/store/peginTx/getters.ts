@@ -44,7 +44,7 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       if (state.addressList) {
         // eslint-disable-next-line no-restricted-syntax
         for (const walletAddress of state.addressList) {
-          if ((walletAddress.serializedPath.startsWith(`m/${accountTypePath}${coinPath}/0'/1`)
+          if ((walletAddress.derivationPath.startsWith(`m/${accountTypePath}${coinPath}/0'/1`)
               && walletAddress.unused)) {
             address = walletAddress.address;
             break;
@@ -64,7 +64,7 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       const coinPath = coin === 'main' ? "/0'" : "/1'";
       // eslint-disable-next-line no-unused-expressions
       state.addressList?.forEach((walletAddress) => {
-        if (walletAddress.serializedPath === `m/44'${coinPath}/0'/0/0`) address = walletAddress.address;
+        if (walletAddress.derivationPath === `m/44'${coinPath}/0'/0/0`) address = walletAddress.address;
       });
     }
     return address;
@@ -75,7 +75,7 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       // eslint-disable-next-line no-unused-expressions
       state.addressList?.forEach((walletAddress) => {
         if (walletAddress.address === address) {
-          path = walletAddress.serializedPath.slice(2);
+          path = walletAddress.derivationPath.slice(2);
         }
       });
       return path;
@@ -86,7 +86,7 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       if (state.addressList) {
         state.addressList.forEach((walletAddress) => {
           if (walletAddress.address === address) {
-            derivationPath = walletAddress.serializedPath;
+            derivationPath = walletAddress.derivationPath;
           }
         });
       }
