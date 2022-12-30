@@ -122,14 +122,62 @@
                 <v-col>
                   <v-row>
                     <span class="status-subtitle">Transaction hash</span>
+                      <v-tooltip right>
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-icon small color="teal darken-2"
+                            v-bind="attrs" v-on="on">
+                            mdi-information
+                            </v-icon>
+                        </template>
+                        <p class="tooltip-form mb-0">
+                            Verify the transaction on
+                            {{environmentContext.getRskText()}} block explorer.
+                        </p>
+                      </v-tooltip>
                   </v-row>
                   <v-row>
                     <v-col class="form-field-summary">
-                    <span class="status-text-ellipsis">{{ computedTxId }}</span>
+                      <v-row class="justify-end">
+                        <v-col cols="11"
+                          class="col-address-button d-flex flex-column">
+                          <span class="breakable-address status-text-ellipsis">
+                            {{ computedTxId }}
+                          </span>
+                        </v-col>
+                        <v-col cols="1" class="col-address-button">
+                          <v-btn @click="btcExplorerUrl" icon color="#C4C4C4" x-small>
+                              <v-icon>mdi-open-in-new</v-icon>
+                          </v-btn>
+                        </v-col>
+                      </v-row>
                     </v-col>
                   </v-row>
                 </v-col>
               </v-row>
+
+              <!-- Fee to pay -->
+              <v-row class="box-field mx-1">
+                <v-col>
+                  <v-row>
+                    <span class="status-subtitle">Fee to pay</span>
+                  </v-row>
+                  <v-row>
+                    <v-col class="form-field-summary">
+                      <v-row class="mx-0 mb-2">
+                        <span>
+                          {{ feePlusAmount }} {{ currencyFromTicker }}
+                        </span>
+                      </v-row>
+                    <v-row class="mx-0">
+                        <span class="grayish" id="total-usd">
+                          USD $ {{ feePlusAmountUSD }}
+                        </span>
+                      </v-row>
+                    </v-col>
+                  </v-row>
+                </v-col>
+              </v-row>
+
             </v-col>
 
             <v-divider inset vertical/>
@@ -198,29 +246,6 @@
                       </v-row>
                       <v-row class="justify-end mx-0">
                         <span class="grayish" id="fee-usd">USD $ {{ feeUSD }}</span>
-                      </v-row>
-                    </v-col>
-                  </v-row>
-                </v-col>
-              </v-row>
-
-              <!-- Fee to pay -->
-              <v-row class="box-field mx-1">
-                <v-col>
-                  <v-row class="justify-end">
-                    <span class="status-subtitle">Fee to pay</span>
-                  </v-row>
-                  <v-row>
-                    <v-col class="form-field-summary">
-                      <v-row class="justify-end mx-0 mb-2">
-                        <span>
-                          {{ feePlusAmount }} {{ currencyFromTicker }}
-                        </span>
-                      </v-row>
-                    <v-row class="justify-end mx-0">
-                        <span class="grayish" id="total-usd">
-                          USD $ {{ feePlusAmountUSD }}
-                        </span>
                       </v-row>
                     </v-col>
                   </v-row>
@@ -377,7 +402,7 @@ import SatoshiBig from '@/types/SatoshiBig';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import { PegInTxState } from '@/types/pegInTx';
-import { formatTxId } from '@/services/utils';
+import { formatTxId, getBtcExplorerUrl } from '@/services/utils';
 import { TxStatusType } from '@/types/store';
 import { TxSummaryOrientation } from '@/types/Status';
 import { getChunkedValue } from '@/utils/common';
@@ -426,6 +451,10 @@ export default class TxSummary extends Vue {
   get amount(): string {
     if (!this.peginTxState.amountToTransfer) return this.VALUE_INCOMPLETE_MESSAGE;
     return this.peginTxState.amountToTransfer.toBTCString();
+  }
+
+  btcExplorerUrl() {
+    window.open(getBtcExplorerUrl(this.txId), '_blank');
   }
 
   get amountUSD(): string {
