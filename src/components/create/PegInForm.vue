@@ -26,8 +26,8 @@
           <tx-summary
             :showTxId="true"
             :initialExpand="true"
-            type='PEGIN'
-            orientation='VERTICAL'/>
+            :type="typeSummary"
+            :orientation="orientationSummary"/>
         </v-col>
       </v-row>
       <v-row class="mx-0">
@@ -75,6 +75,8 @@ import SatoshiBig from '@/types/SatoshiBig';
 import AddressWarningDialog from '@/components/exchange/AddressWarningDialog.vue';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import TxSummary from '@/components/exchange/TxSummary.vue';
+import { TxStatusType } from '@/types/store';
+import { TxSummaryOrientation } from '@/types/Status';
 
 @Component({
   components: {
@@ -94,6 +96,10 @@ export default class PegInForm extends Vue {
   rskAddressState = 'invalid';
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+
+  typeSummary = TxStatusType.PEGIN;
+
+  orientationSummary = TxSummaryOrientation.VERITICAL;
 
   @State('pegInTx') pegInTxState!: PegInTxState;
 

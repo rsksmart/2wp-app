@@ -7,7 +7,7 @@
         Get {{environmentContext.getBtcTicker()}}.</h2>
     </v-row>
     <v-row>
-      <v-col cols="8" lg="7" >
+      <v-col cols="8" lg="8" >
         <rsk-wallet-connection @connectingWallet="openAddressDialog"/>
         <v-divider color="#C4C4C4"/>
         <rbtc-input-amount/>
@@ -35,8 +35,12 @@
         <v-divider color="#C4C4C4"/>
         <rsk-fee-select/>
       </v-col>
-      <v-col cols="4" lg="5" class="d-flex align-center justify-center">
-        Summary (TO-DO)
+      <v-col cols="4" lg="4">
+        <tx-summary
+          :showTxId="true"
+          :initialExpand="true"
+          type='PEGIN'
+          orientation='VERTICAL'/>
       </v-col>
     </v-row>
     <v-row v-if="showAddressDialog">
@@ -51,19 +55,21 @@
 <script lang="ts">
 import { Component, Vue, Emit } from 'vue-property-decorator';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
-import BtcTxSummarySide from '@/components/create/BtcTxSummarySide.vue';
 import RbtcInputAmount from '@/components/pegout/RbtcInputAmount.vue';
 import RskWalletConnection from '@/components/pegout/RskWalletConnection.vue';
 import RskFeeSelect from '@/components/pegout/RskFeeSelect.vue';
 import AddressDialog from '@/components/pegout/AddressDialog.vue';
+import TxSummary from '@/components/exchange/TxSummary.vue';
+import { TxStatusType } from '@/types/store';
+import { TxSummaryOrientation } from '@/types/Status';
 
 @Component({
   components: {
     AddressDialog,
-    BtcTxSummarySide,
     RbtcInputAmount,
     RskWalletConnection,
     RskFeeSelect,
+    TxSummary,
   },
 })
 export default class PegOutForm extends Vue {
@@ -74,6 +80,10 @@ export default class PegOutForm extends Vue {
   showAddressDialog = false;
 
   focus = false;
+
+  typeSummary = TxStatusType.PEGOUT;
+
+  orientationSummary = TxSummaryOrientation.HORIZONTAL;
 
   @Emit()
   closeAddressDialog() {

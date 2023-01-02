@@ -117,8 +117,8 @@
         :txId="txId"
         :showTxId="true"
         :initialExpand="true"
-        type='PEGIN'
-        orientation='HORIZONTAL'/>
+        :type='typeSummary'
+        :orientation='orientationSummary'/>
     </v-row>
   </v-col>
 </template>
@@ -136,7 +136,7 @@ import TxSummary from '@/components/exchange/TxSummary.vue';
 import {
   PeginStatus,
   SatoshiBig,
-  TxStatusType, TxStatus,
+  TxStatusType, TxStatus, TxSummaryOrientation,
 } from '@/types';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import * as constants from '@/store/constants';
@@ -162,6 +162,10 @@ export default class TxPegin extends Vue {
   rskConfirmationsPercentage = 0;
 
   leftBtcTime = '';
+
+  typeSummary = TxStatusType.PEGIN;
+
+  orientationSummary = TxSummaryOrientation.HORIZONTAL;
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
