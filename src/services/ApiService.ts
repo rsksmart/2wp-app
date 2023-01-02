@@ -3,7 +3,7 @@ import { PeginConfiguration, RequestBalance } from '@/types/pegInTx';
 import {
   AccountBalance, AddressStatus, FeeAmountDataResponse, NormalizedTx, TxStatus,
 } from '@/types';
-import { isValidOpReturn, isValidPowPegAddress } from '@/utils';
+import { areValidOutputs } from '@/utils';
 import { BridgeService } from '@/services/BridgeService';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import { ApiInformation } from '@/types/ApiInformation';
@@ -62,14 +62,17 @@ export default class ApiService {
       ])
         .then(([response, powPegAddress]) => {
           const normalizedTx: NormalizedTx = response.data;
-          if (isValidOpReturn(normalizedTx.outputs, recipient, refundAddress)) {
-            if (isValidPowPegAddress(normalizedTx.outputs, powPegAddress)) {
-              resolve(response.data);
-            } else {
-              reject(new Error('Invalid data when comparing Powpeg Address'));
-            }
+          const expectedChangeAddress = changeAddress || normalizedTx.inputs[0].address;
+          const { valid, reason } = areValidOutputs(
+            normalizedTx.outputs, powPegAddress,
+            amountToTransferInSatoshi.toString(),
+            expectedChangeAddress, recipient, refundAddress,
+          );
+          if (!valid) {
+            reject(new Error(reason));
+          } else {
+            resolve(response.data);
           }
-          reject(new Error('Invalid data when parsing OpReturn'));
         })
         .catch(reject);
     });

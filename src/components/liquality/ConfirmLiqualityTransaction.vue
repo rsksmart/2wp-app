@@ -102,9 +102,17 @@
 
           <v-row justify="left" class="mx-2 my-3">
             <v-col class="pa-0 pb-2 d-flex flex-column align-left">
-              <span class="grayish">
+              <v-row class="pa-0 ma-0">
+                <span class="grayish">
                 Fee: {{ fee + ' ' + environmentContext.getBtcTicker() }}
               </span>
+              </v-row>
+              <v-row class="pa-0 mb-0 mt-1 mx-0">
+                <span class="grayish">
+                Please make sure to check that the fee this transaction is paying
+                  is along your expectations.
+              </span>
+              </v-row>
             </v-col>
           </v-row>
         </fieldset>

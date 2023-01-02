@@ -142,7 +142,7 @@ export default class SendBitcoin extends Vue {
       refundAddress,
       recipient,
       feeLevel,
-      changeAddress: await this.getChangeAddress(accountType),
+      changeAddress: this.getChangeAddress(accountType),
       sessionId: this.peginTxState.sessionId,
       accountType,
     })
