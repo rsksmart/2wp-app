@@ -20,4 +20,5 @@ export interface PegOutTxState {
   selectedFee: MiningSpeedFee;
   senderAddress?: string;
   estimatedBTCToRecieve: SatoshiBig;
+  txHash?: string;
 }
