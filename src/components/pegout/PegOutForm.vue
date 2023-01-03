@@ -58,7 +58,7 @@
       </v-col>
       <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0">
         <v-btn v-if="!pegOutFormState.matches(['loading'])" rounded color="#00B43C"
-                @click="changePage"
+                @click="send"
                 :disabled="pegOutFormState.matches(['goingHome'])">
           <span class="whiteish">Continue</span>
           <v-icon class="ml-2" color="#fff">mdi-send-outline</v-icon>
@@ -68,6 +68,10 @@
       </v-col>
     </v-row>
   </v-col>
+  <template v-if="showTxErrorDialog">
+    <tx-error-dialog :showTxErrorDialog="showTxErrorDialog"
+                     :errorMessage="txError" @closeErrorDialog="closeTxErrorDialog"/>
+  </template>
 </v-container>
 </template>
 
@@ -82,6 +86,9 @@ import TxSummary from '@/components/exchange/TxSummary.vue';
 import { TxStatusType } from '@/types/store';
 import { Machine } from '@/services/utils';
 import { TxSummaryOrientation } from '@/types/Status';
+import { Action } from 'vuex-class';
+import * as constants from '@/store/constants';
+import TxErrorDialog from '@/components/exchange/TxErrorDialog.vue';
 
 @Component({
   components: {
@@ -90,6 +97,7 @@ import { TxSummaryOrientation } from '@/types/Status';
     RskWalletConnection,
     RskFeeSelect,
     TxSummary,
+    TxErrorDialog,
   },
 })
 export default class PegOutForm extends Vue {
@@ -111,6 +119,12 @@ export default class PegOutForm extends Vue {
 
   orientationSummary = TxSummaryOrientation.VERITICAL;
 
+  showTxErrorDialog = false;
+
+  txError = '';
+
+  @Action(constants.PEGOUT_TX_SEND, { namespace: 'pegOutTx' }) sendTx !: () => Promise<void>;
+
   @Emit()
   closeAddressDialog() {
     this.showAddressDialog = false;
@@ -129,6 +143,23 @@ export default class PegOutForm extends Vue {
   @Emit()
   openAddressDialog() {
     this.showAddressDialog = true;
+  }
+
+  @Emit()
+  send() {
+    this.sendTx()
+      .then(() => {
+        this.changePage();
+      })
+      .catch((error:Error) => {
+        this.txError = error.message;
+        this.showTxErrorDialog = true;
+      });
+  }
+
+  @Emit()
+  closeTxErrorDialog() {
+    this.showTxErrorDialog = false;
   }
 
   @Emit('changePage')
