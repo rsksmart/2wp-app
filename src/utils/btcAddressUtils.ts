@@ -20,7 +20,7 @@ export function getBtcAddressFromSignedMessage(
   const publicKey: Buffer = getPubKeyFromRskSignedMessage(signedMessage, hashedMessage);
   const pubEcpair = bitcoin.ECPair.fromPublicKey(publicKey, { network: bitcoinJsNetwork(network) });
   return deriveAddress({
-    purpose: Purpose.P2WPKH,
+    purpose: Purpose.P2PKH,
     pubkey: pubEcpair.publicKey,
     network,
   });

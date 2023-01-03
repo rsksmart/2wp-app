@@ -44,7 +44,7 @@ describe('RbtcInputAmount', () => {
       estimatedBTCToRecieve: new SatoshiBig(0.00400000, 'btc'),
     };
     sessionState = {
-      btcAccount: '',
+      btcDerivedAddress: '',
       balance: new WeiBig('0.5', 'rbtc'),
       enabled: false,
       txType: 'PEG_OUT_TRANSACTION_TYPE',
