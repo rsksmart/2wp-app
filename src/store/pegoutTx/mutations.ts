@@ -14,6 +14,9 @@ export const mutations: MutationTree<PegOutTxState> = {
   [constants.PEGOUT_TX_SET_VALID_AMOUNT]: (state, validAmount: boolean) => {
     state.validAmount = validAmount;
   },
+  [constants.PEGOUT_TX_SET_TX_HASH]: (state, txHash: string) => {
+    state.txHash = txHash;
+  },
   [constants.PEGOUT_TX_SET_PEGOUT_CONFIGURATION]:
   (state, pegoutConfiguration: PegoutConfiguration) => {
     state.pegoutConfiguration = pegoutConfiguration;
