@@ -83,10 +83,11 @@ export const actions: ActionTree<SessionState, RootState> = {
   },
   [constants.SESSION_SIGN_MESSAGE]:
     async ({ commit, state }, messageToBeSigned: string): Promise<void> => {
-      const web3: Web3 = Vue.prototype.$web3;
-      const messageHex = web3.utils.utf8ToHex(messageToBeSigned);
-      const signature = await web3.eth.personal.sign(messageHex, state.account || '0', '');
-      const btcAddress = getBtcAddressFromSignedMessage(signature, web3.utils.sha3(messageToBeSigned) || '');
-      commit(constants.SESSION_SET_BTC_ACCOUNT, btcAddress);
+      if (state.web3) {
+        const messageHex = state.web3.utils.utf8ToHex(messageToBeSigned);
+        const signature = await state.web3.eth.personal.sign(messageHex, state.account || '0', '');
+        const btcAddress = getBtcAddressFromSignedMessage(signature, state.web3.utils.sha3(messageToBeSigned) || '');
+        commit(constants.SESSION_SET_BTC_ACCOUNT, btcAddress);
+      }
     },
 };

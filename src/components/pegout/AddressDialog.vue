@@ -33,7 +33,7 @@
 
 <script lang="ts">
 import {
-  Component, Prop, Emit, Vue,
+  Component, Emit, Vue,
 } from 'vue-property-decorator';
 import { Action } from 'vuex-class';
 import * as constants from '@/store/constants';
@@ -42,7 +42,7 @@ import * as constants from '@/store/constants';
 export default class AddressDialog extends Vue {
   messageToBeSigned = 'Sign this message to derive your Bitcoin address';
 
-  @Prop() showAddressDialog!: boolean;
+  showAddressDialog = true;
 
   @Action(constants.SESSION_SIGN_MESSAGE, { namespace: 'web3Session' }) signMessage !: (message: string) => Promise<void>;
 
