@@ -44,8 +44,7 @@
       </v-col>
     </v-row>
     <v-row v-if="showAddressDialog">
-      <address-dialog :showAddressDialog="showAddressDialog"
-      @closeDialog="closeAddressDialog"/>
+      <address-dialog @closeDialog="closeAddressDialog"/>
     </v-row>
     <v-row class="mx-0">
       <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
