@@ -1,6 +1,6 @@
 <template>
   <div id="option-3" class="py-4">
-    <v-row align="start" class="mx-0">
+    <v-row class="align-start mx-0">
       <v-col cols="auto" class="pl-0">
         <div v-bind:class="[focus ?
               'number-filled' : 'number']">3</div>
