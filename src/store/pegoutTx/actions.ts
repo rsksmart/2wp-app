@@ -5,6 +5,8 @@ import {
   MiningSpeedFee, PegOutTxState, RootState, WeiBig,
 } from '@/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import Web3 from 'web3';
+import Vue from 'vue';
 
 export const actions: ActionTree<PegOutTxState, RootState> = {
   [constants.PEGOUT_TX_SELECT_FEE_LEVEL]: ({ commit }, feeLevel: MiningSpeedFee) => {
@@ -28,4 +30,21 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
   },
   [constants.PEGOUT_TX_INIT]: ({ dispatch }):
     Promise<void> => dispatch(constants.PEGOUT_TX_ADD_PEGOUT_CONFIGURATION),
+  [constants.PEGOUT_TX_SEND]: ({ state, rootState, commit })
+    : Promise<void> => new Promise<void>((resolve, reject) => {
+      const web3:Web3 = Vue.prototype.$web3;
+      web3.eth.sendTransaction({
+        from: rootState.web3Session.account,
+        to: state.pegoutConfiguration.bridgeContractAddress,
+        value: state.amountToTransfer.toWeiString(),
+      })
+        .then((tx) => {
+          commit(tx.transactionHash);
+          resolve();
+        })
+        .catch((e) => {
+          console.warn(e);
+          reject(new Error('User Cancelled transaction'));
+        });
+    }),
 };
