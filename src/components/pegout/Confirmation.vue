@@ -3,13 +3,13 @@
     <v-row class="mx-0 d-flex justify-center">
       <v-col cols="10" lg="8" xl="6" class="d-flex justify-center">
         <h1 class="text-center">
-            Congratulations Your RBTC were tranfered
+            Congratulations Your RBTC were transferred
         </h1>
       </v-col>
     </v-row>
      <v-row class="mx-0 my-8 d-flex justify-center">
       <p class="text-center">
-        You can follow the status of conversion from the status page.
+        You can follow the conversion from the status page.
       </p>
     </v-row>
     <v-row class="mx-0 my-8">
@@ -55,7 +55,7 @@ import { TxSummaryOrientation } from '@/types/Status';
 })
 
 export default class Confirmation extends Vue {
-  typeSummary = TxStatusType.PEGIN;
+  typeSummary = TxStatusType.PEGOUT;
 
   orientationSummary = TxSummaryOrientation.HORIZONTAL;
 
