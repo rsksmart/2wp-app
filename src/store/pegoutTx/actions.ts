@@ -4,7 +4,9 @@ import * as constants from '@/store/constants';
 import {
   MiningSpeedFee, PegOutTxState, RootState, SessionState, WeiBig,
 } from '@/types';
+import * as pegoutCostEstimator from 'pegout-cost-estimator';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import Web3 from 'web3';
 
 export const actions: ActionTree<PegOutTxState, RootState> = {
   [constants.PEGOUT_TX_SELECT_FEE_LEVEL]: ({ commit }, feeLevel: MiningSpeedFee) => {
@@ -13,8 +15,21 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
   [constants.PEGOUT_TX_ADD_AMOUNT]: ({ commit }, amountToTransfer: Big) => {
     commit(constants.PEGOUT_TX_SET_AMOUNT, amountToTransfer);
   },
-  [constants.PEGOUT_TX_CALCULATE_FEE]: () => {
-    // TODO: calculate fee from bridgeService method
+  [constants.PEGOUT_TX_CALCULATE_FEE]: async ({
+    state,
+    rootState,
+  }) => {
+    const networkSettings = {
+      networkUpgradesActivationHeights: {},
+      erpDetails: {},
+      network: 'testnet',
+    };
+    const amountToTransfer = Number(state.amountToTransfer.toWeiString());
+    const pegoutCost = await pegoutCostEstimator.estimatePegoutValueInSatoshis(
+      amountToTransfer,
+      rootState.web3Session.web3 as Web3, networkSettings,
+    );
+    console.log(pegoutCost);
   },
   [constants.PEGOUT_TX_ADD_PEGOUT_CONFIGURATION]: ({ commit }) => {
     commit(constants.PEGOUT_TX_SET_PEGOUT_CONFIGURATION, {
