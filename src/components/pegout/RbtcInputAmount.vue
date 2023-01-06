@@ -95,7 +95,6 @@ export default class RbtcInputAmount extends Vue {
 
   updateStore() {
     this.setRbtcAmount(new WeiBig(this.rbtcAmount, 'rbtc'));
-    this.calculateTxFee();
   }
 
   get amountErrorMessage() {
@@ -152,6 +151,9 @@ export default class RbtcInputAmount extends Vue {
     this.stepState = !this.insufficientAmount && isRBTCAmountValidRegex(this.rbtcAmount)
       ? 'valid' : 'error';
     this.setValidAmount(this.stepState === 'valid');
+    if (this.stepState === 'valid') {
+      this.calculateTxFee();
+    }
   }
 }
 </script>
