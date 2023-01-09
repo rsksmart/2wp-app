@@ -24,3 +24,7 @@ declare module 'pegout-cost-estimator'{
     setUtxoSortingMethod,
   };
 }
+declare module 'rsk-network-settings'{
+  function getNetworkSettingsForThisNetwork(network: NETWORKS): NetworkSettings;
+  export { getNetworkSettingsForThisNetwork };
+}
