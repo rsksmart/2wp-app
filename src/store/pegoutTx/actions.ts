@@ -7,6 +7,7 @@ import {
 import * as pegoutCostEstimator from 'pegout-cost-estimator';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import Web3 from 'web3';
+import { getNetworkSettingsForThisNetwork } from 'rsk-network-settings';
 
 export const actions: ActionTree<PegOutTxState, RootState> = {
   [constants.PEGOUT_TX_SELECT_FEE_LEVEL]: ({ commit }, feeLevel: MiningSpeedFee) => {
@@ -19,11 +20,8 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
     state,
     rootState,
   }) => {
-    const networkSettings = {
-      networkUpgradesActivationHeights: {},
-      erpDetails: {},
-      network: 'testnet',
-    };
+    const networkSettings = getNetworkSettingsForThisNetwork('testnet');
+    console.log(networkSettings);
     const amountToTransfer = Number(state.amountToTransfer.toWeiString());
     const pegoutCost = await pegoutCostEstimator.estimatePegoutValueInSatoshis(
       amountToTransfer,
