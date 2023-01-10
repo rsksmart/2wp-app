@@ -64,4 +64,5 @@ export const getClearPegoutTxState = (): PegOutTxState => ({
     fast: new WeiBig(0, 'wei'),
   },
   selectedFee: BITCOIN_AVERAGE_FEE_LEVEL,
+  estimatedBTCToRecieve: new SatoshiBig(0, 'btc'),
 });

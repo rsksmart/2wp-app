@@ -86,6 +86,7 @@ describe('TxSummary', () => {
     const wrapper = shallowMount(TxSummary, { 
       store, localVue, vuetify,
       propsData:{
+        type: 'PEGIN',
         orientation: 'HORIZONTAL',
       },
     });

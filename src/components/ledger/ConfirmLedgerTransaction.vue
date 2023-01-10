@@ -197,7 +197,7 @@ import EnvironmentContextProviderService from '@/providers/EnvironmentContextPro
 import { PegInTxState } from '@/types/pegInTx';
 import * as constants from '@/store/constants';
 import { TxStatusType } from '@/types/store';
-import { TxSummaryOrientation } from '@/types/Status'; 
+import { TxSummaryOrientation } from '@/types/Status';
 
 @Component({
   components: {

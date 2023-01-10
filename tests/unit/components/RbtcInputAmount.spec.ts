@@ -10,6 +10,7 @@ import { web3Session } from '@/store/session';
 import WeiBig from '@/types/WeiBig';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import { EnvironmentContext } from '@/providers/types';
+import SatoshiBig from '@/types/SatoshiBig';
 
 const localVue = createLocalVue();
 let vuetify:any;
@@ -41,6 +42,7 @@ describe('RbtcInputAmount', () => {
         bridgeContractAddress: '',
       },
       selectedFee: constants.BITCOIN_AVERAGE_FEE_LEVEL,
+      estimatedBTCToRecieve: new SatoshiBig(0.00400000, 'btc'),
     };
     sessionState = {
       balance: new WeiBig('0.5', 'rbtc'),

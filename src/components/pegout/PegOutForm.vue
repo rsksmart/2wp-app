@@ -1,12 +1,12 @@
 <template>
-<v-container fluid class="form normalized-height container
+<v-container fluid class="exchange form normalized-height container
   max-width mx-6 mt-6">
-  <v-col>
+  <v-col class="px-0">
     <v-row class="d-flex justify-center">
       <h2 class="d-flex justify-center">Send {{environmentContext.getRbtcTicker()}}.
         Get {{environmentContext.getBtcTicker()}}.</h2>
     </v-row>
-    <v-row>
+    <v-row class="exchange-form">
       <v-col cols="8" lg="8" >
         <rsk-wallet-connection @connectingWallet="openAddressDialog"/>
         <v-divider color="#C4C4C4"/>
@@ -39,8 +39,8 @@
         <tx-summary
           :showTxId="true"
           :initialExpand="true"
-          type='PEGIN'
-          orientation='VERTICAL'/>
+          :type='typeSummary'
+          :orientation='orientationSummary'/>
       </v-col>
     </v-row>
     <v-row v-if="showAddressDialog">
@@ -83,7 +83,7 @@ export default class PegOutForm extends Vue {
 
   typeSummary = TxStatusType.PEGOUT;
 
-  orientationSummary = TxSummaryOrientation.HORIZONTAL;
+  orientationSummary = TxSummaryOrientation.VERITICAL;
 
   @Emit()
   closeAddressDialog() {

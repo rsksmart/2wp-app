@@ -1,10 +1,15 @@
 <template>
   <v-container>
     <v-row justify="center" class="mx-0 pb-4">
-      <h2 class="text-center tx-text">Transaction summary:</h2>
+      <h2 v-if="type === transactionTypes.PEGIN" class="text-center tx-text">
+        Transaction summary:
+      </h2>
+      <h2 v-if="type === transactionTypes.PEGOUT" class="text-center tx-text">
+        Operation summary:
+      </h2>
     </v-row>
 
-    <v-row v-if="orientation == 'HORIZONTAL'"
+    <v-row v-if="orientation == orientationTypes.HORIZONTAL"
       class="mx-0 d-flex justify-center">
       <v-col sm="10"
               md="9"
@@ -258,28 +263,80 @@
       </v-col>
     </v-row>
 
-    <v-row v-if="orientation == 'VERTICAL'"
+    <v-row v-if="orientation == orientationTypes.VERITICAL"
       class="mx-0 px-5 pb-5 summary-box">
+        <!-- title -->
         <v-container class="pb-0 pl-0">
           <v-row class="mx-0">
-            <h2>Bitcoin</h2>
+            <h2 v-if="type === transactionTypes.PEGIN">Bitcoin</h2>
+            <h2 v-if="type === transactionTypes.PEGOUT">RSK</h2>
           </v-row>
         </v-container>
-        <v-container id="summary-1" class="pb-0 pl-0">
+
+        <!-- Address pegout -->
+        <v-container v-if="type === transactionTypes.PEGOUT"
+          class="pb-0 pl-0">
+          <v-row class="mx-0">
+            <h1 class="boldie">Sender address:</h1>
+          </v-row>
+        </v-container>
+
+        <v-container v-if="type === transactionTypes.PEGOUT"
+          class="form-field pt-2 pl-0">
+          <v-container class="mark">
+            <p v-bind:class="{'grayish': pegoutAddress === VALUE_INCOMPLETE_MESSAGE}">
+              {{ pegoutAddress }}
+            </p>
+          </v-container>
+        </v-container>
+        <!-- ---------------------------- -->
+
+        <!-- Amount -->
+        <v-container v-if="type === transactionTypes.PEGOUT" id="summary-2" class="pb-0 pl-0">
+          <v-row class="mx-0">
+            <h1 class="boldie">Amount:</h1>
+          </v-row>
+        </v-container>
+        <v-container v-if="type === transactionTypes.PEGOUT" class="form-field pt-2 pb-2 pl-0">
+          <v-container class="mark">
+            <p v-bind:class="{'grayish': computedBTCAmount === '0'}">
+              {{ amount }} {{ currencyFromTicker }}
+            </p>
+          </v-container>
+        </v-container>
+        <!-- ---------------------------- -->
+
+        <!-- gas -->
+        <v-container v-if="type === transactionTypes.PEGOUT" id="summary-5" class="pb-0 pl-0">
+          <v-row class="mx-0">
+            <h1 class="boldie">Gas:</h1>
+          </v-row>
+        </v-container>
+        <v-container v-if="type === transactionTypes.PEGOUT" class="form-field pt-2 pb-3 pl-0">
+          <v-container class="mark">
+            <p v-bind:class="{'grayish': fee === VALUE_INCOMPLETE_MESSAGE}">
+              {{ fee }} {{ currencyFromTicker }}
+            </p>
+          </v-container>
+        </v-container>
+        <!-- ---------------------------- -->
+
+        <!-- Device account -->
+        <v-container v-if="type === transactionTypes.PEGIN" id="summary-1" class="pb-0 pl-0">
           <v-row class="mx-0">
             <h1 class="boldie">Device account:</h1>
-            <v-icon  v-if="peginTxState.selectedAccount" class="ml-2" small color="#00B520">
+            <v-icon  v-if="txState.selectedAccount" class="ml-2" small color="#00B520">
               mdi-check-circle-outline
             </v-icon>
           </v-row>
         </v-container>
-
-        <v-container class="form-field pl-0">
+        <v-container v-if="type === transactionTypes.PEGIN" class="form-field pl-0">
           <p v-bind:class="{'grayish': computedBTCAddress === VALUE_INCOMPLETE_MESSAGE} + ' mark'">
             {{ computedBTCAddress }}
           </p>
         </v-container>
-        <v-container id="summary-2" class="pb-0 pl-0">
+        <!-- TBTC -->
+        <v-container v-if="type === transactionTypes.PEGIN" id="summary-2" class="pb-0 pl-0">
           <v-row class="mx-0">
             <h1 class="boldie">{{environmentContext.getBtcTicker()}}s:</h1>
             <v-icon v-if="peginTxState.isValidAmountToTransfer" class="ml-2" small color="#00B520">
@@ -287,7 +344,7 @@
             </v-icon>
           </v-row>
         </v-container>
-        <v-container class="form-field pt-2 pb-2 pl-0">
+        <v-container v-if="type === transactionTypes.PEGIN" class="form-field pt-2 pb-2 pl-0">
           <v-container class="mark">
             <p v-bind:class="{'grayish': computedBTCAmount === VALUE_INCOMPLETE_MESSAGE}">
               {{ computedBTCAmount }}
@@ -296,12 +353,15 @@
           </v-container>
         </v-container>
         <v-divider/>
+        <!-- title -->
         <v-container class="pb-0 pl-0">
-          <v-row class="mx-0">
-            <h2>RSK</h2>
+          <v-row v-bind:class="{'justify-end': type === transactionTypes.PEGOUT}" class="mx-0">
+            <h2 v-if="type === transactionTypes.PEGIN">RSK</h2>
+            <h2 v-if="type === transactionTypes.PEGOUT">Bitcoin</h2>
           </v-row>
         </v-container>
-        <v-container id="summary-3" class="pb-0 pl-0">
+        <!-- Destination address -->
+        <v-container v-if="type === transactionTypes.PEGIN" id="summary-3" class="pb-0 pl-0">
           <v-row class="mx-0">
             <h1 class="boldie">Destination address:</h1>
             <v-icon v-if="peginTxState.rskAddressSelected !== ''"
@@ -310,7 +370,7 @@
             </v-icon>
           </v-row>
         </v-container>
-        <v-container class="form-field pt-2 pl-0">
+        <v-container v-if="type === transactionTypes.PEGIN" class="form-field pt-2 pl-0">
           <v-row class="mx-0 d-none d-lg-block p-0 m-0">
             <p v-bind:class="{
                 'grayish':
@@ -325,8 +385,9 @@
             </p>
           </v-row>
         </v-container>
-
-        <v-container v-if="!isLiquality" id="summary-4" class="pb-0 pl-0">
+         <!-- Refaund Address -->
+        <v-container
+          v-if="!isLiquality && type === transactionTypes.PEGIN" id="summary-4" class="pb-0 pl-0">
           <v-row class="mx-0">
             <h1 class="boldie">Refund {{environmentContext.getBtcText()}} address:</h1>
             <v-icon v-if="peginTxState.selectedAccount" class="ml-2" small color="#00B520">
@@ -334,8 +395,8 @@
             </v-icon>
           </v-row>
         </v-container>
-
-        <v-container v-if="!isLiquality" class="form-field pt-2 pl-0">
+        <v-container
+        v-if="!isLiquality && type === transactionTypes.PEGIN" class="form-field pt-2 pl-0">
           <v-row class="mx-0 d-none d-lg-block">
             <p v-bind:class="{
                     'grayish': computedRefundBTCAddress === VALUE_INCOMPLETE_MESSAGE
@@ -351,7 +412,8 @@
             </p>
           </v-row>
         </v-container>
-        <v-container id="summary-5" class="pb-0 pl-0">
+        <!-- Fee BITCOIN-->
+        <v-container v-if="type === transactionTypes.PEGIN" class="pb-0 pl-0">
           <v-row class="mx-0">
             <h1 class="boldie">Fees:</h1>
             <v-icon v-if="peginTxState.rskAddressSelected" class="ml-2" small color="#00B520">
@@ -359,8 +421,7 @@
             </v-icon>
           </v-row>
         </v-container>
-
-        <v-container class="form-field pt-2 pb-3 pl-0">
+        <v-container v-if="type === transactionTypes.PEGIN" class="form-field pt-2 pb-3 pl-0">
           <v-container class="mark">
             <p v-bind:class="{'grayish': computedTxFee === VALUE_INCOMPLETE_MESSAGE}">
               {{ computedTxFee }}
@@ -369,22 +430,66 @@
           </v-container>
         </v-container>
          <v-divider/>
-
-        <v-container id="summary-6" class="pb-0 pl-0">
+        <!-- Transaction total -->
+        <v-container v-if="type === transactionTypes.PEGIN" id="summary-6" class="pb-0 pl-0">
           <v-row class="mx-0">
             <h1 class="boldie">Transaction total:</h1>
-            <v-icon v-if="peginTxState.isValidAmountToTransfer" class="ml-2" small color="#00B520">
+            <v-icon v-if="txState.isValidAmountToTransfer" class="ml-2" small color="#00B520">
               mdi-check-circle-outline
             </v-icon>
           </v-row>
         </v-container>
-
-        <v-container class="form-field pt-2 pb-0 pl-0">
+        <v-container v-if="type === transactionTypes.PEGIN" class="form-field pt-2 pb-0 pl-0">
           <v-container class="mark">
             <p v-bind:class="{'grayish': computedBTCAmount === VALUE_INCOMPLETE_MESSAGE}">
               {{ computedFeePlusAmount }}
             </p>
             <span style="text-overflow: ellipsis;"> USD $ {{ computedFeePlusAmountUSD }}</span>
+          </v-container>
+        </v-container>
+        <!-- Recipient address -->
+        <v-container v-if="type === transactionTypes.PEGOUT" id="summary-3" class="pb-0 pl-0">
+          <v-row class="justify-end mx-0">
+            <h1 class="boldie">Recipient address:</h1>
+          </v-row>
+        </v-container>
+        <v-container v-if="type === transactionTypes.PEGOUT" class="form-field pt-2 pl-0">
+          <v-row class="mx-0 d-none d-lg-block p-0 m-0">
+            <p v-bind:class="{
+                'grayish':
+                txState.pegoutConfiguration.bridgeContractAddress === VALUE_INCOMPLETE_MESSAGE
+              } + ' mark short-address destination-address-p'">
+              0xtesttesttesttesttest
+            </p>
+          </v-row>
+        </v-container>
+        <!-- Revieve -->
+        <v-container v-if="type === transactionTypes.PEGOUT" class="pb-0 pl-0">
+          <v-row class="justify-end mx-0">
+            <h1 class="boldie">Estimated BTC to recieve</h1>
+          </v-row>
+        </v-container>
+        <v-container v-if="type === transactionTypes.PEGOUT" class="form-field pt-2 pb-0 pl-0">
+          <v-container class="mark">
+            <p
+              v-bind:class="{
+                'grayish': pegoutTxState.estimatedBTCToRecieve === VALUE_INCOMPLETE_MESSAGE
+                }">
+              {{ pegoutTxState.estimatedBTCToRecieve.toBTCTrimmedString() }} {{ currencyToTicker }}
+            </p>
+          </v-container>
+        </v-container>
+         <!-- Fee to pay -->
+        <v-container v-if="type === transactionTypes.PEGOUT" class="pb-0 pl-0">
+          <v-row class="justify-end mx-0">
+            <h1 class="boldie">Estimated fee to pay</h1>
+          </v-row>
+        </v-container>
+        <v-container v-if="type === transactionTypes.PEGOUT" class="form-field pt-2 pb-3 pl-0">
+          <v-container class="mark">
+            <p v-bind:class="{'grayish': computedTxFee === VALUE_INCOMPLETE_MESSAGE}">
+              {{ computedTxFee }}
+            </p>
           </v-container>
         </v-container>
     </v-row>
@@ -401,7 +506,12 @@ import * as constants from '@/store/constants';
 import SatoshiBig from '@/types/SatoshiBig';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
-import { PegInTxState } from '@/types/pegInTx';
+import {
+  PegInTxState,
+  SessionState,
+  PegOutTxState,
+  WeiBig,
+} from '@/types';
 import { formatTxId, getBtcExplorerUrl } from '@/services/utils';
 import { TxStatusType } from '@/types/store';
 import { TxSummaryOrientation } from '@/types/Status';
@@ -429,6 +539,10 @@ export default class TxSummary extends Vue {
 
   VALUE_INCOMPLETE_MESSAGE = 'Not Found';
 
+  transactionTypes = TxStatusType;
+
+  orientationTypes = TxSummaryOrientation;
+
   isLiquality = true;
 
   maxLengthForChunked = 15;
@@ -437,11 +551,17 @@ export default class TxSummary extends Vue {
 
   @State('pegInTx') peginTxState!: PegInTxState;
 
+  @State('pegOutTx') pegoutTxState!: PegOutTxState;
+
+  @State('web3Session') web3SessionState!: SessionState;
+
   @Getter(constants.PEGIN_TX_GET_REFUND_ADDRESS, { namespace: 'pegInTx' }) refundAddress!: string;
 
-  @Getter(constants.PEGIN_TX_GET_SAFE_TX_FEE, { namespace: 'pegInTx' }) safeFee!: SatoshiBig;
-
   @Getter(constants.PEGIN_TX_GET_STATUS_TX_ID, { namespace: 'pegInTx' }) txIdValue!: string;
+
+  @Getter(constants.PEGIN_TX_GET_SAFE_TX_FEE, { namespace: 'pegInTx' }) feePegIn!: SatoshiBig;
+
+  @Getter(constants.PEGOUT_TX_GET_SAFE_TX_FEE, { namespace: 'pegOutTx' }) feePegOut !: WeiBig;
 
   @Emit()
   switchExpand() {
@@ -449,8 +569,15 @@ export default class TxSummary extends Vue {
   }
 
   get amount(): string {
-    if (!this.peginTxState.amountToTransfer) return this.VALUE_INCOMPLETE_MESSAGE;
-    return this.peginTxState.amountToTransfer.toBTCString();
+    let amount;
+    if (this.type === this.transactionTypes.PEGIN) {
+      if (!this.peginTxState.amountToTransfer) return this.VALUE_INCOMPLETE_MESSAGE;
+      amount = this.peginTxState.amountToTransfer.toBTCString();
+    } else {
+      if (!this.pegoutTxState.amountToTransfer) return this.VALUE_INCOMPLETE_MESSAGE;
+      amount = this.pegoutTxState.amountToTransfer.toRBTCTrimmedString();
+    }
+    return amount;
   }
 
   btcExplorerUrl() {
@@ -463,27 +590,28 @@ export default class TxSummary extends Vue {
     return amountToTransfer.toUSDFromBTCString(bitcoinPrice, this.fixedUSDDecimals);
   }
 
-  get feeBTC():SatoshiBig {
-    return this.safeFee;
-  }
-
   get fee(): string {
-    if (!this.feeBTC) return this.VALUE_INCOMPLETE_MESSAGE;
-    return this.feeBTC.toBTCString();
+    let fee;
+    if (this.type === this.transactionTypes.PEGIN) {
+      fee = this.feePegIn.toBTCString();
+    } else {
+      fee = this.feePegOut.toRBTCTrimmedString();
+    }
+    return fee;
   }
 
   get feeUSD(): string {
-    if (!this.feeBTC || !this.peginTxState.bitcoinPrice) return this.VALUE_INCOMPLETE_MESSAGE;
-    return this.feeBTC.toUSDFromBTCString(this.peginTxState.bitcoinPrice, this.fixedUSDDecimals);
+    if (!this.feePegIn || !this.peginTxState.bitcoinPrice) return this.VALUE_INCOMPLETE_MESSAGE;
+    return this.feePegIn.toUSDFromBTCString(this.peginTxState.bitcoinPrice, this.fixedUSDDecimals);
   }
 
   get feePlusAmount(): string {
-    if (!this.peginTxState.amountToTransfer || !this.feeBTC) return this.VALUE_INCOMPLETE_MESSAGE;
-    return this.peginTxState.amountToTransfer.plus(this.feeBTC).toBTCString();
+    if (!this.peginTxState.amountToTransfer || !this.feePegIn) return this.VALUE_INCOMPLETE_MESSAGE;
+    return this.peginTxState.amountToTransfer.plus(this.feePegIn).toBTCString();
   }
 
   get feePlusAmountUSD(): string {
-    if (!this.amount || !this.feeBTC || !this.peginTxState.bitcoinPrice) {
+    if (!this.amount || !this.feePegIn || !this.peginTxState.bitcoinPrice) {
       return this.VALUE_INCOMPLETE_MESSAGE;
     }
     return Big(this.amountUSD).plus(Big(this.feeUSD)).toFixed(this.fixedUSDDecimals);
@@ -498,11 +626,17 @@ export default class TxSummary extends Vue {
   }
 
   get computedTxFee(): string {
-    return `${this.safeFee.toBTCString()} ${this.environmentContext.getBtcTicker()}`;
+    let txFee;
+    if (this.type === this.transactionTypes.PEGIN) {
+      txFee = `${this.feePegIn.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
+    } else {
+      txFee = `${this.feePegOut.toRBTCTrimmedString()} ${this.currencyToTicker}`;
+    }
+    return txFee;
   }
 
   get computedTxFeeUSD(): string {
-    return this.safeFee.toUSDFromBTCString(this.peginTxState.bitcoinPrice, this.fixedUSDDecimals);
+    return this.feePegIn.toUSDFromBTCString(this.peginTxState.bitcoinPrice, this.fixedUSDDecimals);
   }
 
   get chunkedRecipientAddress(): string {
@@ -557,7 +691,7 @@ export default class TxSummary extends Vue {
   }
 
   get computedFeePlusAmount(): string {
-    const feePlusAmount: SatoshiBig = this.peginTxState.amountToTransfer.plus(this.safeFee);
+    const feePlusAmount: SatoshiBig = this.peginTxState.amountToTransfer.plus(this.feePegIn);
     return this.peginTxState.isValidAmountToTransfer
       ? `${feePlusAmount.toBTCString()} ${this.environmentContext.getBtcTicker()}` : this.VALUE_INCOMPLETE_MESSAGE;
   }
@@ -593,10 +727,35 @@ export default class TxSummary extends Vue {
   }
 
   get computedRskAddress() {
+    let address;
     if (this.peginTxState.rskAddressSelected === '') {
-      return this.VALUE_INCOMPLETE_MESSAGE;
+      address = this.VALUE_INCOMPLETE_MESSAGE;
+    } else {
+      address = this.peginTxState.rskAddressSelected;
     }
-    return this.peginTxState.rskAddressSelected;
+
+    return address;
+  }
+
+  get pegoutAddress() {
+    let address;
+    if (this.web3SessionState.account) {
+      address = formatTxId(this.web3SessionState.account);
+    } else {
+      address = this.VALUE_INCOMPLETE_MESSAGE;
+    }
+    return address;
+  }
+
+  get txState() {
+    let txState;
+    if (this.type === this.transactionTypes.PEGIN) {
+      txState = this.peginTxState;
+    } else {
+      txState = this.pegoutTxState;
+    }
+
+    return txState;
   }
 
   get accountSelected() {
