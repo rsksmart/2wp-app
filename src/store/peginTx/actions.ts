@@ -95,9 +95,18 @@ export const actions: ActionTree<PegInTxState, RootState> = {
       )
         .then((txFee) => {
           const fees: FeeAmountData = {
-            slow: new SatoshiBig(txFee.slow.amount, 'satoshi'),
-            average: new SatoshiBig(txFee.average.amount, 'satoshi'),
-            fast: new SatoshiBig(txFee.fast.amount, 'satoshi'),
+            slow: {
+              amount: new SatoshiBig(txFee.slow.amount, 'satoshi'),
+              enoughBalance: txFee.slow.enoughBalance,
+            },
+            average: {
+              amount: new SatoshiBig(txFee.average.amount, 'satoshi'),
+              enoughBalance: txFee.average.enoughBalance,
+            },
+            fast: {
+              amount: new SatoshiBig(txFee.fast.amount, 'satoshi'),
+              enoughBalance: txFee.fast.enoughBalance,
+            },
           };
           commit(constants.PEGIN_TX_SET_CALCULATED_TX_FEE, fees);
           commit(constants.PEGIN_TX_SET_LOADING_FEE, false);

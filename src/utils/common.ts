@@ -26,9 +26,18 @@ export const getClearPeginTxState = (): PegInTxState => ({
   loadingBalance: false,
   selectedAccount: undefined,
   calculatedFees: {
-    slow: new SatoshiBig(0, 'satoshi'),
-    average: new SatoshiBig(0, 'satoshi'),
-    fast: new SatoshiBig(0, 'satoshi'),
+    slow: {
+      amount: new SatoshiBig(0, 'satoshi'),
+      enoughBalance: false,
+    },
+    average: {
+      amount: new SatoshiBig(0, 'satoshi'),
+      enoughBalance: false,
+    },
+    fast: {
+      amount: new SatoshiBig(0, 'satoshi'),
+      enoughBalance: false,
+    },
   },
   loadingFee: false,
   selectedFee: BITCOIN_AVERAGE_FEE_LEVEL,
