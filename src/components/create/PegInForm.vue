@@ -95,6 +95,8 @@ export default class PegInForm extends Vue {
 
   @Getter(constants.PEGIN_TX_GET_REFUND_ADDRESS, { namespace: 'pegInTx' }) refundAddress!: string;
 
+  @Getter(constants.PEGIN_TX_GET_ENOUGH_FEE_VALUE, { namespace: 'pegInTx' }) enoughBalanceSelectedFee !: boolean;
+
   @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: any;
 
   backHome() {
@@ -106,13 +108,13 @@ export default class PegInForm extends Vue {
     let fee = new SatoshiBig('0', 'satoshi');
     switch (this.pegInTxState.selectedFee) {
       case constants.BITCOIN_AVERAGE_FEE_LEVEL:
-        fee = this.pegInTxState.calculatedFees.average;
+        fee = this.pegInTxState.calculatedFees.average.amount;
         break;
       case constants.BITCOIN_FAST_FEE_LEVEL:
-        fee = this.pegInTxState.calculatedFees.fast;
+        fee = this.pegInTxState.calculatedFees.fast.amount;
         break;
       case constants.BITCOIN_SLOW_FEE_LEVEL:
-        fee = this.pegInTxState.calculatedFees.slow;
+        fee = this.pegInTxState.calculatedFees.slow.amount;
         break;
       default:
         break;
@@ -124,6 +126,7 @@ export default class PegInForm extends Vue {
     return this.pegInTxState.isValidAmountToTransfer
       && !this.pegInTxState.loadingFee
       && this.rskAddressState !== 'invalid'
+      && this.enoughBalanceSelectedFee
       && this.pegInTxState.rskAddressSelected !== '';
   }
 
