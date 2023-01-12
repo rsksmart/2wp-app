@@ -141,7 +141,7 @@ export default class BtcInputAmount extends Vue {
     if (feePlusAmount.gte(this.selectedAccountBalance)) {
       return 'You don\'t have the balance for this amount';
     }
-    if (this.enoughBalanceSelectedFee) {
+    if (!this.enoughBalanceSelectedFee) {
       return 'The selected fee does not satisfy the minimum required by the network';
     }
     if (this.safeAmount.gt(maxValue)) {
