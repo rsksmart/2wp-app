@@ -193,7 +193,7 @@ export default class Home extends Vue {
   }
 
   get statusIcon() {
-    const statusIcon = this.isAllowedBrowser ? 'noun-process-2013764.svg' : 'noun-process-2013764.svg';
+    const statusIcon = this.isAllowedBrowser ? 'status-icon.svg' : 'status-icon-disabled.svg';
     // eslint-disable-next-line global-require, import/no-dynamic-require
     return require(`@/assets/status/${statusIcon}`);
   }
