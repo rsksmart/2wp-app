@@ -1,13 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
 
 @font-face {
-  font-family: "Objective";
-  src: local("Objective"),
-       url(./fonts/Objective-Regular.woff2) format("woff2");
+  font-family: "Rootstock";
+  src: local("Rootstock"),
+       url(./fonts/Rootstock-Sans-Tags.woff2) format("woff2");
 }
 
 div, p, h1, h2, h3, h4, h5, h6, body, button {
-  font-family: 'Quicksand', sans-serif;
+  font-family: 'Rootstock', sans-serif;
   font-style: normal;
 }
 
@@ -19,21 +19,21 @@ h1 {
   font-weight: bold;
   font-size: 40px;
   line-height: 47px;
-  color: #00B520;
+  color: #000000;
 }
 
 h2 {
   font-weight: bold;
   font-size: 36px;
   line-height: 138.27%;
-  color: #00B520;
+  color: #000000;
 }
 
 p {
   font-weight: normal;
   font-size: 18px;
   line-height: 21px;
-  color: #00B520;
+  color: #000000;
 }
 
 .custom-background {
@@ -48,7 +48,7 @@ p {
   height: 23px;
   font-size: 12px;
   line-height: 15px;
-  border: 1px solid #00B520;
+  border: 1px solid #000000;
   box-sizing: border-box;
   border-radius: 50%;
   padding: 3px 7px 3px 7px;
@@ -62,14 +62,14 @@ p {
   height: 23px;
   font-size: 12px;
   line-height: 15px;
-  border: 1px solid #00B520;
+  border: 1px solid #000000;
   box-sizing: border-box;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 5px;
-  background: #00B520;
+  background: #000000;
   color: #fff !important;
 }
 
@@ -123,7 +123,7 @@ a {
 }
 
 .greenish {
-  color: #00B520 !important;
+  color: #000000!important;
 }
 
 .grayish {

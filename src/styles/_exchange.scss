@@ -5,8 +5,14 @@
     color: #000;
   }
 
+  .title-landing {
+    font-size: 90px;
+    font-family: Rootstock, sans-serif;
+    padding: 0 1px 20px 0;
+  }
+
   h3 {
-    font-family: Quicksand, sans-serif;
+    font-family: Rootstock, sans-serif;
     font-style: normal;
     font-weight: 500;
     font-size: 12px;
@@ -32,13 +38,49 @@
 
     background-color: #fff !important;
     border-radius: 20px !important;
-    border: 1px solid #00B520 !important;
+    border: 1px solid #000000!important;
     .wallet-button-content {
-      color: #00B520 !important;
+      color: #000000!important;
     }
   }
+
+  .wallet-button-low {
+    width: 180px !important;
+    height: 25px !important;
+
+    background-color: #fff;
+    border-radius: 20px !important;
+    border: 1px solid #000000!important;
+    .wallet-button-content {
+      color: #000000!important;
+    }
+  }
+
+  .wallet-button-low:hover {
+    background-color: #000000!important;
+    color: #fff !important;
+  }
+
+  .wallet-button-low:focus {
+      color: #fff !important;
+  }
+
+  .wallet-button-back {
+    width: 180px !important;
+    height: 25px !important;
+    min-width: 64px !important;
+    padding: 0 16px 15px 10px !important;
+
+    background-color: #fff !important;
+    border-radius: 20px !important;
+    border: 1px solid #000000!important;
+    .wallet-button-content {
+      color: #000000!important;
+    }
+  }
+
   .wallet-button:hover {
-    background-color: #00B520 !important;
+    background-color: #000000!important;
     .wallet-button-content {
       color: #fff !important;
     }
@@ -67,12 +109,12 @@
     padding: 0 30px 0 30px !important;
     background-color: #fff !important;
     border-radius: 20px !important;
-    border: 1px solid #00B520 !important;
+    border: 1px solid #000000!important;
     .wallet-button-content {
-      color: #00B520 !important;
+      color: #000000!important;
     }
     &:hover {
-      background-color: #00B520 !important;
+      background-color: #000000!important;
       .wallet-button-content {
         color: #fff !important;
       }
@@ -122,17 +164,17 @@
       max-width: 80px;
       max-height: 25px;
       padding: 25px 0 0 80px;
-      background-image: url('../assets/wallet-icons/liquality.svg');
+      background-image: url('../assets/wallet-icons/liquality.png');
     }
   }
 
   .return-to-form-button {
     background-color: #fff !important;
     .return-to-form-button-content {
-      color: #00B520 !important;
+      color: #000000!important;
     }
     &:hover {
-      background-color: #00B520 !important;
+      background-color: #000000!important;
       .return-to-form-button-content {
         color: #fff !important;
       }
@@ -140,7 +182,7 @@
   }
 
   .selected {
-    background-color: #00B520 !important;
+    background-color: #000000!important;
     border-color: transparent !important;
     .wallet-button-content {
       color: #fff !important;

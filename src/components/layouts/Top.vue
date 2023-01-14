@@ -7,7 +7,7 @@
             <v-img @click="toExchange" position="center left"
                    :src="logo"
                    :alt="`${environmentContext.getRskText()} Two Way Peg`"
-                   height="65" width="150" contain class="rsk-main-logo"/>
+                   height="60" width="180" contain class="rsk-main-logo"/>
           </v-col>
         </v-col>
       </v-col>

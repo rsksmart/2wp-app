@@ -44,11 +44,11 @@ export function getMainLogo() {
   switch (EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin) {
     case constants.BTC_NETWORK_TESTNET:
       // eslint-disable-next-line global-require
-      return require('@/assets/2wp-testnet.png');
+      return require('@/assets/logo-rootstock-black.png');
     case constants.BTC_NETWORK_MAINNET:
     default:
       // eslint-disable-next-line global-require
-      return require('@/assets/2wp-mainnet.png');
+      return require('@/assets/logo-rootstock-black.png');
   }
 }
 

@@ -28,7 +28,7 @@
       </v-row>
       <v-row class="mx-0">
         <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
-          <v-btn rounded outlined color="#00B520" width="110" @click="back"
+          <v-btn rounded outlined color="#000000" width="110" @click="back"
                  :disabled="pegInFormState.matches(['loading', 'goingHome'])">
             <span>Back</span>
           </v-btn>
@@ -41,7 +41,7 @@
             <v-icon class="ml-2" color="#fff">mdi-send-outline</v-icon>
           </v-btn>
           <v-progress-circular v-if="pegInFormState.matches(['loading'])"
-                               indeterminate color="#00B520" class="mr-10"/>
+                               indeterminate color="#000000" class="mr-10"/>
         </v-col>
       </v-row>
       <v-row>
