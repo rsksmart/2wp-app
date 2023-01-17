@@ -15,7 +15,7 @@
     "@ledgerhq/hw-transport": "6.27.1",
     "@ledgerhq/hw-transport-webusb": "6.27.1",
     "@rsksmart/rlogin": "^1.4.1",
-    "@rsksmart/rsk-precompiled-abis": "^4.0.2-IRIS",
+    "@rsksmart/rsk-precompiled-abis": "^5.0.0-HOP",
     "@rsksmart/rsk-utils": "^1.1.0",
     "@swan-bitcoin/xpub-lib": "^0.1.5",
     "@types/big.js": "^6.1.1",
