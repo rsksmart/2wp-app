@@ -60,4 +60,14 @@ export default class WeiBig extends Big {
   toWeiString(): string {
     return this.toFixed(0);
   }
+
+  toGweiString(): string {
+    return super.div(100_000_000_0)
+      .toFixed(9);
+  }
+
+  toGweiTrimmedString(): string {
+    return super.div(100_000_000_0)
+      .toString();
+  }
 }

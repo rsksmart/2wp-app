@@ -2,14 +2,15 @@ import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex, { Store } from 'vuex';
 import Vuetify from 'vuetify';
 import RbtcInputAmount from '@/components/pegout/RbtcInputAmount.vue';
-import { PegOutTxState, RootState, SessionState } from '@/types';
+import {
+  PegOutTxState, RootState, SatoshiBig, SessionState,
+} from '@/types';
 import * as constants from '@/store/constants';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import { pegOutTx } from '@/store/pegoutTx';
 import WeiBig from '@/types/WeiBig';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import { EnvironmentContext } from '@/providers/types';
-import SatoshiBig from '@/types/SatoshiBig';
 
 const localVue = createLocalVue();
 let vuetify:any;
@@ -42,6 +43,8 @@ describe('RbtcInputAmount', () => {
       },
       selectedFee: constants.BITCOIN_AVERAGE_FEE_LEVEL,
       estimatedBTCToRecieve: new SatoshiBig(0.00400000, 'btc'),
+      gas: 20000,
+      btcEstimatedFee: new SatoshiBig(0, 'satoshi'),
     };
     sessionState = {
       btcDerivedAddress: '',
