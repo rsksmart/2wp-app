@@ -22,4 +22,24 @@ export class BridgeService {
         .catch(reject);
     });
   }
+
+  public getEstimatedFeesForNextPegOutEvent(): Promise<number> {
+    return new Promise<number>((resolve, reject) => {
+      this.bridgeContract.methods
+        .getEstimatedFeesForNextPegOutEvent()
+        .call()
+        .then(resolve)
+        .catch(reject);
+    });
+  }
+
+  public getQueuedPegoutsCount(): Promise<number> {
+    return new Promise<number>((resolve, reject) => {
+      this.bridgeContract.methods
+        .getQueuedPegoutsCount()
+        .call()
+        .then(resolve)
+        .catch(reject);
+    });
+  }
 }

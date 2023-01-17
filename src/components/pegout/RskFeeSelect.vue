@@ -22,15 +22,15 @@
             <v-row class="mx-0 fee-label">
               <v-col cols="4" class="d-flex justify-start pa-0">
                       <span class="text-left">{{ slowFee }}
-                      {{environmentContext.getRbtcTicker()}}</span>
+                       gwei</span>
               </v-col>
               <v-col cols="4" class="d-flex justify-center pa-0">
                       <span class="text-center">{{ averageFee }}
-                      {{environmentContext.getRbtcTicker()}}</span>
+                       gwei</span>
               </v-col>
               <v-col cols="4" class="d-flex justify-end pa-0">
                       <span class="text-right">{{ fastFee }}
-                      {{environmentContext.getRbtcTicker()}}</span>
+                       gwei</span>
               </v-col>
             </v-row>
           </v-col>
@@ -76,15 +76,15 @@ export default class RskFeeSelect extends Vue {
   }
 
   get slowFee() {
-    return this.pegOutTxState.calculatedFees.slow.toString();
+    return this.pegOutTxState.calculatedFees.slow.toGweiTrimmedString();
   }
 
   get averageFee() {
-    return this.pegOutTxState.calculatedFees.average.toString();
+    return this.pegOutTxState.calculatedFees.average.toGweiTrimmedString();
   }
 
   get fastFee() {
-    return this.pegOutTxState.calculatedFees.fast.toString();
+    return this.pegOutTxState.calculatedFees.fast.toGweiTrimmedString();
   }
 
   get enoughBalance(): boolean | string {

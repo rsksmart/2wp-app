@@ -22,7 +22,7 @@ const routes: Array<RouteConfig> = [
   {
     path: '/status',
     name: 'StatusSearch',
-    component: () => import(/* webpackChunkName: "transactions" */ '../views/Status.vue'),
+    component: () => import(/* webpackChunkName: "status" */ '../views/Status.vue'),
   },
   {
     path: '/pegin',
@@ -32,12 +32,12 @@ const routes: Array<RouteConfig> = [
   {
     path: '/pegout',
     name: 'PegOut',
-    component: () => import(/* webpackChunkName: "transactions" */ '../views/PegOut.vue'),
+    component: () => import(/* webpackChunkName: "pegout" */ '../views/PegOut.vue'),
   },
   {
     path: '/pegin/:wallet/create',
     name: 'Create',
-    component: () => import(/* webpackChunkName: "transactions" */ '../views/Create.vue'),
+    component: () => import(/* webpackChunkName: "pegin-create" */ '../views/Create.vue'),
   },
   {
     path: '/pegin/success/:txId',
