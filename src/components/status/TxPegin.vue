@@ -101,7 +101,7 @@
             <v-col class="confirm-percentage pa-0">
               <v-row>
                 <v-progress-linear
-                class="progress-bar-status "
+                class="progress-bar-status"
                 :value="rskConfirmationsPercentage"
                 :color="currentRskBarColor"
                 height="19"/>

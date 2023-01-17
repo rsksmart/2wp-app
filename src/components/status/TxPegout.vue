@@ -1,7 +1,7 @@
 <template>
   <v-col>
       <v-row justify="center" class="mt-6">
-        <div v-if="pegStatus">Pegout status: {{pegStatus.status}}</div>
+        <pegout-progress/>
       </v-row>
   </v-col>
 </template>
@@ -11,25 +11,24 @@ import {
   Component,
   Prop,
   Vue,
-  Emit,
 } from 'vue-property-decorator';
-import { setStatusMessage } from '@/services/utils';
 import {
-  PegoutStatusDataModel,
-  TxStatusType,
+  TxStatus,
 } from '@/types';
+import { State, Getter } from 'vuex-class';
+import * as constants from '@/store/constants';
+import PegoutProgress from '@/components/status/PegoutProgress.vue';
 
-@Component({})
+@Component({
+  components: {
+    PegoutProgress,
+  },
+})
 export default class TxPegout extends Vue {
-  @Prop() pegStatus!: PegoutStatusDataModel;
+  @Prop() txId!: string;
 
-  @Emit('setMessage')
-  setMessage() {
-    return setStatusMessage(TxStatusType.PEGOUT, this.pegStatus.status);
-  }
+  @State('status') txStatus!: TxStatus;
 
-  created() {
-    this.setMessage();
-  }
+  @Getter(constants.STATUS_IS_REJECTED, { namespace: 'status' }) isRejected!: boolean;
 }
 </script>
