@@ -129,13 +129,13 @@
     </v-row>
     <v-row v-if="confirmTxState.matches(['idle', 'error', 'goingHome'])" class="ma-0">
       <v-col cols="2" class="d-flex justify-start ma-0 py-0">
-        <v-btn rounded outlined color="#00B520" width="110" @click="toPegInForm"
+        <v-btn rounded outlined color="#000000" width="110" @click="toPegInForm"
                :disabled="confirmTxState.matches(['error', 'goingHome', 'loading'])">
           <span>Back</span>
         </v-btn>
       </v-col>
       <v-col cols="10" class="d-flex justify-end ma-0 py-0">
-        <v-btn rounded color="#00B520" width="110" @click="toTrackId"
+        <v-btn rounded color="#000000" width="110" @click="toTrackId"
                :disabled="confirmTxState.matches(['error', 'goingHome', 'loading'])">
           <span class="whiteish">Send</span>
         </v-btn>
@@ -147,7 +147,7 @@
           See Liquality wallet to confirm your transaction!
         </v-row>
         <v-row class="mx-0 mb-5 mt-10 d-flex justify-center">
-          <v-progress-circular indeterminate :size="60" :width="8" color="#00B520" />
+          <v-progress-circular indeterminate :size="60" :width="8" color="#000000" />
         </v-row>
       </v-col>
     </v-row>
