@@ -155,7 +155,11 @@
     </v-row>
     <v-divider/>
     <v-row class="mx-0 my-8">
-      <tx-summary :initial-expand="true"/>
+      <tx-summary
+        :showTxId="false"
+        :initialExpand="true"
+        :type='typeSummary'
+        :orientation='orientationSummary'/>
     </v-row>
     <v-row class="mx-0 my-8">
       <advanced-data :rawTx="rawTx" :initial-expand="false"/>
@@ -206,6 +210,8 @@ import { Machine } from '@/services/utils';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import { PegInTxState } from '@/types/pegInTx';
 import * as constants from '@/store/constants';
+import { TxStatusType } from '@/types/store';
+import { TxSummaryOrientation } from '@/types/Status';
 
 @Component({
   components: {
@@ -217,6 +223,10 @@ export default class ConfirmTrezorTransaction extends Vue {
   txId = '';
 
   rawTx = '';
+
+  typeSummary = TxStatusType.PEGIN;
+
+  orientationSummary = TxSummaryOrientation.HORIZONTAL;
 
   @Prop() confirmTxState!: Machine<
     'idle'

@@ -122,7 +122,11 @@
     </v-row>
     <v-divider/>
     <v-row class="mx-0 my-8">
-      <tx-summary :showTxId="false" :initial-expand="true"/>
+      <tx-summary
+        :showTxId="false"
+        :initialExpand="true"
+        :type='typeSummary'
+        :orientation='orientationSummary'/>
     </v-row>
     <v-row class="mx-0 my-8">
       <advanced-data :rawTx="rawTx" :initial-expand="false"/>
@@ -174,6 +178,8 @@ import EnvironmentContextProviderService from '@/providers/EnvironmentContextPro
 import { PegInTxState } from '@/types/pegInTx';
 import * as constants from '@/store/constants';
 import LiqualityTxBuilder from '@/middleware/TxBuilder/LiqualityTxBuilder';
+import { TxStatusType } from '@/types/store';
+import { TxSummaryOrientation } from '@/types/Status';
 
 @Component({
   components: {
@@ -186,6 +192,10 @@ export default class ConfirmLiqualityTransaction extends Vue {
   txId = '';
 
   rawTx = '';
+
+  typeSummary = TxStatusType.PEGIN;
+
+  orientationSummary = TxSummaryOrientation.HORIZONTAL;
 
   @Prop() confirmTxState!: Machine<
     'idle'

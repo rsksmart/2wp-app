@@ -24,6 +24,22 @@ export function getAccountType(address: string, network: AppNetwork): string {
   return constants.BITCOIN_MULTISIGNATURE_ADDRESS;
 }
 
+export function getBtcExplorerUrl(txId: string) {
+  let network = '';
+  switch (EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin) {
+    case constants.BTC_NETWORK_TESTNET:
+      network = 'btc-testnet';
+      break;
+    case constants.BTC_NETWORK_MAINNET:
+      network = 'btc';
+      break;
+    default:
+      network = 'btc-testnet';
+      break;
+  }
+  return `https://live.blockcypher.com/${network}/tx/${txId}`;
+}
+
 export class Machine<States extends string> {
   value: States;
 
