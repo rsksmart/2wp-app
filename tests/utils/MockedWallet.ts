@@ -43,6 +43,7 @@ export default class MockedWallet extends WalletService {
     return this.testCase.walletMaxCall;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   sign(tx: Tx): Promise<TrezorSignedTx | LedgerSignedTx> {
     return new Promise<TrezorSignedTx | LedgerSignedTx>((resolve, reject) => {
       if (this.testCase.signedTx instanceof Error) {

@@ -1,5 +1,6 @@
 import { MiningSpeedFee } from '@/types/pegInTx';
 import WeiBig from '@/types/WeiBig';
+import SatoshiBig from './SatoshiBig';
 
 export interface PegoutConfiguration {
   minValue: WeiBig;
@@ -18,4 +19,5 @@ export interface PegOutTxState {
   };
   selectedFee: MiningSpeedFee;
   senderAddress?: string;
+  estimatedBTCToRecieve: SatoshiBig;
 }

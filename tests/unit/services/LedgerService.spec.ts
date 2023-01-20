@@ -29,6 +29,7 @@ describe('Ledger Service: ', () => {
   it('should get the number of requested addresses based on env variables set', () => {
     const ledgerService = new LedgerService();
     jest.spyOn(ledgerService, 'getXpub')
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .mockImplementation((accountType: BtcAccount, accountNumber: number) => {
         let xpub = '';
         switch (accountType) {
