@@ -8,3 +8,8 @@ export interface StatusState extends TxStatus{
     errorMessage: string,
     txStatus?: TxStatus,
 }
+
+export enum TxSummaryOrientation {
+    VERITICAL = 'VERTICAL',
+    HORIZONTAL = 'HORIZONTAL'
+}

@@ -8,8 +8,8 @@
   }
 
   h2 {
-    font-size: 20px;
-    line-height: 25px;
+    font-size: 20px !important;
+    line-height: 25px !important;;
     color: #00B520;
   }
 
@@ -226,23 +226,55 @@
   font-size: 14px !important;
 }
 
-.pop-up-title {
-  font-size: 30px !important;
-  color: #00B520 !important;
-  font-weight: bold !important;
+.form-field {
+  .mark, .label-liquality, .row {
+    background-color:#F8F5F5;
+    padding:9px;
+    margin: 0px;
+    border-radius:4px;
+    border:1px solid #d9d9d9;
+    .v-input__control > .v-input__slot {
+      background: none !important;
+    }
+  }
+
+  .row {
+    .destination-address-p {
+      padding:0px !important;
+      border: none;
+    }
+  }
+
+  .mark-text-field {
+    background-color:#F8F5F5 !important;
+    padding: 0px 9px !important;
+    margin: 0px !important;
+    border-radius:4px !important;
+    border:1px solid #d9d9d9 !important;
+    .v-input__slot {
+      padding: 0px !important;
+      margin: 0px !important;
+      background: none !important;
+      input {
+        padding:0px !important;
+      }
+    }
+  }
 }
 
-.pop-up-subtitle {
-  font-size: 15px !important;
-  font-weight: bold !important;
-}
-
-.pop-up-sign-field {
-  font-size: 15px;
-  color: #666666;
+.title-transaction-summary {
   text-align: center;
-  border: 1px solid #c4c4c4;
-  padding: 10px;
-  padding-bottom: 30px;
-  padding-right: 40px;
+  font-size: 30px !important;
+}
+
+.short-address {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.form-field-summary {
+  background-color: #F8F5F5;
+  border: 1px #D9D9D9 solid;
+  border-radius: 5px;
+  padding: 10px 7px !important;
 }
