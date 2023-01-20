@@ -22,8 +22,12 @@
           <v-divider color="#C4C4C4"/>
           <btc-fee-select/>
         </v-col>
-        <v-col id="summary-col" cols="4" lg="5">
-          <btc-tx-summary-side/>
+        <v-col id="summary-col" cols="4" lg="4">
+          <tx-summary
+            :showTxId="true"
+            :initialExpand="true"
+            :type="typeSummary"
+            :orientation="orientationSummary"/>
         </v-col>
       </v-row>
       <v-row class="mx-0">
@@ -64,13 +68,15 @@ import PegInAccountSelect from '@/components/create/PegInAccountSelect.vue';
 import BtcInputAmount from '@/components/create/BtcInputAmount.vue';
 import RskAddressInput from '@/components/create/RskAddressInput.vue';
 import BtcFeeSelect from '@/components/create/BtcFeeSelect.vue';
-import BtcTxSummarySide from '@/components/create/BtcTxSummarySide.vue';
 import { PegInTxState } from '@/types/pegInTx';
 import * as constants from '@/store/constants';
 import { Machine } from '@/services/utils';
 import SatoshiBig from '@/types/SatoshiBig';
 import AddressWarningDialog from '@/components/exchange/AddressWarningDialog.vue';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
+import TxSummary from '@/components/exchange/TxSummary.vue';
+import { TxStatusType } from '@/types/store';
+import { TxSummaryOrientation } from '@/types/Status';
 
 @Component({
   components: {
@@ -78,7 +84,7 @@ import EnvironmentContextProviderService from '@/providers/EnvironmentContextPro
     BtcInputAmount,
     RskAddressInput,
     BtcFeeSelect,
-    BtcTxSummarySide,
+    TxSummary,
     AddressWarningDialog,
   },
 })
@@ -90,6 +96,10 @@ export default class PegInForm extends Vue {
   rskAddressState = 'invalid';
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+
+  typeSummary = TxStatusType.PEGIN;
+
+  orientationSummary = TxSummaryOrientation.VERITICAL;
 
   @State('pegInTx') pegInTxState!: PegInTxState;
 

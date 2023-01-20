@@ -102,6 +102,41 @@
     border: 0.5px solid #BFBFBF;
     box-sizing: border-box;
     border-radius: 30px;
+    padding: 30px 20px;
+
+    .box-field {
+      margin: 10px 5px !important;
+    }
+    
+    .box-col {
+      padding: 0px 5px !important;
+    }
+
+    .col {
+      padding: 0px;
+    }
+
+    .row {
+      margin: 0px;
+    }
+
+    .status-title {
+      span {
+        font-size: 24px;
+        color: #00B520;
+        font-weight: bold;
+        padding-left: 2px;
+        padding-right: 2px;
+        padding-bottom: 25px;
+      }
+    }
+    
+    .status-subtitle {
+      color: #00B520;
+      font-size: 16px;
+      font-weight: bold;
+      padding-bottom: 5px;
+    }
   }
 
   .status {
@@ -246,5 +281,58 @@
     background-color:green;
     color:white;
     font-weight:bold;
+  }
+}
+
+.summary-container {
+  max-width: 900px;
+}
+
+.status-text-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.box-pegin { 
+  display: flex;
+  flex-direction: column;
+
+  .title-container {
+    width: 100%;
+  }
+
+  .rsk-col {
+    order: 3;
+  }
+
+  .v-divider {
+    order: 2;
+  }
+
+  .bitcoin-col {
+    order: 1;
+  }
+
+}
+
+.box-pegout { 
+  display: flex;
+  flex-direction: column;
+
+  .title-container {
+    width: 100%;
+  }
+
+  .bitcoin-col {
+    order: 3;
+  }
+
+  .v-divider {
+    order: 2;
+  }
+
+  .rsk-col {
+    order: 1;
   }
 }

@@ -3,10 +3,8 @@ import ApiService from '@/services/ApiService';
 import axios, { AxiosResponse } from 'axios';
 import sinon from 'sinon';
 import { BridgeService } from '@/services/BridgeService';
-import * as OpReturnUtils from '@/utils/OpReturnUtils';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import * as constants from '@/store/constants';
-import * as PowPegAddressUtils from '../../../src/utils/PowPegUtils';
 import { ApiInformation } from '../../../src/types/ApiInformation';
 
 function getNormalizedTx(): Promise<AxiosResponse> {
@@ -51,6 +49,7 @@ function getNormalizedTx(): Promise<AxiosResponse> {
   });
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function setEnvironment(isValidOpReturn: boolean, isValidPowPegAddress: boolean) {
   const defaultEnvironmentVariables = {
     vueAppCoin: constants.BTC_NETWORK_TESTNET,

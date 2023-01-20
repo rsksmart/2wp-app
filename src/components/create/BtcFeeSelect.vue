@@ -53,7 +53,7 @@
 
 <script lang="ts">
 import {
-  Component, Emit, Vue, Watch,
+  Component, Emit, Vue,
 } from 'vue-property-decorator';
 import { Action, Getter, State } from 'vuex-class';
 import * as constants from '@/store/constants';
