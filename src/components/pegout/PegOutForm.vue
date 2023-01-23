@@ -48,6 +48,22 @@
       @toSign="signMessage"
       @closeDialog="closeAddressDialog"/>
     </v-row>
+    <v-row class="mx-0">
+      <v-col cols="2" class="d-flex justify-start ma-0 pa-0 mt-10">
+        <v-btn rounded outlined color="#00B520" width="110" @click="back">
+          <span>Back</span>
+        </v-btn>
+      </v-col>
+      <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0">
+        <v-btn v-if="!pegOutFormState.matches(['loading'])" rounded color="#00B43C"
+            @click="sendTx">
+          <span class="whiteish">Continue</span>
+          <v-icon class="ml-2" color="#fff">mdi-send-outline</v-icon>
+        </v-btn>
+        <v-progress-circular v-if="pegOutFormState.matches(['loading'])"
+          indeterminate color="#00B520" class="mr-10"/>
+      </v-col>
+    </v-row>
   </v-col>
 </v-container>
 </template>
@@ -61,6 +77,7 @@ import RskFeeSelect from '@/components/pegout/RskFeeSelect.vue';
 import AddressDialog from '@/components/pegout/AddressDialog.vue';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import { TxStatusType } from '@/types/store';
+import { Machine } from '@/services/utils';
 import { TxSummaryOrientation } from '@/types/Status';
 
 @Component({
@@ -73,6 +90,8 @@ import { TxSummaryOrientation } from '@/types/Status';
   },
 })
 export default class PegOutForm extends Vue {
+  pegOutFormState: Machine<'loading' | 'goingHome' | 'fill'> = new Machine('fill');
+
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
   recipientAddress = '';
@@ -81,6 +100,8 @@ export default class PegOutForm extends Vue {
 
   focus = false;
 
+  isReadyToCreate = true;
+
   typeSummary = TxStatusType.PEGOUT;
 
   orientationSummary = TxSummaryOrientation.VERITICAL;
@@ -88,6 +109,11 @@ export default class PegOutForm extends Vue {
   @Emit()
   closeAddressDialog() {
     this.showAddressDialog = false;
+  }
+
+  @Emit()
+  back():void {
+    this.$router.push({ name: 'Home' });
   }
 
   signMessage() {
