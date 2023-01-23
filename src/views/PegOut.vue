@@ -1,19 +1,12 @@
 <template>
   <v-container fluid class="exchange normalized-height container
   max-width mx-6 pt-6">
-    <peg-out-form/>
-    <v-row class="mx-0">
-      <v-col cols="2" class="d-flex justify-start ma-0 pa-0 mt-10">
-        <v-btn rounded outlined color="#00B520" width="110" @click="back">
-          <span>Back</span>
-        </v-btn>
-      </v-col>
-    </v-row>
+    <component :is="currentComponent"/>
   </v-container>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Emit } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import PegOutForm from '@/components/pegout/PegOutForm.vue';
 import { Action } from 'vuex-class';
 import * as constants from '@/store/constants';
@@ -26,10 +19,7 @@ import * as constants from '@/store/constants';
 export default class PegOut extends Vue {
   @Action(constants.PEGOUT_TX_INIT, { namespace: 'pegOutTx' }) init !: () => Promise<void>;
 
-  @Emit()
-  back():void {
-    this.$router.push({ name: 'Home' });
-  }
+  currentComponent = 'PegOutForm';
 
   created() {
     this.init();
