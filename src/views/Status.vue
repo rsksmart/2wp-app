@@ -17,10 +17,16 @@
                           @click:append="getPegStatus"
                           v-model="txId"
                           @keyup.enter="getPegStatus"
-                          v-bind:color="activeMessage.error ? '#F6C61B': '#C4C4C4'"
+                          v-bind:color="
+                          activeMessage.error &&
+                          status.txDetails.status === 'NOT_PEGOUT_TX'
+                          ? '#F6C61B': '#C4C4C4'"
                           :label="'Transaction id'"
-                          v-bind:class="activeMessage.error ? 'status-text-field-error' : ''"/>
-            <v-row class="mx-0 pl-1 pt-1" v-if="activeMessage.error">
+                          v-bind:class=" activeMessage.error &&
+                          status.txDetails.status === 'NOT_PEGOUT_TX'
+                          ? 'status-text-field-error' : ''"/>
+            <v-row class="mx-0 pl-1 pt-1" v-if=" activeMessage.error &&
+                          status.txDetails.status === 'NOT_PEGOUT_TX'">
                 <span class="yellowish">
                   {{activeMessage.errorMessage}}
                 </span>
@@ -41,7 +47,7 @@
           />
          <!--  TODO: create a pegout-tx-summary component-->
         <tx-pegout
-          v-if="!activeMessage.isRejected && showStatus && isPegOut"
+          v-if="!activeMessage.isRejected && isPegOut && status.txDetails.status !== 'NOT_PEGOUT_TX'"
           :txId ="txId"
         />
         <v-row justify="center" class="mx-0 mt-5">

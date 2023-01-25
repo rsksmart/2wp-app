@@ -22,14 +22,15 @@
     <v-row v-if="confirmTxState.matches(['idle', 'error', 'goingHome'])" class="ma-0">
       <v-col cols="2" class="d-flex justify-start ma-0 py-0">
         <v-btn rounded outlined color="#00B520" width="110"
+               @click="changePage"
                :disabled="confirmTxState.matches(['error', 'goingHome', 'loading'])">
           <span>Back</span>
         </v-btn>
       </v-col>
       <v-col cols="10" class="d-flex justify-end ma-0 py-0">
         <v-btn rounded color="#00B520" width="110"
-               :disabled="confirmTxState.matches(['error', 'goingHome', 'loading'])">
-          <span class="whiteish">Send</span>
+               :disabled="true">
+          <span class="whiteish">Confirm</span>
         </v-btn>
       </v-col>
     </v-row>
@@ -39,6 +40,7 @@
 <script lang="ts">
 import {
   Component, Prop,
+  Emit,
   Vue,
 } from 'vue-property-decorator';
 import TxSummary from '@/components/exchange/TxSummary.vue';
@@ -65,5 +67,12 @@ export default class Confirmation extends Vue {
     >;
 
   VALUE_INCOMPLETE_MESSAGE = 'Not Found';
+
+  backPage = 'PegOutForm';
+
+  @Emit('changePage')
+  changePage() {
+    return this.backPage;
+  }
 }
 </script>
