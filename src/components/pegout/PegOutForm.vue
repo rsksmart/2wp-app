@@ -39,8 +39,8 @@
         <tx-summary
           :showTxId="true"
           :initialExpand="true"
-          :type='typeSummary'
-          :orientation='orientationSummary'/>
+          :type="typeSummary"
+          :orientation="orientationSummary"/>
       </v-col>
     </v-row>
     <v-row v-if="showAddressDialog">
@@ -49,19 +49,22 @@
       @closeDialog="closeAddressDialog"/>
     </v-row>
     <v-row class="mx-0">
-      <v-col cols="2" class="d-flex justify-start ma-0 pa-0 mt-10">
-        <v-btn rounded outlined color="#00B520" width="110" @click="back">
+      <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
+        <v-btn @click="back"
+        rounded outlined color="#00B520" width="110"
+                :disabled="pegOutFormState.matches(['loading', 'goingHome'])">
           <span>Back</span>
         </v-btn>
       </v-col>
       <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0">
         <v-btn v-if="!pegOutFormState.matches(['loading'])" rounded color="#00B43C"
-            @click="sendTx">
+                @click="changePage"
+                :disabled="pegOutFormState.matches(['goingHome'])">
           <span class="whiteish">Continue</span>
           <v-icon class="ml-2" color="#fff">mdi-send-outline</v-icon>
         </v-btn>
         <v-progress-circular v-if="pegOutFormState.matches(['loading'])"
-          indeterminate color="#00B520" class="mr-10"/>
+                              indeterminate color="#00B520" class="mr-10"/>
       </v-col>
     </v-row>
   </v-col>
@@ -102,6 +105,8 @@ export default class PegOutForm extends Vue {
 
   isReadyToCreate = true;
 
+  nextPage = 'Confirmation';
+
   typeSummary = TxStatusType.PEGOUT;
 
   orientationSummary = TxSummaryOrientation.VERITICAL;
@@ -124,6 +129,11 @@ export default class PegOutForm extends Vue {
   @Emit()
   openAddressDialog() {
     this.showAddressDialog = true;
+  }
+
+  @Emit('changePage')
+  changePage() {
+    return this.nextPage;
   }
 }
 </script>
