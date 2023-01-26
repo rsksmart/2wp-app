@@ -115,7 +115,7 @@
                   <v-row>
                     <v-col class="form-field-summary">
                       <span class="status-text-ellipsis">
-                        {{ rskFederationAddress }}
+                        {{ computedFederationAddress }}
                       </span>
                     </v-col>
                   </v-row>
@@ -136,7 +136,7 @@
                         </template>
                         <p class="tooltip-form mb-0">
                             Verify the transaction on
-                            {{environmentContext.getRskText()}} block explorer.
+                            {{displayExplorerText}} block explorer.
                         </p>
                       </v-tooltip>
                   </v-row>
@@ -146,11 +146,11 @@
                         <v-col cols="11"
                           class="col-address-button d-flex flex-column">
                           <span class="breakable-address status-text-ellipsis">
-                            {{ computedTxId }}
+                            {{ txId }}
                           </span>
                         </v-col>
                         <v-col cols="1" class="col-address-button">
-                          <v-btn @click="btcExplorerUrl" icon color="#C4C4C4" x-small>
+                          <v-btn @click="openExplorer" icon color="#C4C4C4" x-small>
                               <v-icon>mdi-open-in-new</v-icon>
                           </v-btn>
                         </v-col>
@@ -580,8 +580,32 @@ export default class TxSummary extends Vue {
     return amount;
   }
 
-  btcExplorerUrl() {
-    window.open(getBtcExplorerUrl(this.txId), '_blank');
+  openExplorer() {
+    if (this.type === this.transactionTypes.PEGIN) {
+      this.openBtcExplorer();
+    } else {
+      this.openRskExplorer();
+    }
+  }
+
+  get displayExplorerText(): string {
+    if (this.type === this.transactionTypes.PEGIN) {
+      return this.environmentContext.getBtcText();
+    }
+    return this.environmentContext.getRskText();
+  }
+
+  openBtcExplorer() {
+    const txWithout0x = this.txId.substring(2, (this.txId.length));
+    console.log(txWithout0x);
+    window.open(getBtcExplorerUrl(txWithout0x), '_blank');
+  }
+
+  openRskExplorer() {
+    const url = this.getRskExplorerUrl();
+    const urlWithTx = `${url}/tx/${this.txId}`;
+    console.log(urlWithTx);
+    window.open(urlWithTx, '_blank');
   }
 
   get amountUSD(): string {
@@ -650,6 +674,16 @@ export default class TxSummary extends Vue {
       result = formatTxId(this.txIdValue);
     } else if (this.txId) {
       result = formatTxId(this.txId);
+    } else {
+      result = this.VALUE_INCOMPLETE_MESSAGE;
+    }
+    return result;
+  }
+
+  get computedFederationAddress(): string {
+    let result;
+    if (this.rskFederationAddress) {
+      result = formatTxId(this.rskFederationAddress);
     } else {
       result = this.VALUE_INCOMPLETE_MESSAGE;
     }
@@ -787,8 +821,14 @@ export default class TxSummary extends Vue {
 
   @Emit()
   toRskExplorer() {
+    const rskUrl = this.getRskExplorerUrl();
+    window.open(`${rskUrl}/address/${this.peginTxState.rskAddressSelected}`, '_blank');
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getRskExplorerUrl(): string {
     const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_MAINNET ? '' : '.testnet';
-    window.open(`https://explorer${network}.rsk.co/address/${this.peginTxState.rskAddressSelected}`, '_blank');
+    return `https://explorer${network}.rsk.co`;
   }
 
   created() {

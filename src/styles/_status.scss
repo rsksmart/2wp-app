@@ -139,6 +139,17 @@
     }
   }
 
+  .mdi:before, .mdi-set {
+    display: inline-block;
+    font: normal normal normal 24px/1 "Material Design Icons";
+    font-size: inherit;
+    text-rendering: auto;
+    line-height: inherit;
+    padding: 0px 0px 4px 3px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   .status {
     font-family: Quicksand, sans-serif;
     font-style: normal;
