@@ -2,8 +2,8 @@ name: 2WP-app deploy UI for TestNet
 
 on:
   push:
-    tags:
-      - '**'
+    branches:
+      - '*-qa'
 
 jobs:
   checkout-and-build:
