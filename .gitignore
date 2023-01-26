@@ -26,8 +26,6 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
-sonar-project.properties
 .scannerwork
 nginx.crt
 nginx.key
-sonar-project5.properties
