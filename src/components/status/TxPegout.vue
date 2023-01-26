@@ -6,6 +6,7 @@
           :txId="txId"
           :statusFee="currentFee"
           :showTxId="true"
+          :statusRefundAddress="currentRefundAddress"
           :initialExpand="true"
           :type="typeSummary"
           :orientation="orientationSummary"/>
@@ -44,6 +45,8 @@ export default class TxPegout extends Vue {
 
   currentFee = new SatoshiBig('0', 'btc');
 
+  currentRefundAddress = '';
+
   @Prop() txId!: string;
 
   @State('status') txStatus!: TxStatus;
@@ -63,11 +66,13 @@ export default class TxPegout extends Vue {
     const txData = {
       amount: new SatoshiBig(pegoutStatusDataModel.valueRequestedInSatoshis, 'btc'),
       recipient: pegoutStatusDataModel.btcRecipientAddress,
+      refundAddress: pegoutStatusDataModel.rskSenderAddress,
       feeBTC: new SatoshiBig(pegoutStatusDataModel.fees ? pegoutStatusDataModel.fees : 0, 'btc'),
       change: '',
     };
     this.peginInit();
     this.setAmount(txData.amount);
+    this.currentRefundAddress = txData.refundAddress;
     this.currentFee = txData.feeBTC;
     this.setRskAddress(txData.recipient);
   }
