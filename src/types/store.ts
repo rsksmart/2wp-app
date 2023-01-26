@@ -48,6 +48,7 @@ export interface PegoutStatusDataModel {
   feeInSatoshisToBePaid: number;
   status: PegoutStatus;
   btcRawTransaction: string;
+  fees: number;
 }
 
 export enum TxStatusType {
