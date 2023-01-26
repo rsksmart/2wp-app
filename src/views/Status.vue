@@ -47,7 +47,10 @@
           />
          <!--  TODO: create a pegout-tx-summary component-->
         <tx-pegout
-          v-if="!activeMessage.isRejected && isPegOut && status.txDetails.status !== 'NOT_PEGOUT_TX'"
+          v-if="!activeMessage.isRejected
+            && isPegOut
+            && status.txDetails.status
+            !== 'NOT_PEGOUT_TX'"
           :txId ="txId"
         />
         <v-row justify="center" class="mx-0 mt-5">
