@@ -14,4 +14,5 @@ export interface SessionState {
   rLoginInstance?: RLogin;
   txType: TransactionType;
   balance: WeiBig;
+  btcDerivedAddress?: string;
 }
