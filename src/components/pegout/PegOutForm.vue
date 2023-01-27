@@ -59,8 +59,8 @@
       <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0">
         <v-btn v-if="!pegOutFormState.matches(['loading'])" rounded color="#00B43C"
                 @click="send"
-                :disabled="pegOutFormState.matches(['goingHome'])">
-          <span class="whiteish">Continue</span>
+                :disabled="!isReadyToCreate || pegOutFormState.matches(['goingHome'])">
+          <span class="whiteish">Send</span>
           <v-icon class="ml-2" color="#fff">mdi-send-outline</v-icon>
         </v-btn>
         <v-progress-circular v-if="pegOutFormState.matches(['loading'])"
@@ -86,9 +86,10 @@ import TxSummary from '@/components/exchange/TxSummary.vue';
 import { TxStatusType } from '@/types/store';
 import { Machine } from '@/services/utils';
 import { TxSummaryOrientation } from '@/types/Status';
-import { Action } from 'vuex-class';
+import { Action, Getter, State } from 'vuex-class';
 import * as constants from '@/store/constants';
 import TxErrorDialog from '@/components/exchange/TxErrorDialog.vue';
+import { SessionState } from '@/types';
 
 @Component({
   components: {
@@ -111,8 +112,6 @@ export default class PegOutForm extends Vue {
 
   focus = false;
 
-  isReadyToCreate = true;
-
   nextPage = 'Confirmation';
 
   typeSummary = TxStatusType.PEGOUT;
@@ -123,7 +122,11 @@ export default class PegOutForm extends Vue {
 
   txError = '';
 
+  @State('web3Session') session !: SessionState;
+
   @Action(constants.PEGOUT_TX_SEND, { namespace: 'pegOutTx' }) sendTx !: () => Promise<void>;
+
+  @Getter(constants.PEGOUT_TX_IS_ENOUGH_BALANCE, { namespace: 'pegOutTx' }) isEnoughBalance !: boolean;
 
   @Emit()
   closeAddressDialog() {
@@ -147,14 +150,21 @@ export default class PegOutForm extends Vue {
 
   @Emit()
   send() {
+    this.pegOutFormState.send('loading');
     this.sendTx()
       .then(() => {
         this.changePage();
+        this.pegOutFormState.send('fill');
       })
       .catch((error:Error) => {
         this.txError = error.message;
         this.showTxErrorDialog = true;
       });
+  }
+
+  get isReadyToCreate(): boolean {
+    return this.isEnoughBalance
+      && !!this.session.btcDerivedAddress;
   }
 
   @Emit()
