@@ -1,6 +1,6 @@
 {
   "name": "2wp-app",
-  "version": "1.2.0",
+  "version": "1.2.0.2",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
