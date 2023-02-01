@@ -6,6 +6,10 @@ import TxSummary from '@/components/exchange/TxSummary.vue';
 import SatoshiBig from '@/types/SatoshiBig';
 import * as constants from '@/store/constants';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import sinon from 'sinon';
+import { pegOutTx } from '@/store/pegoutTx';
+import { status } from '@/store/status';
+import { PegoutStatus, PegOutTxState, TxStatus, TxStatusType, WeiBig } from '@/types';
 
 const localVue = createLocalVue();
 let vuetify:any;
@@ -18,6 +22,10 @@ describe('TxSummary', () => {
     vuetify = new Vuetify();
     EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
   });
+  afterEach(() => {
+    sinon.restore();
+  });
+
   localVue.use(Vuex);
   const state = {
     peginConfiguration: {
@@ -67,6 +75,39 @@ describe('TxSummary', () => {
     },
   };
 
+  const pegOutTxState: PegOutTxState = {
+    amountToTransfer: new WeiBig(200000, 'wei'),
+    calculatedFees: {
+      average: new WeiBig(0, 'gwei'),
+      fast: new WeiBig(0, 'gwei'),
+      slow: new WeiBig(0, 'gwei'),
+    },
+    estimatedBTCToRecieve: new SatoshiBig(0, 'satoshi'),
+    pegoutConfiguration: {
+      minValue: new WeiBig(0, 'wei'),
+      maxValue: new WeiBig(0, 'wei'),
+      bridgeContractAddress: 'bridgeAddress',
+    },
+    selectedFee: constants.BITCOIN_AVERAGE_FEE_LEVEL,
+    validAmount: true,
+  };
+
+  const mockedStatus = {
+    type: TxStatusType.PEGOUT,
+    txDetails: {
+      originatingRskTxHash: 'originatingTxhash',
+      rskTxHash: 'rskTxHash',
+      rskSenderAddress: 'testSenderAddress',
+      btcRecipientAddress: 'testBtcRecipientAddress',
+      valueRequestedInSatoshis: 50000000,
+      valueInSatoshisToBeReceived: 450000000,
+      feeInSatoshisToBePaid: 50000,
+      status: PegoutStatus.RECEIVED,
+      btcRawTransaction: 'testRawTx',
+      fees: 0,
+    },
+  };
+
   const getters = {
     [constants.PEGIN_TX_GET_REFUND_ADDRESS]: () => 'n2y1xQBv3cqmRPke7QBWy52F91ZdgrYUgh',
     [constants.PEGIN_TX_GET_SAFE_TX_FEE]: () => state.calculatedFees.average,
@@ -78,6 +119,19 @@ describe('TxSummary', () => {
         state,
         getters,
         namespaced: true,
+      },
+      pegOutTx: {
+        state: pegOutTxState,
+        getters: pegOutTx.getters,
+        actions: pegOutTx.actions,
+        mutations: pegOutTx.mutations,
+        namespaced: true,
+      },
+      status: {
+        state: mockedStatus,
+        getters: status.getters,
+        actions: status.actions,
+        mutations: status.mutations,
       },
     },
   });
@@ -106,5 +160,31 @@ describe('TxSummary', () => {
     expect(wrapper.find('#amount-usd').text()).toEqual(`USD $ ${amountUSD}`);
     expect(wrapper.find('#fee-usd').text()).toEqual(`USD $ ${feeUSD}`);
     expect(wrapper.find('#total-usd').text()).toEqual(`USD $ ${totalUSD}`);
+  });
+
+  it('shows properly the pegout info in pegout flow', () => {
+    const wrapper = shallowMount(TxSummary, {
+      store,
+      localVue,
+      vuetify,
+      propsData: {
+        type: 'PEGOUT',
+        orientation: 'HORIZONTAL',
+      },
+    });
+    expect(wrapper.find('#amount').text()).toEqual(`${pegOutTxState.amountToTransfer.toRBTCTrimmedString()} TRBTC`);
+  });
+  it('shows properly the pegout info from API', () => {
+    const wrapper = shallowMount(TxSummary, {
+      store,
+      localVue,
+      vuetify,
+      propsData: {
+        type: 'PEGOUT',
+        orientation: 'HORIZONTAL',
+      },
+    });
+    const amount = new SatoshiBig(mockedStatus.txDetails.valueRequestedInSatoshis, 'satoshi');
+    expect(wrapper.find('#amount').text()).toEqual(`${amount.toBTCTrimmedString()} TRBTC`);
   });
 });
