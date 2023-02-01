@@ -190,7 +190,9 @@ export default class LiqualityService extends WalletService {
             });
           }
         })
-        .catch(reject);
+        .catch(() => {
+          reject(new LiqualityError('User declined transaction sign'));
+        });
     });
   }
 
