@@ -114,7 +114,7 @@ export default class PegOutForm extends Vue {
 
   typeSummary = TxStatusType.PEGOUT;
 
-  orientationSummary = TxSummaryOrientation.VERITICAL;
+  orientationSummary = TxSummaryOrientation.VERTICAL;
 
   showTxErrorDialog = false;
 

@@ -263,7 +263,7 @@
       </v-col>
     </v-row>
 
-    <v-row v-if="orientation == orientationTypes.VERITICAL"
+    <v-row v-if="orientation == orientationTypes.VERTICAL"
       class="mx-0 px-5 pb-5 summary-box">
         <!-- title -->
         <v-container class="pb-0 pl-0">
@@ -315,7 +315,7 @@
         <v-container v-if="type === transactionTypes.PEGOUT" class="form-field pt-2 pb-3 pl-0">
           <v-container class="mark">
             <p v-bind:class="{'grayish': fee === VALUE_INCOMPLETE_MESSAGE}">
-              {{ fee }} {{ currencyFromTicker }}
+              {{ pegoutTxState.gas }}
             </p>
           </v-container>
         </v-container>
@@ -454,14 +454,14 @@
           </v-row>
         </v-container>
         <v-container v-if="type === transactionTypes.PEGOUT" class="form-field pt-2 pl-0">
-          <v-row class="mx-0 d-none d-lg-block p-0 m-0">
-            <p v-bind:class="{
-                'grayish':
-                txState.pegoutConfiguration.bridgeContractAddress === VALUE_INCOMPLETE_MESSAGE
-              } + ' mark short-address destination-address-p'">
-              0xtesttesttesttesttest
+          <v-container class="mark">
+            <p
+              v-bind:class="{
+                'grayish': croppedBtcDestinationAddress === VALUE_INCOMPLETE_MESSAGE
+                }">
+              {{ croppedBtcDestinationAddress }}
             </p>
-          </v-row>
+          </v-container>
         </v-container>
         <!-- Revieve -->
         <v-container v-if="type === transactionTypes.PEGOUT" class="pb-0 pl-0">
@@ -652,9 +652,9 @@ export default class TxSummary extends Vue {
   get computedTxFee(): string {
     let txFee;
     if (this.type === this.transactionTypes.PEGIN) {
-      txFee = `${this.feePegIn.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
+      txFee = `${this.feePegIn.toBTCTrimmedString()} ${this.currencyFromTicker}`;
     } else {
-      txFee = `${this.feePegOut.toRBTCTrimmedString()} ${this.currencyToTicker}`;
+      txFee = `${this.feePegOut.toGweiTrimmedString()} gwei`;
     }
     return txFee;
   }
@@ -709,6 +709,12 @@ export default class TxSummary extends Vue {
 
   get croppedComputedRskAddress() {
     return getChunkedValue(this.computedRskAddress, this.maxLengthForChunked);
+  }
+
+  get croppedBtcDestinationAddress():string {
+    return this.web3SessionState.btcDerivedAddress
+      ? getChunkedValue(this.web3SessionState.btcDerivedAddress, this.maxLengthForChunked)
+      : this.VALUE_INCOMPLETE_MESSAGE;
   }
 
   get computedBTCAmount() {
