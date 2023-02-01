@@ -147,11 +147,13 @@ export default class PegOutForm extends Vue {
     this.sendTx()
       .then(() => {
         this.changePage();
-        this.pegOutFormState.send('fill');
       })
       .catch((error:Error) => {
         this.txError = error.message;
         this.showTxErrorDialog = true;
+      })
+      .finally(() => {
+        this.pegOutFormState.send('fill');
       });
   }
 

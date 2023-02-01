@@ -20,6 +20,7 @@ export interface PegOutTxState {
   gas: number;
   btcEstimatedFee: SatoshiBig;
   selectedFee: MiningSpeedFee;
+  efectivePaidFee?: WeiBig;
   senderAddress?: string;
   estimatedBTCToRecieve: SatoshiBig;
   txHash?: string;

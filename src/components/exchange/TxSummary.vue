@@ -170,12 +170,12 @@
                     <v-col class="form-field-summary">
                       <v-row class="mx-0 mb-2">
                         <span>
-                          {{ feePlusAmount }} {{ currencyFromTicker }}
+                          {{ fee }} {{ currencyFromTicker }}
                         </span>
                       </v-row>
                     <v-row class="mx-0">
                         <span class="grayish" id="total-usd">
-                          USD $ {{ feePlusAmountUSD }}
+                          USD $ {{ feeUSD }}
                         </span>
                       </v-row>
                     </v-col>
