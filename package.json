@@ -31,8 +31,6 @@
     "core-js": "^3.6.5",
     "lodash": "^4.17.21",
     "secp256k1": "^4.0.3",
-    "pegout-cost-estimator": "git+https://github.com/rsksmart/pegout-cost-estimator.git",
-    "rsk-network-settings": "git+https://github.com/rsksmart/rsk-network-settings.git#v0.4.0-beta",
     "tiny-secp256k1": "^1.1.6",
     "trezor-connect": "^8.1.19",
     "vue": "^2.6.11",

@@ -10,6 +10,6 @@ export interface StatusState extends TxStatus{
 }
 
 export enum TxSummaryOrientation {
-    VERITICAL = 'VERTICAL',
+    VERTICAL = 'VERTICAL',
     HORIZONTAL = 'HORIZONTAL'
 }

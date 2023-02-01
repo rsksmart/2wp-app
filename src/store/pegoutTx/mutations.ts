@@ -31,4 +31,7 @@ export const mutations: MutationTree<PegOutTxState> = {
   (state, pegoutConfiguration: PegoutConfiguration) => {
     state.pegoutConfiguration = pegoutConfiguration;
   },
+  [constants.PEGOUT_TX_SET_GAS]: (state, gas: number) => {
+    state.gas = gas;
+  },
 };
