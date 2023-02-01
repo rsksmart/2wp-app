@@ -14,8 +14,9 @@
     </v-row>
     <v-row class="mx-0 my-8">
       <tx-summary
-        :showTxId="false"
+        :showTxId="true"
         :initialExpand="true"
+        :txId="pegoutTxState.txHash"
         :type='typeSummary'
         :orientation='orientationSummary'/>
     </v-row>
@@ -41,6 +42,8 @@ import TxSummary from '@/components/exchange/TxSummary.vue';
 import { Machine } from '@/services/utils';
 import { TxStatusType } from '@/types/store';
 import { TxSummaryOrientation } from '@/types/Status';
+import { State } from 'vuex-class';
+import { PegOutTxState } from '@/types';
 
 @Component({
   components: {
@@ -52,6 +55,8 @@ export default class Confirmation extends Vue {
   typeSummary = TxStatusType.PEGOUT;
 
   orientationSummary = TxSummaryOrientation.HORIZONTAL;
+
+  @State('pegOutTx') pegoutTxState!: PegOutTxState;
 
   @Prop() confirmTxState!: Machine<
     'idle'

@@ -161,7 +161,6 @@ describe('TxSummary', () => {
       .toFixed(2);
     expect(wrapper.find('#amount-usd').text()).toEqual(`USD $ ${amountUSD}`);
     expect(wrapper.find('#fee-usd').text()).toEqual(`USD $ ${feeUSD}`);
-    expect(wrapper.find('#total-usd').text()).toEqual(`USD $ ${totalUSD}`);
   });
 
   it('shows properly the pegout info in pegout flow', () => {

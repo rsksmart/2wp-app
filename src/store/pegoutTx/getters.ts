@@ -3,18 +3,22 @@ import { PegOutTxState, RootState, WeiBig } from '@/types';
 import * as constants from '@/store/constants';
 
 export const getters: GetterTree<PegOutTxState, RootState> = {
-  [constants.PEGOUT_TX_GET_SAFE_TX_FEE]: (state): WeiBig => {
+  [constants.PEGOUT_TX_GET_SAFE_TX_FEE]: (state:PegOutTxState): WeiBig => {
     let fee:WeiBig;
-    switch (state.selectedFee) {
-      case constants.BITCOIN_SLOW_FEE_LEVEL:
-        fee = state.calculatedFees.slow;
-        break;
-      case constants.BITCOIN_FAST_FEE_LEVEL:
-        fee = state.calculatedFees.fast;
-        break;
-      default:
-        fee = state.calculatedFees.average;
-        break;
+    if (state.efectivePaidFee) {
+      fee = state.efectivePaidFee;
+    } else {
+      switch (state.selectedFee) {
+        case constants.BITCOIN_SLOW_FEE_LEVEL:
+          fee = state.calculatedFees.slow;
+          break;
+        case constants.BITCOIN_FAST_FEE_LEVEL:
+          fee = state.calculatedFees.fast;
+          break;
+        default:
+          fee = state.calculatedFees.average;
+          break;
+      }
     }
     return fee;
   },
