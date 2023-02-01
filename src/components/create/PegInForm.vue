@@ -99,7 +99,7 @@ export default class PegInForm extends Vue {
 
   typeSummary = TxStatusType.PEGIN;
 
-  orientationSummary = TxSummaryOrientation.VERITICAL;
+  orientationSummary = TxSummaryOrientation.VERTICAL;
 
   @State('pegInTx') pegInTxState!: PegInTxState;
 

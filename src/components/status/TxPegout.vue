@@ -25,7 +25,7 @@ import {
   SatoshiBig,
   TxStatusType,
   TxSummaryOrientation,
-  PegoutStatusDataModel,
+  PegoutStatusDataModel, WeiBig,
 } from '@/types';
 import { State, Getter, Action } from 'vuex-class';
 import * as constants from '@/store/constants';
@@ -51,11 +51,9 @@ export default class TxPegout extends Vue {
 
   @State('status') txStatus!: TxStatus;
 
-  @Action(constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER, { namespace: 'pegInTx' }) setAmount!: (amount: SatoshiBig) => void;
-
   @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) peginInit!: () => void;
 
-  @Action(constants.PEGIN_TX_ADD_RSK_ADDRESS, { namespace: 'pegInTx' }) setRskAddress!: (address: string) => void;
+  @Action(constants.PEGOUT_TX_ADD_AMOUNT, { namespace: 'pegOutTx' }) setAmount!: (amount: WeiBig) => void;
 
   @Getter(constants.STATUS_IS_REJECTED, { namespace: 'status' }) isRejected!: boolean;
 
@@ -70,11 +68,10 @@ export default class TxPegout extends Vue {
       feeBTC: new SatoshiBig(pegoutStatusDataModel.fees ? pegoutStatusDataModel.fees : 0, 'btc'),
       change: '',
     };
-    this.peginInit();
-    this.setAmount(txData.amount);
+    // this.peginInit();
+    this.setAmount(new WeiBig(pegoutStatusDataModel.valueRequestedInSatoshis * 10000000000, 'wei'));
     this.currentRefundAddress = txData.refundAddress;
     this.currentFee = txData.feeBTC;
-    this.setRskAddress(txData.recipient);
   }
 
   created() {
