@@ -9,6 +9,7 @@ import {
 } from '@/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import { getBtcAddressFromSignedMessage } from '@/utils';
+import axios from 'axios';
 
 export const actions: ActionTree<SessionState, RootState> = {
   [constants.SESSION_CONNECT_WEB3]: ({ commit, state }): Promise<void> => {
@@ -90,4 +91,12 @@ export const actions: ActionTree<SessionState, RootState> = {
         commit(constants.SESSION_SET_BTC_ACCOUNT, btcAddress);
       }
     },
+  [constants.SESSION_ADD_BITCOIN_PRICE]: ({ commit }) => {
+    axios.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin&order=market_cap_desc&per_page=100&page=1&sparkline=false')
+      .then((response) => {
+        const [result] = response.data;
+        commit(constants.SESSION_SET_BITCOIN_PRICE, result.current_price);
+      })
+      .catch(console.error);
+  },
 };

@@ -512,7 +512,7 @@ import {
   PegOutTxState,
   WeiBig,
 } from '@/types';
-import { formatTxId, getBtcExplorerUrl } from '@/services/utils';
+import { formatTxId, getBtcTxExplorerUrl } from '@/services/utils';
 import { TxStatusType } from '@/types/store';
 import { TxSummaryOrientation } from '@/types/Status';
 import { getChunkedValue } from '@/utils/common';
@@ -598,7 +598,7 @@ export default class TxSummary extends Vue {
   openBtcExplorer() {
     const txWithout0x = this.txId.substring(2, (this.txId.length));
     console.log(txWithout0x);
-    window.open(getBtcExplorerUrl(txWithout0x), '_blank');
+    window.open(getBtcTxExplorerUrl(txWithout0x), '_blank');
   }
 
   openRskExplorer() {

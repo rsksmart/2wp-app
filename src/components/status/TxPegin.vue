@@ -135,11 +135,8 @@
       </v-row>
     </v-container>
     <v-row>
-      <tx-summary
-        :statusFee="currentFee"
-        :statusRefundAddress="currentRefundAddress"
-        :txId="txId"
-        :showTxId="true"
+      <tx-summary-fixed
+        :summary="txPeginSummary"
         :initialExpand="true"
         :type="typeSummary"
         :orientation="orientationSummary"/>
@@ -156,19 +153,19 @@ import {
   Watch,
 } from 'vue-property-decorator';
 import { Action, State, Getter } from 'vuex-class';
-import TxSummary from '@/components/exchange/TxSummary.vue';
 import {
   PeginStatus,
   SatoshiBig,
-  TxStatusType, TxStatus, TxSummaryOrientation,
+  TxStatusType, TxStatus, TxSummaryOrientation, NormalizedSummary,
 } from '@/types';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import * as constants from '@/store/constants';
 import { getTime, setStatusMessage } from '@/services/utils';
+import TxSummaryFixed from '@/components/exchange/TxSummaryFixed.vue';
 
 @Component({
   components: {
-    TxSummary,
+    TxSummaryFixed,
   },
 })
 
@@ -247,6 +244,19 @@ export default class TxPegin extends Vue {
 
   get showSteps(): boolean {
     return this.txStatus.type !== TxStatusType.UNSET_STATUS;
+  }
+
+  get txPeginSummary(): NormalizedSummary {
+    const status = this.txStatus.txDetails as PeginStatus;
+    return {
+      amountFromString: status.btc.amountTransferred.toString(),
+      amountReceivedString: status.btc.amountTransferred.toString(),
+      fee: status.btc.fees,
+      recipientAddress: status.rsk.recipientAddress,
+      txId: status.btc.txId,
+      refundAddress: status.btc.refundAddress,
+      federationAddress: status.btc.federationAddress,
+    };
   }
 
   @Emit()

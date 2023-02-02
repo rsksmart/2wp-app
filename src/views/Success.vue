@@ -65,7 +65,7 @@ import {
   Component, Emit,
   Vue,
 } from 'vue-property-decorator';
-import { getBtcExplorerUrl } from '@/services/utils';
+import { getBtcTxExplorerUrl } from '@/services/utils';
 
 @Component
 export default class Success extends Vue {
@@ -74,7 +74,7 @@ export default class Success extends Vue {
   txId = '';
 
   get btcExplorerUrl() {
-    return getBtcExplorerUrl(this.txId);
+    return getBtcTxExplorerUrl(this.txId);
   }
 
   get chunkedBtcExplorerUrl() {

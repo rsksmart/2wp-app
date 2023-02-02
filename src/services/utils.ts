@@ -24,7 +24,7 @@ export function getAccountType(address: string, network: AppNetwork): string {
   return constants.BITCOIN_MULTISIGNATURE_ADDRESS;
 }
 
-export function getBtcExplorerUrl(txId: string) {
+export function getBtcBaseExplorerUrl() {
   let network = '';
   switch (EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin) {
     case constants.BTC_NETWORK_TESTNET:
@@ -37,7 +37,15 @@ export function getBtcExplorerUrl(txId: string) {
       network = 'btc-testnet';
       break;
   }
-  return `https://live.blockcypher.com/${network}/tx/${txId}`;
+  return `https://live.blockcypher.com/${network}`;
+}
+
+export function getBtcTxExplorerUrl(txId: string) {
+  return `${getBtcBaseExplorerUrl()}/tx/${txId}`;
+}
+
+export function getBtcAddressExplorerUrl(address: string) {
+  return `${getBtcBaseExplorerUrl()}/address/${address}`;
 }
 
 export class Machine<States extends string> {
