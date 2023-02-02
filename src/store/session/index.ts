@@ -13,6 +13,7 @@ export const state: SessionState = {
   txType: undefined,
   balance: new WeiBig('0', 'wei'),
   btcDerivedAddress: '',
+  bitcoinPrice: 0,
 };
 
 const namespaced = true;

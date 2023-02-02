@@ -45,7 +45,7 @@ export interface PegoutStatusDataModel {
   btcRecipientAddress: string;
   valueRequestedInSatoshis: number;
   valueInSatoshisToBeReceived: number;
-  feeInSatoshisToBePaid: number;
+  feeInSatoshisToBePaid?: number;
   status: PegoutStatus;
   btcRawTransaction: string;
   fees: number;

@@ -17,6 +17,8 @@ import Top from '@/components/layouts/Top.vue';
 import FooterRsk from '@/components/layouts/Footer.vue';
 import Mobile from '@/views/Mobile.vue';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import { Action } from 'vuex-class';
+import * as constants from '@/store/constants';
 
 @Component({
   components: {
@@ -27,6 +29,8 @@ import { EnvironmentAccessorService } from '@/services/enviroment-accessor.servi
 })
 export default class App extends Vue {
   scriptTag?: any;
+
+  @Action(constants.SESSION_ADD_BITCOIN_PRICE, { namespace: 'web3Session' }) getBtcPrice!: () => void;
 
   mounted() {
     const hotjarID = EnvironmentAccessorService.getEnvironmentVariables().vueAppHotjarId;
@@ -42,6 +46,10 @@ export default class App extends Vue {
     + '})(window,document,"https://static.hotjar.com/c/hotjar-",".js?sv=");';
 
     document.body.appendChild(this.scriptTag);
+  }
+
+  created() {
+    this.getBtcPrice();
   }
 }
 </script>

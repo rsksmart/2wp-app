@@ -105,3 +105,15 @@ export interface PsbtExtendedInput {
     script: Buffer;
   };
 }
+
+export interface NormalizedSummary {
+  amountFromString: string;
+  amountReceivedString: string;
+  fee: number;
+  recipientAddress: string;
+  senderAddress?: string;
+  txId?: string;
+  refundAddress?: string;
+  selectedAccount?: string;
+  federationAddress?: string;
+}

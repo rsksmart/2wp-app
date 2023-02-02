@@ -15,4 +15,5 @@ export interface SessionState {
   txType: TransactionType;
   balance: WeiBig;
   btcDerivedAddress: string;
+  bitcoinPrice: number;
 }
