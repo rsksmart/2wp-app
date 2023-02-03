@@ -1,6 +1,6 @@
 <template>
   <v-col>
-    <v-container fluid class="pa-0 mb-10 mt-0 max-width">
+    <v-container fluid class="pa-0 mb-1 mt-7 max-width">
       <v-row justify="center" class="mt-6">
         <v-col class="ma-0 pa-0" cols="7">
            <!-- isReject -->
