@@ -113,6 +113,7 @@ export interface NormalizedSummary {
   recipientAddress: string;
   senderAddress?: string;
   txId?: string;
+  gas?: number;
   refundAddress?: string;
   selectedAccount?: string;
   federationAddress?: string;

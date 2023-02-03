@@ -268,8 +268,150 @@
       </v-col>
     </v-row>
     <v-row v-if="orientation === orientationTypes.VERTICAL"
-           class="mx-0 d-flex justify-center">
-      {{summary}}
+           class="mx-0 px-5 pb-5 summary-box">
+      <!-- title -->
+      <v-container class="pb-0 pl-0">
+        <v-row class="mx-0">
+          <h2 id="summary-title-from">{{fromTitle}}</h2>
+        </v-row>
+        <!-- Sender -->
+        <v-container class="pb-0 pl-0">
+          <v-row class="mx-0">
+            <h1 class="boldie">
+              {{ type === txType.PEGOUT ? 'Sender address:' : 'Device account:' }}
+            </h1>
+          </v-row>
+          <div class="form-field pt-2 pl-0">
+            <v-container class="mark">
+              <p v-bind:class="{'grayish': senderValue === VALUE_INCOMPLETE_MESSAGE}">
+                {{ senderValue }}
+              </p>
+            </v-container>
+          </div>
+        </v-container>
+        <!-- Amount -->
+        <v-container class="pb-0 pl-0">
+          <v-row class="mx-0">
+            <h1 class="boldie">Amount:</h1>
+          </v-row>
+          <div class="form-field pt-2 pb-2 pl-0">
+            <v-container class="mark">
+              <p v-bind:class="{'grayish': amount === '0'}">
+                {{ amount }} {{ currencyFromTicker }}
+              </p>
+            </v-container>
+          </div>
+        </v-container>
+
+        <!-- Refund -->
+        <v-container v-if="summary.refundAddress"
+                     class="pb-0 pl-0">
+          <v-row class="mx-0">
+            <h1 class="boldie">
+              Refund address:
+            </h1>
+          </v-row>
+          <div class="form-field pt-2 pl-0">
+            <v-container class="mark">
+              <p>
+                {{ refundAddress }}
+              </p>
+            </v-container>
+          </div>
+        </v-container>
+
+        <!-- Gas -->
+        <v-container v-if="type === txType.PEGOUT" class="pb-0 pl-0">
+          <v-row class="mx-0">
+            <h1 class="boldie">Gas:</h1>
+          </v-row>
+          <div class="form-field pt-2 pb-2 pl-0">
+            <v-container class="mark">
+              <p v-bind:class="{'grayish': summary.gas === 0}">
+                {{ summary.gas }}
+              </p>
+            </v-container>
+          </div>
+        </v-container>
+      </v-container>
+
+      <v-divider/>
+      <v-container class="pb-0 pl-0">
+
+        <v-container class="pb-0 pl-0">
+          <v-row class="mx-0 justify-end">
+            <h2>{{ toTitle }}</h2>
+          </v-row>
+        </v-container>
+
+        <!-- Recipient -->
+        <v-container class="pb-0 pl-0">
+          <v-row class="justify-end mx-0">
+            <h1 class="boldie">
+              {{ type === txType.PEGOUT ? 'Recipient' : 'Destination' }} address:
+            </h1>
+          </v-row>
+          <div class="form-field pt-2 pl-0">
+            <v-container class="mark">
+              <p v-bind:class="{'grayish': recipientAddress === VALUE_INCOMPLETE_MESSAGE}"
+                 class="text-end">
+                {{ recipientAddress }}
+              </p>
+            </v-container>
+          </div>
+        </v-container>
+
+        <!-- Fee -->
+        <v-container class="pb-0 pl-0">
+          <v-row class="justify-end mx-0">
+            <h1 class="boldie">
+              {{ type === txType.PEGOUT ? 'Estimated fee to pay' : 'Fee' }}:
+            </h1>
+          </v-row>
+          <div class="form-field pt-2 pl-0">
+            <v-container class="mark">
+              <p v-bind:class="{'grayish': summary.fee === 0}"
+                 class="text-end">
+                {{ summary.fee }} {{currencyFromTicker}}
+              </p>
+            </v-container>
+          </div>
+        </v-container>
+
+        <!-- Estimated BTC to receive -->
+        <v-container v-if="type === txType.PEGOUT" class="pb-0 pl-0">
+          <v-row class="justify-end mx-0">
+            <h1 class="boldie">
+              Estimated {{environmentContext.getBtcTicker()}} to receive:
+            </h1>
+          </v-row>
+          <div class="form-field pt-2 pl-0">
+            <v-container class="mark">
+              <p v-bind:class="{'grayish': summary.amountReceivedString === '0'}"
+                 class="text-end">
+                {{ summary.amountReceivedString }} {{currencyToTicker}}
+              </p>
+            </v-container>
+          </div>
+        </v-container>
+
+        <!-- Total -->
+        <v-container class="pb-0 pl-0">
+          <v-row class="justify-end mx-0">
+            <h1 class="boldie">
+              Total:
+            </h1>
+          </v-row>
+          <div class="form-field pt-2 pl-0">
+            <v-container class="mark">
+              <p v-bind:class="{'grayish': total === '0'}"
+                 class="text-end">
+                {{ total }} {{currencyFromTicker}}
+              </p>
+            </v-container>
+          </div>
+        </v-container>
+      </v-container>
     </v-row>
   </v-container>
 </template>
@@ -291,6 +433,7 @@ import { State } from 'vuex-class';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import * as constants from '@/store/constants';
 import Big from 'big.js';
+import { getChunkedValue } from '@/utils';
 
 @Component
 export default class TxSummaryFixed extends Vue {
@@ -313,6 +456,10 @@ export default class TxSummaryFixed extends Vue {
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
   orientationTypes = TxSummaryOrientation;
+
+  txType = TxStatusType;
+
+  maxLengthForChunked = 15;
 
   @State('web3Session') sessionState!: SessionState;
 
@@ -403,9 +550,25 @@ export default class TxSummaryFixed extends Vue {
   }
 
   get recipientAddress():string {
-    return this.summary.recipientAddress !== '0x'
-      ? this.summary.recipientAddress
+    return (!this.summary.recipientAddress || this.summary.recipientAddress === '0x')
+      ? this.VALUE_INCOMPLETE_MESSAGE
+      : getChunkedValue(this.summary.recipientAddress, this.maxLengthForChunked);
+  }
+
+  get refundAddress(): string {
+    return this.summary.refundAddress
+      ? getChunkedValue(this.summary.refundAddress, this.maxLengthForChunked)
       : this.VALUE_INCOMPLETE_MESSAGE;
+  }
+
+  get senderValue():string {
+    if (this.summary.senderAddress) {
+      return getChunkedValue(this.summary.senderAddress, this.maxLengthForChunked);
+    }
+    if (this.summary.selectedAccount) {
+      return this.summary.selectedAccount;
+    }
+    return this.VALUE_INCOMPLETE_MESSAGE;
   }
 
   openExplorerTx() {

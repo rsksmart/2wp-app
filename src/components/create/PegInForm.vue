@@ -23,8 +23,8 @@
           <btc-fee-select/>
         </v-col>
         <v-col id="summary-col" cols="4" lg="4">
-          <tx-summary
-            :showTxId="true"
+          <tx-summary-fixed
+            :summary="pegInFormSummary"
             :initialExpand="true"
             :type="typeSummary"
             :orientation="orientationSummary"/>
@@ -74,9 +74,10 @@ import { Machine } from '@/services/utils';
 import SatoshiBig from '@/types/SatoshiBig';
 import AddressWarningDialog from '@/components/exchange/AddressWarningDialog.vue';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
-import TxSummary from '@/components/exchange/TxSummary.vue';
 import { TxStatusType } from '@/types/store';
 import { TxSummaryOrientation } from '@/types/Status';
+import TxSummaryFixed from '@/components/exchange/TxSummaryFixed.vue';
+import { NormalizedSummary } from '@/types';
 
 @Component({
   components: {
@@ -84,7 +85,7 @@ import { TxSummaryOrientation } from '@/types/Status';
     BtcInputAmount,
     RskAddressInput,
     BtcFeeSelect,
-    TxSummary,
+    TxSummaryFixed,
     AddressWarningDialog,
   },
 })
@@ -104,6 +105,10 @@ export default class PegInForm extends Vue {
   @State('pegInTx') pegInTxState!: PegInTxState;
 
   @Getter(constants.PEGIN_TX_GET_REFUND_ADDRESS, { namespace: 'pegInTx' }) refundAddress!: string;
+
+  @Getter(constants.PEGIN_TX_GET_SAFE_TX_FEE, { namespace: 'pegInTx' }) safeFee!: SatoshiBig;
+
+  @Getter(constants.PEGIN_TX_GET_ACCOUNT_BALANCE_TEXT, { namespace: 'pegInTx' }) accountBalanceText!: string;
 
   @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: any;
 
@@ -135,6 +140,18 @@ export default class PegInForm extends Vue {
       && !this.pegInTxState.loadingFee
       && this.rskAddressState !== 'invalid'
       && this.pegInTxState.rskAddressSelected !== '';
+  }
+
+  get pegInFormSummary(): NormalizedSummary {
+    return {
+      amountFromString: this.pegInTxState.amountToTransfer.toBTCTrimmedString(),
+      amountReceivedString: this.pegInTxState.amountToTransfer.toBTCTrimmedString(),
+      fee: Number(this.safeFee.toBTCString()),
+      recipientAddress: this.pegInTxState.rskAddressSelected,
+      refundAddress: this.refundAddress,
+      selectedAccount: this.accountBalanceText,
+      federationAddress: this.pegInTxState.peginConfiguration.federationAddress,
+    };
   }
 
   @Emit()
