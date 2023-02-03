@@ -7,7 +7,7 @@
       </v-col>
       <v-col class="pl-0">
         <p v-bind:class="{'boldie': focus}">
-          Connect your RSK wallet:
+          Connect your RSK wallet 2 :
         </p>
         <v-row>
           <v-col>

@@ -1,4 +1,3 @@
-import Big from 'big.js';
 import { ActionTree } from 'vuex';
 import * as constants from '@/store/constants';
 import {
