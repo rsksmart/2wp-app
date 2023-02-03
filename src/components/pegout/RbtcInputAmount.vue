@@ -1,5 +1,5 @@
 <template>
-  <v-container class="form-step pb-0 pt-3">
+  <v-container class="form-step mt-5 mb-0 py-0">
     <v-row class="align-start mx-0">
       <v-col cols="auto" class="pl-0">
         <div v-bind:class="[focus ?
@@ -9,9 +9,9 @@
         <p v-bind:class="{'boldie': focus}">
           Enter the amount you want to send:
         </p>
-        <v-row class="ma-0">
-          <v-col cols="5" class="pa-0 d-flex align-center input-box" >
-            <v-col cols="8" class="ma-0 pa-0 d-flex align-center">
+        <v-row class="d-cols-wht mt-6 ml-1">
+          <v-col cols="5" class="d-flex align-center input-box" >
+            <v-col cols="8" class="d-flex align-center">
               <v-text-field class="amount-input" v-model="rbtcAmount" color="#F8F5F5"
                             placeholder="add amount" type="number" step="0.00000001"
                             @focus="focus = true"
