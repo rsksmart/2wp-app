@@ -61,10 +61,13 @@
               </v-row>
 
               <!-- Sender -->
-              <v-row v-if="!!summary.senderAddress" class="box-field mx-1">
+              <v-row v-if="!!summary.senderAddress || summary.selectedAccount"
+                     class="box-field mx-1">
                 <v-col>
                   <v-row>
-                    <span class="status-subtitle">Sender</span>
+                    <span class="status-subtitle">
+                      {{ type === txType.PEGOUT ? 'Sender address:' : 'Device account:' }}
+                    </span>
                   </v-row>
                   <v-row>
                     <v-col class="form-field-summary">
@@ -72,7 +75,7 @@
                         <v-col cols="12"
                                class="col-address-button d-flex flex-column justify-end">
                           <span class="breakable-address status-text-ellipsis">
-                            {{ summary.senderAddress }}
+                            {{ senderValue }}
                           </span>
                         </v-col>
                       </v-row>
@@ -92,11 +95,6 @@
                       <v-row class="mx-0 mb-2">
                         <span id="amount">
                           {{ amount }} {{ currencyFromTicker }}
-                        </span>
-                      </v-row>
-                      <v-row class="mx-0">
-                        <span class="grayish" id="amount-usd">
-                          USD $ {{ amountUSD }}
                         </span>
                       </v-row>
                     </v-col>
@@ -175,7 +173,6 @@
                 </v-col>
               </v-row>
 
-              <!-- TODO: Fee to pay -->
             </v-col>
 
             <v-divider inset vertical/>
@@ -235,8 +232,21 @@
                       <v-row class="justify-end mx-0 mb-2">
                         <span>{{ amountToReceive }} {{ currencyToTicker }}</span>
                       </v-row>
-                      <v-row class="justify-end mx-0">
-                        <span class="grayish" id="fee-usd">USD $ {{ amountToReceiveUSD }}</span>
+                    </v-col>
+                  </v-row>
+                </v-col>
+              </v-row>
+
+              <!-- Fee -->
+              <v-row v-if="summary.fee !== 0" class="box-field mx-1">
+                <v-col>
+                  <v-row class="justify-end">
+                    <span class="status-subtitle">Fee</span>
+                  </v-row>
+                  <v-row>
+                    <v-col class="form-field-summary">
+                      <v-row class="justify-end mx-0 mb-2">
+                        <span>{{ summary.fee }} {{ currencyFromTicker }}</span>
                       </v-row>
                     </v-col>
                   </v-row>
@@ -253,9 +263,6 @@
                     <v-col class="form-field-summary">
                       <v-row class="justify-end mx-0 mb-2">
                         <span>{{ total }} {{ currencyFromTicker }}</span>
-                      </v-row>
-                      <v-row class="justify-end mx-0">
-                        <span class="grayish" id="fee-usd">USD $ {{ totalUSD }}</span>
                       </v-row>
                     </v-col>
                   </v-row>
@@ -459,8 +466,6 @@ export default class TxSummaryFixed extends Vue {
 
   txType = TxStatusType;
 
-  maxLengthForChunked = 15;
-
   @State('web3Session') sessionState!: SessionState;
 
   @Emit()
@@ -569,6 +574,11 @@ export default class TxSummaryFixed extends Vue {
       return this.summary.selectedAccount;
     }
     return this.VALUE_INCOMPLETE_MESSAGE;
+  }
+
+  get maxLengthForChunked(): number {
+    return this.orientation === TxSummaryOrientation.VERTICAL
+      ? 15 : 25;
   }
 
   openExplorerTx() {

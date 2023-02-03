@@ -141,8 +141,8 @@
     </v-row>
     <v-divider/>
     <v-row class="mx-0 my-8">
-        <tx-summary
-          :showTxId="false"
+        <tx-summary-fixed
+          :summary="confirmLedgerTxSummary"
           :initialExpand="true"
           :type='typeSummary'
           :orientation='orientationSummary'/>
@@ -184,9 +184,8 @@ import {
 } from 'vue-property-decorator';
 import { Getter, State, Action } from 'vuex-class';
 import {
-  LedgerTx, LedgerSignedTx,
+  LedgerTx, LedgerSignedTx, NormalizedSummary,
 } from '@/types';
-import TxSummary from '@/components/exchange/TxSummary.vue';
 import ApiService from '@/services/ApiService';
 import AdvancedData from '@/components/exchange/AdvancedData.vue';
 import SatoshiBig from '@/types/SatoshiBig';
@@ -198,10 +197,11 @@ import { PegInTxState } from '@/types/pegInTx';
 import * as constants from '@/store/constants';
 import { TxStatusType } from '@/types/store';
 import { TxSummaryOrientation } from '@/types/Status';
+import TxSummaryFixed from '@/components/exchange/TxSummaryFixed.vue';
 
 @Component({
   components: {
-    TxSummary,
+    TxSummaryFixed,
     AdvancedData,
   },
 })
@@ -229,6 +229,10 @@ export default class ConfirmLedgerTransaction extends Vue {
   @Action(constants.PEGIN_TX_STOP_ASKING_FOR_BALANCE, { namespace: 'pegInTx' }) stopAskingForBalance !: () => Promise<void>;
 
   @Getter(constants.PEGIN_TX_GET_WALLET_SERVICE, { namespace: 'pegInTx' }) walletService!: WalletService;
+
+  @Getter(constants.PEGIN_TX_GET_REFUND_ADDRESS, { namespace: 'pegInTx' }) refundAddress!: string;
+
+  @Getter(constants.PEGIN_TX_GET_ACCOUNT_BALANCE_TEXT, { namespace: 'pegInTx' }) accountBalanceText!: string;
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
@@ -307,6 +311,18 @@ export default class ConfirmLedgerTransaction extends Vue {
   get changeAmount() {
     const changeAmount = new SatoshiBig(this.pegInTxState.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
     return changeAmount.toBTCTrimmedString();
+  }
+
+  get confirmLedgerTxSummary(): NormalizedSummary {
+    return {
+      amountFromString: this.pegInTxState.amountToTransfer.toBTCTrimmedString(),
+      amountReceivedString: this.pegInTxState.amountToTransfer.toBTCTrimmedString(),
+      fee: Number(this.safeFee.toBTCTrimmedString()),
+      recipientAddress: this.pegInTxState.rskAddressSelected,
+      refundAddress: this.refundAddress,
+      selectedAccount: this.accountBalanceText,
+      federationAddress: this.pegInTxState.peginConfiguration.federationAddress,
+    };
   }
 
   async created() {
