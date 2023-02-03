@@ -22,7 +22,7 @@
               <p v-bind:class="{'boldie': focus}">
                 Recipient address:
               </p>
-              <v-row class="ma-0 pa-0">
+              <v-row class="ma-0 mt-2 pa-0">
                 <v-col cols="6" class="pa-0" >
                   <v-text-field class="disabled-input" :value="session.btcDerivedAddress"
                                 disabled color="#F8F5F5"
