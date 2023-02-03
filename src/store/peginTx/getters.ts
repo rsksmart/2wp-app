@@ -4,6 +4,7 @@ import { PegInTxState, RootState } from '@/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import SatoshiBig from '@/types/SatoshiBig';
 import { WalletService } from '@/services';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
 export const getters: GetterTree<PegInTxState, RootState> = {
   [constants.WALLET_NAME]: (state) => {
@@ -54,7 +55,7 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       return address;
     },
   [constants.PEGIN_TX_GET_REFUND_ADDRESS]:
-  (state: PegInTxState, localGetters?:any, rootState?:RootState, rootGetters?: any) => {
+  (state: PegInTxState, localGetters?:any, rootState?:RootState, rootGetters?: any):string => {
     let address = '';
     const currentView = rootGetters[constants.VIEW_GET_CURRENT_VIEW];
     if (currentView && currentView === 'Status') {
@@ -188,5 +189,23 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       return true;
     }
     return true;
+  },
+  [constants.PEGIN_TX_GET_ACCOUNT_BALANCE_TEXT]: (state: PegInTxState): string => {
+    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+    let text = '';
+    switch (state.selectedAccount) {
+      case constants.BITCOIN_LEGACY_ADDRESS:
+        text = `Legacy - ${state.balances.legacy.toBTCStringNotZeroPadded()} ${environmentContext.getBtcTicker()}`;
+        break;
+      case constants.BITCOIN_SEGWIT_ADDRESS:
+        text = `Segwit - ${state.balances.segwit.toBTCStringNotZeroPadded()} ${environmentContext.getBtcTicker()}`;
+        break;
+      case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
+        text = `Native segwit - ${state.balances.nativeSegwit.toBTCStringNotZeroPadded()} ${environmentContext.getBtcTicker()}`;
+        break;
+      default:
+        break;
+    }
+    return text;
   },
 };

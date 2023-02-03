@@ -36,8 +36,8 @@
         <rsk-fee-select/>
       </v-col>
       <v-col cols="4" lg="4">
-        <tx-summary
-          :showTxId="true"
+        <tx-summary-fixed
+          :summary="pegOutFormSummary"
           :initialExpand="true"
           :type="typeSummary"
           :orientation="orientationSummary"/>
@@ -80,14 +80,16 @@ import RbtcInputAmount from '@/components/pegout/RbtcInputAmount.vue';
 import RskWalletConnection from '@/components/pegout/RskWalletConnection.vue';
 import RskFeeSelect from '@/components/pegout/RskFeeSelect.vue';
 import AddressDialog from '@/components/pegout/AddressDialog.vue';
-import TxSummary from '@/components/exchange/TxSummary.vue';
 import { TxStatusType } from '@/types/store';
 import { Machine } from '@/services/utils';
 import { TxSummaryOrientation } from '@/types/Status';
 import { Action, Getter, State } from 'vuex-class';
 import * as constants from '@/store/constants';
 import TxErrorDialog from '@/components/exchange/TxErrorDialog.vue';
-import { SessionState } from '@/types';
+import {
+  NormalizedSummary, PegOutTxState, SessionState, WeiBig,
+} from '@/types';
+import TxSummaryFixed from '@/components/exchange/TxSummaryFixed.vue';
 
 @Component({
   components: {
@@ -95,7 +97,7 @@ import { SessionState } from '@/types';
     RbtcInputAmount,
     RskWalletConnection,
     RskFeeSelect,
-    TxSummary,
+    TxSummaryFixed,
     TxErrorDialog,
   },
 })
@@ -122,9 +124,13 @@ export default class PegOutForm extends Vue {
 
   @State('web3Session') session !: SessionState;
 
+  @State('pegOutTx') pegOutTxState !: PegOutTxState;
+
   @Action(constants.PEGOUT_TX_SEND, { namespace: 'pegOutTx' }) sendTx !: () => Promise<void>;
 
   @Getter(constants.PEGOUT_TX_IS_ENOUGH_BALANCE, { namespace: 'pegOutTx' }) isEnoughBalance !: boolean;
+
+  @Getter(constants.PEGOUT_TX_GET_SAFE_TX_FEE, { namespace: 'pegOutTx' }) safeFee !: WeiBig;
 
   @Emit()
   closeAddressDialog() {
@@ -160,6 +166,17 @@ export default class PegOutForm extends Vue {
   get isReadyToCreate(): boolean {
     return this.isEnoughBalance
       && !!this.session.btcDerivedAddress;
+  }
+
+  get pegOutFormSummary(): NormalizedSummary {
+    return {
+      amountFromString: this.pegOutTxState.amountToTransfer.toRBTCTrimmedString(),
+      amountReceivedString: this.pegOutTxState.estimatedBTCToRecieve.toBTCTrimmedString(),
+      fee: Number(this.safeFee.toRBTCTrimmedString()),
+      recipientAddress: this.session.btcDerivedAddress,
+      senderAddress: this.session.account,
+      gas: this.pegOutTxState.gas,
+    };
   }
 
   @Emit()
