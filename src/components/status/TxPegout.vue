@@ -68,7 +68,6 @@ export default class TxPegout extends Vue {
   }
 
   setSummaryData() {
-    console.log(this.txStatus);
     const pegoutStatusDataModel = this.txStatus?.txDetails as PegoutStatusDataModel;
 
     const txData = {
@@ -78,7 +77,6 @@ export default class TxPegout extends Vue {
       feeBTC: new SatoshiBig(pegoutStatusDataModel.fees ? pegoutStatusDataModel.fees : 0, 'btc'),
       change: '',
     };
-    // this.peginInit();
     this.setAmount(new WeiBig(pegoutStatusDataModel.valueRequestedInSatoshis * 10000000000, 'wei'));
     this.currentRefundAddress = txData.refundAddress;
     this.currentFee = txData.feeBTC;

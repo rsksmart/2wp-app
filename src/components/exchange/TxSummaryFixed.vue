@@ -254,7 +254,7 @@
               </v-row>
 
               <!-- Total -->
-              <v-row class="box-field mx-1">
+              <v-row v-if="type === txType.PEGIN" class="box-field mx-1">
                 <v-col>
                   <v-row class="justify-end">
                     <span class="status-subtitle">Total</span>
