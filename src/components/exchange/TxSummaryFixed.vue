@@ -475,11 +475,11 @@ export default class TxSummaryFixed extends Vue {
   }
 
   get fromTitle() {
-    return this.type === TxStatusType.PEGIN ? 'Bitcoin' : 'RSK';
+    return this.type === TxStatusType.PEGIN ? 'Bitcoin' : 'Rootstock';
   }
 
   get toTitle() {
-    return this.type === TxStatusType.PEGIN ? 'RSK' : 'Bitcoin';
+    return this.type === TxStatusType.PEGIN ? 'Rootstock' : 'Bitcoin';
   }
 
   get computedRefundAddress(): string {
