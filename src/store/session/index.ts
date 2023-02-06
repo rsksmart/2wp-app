@@ -1,20 +1,11 @@
 import { Module } from 'vuex';
-import { SessionState, RootState, WeiBig } from '@/types';
+import { SessionState, RootState } from '@/types';
+import { getClearSessionState } from '@/utils';
 import { getters } from './getters';
 import { actions } from './actions';
 import { mutations } from './mutations';
 
-export const state: SessionState = {
-  account: undefined,
-  web3: undefined,
-  enabled: false,
-  rLogin: undefined,
-  rLoginInstance: undefined,
-  txType: undefined,
-  balance: new WeiBig('0', 'wei'),
-  btcDerivedAddress: '',
-  bitcoinPrice: 0,
-};
+export const state: SessionState = getClearSessionState();
 
 const namespaced = true;
 

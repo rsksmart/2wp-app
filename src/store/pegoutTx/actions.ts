@@ -1,7 +1,7 @@
 import { ActionTree } from 'vuex';
 import * as constants from '@/store/constants';
 import {
-  MiningSpeedFee, PegOutTxState, RootState, SessionState, WeiBig,
+  MiningSpeedFee, PegOutTxState, RootState, SatoshiBig, SessionState, WeiBig,
 } from '@/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import { BridgeService } from '@/services/BridgeService';
@@ -39,7 +39,7 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
       bridgeService.getQueuedPegoutsCount(),
     ]);
     const estimatedFee = pegoutQueueCount > 0 ? nextPegoutCost / pegoutQueueCount : 0;
-    commit(constants.PEGOUT_TX_SET_BTC_ESTIMATED_FEE, estimatedFee);
+    commit(constants.PEGOUT_TX_SET_BTC_ESTIMATED_FEE, new SatoshiBig(estimatedFee, 'satoshi'));
   },
   [constants.PEGOUT_TX_ADD_PEGOUT_CONFIGURATION]: ({ commit }) => {
     commit(constants.PEGOUT_TX_SET_PEGOUT_CONFIGURATION, {
@@ -76,4 +76,7 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
           });
       }
     }),
+  [constants.PEGOUT_TX_CLEAR]: ({ commit }) => {
+    commit(constants.PEGOUT_TX_CLEAR_STATE);
+  },
 };

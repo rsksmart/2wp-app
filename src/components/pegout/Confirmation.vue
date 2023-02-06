@@ -13,12 +13,11 @@
       </p>
     </v-row>
     <v-row class="mx-0 my-8">
-      <tx-summary
-        :showTxId="true"
+      <tx-summary-fixed
+        :summary="successPegOutSummary"
         :initialExpand="true"
-        :txId="pegoutTxState.txHash"
-        :type='typeSummary'
-        :orientation='orientationSummary'/>
+        :type="typeSummary"
+        :orientation="orientationSummary"/>
     </v-row>
     <v-row v-if="confirmTxState.matches(['idle', 'error', 'goingHome'])" class="ma-0">
       <v-col cols="2" class="d-flex justify-start ma-0 py-0" offset="10">
@@ -38,16 +37,19 @@ import {
   Emit,
   Vue,
 } from 'vue-property-decorator';
-import TxSummary from '@/components/exchange/TxSummary.vue';
 import { Machine } from '@/services/utils';
 import { TxStatusType } from '@/types/store';
 import { TxSummaryOrientation } from '@/types/Status';
-import { State } from 'vuex-class';
-import { PegOutTxState } from '@/types';
+import { Getter, State } from 'vuex-class';
+import {
+  NormalizedSummary, PegOutTxState, SatoshiBig, SessionState, WeiBig,
+} from '@/types';
+import TxSummaryFixed from '@/components/exchange/TxSummaryFixed.vue';
+import * as constants from '@/store/constants';
 
 @Component({
   components: {
-    TxSummary,
+    TxSummaryFixed,
   },
 })
 
@@ -57,6 +59,12 @@ export default class Confirmation extends Vue {
   orientationSummary = TxSummaryOrientation.HORIZONTAL;
 
   @State('pegOutTx') pegoutTxState!: PegOutTxState;
+
+  @State('web3Session') session !: SessionState;
+
+  @Getter(constants.PEGOUT_TX_GET_SAFE_TX_FEE, { namespace: 'pegOutTx' }) safeFee !: WeiBig;
+
+  @Getter(constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE, { namespace: 'pegOutTx' }) estimatedBtcToReceive !: SatoshiBig;
 
   @Prop() confirmTxState!: Machine<
     'idle'
@@ -72,6 +80,18 @@ export default class Confirmation extends Vue {
   @Emit('changePage')
   changePage() {
     return this.backPage;
+  }
+
+  get successPegOutSummary(): NormalizedSummary {
+    return {
+      amountFromString: this.pegoutTxState.amountToTransfer.toRBTCTrimmedString(),
+      amountReceivedString: this.estimatedBtcToReceive.toBTCTrimmedString(),
+      fee: Number(this.pegoutTxState.btcEstimatedFee.toBTCTrimmedString()),
+      recipientAddress: this.session.btcDerivedAddress,
+      senderAddress: this.session.account,
+      txId: this.pegoutTxState.txHash,
+      gas: Number(this.pegoutTxState.efectivePaidFee?.toRBTCTrimmedString()),
+    };
   }
 }
 </script>

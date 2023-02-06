@@ -1,5 +1,5 @@
 <template>
-  <v-container v-if="type && orientation">
+  <v-container v-if="type && orientation" class="mt-10">
     <v-row justify="center" class="mx-0 pb-4">
       <h2 class="text-center tx-text">
         Transaction summary:
@@ -335,7 +335,7 @@
           <div class="form-field pt-2 pb-2 pl-0">
             <v-container class="mark">
               <p v-bind:class="{'grayish': summary.gas === 0}">
-                {{ summary.gas }}
+                {{ summary.gas }} {{currencyFromTicker}}
               </p>
             </v-container>
           </div>
@@ -379,7 +379,8 @@
             <v-container class="mark">
               <p v-bind:class="{'grayish': summary.fee === 0}"
                  class="text-end">
-                {{ summary.fee }} {{currencyFromTicker}}
+                {{ summary.fee }}
+                {{ type === txType.PEGOUT ? currencyToTicker : currencyFromTicker }}
               </p>
             </v-container>
           </div>
@@ -403,7 +404,7 @@
         </v-container>
 
         <!-- Total -->
-        <v-container class="pb-0 pl-0">
+        <v-container  v-if="type === txType.PEGIN" class="pb-0 pl-0">
           <v-row class="justify-end mx-0">
             <h1 class="boldie">
               Total:
