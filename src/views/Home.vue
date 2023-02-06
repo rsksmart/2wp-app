@@ -140,6 +140,10 @@ export default class Home extends Vue {
 
   @Action(constants.PEGIN_TX_CLEAR_STATE, { namespace: 'pegInTx' }) clear !: () => void;
 
+  @Action(constants.PEGOUT_TX_CLEAR, { namespace: 'pegOutTx' }) clearPegOut !: () => void;
+
+  @Action(constants.SESSION_CLEAR, { namespace: 'web3Session' }) clearSession !: () => void;
+
   @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) initPegin !: () => Promise<void>;
 
   @Action(constants.PEGOUT_TX_INIT, { namespace: 'pegOutTx' }) init !: () => Promise<void>;
@@ -173,6 +177,8 @@ export default class Home extends Vue {
 
   async created() {
     this.clear();
+    this.clearPegOut();
+    this.clearSession();
     this.addPeg(undefined);
     await this.init();
     await this.initPegin();

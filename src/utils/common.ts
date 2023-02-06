@@ -1,7 +1,7 @@
 import { PegInTxState } from '@/types/pegInTx';
 import SatoshiBig from '@/types/SatoshiBig';
 import { BITCOIN_AVERAGE_FEE_LEVEL } from '@/store/constants';
-import { PegOutTxState, WeiBig } from '@/types';
+import { PegOutTxState, SessionState, WeiBig } from '@/types';
 
 export const getChunkedValue = (value: string, maxLength: number) => (value.length < maxLength ? value : `${value.substr(0, maxLength / 2)}...${value.substr(value.length - maxLength / 2, value.length)}`);
 
@@ -68,3 +68,17 @@ export const getClearPegoutTxState = (): PegOutTxState => ({
   selectedFee: BITCOIN_AVERAGE_FEE_LEVEL,
   estimatedBTCToRecieve: new SatoshiBig(0, 'btc'),
 });
+
+export const getClearSessionState = ():SessionState => (
+  {
+    account: undefined,
+    web3: undefined,
+    enabled: false,
+    rLogin: undefined,
+    rLoginInstance: undefined,
+    txType: undefined,
+    balance: new WeiBig('0', 'wei'),
+    btcDerivedAddress: '',
+    bitcoinPrice: 0,
+  }
+);

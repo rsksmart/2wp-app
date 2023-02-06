@@ -87,7 +87,7 @@ import { Action, Getter, State } from 'vuex-class';
 import * as constants from '@/store/constants';
 import TxErrorDialog from '@/components/exchange/TxErrorDialog.vue';
 import {
-  NormalizedSummary, PegOutTxState, SessionState, WeiBig,
+  NormalizedSummary, PegOutTxState, SatoshiBig, SessionState, WeiBig,
 } from '@/types';
 import TxSummaryFixed from '@/components/exchange/TxSummaryFixed.vue';
 
@@ -132,6 +132,8 @@ export default class PegOutForm extends Vue {
 
   @Getter(constants.PEGOUT_TX_GET_SAFE_TX_FEE, { namespace: 'pegOutTx' }) safeFee !: WeiBig;
 
+  @Getter(constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE, { namespace: 'pegOutTx' }) estimatedBtcToReceive !: SatoshiBig;
+
   @Emit()
   closeAddressDialog() {
     this.showAddressDialog = false;
@@ -171,11 +173,11 @@ export default class PegOutForm extends Vue {
   get pegOutFormSummary(): NormalizedSummary {
     return {
       amountFromString: this.pegOutTxState.amountToTransfer.toRBTCTrimmedString(),
-      amountReceivedString: this.pegOutTxState.estimatedBTCToRecieve.toBTCTrimmedString(),
-      fee: Number(this.safeFee.toRBTCTrimmedString()),
+      amountReceivedString: this.estimatedBtcToReceive.toBTCTrimmedString(),
+      fee: Number(this.pegOutTxState.btcEstimatedFee.toBTCTrimmedString()),
       recipientAddress: this.session.btcDerivedAddress,
       senderAddress: this.session.account,
-      gas: this.pegOutTxState.gas,
+      gas: Number(this.safeFee.toRBTCTrimmedString()),
     };
   }
 

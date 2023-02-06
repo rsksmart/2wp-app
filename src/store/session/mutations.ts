@@ -3,6 +3,7 @@ import Web3 from 'web3';
 import * as constants from '@/store/constants';
 import { WeiBig } from '@/types';
 import { TransactionType, SessionState } from '@/types/session';
+import { getClearSessionState } from '@/utils';
 
 export const mutations: MutationTree<SessionState> = {
   [constants.SESSION_SET_ACCOUNT]: (state, account: string) => {
@@ -35,5 +36,11 @@ export const mutations: MutationTree<SessionState> = {
   },
   [constants.SESSION_SET_BITCOIN_PRICE]: (state, bitcoinPrice) => {
     state.bitcoinPrice = bitcoinPrice;
+  },
+  [constants.SESSION_CLEAR_STATE]: async (state) => {
+    await state.rLogin?.disconnect();
+    const clearState = getClearSessionState();
+    clearState.rLoginInstance = state.rLoginInstance;
+    Object.assign(state, clearState);
   },
 };

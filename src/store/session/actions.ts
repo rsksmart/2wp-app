@@ -99,4 +99,7 @@ export const actions: ActionTree<SessionState, RootState> = {
       })
       .catch(console.error);
   },
+  [constants.SESSION_CLEAR]: ({ commit }) => {
+    commit(constants.SESSION_CLEAR_STATE);
+  },
 };

@@ -3,6 +3,7 @@ import * as constants from '@/store/constants';
 import {
   MiningSpeedFee, PegoutConfiguration, PegOutTxState, SatoshiBig, WeiBig,
 } from '@/types';
+import { getClearPegoutTxState } from '@/utils';
 
 export const mutations: MutationTree<PegOutTxState> = {
   [constants.PEGOUT_TX_SET_SELECTED_FEE_LEVEL]: (state, feeLevel: MiningSpeedFee) => {
@@ -37,5 +38,9 @@ export const mutations: MutationTree<PegOutTxState> = {
   [constants.PEGOUT_TX_SET_EFECTIVE_FEE]: (state, effectiveFee: WeiBig) => {
     state.efectivePaidFee = effectiveFee;
     state.selectedFee = constants.BITCOIN_AVERAGE_FEE_LEVEL;
+  },
+  [constants.PEGOUT_TX_CLEAR_STATE]: (state) => {
+    const clearState = getClearPegoutTxState();
+    Object.assign(state, clearState);
   },
 };

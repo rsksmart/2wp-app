@@ -51,6 +51,7 @@ describe('RbtcInputAmount', () => {
       balance: new WeiBig('0.5', 'rbtc'),
       enabled: false,
       txType: 'PEG_OUT_TRANSACTION_TYPE',
+      bitcoinPrice: 0,
     };
 
     const { getters, actions, mutations } = pegOutTx;
