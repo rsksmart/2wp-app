@@ -80,13 +80,20 @@
             <v-row class="mx-0 mt-10 d-flex justify-center">
               <p>Or check the status of your transaction</p>
             </v-row>
-            <v-row class="d-flex justify-center pt-4">
+                        <v-row class="d-flex justify-center pt-4">
               <v-btn @click="toPegInStatus" outlined
-                     v-bind:class="[ 'wallet-button-back', STATUS ? 'selected' : '' ]"
+                     v-bind:class="[ this.btnWalletClass, STATUS ? 'selected' : '' ]"
                      :disabled="!isAllowedBrowser">
                 <div>
+                  <v-row class="mx-0 d-flex justify-center">
+                    <v-col/>
+                    <v-col class="pa-0 d-flex align-center mx-3">
+                      <v-img :src="statusIcon" width="60" contain/>
+                    </v-col>
+                    <v-col/>
+                  </v-row>
                   <v-row class="mx-0 d-flex justify-center mt-2">
-                    <span class="wallet-button-low">Transaction status</span>
+                    <span class="wallet-button-content">Transaction status</span>
                   </v-row>
                 </div>
               </v-btn>
