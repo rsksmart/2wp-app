@@ -5,7 +5,7 @@
       <v-row justify="center" class="mx-0">
         <v-col>
           <v-row class="mx-0 mb-5 d-flex justify-center">
-            <h1 class="title-landing">2 way Peg App</h1>
+            <h1 class="title-landing">2-Way Peg App</h1>
           </v-row>
         </v-col>
       </v-row>

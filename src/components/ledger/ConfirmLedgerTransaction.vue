@@ -23,7 +23,7 @@
         <v-row class="mx-0 d-flex justify-center">
           <h4 class="text-center">
             <span class="number">1</span>
-            Confirm {{environmentContext.getRskText()}} information
+            Confirm on {{environmentContext.getRskText()}}
           </h4>
         </v-row>
       </v-col>
