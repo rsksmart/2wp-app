@@ -3,7 +3,7 @@ import * as constants from '@/store/constants';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import {
-  AppNetwork, TxStatusType, TxStatusMessage, WalletAddress, RequestBalance,
+  AppNetwork, TxStatusType, TxStatusMessage, WalletAddress, RequestBalance, PegoutStatus,
 } from '@/types';
 
 export function getAccountType(address: string, network: AppNetwork): string {
@@ -155,6 +155,41 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
       break;
     case TxStatusType.PEGOUT:
       switch (status) {
+        case PegoutStatus.RECEIVED:
+          statusMessage = 'Your transaction was successfully processed!';
+          activeMessageStyle = 'statusSuccess';
+          isRejected = false;
+          break;
+        case PegoutStatus.NOT_FOUND:
+          statusMessage = 'Unfortunately this is not recognized as a Peg out transaction, please check it and try again';
+          activeMessageStyle = 'statusRejected';
+          isRejected = true;
+          break;
+        case PegoutStatus.NOT_PEGOUT_TX:
+          statusMessage = 'Unfortunately this is not recognized as a Peg out transaction, please check it and try again';
+          activeMessageStyle = 'statusRejected';
+          isRejected = true;
+          break;
+        case PegoutStatus.SIGNED:
+          statusMessage = 'Your transaction was successfully processed!';
+          activeMessageStyle = 'statusSuccess';
+          isRejected = false;
+          break;
+        case PegoutStatus.REJECTED:
+          statusMessage = `Your transaction was declined. \n Your ${environmentContext.getRbtcTicker()} will be sent to the sender address`;
+          activeMessageStyle = 'statusRejected';
+          isRejected = true;
+          break;
+        case PegoutStatus.WAITING_FOR_CONFIRMATION:
+          statusMessage = `More ${environmentContext.getRskText()} confirmations are yet needed, please wait`;
+          activeMessageStyle = 'statusProgress';
+          isRejected = false;
+          break;
+        case PegoutStatus.WAITING_FOR_SIGNATURE:
+          statusMessage = 'Your transaction is waiting for more signatures!';
+          activeMessageStyle = 'statusProgress';
+          isRejected = false;
+          break;
         default:
           error = true;
           errorMessage = 'The input transaction is not valid, please check it and try again';
