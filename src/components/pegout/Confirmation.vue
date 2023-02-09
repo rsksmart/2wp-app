@@ -20,11 +20,14 @@
         :orientation="orientationSummary"/>
     </v-row>
     <v-row v-if="confirmTxState.matches(['idle', 'error', 'goingHome'])" class="ma-0">
-      <v-col cols="2" class="d-flex justify-start ma-0 py-0" offset="10">
-        <v-btn rounded outlined color="#00B520" width="110"
-               @click="changePage"
-               :disabled="confirmTxState.matches(['error', 'goingHome', 'loading'])">
-          <span>Back</span>
+      <v-col cols="2" class="d-flex justify-start ma-0 py-0">
+        <v-btn rounded outlined color="#00B520" width="110" @click="goToHome">
+          <span>Go Home</span>
+        </v-btn>
+      </v-col>
+      <v-col cols="10" class="d-flex justify-end ma-0 py-0">
+        <v-btn rounded color="#00B520" width="110" @click="goStatus">
+          <span class="whiteish">Status</span>
         </v-btn>
       </v-col>
     </v-row>
@@ -34,13 +37,12 @@
 <script lang="ts">
 import {
   Component, Prop,
-  Emit,
   Vue,
 } from 'vue-property-decorator';
 import { Machine } from '@/services/utils';
 import { TxStatusType } from '@/types/store';
 import { TxSummaryOrientation } from '@/types/Status';
-import { Getter, State } from 'vuex-class';
+import { Getter, State, Action } from 'vuex-class';
 import {
   NormalizedSummary, PegOutTxState, SatoshiBig, SessionState, WeiBig,
 } from '@/types';
@@ -62,6 +64,8 @@ export default class Confirmation extends Vue {
 
   @State('web3Session') session !: SessionState;
 
+  @Action(constants.PEGOUT_TX_CLEAR, { namespace: 'pegOutTx' }) clearPegOut !: () => void;
+
   @Getter(constants.PEGOUT_TX_GET_SAFE_TX_FEE, { namespace: 'pegOutTx' }) safeFee !: WeiBig;
 
   @Getter(constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE, { namespace: 'pegOutTx' }) estimatedBtcToReceive !: SatoshiBig;
@@ -77,9 +81,21 @@ export default class Confirmation extends Vue {
 
   backPage = 'PegOutForm';
 
-  @Emit('changePage')
-  changePage() {
-    return this.backPage;
+  goToHome() {
+    this.clearPegOut();
+    this.$router.push({
+      name: 'Home',
+    });
+  }
+
+  goStatus() {
+    const txId = this.pegoutTxState.txHash
+      ? this.pegoutTxState.txHash.toString() : '';
+    this.clearPegOut();
+    this.$router.push({
+      name: 'Status',
+      params: { txId },
+    });
   }
 
   get successPegOutSummary(): NormalizedSummary {
