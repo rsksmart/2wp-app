@@ -183,6 +183,8 @@ export default class TxSummary extends Vue {
 
   @Prop() statusRefundAddress!: string;
 
+  @Prop() receivedFee!: SatoshiBig;
+
   expanded = true;
 
   over = false;
@@ -222,22 +224,25 @@ export default class TxSummary extends Vue {
   }
 
   get fee(): string {
-    if (!this.feeBTC) return this.VALUE_INCOMPLETE_MESSAGE;
-    return this.feeBTC.toBTCString();
+    if (!this.receivedFee) return this.VALUE_INCOMPLETE_MESSAGE;
+    return this.receivedFee.toBTCString();
   }
 
   get feeUSD(): string {
-    if (!this.feeBTC || !this.peginTxState.bitcoinPrice) return this.VALUE_INCOMPLETE_MESSAGE;
-    return this.feeBTC.toUSDFromBTCString(this.peginTxState.bitcoinPrice, this.fixedUSDDecimals);
+    if (!this.receivedFee || !this.peginTxState.bitcoinPrice) return this.VALUE_INCOMPLETE_MESSAGE;
+    return this.receivedFee
+      .toUSDFromBTCString(this.peginTxState.bitcoinPrice, this.fixedUSDDecimals);
   }
 
   get feePlusAmount(): string {
-    if (!this.peginTxState.amountToTransfer || !this.feeBTC) return this.VALUE_INCOMPLETE_MESSAGE;
-    return this.peginTxState.amountToTransfer.plus(this.feeBTC).toBTCString();
+    if (!this.peginTxState.amountToTransfer || !this.receivedFee) {
+      return this.VALUE_INCOMPLETE_MESSAGE;
+    }
+    return this.peginTxState.amountToTransfer.plus(this.receivedFee).toBTCString();
   }
 
   get feePlusAmountUSD(): string {
-    if (!this.amount || !this.feeBTC || !this.peginTxState.bitcoinPrice) {
+    if (!this.amount || !this.receivedFee || !this.peginTxState.bitcoinPrice) {
       return this.VALUE_INCOMPLETE_MESSAGE;
     }
     return Big(this.amountUSD).plus(Big(this.feeUSD)).toFixed(this.fixedUSDDecimals);

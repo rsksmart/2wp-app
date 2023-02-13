@@ -9,7 +9,7 @@ export class LiqualityError extends Error {
 
   public messageToUserOnLink = 'Click here to know how to use Liquality';
 
-  constructor() {
-    super('Liquality software wallet is not installed on your browser');
+  constructor(message?: string) {
+    super(message || 'Liquality software wallet is not installed on your browser');
   }
 }

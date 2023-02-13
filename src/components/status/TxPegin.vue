@@ -115,6 +115,7 @@
         :statusFee="currentFee"
         :statusRefundAddress="currentRefundAddress"
         :txId="txId"
+        :receivedFee="currentFee"
         :showTxId="true"
         :initialExpand="true"/>
     </v-row>
