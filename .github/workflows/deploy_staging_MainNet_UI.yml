@@ -3,7 +3,7 @@ name: 2wp-app deploy UI for staging MainNet
 on:
   push:
     branches:
-      - '*-qa'
+      - '*-rc'
 
 jobs:
   checkout-and-build:

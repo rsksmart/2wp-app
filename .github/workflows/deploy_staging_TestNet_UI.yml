@@ -3,7 +3,7 @@ name: 2wp-app deploy UI for staging TestNet
 on:
   push:
     branches:
-      - '*-qa1'
+      - '*-qa'
 
 jobs:
   checkout-and-build:
