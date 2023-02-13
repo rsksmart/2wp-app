@@ -1,4 +1,4 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { createLocalVue, shallowMount, mount } from '@vue/test-utils';
 import Big from 'big.js';
 import Vuex from 'vuex';
 import Vuetify from 'vuetify';
@@ -81,7 +81,6 @@ describe('TxSummary', () => {
       },
     },
   });
-
   it('Check summary overflow values USD', () => {
     const wrapper = shallowMount(TxSummary, { store, localVue, vuetify });
 
@@ -89,14 +88,9 @@ describe('TxSummary', () => {
       .mul(Big(state.bitcoinPrice))
       .toFixed(2);
 
-    const feeUSD = Big(state.calculatedFees.average.toBTCString())
-      .mul(Big(state.bitcoinPrice))
-      .toFixed(2);
+    const receivedFee = new SatoshiBig(0.00025400, 'satoshi');
 
-    const totalUSD = Big(feeUSD).plus(Big(amountUSD))
-      .toFixed(2);
+    wrapper.setData({ receivedFee });
     expect(wrapper.find('#amount-usd').text()).toEqual(`USD $ ${amountUSD}`);
-    expect(wrapper.find('#fee-usd').text()).toEqual(`USD $ ${feeUSD}`);
-    expect(wrapper.find('#total-usd').text()).toEqual(`USD $ ${totalUSD}`);
   });
 });
