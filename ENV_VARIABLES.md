@@ -13,8 +13,8 @@ The value of these variables are used in **environment-variables.ts** file.
 |VUE_APP_RSK_EXPLORER                        |             |RSK EXPLORER URL used to verify the transaction status                                                      |
 |VUE_APP_WALLET_ADDRESSES_HARD_STOP          | `100`       |Maximum number of addresses derived from wallet                             |
 |VUE_APP_WALLET_ADDRESS_PER_CALL             | `5`         |Number of addresses obtained per derivation call                                                                       |
-|VUE_APP_PEGOUT_MAX_AMOUNT_ALLOWED_IN_RBTC    | `0.005`     | 0,005 Minimum allowed value for a PEGOUT transaction
-|VUE_APP_PEGOUT_MIN_AMOUNT_ALLOWED_IN_RBTC   | `1`          | 1 Maximum allowed value for a PEGOUT transaction
+|VUE_APP_PEGOUT_MIN_AMOUNT_ALLOWED_IN_RBTC    | `0.004`     | 0,004 Minimum allowed value for a PEGOUT transaction
+|VUE_APP_PEGOUT_MAX_AMOUNT_ALLOWED_IN_RBTC   | `1`          | 1 Maximum allowed value for a PEGOUT transaction
 
 ## Example for .env.local.test file
 
