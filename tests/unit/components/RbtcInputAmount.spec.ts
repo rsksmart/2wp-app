@@ -44,6 +44,7 @@ describe('RbtcInputAmount', () => {
       selectedFee: constants.BITCOIN_AVERAGE_FEE_LEVEL,
       estimatedBTCToRecieve: new SatoshiBig(0.00400000, 'btc'),
       gas: 20000,
+      bitcoinPrice: 40537,
       btcEstimatedFee: new SatoshiBig(0, 'satoshi'),
     };
     sessionState = {

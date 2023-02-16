@@ -1,14 +1,17 @@
 <template>
-<v-container fluid class="exchange form normalized-height container
+<v-container fluid class="exchange-form normalized-height container
   max-width mx-6 mt-6">
   <v-col class="px-0">
-    <v-row class="d-flex justify-center">
-      <h2 class="d-flex justify-center">Send {{environmentContext.getRbtcTicker()}}.
-        Get {{environmentContext.getBtcTicker()}}.</h2>
+    <v-row class="mx-0">
+      <v-col class="justify-center px-0">
+        <h1 class="justify-center text-left">Send {{environmentContext.getRbtcTicker()}}.
+          Get {{environmentContext.getBtcTicker()}}.</h1>
+      </v-col>
     </v-row>
     <v-row class="exchange-form">
       <v-col cols="8" lg="8" >
-        <rsk-wallet-connection @connectingWallet="openAddressDialog"/>
+        <rsk-wallet-connection
+          @switchDeriveButton="switchDeriveButton"/>
         <v-divider color="#C4C4C4"/>
         <rbtc-input-amount/>
         <v-divider color="#C4C4C4"/>
@@ -23,10 +26,30 @@
                 Recipient address:
               </p>
               <v-row class="ma-0 mt-2 pa-0">
-                <v-col cols="6" class="pa-0" >
-                  <v-text-field class="disabled-input" :value="session.btcDerivedAddress"
-                                disabled color="#F8F5F5"
-                                solo hide-details full-width single-line flat/>
+                <v-col cols="7" class="p-0">
+                  <v-row class="blue-box input-box-outline m-0 pa-0 pl-0" >
+                    <v-text-field
+                      v-model="session.btcDerivedAddress"
+                      class="wallet-address-input"
+                      solo dense
+                      disabled
+                      flat
+                      hide-details
+                      @focus="focus = true"
+                      @blur="focus = false"/>
+                  </v-row>
+                </v-col>
+                <v-col cols="1" class="d-flex justify-center pb-0">
+                  <div class="divider"/>
+                </v-col>
+                <v-col cols="4" class="pb-0 px-0">
+                  <v-row class="mx-0 d-flex justify-center">
+                    <v-btn :disabled="!isReadyToSign"
+                    rounded width="100%" height="38" color="#00B43C"
+                      @click="openAddressDialog">
+                      <span class="whiteish">Derive address</span>
+                    </v-btn>
+                  </v-row>
                 </v-col>
               </v-row>
             </v-col>
@@ -44,7 +67,8 @@
       </v-col>
     </v-row>
     <v-row v-if="showAddressDialog">
-      <address-dialog @closeDialog="closeAddressDialog"/>
+      <address-dialog @switchDeriveButton="switchDeriveButton"
+       @closeDialog="closeAddressDialog"/>
     </v-row>
     <v-row class="mx-0">
       <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
@@ -122,6 +146,8 @@ export default class PegOutForm extends Vue {
 
   txError = '';
 
+  isReadyToSign = false;
+
   @State('web3Session') session !: SessionState;
 
   @State('pegOutTx') pegOutTxState !: PegOutTxState;
@@ -147,6 +173,10 @@ export default class PegOutForm extends Vue {
   @Emit()
   openAddressDialog() {
     this.showAddressDialog = true;
+  }
+
+  switchDeriveButton(value: boolean): void {
+    this.isReadyToSign = value;
   }
 
   @Emit()

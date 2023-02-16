@@ -299,7 +299,7 @@
         <!-- Amount -->
         <v-container class="pb-0 pl-0">
           <v-row class="mx-0">
-            <h1 class="boldie">Amount:</h1>
+            <h1 class="boldie">{{ currencyFromTicker }}s:</h1>
           </v-row>
           <div class="form-field pt-2 pb-2 pl-0">
             <v-container class="mark">
@@ -330,7 +330,7 @@
         <!-- Gas -->
         <v-container v-if="type === txType.PEGOUT" class="pb-0 pl-0">
           <v-row class="mx-0">
-            <h1 class="boldie">Gas:</h1>
+            <h1 class="boldie">Transaction fee:</h1>
           </v-row>
           <div class="form-field pt-2 pb-2 pl-0">
             <v-container class="mark">
@@ -355,7 +355,7 @@
         <v-container class="pb-0 pl-0">
           <v-row class="justify-end mx-0">
             <h1 class="boldie">
-             Destination address:
+              Destination address:
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">

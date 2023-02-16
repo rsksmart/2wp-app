@@ -90,6 +90,7 @@ describe('TxSummary', () => {
       maxValue: new WeiBig(0, 'wei'),
       bridgeContractAddress: 'bridgeAddress',
     },
+    bitcoinPrice: 40537,
     selectedFee: constants.BITCOIN_AVERAGE_FEE_LEVEL,
     validAmount: true
   };

@@ -20,13 +20,10 @@
         :orientation="orientationSummary"/>
     </v-row>
     <v-row v-if="confirmTxState.matches(['idle', 'error', 'goingHome'])" class="ma-0">
-      <v-col cols="2" class="d-flex justify-start ma-0 py-0">
-        <v-btn rounded outlined color="#00B520" width="110" @click="goToHome">
-          <span>Go Home</span>
-        </v-btn>
+      <v-col cols="2" class="d-flex justify-start ma-0 py-0" offset="10">
       </v-col>
       <v-col cols="10" class="d-flex justify-end ma-0 py-0">
-        <v-btn rounded color="#00B520" width="110" @click="goStatus">
+        <v-btn rounded color="#00B520" width="110" @click="goToStatus">
           <span class="whiteish">Status</span>
         </v-btn>
       </v-col>
@@ -70,6 +67,8 @@ export default class Confirmation extends Vue {
 
   @Getter(constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE, { namespace: 'pegOutTx' }) estimatedBtcToReceive !: SatoshiBig;
 
+  @Action(constants.STATUS_CLEAR, { namespace: 'pegOutTx' }) clearPegOutTx !: () => Promise<void>;
+
   @Prop() confirmTxState!: Machine<
     'idle'
     | 'loading'
@@ -88,13 +87,11 @@ export default class Confirmation extends Vue {
     });
   }
 
-  goStatus() {
-    const txId = this.pegoutTxState.txHash
-      ? this.pegoutTxState.txHash.toString() : '';
-    this.clearPegOut();
+  goToStatus() {
+    this.clearPegOutTx();
     this.$router.push({
       name: 'Status',
-      params: { txId },
+      params: { txId: String(this.pegoutTxState.txHash) },
     });
   }
 

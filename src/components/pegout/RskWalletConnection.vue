@@ -1,5 +1,5 @@
 <template>
-  <v-container class="form-step mt-5 mb-0 py-0">
+  <div class="py-4">
     <v-row class="align-start mx-0">
       <v-col cols="auto" class="pl-0">
         <div v-bind:class="[focus ?
@@ -9,21 +9,62 @@
         <p v-bind:class="{'boldie': focus}">
           Connect your RSK wallet :
         </p>
-        <v-row>
-          <v-col>
-            <v-text-field class="disabled-input" :value="address" disabled color="#F8F5F5"
-                          solo hide-details full-width single-line flat/>
-          </v-col>
-          <v-col class="d-flex align-center">
-            <v-btn rounded color="#00B520" width="100%" height="38"
-                   @click="connectWallet" @focus="focus = true" @blur="focus = false">
-              <span class="whiteish">Connect wallet</span>
-            </v-btn>
-          </v-col>
+        <v-row class="mx-0 mt-4">
+          <template v-if="useWeb3Wallet && web3Address">
+             <div class="container">
+              <v-row class="mx-0">
+                <span>Wallet connected</span>
+              </v-row>
+              <v-row class="mx-0 d-flex align-center">
+                <p class="mb-0 account">{{ address }}</p>
+              </v-row>
+              <v-row class="mx-0">
+                <v-btn class="pa-0" text @click="disconnectWallet">
+                  <span class="blueish">Disconnect wallet</span>
+                </v-btn>
+              </v-row>
+            </div>
+          </template>
+          <template v-else>
+            <v-col cols="7" class="wallet-label-container pl-0 pb-0">
+              <v-row class="mx-0 mb-4 d-flex justify-start">
+                <span class="label-title text-center">
+                  Type in your {{ address }} address
+                </span>
+              </v-row>
+              <v-row class="blue-box input-box-outline mx-0 pa-0 pl-0" >
+                <v-text-field
+                  v-model="address"
+                  class="wallet-address-input"
+                  solo dense
+                  disabled
+                  flat
+                  hide-details
+                  :label="`Select or paste the ${this.environmentContext.getRbtcTicker()} address`"
+                  @focus="focus = true"
+                  @blur="focus = false"/>
+              </v-row>
+            </v-col>
+            <v-col cols="1" class="d-flex justify-center pb-0">
+              <div class="divider"/>
+            </v-col>
+            <v-col cols="4" class="pb-0 px-0">
+              <v-row class="mx-0 mb-4 d-flex justify-center">
+                <span class="text-center">Choose address from a wallet</span>
+              </v-row>
+              <v-row class="mx-0 d-flex justify-center">
+                <v-btn outlined rounded color="#00B520" width="100%" height="38"
+                  class="select-wallet-button"
+                  @click="connectWallet" >
+                  <span class="greenish">Connect wallet</span>
+                </v-btn>
+              </v-row>
+            </v-col>
+          </template>
         </v-row>
       </v-col>
     </v-row>
-  </v-container>
+  </div>
 </template>
 
 <script lang="ts">
@@ -31,11 +72,15 @@ import { Component, Emit, Vue } from 'vue-property-decorator';
 import { Action, State } from 'vuex-class';
 import { PegOutTxState, SessionState } from '@/types';
 import * as constants from '@/store/constants';
-import { formatTxId } from '@/services/utils';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
 @Component({})
 export default class RskWalletConnection extends Vue {
-  focus = true;
+  focus = false;
+
+  useWeb3Wallet = false;
+
+  isValidPegOutAddress = true;
 
   @State('pegOutTx') pegOutTxState!: PegOutTxState;
 
@@ -47,24 +92,40 @@ export default class RskWalletConnection extends Vue {
 
   @Action(constants.WEB3_SESSION_ADD_BALANCE, { namespace: 'web3Session' }) getBalance !: () => Promise<void>;
 
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+
+  get web3Address() {
+    return this.web3SessionState.account ?? '';
+  }
+
+  disconnectWallet() {
+    this.focus = true;
+    this.clearAccount();
+    this.switchSignature();
+  }
+
   connectWallet(): Promise<void> {
+    this.useWeb3Wallet = true;
+    this.focus = true;
     return this.connectWeb3()
       .then(() => {
+        this.focus = false;
         this.getBalance();
-        this.askForSignature();
+        this.switchSignature();
       })
       .catch(() => {
+        this.focus = false;
         this.clearAccount();
       });
   }
 
-  @Emit('connectingWallet')
-  askForSignature(): boolean {
-    return this.web3SessionState.account !== '';
+  @Emit('switchDeriveButton')
+  switchSignature(): boolean {
+    return this.web3SessionState.account ? true : false;
   }
 
   get address(): string {
-    return this.web3SessionState.account ? formatTxId(this.web3SessionState.account) : 'unset wallet';
+    return this.web3SessionState.account ? this.web3SessionState.account : '';
   }
 }
 </script>

@@ -6,6 +6,7 @@ import {
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import { BridgeService } from '@/services/BridgeService';
 import Web3 from 'web3';
+import axios from 'axios';
 
 export const actions: ActionTree<PegOutTxState, RootState> = {
   [constants.PEGOUT_TX_SELECT_FEE_LEVEL]: ({ commit }, feeLevel: MiningSpeedFee) => {
@@ -52,7 +53,8 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
     commit(constants.PEGOUT_TX_SET_VALID_AMOUNT, valid);
   },
   [constants.PEGOUT_TX_INIT]: ({ dispatch }):
-    Promise<void> => dispatch(constants.PEGOUT_TX_ADD_PEGOUT_CONFIGURATION),
+    Promise<void> => dispatch(constants.PEGOUT_TX_ADD_BITCOIN_PRICE)
+    .then(() => dispatch(constants.PEGOUT_TX_ADD_PEGOUT_CONFIGURATION)),
   [constants.PEGOUT_TX_SEND]: ({ state, rootState, commit })
     : Promise<void> => new Promise<void>((resolve, reject) => {
       const { web3 } = rootState.web3Session as SessionState;
@@ -79,5 +81,13 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
     }),
   [constants.PEGOUT_TX_CLEAR]: ({ commit }) => {
     commit(constants.PEGOUT_TX_CLEAR_STATE);
+  },
+  [constants.PEGOUT_TX_ADD_BITCOIN_PRICE]: ({ commit }) => {
+    axios.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin&order=market_cap_desc&per_page=100&page=1&sparkline=false')
+      .then((response) => {
+        const [result] = response.data;
+        commit(constants.PEGOUT_TX_SET_BITCOIN_PRICE, result.current_price);
+      })
+      .catch(console.error);
   },
 };

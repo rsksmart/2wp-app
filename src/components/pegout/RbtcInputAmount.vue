@@ -1,5 +1,5 @@
 <template>
-  <v-container class="form-step mt-5 mb-0 py-0">
+  <div class="form-step mt-5 mb-0 py-0">
     <v-row class="align-start mx-0">
       <v-col cols="auto" class="pl-0">
         <div v-bind:class="[focus ?
@@ -10,15 +10,17 @@
           Enter the amount you want to send:
         </p>
         <v-row class="d-cols-wht mt-6 ml-1">
-          <v-col cols="5" class="d-flex align-center input-box" >
+          <v-col cols="5" v-bind:class="[amountStyle]" class="input-box-outline" >
             <v-col cols="8" class="d-flex align-center">
-              <v-text-field class="amount-input" v-model="rbtcAmount" color="#F8F5F5"
-                            placeholder="add amount" type="number" step="0.00000001"
-                            @focus="focus = true"
-                            @blur="focus = false"
-                            @change="updateStore()"
-                            @keydown="blockLetterKeyDown"
-                            solo hide-details full-width single-line flat/>
+              <v-text-field
+                v-model="rbtcAmount" color="#F8F5F5"
+                class="amount-input"
+                placeholder="add amount" type="number" step="0.00000001"
+                @focus="focus = true"
+                @blur="focus = false"
+                @change="updateStore()"
+                @keydown="blockLetterKeyDown"
+                solo hide-details full-width single-line flat/>
             </v-col>
             <v-col cols="4" class="ma-0 pa-0">
               <v-row>
@@ -26,8 +28,8 @@
               </v-row>
             </v-col>
           </v-col>
-          <v-col cols="1" class="pa-0 d-flex align-center">
-            <v-icon>mdi-arrow-right</v-icon>
+          <v-col cols="1" class="py-0 d-flex justify-center">
+            <v-icon color="#000">mdi-arrow-right</v-icon>
           </v-col>
           <v-col cols="5" class="pa-0 d-flex align-center">
             <v-row class="ma-0 pa-0">
@@ -35,7 +37,7 @@
                 <span>{{rbtcAmount}}</span>
               </v-col>
               <v-col class="ma-0 pa-0 d-flex align-center">
-                <v-img src="@/assets/exchange/rbtc.png" height="30" contain/>
+                <v-img src="@/assets/exchange/btc.png" height="30" contain/>
               </v-col>
             </v-row>
           </v-col>
@@ -47,7 +49,7 @@
         </v-row>
       </v-col>
     </v-row>
-  </v-container>
+  </div>
 </template>
 
 <script lang="ts">
@@ -65,6 +67,8 @@ export default class RbtcInputAmount extends Vue {
   focus = false;
 
   rbtcAmount = '';
+
+  amountStyle = '';
 
   stepState: 'unset' | 'valid' |'error' = 'unset';
 
@@ -152,6 +156,7 @@ export default class RbtcInputAmount extends Vue {
     this.stepState = !this.insufficientAmount && isRBTCAmountValidRegex(this.rbtcAmount)
       ? 'valid' : 'error';
     this.setValidAmount(this.stepState === 'valid');
+    this.amountStyle = this.stepState === 'valid' ? 'green-box' : 'yellow-box';
   }
 }
 </script>

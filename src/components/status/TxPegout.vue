@@ -49,8 +49,6 @@ export default class TxPegout extends Vue {
 
   @State('status') txStatus!: TxStatus;
 
-  @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) peginInit!: () => void;
-
   @Action(constants.PEGOUT_TX_ADD_AMOUNT, { namespace: 'pegOutTx' }) setAmount!: (amount: WeiBig) => void;
 
   @Getter(constants.STATUS_IS_REJECTED, { namespace: 'status' }) isRejected!: boolean;

@@ -49,7 +49,7 @@
                   solo dense
                   flat
                   hide-details
-                  :label="`Select or paste the ${this.environmentContext.getRskText()} address`"
+                  :label="`Select or paste the ${environmentContext.getRskText()} address`"
                   @focus="focus = true"
                   @blur="focus = false"
                   @change="checkStep"/>
