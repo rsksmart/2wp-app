@@ -121,7 +121,7 @@ export default class RskWalletConnection extends Vue {
 
   @Emit('switchDeriveButton')
   switchSignature(): boolean {
-    return this.web3SessionState.account ? true : false;
+    return this.web3SessionState.account !== undefined;
   }
 
   get address(): string {
