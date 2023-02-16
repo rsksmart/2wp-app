@@ -45,7 +45,11 @@
             </v-row>
           </v-col>
         </v-row>
+<<<<<<< HEAD
         <v-row v-if="showErrorMessage" class="mx-0 mt-0 d-flex justify-start">
+=======
+        <v-row v-if="isEnoughBalance" class="mx-0 mt-0 d-flex justify-start">
+>>>>>>> change ui and derive button
           <span class="message-error-fee">
             You don't have the balance for this fee + amount
           </span>

@@ -47,6 +47,7 @@
                   <div class="divider"/>
                 </v-col>
                 <v-col cols="4" class="pb-0 px-0">
+<<<<<<< HEAD
                   <v-row class="derive-button mx-0 d-flex justify-center">
                     <v-btn :disabled="!isReadyToSign"
                       outlined rounded
@@ -55,6 +56,13 @@
                       <span>
                         Derive address
                       </span>
+=======
+                  <v-row class="mx-0 d-flex justify-center">
+                    <v-btn :disabled="!isReadyToSign"
+                    rounded width="100%" height="38" color="#00B43C"
+                      @click="openAddressDialog">
+                      <span class="whiteish">Derive address</span>
+>>>>>>> change ui and derive button
                     </v-btn>
                   </v-row>
                 </v-col>
@@ -182,8 +190,13 @@ export default class PegOutForm extends Vue {
     this.showAddressDialog = true;
   }
 
+<<<<<<< HEAD
   switchDeriveButton(): void {
     this.isReadyToSign = !this.isReadyToSign;
+=======
+  switchDeriveButton(value: boolean): void {
+    this.isReadyToSign = value;
+>>>>>>> change ui and derive button
   }
 
   @Emit()
