@@ -34,7 +34,7 @@
           </v-btn>
         </v-col>
         <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0">
-          <v-btn v-if="!pegInFormState.matches(['loading'])" rounded color="#00B43C"
+          <v-btn v-if="!pegInFormState.matches(['loading'])" rounded color="#000000"
                  @click="sendTx"
                  :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])">
             <span class="whiteish">Continue</span>
