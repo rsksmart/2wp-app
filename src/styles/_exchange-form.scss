@@ -183,6 +183,14 @@
       text-align: center !important;
     }
   }
+
+  .message-error-fee {
+    line-height: 12px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    color: #ff5252 !important;
+    caret-color: #ff5252 !important;
+  }
 }
 
 .tooltip-form {

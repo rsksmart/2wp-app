@@ -16,7 +16,6 @@
                         :color="txFeeColor" :track-color="txFeeColor" step="1"
                         @focus="focus = true"
                         @blur="focus = false"
-                        :rules="[enoughBalance]"
                         @change="updateStore"/>
             </v-row>
             <v-row class="mx-0">
@@ -45,6 +44,11 @@
               </v-col>
             </v-row>
           </v-col>
+        </v-row>
+        <v-row v-if="isEnoughBalance" class="mx-0 mt-0 d-flex justify-start">
+          <span class="message-error-fee">
+            You don't have the balance for this fee + amount
+          </span>
         </v-row>
       </v-col>
     </v-row>
@@ -112,10 +116,6 @@ export default class BtcFeeSelect extends Vue {
   get fastFeeUSD() {
     return this.pegInTxState.calculatedFees.fast
       .amount.toUSDFromBTCString(this.pegInTxState.bitcoinPrice, this.fixedUSDDecimals);
-  }
-
-  get enoughBalance(): boolean | string {
-    return this.isEnoughBalance ? this.isEnoughBalance : 'You don\'t have the balance for this fee + amount';
   }
 
   @Emit()

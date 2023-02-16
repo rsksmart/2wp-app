@@ -17,6 +17,7 @@ export interface PegOutTxState {
     average: WeiBig;
     slow: WeiBig;
   };
+  bitcoinPrice: number; 
   gas: number;
   btcEstimatedFee: SatoshiBig;
   selectedFee: MiningSpeedFee;

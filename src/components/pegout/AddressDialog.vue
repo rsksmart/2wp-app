@@ -44,13 +44,16 @@ export default class AddressDialog extends Vue {
 
   showAddressDialog = true;
 
+  disbleDerivateButton = false;
+
   @Action(constants.SESSION_SIGN_MESSAGE, { namespace: 'web3Session' }) signMessage !: (message: string) => Promise<void>;
 
-  @Emit()
+  @Emit('switchDeriveButton')
   toSign() {
     return this.signMessage(this.messageToBeSigned)
       .then(() => {
         this.showAddressDialog = false;
+        return this.disbleDerivateButton;
       });
   }
 

@@ -43,4 +43,7 @@ export const mutations: MutationTree<PegOutTxState> = {
     const clearState = getClearPegoutTxState();
     Object.assign(state, clearState);
   },
+  [constants.PEGOUT_TX_SET_BITCOIN_PRICE]: (state, bitcoinPrice) => {
+    state.bitcoinPrice = bitcoinPrice;
+  },
 };

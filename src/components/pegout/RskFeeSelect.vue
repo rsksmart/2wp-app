@@ -16,7 +16,6 @@
                         :color="txFeeColor" :track-color="txFeeColor" step="1"
                         @focus="focus = true"
                         @blur="focus = false"
-                        :rules="[enoughBalance]"
                         @change="updateStore"/>
             </v-row>
             <v-row class="mx-0 fee-label">
@@ -33,7 +32,23 @@
                        gwei</span>
               </v-col>
             </v-row>
+            <v-row class="mx-0">
+              <v-col cols="4" class="d-flex justify-start pa-0">
+                <span class="boldie text-left">$ {{ slowFeeUSD }}</span>
+              </v-col>
+              <v-col cols="4" class="d-flex justify-center pa-0">
+                <span class="boldie text-center">$ {{ averageFeeUSD }}</span>
+              </v-col>
+              <v-col cols="4" class="d-flex justify-end pa-0">
+                <span class="boldie text-right">$ {{ fastFeeUSD }}</span>
+              </v-col>
+            </v-row>
           </v-col>
+        </v-row>
+        <v-row v-if="isEnoughBalance" class="mx-0 mt-0 d-flex justify-start">
+          <span class="message-error-fee">
+            You don't have the balance for this fee + amount
+          </span>
         </v-row>
       </v-col>
     </v-row>
@@ -54,6 +69,8 @@ export default class RskFeeSelect extends Vue {
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
   focus = false;
+
+  showEnoughBalanceError = false;
 
   txFeeIndex = 1.0;
 
@@ -79,16 +96,37 @@ export default class RskFeeSelect extends Vue {
     return this.pegOutTxState.calculatedFees.slow.toGweiTrimmedString();
   }
 
+  get slowFeeUSD() {
+    return this.pegOutTxState.calculatedFees.slow
+      .toUSDFromRBTCString(
+        this.pegOutTxState.bitcoinPrice, this.fixedUSDDecimals,
+      );
+  }
+
   get averageFee() {
     return this.pegOutTxState.calculatedFees.average.toGweiTrimmedString();
+  }
+
+  get averageFeeUSD() {
+    return this.pegOutTxState.calculatedFees.average
+      .toUSDFromRBTCString(
+        this.pegOutTxState.bitcoinPrice, this.fixedUSDDecimals,
+      );
   }
 
   get fastFee() {
     return this.pegOutTxState.calculatedFees.fast.toGweiTrimmedString();
   }
 
+  get fastFeeUSD() {
+    return this.pegOutTxState.calculatedFees.fast
+      .toUSDFromRBTCString(
+        this.pegOutTxState.bitcoinPrice, this.fixedUSDDecimals,
+      );
+  }
+
   get enoughBalance(): boolean | string {
-    return this.isEnoughBalance ? this.isEnoughBalance : 'You don\'t have the balance for this fee + amount';
+    return this.isEnoughBalance ? this.isEnoughBalance : true;
   }
 
   @Emit()

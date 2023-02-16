@@ -57,6 +57,11 @@ export default class WeiBig extends Big {
       .toString();
   }
 
+  toUSDFromRBTCString(price: number | string | Big, decimals = 2): string {
+    const safePrice: Big = Big(numberRegex.test(price.toString()) ? price : '0');
+    return Big(this.toRBTCString()).mul(safePrice).toFixed(decimals);
+  }
+
   toWeiString(): string {
     return this.toFixed(0);
   }
