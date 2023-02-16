@@ -1,4 +1,4 @@
-import { createLocalVue, shallowMount, mount } from '@vue/test-utils';
+import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Big from 'big.js';
 import Vuex from 'vuex';
 import Vuetify from 'vuetify';
