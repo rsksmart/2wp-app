@@ -175,8 +175,8 @@ export default class PegOutForm extends Vue {
     this.showAddressDialog = true;
   }
 
-  switchDeriveButton(value: boolean): void {
-    this.isReadyToSign = value;
+  switchDeriveButton(): void {
+    this.isReadyToSign = !this.isReadyToSign;
   }
 
   @Emit()
