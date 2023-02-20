@@ -9,6 +9,12 @@
         <p v-bind:class="{'boldie': focus}">
           Enter the amount you want to send:
         </p>
+        <v-row class="m-0 p-0">
+          <v-col cols="5" class="d-flex align-center m-0 p-0">
+            <span @click="setMax" class="greenish justify-center btn-max">Max</span>
+          </v-col>
+          <v-col cols="5" class="m-0 p-0"></v-col>
+        </v-row>
         <v-row class="d-cols-wht mt-6 ml-1">
           <v-col cols="5" v-bind:class="[amountStyle]" class="input-box-outline" >
             <v-col cols="8" class="d-flex align-center">
@@ -59,6 +65,7 @@ import { Action, Getter, State } from 'vuex-class';
 import * as constants from '@/store/constants';
 import { isRBTCAmountValidRegex } from '@/services/utils';
 import { PegOutTxState, SessionState, WeiBig } from '@/types';
+import Web3 from 'web3';
 
 @Component({})
 export default class RbtcInputAmount extends Vue {
@@ -128,6 +135,51 @@ export default class RbtcInputAmount extends Vue {
       return `The maximum accepted value is ${maxValue.toRBTCTrimmedString()} ${this.environmentContext.getRbtcTicker()}`;
     }
     return '';
+  }
+
+  async setMax() {
+    const { balance } = this.web3SessionState;
+    const fee = await this.calculateFeeByAmount(balance);
+    const maxAmount = balance.minus(fee);
+    this.rbtcAmount = maxAmount.toRBTCString();
+    this.setRbtcAmount(balance);
+    this.calculateTxFee();
+  }
+
+  async calculateFeeByAmount(amount: WeiBig) {
+    const web3 = this.web3SessionState.web3 as Web3;
+    const sender = this.web3SessionState.account as string;
+    let finalFee;
+    const gas = await web3.eth.estimateGas({
+      from: sender,
+      to: this.pegOutTxState.pegoutConfiguration.bridgeContractAddress,
+      value: amount.toWeiString(),
+    });
+
+    const gasPrice = Number(await web3.eth.getGasPrice());
+    const averageGasPrice = Math.round(gasPrice * (3 / 2));
+    const calculatedFees = {
+      slow: new WeiBig(gasPrice * gas, 'wei'),
+      average: new WeiBig(averageGasPrice * gas, 'wei'),
+      fast: new WeiBig(gasPrice * gas * 2, 'wei'),
+    };
+
+    switch (this.pegOutTxState.selectedFee) {
+      case constants.BITCOIN_SLOW_FEE_LEVEL:
+        finalFee = calculatedFees.slow;
+        break;
+      case constants.BITCOIN_AVERAGE_FEE_LEVEL:
+        finalFee = calculatedFees.average;
+        break;
+      case constants.BITCOIN_FAST_FEE_LEVEL:
+        finalFee = calculatedFees.fast;
+        break;
+      default:
+        finalFee = calculatedFees.average;
+        break;
+    }
+
+    return finalFee;
   }
 
   get safeAmount(): WeiBig {

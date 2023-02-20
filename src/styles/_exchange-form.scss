@@ -191,6 +191,15 @@
     color: #ff5252 !important;
     caret-color: #ff5252 !important;
   }
+
+  .btn-max {
+    font-weight: bold !important;
+    width: 100%;
+  }
+
+  .btn-max:hover {
+    cursor: pointer;
+  }
 }
 
 .tooltip-form {
