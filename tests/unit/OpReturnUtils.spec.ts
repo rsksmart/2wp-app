@@ -118,4 +118,55 @@ describe('function: isValidOptReturn', () => {
     const result = isValidOpReturn([normalizedOutput], '0x224d0b72bab9342f898c633ef187abff8a96c0fa', '');
     expect(result).toBeTruthy();
   });
+  it('should be true the validation when has one output op_return valid', async () => {
+    const opReturn = '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa';
+    const normalizedOutput: NormalizedOutput = {
+      amount: '0',
+      op_return_data: opReturn,
+    };
+    const normalizedOutput2: NormalizedOutput = {
+      amount: '20000',
+      address: 'userChangeAddress',
+    };
+    const normalizedOutput3: NormalizedOutput = {
+      amount: '20000',
+      address: 'FederationAddress',
+    };
+    const result = isValidOpReturn([normalizedOutput, normalizedOutput2, normalizedOutput3], '0x224d0b72bab9342f898c633ef187abff8a96c0fa', '');
+    expect(result).toBeTruthy();
+  });
+  it('should be falsy the validation when two Op_Return are valid', async () => {
+    const opReturn = '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa';
+    const normalizedOutput: NormalizedOutput = {
+      amount: '0',
+      op_return_data: opReturn,
+    };
+    const result = isValidOpReturn([normalizedOutput, normalizedOutput], '0x224d0b72bab9342f898c633ef187abff8a96c0fa', '');
+    expect(result).toBeFalsy();
+  });
+  it('Should be falsy the validation when three Op_Return are valid', async () => {
+    const opReturn = '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa';
+    const normalizedOutput: NormalizedOutput = {
+      amount: '0',
+      op_return_data: opReturn,
+    };
+    const result = isValidOpReturn([normalizedOutput, normalizedOutput, normalizedOutput], '0x224d0b72bab9342f898c633ef187abff8a96c0fa', '');
+    expect(result).toBeFalsy();
+  });
+
+  it('Should be falsy the validation when one is valid and the other invalid', async () => {
+    const opReturn = '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa';
+    const normalizedOutput: NormalizedOutput = {
+      amount: '0',
+      op_return_data: opReturn,
+    };
+    const opReturn2 = '52534b5401224d0b72bab9342f898c633ef187abff8a96c0faxy';
+    const normalizedOutput2: NormalizedOutput = {
+      amount: '0',
+      op_return_data: opReturn2,
+    };
+    const result = isValidOpReturn([normalizedOutput, normalizedOutput2], '0x224d0b72bab9342f898c633ef187abff8a96c0fa', '');
+    expect(result).toBeFalsy();
+  });
+
 });
