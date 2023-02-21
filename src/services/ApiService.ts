@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { WalletAddress, PeginConfiguration } from '@/types/pegInTx';
 import {
-  AccountBalance, AddressStatus, FeeAmountDataResponse, NormalizedTx, TxStatus,
+  AccountBalance, AddressStatus, FeeAmountDataResponse, NormalizedInput, NormalizedTx, TxStatus,
 } from '@/types';
-import { areValidOutputs } from '@/utils';
+import { areValidOutputs, isValidInput } from '@/utils';
 import { BridgeService } from '@/services/BridgeService';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import { ApiInformation } from '@/types/ApiInformation';
@@ -46,7 +46,7 @@ export default class ApiService {
 
   public static createPeginTx(amountToTransferInSatoshi: number, refundAddress: string,
     recipient: string, sessionId: string, feeLevel: string,
-    changeAddress: string): Promise<NormalizedTx> {
+    changeAddress: string, userAddressList: string[]): Promise<NormalizedTx> {
     const bridgeService = new BridgeService();
     return new Promise<NormalizedTx>((resolve, reject) => {
       Promise.all([
@@ -62,6 +62,10 @@ export default class ApiService {
       ])
         .then(([response, powPegAddress]) => {
           const normalizedTx: NormalizedTx = response.data;
+          if (!normalizedTx.inputs
+            .every((input: NormalizedInput) => isValidInput(input, userAddressList))) {
+            reject(new Error('Invalid input list on the created Transaction'));
+          }
           const expectedChangeAddress = changeAddress || normalizedTx.inputs[0].address;
           const { valid, reason } = areValidOutputs(
             normalizedTx.outputs, powPegAddress,

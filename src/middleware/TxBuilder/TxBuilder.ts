@@ -35,11 +35,12 @@ export default abstract class TxBuilder {
     sessionId: string;
     accountType: string;
   }): Promise<NormalizedTx> {
+    const walletAddresses: WalletAddress[] = store.state.pegInTx.addressList as WalletAddress[];
+    const userAddressList = walletAddresses.map((walletAddress) => walletAddress.address);
     const normalizedTx = await ApiService.createPeginTx(
       amountToTransferInSatoshi, refundAddress, recipient,
-      sessionId, feeLevel, changeAddress,
+      sessionId, feeLevel, changeAddress, userAddressList,
     );
-    const walletAddresses: WalletAddress[] = store.state.pegInTx.addressList as WalletAddress[];
     const hasChange: boolean = normalizedTx.outputs[2] !== undefined;
     const changeAddr = hasChange && normalizedTx.outputs[2].address
       ? normalizedTx.outputs[2].address : changeAddress;

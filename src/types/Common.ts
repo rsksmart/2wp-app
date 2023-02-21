@@ -20,6 +20,7 @@ export interface NormalizedInput {
   // eslint-disable-next-line camelcase
   script_type?: string;
   sequence?: number;
+  prevRawTx?: string;
 }
 
 export interface NormalizedOutput {

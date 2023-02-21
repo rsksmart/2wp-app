@@ -62,8 +62,12 @@ export function isValidOpReturn(
   refundBtcAddress: string,
 ): boolean {
   let validOpReturnOutputs = 0;
+  let opReturnOutputsCount = 0;
   for (let i = 0; outputs && i < outputs.length; i += 1) {
     const output: NormalizedOutput = outputs[i];
+    if (output.op_return_data) {
+      opReturnOutputsCount += 1;
+    }
     if (output.op_return_data
       && (output.op_return_data.length === 50 || output.op_return_data.length === 92)
       && output.op_return_data.substr(0, 10).startsWith('52534b5401')
@@ -87,5 +91,5 @@ export function isValidOpReturn(
       }
     }
   }
-  return validOpReturnOutputs === 1;
+  return validOpReturnOutputs === 1 && opReturnOutputsCount === 1;
 }
