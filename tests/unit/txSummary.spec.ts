@@ -82,15 +82,15 @@ describe('TxSummary', () => {
     },
   });
   it('Check summary overflow values USD', () => {
-    const wrapper = shallowMount(TxSummary, { store, localVue, vuetify });
+    const receivedFee = new SatoshiBig(0.00025400, 'satoshi');
+    const propsData = { receivedFee };
+    const wrapper = shallowMount(TxSummary, {
+      store, localVue, vuetify, propsData,
+    });
 
     const amountUSD = Big(state.amountToTransfer.toBTCString())
       .mul(Big(state.bitcoinPrice))
       .toFixed(2);
-
-    const receivedFee = new SatoshiBig(0.00025400, 'satoshi');
-
-    wrapper.setData({ receivedFee });
     expect(wrapper.find('#amount-usd').text()).toEqual(`USD $ ${amountUSD}`);
   });
 });

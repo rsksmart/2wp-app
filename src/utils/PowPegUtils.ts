@@ -1,29 +1,22 @@
 import { NormalizedInput, NormalizedOutput } from '@/types';
-import { isValidOpReturn } from '@/utils/OpReturnUtils';
+import { isValidOpReturnOutput } from '@/utils/OpReturnUtils';
 import * as bitcoin from 'bitcoinjs-lib';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import * as constants from '@/store/constants';
 
 export function isValidPowPegOutput(
-  outputs: NormalizedOutput[], powPegAddress: string, amountToTransfer: string,
+  output: NormalizedOutput, powPegAddress: string, amountToTransfer: string,
 ): boolean {
-  for (let i = 0; outputs && i < outputs.length; i += 1) {
-    const output: NormalizedOutput = outputs[i];
-    if (output.address && output.address === powPegAddress && output.amount === amountToTransfer) {
-      return true;
-    }
-  }
-  return false;
+  return !!(
+    output.address
+    && output.address === powPegAddress
+    && output.amount === amountToTransfer
+    && !output.op_return_data
+  );
 }
 
-export function isValidChangeOutput(outputs: NormalizedOutput[], changeAddress: string): boolean {
-  for (let i = 0; outputs && i < outputs.length; i += 1) {
-    const output: NormalizedOutput = outputs[i];
-    if (output.address === changeAddress) {
-      return true;
-    }
-  }
-  return false;
+export function isValidChangeOutput(output: NormalizedOutput, changeAddress: string): boolean {
+  return output.address === changeAddress && !output.op_return_data;
 }
 
 export function areValidOutputs(
@@ -41,27 +34,38 @@ export function areValidOutputs(
     response.reason = 'Invalid outputs number';
     return response;
   }
-  if (isValidPowPegOutput(outputs, powPegAddress, amountToTransfer)) {
-    if (isValidOpReturn(outputs, destinationRskAddress, refundBtcAddress)) {
-      if (size === 3) {
-        if (isValidChangeOutput(outputs, changeAddress)) {
-          response.valid = true;
-        } else {
-          response.valid = false;
-          response.reason = 'Invalid change address';
-        }
-      } else {
-        // Not change output in the created tx
-        response.valid = true;
-      }
+  let powPegOutputsCount = 0;
+  let opReturnOutputsCount = 0;
+  let changeOutputsCount = 0;
+  for (let i = 0; outputs && i < outputs.length; i += 1) {
+    const output: NormalizedOutput = outputs[i];
+    if (isValidPowPegOutput(output, powPegAddress, amountToTransfer)) {
+      powPegOutputsCount += 1;
+    }
+    if (isValidOpReturnOutput(output, destinationRskAddress, refundBtcAddress)) {
+      opReturnOutputsCount += 1;
+    }
+    if (isValidChangeOutput(output, changeAddress)) {
+      changeOutputsCount += 1;
+    }
+  }
+  if (powPegOutputsCount === 1 && opReturnOutputsCount === 1) {
+    if ((size === 3 && changeOutputsCount === 1) || size === 2) {
+      response.valid = true;
     } else {
       response.valid = false;
-      response.reason = 'Invalid data when parsing OpReturn';
+      response.reason = 'Invalid change address';
     }
-  } else {
+  }
+  if (powPegOutputsCount !== 1) {
     response.valid = false;
     response.reason = 'Invalid data when comparing Powpeg Address';
   }
+  if (opReturnOutputsCount !== 1) {
+    response.valid = false;
+    response.reason = 'Invalid data when parsing OpReturn';
+  }
+  // console.log({ powPegOutputsCount, opReturnOutputsCount, changeOutputsCount });
   return response;
 }
 
@@ -74,12 +78,11 @@ export function isValidInput(input:NormalizedInput, userAddressList: string[]): 
     try {
       const pubKey = Buffer.from(tx.outs[input.prev_index].script, 3, 20);
       const expectedAddress = bitcoin.address.fromOutputScript(pubKey, network);
-      console.log(expectedAddress);
       return expectedAddress === input.address
         && tx.getId() === input.prev_hash
         && userAddressList.includes(expectedAddress);
     } catch (e) {
-      console.log(e);
+      console.error(e);
       return false;
     }
   }

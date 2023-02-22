@@ -61,11 +61,11 @@ function setEnvironment(_isValidOpReturn: boolean, _isValidPowPegAddress: boolea
   sinon.stub(axios, 'post').resolves(getNormalizedTx());
 }
 describe('Api Service', () => {
-  describe('function: createPeginTx', () => {
+  describe('Function: createPeginTx', () => {
     const userChangeAddress = 'changeAddress';
     const userRefundAddress = '2MxKEf2su6FGAUfCEAHreGFQvEYrfYNHvL7';
     const recipientAddress = '0x224d0b72bab9342f898c633ef187abff8a96c0fa';
-    const userAddressList = [userChangeAddress, userRefundAddress]
+    const userAddressList = [userChangeAddress, userRefundAddress];
     afterEach(() => {
       sinon.restore();
     });
@@ -94,19 +94,19 @@ describe('Api Service', () => {
         expect(e).toEqual(new Error('Invalid data when parsing OpReturn'));
       }
     });
-
-    it('obtain api version, return promise', async () => {
+  });
+  describe('Function: ApiInformation', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+    it('obtain api info, return promise', async () => {
       sinon.stub(axios, 'get').resolves({ data: { version: '1.1.0' } });
-      return expect(ApiService.getApiInformation()).resolves.not.toBeNull();
-
-      const result = await ApiService.createPeginTx(1, 'refundBtcAddress', 'recipientRsKAddress', 'sessionId', 'feeLevel', 'changeBtcAddress', userAddressList);
-      expect(result.coin).toEqual('0');
-      expect(result.outputs[2].op_return_data).toEqual('test1');
+      const info = await ApiService.getApiInformation();
+      return expect(info).not.toBeNull();
     });
 
     it('obtain api version, return promise', () => {
       sinon.stub(axios, 'get').resolves({ data: { version: '1.1.0' } });
-      setEnvironment(true, true);
       return ApiService.getApiInformation()
         .then((apiInfo: ApiInformation) => expect(apiInfo.version).toEqual('1.1.0'));
     });
