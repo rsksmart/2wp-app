@@ -65,7 +65,6 @@ export function areValidOutputs(
     response.valid = false;
     response.reason = 'Invalid data when parsing OpReturn';
   }
-  // console.log({ powPegOutputsCount, opReturnOutputsCount, changeOutputsCount });
   return response;
 }
 

@@ -2,7 +2,7 @@ import * as bitcoin from 'bitcoinjs-lib';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import {
   AppNetwork,
-  NormalizedInput, NormalizedTx, Tx,
+  NormalizedInput, NormalizedTx, SatoshiBig, Tx,
 } from '@/types';
 import * as constants from '@/store/constants';
 import ApiService from '@/services/ApiService';
@@ -37,9 +37,10 @@ export default abstract class TxBuilder {
   }): Promise<NormalizedTx> {
     const walletAddresses: WalletAddress[] = store.state.pegInTx.addressList as WalletAddress[];
     const userAddressList = walletAddresses.map((walletAddress) => walletAddress.address);
+    const feeAmountCalculated: SatoshiBig = store.getters[`pegInTx/${constants.PEGIN_TX_GET_SAFE_TX_FEE}`] as SatoshiBig;
     const normalizedTx = await ApiService.createPeginTx(
       amountToTransferInSatoshi, refundAddress, recipient,
-      sessionId, feeLevel, changeAddress, userAddressList,
+      sessionId, feeLevel, changeAddress, userAddressList, feeAmountCalculated,
     );
     const hasChange: boolean = normalizedTx.outputs[2] !== undefined;
     const changeAddr = hasChange && normalizedTx.outputs[2].address
