@@ -62,13 +62,14 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
             from: rootState.web3Session.account,
             to: state.pegoutConfiguration.bridgeContractAddress,
             value: state.amountToTransfer.toWeiString(),
+          }).on(constants.PEGOUT_TX_EVENT_TRANSACTION_HASH, (hash) => {
+            commit(constants.PEGOUT_TX_SET_TX_HASH, hash);
+            resolve();
           }),
           web3.eth.getGasPrice(),
         ])
           .then(([tx, gasPrice]) => {
-            commit(constants.PEGOUT_TX_SET_TX_HASH, tx.transactionHash);
             commit(constants.PEGOUT_TX_SET_EFECTIVE_FEE, new WeiBig(Number(gasPrice) * tx.gasUsed, 'wei'));
-            resolve();
           })
           .catch((e) => {
             console.warn(e);
