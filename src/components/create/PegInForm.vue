@@ -3,8 +3,12 @@
   max-width mx-6">
     <v-col class="exchange-form px-0">
       <v-row class="mx-0">
-        <v-col class="justify-center px-0">
-          <h1 class="justify-center text-left">Send {{environmentContext.getBtcTicker()}}.
+        <v-col cols="1" class="pa-0 d-flex align-center">
+          <v-img position="center left"
+                 src="@/assets/exchange/arrow.png" height="40" contain/>
+        </v-col>
+        <v-col class="px-0">
+         <h1 class="justify-center text-left">Send {{environmentContext.getBtcTicker()}}.
             Get {{environmentContext.getRbtcTicker()}}.</h1>
         </v-col>
       </v-row>

@@ -3,11 +3,15 @@
   max-width mx-6 mt-6">
   <v-col class="px-0">
     <v-row class="mx-0">
-      <v-col class="justify-center px-0">
-        <h1 class="justify-center text-left">Send {{environmentContext.getRbtcTicker()}}.
+        <v-col cols="1" class="pa-0 d-flex align-center">
+          <v-img position="center left"
+                 src="@/assets/exchange/arrow.png" height="40" contain/>
+        </v-col>
+        <v-col class="px-0">
+         <h1 class="justify-center text-left">Send {{environmentContext.getRbtcTicker()}}.
           Get {{environmentContext.getBtcTicker()}}.</h1>
-      </v-col>
-    </v-row>
+        </v-col>
+      </v-row>
     <v-row class="exchange-form">
       <v-col cols="8" lg="8" >
         <rsk-wallet-connection
@@ -15,7 +19,7 @@
         <v-divider color="#C4C4C4"/>
         <rbtc-input-amount/>
         <v-divider color="#C4C4C4"/>
-        <v-container class="form-step pb-0 pt-3 mb-3">
+        <div class="form-step pb-0 pt-3 mb-3">
           <v-row class="mx-0 align-start">
             <v-col cols="auto" class="pl-0">
               <div v-bind:class="[focus ?
@@ -54,7 +58,7 @@
               </v-row>
             </v-col>
           </v-row>
-        </v-container>
+        </div>
         <v-divider color="#C4C4C4"/>
         <rsk-fee-select/>
       </v-col>
