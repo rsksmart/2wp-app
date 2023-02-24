@@ -45,7 +45,7 @@
             </v-row>
           </v-col>
         </v-row>
-        <v-row v-if="isEnoughBalance" class="mx-0 mt-0 d-flex justify-start">
+        <v-row v-if="showErrorMessage" class="mx-0 mt-0 d-flex justify-start">
           <span class="message-error-fee">
             You don't have the balance for this fee + amount
           </span>
@@ -61,7 +61,7 @@ import { Action, Getter, State } from 'vuex-class';
 import * as constants from '@/store/constants';
 import { MiningSpeedFee } from '@/types/pegInTx';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
-import { PegOutTxState } from '@/types';
+import { PegOutTxState, SessionState } from '@/types';
 
 @Component({
 })
@@ -76,9 +76,13 @@ export default class RskFeeSelect extends Vue {
 
   fixedUSDDecimals = 2;
 
+  hasChange = false;
+
   transactionFees = ['Slow', 'Average', 'Fast'];
 
   @State('pegOutTx') pegOutTxState!: PegOutTxState;
+
+  @State('web3Session') web3SessionState!: SessionState;
 
   @Action(constants.PEGOUT_TX_SELECT_FEE_LEVEL, { namespace: 'pegOutTx' }) setSelectedFee !: (feeLevel: MiningSpeedFee) => void;
 
@@ -125,12 +129,15 @@ export default class RskFeeSelect extends Vue {
       );
   }
 
-  get enoughBalance(): boolean | string {
-    return this.isEnoughBalance ? this.isEnoughBalance : true;
+  get showErrorMessage() {
+    return !this.isEnoughBalance
+    && !this.web3SessionState.account
+    && this.hasChange;
   }
 
   @Emit()
   updateStore() {
+    this.hasChange = true;
     let selectedFee: MiningSpeedFee;
     switch (this.txFeeIndex) {
       case 0:

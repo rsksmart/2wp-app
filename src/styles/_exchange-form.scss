@@ -230,6 +230,24 @@
   font-size: 13px;
 }
 
+.derive-button {
+  .v-btn {
+    background-color: #fff !important;
+    border: 1px solid #00B520 !important;
+    .v-btn__content {
+      color: #00B520 !important;
+    }
+  }
+
+  .v-btn--disabled {
+    background-color: #D9D9D9 !important;
+    border: none !important;
+    .v-btn__content {
+      color: #fff !important;
+    }
+  }
+}
+
 .label-liquality {
   font-size: 14px !important;
 }
