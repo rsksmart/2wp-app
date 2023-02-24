@@ -7,7 +7,7 @@
       </v-col>
       <v-col class="pl-0">
         <p v-bind:class="{'boldie': focus}">
-          Connect your RSK wallet :
+          Connect your Rootstock wallet :
         </p>
         <v-row class="mx-0 mt-4">
           <template v-if="useWeb3Wallet && web3Address">
@@ -27,11 +27,6 @@
           </template>
           <template v-else>
             <v-col cols="7" class="wallet-label-container pl-0 pb-0">
-              <v-row class="mx-0 mb-4 d-flex justify-start">
-                <span class="label-title text-center">
-                  Type in your {{ address }} address
-                </span>
-              </v-row>
               <v-row class="blue-box input-box-outline mx-0 pa-0 pl-0" >
                 <v-text-field
                   v-model="address"
