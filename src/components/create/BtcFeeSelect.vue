@@ -45,7 +45,7 @@
             </v-row>
           </v-col>
         </v-row>
-        <v-row v-if="isEnoughBalance" class="mx-0 mt-0 d-flex justify-start">
+        <v-row v-if="showErrorMessage" class="mx-0 mt-0 d-flex justify-start">
           <span class="message-error-fee">
             You don't have the balance for this fee + amount
           </span>
@@ -63,11 +63,14 @@ import { Action, Getter, State } from 'vuex-class';
 import * as constants from '@/store/constants';
 import { MiningSpeedFee, PegInTxState } from '@/types/pegInTx';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
+import { SessionState } from '@/types';
 
 @Component({
 })
 export default class BtcFeeSelect extends Vue {
   @State('pegInTx') pegInTxState!: PegInTxState;
+
+  @State('web3Session') web3SessionState!: SessionState;
 
   @Action(constants.PEGIN_TX_SELECT_FEE_LEVEL, { namespace: 'pegInTx' }) setSelectedFee !: (feeLevel: MiningSpeedFee) => void;
 
@@ -76,6 +79,8 @@ export default class BtcFeeSelect extends Vue {
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
   focus = false;
+
+  hasChange = true;
 
   txFeeIndex = 1;
 
@@ -118,9 +123,16 @@ export default class BtcFeeSelect extends Vue {
       .amount.toUSDFromBTCString(this.pegInTxState.bitcoinPrice, this.fixedUSDDecimals);
   }
 
+  get showErrorMessage() {
+    return !this.isEnoughBalance
+    && !this.web3SessionState.account
+    && this.hasChange;
+  }
+
   @Emit()
   updateStore() {
     let selectedFee: MiningSpeedFee;
+    this.hasChange = true;
     switch (this.txFeeIndex) {
       case 0:
         selectedFee = constants.BITCOIN_SLOW_FEE_LEVEL;

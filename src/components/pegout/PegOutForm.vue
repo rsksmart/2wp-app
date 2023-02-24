@@ -47,11 +47,14 @@
                   <div class="divider"/>
                 </v-col>
                 <v-col cols="4" class="pb-0 px-0">
-                  <v-row class="mx-0 d-flex justify-center">
+                  <v-row class="derive-button mx-0 d-flex justify-center">
                     <v-btn :disabled="!isReadyToSign"
-                    rounded width="100%" height="38" color="#00B43C"
-                      @click="openAddressDialog">
-                      <span class="whiteish">Derive address</span>
+                      outlined rounded
+                      width="100%" height="38"
+                      @click="openAddressDialog" >
+                      <span>
+                        Derive address
+                      </span>
                     </v-btn>
                   </v-row>
                 </v-col>
@@ -201,7 +204,7 @@ export default class PegOutForm extends Vue {
 
   get isReadyToCreate(): boolean {
     return this.isEnoughBalance
-      && !!this.session.btcDerivedAddress;
+      && !!this.session.account;
   }
 
   get pegOutFormSummary(): NormalizedSummary {
