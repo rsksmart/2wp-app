@@ -30,7 +30,7 @@
           </v-col>
           <v-col class="pt-1">
             <v-row justify="end" class="mx-0 footer-icons">
-              <a href="https://twitter.com/rsksmart" target="_blank">
+              <a href="https://twitter.com/rootstock_io" target="_blank">
                 <v-icon>mdi-twitter</v-icon>
               </a>
               <a href="https://github.com/rsksmart/2wp-app" target="_blank">
@@ -59,21 +59,6 @@ export default class FooterRsk extends Vue {
 
   urlApi = `https://github.com/rsksmart/2wp-api/releases/tag/v${this.apiVersion}`;
 
-  socialNetworkButtons: {icon: string; link: string} [] = [
-    { icon: 'mdi-slack', link: 'http://developers.rsk.co/slack' },
-    { icon: 'mdi-twitter', link: 'https://twitter.com/rsksmart' },
-    { icon: 'mdi-youtube', link: 'https://www.youtube.com/rsksmart' },
-    { icon: 'mdi-facebook', link: 'https://www.facebook.com/RSKsmart/' },
-    { icon: 'fab fa-gitter', link: 'https://gitter.im/rsksmart' },
-    { icon: 'mdi-reddit', link: 'https://www.reddit.com/r/rootstock/' },
-    { icon: 'fab fa-telegram', link: 'https://t.me/rskofficialcommunity' },
-    { icon: 'fab fa-medium', link: 'https://medium.com/@RSKNews' },
-    { icon: 'fab fa-telegram', link: 'https://t.me/rsksmartcontract' },
-    { icon: 'fab fa-btc', link: 'https://bitcointalk.org/index.php?topic=5124334' },
-    { icon: 'mdi-instagram', link: 'https://www.instagram.com/rsksmart/' },
-  ];
-
-  // eslint-disable-next-line class-methods-use-this
   get obtainApiVersion() {
     ApiService.getApiInformation()
       .then((res: ApiInformation) => {

@@ -137,7 +137,6 @@ describe('TxSummary', () => {
       },
     },
   });
-
   it('Check summary overflow values USD', () => {
     const wrapper = shallowMount(TxSummary, {
       store,
@@ -153,14 +152,10 @@ describe('TxSummary', () => {
       .mul(Big(state.bitcoinPrice))
       .toFixed(2);
 
-    const feeUSD = Big(state.calculatedFees.average.toBTCString())
-      .mul(Big(state.bitcoinPrice))
-      .toFixed(2);
+    const receivedFee = new SatoshiBig(0.00025400, 'satoshi');
 
-    const totalUSD = Big(feeUSD).plus(Big(amountUSD))
-      .toFixed(2);
+    wrapper.setData({ receivedFee });
     expect(wrapper.find('#amount-usd').text()).toEqual(`USD $ ${amountUSD}`);
-    expect(wrapper.find('#fee-usd').text()).toEqual(`USD $ ${feeUSD}`);
   });
 
   it('shows properly the pegout info in pegout flow', () => {

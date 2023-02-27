@@ -102,6 +102,8 @@ export default class BtcInputAmount extends Vue {
 
   @Getter(constants.PEGIN_TX_SELECT_ACCOUNT_TYPE, { namespace: 'pegInTx' }) selectAccount !: (accountType: BtcAccount) => void;
 
+  @Getter(constants.PEGIN_TX_GET_ENOUGH_FEE_VALUE, { namespace: 'pegInTx' }) enoughBalanceSelectedFee !: boolean;
+
   get isBTCAmountValidNumberRegex() {
     return isBTCAmountValidRegex(this.bitcoinAmount);
   }
@@ -139,6 +141,9 @@ export default class BtcInputAmount extends Vue {
     if (feePlusAmount.gte(this.selectedAccountBalance)) {
       return 'You don\'t have the balance for this amount';
     }
+    if (!this.enoughBalanceSelectedFee) {
+      return 'The selected fee does not satisfy the minimum required by the network';
+    }
     if (this.safeAmount.gt(maxValue)) {
       return `The maximum accepted value is ${maxValue.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
     }
@@ -149,13 +154,13 @@ export default class BtcInputAmount extends Vue {
     let fee = new SatoshiBig('0', 'satoshi');
     switch (this.pegInTxState.selectedFee) {
       case constants.BITCOIN_AVERAGE_FEE_LEVEL:
-        fee = this.pegInTxState.calculatedFees.average;
+        fee = this.pegInTxState.calculatedFees.average.amount;
         break;
       case constants.BITCOIN_FAST_FEE_LEVEL:
-        fee = this.pegInTxState.calculatedFees.fast;
+        fee = this.pegInTxState.calculatedFees.fast.amount;
         break;
       case constants.BITCOIN_SLOW_FEE_LEVEL:
-        fee = this.pegInTxState.calculatedFees.slow;
+        fee = this.pegInTxState.calculatedFees.slow.amount;
         break;
       default:
         break;

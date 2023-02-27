@@ -3,7 +3,7 @@ name: 2wp-app deploy UI for MainNet
 on:
   push:
     tags:
-      - '**'
+      - '*-DISABLED'
 
 jobs:
   checkout-and-build:
