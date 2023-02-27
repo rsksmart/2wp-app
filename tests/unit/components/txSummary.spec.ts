@@ -6,7 +6,7 @@ import * as constants from '@/store/constants';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import sinon from 'sinon';
 import {
-  NormalizedSummary, TxStatusType, TxSummaryOrientation, WeiBig,
+  NormalizedSummary, PegoutStatus, SatoshiBig, TxStatusType, TxSummaryOrientation, WeiBig,
 } from '@/types';
 
 const localVue = createLocalVue();
@@ -18,6 +18,7 @@ describe('TxSummary', () => {
   };
   const btcDerivedAddress = 'userBtcDerivedAddress';
   const bitcoinPrice = 40537;
+  let summary:NormalizedSummary;
   beforeEach(() => {
     vuetify = new Vuetify();
     EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
@@ -35,7 +36,6 @@ describe('TxSummary', () => {
     btcDerivedAddress,
     bitcoinPrice,
   };
-  let summary:NormalizedSummary;
   const store = new Vuex.Store({
     modules: {
       web3Session: {
@@ -44,6 +44,12 @@ describe('TxSummary', () => {
       },
     },
   });
+
+  test.todo('Summary horizontal Peg In');
+  test.todo('Summary horizontal Peg Out');
+  test.todo('Summary Vertical Peg In');
+  test.todo('Summary Vertical Peg Out');
+
   it('Check summary overflow values USD', () => {
     summary = {
       amountFromString: '0.005',
@@ -66,5 +72,30 @@ describe('TxSummary', () => {
       },
     });
     expect(wrapper.find('#amount').text()).toEqual(`${0.005} TBTC`);
+  });
+  it('should show the estimated fee if the api does not return the value', () => {
+    summary = {
+      amountFromString: '0.005',
+      amountReceivedString: '0.005',
+      fee: undefined,
+      recipientAddress: 'selectedWalletAddress',
+      refundAddress: 'userRefundAddress',
+      selectedAccount: 'Legacy - 0.005 TBTC',
+      federationAddress: 'federationAddress',
+      estimatedFee: 3000,
+    };
+    const wrapper = shallowMount(TxSummaryFixed, {
+      store,
+      localVue,
+      vuetify,
+      propsData: {
+        type: TxStatusType.PEGOUT,
+        orientation: TxSummaryOrientation.HORIZONTAL,
+        summary,
+        initialExpand: true,
+      },
+    });
+    expect(wrapper.find('#summary-horizontal-value-fee').text()).toEqual(`${new SatoshiBig('3000', 'satoshi')} TRBTC`);
+    expect(wrapper.find('#summary-horizontal-title-fee').text()).toEqual('Estimated fee');
   });
 });

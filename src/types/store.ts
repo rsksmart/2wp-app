@@ -1,4 +1,5 @@
 import { PegStatus } from '@/store/constants';
+import SatoshiBig from '@/types/SatoshiBig';
 
 export interface RootState {
   [x: string]: any;
@@ -49,6 +50,7 @@ export interface PegoutStatusDataModel {
   status: PegoutStatus;
   btcRawTransaction: string;
   fees: number;
+  estimatedFee?: SatoshiBig;
 }
 
 export enum TxStatusType {
