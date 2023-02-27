@@ -141,8 +141,8 @@ export default class RbtcInputAmount extends Vue {
     const { balance } = this.web3SessionState;
     const fee = await this.calculateFeeByAmount(balance);
     const maxAmount = balance.minus(fee);
-    this.rbtcAmount = maxAmount.toRBTCString();
-    this.setRbtcAmount(balance);
+    this.rbtcAmount = maxAmount.toRBTCTrimmedString();
+    this.setRbtcAmount(maxAmount);
     this.calculateTxFee();
   }
 
