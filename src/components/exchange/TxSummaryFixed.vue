@@ -238,15 +238,19 @@
               </v-row>
 
               <!-- Fee -->
-              <v-row v-if="summary.fee !== 0" class="box-field mx-1">
+              <v-row class="box-field mx-1">
                 <v-col>
                   <v-row class="justify-end">
-                    <span class="status-subtitle">Fee</span>
+                    <span class="status-subtitle" id="summary-horizontal-title-fee">
+                      {{ summary.fee ? 'Fee' : 'Estimated fee' }}
+                    </span>
                   </v-row>
                   <v-row>
                     <v-col class="form-field-summary">
                       <v-row class="justify-end mx-0 mb-2">
-                        <span>{{ summary.fee }} {{ currencyFromTicker }}</span>
+                        <span id="summary-horizontal-value-fee">
+                          {{ safeFee}} {{ currencyFromTicker }}
+                        </span>
                       </v-row>
                     </v-col>
                   </v-row>
@@ -510,7 +514,7 @@ export default class TxSummaryFixed extends Vue {
 
   get total(): string {
     const amount = new Big(this.summary.amountFromString);
-    const fee = new Big(this.summary.fee);
+    const fee = new Big(this.safeFee);
     return amount.plus(fee).toString() || this.VALUE_INCOMPLETE_MESSAGE;
   }
 
@@ -580,6 +584,18 @@ export default class TxSummaryFixed extends Vue {
   get maxLengthForChunked(): number {
     return this.orientation === TxSummaryOrientation.VERTICAL
       ? 15 : 25;
+  }
+
+  get safeFee(): number {
+    let fee = this.summary.fee ?? 0;
+    if (
+      (!this.summary.fee || this.summary.fee !== 0)
+      && this.type === TxStatusType.PEGOUT
+      && this.summary.estimatedFee
+    ) {
+      fee = this.summary.estimatedFee;
+    }
+    return fee;
   }
 
   openExplorerTx() {
