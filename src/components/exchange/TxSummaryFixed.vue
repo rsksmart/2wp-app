@@ -222,7 +222,8 @@
               </v-row>
 
               <!-- will receive -->
-              <v-row v-if="summary.amountReceivedString !== '0' || isRejected" class="box-field mx-1">
+              <v-row v-if="summary.amountReceivedString !== '0' || isRejected"
+                class="box-field mx-1">
                 <v-col>
                   <v-row class="justify-end">
                     <span class="status-subtitle">Will receive</span>

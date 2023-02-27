@@ -56,11 +56,18 @@ export default class TxPegout extends Vue {
 
   @Getter(constants.STATUS_IS_REJECTED, { namespace: 'status' }) isRejected!: boolean;
 
+  @Getter(constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE, { namespace: 'pegOutTx' }) estimatedBtcToReceive !: SatoshiBig;
+
+  @Getter(constants.STATUS_GET_ESTIMATED_FEE, { namespace: 'status' }) estimatedFee!: any;
+
   get txPegoutSummary(): NormalizedSummary {
     const status = this.txStatus.txDetails as PegoutStatusDataModel;
+    const valueRecieve = status.valueInSatoshisToBeReceived
+      ? status.valueInSatoshisToBeReceived
+      : this.estimatedBtcToReceive;
     return {
       amountFromString: new SatoshiBig(status.valueRequestedInSatoshis, 'satoshi').toBTCTrimmedString(),
-      amountReceivedString: new SatoshiBig(status.valueInSatoshisToBeReceived, 'satoshi').toBTCTrimmedString(),
+      amountReceivedString: new SatoshiBig(valueRecieve, 'satoshi').toBTCTrimmedString(),
       fee: status.feeInSatoshisToBePaid || 0,
       recipientAddress: status.btcRecipientAddress,
       senderAddress: status.rskSenderAddress,
