@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NormalizedInput, NormalizedOutput } from '@/types';
 import ApiService from '@/services/ApiService';
 import axios, { AxiosResponse } from 'axios';
@@ -49,7 +50,6 @@ function getNormalizedTx(): Promise<AxiosResponse> {
   });
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function setEnvironment(isValidOpReturn: boolean, isValidPowPegAddress: boolean) {
   const defaultEnvironmentVariables = {
     vueAppCoin: constants.BTC_NETWORK_TESTNET,

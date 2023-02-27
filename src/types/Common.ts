@@ -55,9 +55,9 @@ export interface FeeAmountDataResponse {
 }
 
 export interface FeeAmountData {
-  slow: SatoshiBig;
-  average: SatoshiBig;
-  fast: SatoshiBig;
+  slow: { amount: SatoshiBig, enoughBalance: boolean };
+  average: { amount: SatoshiBig, enoughBalance: boolean };
+  fast: { amount: SatoshiBig, enoughBalance: boolean };
 }
 
 export interface TxData {

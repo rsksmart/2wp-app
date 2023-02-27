@@ -32,20 +32,20 @@
       </v-row>
       <v-row class="mx-0">
         <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
-          <v-btn rounded outlined color="#00B520" width="110" @click="back"
+          <v-btn rounded outlined color="#000000" width="110" @click="back"
                  :disabled="pegInFormState.matches(['loading', 'goingHome'])">
             <span>Back</span>
           </v-btn>
         </v-col>
         <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0">
-          <v-btn v-if="!pegInFormState.matches(['loading'])" rounded color="#00B43C"
+          <v-btn v-if="!pegInFormState.matches(['loading'])" rounded color="#000000"
                  @click="sendTx"
                  :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])">
             <span class="whiteish">Continue</span>
             <v-icon class="ml-2" color="#fff">mdi-send-outline</v-icon>
           </v-btn>
           <v-progress-circular v-if="pegInFormState.matches(['loading'])"
-                               indeterminate color="#00B520" class="mr-10"/>
+                               indeterminate color="#000000" class="mr-10"/>
         </v-col>
       </v-row>
       <v-row>
@@ -110,6 +110,8 @@ export default class PegInForm extends Vue {
 
   @Getter(constants.PEGIN_TX_GET_ACCOUNT_BALANCE_TEXT, { namespace: 'pegInTx' }) accountBalanceText!: string;
 
+  @Getter(constants.PEGIN_TX_GET_ENOUGH_FEE_VALUE, { namespace: 'pegInTx' }) enoughBalanceSelectedFee !: boolean;
+
   @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: any;
 
   backHome() {
@@ -121,13 +123,13 @@ export default class PegInForm extends Vue {
     let fee = new SatoshiBig('0', 'satoshi');
     switch (this.pegInTxState.selectedFee) {
       case constants.BITCOIN_AVERAGE_FEE_LEVEL:
-        fee = this.pegInTxState.calculatedFees.average;
+        fee = this.pegInTxState.calculatedFees.average.amount;
         break;
       case constants.BITCOIN_FAST_FEE_LEVEL:
-        fee = this.pegInTxState.calculatedFees.fast;
+        fee = this.pegInTxState.calculatedFees.fast.amount;
         break;
       case constants.BITCOIN_SLOW_FEE_LEVEL:
-        fee = this.pegInTxState.calculatedFees.slow;
+        fee = this.pegInTxState.calculatedFees.slow.amount;
         break;
       default:
         break;
@@ -139,6 +141,7 @@ export default class PegInForm extends Vue {
     return this.pegInTxState.isValidAmountToTransfer
       && !this.pegInTxState.loadingFee
       && this.rskAddressState !== 'invalid'
+      && this.enoughBalanceSelectedFee
       && this.pegInTxState.rskAddressSelected !== '';
   }
 

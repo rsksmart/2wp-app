@@ -115,13 +115,13 @@ export const getters: GetterTree<PegInTxState, RootState> = {
         } else {
           switch (state.selectedFee) {
             case constants.BITCOIN_SLOW_FEE_LEVEL:
-              fee = state.calculatedFees.slow;
+              fee = state.calculatedFees.slow.amount;
               break;
             case constants.BITCOIN_FAST_FEE_LEVEL:
-              fee = state.calculatedFees.fast;
+              fee = state.calculatedFees.fast.amount;
               break;
             default:
-              fee = state.calculatedFees.average;
+              fee = state.calculatedFees.average.amount;
               break;
           }
         }
@@ -207,5 +207,20 @@ export const getters: GetterTree<PegInTxState, RootState> = {
         break;
     }
     return text;
+  },
+  [constants.PEGIN_TX_GET_ENOUGH_FEE_VALUE]: (state: PegInTxState): boolean => {
+    let enoughBalance = false;
+    switch (state.selectedFee) {
+      case constants.BITCOIN_SLOW_FEE_LEVEL:
+        enoughBalance = state.calculatedFees.slow.enoughBalance;
+        break;
+      case constants.BITCOIN_FAST_FEE_LEVEL:
+        enoughBalance = state.calculatedFees.fast.enoughBalance;
+        break;
+      default:
+        enoughBalance = state.calculatedFees.average.enoughBalance;
+        break;
+    }
+    return enoughBalance;
   },
 };
