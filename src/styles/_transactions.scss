@@ -5,7 +5,7 @@
     line-height: 45px;
     display: flex;
     align-items: center;
-    color: #00B520;
+    color: #000000;
   }
 
   h2 {
@@ -14,7 +14,7 @@
     line-height: 25px;
     display: flex;
     align-items: center;
-    color: #10B848;
+    color: #000000;
   }
 
   h3 {
@@ -23,7 +23,7 @@
     line-height: 17px;
     display: flex;
     align-items: center;
-    color: #00B520;
+    color: #000000;
   }
 
   h4 {
@@ -78,7 +78,7 @@
     }
   }
   .expand-btn-active {
-    background-color: #00B520 !important;
+    background-color: #000000 !important;
     border-color: transparent !important;
     .content {
       font-weight: 750;
@@ -88,11 +88,11 @@
   }
   .expand-btn-inactive {
     background-color: #FFFFFF !important;
-    border-color: #00B520 !important;
+    border-color: #000000 !important;
     .content {
       font-weight: 750;
       font-size: 15px;
-      color: #00B520 !important;
+      color: #000000 !important;
     }
   }
 }

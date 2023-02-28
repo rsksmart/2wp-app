@@ -88,30 +88,30 @@ export default class BtcFeeSelect extends Vue {
   }
 
   get slowFee() {
-    return this.pegInTxState.calculatedFees.slow.toBTCString();
+    return this.pegInTxState.calculatedFees.slow.amount.toBTCString();
   }
 
   get slowFeeUSD() {
     return this.pegInTxState.calculatedFees.slow
-      .toUSDFromBTCString(this.pegInTxState.bitcoinPrice, this.fixedUSDDecimals);
+      .amount.toUSDFromBTCString(this.pegInTxState.bitcoinPrice, this.fixedUSDDecimals);
   }
 
   get averageFee() {
-    return this.pegInTxState.calculatedFees.average.toBTCString();
+    return this.pegInTxState.calculatedFees.average.amount.toBTCString();
   }
 
   get averageFeeUSD() {
     return this.pegInTxState.calculatedFees.average
-      .toUSDFromBTCString(this.pegInTxState.bitcoinPrice, this.fixedUSDDecimals);
+      .amount.toUSDFromBTCString(this.pegInTxState.bitcoinPrice, this.fixedUSDDecimals);
   }
 
   get fastFee() {
-    return this.pegInTxState.calculatedFees.fast.toBTCString();
+    return this.pegInTxState.calculatedFees.fast.amount.toBTCString();
   }
 
   get fastFeeUSD() {
     return this.pegInTxState.calculatedFees.fast
-      .toUSDFromBTCString(this.pegInTxState.bitcoinPrice, this.fixedUSDDecimals);
+      .amount.toUSDFromBTCString(this.pegInTxState.bitcoinPrice, this.fixedUSDDecimals);
   }
 
   get enoughBalance(): boolean | string {

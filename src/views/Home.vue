@@ -5,6 +5,13 @@
       <v-row justify="center" class="mx-0">
         <v-col>
           <v-row class="mx-0 mb-5 d-flex justify-center">
+            <h1 class="title-landing">2-Way Peg App</h1>
+          </v-row>
+        </v-col>
+      </v-row>
+      <v-row justify="center" class="mx-0">
+        <v-col>
+          <v-row class="mx-0 mb-5 d-flex justify-center">
             <h2>Bridging {{environmentContext.getBtcTicker()}} and
             {{environmentContext.getRbtcTicker()}}</h2>
           </v-row>
@@ -68,7 +75,7 @@
             <v-row class="mx-0 mt-10 d-flex justify-center">
               <p>Or check the status of your transaction</p>
             </v-row>
-            <v-row class="d-flex justify-center pt-4">
+                        <v-row class="d-flex justify-center pt-4">
               <v-btn @click="toPegInStatus" outlined
                      v-bind:class="[ this.btnWalletClass, STATUS ? 'selected' : '' ]"
                      :disabled="!isAllowedBrowser">
