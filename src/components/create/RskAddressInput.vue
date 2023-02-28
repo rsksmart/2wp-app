@@ -68,7 +68,7 @@
                 <span class="text-center">Choose address from a wallet</span>
               </v-row>
               <v-row class="mx-0 d-flex justify-center">
-                <v-btn outlined rounded color="#00B520" width="100%" height="38"
+                <v-btn outlined rounded color="#000000" width="100%" height="38"
                   class="select-wallet-button"
                   @click="selectRLoginWallet" >
                   <span class="greenish">Connect wallet</span>

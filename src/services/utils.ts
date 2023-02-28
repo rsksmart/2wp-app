@@ -1,10 +1,10 @@
 import * as Bowser from 'bowser';
 import * as constants from '@/store/constants';
-import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import {
   AppNetwork, TxStatusType, TxStatusMessage, WalletAddress, RequestBalance, PegoutStatus,
 } from '@/types';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 export function getAccountType(address: string, network: AppNetwork): string {
   const [legacyTestReg, segwitTestReg, nativeTestReg] = network === constants.BTC_NETWORK_MAINNET
@@ -65,15 +65,8 @@ export class Machine<States extends string> {
 }
 
 export function getMainLogo() {
-  switch (EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin) {
-    case constants.BTC_NETWORK_TESTNET:
-      // eslint-disable-next-line global-require
-      return require('@/assets/2wp-testnet.png');
-    case constants.BTC_NETWORK_MAINNET:
-    default:
-      // eslint-disable-next-line global-require
-      return require('@/assets/2wp-mainnet.png');
-  }
+  // eslint-disable-next-line global-require
+  return require('@/assets/logo-rootstock-black.png');
 }
 
 export function getTime(totalMinutes: number): string {

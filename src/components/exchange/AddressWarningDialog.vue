@@ -18,12 +18,12 @@
         <v-row class="mx-0 mb-8 mt-3" justify="space-around">
           <v-col class="d-flex justify-center">
             <v-btn width="100" height="40" dense
-                   outlined rounded color="#00B520" @click="closeDialog">
+                   outlined rounded color="#000000" @click="closeDialog">
               <span class="greenish">cancel</span>
             </v-btn>
           </v-col>
           <v-col class="d-flex justify-center">
-            <v-btn width="100" height="40" dense outlined rounded color="#00B520" @click="send">
+            <v-btn width="100" height="40" dense outlined rounded color="#000000" @click="send">
               <span class="greenish">continue</span>
             </v-btn>
           </v-col>
