@@ -249,7 +249,7 @@
                     <v-col class="form-field-summary">
                       <v-row class="justify-end mx-0 mb-2">
                         <span id="summary-horizontal-value-fee">
-                          {{ safeFee}} {{ currencyFromTicker }}
+                          {{ safeFeeString}} {{ environmentContext.getBtcTicker() }}
                         </span>
                       </v-row>
                     </v-col>
@@ -429,9 +429,7 @@
 </template>
 
 <script lang="ts">
-import {
-  Component, Emit, Prop, Vue,
-} from 'vue-property-decorator';
+import { Component, Emit, Prop, Vue, } from 'vue-property-decorator';
 import {
   NormalizedSummary,
   SatoshiBig,
@@ -584,6 +582,10 @@ export default class TxSummaryFixed extends Vue {
   get maxLengthForChunked(): number {
     return this.orientation === TxSummaryOrientation.VERTICAL
       ? 15 : 25;
+  }
+
+  get safeFeeString(): string {
+    return new SatoshiBig(this.safeFee, 'satoshi').toBTCTrimmedString();
   }
 
   get safeFee(): number {
