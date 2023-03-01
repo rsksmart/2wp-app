@@ -1,6 +1,6 @@
 import { MutationTree } from 'vuex';
 import {
-  PegoutStatusDataModel, SatoshiBig, TxStatus, TxStatusType,
+  SatoshiBig, TxStatus, TxStatusType,
 } from '@/types';
 import * as constants from '@/store/constants';
 
@@ -16,8 +16,6 @@ export const mutations: MutationTree<TxStatus> = {
     state.type = TxStatusType.UNSET_STATUS;
   },
   [constants.STATUS_SET_BTC_ESTIMATED_FEE]: (state:TxStatus, estimatedFee:SatoshiBig) => {
-    if (state.txDetails) {
-      (state.txDetails as PegoutStatusDataModel).estimatedFee = estimatedFee;
-    }
+    state.pegOutEstimatedFee = estimatedFee;
   },
 };
