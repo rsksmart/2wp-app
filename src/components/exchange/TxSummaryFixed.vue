@@ -430,7 +430,10 @@
 
 <script lang="ts">
 import {
-  Component, Emit, Prop, Vue,
+  Component,
+  Emit,
+  Prop,
+  Vue,
 } from 'vue-property-decorator';
 import {
   NormalizedSummary,
