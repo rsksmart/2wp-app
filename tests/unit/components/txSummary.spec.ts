@@ -95,7 +95,8 @@ describe('TxSummary', () => {
         initialExpand: true,
       },
     });
-    expect(wrapper.find('#summary-horizontal-value-fee').text()).toEqual(`${new SatoshiBig('3000', 'satoshi')} TRBTC`);
+    expect(wrapper.find('#summary-horizontal-value-fee').text()).toEqual(`${new SatoshiBig('3000', 'satoshi').toBTCTrimmedString()
+    } TBTC`);
     expect(wrapper.find('#summary-horizontal-title-fee').text()).toEqual('Estimated fee');
   });
   it('should show the fee if the api return the value', () => {
@@ -120,7 +121,32 @@ describe('TxSummary', () => {
         initialExpand: true,
       },
     });
-    expect(wrapper.find('#summary-horizontal-value-fee').text()).toEqual(`${new SatoshiBig('2000', 'satoshi')} TRBTC`);
+    expect(wrapper.find('#summary-horizontal-value-fee').text()).toEqual(`${new SatoshiBig('2000', 'satoshi').toBTCTrimmedString()} TBTC`);
+    expect(wrapper.find('#summary-horizontal-title-fee').text()).toEqual('Fee');
+  });
+  it('should show the fee in BTC if it was a pegIn', () => {
+    summary = {
+      amountFromString: '0.005',
+      amountReceivedString: '0.005',
+      fee: 2000,
+      recipientAddress: 'selectedWalletAddress',
+      refundAddress: 'userRefundAddress',
+      selectedAccount: 'Legacy - 0.005 TBTC',
+      federationAddress: 'federationAddress',
+      estimatedFee: 3000,
+    };
+    const wrapper = shallowMount(TxSummaryFixed, {
+      store,
+      localVue,
+      vuetify,
+      propsData: {
+        type: TxStatusType.PEGIN,
+        orientation: TxSummaryOrientation.HORIZONTAL,
+        summary,
+        initialExpand: true,
+      },
+    });
+    expect(wrapper.find('#summary-horizontal-value-fee').text()).toEqual(`${new SatoshiBig('2000', 'satoshi').toBTCTrimmedString()} TBTC`);
     expect(wrapper.find('#summary-horizontal-title-fee').text()).toEqual('Fee');
   });
 });
