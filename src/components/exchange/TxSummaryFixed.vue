@@ -589,7 +589,7 @@ export default class TxSummaryFixed extends Vue {
   get safeFee(): number {
     let fee = this.summary.fee ?? 0;
     if (
-      (!this.summary.fee || this.summary.fee !== 0)
+      (!this.summary.fee || this.summary.fee === 0)
       && this.type === TxStatusType.PEGOUT
       && this.summary.estimatedFee
     ) {

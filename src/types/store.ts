@@ -50,7 +50,7 @@ export interface PegoutStatusDataModel {
   status: PegoutStatus;
   btcRawTransaction: string;
   fees: number;
-  estimatedFee?: SatoshiBig;
+  estimatedFee: SatoshiBig;
 }
 
 export enum TxStatusType {
@@ -64,4 +64,5 @@ export enum TxStatusType {
 export interface TxStatus {
   txDetails?: PeginStatus | PegoutStatusDataModel;
   type: TxStatusType;
+  pegOutEstimatedFee: SatoshiBig;
 }
