@@ -33,17 +33,17 @@ export default class App extends Vue {
     const envVariables = EnvironmentAccessorService.getEnvironmentVariables();
     let response = '';
     response = `
-    style-src 'self' 'nonce-dQw4w9WgXcQ';
+    style-src 'unsafe-inline' 'self';
     img-src data: https:;
-    connect-src 'self' ${envVariables.vueAppApiBaseUrl} https://api.coingecko.com ;
+    connect-src 'self' ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://api.coingecko.com ;
     object-src 'none';
-    frame-src 'none';
+    frame-src https://connect.trezor.io;
+    worker-src 'none';
     `;
     return response;
   }
 
   appendCSP():void {
-    console.log('called second');
     const metaTag: HTMLMetaElement = document.createElement<'meta'>('meta');
     metaTag.httpEquiv = 'Content-Security-policy';
     metaTag.content = this.contentSecurityPolicy;
