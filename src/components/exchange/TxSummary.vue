@@ -70,7 +70,7 @@
               <v-row class="box-field mx-1">
                 <v-col>
                   <v-row>
-                    <span class="status-subtitle">Sent</span>
+                    <span class="status-subtitle">Sent xxx</span>
                   </v-row>
                   <v-row>
                     <v-col class="form-field-summary">
@@ -459,7 +459,7 @@
               v-bind:class="{
                 'grayish': croppedBtcDestinationAddress === VALUE_INCOMPLETE_MESSAGE
                 }">
-              {{ croppedBtcDestinationAddress }}
+              {{ croppedBtcDestinationAddress ? croppedBtcDestinationAddress : '-' }}
             </p>
           </v-container>
         </v-container>

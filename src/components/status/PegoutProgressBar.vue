@@ -1,5 +1,14 @@
 <template>
   <v-container fluid class="pa-0 mb-1 mt-0 max-width">
+    <v-row v-if="showRejectedMsg" justify="center">
+      <v-col class="d-flex justify-center mb-5 pa-0" justify="center" cols="12">
+        <div class="text-center">
+          <p class="title-reject">Your Peg-out was rejected.</p>
+          <br/>
+          <p class="title-reject">but don't worry your funds were reimbursed.</p>
+        </div>
+      </v-col>
+    </v-row>
     <v-row justify="center" class="mt-6">
       <v-col class="ma-0 pa-0" cols="7">
         <v-row class="mx-0 d-flex justify-center progress-bar">
@@ -100,16 +109,13 @@ export default class PegoutProgressBar extends Vue {
     rbtc: this.borderColor.gray,
   };
 
-  percentageTest = PegoutStatus.WAITING_FOR_SIGNATURE;
-
   @State('status') txStatus!: TxStatus;
 
   @Getter(constants.STATUS_IS_REJECTED, { namespace: 'status' }) isRejected!: boolean;
 
   get percentage() {
     let percentage;
-    // switch (this.txStatus.txDetails?.status) {
-    switch (this.percentageTest) {
+    switch (this.currentStatus) {
       case PegoutStatus.REJECTED:
         this.currentBarColor = this.colors.yellow;
         this.bordersStyle.rbtc = this.borderColor.yellow;
@@ -165,6 +171,14 @@ export default class PegoutProgressBar extends Vue {
         break;
     }
     return percentage;
+  }
+
+  get currentStatus() {
+    return this.txStatus.txDetails?.status;
+  }
+
+  get showRejectedMsg() {
+    return this.currentStatus === PegoutStatus.REJECTED;
   }
 }
 </script>

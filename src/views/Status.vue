@@ -37,13 +37,16 @@
       </v-container>
       <v-container fluid class="transactions px-0">
         <tx-pegin
-          v-if="!activeMessage.isRejected && isPegIn && !activeMessage.error"
+          v-if="!activeMessage.isRejected
+            && isPegIn &&
+            !activeMessage.error"
           :txId ="txId"
           />
         <tx-pegout
-          v-if="!activeMessage.isRejected
-            && isPegOut
-            && !activeMessage.error"
+          v-if="((!activeMessage.isRejected
+            && !activeMessage.error)
+            ||isRejected)
+            && isPegOut"
           :txId ="txId"
         />
         <v-row justify="center" class="mx-0 mt-5">
@@ -131,7 +134,14 @@ export default class Status extends Vue {
   @Getter(constants.STATUS_GET_ACTIVE_MESSAGE, { namespace: 'status' }) activeMessage !: TxStatusMessage;
 
   get showStatus() {
-    return !this.loading && !this.activeMessage.error && !!this.activeMessage.statusMessage;
+    return !this.loading
+      && !this.activeMessage.error
+      && !this.isRejected
+      && !!this.activeMessage.statusMessage;
+  }
+
+  get isRejected() {
+    return this.status.txDetails?.status === 'REJECTED';
   }
 
   get isPegIn(): boolean {

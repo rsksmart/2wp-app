@@ -6,6 +6,7 @@
            :summary="txPegoutSummary"
            :initialExpand="true"
            :type="typeSummary"
+           :txId="txId"
            :orientation="orientationSummary"/>
       </v-row>
   </v-col>
