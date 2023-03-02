@@ -28,7 +28,30 @@ import { EnvironmentAccessorService } from '@/services/enviroment-accessor.servi
 export default class App extends Vue {
   scriptTag?: any;
 
-  mounted() {
+  // eslint-disable-next-line class-methods-use-this
+  get contentSecurityPolicy(): string {
+    const envVariables = EnvironmentAccessorService.getEnvironmentVariables();
+    let response = '';
+    response = `
+    style-src 'self' 'nonce-dQw4w9WgXcQ';
+    img-src data: https:;
+    connect-src 'self' ${envVariables.vueAppApiBaseUrl} https://api.coingecko.com ;
+    object-src 'none';
+    frame-src 'none';
+    `;
+    return response;
+  }
+
+  appendCSP():void {
+    console.log('called second');
+    const metaTag: HTMLMetaElement = document.createElement<'meta'>('meta');
+    metaTag.httpEquiv = 'Content-Security-policy';
+    metaTag.content = this.contentSecurityPolicy;
+    document.head.appendChild(metaTag);
+  }
+
+  created() {
+    this.appendCSP();
     const hotjarID = EnvironmentAccessorService.getEnvironmentVariables().vueAppHotjarId;
     this.scriptTag = document.createElement('script');
     this.scriptTag.type = 'text/javascript';
@@ -39,8 +62,7 @@ export default class App extends Vue {
       + 'r=o.createElement("script");r.async=1;'
       + 'r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;'
       + 'a.appendChild(r);'
-    + '})(window,document,"https://static.hotjar.com/c/hotjar-",".js?sv=");';
-
+      + '})(window,document,"https://static.hotjar.com/c/hotjar-",".js?sv=");';
     document.body.appendChild(this.scriptTag);
   }
 }

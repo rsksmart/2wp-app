@@ -23,7 +23,7 @@
               <a href="https://www.rsk.co/terms-conditions" target="_blank">
                 Terms & Conditions
               </a>
-              <a :href="urlApi" target="_blank">Api Version: {{obtainApiVersion}}</a>
+              <a :href="urlApi" target="_blank">Api Version: {{apiVersion}}</a>
               <a :href="url" target="_blank">App Version: {{$store.getters.appVersion}}</a>
               <a v-if="false">Documentation</a>
             </v-row>
@@ -59,13 +59,18 @@ export default class FooterRsk extends Vue {
 
   urlApi = `https://github.com/rsksmart/2wp-api/releases/tag/v${this.apiVersion}`;
 
-  get obtainApiVersion() {
+  obtainApiVersion() {
+    console.log('called first');
     ApiService.getApiInformation()
       .then((res: ApiInformation) => {
         this.apiVersion = res.version;
         this.urlApi = `https://github.com/rsksmart/2wp-api/releases/tag/v${this.apiVersion}`;
       });
     return this.apiVersion;
+  }
+
+  created() {
+    this.obtainApiVersion();
   }
 }
 </script>
