@@ -60,7 +60,6 @@ export default class FooterRsk extends Vue {
   urlApi = `https://github.com/rsksmart/2wp-api/releases/tag/v${this.apiVersion}`;
 
   obtainApiVersion() {
-    console.log('called first');
     ApiService.getApiInformation()
       .then((res: ApiInformation) => {
         this.apiVersion = res.version;
