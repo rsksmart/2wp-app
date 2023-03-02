@@ -183,7 +183,7 @@
               </v-row>
 
               <!-- Recipient -->
-              <v-row v-if="summary.recipientAddress" class="box-field mx-1">
+              <v-row class="box-field mx-1">
                 <v-col>
                   <v-row class="justify-end">
                     <span class="status-subtitle">Recipient</span>
@@ -204,13 +204,13 @@
                   <v-row>
                     <v-col class="form-field-summary">
                       <v-row class="justify-end">
-                        <v-col cols="11"
+                        <v-col cols="11" v-bind:class="{'text-right': recipientAddress === '-'}"
                                class="col-address-button d-flex flex-column">
                             <span class="breakable-address status-text-ellipsis">
-                              {{recipientAddress}}
+                              {{ recipientAddress }}
                             </span>
                         </v-col>
-                        <v-col cols="1" class="col-address-button">
+                        <v-col v-if="recipientAddress !== '-'" cols="1" class="col-address-button">
                           <v-btn @click="openExplorerToAddress" icon color="#C4C4C4" x-small>
                             <v-icon>mdi-open-in-new</v-icon>
                           </v-btn>
@@ -222,7 +222,7 @@
               </v-row>
 
               <!-- will receive -->
-              <v-row v-if="summary.amountReceivedString !== '0'" class="box-field mx-1">
+              <v-row class="box-field mx-1">
                 <v-col>
                   <v-row class="justify-end">
                     <span class="status-subtitle">Will receive</span>
@@ -230,7 +230,7 @@
                   <v-row>
                     <v-col class="form-field-summary">
                       <v-row class="justify-end mx-0 mb-2">
-                        <span>{{ amountToReceive }} {{ currencyToTicker }}</span>
+                        <span>{{ amountToReceive }} </span>
                       </v-row>
                     </v-col>
                   </v-row>
@@ -248,9 +248,8 @@
                   <v-row>
                     <v-col class="form-field-summary">
                       <v-row class="justify-end mx-0 mb-2">
-                        <span id="summary-horizontal-value-fee">
-                          {{ safeFeeString}} {{ environmentContext.getBtcTicker() }}
-                        </span>
+                        <span>{{ safeFeeString === 0 ? '-'
+                          : safeFeeString + ' ' + currencyFromTicker }}</span>
                       </v-row>
                     </v-col>
                   </v-row>
@@ -509,7 +508,8 @@ export default class TxSummaryFixed extends Vue {
   }
 
   get amountToReceive(): string {
-    return this.summary.amountReceivedString || this.VALUE_INCOMPLETE_MESSAGE;
+    return this.summary.amountReceivedString === '0' ? '-'
+      : `${this.summary.amountReceivedString} ${this.currencyToTicker}`;
   }
 
   get total(): string {
@@ -561,7 +561,7 @@ export default class TxSummaryFixed extends Vue {
 
   get recipientAddress():string {
     return (!this.summary.recipientAddress || this.summary.recipientAddress === '0x')
-      ? this.VALUE_INCOMPLETE_MESSAGE
+      ? '-'
       : getChunkedValue(this.summary.recipientAddress, this.maxLengthForChunked);
   }
 
