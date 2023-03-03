@@ -7,6 +7,7 @@
            :initialExpand="true"
            :type="typeSummary"
            :txId="txId"
+           :isRejected="isRejectedPegout"
            :orientation="orientationSummary"/>
       </v-row>
   </v-col>
@@ -22,6 +23,7 @@ import {
   TxStatus,
   SatoshiBig,
   TxStatusType,
+  PegoutStatus,
   TxSummaryOrientation,
   WeiBig,
   PegoutStatusDataModel, NormalizedSummary,
@@ -65,6 +67,10 @@ export default class TxPegout extends Vue {
       txId: status.rskTxHash,
       estimatedFee: Number(this.txStatus.pegOutEstimatedFee.toSatoshiString()),
     };
+  }
+
+  get isRejectedPegout() {
+    return this.txStatus.txDetails?.status === PegoutStatus.REJECTED;
   }
 
   setSummaryData() {
