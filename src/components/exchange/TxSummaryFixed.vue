@@ -222,7 +222,7 @@
               </v-row>
 
               <!-- will receive -->
-              <v-row class="box-field mx-1">
+              <v-row v-if="summary.amountReceivedString !== '0' || isRejected" class="box-field mx-1">
                 <v-col>
                   <v-row class="justify-end">
                     <span class="status-subtitle">Will receive</span>
@@ -238,7 +238,7 @@
               </v-row>
 
               <!-- Fee -->
-              <v-row class="box-field mx-1">
+              <v-row v-if="summary.fee !== 0 || isRejected" class="box-field mx-1">
                 <v-col>
                   <v-row class="justify-end">
                     <span class="status-subtitle" id="summary-horizontal-title-fee">
@@ -453,6 +453,8 @@ export default class TxSummaryFixed extends Vue {
   @Prop() summary!: NormalizedSummary;
 
   @Prop() type!: TxStatusType;
+
+  @Prop() isRejected !: boolean;
 
   @Prop() orientation !: TxSummaryOrientation;
 
