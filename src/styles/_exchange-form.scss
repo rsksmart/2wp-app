@@ -66,12 +66,12 @@
 
   .input-box-outline {
     padding: 0 !important;
-    background: #ECF7FC;
-    border: 1px solid #008CFF;
+    background: #FFFFFF;
+    border: 1px solid #D9D9D9;
     box-sizing: border-box;
     border-radius: 5px;
     .flat {
-      background: #ECF7FC;
+      background: #FFFFFF;
       box-sizing: border-box;
     }
     height: 37px;
@@ -84,7 +84,7 @@
       margin: 0 !important;
       height: 33px !important;
       min-height: 35px !important;
-      background: #ECF7FC !important;
+      background: #FFFFFF !important;
     }
 
     input::-webkit-inner-spin-button {
@@ -232,6 +232,7 @@
     .v-input__slot {
       padding: 0 5px !important;
     }
+    $text-field-affix-color: black;
   }
 }
 

@@ -30,23 +30,19 @@
                 Recipient address:
               </p>
               <v-row class="ma-0 mt-2 pa-0">
-                <v-col cols="7" class="p-0">
-                  <v-row class="blue-box input-box-outline m-0 pa-0 pl-0" >
-                    <v-text-field
-                      v-model="session.btcDerivedAddress"
-                      class="wallet-address-input"
-                      solo dense
-                      disabled
-                      flat
-                      hide-details
-                      @focus="focus = true"
-                      @blur="focus = false"/>
-                  </v-row>
+                <v-col v-if="session.btcDerivedAddress" cols="7" class="p-0">
+                  <div class="container">
+                    <v-row class="mx-0">
+                      <span>Address derived</span>
+                    </v-row>
+                    <v-row class="mx-0 d-flex align-center">
+                      <p class="mb-0 account">
+                        {{session.btcDerivedAddress}}
+                      </p>
+                    </v-row>
+                  </div>
                 </v-col>
-                <v-col cols="1" class="d-flex justify-center pb-0">
-                  <div class="divider"/>
-                </v-col>
-                <v-col cols="4" class="pb-0 px-0">
+                <v-col v-else cols="4" class="pb-0 px-0">
                   <v-row class="derive-button mx-0 d-flex justify-center">
                     <v-btn :disabled="!isReadyToSign"
                       outlined rounded
@@ -62,8 +58,6 @@
             </v-col>
           </v-row>
         </div>
-        <v-divider color="#C4C4C4"/>
-        <rsk-fee-select/>
       </v-col>
       <v-col cols="4" lg="4">
         <tx-summary-fixed
@@ -109,7 +103,6 @@ import { Component, Vue, Emit } from 'vue-property-decorator';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import RbtcInputAmount from '@/components/pegout/RbtcInputAmount.vue';
 import RskWalletConnection from '@/components/pegout/RskWalletConnection.vue';
-import RskFeeSelect from '@/components/pegout/RskFeeSelect.vue';
 import AddressDialog from '@/components/pegout/AddressDialog.vue';
 import { TxStatusType } from '@/types/store';
 import { Machine } from '@/services/utils';
@@ -127,7 +120,6 @@ import TxSummaryFixed from '@/components/exchange/TxSummaryFixed.vue';
     AddressDialog,
     RbtcInputAmount,
     RskWalletConnection,
-    RskFeeSelect,
     TxSummaryFixed,
     TxErrorDialog,
   },

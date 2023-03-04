@@ -27,13 +27,8 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
     });
     commit(constants.PEGOUT_TX_SET_GAS, gas);
     const gasPrice = Number(await web3.eth.getGasPrice());
-    const averageGasPrice = Math.round(gasPrice * (3 / 2));
-    const calculatedFees = {
-      slow: new WeiBig(gasPrice * gas, 'wei'),
-      average: new WeiBig(averageGasPrice * gas, 'wei'),
-      fast: new WeiBig(gasPrice * gas * 2, 'wei'),
-    };
-    commit(constants.PEGOUT_TX_SET_RSK_ESTIMATED_FEE, calculatedFees);
+    const calculatedFee = new WeiBig(gasPrice * gas, 'wei');
+    commit(constants.PEGOUT_TX_SET_RSK_ESTIMATED_FEE, calculatedFee);
     // BTC Fee
     const [nextPegoutCost, pegoutQueueCount] = await Promise.all([
       bridgeService.getEstimatedFeesForNextPegOutEvent(),

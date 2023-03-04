@@ -10,17 +10,7 @@ export const getters: GetterTree<PegOutTxState, RootState> = {
     if (state.efectivePaidFee) {
       fee = state.efectivePaidFee;
     } else {
-      switch (state.selectedFee) {
-        case constants.BITCOIN_SLOW_FEE_LEVEL:
-          fee = state.calculatedFees.slow;
-          break;
-        case constants.BITCOIN_FAST_FEE_LEVEL:
-          fee = state.calculatedFees.fast;
-          break;
-        default:
-          fee = state.calculatedFees.average;
-          break;
-      }
+      fee = state.calculatedFee;
     }
     return fee;
   },

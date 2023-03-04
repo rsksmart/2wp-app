@@ -9,12 +9,8 @@ export const mutations: MutationTree<PegOutTxState> = {
   [constants.PEGOUT_TX_SET_SELECTED_FEE_LEVEL]: (state, feeLevel: MiningSpeedFee) => {
     state.selectedFee = feeLevel;
   },
-  [constants.PEGOUT_TX_SET_RSK_ESTIMATED_FEE]: (state, calculatedFees: {
-    fast: WeiBig;
-    average: WeiBig;
-    slow: WeiBig;
-  }) => {
-    state.calculatedFees = calculatedFees;
+  [constants.PEGOUT_TX_SET_RSK_ESTIMATED_FEE]: (state, calculatedFee: WeiBig) => {
+    state.calculatedFee = calculatedFee;
   },
   [constants.PEGOUT_TX_SET_BTC_ESTIMATED_FEE]: (state, fee: SatoshiBig) => {
     state.btcEstimatedFee = fee;

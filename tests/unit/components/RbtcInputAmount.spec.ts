@@ -31,11 +31,7 @@ describe('RbtcInputAmount', () => {
     state = {
       amountToTransfer: new WeiBig(0, 'wei'),
       validAmount: false,
-      calculatedFees: {
-        average: new WeiBig('30000', 'wei'),
-        fast: new WeiBig('60000', 'wei'),
-        slow: new WeiBig('10000', 'wei'),
-      },
+      calculatedFee: new WeiBig('30000', 'wei'),
       pegoutConfiguration: {
         minValue: new WeiBig('50000000', 'gwei'),
         maxValue: new WeiBig('1', 'rbtc'),
