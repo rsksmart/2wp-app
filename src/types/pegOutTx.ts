@@ -12,11 +12,7 @@ export interface PegOutTxState {
   amountToTransfer: WeiBig;
   pegoutConfiguration: PegoutConfiguration;
   validAmount: boolean;
-  calculatedFees: {
-    fast: WeiBig;
-    average: WeiBig;
-    slow: WeiBig;
-  };
+  calculatedFee: WeiBig;
   bitcoinPrice: number;
   gas: number;
   btcEstimatedFee: SatoshiBig;

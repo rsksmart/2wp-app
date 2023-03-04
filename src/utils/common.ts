@@ -67,11 +67,7 @@ export const getClearPegoutTxState = (): PegOutTxState => ({
     bridgeContractAddress: '',
   },
   validAmount: false,
-  calculatedFees: {
-    slow: new WeiBig(0, 'wei'),
-    average: new WeiBig(0, 'wei'),
-    fast: new WeiBig(0, 'wei'),
-  },
+  calculatedFee: new WeiBig('0', 'wei'),
   gas: 0,
   bitcoinPrice: 0,
   btcEstimatedFee: new SatoshiBig(0, 'satoshi'),
