@@ -96,7 +96,7 @@
                       <span class="status-subtitle">PowPeg Address</span>
                       <v-tooltip right>
                           <template v-slot:activator="{ on, attrs }">
-                            <v-icon small color="teal darken-2"
+                            <v-icon small color="#000000"
                             v-bind="attrs" v-on="on">
                                 mdi-information
                             </v-icon>

@@ -34,7 +34,7 @@
                     <span class="status-subtitle">Refund Address</span>
                     <v-tooltip right>
                       <template v-slot:activator="{ on, attrs }">
-                        <v-icon small color="teal darken-2"
+                        <v-icon small color="#000000"
                                 v-bind="attrs" v-on="on">
                           mdi-information
                         </v-icon>
@@ -109,7 +109,7 @@
                     <span class="status-subtitle">PowPeg Address</span>
                     <v-tooltip right>
                       <template v-slot:activator="{ on, attrs }">
-                        <v-icon small color="teal darken-2"
+                        <v-icon small color="#000000"
                                 v-bind="attrs" v-on="on">
                           mdi-information
                         </v-icon>
@@ -142,7 +142,7 @@
                     <span class="status-subtitle">Transaction hash</span>
                     <v-tooltip right>
                       <template v-slot:activator="{ on, attrs }">
-                        <v-icon small color="teal darken-2"
+                        <v-icon small color="#000000"
                                 v-bind="attrs" v-on="on">
                           mdi-information
                         </v-icon>
@@ -189,7 +189,7 @@
                     <span class="status-subtitle">Recipient</span>
                     <v-tooltip right>
                       <template v-slot:activator="{ on, attrs }">
-                        <v-icon small color="teal darken-2"
+                        <v-icon small color="#000000"
                                 v-bind="attrs" v-on="on">
                           mdi-information
                         </v-icon>
@@ -212,7 +212,7 @@
                         </v-col>
                         <v-col cols="1" class="col-address-button">
                           <v-btn @click="openExplorerToAddress" icon color="#C4C4C4" x-small>
-                            <v-icon>mdi-open-in-new</v-icon>
+                            <v-icon color="#000000">mdi-open-in-new</v-icon>
                           </v-btn>
                         </v-col>
                       </v-row>
