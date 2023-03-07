@@ -24,7 +24,7 @@
       </v-col>
       <v-col cols="10" class="d-flex justify-end ma-0 py-0">
         <v-btn rounded class="big_button" color="#000000" @click="goToStatus">
-          <span class="whiteish">Go to Status page</span>
+          <span class="whiteish">Go to status page</span>
         </v-btn>
       </v-col>
     </v-row>
