@@ -109,7 +109,7 @@
               </v-col>
               <v-col>
                 <p class="text-justify mb-0">Fill in the enabled fields like below:</p>
-                <div class="green-box">
+                <div class="black-box">
                   <v-row class="mx-0">
                     <p class="mx-0">Network Name:
                       <strong class="ml-1">
@@ -145,7 +145,7 @@
             </v-row>
             <v-row class="mx-0 d-flex justify-end">
               <v-btn rounded outlined color="#000000" width="104" @click="getWalletAddress">
-                Done
+                Go to Status page
               </v-btn>
             </v-row>
           </div>

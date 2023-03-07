@@ -98,6 +98,40 @@
     }
   }
 
+  .input-box-outline-readonly {
+    padding: 0 !important;
+    background: #FFFFFF;
+    border: 0px;
+    box-sizing: border-box;
+    border-radius: 5px;
+    .flat {
+      background: #FFFFFF;
+      box-sizing: border-box;
+    }
+    height: 37px;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    line-height: 14px;
+
+    .v-text-field fieldset, .v-text-field .v-input__control, .v-text-field .v-input__slot {
+      margin: 0 !important;
+      height: 33px !important;
+      min-height: 35px !important;
+      background: #FFFFFF !important;
+    }
+
+    input::-webkit-inner-spin-button {
+      display: none !important;
+      -webkit-appearance: none !important;
+      margin: 0 !important;
+    }
+
+    input {
+      text-align: center !important;
+    }
+  }
+
   .yellow-box {
     border: 1px solid #F6C61B !important;
   }
@@ -106,8 +140,8 @@
     border: 1px solid #008CFF !important;
   }
 
-  .green-box {
-    border: 1px solid #00B43C !important;
+  .black-box {
+    border: 1px solid #000000 !important;
   }
 
   .input-box-flat {
@@ -234,9 +268,9 @@
 .derive-button {
   .v-btn {
     background-color: #fff !important;
-    border: 1px solid #00B520 !important;
+    border: 1px solid #000000 !important;
     .v-btn__content {
-      color: #00B520 !important;
+      color: #000000 !important;
     }
   }
 

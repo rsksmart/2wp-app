@@ -160,7 +160,7 @@ export default class RbtcInputAmount extends Vue {
     this.stepState = !this.insufficientAmount && isRBTCAmountValidRegex(this.rbtcAmount)
       ? 'valid' : 'error';
     this.setValidAmount(this.stepState === 'valid');
-    this.amountStyle = this.stepState === 'valid' ? 'green-box' : 'yellow-box';
+    this.amountStyle = this.stepState === 'valid' ? 'black-box' : 'yellow-box';
   }
 }
 </script>

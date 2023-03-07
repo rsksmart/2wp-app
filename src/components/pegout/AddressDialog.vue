@@ -18,11 +18,11 @@
         </v-row>
         <v-row class="mx-0 mb-10" justify="space-around">
             <v-btn width="145" height="50" dense outlined rounded
-            color="#00B520" @click="closeDialog">
-                <span class="greenish">Cancel</span>
+            color="#000000" @click="closeDialog">
+                <span class="blackish">Cancel</span>
             </v-btn>
             <v-btn width="200" height="50" dense rounded
-            @click="toSign" color="#00B520">
+            @click="toSign" color="#000000">
                 <span class="whiteish">Sign</span>
             </v-btn>
         </v-row>

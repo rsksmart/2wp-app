@@ -27,7 +27,7 @@
           </template>
           <template v-else>
             <v-col cols="7" class="wallet-label-container pl-0 pb-0">
-              <v-row class="input-box-outline mx-0 pa-0 pl-0" >
+              <v-row class="input-box-outline-readonly mx-0 pa-0 pl-0" >
                 <v-text-field
                   v-model="address"
                   class="wallet-address-input"
@@ -35,7 +35,8 @@
                   disabled
                   flat
                   hide-details
-                  :label="`Select or paste the ${this.environmentContext.getRbtcTicker()} address`"
+                  :label="`Select the
+                    ${this.environmentContext.getRbtcTicker()} address`"
                   @focus="focus = true"
                   @blur="focus = false"/>
               </v-row>
@@ -45,10 +46,10 @@
             </v-col>
             <v-col cols="4" class="pb-0 px-0">
               <v-row class="mx-0 d-flex justify-center">
-                <v-btn outlined rounded color="#00B520" width="100%" height="38"
+                <v-btn outlined rounded color="#000000" width="100%" height="38"
                   class="select-wallet-button"
                   @click="connectWallet" >
-                  <span class="greenish">Connect wallet</span>
+                  <span class="blackish">Connect wallet</span>
                 </v-btn>
               </v-row>
             </v-col>
