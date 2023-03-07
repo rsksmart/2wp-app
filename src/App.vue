@@ -33,7 +33,8 @@ export default class App extends Vue {
     const envVariables = EnvironmentAccessorService.getEnvironmentVariables();
     let response = '';
     response = `
-    style-src 'unsafe-inline' 'self';
+    style-src 'self' 'nonce-dQw4w9WgXcQ';
+    script-src 'self' 'nonce-dQw4w9WgXcQ' 'unsafe-eval';
     img-src data: https:;
     connect-src 'self' ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://api.coingecko.com ;
     object-src 'none';
@@ -50,8 +51,7 @@ export default class App extends Vue {
     document.head.appendChild(metaTag);
   }
 
-  created() {
-    this.appendCSP();
+  appendHotjar(): void {
     const hotjarID = EnvironmentAccessorService.getEnvironmentVariables().vueAppHotjarId;
     this.scriptTag = document.createElement('script');
     this.scriptTag.type = 'text/javascript';
@@ -64,6 +64,11 @@ export default class App extends Vue {
       + 'a.appendChild(r);'
       + '})(window,document,"https://static.hotjar.com/c/hotjar-",".js?sv=");';
     document.body.appendChild(this.scriptTag);
+  }
+
+  created() {
+    this.appendHotjar();
+    this.appendCSP();
   }
 }
 </script>
