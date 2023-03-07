@@ -145,7 +145,7 @@
             </v-row>
             <v-row class="mx-0 d-flex justify-end">
               <v-btn rounded outlined color="#000000" width="104" @click="getWalletAddress">
-                Go to Status page
+                Go to status page
               </v-btn>
             </v-row>
           </div>
