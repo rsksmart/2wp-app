@@ -359,7 +359,7 @@
         <v-container class="pb-0 pl-0">
           <v-row class="justify-end mx-0">
             <h1 class="boldie">
-              Destination address:
+              Bitcoin destination address:
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">

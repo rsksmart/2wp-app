@@ -71,7 +71,7 @@
                 <v-btn outlined rounded color="#000000" width="100%" height="38"
                   class="select-wallet-button"
                   @click="selectRLoginWallet" >
-                  <span class="greenish">Connect wallet</span>
+                  <span class="blackish">Connect wallet</span>
                 </v-btn>
               </v-row>
             </v-col>
