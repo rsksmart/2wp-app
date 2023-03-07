@@ -80,7 +80,7 @@ export default class BtcFeeSelect extends Vue {
 
   focus = false;
 
-  hasChange = true;
+  hasChange = false;
 
   txFeeIndex = 1;
 
