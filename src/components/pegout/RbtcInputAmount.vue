@@ -9,13 +9,14 @@
         <p v-bind:class="{'boldie': focus}">
           Enter the amount you want to send:
         </p>
-        <v-row class="m-0 p-0">
-          <v-col cols="5" class="d-flex align-center m-0 p-0">
-            <span @click="setMax" class="greenish justify-center btn-max">Max</span>
+        <v-row class="mt-4 d-flex justify-center pa-0">
+          <v-col cols="5" class="ma-0 d-flex justify-center pa-0">
+            <span @click="setMax" class="greenish d-flex justify-center btn-max">Max</span>
           </v-col>
-          <v-col cols="5" class="m-0 p-0"></v-col>
+          <v-col cols="7">
+          </v-col>
         </v-row>
-        <v-row class="d-cols-wht mt-6 ml-1">
+        <v-row class="d-cols-wht mt-2 ml-1">
           <v-col cols="5" v-bind:class="[amountStyle]" class="input-box-outline" >
             <v-col cols="8" class="d-flex align-center">
               <v-text-field
