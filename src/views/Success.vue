@@ -51,7 +51,7 @@
           </v-container>
         </div>
         <v-row class="mx-0 my-5 d-flex justify-center dialog">
-          <v-btn class="button" style="width:150px" color="#000000" @click="toTxStatus">
+          <v-btn class="big_button" color="#000000" @click="toTxStatus">
             <span class="whiteish">Go to Status page</span>
           </v-btn>
         </v-row>

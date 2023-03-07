@@ -3,7 +3,7 @@
     <v-row class="mx-0 d-flex justify-center">
       <v-col cols="10" lg="8" xl="6" class="d-flex justify-center">
         <h1 class="text-center">
-            Congratulations Your RBTC were transferred
+          Your RBTC is on your way.
         </h1>
       </v-col>
     </v-row>
@@ -23,7 +23,7 @@
       <v-col cols="2" class="d-flex justify-start ma-0 py-0" offset="10">
       </v-col>
       <v-col cols="10" class="d-flex justify-end ma-0 py-0">
-        <v-btn rounded color="#000000" width="150" @click="goToStatus">
+        <v-btn rounded class="big_button" color="#000000" @click="goToStatus">
           <span class="whiteish">Go to Status page</span>
         </v-btn>
       </v-col>

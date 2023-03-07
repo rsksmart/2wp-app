@@ -20,7 +20,7 @@
               </v-row>
               <v-row class="mx-0">
                 <v-btn class="pa-0" text @click="disconnectWallet">
-                  <span class="blueish">Disconnect wallet</span>
+                  <span class="blackish">Disconnect wallet</span>
                 </v-btn>
               </v-row>
             </div>
@@ -35,7 +35,7 @@
                   disabled
                   flat
                   hide-details
-                  :label="`Select the
+                  :label="`Connect your wallet to select the
                     ${this.environmentContext.getRbtcTicker()} address`"
                   @focus="focus = true"
                   @blur="focus = false"/>
