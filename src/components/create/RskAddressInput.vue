@@ -28,7 +28,7 @@
               </v-row>
               <v-row class="mx-0">
                 <v-btn class="pa-0" text @click="disconnectWallet">
-                  <span class="blueish">Disconnect wallet</span>
+                  <span class="blackish">Disconnect wallet</span>
                 </v-btn>
               </v-row>
             </div>
@@ -41,7 +41,7 @@
                 </span>
               </v-row>
               <v-row :class="[isValidRskAddress || !rskAddressSelected ?
-                     'blue-box' : 'yellow-box' ]"
+                     'black-box' : 'yellow-box' ]"
                      class="input-box-outline mx-0 pa-0 pl-0" >
                 <v-text-field
                   v-model="rskAddressSelected"
