@@ -220,14 +220,14 @@ export default class BtcInputAmount extends Vue {
   @Watch('bitcoinAmount')
   watchBitcoinAmount() {
     this.checkStep();
-    this.amountStyle = this.stepState === 'done' ? 'green-box' : 'yellow-box';
+    this.amountStyle = this.stepState === 'done' ? 'black-box' : 'yellow-box';
   }
 
   @Watch('selectedAccountBalance')
   watchBTCAccountTypeSelected() {
     if (this.stepState !== 'unused') {
       this.checkStep();
-      this.amountStyle = this.stepState === 'done' ? 'green-box' : 'yellow-box';
+      this.amountStyle = this.stepState === 'done' ? 'black-box' : 'yellow-box';
     }
   }
 
@@ -236,7 +236,7 @@ export default class BtcInputAmount extends Vue {
     if (this.stepState !== 'unused') {
       this.checkStep();
       this.calculateTxFee();
-      this.amountStyle = this.stepState === 'done' ? 'green-box' : 'yellow-box';
+      this.amountStyle = this.stepState === 'done' ? 'black-box' : 'yellow-box';
     }
   }
 

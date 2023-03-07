@@ -92,7 +92,7 @@ export default class BtcFeeSelect extends Vue {
     let color;
     if (this.txFeeIndex === 0) color = '#F6C61B';
     if (this.txFeeIndex === 1) color = '#737778';
-    if (this.txFeeIndex === 2) color = '#00B43C';
+    if (this.txFeeIndex === 2) color = '#000000';
     return color;
   }
 

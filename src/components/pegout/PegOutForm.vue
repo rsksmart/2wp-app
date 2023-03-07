@@ -27,7 +27,7 @@
             </v-col>
             <v-col class="pl-0 ma-0 pb-0">
               <p v-bind:class="{'boldie': focus}">
-                Recipient address:
+                (Optional) Verify your Bitcoin destination address:
               </p>
               <v-row class="ma-0 mt-2 pa-0">
                 <v-col v-if="session.btcDerivedAddress" cols="7" class="p-0">
@@ -49,7 +49,7 @@
                       width="100%" height="38"
                       @click="openAddressDialog" >
                       <span>
-                        Derive address
+                        Get Bitcoin destination address
                       </span>
                     </v-btn>
                   </v-row>
@@ -74,20 +74,20 @@
     <v-row class="mx-0">
       <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
         <v-btn @click="back"
-        rounded outlined color="#00B520" width="110"
+        rounded outlined color="#000000" width="110"
                 :disabled="pegOutFormState.matches(['loading', 'goingHome'])">
           <span>Back</span>
         </v-btn>
       </v-col>
       <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0">
-        <v-btn v-if="!pegOutFormState.matches(['loading'])" rounded color="#00B43C"
+        <v-btn v-if="!pegOutFormState.matches(['loading'])" rounded color="#000000"
                 @click="send"
                 :disabled="!isReadyToCreate || pegOutFormState.matches(['goingHome'])">
           <span class="whiteish">Send</span>
           <v-icon class="ml-2" color="#fff">mdi-send-outline</v-icon>
         </v-btn>
         <v-progress-circular v-if="pegOutFormState.matches(['loading'])"
-                              indeterminate color="#00B520" class="mr-10"/>
+                              indeterminate color="#000000" class="mr-10"/>
       </v-col>
     </v-row>
   </v-col>
