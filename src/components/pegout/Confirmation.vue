@@ -99,7 +99,7 @@ export default class Confirmation extends Vue {
     return {
       amountFromString: this.pegoutTxState.amountToTransfer.toRBTCTrimmedString(),
       amountReceivedString: this.estimatedBtcToReceive.toBTCTrimmedString(),
-      fee: Number(this.pegoutTxState.btcEstimatedFee.toBTCTrimmedString()),
+      estimatedFee: Number(this.pegoutTxState.btcEstimatedFee.toBTCTrimmedString()),
       recipientAddress: this.session.btcDerivedAddress,
       senderAddress: this.session.account,
       txId: this.pegoutTxState.txHash,
