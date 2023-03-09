@@ -100,4 +100,14 @@ describe('function: isValidOptReturn', () => {
     const result = isValidOpReturnOutput(normalizedOutput, '0x224d0b72bab9342f898c633ef187abff8a96c0fa', '');
     expect(result).toBeTruthy();
   });
+  it('output with address field set', async () => {
+    const opReturn = '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa';
+    const normalizedOutput: NormalizedOutput = {
+      amount: '0',
+      op_return_data: opReturn,
+      address: 'mzBc4XEFSdzCDcTxAgf6EZXgsZWpztRhef',
+    };
+    const result = isValidOpReturnOutput(normalizedOutput, '0x224d0b72bab9342f898c633ef187abff8a96c0fa', '');
+    expect(result).toBe(false);
+  });
 });
