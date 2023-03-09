@@ -5,7 +5,7 @@ import * as constants from './store/constants';
 import App from './App.vue';
 import router from './router';
 import store from './store';
-import vuetify from './plugins/vuetify';
+import { vuetify } from './plugins/vuetify';
 import '@/styles/main.scss';
 import { EnvironmentAccessorService } from './services/enviroment-accessor.service';
 

@@ -17,6 +17,7 @@ import Top from '@/components/layouts/Top.vue';
 import FooterRsk from '@/components/layouts/Footer.vue';
 import Mobile from '@/views/Mobile.vue';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import { vuetifyNonce } from '@/plugins/vuetify';
 
 @Component({
   components: {
@@ -33,8 +34,8 @@ export default class App extends Vue {
     const envVariables = EnvironmentAccessorService.getEnvironmentVariables();
     let response = '';
     response = `
-    style-src 'self' 'nonce-dQw4w9WgXcQ';
-    script-src 'self' 'nonce-dQw4w9WgXcQ' 'unsafe-eval';
+    style-src 'self' 'nonce-${vuetifyNonce}';
+    script-src 'self' 'nonce-${vuetifyNonce}' 'unsafe-eval';
     img-src data: https:;
     connect-src 'self' ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://api.coingecko.com ;
     object-src 'none';
