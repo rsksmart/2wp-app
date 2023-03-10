@@ -34,7 +34,7 @@ export default class App extends Vue {
     const envVariables = EnvironmentAccessorService.getEnvironmentVariables();
     let response = '';
     response = `
-    style-src 'self' 'nonce-${vuetifyNonce}';
+    style-src 'self' 'unsafe-inline' ;
     script-src 'self' 'nonce-${vuetifyNonce}' 'unsafe-eval';
     img-src data: https:;
     connect-src 'self' ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://api.coingecko.com ;
