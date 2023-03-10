@@ -249,8 +249,8 @@
                   <v-row>
                     <v-col class="form-field-summary">
                       <v-row class="justify-end mx-0 mb-2">
-                        <span>{{ safeFeeString === 0 ? '-'
-                          : safeFeeString + ' ' + currencyFromTicker }}</span>
+                        <span id="summary-horizontal-value-fee">{{ safeFeeString === 0 ? '-'
+                          : safeFeeString + ' ' + environmentContext.getBtcTicker() }}</span>
                       </v-row>
                     </v-col>
                   </v-row>
