@@ -32,6 +32,69 @@ const outputs1: NormalizedOutput[] = [
     op_return_data: '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa02379ad9b7ba73bdc1e29e286e014d4e2e1f6884e3',
   },
 ];
+const outputsSegwit: NormalizedOutput[] = [
+  {
+    address: powPegAddress,
+    address_n: [0],
+    amount: '50000',
+    serializedValue: '',
+  },
+  {
+    address: 'changeAddress',
+    address_n: [],
+    amount: '1850060',
+    serializedValue: '',
+  },
+  {
+    address: '',
+    address_n: [],
+    amount: '0',
+    serializedValue: '',
+    op_return_data: '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa02379ad9b7ba73bdc1e29e286e014d4e2e1f6884e3',
+  },
+];
+const outputsNativeSegwit: NormalizedOutput[] = [
+  {
+    address: powPegAddress,
+    address_n: [0],
+    amount: '50000',
+    serializedValue: '',
+  },
+  {
+    address: 'changeAddress',
+    address_n: [],
+    amount: '6595495955',
+    serializedValue: '',
+  },
+  {
+    address: '',
+    address_n: [],
+    amount: '0',
+    serializedValue: '',
+    op_return_data: '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa02379ad9b7ba73bdc1e29e286e014d4e2e1f6884e3',
+  },
+];
+const outputsP2PKH: NormalizedOutput[] = [
+  {
+    address: powPegAddress,
+    address_n: [0],
+    amount: '50000',
+    serializedValue: '',
+  },
+  {
+    address: 'changeAddress',
+    address_n: [],
+    amount: '61487527',
+    serializedValue: '',
+  },
+  {
+    address: '',
+    address_n: [],
+    amount: '0',
+    serializedValue: '',
+    op_return_data: '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa02379ad9b7ba73bdc1e29e286e014d4e2e1f6884e3',
+  },
+];
 const outputs2: NormalizedOutput[] = [
   {
     address: powPegAddress,
@@ -147,6 +210,36 @@ const inputs3: NormalizedInput[] = [
   },
 ];
 const inputs4: NormalizedInput[] = [
+  {
+    address: 'tb1que67sfexzx03t2nydm000tzpctkyfejp4d9sjz',
+    address_n: [0],
+    prev_hash: '4420e6fde51bef2b5b5d3063b56a854e71209f6549004d25f49754e9f9e7bd8c',
+    prev_index: 0,
+    amount: '6595502955',
+    prevRawTx: '02000000000101d888619018ee3de8ecc6b65c00cc85234d27f628fb462e745e354f330f97d3d50100000000feffffff026b631f8901000000160014e675e82726119f15aa646edef7ac41c2ec44e641c8ee180000000000160014c8c050e320dccd0d3035561289516f0f44bd60c502473044022028cfd99abf6263f9e32a11bba134fa2d7d4679a37f82583bfd2e098d9c495935022035b086240a05648e88550f1e9a209defa378ea9c92b93f2bec6252aec280e2e70121038cfd6227d5dedd3879df2a9ee37a46865e84afe46ce904877f9535415a7655b13ff12400',
+  },
+];
+const inputsP2SH: NormalizedInput[] = [
+  {
+    address: '2NFf5d6LhYptMCni4Qtp2gHPx7DCNSvzCUX',
+    address_n: [0],
+    prev_hash: '487671c1dfbbe24aae0e1974733d377f918482311304267889fc714a4dac6ddb',
+    prev_index: 1,
+    amount: '1902060',
+    prevRawTx: '020000000001018c9073490999e93cff500ed26ef39ee754f1de0a2fcc43419f8213a663cf67a4010000001716001465bc922ebb303a817c9bcb156baab34360d5eef4feffffff0229721f080100000017a914d3af02c2b27c37bdadcd0435c750ae9b3281d47687ec051d000000000017a914f5d5c46bf6f40470b5476ab27108d937c6e65c0e8702473044022054cd9ab0979dafd28769dbfd1327bccfbd4090e94582799ec73833ae81e646e2022019ee9f59c46a7d696a054ec49fddacca812b2bd63eb9da63cf5f9d45c059153301210283a19afc5d34b8bef04cd32cfdc3e5ab8b2ee16f1f0fe8c4e598fa8d47095f4330fc2400',
+  },
+];
+const inputsP2PKH: NormalizedInput[] = [
+  {
+    address: 'mxVFsFW5N4mu1HPkxPttorvocvzeZ7KZyk',
+    address_n: [0],
+    prev_hash: '2bbf4a0dec88ee481996e91020609b72eb4aea96290f3c33ca6f69eb5a1064c8',
+    prev_index: 3,
+    amount: '61494527',
+    prevRawTx: '0100000001386e095313899d0deca5e90ee610d5c85c2ffc36d42db9f8e7e261961c04a906030000006b483045022100a74d3b7b94c6898f54b1e9bcfa01e22b8f11f3d4cffb22fefc9819a7b27110e902200bd4d816e6fc91b0fbe3f9a2d2f5b4c82fb5ffb2c8fceadc471360bb1c500fd80121037435c194e9b01b3d7f7a2802d6684a3af68d05bbf4ec8f17021980d777691f1dfdffffff040000000000000000536a4c5054325bb87563b146568cc7b7a1625064c73e655015a3ec5ba98288e7c19b6526623ac830b03f37719247ed65015171ef551719468a9035a7e9274f2782bf1059e9aa020024fcc8000c0024f6c100053310270000000000001976a914000000000000000000000000000000000000000088ac10270000000000001976a914000000000000000000000000000000000000000088acff54aa03000000001976a914ba27f99e007c7f605a8305e318c1abde3cd220ac88ac00000000',
+  },
+];
+const inputsBech32: NormalizedInput[] = [
   {
     address: 'tb1que67sfexzx03t2nydm000tzpctkyfejp4d9sjz',
     address_n: [0],
@@ -287,6 +380,36 @@ describe('Api Service', () => {
       const result = await ApiService.createPeginTx(50000, userRefundAddress, recipientAddress, 'sessionId', 'feeLevel', userChangeAddress, addressList, storedFee);
       expect(result)
         .toEqual({ inputs: inputs1, outputs: outputs1, coin: constants.BTC_NETWORK_TESTNET });
+    });
+    it('Should resolve for utxo P2PKH', async () => {
+      sinon.stub(axios, 'post').resolves(getNormalizedTx(inputsP2PKH, outputsP2PKH));
+      const addressList = [...inputs1Addresses, ...userAddressList, 'mxVFsFW5N4mu1HPkxPttorvocvzeZ7KZyk'];
+      const storedFee = new SatoshiBig('2000', 'satoshi');
+      const result = await ApiService.createPeginTx(50000, userRefundAddress, recipientAddress, 'sessionId', 'feeLevel', userChangeAddress, addressList, storedFee);
+      expect(result)
+        .toEqual({
+          inputs: inputsP2PKH, outputs: outputsP2PKH, coin: constants.BTC_NETWORK_TESTNET,
+        });
+    });
+    it('Should resolve for utxo P2SH', async () => {
+      sinon.stub(axios, 'post').resolves(getNormalizedTx(inputsP2SH, outputsSegwit));
+      const addressList = [...inputs1Addresses, ...userAddressList, '2NFf5d6LhYptMCni4Qtp2gHPx7DCNSvzCUX'];
+      const storedFee = new SatoshiBig('2000', 'satoshi');
+      const result = await ApiService.createPeginTx(50000, userRefundAddress, recipientAddress, 'sessionId', 'feeLevel', userChangeAddress, addressList, storedFee);
+      expect(result)
+        .toEqual({
+          inputs: inputsP2SH, outputs: outputsSegwit, coin: constants.BTC_NETWORK_TESTNET,
+        });
+    });
+    it('Should resolve for utxo Bech32', async () => {
+      sinon.stub(axios, 'post').resolves(getNormalizedTx(inputsBech32, outputsNativeSegwit));
+      const addressList = [...inputs1Addresses, ...userAddressList, 'tb1que67sfexzx03t2nydm000tzpctkyfejp4d9sjz'];
+      const storedFee = new SatoshiBig('2000', 'satoshi');
+      const result = await ApiService.createPeginTx(50000, userRefundAddress, recipientAddress, 'sessionId', 'feeLevel', userChangeAddress, addressList, storedFee);
+      expect(result)
+        .toEqual({
+          inputs: inputsBech32, outputs: outputsNativeSegwit, coin: constants.BTC_NETWORK_TESTNET,
+        });
     });
   });
   describe('Function: ApiInformation', () => {
