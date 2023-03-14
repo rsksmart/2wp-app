@@ -20,7 +20,7 @@
                 <v-row class="mx-0 mb-1">
                   <h3>Transaction id:</h3>
                 </v-row>
-                <v-row class="mx-0">
+                <v-row class="mx-0 mb-2 ml-2">
                   <span>{{ txId }}</span>
                 </v-row>
               </v-col>
@@ -36,7 +36,7 @@
                 <v-row class="mx-0 mb-1">
                   <h3>Transaction link: </h3>
                 </v-row>
-                <v-row class="mx-0">
+                <v-row class="mx-0 mb-2 ml-2">
                   <a class="listTitle" target="_blank" :href="btcExplorerUrl">
                     {{ chunkedBtcExplorerUrl }}
                   </a>
@@ -51,8 +51,8 @@
           </v-container>
         </div>
         <v-row class="mx-0 my-5 d-flex justify-center dialog">
-          <v-btn class="button" color="#126DF2" @click="toTxStatus">
-            <span class="whiteish">Done</span>
+          <v-btn rounded class="big_button" color="#000000" @click="toTxStatus">
+            <span class="whiteish">Go to status page</span>
           </v-btn>
         </v-row>
       </v-col>

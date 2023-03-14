@@ -34,7 +34,7 @@
                     <span class="status-subtitle">Refund Address</span>
                     <v-tooltip right>
                       <template v-slot:activator="{ on, attrs }">
-                        <v-icon small color="teal darken-2"
+                        <v-icon small color="#000000"
                                 v-bind="attrs" v-on="on">
                           mdi-information
                         </v-icon>
@@ -109,7 +109,7 @@
                     <span class="status-subtitle">PowPeg Address</span>
                     <v-tooltip right>
                       <template v-slot:activator="{ on, attrs }">
-                        <v-icon small color="teal darken-2"
+                        <v-icon small color="#000000"
                                 v-bind="attrs" v-on="on">
                           mdi-information
                         </v-icon>
@@ -142,7 +142,7 @@
                     <span class="status-subtitle">Transaction hash</span>
                     <v-tooltip right>
                       <template v-slot:activator="{ on, attrs }">
-                        <v-icon small color="teal darken-2"
+                        <v-icon small color="#000000"
                                 v-bind="attrs" v-on="on">
                           mdi-information
                         </v-icon>
@@ -189,7 +189,7 @@
                     <span class="status-subtitle">Recipient</span>
                     <v-tooltip right>
                       <template v-slot:activator="{ on, attrs }">
-                        <v-icon small color="teal darken-2"
+                        <v-icon small color="#000000"
                                 v-bind="attrs" v-on="on">
                           mdi-information
                         </v-icon>
@@ -212,7 +212,7 @@
                         </v-col>
                         <v-col v-if="recipientAddress !== '-'" cols="1" class="col-address-button">
                           <v-btn @click="openExplorerToAddress" icon color="#C4C4C4" x-small>
-                            <v-icon>mdi-open-in-new</v-icon>
+                            <v-icon color="#000000">mdi-open-in-new</v-icon>
                           </v-btn>
                         </v-col>
                       </v-row>
@@ -300,6 +300,24 @@
             </v-container>
           </div>
         </v-container>
+
+        <!-- Refund -->
+        <v-container v-if="summary.refundAddress"
+                     class="pb-0 pl-0">
+          <v-row class="mx-0">
+            <h1 class="boldie">
+              Refund address:
+            </h1>
+          </v-row>
+          <div class="form-field pt-2 pl-0">
+            <v-container class="mark">
+              <p>
+                {{ refundAddress }}
+              </p>
+            </v-container>
+          </div>
+        </v-container>
+
         <!-- Amount -->
         <v-container class="pb-0 pl-0">
           <v-row class="mx-0">
@@ -314,18 +332,34 @@
           </div>
         </v-container>
 
-        <!-- Refund -->
-        <v-container v-if="summary.refundAddress"
-                     class="pb-0 pl-0">
+        <!-- Fee PEGIN -->
+        <v-container v-if="type === txType.PEGIN" class="pb-0 pl-0">
           <v-row class="mx-0">
             <h1 class="boldie">
-              Refund address:
+             Transaction fee:
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
             <v-container class="mark">
-              <p>
-                {{ refundAddress }}
+              <p v-bind:class="{'grayish': summary.fee === 0}">
+                {{ summary.fee }}
+                {{ currencyFromTicker }}
+              </p>
+            </v-container>
+          </div>
+        </v-container>
+
+        <!-- Total -->
+        <v-container  v-if="type === txType.PEGIN" class="pb-0 pl-0">
+          <v-row class="mx-0">
+            <h1 class="boldie">
+              Transaction total:
+            </h1>
+          </v-row>
+          <div class="form-field pt-2 pl-0">
+            <v-container class="mark">
+              <p v-bind:class="{'grayish': total === '0'}">
+                {{ total }} {{currencyFromTicker}}
               </p>
             </v-container>
           </div>
@@ -359,7 +393,7 @@
         <v-container class="pb-0 pl-0">
           <v-row class="justify-end mx-0">
             <h1 class="boldie">
-              Destination address:
+              Bitcoin destination address:
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
@@ -372,11 +406,11 @@
           </div>
         </v-container>
 
-        <!-- Fee -->
-        <v-container class="pb-0 pl-0">
+        <!-- Fee PEGOUT -->
+        <v-container v-if="type === txType.PEGOUT" class="pb-0 pl-0">
           <v-row class="justify-end mx-0">
             <h1 class="boldie">
-              {{ type === txType.PEGOUT ? 'Estimated fee to pay' : 'Fee' }}:
+             Estimated fee to pay
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
@@ -384,7 +418,7 @@
               <p v-bind:class="{'grayish': summary.fee === 0}"
                  class="text-end">
                 {{ summary.fee }}
-                {{ type === txType.PEGOUT ? currencyToTicker : currencyFromTicker }}
+                {{ currencyToTicker }}
               </p>
             </v-container>
           </div>
@@ -407,22 +441,22 @@
           </div>
         </v-container>
 
-        <!-- Total -->
+        <!-- Pegin RBTC to receive -->
         <v-container  v-if="type === txType.PEGIN" class="pb-0 pl-0">
           <v-row class="justify-end mx-0">
             <h1 class="boldie">
-              Total:
+               {{environmentContext.getRbtcTicker()}} to receive:
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
             <v-container class="mark">
-              <p v-bind:class="{'grayish': total === '0'}"
-                 class="text-end">
-                {{ total }} {{currencyFromTicker}}
+              <p v-bind:class="{'grayish': total === '0'}" class="text-end">
+                {{ amount }}  {{currencyToTicker}}
               </p>
             </v-container>
           </div>
         </v-container>
+
       </v-container>
     </v-row>
   </v-container>

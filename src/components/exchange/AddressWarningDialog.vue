@@ -19,12 +19,12 @@
           <v-col class="d-flex justify-center">
             <v-btn width="100" height="40" dense
                    outlined rounded color="#000000" @click="closeDialog">
-              <span class="greenish">cancel</span>
+              <span class="blackish">cancel</span>
             </v-btn>
           </v-col>
           <v-col class="d-flex justify-center">
             <v-btn width="100" height="40" dense outlined rounded color="#000000" @click="send">
-              <span class="greenish">continue</span>
+              <span class="blackish">continue</span>
             </v-btn>
           </v-col>
         </v-row>

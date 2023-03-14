@@ -3,7 +3,7 @@
     <v-row class="mx-0 d-flex justify-center">
       <v-col cols="10" lg="8" xl="6" class="d-flex justify-center">
         <h1 class="text-center">
-            Congratulations Your RBTC were transferred
+          Your RBTC is on your way.
         </h1>
       </v-col>
     </v-row>
@@ -23,8 +23,8 @@
       <v-col cols="2" class="d-flex justify-start ma-0 py-0" offset="10">
       </v-col>
       <v-col cols="10" class="d-flex justify-end ma-0 py-0">
-        <v-btn rounded color="#00B520" width="110" @click="goToStatus">
-          <span class="whiteish">Status</span>
+        <v-btn rounded class="big_button" color="#000000" @click="goToStatus">
+          <span class="whiteish">Go to status page</span>
         </v-btn>
       </v-col>
     </v-row>
@@ -99,7 +99,7 @@ export default class Confirmation extends Vue {
     return {
       amountFromString: this.pegoutTxState.amountToTransfer.toRBTCTrimmedString(),
       amountReceivedString: this.estimatedBtcToReceive.toBTCTrimmedString(),
-      fee: Number(this.pegoutTxState.btcEstimatedFee.toBTCTrimmedString()),
+      estimatedFee: Number(this.pegoutTxState.btcEstimatedFee.toBTCTrimmedString()),
       recipientAddress: this.session.btcDerivedAddress,
       senderAddress: this.session.account,
       txId: this.pegoutTxState.txHash,

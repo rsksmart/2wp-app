@@ -22,7 +22,7 @@
               <v-text-field
                 v-model="rbtcAmount" color="#F8F5F5"
                 class="amount-input"
-                placeholder="add amount" type="number" step="0.00000001"
+                placeholder="Add amount" type="number" step="0.00000001"
                 @focus="focus = true"
                 @blur="focus = false"
                 @change="updateStore()"
@@ -41,7 +41,7 @@
           <v-col cols="5" class="pa-0 d-flex align-center">
             <v-row class="ma-0 pa-0">
               <v-col class="ma-0 pa-0 d-flex align-center">
-                <span>{{rbtcAmount}}</span>
+                <span>{{estimatedBtcToReceive.toBTCTrimmedString()}}</span>
               </v-col>
               <v-col class="ma-0 pa-0 d-flex align-center">
                 <v-img src="@/assets/exchange/btc.png" height="30" contain/>
@@ -65,8 +65,10 @@ import EnvironmentContextProviderService from '@/providers/EnvironmentContextPro
 import { Action, Getter, State } from 'vuex-class';
 import * as constants from '@/store/constants';
 import { isRBTCAmountValidRegex } from '@/services/utils';
-import { PegOutTxState, SessionState, WeiBig } from '@/types';
 import Web3 from 'web3';
+import {
+  PegOutTxState, SatoshiBig, SessionState, WeiBig,
+} from '@/types';
 
 @Component({})
 export default class RbtcInputAmount extends Vue {
@@ -91,6 +93,8 @@ export default class RbtcInputAmount extends Vue {
   @Action(constants.PEGOUT_TX_ADD_VALID_AMOUNT, { namespace: 'pegOutTx' }) setValidAmount !: (valid: boolean) => void;
 
   @Getter(constants.PEGOUT_TX_GET_SAFE_TX_FEE, { namespace: 'pegOutTx' }) safeTxFee !: WeiBig;
+
+  @Getter(constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE, { namespace: 'pegOutTx' }) estimatedBtcToReceive !: SatoshiBig;
 
   blockLetterKeyDown(e: KeyboardEvent) {
     if (this.rbtcAmount.toString().length > 18
@@ -209,7 +213,7 @@ export default class RbtcInputAmount extends Vue {
     this.stepState = !this.insufficientAmount && isRBTCAmountValidRegex(this.rbtcAmount)
       ? 'valid' : 'error';
     this.setValidAmount(this.stepState === 'valid');
-    this.amountStyle = this.stepState === 'valid' ? 'green-box' : 'yellow-box';
+    this.amountStyle = this.stepState === 'valid' ? 'black-box' : 'yellow-box';
   }
 }
 </script>

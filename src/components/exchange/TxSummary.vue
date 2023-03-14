@@ -96,7 +96,7 @@
                       <span class="status-subtitle">PowPeg Address</span>
                       <v-tooltip right>
                           <template v-slot:activator="{ on, attrs }">
-                            <v-icon small color="teal darken-2"
+                            <v-icon small color="#000000"
                             v-bind="attrs" v-on="on">
                                 mdi-information
                             </v-icon>
@@ -325,7 +325,7 @@
         <v-container v-if="type === transactionTypes.PEGIN" id="summary-1" class="pb-0 pl-0">
           <v-row class="mx-0">
             <h1 class="boldie">Device account:</h1>
-            <v-icon  v-if="txState.selectedAccount" class="ml-2" small color="#00B520">
+            <v-icon  v-if="txState.selectedAccount" class="ml-2" small color="#000000">
               mdi-check-circle-outline
             </v-icon>
           </v-row>
@@ -339,7 +339,7 @@
         <v-container v-if="type === transactionTypes.PEGIN" id="summary-2" class="pb-0 pl-0">
           <v-row class="mx-0">
             <h1 class="boldie">{{environmentContext.getBtcTicker()}}s:</h1>
-            <v-icon v-if="peginTxState.isValidAmountToTransfer" class="ml-2" small color="#00B520">
+            <v-icon v-if="peginTxState.isValidAmountToTransfer" class="ml-2" small color="#000000">
               mdi-check-circle-outline
             </v-icon>
           </v-row>
@@ -365,7 +365,7 @@
           <v-row class="mx-0">
             <h1 class="boldie">Destination address:</h1>
             <v-icon v-if="peginTxState.rskAddressSelected !== ''"
-              class="ml-2" small color="#00B520">
+              class="ml-2" small color="#000000">
               mdi-check-circle-outline
             </v-icon>
           </v-row>
@@ -390,7 +390,7 @@
           v-if="!isLiquality && type === transactionTypes.PEGIN" id="summary-4" class="pb-0 pl-0">
           <v-row class="mx-0">
             <h1 class="boldie">Refund {{environmentContext.getBtcText()}} address:</h1>
-            <v-icon v-if="peginTxState.selectedAccount" class="ml-2" small color="#00B520">
+            <v-icon v-if="peginTxState.selectedAccount" class="ml-2" small color="#000000">
               mdi-check-circle-outline
             </v-icon>
           </v-row>
@@ -416,7 +416,7 @@
         <v-container v-if="type === transactionTypes.PEGIN" class="pb-0 pl-0">
           <v-row class="mx-0">
             <h1 class="boldie">Fees:</h1>
-            <v-icon v-if="peginTxState.rskAddressSelected" class="ml-2" small color="#00B520">
+            <v-icon v-if="peginTxState.rskAddressSelected" class="ml-2" small color="#000000">
               mdi-check-circle-outline
             </v-icon>
           </v-row>
@@ -434,7 +434,7 @@
         <v-container v-if="type === transactionTypes.PEGIN" id="summary-6" class="pb-0 pl-0">
           <v-row class="mx-0">
             <h1 class="boldie">Transaction total:</h1>
-            <v-icon v-if="txState.isValidAmountToTransfer" class="ml-2" small color="#00B520">
+            <v-icon v-if="txState.isValidAmountToTransfer" class="ml-2" small color="#000000">
               mdi-check-circle-outline
             </v-icon>
           </v-row>

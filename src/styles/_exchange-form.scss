@@ -66,12 +66,12 @@
 
   .input-box-outline {
     padding: 0 !important;
-    background: #ECF7FC;
-    border: 1px solid #008CFF;
+    background: #FFFFFF;
+    border: 1px solid #D9D9D9;
     box-sizing: border-box;
     border-radius: 5px;
     .flat {
-      background: #ECF7FC;
+      background: #FFFFFF;
       box-sizing: border-box;
     }
     height: 37px;
@@ -84,7 +84,41 @@
       margin: 0 !important;
       height: 33px !important;
       min-height: 35px !important;
-      background: #ECF7FC !important;
+      background: #FFFFFF !important;
+    }
+
+    input::-webkit-inner-spin-button {
+      display: none !important;
+      -webkit-appearance: none !important;
+      margin: 0 !important;
+    }
+
+    input {
+      text-align: center !important;
+    }
+  }
+
+  .input-box-outline-readonly {
+    padding: 0 !important;
+    background: #FFFFFF;
+    border: 0px;
+    box-sizing: border-box;
+    border-radius: 5px;
+    .flat {
+      background: #FFFFFF;
+      box-sizing: border-box;
+    }
+    height: 37px;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    line-height: 14px;
+
+    .v-text-field fieldset, .v-text-field .v-input__control, .v-text-field .v-input__slot {
+      margin: 0 !important;
+      height: 33px !important;
+      min-height: 35px !important;
+      background: #FFFFFF !important;
     }
 
     input::-webkit-inner-spin-button {
@@ -106,8 +140,8 @@
     border: 1px solid #008CFF !important;
   }
 
-  .green-box {
-    border: 1px solid #00B43C !important;
+  .black-box {
+    border: 1px solid #000000 !important;
   }
 
   .input-box-flat {
@@ -232,6 +266,7 @@
     .v-input__slot {
       padding: 0 5px !important;
     }
+    $text-field-affix-color: black;
   }
 }
 
@@ -242,9 +277,9 @@
 .derive-button {
   .v-btn {
     background-color: #fff !important;
-    border: 1px solid #00B520 !important;
+    border: 1px solid #000000 !important;
     .v-btn__content {
-      color: #00B520 !important;
+      color: #000000 !important;
     }
   }
 
@@ -267,7 +302,6 @@
     padding:9px;
     margin: 0px;
     border-radius:4px;
-    border:1px solid #d9d9d9;
     .v-input__control > .v-input__slot {
       background: none !important;
     }
@@ -309,7 +343,6 @@
 
 .form-field-summary {
   background-color: #F8F5F5;
-  border: 1px #D9D9D9 solid;
   border-radius: 5px;
   padding: 10px 7px !important;
 }
