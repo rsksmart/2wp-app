@@ -31,6 +31,7 @@
                 </v-row>
               </div>
               <v-progress-linear
+                id="progress-bar-pegout"
                 class="progress-bar-status"
                 :value="percentage"
                 :color="currentBarColor"
@@ -108,8 +109,7 @@ export default class PegoutProgressBar extends Vue {
 
   get percentage() {
     let percentage;
-    // switch (this.txStatus.txDetails?.status) {
-    switch (this.percentageTest) {
+    switch (this.txStatus.txDetails?.status) {
       case PegoutStatus.REJECTED:
         this.currentBarColor = this.colors.yellow;
         this.bordersStyle.rbtc = this.borderColor.yellow;
