@@ -8,7 +8,8 @@ import { deriveAddress, NETWORKS, bitcoinJsNetwork } from './xPubUtils';
 export function getPubKeyFromRskSignedMessage(signedMessage:string, hashedMessage: string): Buffer {
   const hashedMessageBuffer = Buffer.from(hashedMessage.substring(2), 'hex');
   const messageBuffer = Buffer.from(signedMessage.substring(2, 130), 'hex');
-  const recId = 0;
+  const recId = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin
+  === constants.BTC_NETWORK_MAINNET ? 0 : 1;
   return Buffer.from(ecdsaRecover(messageBuffer, recId, hashedMessageBuffer, false));
 }
 
