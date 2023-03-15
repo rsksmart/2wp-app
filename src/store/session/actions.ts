@@ -78,6 +78,7 @@ export const actions: ActionTree<SessionState, RootState> = {
     commit(constants.SESSION_SET_ACCOUNT, undefined);
     commit(constants.SESSION_CLOSE_RLOGIN);
     commit(constants.SESSION_SET_RLOGIN, undefined);
+    commit(constants.SESSION_SET_BTC_ACCOUNT, '');
   },
   [constants.SESSION_ADD_TX_TYPE]: ({ commit }, peg: TransactionType): void => {
     commit(constants.SESSION_SET_TX_TYPE, peg);
