@@ -10,7 +10,7 @@ export function getPubKeyFromRskSignedMessage(signedMessage:string, hashedMessag
   const messageBuffer = Buffer.from(signedMessage.substring(2, 130), 'hex');
   const recId = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin
   === constants.BTC_NETWORK_MAINNET ? 0 : 1;
-  return Buffer.from(ecdsaRecover(messageBuffer, recId, hashedMessageBuffer, false));
+  return Buffer.from(ecdsaRecover(messageBuffer, recId, hashedMessageBuffer, true));
 }
 
 export function getBtcAddressFromSignedMessage(

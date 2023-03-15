@@ -46,11 +46,11 @@ export default class AddressDialog extends Vue {
 
   @Action(constants.SESSION_SIGN_MESSAGE, { namespace: 'web3Session' }) signMessage !: (message: string) => Promise<void>;
 
-  @Emit('switchDeriveButton')
+  @Emit()
   toSign() {
     this.signMessage(this.messageToBeSigned)
       .then(() => {
-        this.showAddressDialog = false;
+        this.closeDialog();
       });
   }
 
