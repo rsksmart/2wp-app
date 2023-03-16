@@ -195,7 +195,7 @@
                         </v-icon>
                       </template>
                       <p class="tooltip-form mb-0">
-                        This is the {{networkFromText}}
+                        This is the {{networkToText}}
                         address where the
                         {{networkToText}} will be delivered.
                       </p>
@@ -391,10 +391,25 @@
         </v-container>
 
         <!-- Recipient -->
-        <v-container class="pb-0 pl-0">
+        <v-container v-if="type === txType.PEGOUT" class="pb-0 pl-0">
           <v-row class="justify-end mx-0">
             <h1 class="boldie">
               Bitcoin destination address:
+            </h1>
+          </v-row>
+          <div class="form-field pt-2 pl-0">
+            <v-container class="mark">
+              <p v-bind:class="{'grayish': recipientAddress === VALUE_INCOMPLETE_MESSAGE}"
+                 class="text-end">
+                {{ recipientAddress }}
+              </p>
+            </v-container>
+          </div>
+        </v-container>
+        <v-container v-if="type === txType.PEGIN" class="pb-0 pl-0">
+          <v-row class="justify-end mx-0">
+            <h1 class="boldie">
+              {{environmentContext.getRbtcTicker()}} destination address:
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">

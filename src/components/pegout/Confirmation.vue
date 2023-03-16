@@ -3,7 +3,7 @@
     <v-row class="mx-0 d-flex justify-center">
       <v-col cols="10" lg="8" xl="6" class="d-flex justify-center">
         <h1 class="text-center">
-          Your RBTC is on your way.
+          Your BTC is on its way!
         </h1>
       </v-col>
     </v-row>
