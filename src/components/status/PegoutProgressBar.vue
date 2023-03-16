@@ -115,8 +115,7 @@ export default class PegoutProgressBar extends Vue {
 
   get percentage() {
     let percentage;
-    // switch (this.txStatus.txDetails?.status) {
-    switch (this.currentStatus) {
+    switch (this.txStatus.txDetails?.status) {
       case PegoutStatus.REJECTED:
         this.currentBarColor = this.colors.yellow;
         this.bordersStyle.rbtc = this.borderColor.yellow;
@@ -150,7 +149,7 @@ export default class PegoutProgressBar extends Vue {
         this.secondCircle = this.circleColor.blue;
         percentage = 60;
         break;
-      case PegoutStatus.SIGNED:
+      case PegoutStatus.RELEASE_BTC:
         this.currentBarColor = this.colors.green;
         this.bordersStyle.rbtc = this.borderColor.green;
         this.bordersStyle.btc = this.borderColor.green;
