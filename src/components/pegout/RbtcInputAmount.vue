@@ -9,13 +9,6 @@
         <p v-bind:class="{'boldie': focus}">
           Enter the amount you want to send:
         </p>
-        <v-row class="mt-4 d-flex justify-center pa-0">
-          <v-col cols="5" class="ma-0 d-flex justify-center pa-0">
-            <span @click="setMax" class="greenish d-flex justify-center btn-max">Max</span>
-          </v-col>
-          <v-col cols="7">
-          </v-col>
-        </v-row>
         <v-row class="d-cols-wht mt-2 ml-1">
           <v-col cols="5" v-bind:class="[amountStyle]" class="input-box-outline" >
             <v-col cols="8" class="d-flex align-center">
@@ -49,7 +42,17 @@
             </v-row>
           </v-col>
         </v-row>
-        <v-row v-if="stepState === 'error'" class="mx-0">
+        <v-row class="mt-4 d-flex align-left pa-0">
+          <v-col cols="5" class="ma-0 d-flex align-left pa-0">
+            <span @click="setMax"
+              class="greenish d-flex align-left btn-max">
+                Use max available balance
+            </span>
+          </v-col>
+          <v-col cols="7">
+          </v-col>
+        </v-row>
+        <v-row v-if="stepState === 'error'" class="mx-0 error-max-balance">
                 <span class="yellowish" id="rbtc-error-msg">
                   {{amountErrorMessage}}
                 </span>
