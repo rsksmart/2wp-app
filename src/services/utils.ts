@@ -163,7 +163,7 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
           activeMessageStyle = 'statusRejected';
           isRejected = true;
           break;
-        case PegoutStatus.SIGNED:
+        case PegoutStatus.RELEASE_BTC:
           statusMessage = 'Your transaction was successfully processed!';
           activeMessageStyle = 'statusSuccess';
           isRejected = false;
