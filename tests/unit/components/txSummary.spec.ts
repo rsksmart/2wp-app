@@ -95,7 +95,7 @@ describe('TxSummary', () => {
         initialExpand: true,
       },
     });
-    expect(wrapper.find('#summary-horizontal-value-fee').text()).toEqual(`${new SatoshiBig('3000', 'satoshi').toBTCTrimmedString()
+    expect(wrapper.find('#summary-horizontal-value-fee').text()).toEqual(`${new SatoshiBig('3000', 'btc').toBTCTrimmedString()
     } TBTC`);
     expect(wrapper.find('#summary-horizontal-title-fee').text()).toEqual('Estimated fee');
   });
@@ -121,7 +121,7 @@ describe('TxSummary', () => {
         initialExpand: true,
       },
     });
-    expect(wrapper.find('#summary-horizontal-value-fee').text()).toEqual(`${new SatoshiBig('2000', 'satoshi').toBTCTrimmedString()} TBTC`);
+    expect(wrapper.find('#summary-horizontal-value-fee').text()).toEqual(`${new SatoshiBig('2000', 'btc').toBTCTrimmedString()} TBTC`);
     expect(wrapper.find('#summary-horizontal-title-fee').text()).toEqual('Fee');
   });
   it('should show the fee in BTC if it was a pegIn', () => {
@@ -146,7 +146,7 @@ describe('TxSummary', () => {
         initialExpand: true,
       },
     });
-    expect(wrapper.find('#summary-horizontal-value-fee').text()).toEqual(`${new SatoshiBig('2000', 'satoshi').toBTCTrimmedString()} TBTC`);
+    expect(wrapper.find('#summary-horizontal-value-fee').text()).toEqual(`${new SatoshiBig('2000', 'btc').toBTCTrimmedString()} TBTC`);
     expect(wrapper.find('#summary-horizontal-title-fee').text()).toEqual('Fee');
   });
 });
