@@ -249,7 +249,7 @@
                   <v-row>
                     <v-col class="form-field-summary">
                       <v-row class="justify-end mx-0 mb-2">
-                        <span id="summary-horizontal-value-fee">{{ safeFeeString === 0 ? '-'
+                        <span id="summary-horizontal-value-fee">{{ safeFeeString === '0' ? '-'
                           : safeFeeString + ' ' + environmentContext.getBtcTicker() }}
                         </span>
                       </v-row>
@@ -640,7 +640,7 @@ export default class TxSummaryFixed extends Vue {
   }
 
   get safeFeeString(): string {
-    return new SatoshiBig(this.safeFee, 'satoshi').toBTCTrimmedString();
+    return new SatoshiBig(this.safeFee.toString(), 'btc').toBTCTrimmedString();
   }
 
   get safeFee(): number {
