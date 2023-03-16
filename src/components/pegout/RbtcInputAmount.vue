@@ -42,14 +42,15 @@
             </v-row>
           </v-col>
         </v-row>
-        <v-row class="mt-4 d-flex align-left pa-0">
-          <v-col cols="5" class="ma-0 d-flex align-left pa-0">
-            <span @click="setMax"
-              class="greenish d-flex align-left btn-max">
-                Use max available balance
-            </span>
+        <v-row class="mt-4 d-flex align-left">
+          <v-col cols="4" class="ma-0 d-flex align-left">
+            <v-btn outlined rounded color="#000000" width="100%" height="38"
+              class="select-wallet-button align-left btn-max"
+              @click="setMax" >
+              <span class="blackish">Use max available balance</span>
+          </v-btn>
           </v-col>
-          <v-col cols="7">
+          <v-col cols="25">
           </v-col>
         </v-row>
         <v-row v-if="stepState === 'error'" class="mx-0 error-max-balance">
