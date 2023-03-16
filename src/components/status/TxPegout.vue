@@ -71,6 +71,8 @@ export default class TxPegout extends Vue {
       fee: status.feeInSatoshisToBePaid || 0,
       recipientAddress: status.btcRecipientAddress,
       senderAddress: status.rskSenderAddress,
+      txId: status.rskTxHash ? status.rskTxHash : this.txId,
+      estimatedFee: Number(this.txStatus.pegOutEstimatedFee.toSatoshiString()),
     };
   }
 
