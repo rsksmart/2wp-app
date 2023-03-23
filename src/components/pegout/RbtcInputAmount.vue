@@ -67,7 +67,12 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch, Prop } from 'vue-property-decorator';
+import {
+  Component,
+  Vue,
+  Watch,
+  Prop,
+} from 'vue-property-decorator';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import { Action, Getter, State } from 'vuex-class';
 import * as constants from '@/store/constants';
