@@ -5,7 +5,7 @@
         <div v-bind:class="[focus ?
               'number-filled' : 'number']">2</div>
       </v-col>
-      <v-col class="px-0 mb-4">
+      <v-col class="px-0 mb-3">
         <p v-bind:class="{'boldie': focus}">
           Enter the amount you want to send:
         </p>
@@ -42,9 +42,12 @@
             </v-row>
           </v-col>
         </v-row>
-        <v-row class="mt-4 d-flex align-left">
+        <v-row class="mx-4 d-flex align-left">
           <v-col cols="4" class="ma-0 d-flex align-left">
-            <v-btn outlined rounded color="#000000" width="100%" height="38"
+            <v-btn outlined rounded 
+              :color="'#000000'" 
+              width="100%" height="38"
+              :disabled="!enableButton"
               class="select-wallet-button align-left btn-max"
               @click="setMax" >
               <span class="blackish">Use max available balance</span>
@@ -64,7 +67,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import { Component, Vue, Watch, Prop } from 'vue-property-decorator';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import { Action, Getter, State } from 'vuex-class';
 import * as constants from '@/store/constants';
@@ -85,6 +88,8 @@ export default class RbtcInputAmount extends Vue {
   amountStyle = '';
 
   stepState: 'unset' | 'valid' |'error' = 'unset';
+
+  @Prop() enableButton !: boolean;
 
   @State('pegOutTx') pegOutTxState!: PegOutTxState;
 

@@ -19,8 +19,14 @@
                 <p class="mb-0 account">{{ address }}</p>
               </v-row>
               <v-row class="mx-0">
+                <span>Balance</span>
+              </v-row>
+              <v-row class="mx-0 d-flex align-center">
+                <p class="mb-0 account">{{ web3SessionState.balance.toRBTCTrimmedString() }}</p>
+              </v-row>
+              <v-row class="mx-0">
                 <v-btn class="pa-0" text @click="disconnectWallet">
-                  <span class="blackish">Disconnect wallet</span>
+                  <span class="px-2 blackish">Disconnect wallet</span>
                 </v-btn>
               </v-row>
             </div>
