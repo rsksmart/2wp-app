@@ -17,7 +17,7 @@
         <rsk-wallet-connection
           @switchDeriveButton="switchDeriveButton"/>
         <v-divider color="#C4C4C4"/>
-        <rbtc-input-amount/>
+        <rbtc-input-amount :enableButton="isReadyToSign"/>
         <v-divider color="#C4C4C4"/>
         <div class="form-step pb-0 pt-3 mb-3">
           <v-row class="mx-0 align-start">
