@@ -88,19 +88,6 @@ export const actions: ActionTree<SessionState, RootState> = {
       if (state.web3) {
         const messageHash = state.web3.utils.keccak256(messageToBeSigned);
         const signature = await state.web3.eth.personal.sign(messageHash, state.account || '0', '');
-        /*
-        const web3Provider = state.web3?.currentProvider as providers.ExternalProvider;
-        const provider = new providers.Web3Provider(web3Provider);
-        const key = provider.getSigner(0);
-        const messageHash = id(messageToBeSigned);
-        console.log('message hex:', messageHash);
-        const messageHash2 = state.web3.utils.sha3(messageToBeSigned);
-        console.log('hash sha3:', messageHash2);
-        const messageHash3 = state.web3.utils.keccak256(messageToBeSigned);
-        console.log('hash keccak256:', messageHash3);
-        const signature = await key.signMessage(Buffer.from(messageHash));
-        console.log('Signature', signature);
-        */
         const btcAddress = getBtcAddressFromSignedMessage(signature, messageHash || '');
         commit(constants.SESSION_SET_BTC_ACCOUNT, btcAddress);
       }
