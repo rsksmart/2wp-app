@@ -561,8 +561,10 @@ export default class TxSummaryFixed extends Vue {
   }
 
   get amountToReceive(): string {
-    return this.summary.amountReceivedString === '0' ? '-'
-      : `${this.summary.amountReceivedString} ${this.currencyToTicker}`;
+    if (!this.summary.amountReceivedString || this.summary.amountReceivedString === '0') {
+      return '-';
+    }
+    return `${this.summary.amountReceivedString} ${this.currencyToTicker}`;
   }
 
   get total(): string {

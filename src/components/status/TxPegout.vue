@@ -58,8 +58,6 @@ export default class TxPegout extends Vue {
 
   @Getter(constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE, { namespace: 'pegOutTx' }) estimatedBtcToReceive !: SatoshiBig;
 
-  @Getter(constants.STATUS_GET_ESTIMATED_FEE, { namespace: 'status' }) estimatedFee!: any;
-
   get txPegoutSummary(): NormalizedSummary {
     const status = this.txStatus.txDetails as PegoutStatusDataModel;
     return {

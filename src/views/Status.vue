@@ -1,17 +1,17 @@
 <template>
   <v-container fluid class="px-0 mx-0 max-width">
     <v-col>
-      <v-container class="transactions">
+      <v-container class="transactions ma-0 pa-0" >
         <v-row class="mx-0 mb-5 d-flex justify-center">
           <h1 class="text-center">Transaction status</h1>
         </v-row>
-        <v-row class="mx-0 mt-10 mb-8" justify="center">
+        <v-row class="mx-0 mt-10 mb-4" justify="center">
           <p class="subtitle">Enter your
             transaction hash in the textbox below
             to check the status of your operation</p>
         </v-row>
         <v-row justify="center" class="mx-0">
-          <v-col cols="7" md="8" xl="7" lg="7">
+          <v-col cols="7" md="8" xl="7" lg="7" class="pa-0">
             <v-text-field dense outlined hide-details
                           append-icon="mdi-magnify"
                           @click:append="getPegStatus"
@@ -30,12 +30,13 @@
           </v-col>
         </v-row>
         <v-row justify="center"  v-if="showStatus" class="mx-0 mt-5 mb-0">
-          <div class="mt-4 mb-0 status" :class="activeMessage.activeMessageStyle">
+          <div class="mt-4 mb-0 status text-center"
+               :class="activeMessage.activeMessageStyle">
             {{ activeMessage.statusMessage }}
           </div>
         </v-row>
       </v-container>
-      <v-container fluid class="transactions px-0">
+      <v-container fluid class="transactions pa-0">
         <tx-pegin
           v-if="!activeMessage.isRejected
             && isPegIn
@@ -136,7 +137,6 @@ export default class Status extends Vue {
   get showStatus() {
     return !this.loading
       && !this.activeMessage.error
-      && !this.isRejected
       && !!this.activeMessage.statusMessage;
   }
 

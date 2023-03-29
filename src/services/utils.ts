@@ -149,8 +149,8 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
     case TxStatusType.PEGOUT:
       switch (status) {
         case PegoutStatus.RECEIVED:
-          statusMessage = 'Your transaction was successfully processed!';
-          activeMessageStyle = 'statusSuccess';
+          statusMessage = 'Your peg-out is being processed \n Estimated time 34 hours';
+          activeMessageStyle = 'statusProgress';
           isRejected = false;
           break;
         case PegoutStatus.NOT_FOUND:
@@ -169,7 +169,7 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
           isRejected = false;
           break;
         case PegoutStatus.REJECTED:
-          statusMessage = `Your transaction was declined. \n Your ${environmentContext.getRbtcTicker()} will be sent to the sender address`;
+          statusMessage = 'Your peg-out was rejected. \n But don’t worry your funds were reimbursed';
           activeMessageStyle = 'statusRejected';
           isRejected = true;
           break;
