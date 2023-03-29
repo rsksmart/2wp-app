@@ -16,8 +16,16 @@ export const actions: ActionTree<TxStatus, RootState> = {
       dispatch(constants.STATUS_GET_ESTIMATED_FEE),
     ])
       .then(([status]) => {
-        commit(constants.STATUS_SET_TX_DETAILS, status.txDetails);
-        commit(constants.STATUS_SET_TX_TYPE, status.type);
+        const mockedStatus = {
+          btcRecipientAddress: 'btcRecipientAddress',
+          originatingRskTxHash: 'originatingTxHashTest',
+          rskSenderAddress: 'userSenderAddress',
+          rskTxHash: 'rskTxHash',
+          status: 'RECEIVED',
+          valueRequestedInSatoshis: 500000,
+        };
+        commit(constants.STATUS_SET_TX_DETAILS, mockedStatus);
+        commit(constants.STATUS_SET_TX_TYPE, 'PEGOUT');
       })
       .catch(() => {
         commit(constants.STATUS_SET_TX_DETAILS, undefined);

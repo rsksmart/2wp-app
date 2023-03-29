@@ -107,7 +107,7 @@
     .box-field {
       margin: 10px 5px !important;
     }
-    
+
     .box-col {
       padding: 0px 5px !important;
     }
@@ -130,7 +130,7 @@
         padding-bottom: 25px;
       }
     }
-    
+
     .status-subtitle {
       color: #000;
       font-size: 16px;
@@ -160,12 +160,21 @@
   }
   .statusProgress {
     color: #008CFF;
+    font-weight: 600;
+    font-size: 25px;
+    line-height: 31px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
   }
   .statusSuccess {
     color: #00B43C;
   }
   .statusRejected {
     color: #F6C61B;
+    font-size: 26px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    line-height: 32px;
   }
 
   .rounded {
@@ -270,7 +279,7 @@
 }
 
 .rsk-icon-green {
-  z-index: 5; 
+  z-index: 5;
   position: absolute;
   margin-left: -75px;
   margin-top: -30px;
@@ -306,7 +315,7 @@
   text-overflow: ellipsis;
 }
 
-.box-pegin { 
+.box-pegin {
   display: flex;
   flex-direction: column;
 
@@ -328,7 +337,7 @@
 
 }
 
-.box-pegout { 
+.box-pegout {
   display: flex;
   flex-direction: column;
 

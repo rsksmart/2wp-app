@@ -1,14 +1,5 @@
 <template>
   <v-container fluid class="pa-0 mb-1 mt-0 max-width">
-    <v-row v-if="showRejectedMsg" justify="center">
-      <v-col class="d-flex justify-center mb-5 pa-0" justify="center" cols="12">
-        <div class="text-center">
-          <p class="title-reject">Your Peg-out was rejected.</p>
-          <br/>
-          <p class="title-reject">but don't worry your funds were reimbursed.</p>
-        </div>
-      </v-col>
-    </v-row>
     <v-row justify="center" class="mt-6">
       <v-col class="ma-0 pa-0" cols="7">
         <v-row class="mx-0 d-flex justify-center progress-bar">
