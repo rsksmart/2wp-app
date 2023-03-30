@@ -17,7 +17,7 @@
         <rsk-wallet-connection
           @switchDeriveButton="switchDeriveButton"/>
         <v-divider color="#C4C4C4"/>
-        <rbtc-input-amount :enableButton="isReadyToSign"/>
+        <rbtc-input-amount :enableButton="!isReadyToSign"/>
         <v-divider color="#C4C4C4"/>
         <div class="form-step pb-0 pt-3 mb-3">
           <v-row class="mx-0 align-start">
@@ -43,7 +43,7 @@
                   </div>
                 </v-col>
                 <v-col v-else cols="4" class="pb-0 px-0">
-                  <v-row class="derive-button mx-0 d-flex justify-center">
+                  <v-row class="derive-button ml-1 mx-0 d-flex justify-center">
                     <v-btn :disabled="!isReadyToSign"
                       outlined rounded
                       width="100%" height="38"
@@ -175,6 +175,7 @@ export default class PegOutForm extends Vue {
   }
 
   switchDeriveButton(): void {
+    console.log('======================================');
     this.isReadyToSign = !this.isReadyToSign;
   }
 
