@@ -41,19 +41,17 @@
               </v-col>
             </v-row>
           </v-col>
-        </v-row>
-        <v-row class="mx-4 d-flex align-left">
-          <v-col cols="4" class="ma-0 d-flex align-left">
-            <v-btn outlined rounded 
-              :color="'#000000'" 
-              width="100%" height="38"
-              :disabled="!enableButton"
-              class="select-wallet-button align-left btn-max"
-              @click="setMax" >
-              <span class="blackish">Use max available balance</span>
-          </v-btn>
-          </v-col>
-          <v-col cols="25">
+          <v-col cols="4" class="pb-0 px-0">
+            <v-row class="derive-button mx-0 d-flex justify-center">
+              <v-btn :disabled="enableButton"
+                outlined rounded
+                width="100%" height="38"
+                @click="setMax" >
+                <span>
+                 Use max available balance
+                </span>
+              </v-btn>
+            </v-row>
           </v-col>
         </v-row>
         <v-row v-if="stepState === 'error'" class="mx-0 error-max-balance">
@@ -82,7 +80,8 @@ import {
   PegOutTxState, SatoshiBig, SessionState, WeiBig,
 } from '@/types';
 
-@Component({})
+@Component({
+})
 export default class RbtcInputAmount extends Vue {
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
@@ -93,6 +92,8 @@ export default class RbtcInputAmount extends Vue {
   amountStyle = '';
 
   stepState: 'unset' | 'valid' |'error' = 'unset';
+
+  isReadyToSign = false;
 
   @Prop() enableButton !: boolean;
 
@@ -109,6 +110,11 @@ export default class RbtcInputAmount extends Vue {
   @Getter(constants.PEGOUT_TX_GET_SAFE_TX_FEE, { namespace: 'pegOutTx' }) safeTxFee !: WeiBig;
 
   @Getter(constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE, { namespace: 'pegOutTx' }) estimatedBtcToReceive !: SatoshiBig;
+
+  switchDeriveButton(): void {
+    console.log('====================================== 2');
+    this.isReadyToSign = !this.isReadyToSign;
+  }
 
   blockLetterKeyDown(e: KeyboardEvent) {
     if (this.rbtcAmount.toString().length > 18

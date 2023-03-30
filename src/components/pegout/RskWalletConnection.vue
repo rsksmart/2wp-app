@@ -11,23 +11,29 @@
         </p>
         <v-row class="mx-0 mt-4">
           <template v-if="useWeb3Wallet && web3Address">
-             <div class="container">
+             <div class="pl-1">
               <v-row class="mx-0">
-                <span>Wallet connected</span>
-              </v-row>
-              <v-row class="mx-0 d-flex align-center">
-                <p class="mb-0 account">{{ address }}</p>
-              </v-row>
-              <v-row class="mx-0">
-                <span>Balance</span>
-              </v-row>
-              <v-row class="mx-0 d-flex align-center">
-                <p class="mb-0 account">{{ web3SessionState.balance.toRBTCTrimmedString() }}</p>
+                <v-col>
+                   <p class="mb-0 account">
+                     {{ address }} -
+                     {{ web3SessionState.balance.toRBTCTrimmedString() }}
+                     {{this.environmentContext.getRbtcTicker()}}
+                  </p>
+                </v-col>
               </v-row>
               <v-row class="mx-0">
-                <v-btn class="pa-0" text @click="disconnectWallet">
-                  <span class="px-2 blackish">Disconnect wallet</span>
-                </v-btn>
+                <v-col cols="4" class="pb-0 px-0">
+                  <v-row class="derive-button mx-0 d-flex justify-center">
+                    <v-btn
+                      @click="disconnectWallet"
+                      outlined rounded
+                      width="100%" height="38">
+                      <span>
+                        Disconnect wallet
+                      </span>
+                    </v-btn>
+                  </v-row>
+                </v-col>
               </v-row>
             </div>
           </template>
