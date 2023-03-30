@@ -121,7 +121,9 @@ export default class PegoutProgressBar extends Vue {
         this.bordersStyle.btc = this.borderColor.gray;
 
         this.firstCircle = this.circleColor.blue;
-        percentage = 20;
+        this.secondCircle = this.circleColor.blue;
+        this.thirdCircle = this.circleColor.blue;
+        percentage = 90;
         break;
       case PegoutStatus.RECEIVED:
         this.currentBarColor = this.colors.blue;

@@ -204,8 +204,7 @@
                   <v-row>
                     <v-col class="form-field-summary">
                       <v-row class="justify-end">
-                        <v-col cols="11" v-bind:class="{'text-right': recipientAddress === '-'}"
-                               class="col-address-button d-flex flex-column">
+                        <v-col cols="11" class="col-address-button d-flex flex-column text-right">
                             <span class="breakable-address status-text-ellipsis">
                               {{recipientAddress}}
                             </span>
@@ -239,7 +238,7 @@
               </v-row>
 
               <!-- Fee -->
-              <v-row v-if="summary.fee !== 0 || isRejected" class="box-field mx-1">
+              <v-row class="box-field mx-1">
                 <v-col>
                   <v-row class="justify-end">
                     <span class="status-subtitle" id="summary-horizontal-title-fee">

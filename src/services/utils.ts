@@ -179,7 +179,7 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
           isRejected = false;
           break;
         case PegoutStatus.WAITING_FOR_SIGNATURE:
-          statusMessage = 'Your transaction is waiting for more signatures!';
+          statusMessage = 'Your peg-out is being processed \n Estimated time 10 minutes';
           activeMessageStyle = 'statusProgress';
           isRejected = false;
           break;
