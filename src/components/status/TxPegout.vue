@@ -67,7 +67,7 @@ export default class TxPegout extends Vue {
       recipientAddress: status.btcRecipientAddress,
       senderAddress: status.rskSenderAddress,
       txId: status.rskTxHash ? status.rskTxHash : this.txId,
-      estimatedFee: Number(this.txStatus.pegOutEstimatedFee.toSatoshiString()),
+      estimatedFee: Number(this.txStatus.pegOutEstimatedFee.toBTCTrimmedString()),
     };
   }
 
