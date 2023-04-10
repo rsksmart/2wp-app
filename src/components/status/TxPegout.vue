@@ -77,7 +77,7 @@ export default class TxPegout extends Vue {
       return '';
     }
     if (status.valueInSatoshisToBeReceived) {
-      new SatoshiBig(status.valueInSatoshisToBeReceived, 'satoshi').toBTCTrimmedString();
+      return new SatoshiBig(status.valueInSatoshisToBeReceived, 'satoshi').toBTCTrimmedString();
     }
     return this.estimatedBtcToReceive.toBTCTrimmedString();
   }
