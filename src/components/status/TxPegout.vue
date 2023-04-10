@@ -63,7 +63,7 @@ export default class TxPegout extends Vue {
     return {
       amountFromString: new SatoshiBig(status.valueRequestedInSatoshis, 'satoshi').toBTCTrimmedString(),
       amountReceivedString: this.amountToBeReceived,
-      fee: status.feeInSatoshisToBePaid || 0,
+      fee: Number(new SatoshiBig(status.feeInSatoshisToBePaid || 0, 'satoshi').toBTCTrimmedString()),
       recipientAddress: status.btcRecipientAddress,
       senderAddress: status.rskSenderAddress,
       txId: status.rskTxHash ? status.rskTxHash : this.txId,
