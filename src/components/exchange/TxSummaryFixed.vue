@@ -1,6 +1,6 @@
 <template>
   <v-container v-if="type && orientation" class="mt-10">
-    <v-row class="mx-0 pb-4">
+    <v-row class="mx-0 pb-4 d-flex justify-center">
       <h2 class="text-center tx-text">
         Transaction summary:
       </h2>
