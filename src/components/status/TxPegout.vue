@@ -24,11 +24,10 @@ import {
   SatoshiBig,
   TxStatusType,
   TxSummaryOrientation,
-  WeiBig,
   PegoutStatus,
   PegoutStatusDataModel, NormalizedSummary,
 } from '@/types';
-import { State, Getter, Action } from 'vuex-class';
+import { State, Getter } from 'vuex-class';
 import * as constants from '@/store/constants';
 import PegoutProgressBar from '@/components/status/PegoutProgressBar.vue';
 import TxSummaryFixed from '@/components/exchange/TxSummaryFixed.vue';
@@ -44,19 +43,11 @@ export default class TxPegout extends Vue {
 
   orientationSummary = TxSummaryOrientation.HORIZONTAL;
 
-  currentFee = new SatoshiBig('0', 'btc');
-
-  currentRefundAddress = '';
-
   @Prop() txId!: string;
 
   @State('status') txStatus!: TxStatus;
 
-  @Action(constants.PEGOUT_TX_ADD_AMOUNT, { namespace: 'pegOutTx' }) setAmount!: (amount: WeiBig) => void;
-
   @Getter(constants.STATUS_IS_REJECTED, { namespace: 'status' }) isRejected!: boolean;
-
-  @Getter(constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE, { namespace: 'pegOutTx' }) estimatedBtcToReceive !: SatoshiBig;
 
   get txPegoutSummary(): NormalizedSummary {
     const status = this.txStatus.txDetails as PegoutStatusDataModel;
@@ -79,30 +70,12 @@ export default class TxPegout extends Vue {
     if (status.valueInSatoshisToBeReceived) {
       return new SatoshiBig(status.valueInSatoshisToBeReceived, 'satoshi').toBTCTrimmedString();
     }
-    return this.estimatedBtcToReceive.toBTCTrimmedString();
+    const requestedAmount = new SatoshiBig(status.valueRequestedInSatoshis, 'satoshi');
+    return requestedAmount.minus(this.txStatus.pegOutEstimatedFee).toBTCTrimmedString();
   }
 
   get isRejectedPegout() {
     return this.txStatus.txDetails?.status === PegoutStatus.REJECTED;
-  }
-
-  setSummaryData() {
-    const pegoutStatusDataModel = this.txStatus?.txDetails as PegoutStatusDataModel;
-
-    const txData = {
-      amount: new SatoshiBig(pegoutStatusDataModel.valueRequestedInSatoshis, 'btc'),
-      recipient: pegoutStatusDataModel.btcRecipientAddress,
-      refundAddress: pegoutStatusDataModel.rskSenderAddress,
-      feeBTC: new SatoshiBig(pegoutStatusDataModel.fees ? pegoutStatusDataModel.fees : 0, 'btc'),
-      change: '',
-    };
-    this.setAmount(new WeiBig(pegoutStatusDataModel.valueRequestedInSatoshis * 10000000000, 'wei'));
-    this.currentRefundAddress = txData.refundAddress;
-    this.currentFee = txData.feeBTC;
-  }
-
-  created() {
-    this.setSummaryData();
   }
 }
 </script>
