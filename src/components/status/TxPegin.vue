@@ -134,7 +134,7 @@
         </v-col>
       </v-row>
     </v-container>
-    <v-row>
+    <v-row class="mt-12">
       <tx-summary-fixed
         :summary="txPeginSummary"
         :initialExpand="true"
