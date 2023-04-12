@@ -1,6 +1,6 @@
 <template>
   <v-container fluid class="exchange-form normalized-height container
-                                                                                      max-width mx-6 mt-6">
+                                                                                        max-width mx-6 mt-6">
     <v-col class="px-0">
       <v-row class="mx-0">
         <v-col cols="1" class="pa-0 d-flex align-center">
@@ -54,7 +54,7 @@
                     <div>
                       As you are using Liquality, you need to follow
                       <a :href=DOC_URL class='d-inline' style='text-decoration: none;' target='_blank'> documentation</a>
-                      to get the address.
+                      to get the destination address.
                     </div>
                   </v-container>
                 </v-row>
