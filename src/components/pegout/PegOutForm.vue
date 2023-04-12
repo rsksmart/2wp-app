@@ -1,6 +1,5 @@
 <template>
-  <v-container fluid class="exchange-form normalized-height container
-                                                                                        max-width mx-6 mt-6">
+  <v-container fluid class="exchange-form normalized-height container max-width mx-6 mt-6">
     <v-col class="px-0">
       <v-row class="mx-0">
         <v-col cols="1" class="pa-0 d-flex align-center">
@@ -42,8 +41,8 @@
                   </v-col>
                   <v-col v-else cols="4" class="pb-0 px-0">
                     <v-row class="derive-button ml-1 mx-0 d-flex justify-center">
-                      <v-btn :disabled="!isReadyToSign || injectedProvider == LIQUALITY" outlined rounded width="100%"
-                        height="38" @click="openAddressDialog">
+                      <v-btn :disabled="!isReadyToSign || injectedProvider == LIQUALITY"
+                      outlined rounded width="100%" height="38" @click="openAddressDialog">
                         <span>
                           Get Bitcoin destination address
                         </span>
@@ -53,7 +52,8 @@
                   <v-container v-if="injectedProvider === LIQUALITY">
                     <div>
                       As you are using Liquality, you need to follow
-                      <a :href=DOC_URL class='d-inline' style='text-decoration: none;' target='_blank'> documentation</a>
+                      <a :href=DOC_URL class='d-inline' style='text-decoration: none;'
+                      target='_blank'> documentation </a>
                       to get the destination address.
                     </div>
                   </v-container>
@@ -68,7 +68,8 @@
         </v-col>
       </v-row>
       <v-row v-if="showAddressDialog">
-        <address-dialog @switchDeriveButton="switchDeriveButton" @closeDialog="closeAddressDialog" />
+        <address-dialog @switchDeriveButton="switchDeriveButton"
+          @closeDialog="closeAddressDialog" />
       </v-row>
       <v-row class="mx-0">
         <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
@@ -83,7 +84,8 @@
             <span class="whiteish">Send</span>
             <v-icon class="ml-2" color="#fff">mdi-send-outline</v-icon>
           </v-btn>
-          <v-progress-circular v-if="pegOutFormState.matches(['loading'])" indeterminate color="#000000" class="mr-10" />
+          <v-progress-circular v-if="pegOutFormState.matches(['loading'])"
+            indeterminate color="#000000" class="mr-10" />
         </v-col>
       </v-row>
     </v-col>
