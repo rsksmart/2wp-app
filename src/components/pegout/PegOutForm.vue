@@ -41,19 +41,20 @@
                   </v-col>
                   <v-col v-else cols="4" class="pb-0 px-0">
                     <v-row class="derive-button ml-1 mx-0 d-flex justify-center">
-                      <v-btn :disabled="!isReadyToSign || injectedProvider == LIQUALITY"
-                      outlined rounded width="100%" height="38" @click="openAddressDialog">
+                      <v-btn :disabled="!isReadyToSign ||
+                        injectedProvider == appConstants.RLOGIN_LIQUALITY_WALLET"
+                        outlined rounded width="100%" height="38" @click="openAddressDialog">
                         <span>
                           Get Bitcoin destination address
                         </span>
                       </v-btn>
                     </v-row>
                   </v-col>
-                  <v-container v-if="injectedProvider === LIQUALITY">
+                  <v-container v-if="injectedProvider === appConstants.RLOGIN_LIQUALITY_WALLET">
                     <div>
                       As you are using Liquality, you need to follow
-                      <a :href=DOC_URL class='d-inline' style='text-decoration: none;'
-                      target='_blank'> documentation </a>
+                      <a :href=appConstants.RSK_PEGOUT_DOCUMENTATION_URL class="d-inline a"
+                      style='text-decoration: none;' target='_blank'> this documentation </a>
                       to get the destination address.
                     </div>
                   </v-container>
@@ -128,9 +129,7 @@ export default class PegOutForm extends Vue {
 
   injectedProvider = '';
 
-  LIQUALITY = 'Liquality'
-
-  DOC_URL = 'https://developers.rsk.co/rsk/rbtc/conversion/networks/mainnet/#rbtc-to-btc-conversion'
+  appConstants = constants;
 
   recipientAddress = '';
 
@@ -182,7 +181,6 @@ export default class PegOutForm extends Vue {
     // @ts-ignore
     this.injectedProvider = this.session.rLoginInstance?.providerController.injectedProvider.name;
     //
-    console.log('======================================');
     this.isReadyToSign = !this.isReadyToSign;
   }
 
