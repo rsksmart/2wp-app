@@ -50,6 +50,7 @@
                       </v-btn>
                     </v-row>
                   </v-col>
+<<<<<<< HEAD
                   <v-container v-if="injectedProvider === appConstants.RLOGIN_LIQUALITY_WALLET"
                     style="font-size: 14px;">
                     <div>
@@ -57,6 +58,14 @@
                       <a :href=appConstants.RSK_PEGOUT_DOCUMENTATION_URL class="d-inline blackish a"
                         target='_blank'> this documentation</a>
                        to get the destination address.
+=======
+                  <v-container v-if="injectedProvider === appConstants.RLOGIN_LIQUALITY_WALLET">
+                    <div>
+                      As you are using Liquality, you need to follow
+                      <a :href=appConstants.RSK_PEGOUT_DOCUMENTATION_URL class="d-inline a"
+                      style='text-decoration: none;' target='_blank'> this documentation </a>
+                      to get the destination address.
+>>>>>>> 45c295905635bb04ca0a39e0d135ac4cc4cb7bf1
                     </div>
                   </v-container>
                 </v-row>
