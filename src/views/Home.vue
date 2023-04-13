@@ -2,14 +2,14 @@
   <v-container fluid class="exchange normalized-height container
   max-width mx-6">
     <v-container fluid class="exchange">
-      <v-row justify="center" class="mx-0">
+      <v-row class="mx-0 justify-center">
         <v-col>
           <v-row class="mx-0 mb-5 d-flex justify-center">
             <h1 class="title-landing">2-Way Peg App</h1>
           </v-row>
         </v-col>
       </v-row>
-      <v-row justify="center" class="mx-0">
+      <v-row class="mx-0 justify-center">
         <v-col>
           <v-row class="mx-0 mb-5 d-flex justify-center">
             <h2>Bridging {{environmentContext.getBtcTicker()}} and
@@ -19,7 +19,7 @@
             <v-row class="mx-0 mt-10 d-flex justify-center">
               <p>Select your token conversion</p>
             </v-row>
-            <v-row justify="center" class="ma-0">
+            <v-row class="ma-0 justify-center">
               <v-col cols="4" class="d-flex justify-end pb-0">
                 <v-btn @click="selectPegIn" :disabled="!isAllowedBrowser" outlined
                        v-bind:class="[ this.btnWalletClass, btcToRbtc ? 'selected' : '' ]">

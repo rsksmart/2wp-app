@@ -1,6 +1,6 @@
 <template>
   <v-col>
-      <v-row justify="center" class="mt-1">
+      <v-row class="mt-1 justify-center">
         <pegout-progress-bar/>
          <tx-summary-fixed
            :summary="txPegoutSummary"

@@ -1,6 +1,6 @@
 <template>
   <v-app-bar color="#fff" elevation="0" class="mx-8 top">
-    <v-row justify="center">
+    <v-row class="justify-center">
       <v-col cols="11" class="d-flex flex-column align-start px-0">
         <v-col cols="auto" class="top-logo">
           <v-col cols="auto" class="px-0 pb-1">

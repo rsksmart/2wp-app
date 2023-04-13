@@ -1,9 +1,15 @@
 import axios from 'axios';
 import { PeginConfiguration, RequestBalance } from '@/types/pegInTx';
 import {
-  AccountBalance, AddressStatus, FeeAmountDataResponse, NormalizedTx, TxStatus,
+  AccountBalance,
+  AddressStatus,
+  FeeAmountDataResponse,
+  NormalizedInput,
+  NormalizedTx,
+  SatoshiBig,
+  TxStatus,
 } from '@/types';
-import { areValidOutputs } from '@/utils';
+import { areValidOutputs, isValidInput } from '@/utils';
 import { BridgeService } from '@/services/BridgeService';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import { ApiInformation } from '@/types/ApiInformation';
@@ -46,7 +52,8 @@ export default class ApiService {
 
   public static createPeginTx(amountToTransferInSatoshi: number, refundAddress: string,
     recipient: string, sessionId: string, feeLevel: string,
-    changeAddress: string): Promise<NormalizedTx> {
+    changeAddress: string, userAddressList: string[], feeAmountCalculated: SatoshiBig)
+    : Promise<NormalizedTx> {
     const bridgeService = new BridgeService();
     return new Promise<NormalizedTx>((resolve, reject) => {
       Promise.all([
@@ -62,6 +69,20 @@ export default class ApiService {
       ])
         .then(([response, powPegAddress]) => {
           const normalizedTx: NormalizedTx = response.data;
+          if (!normalizedTx.inputs
+            .every((input: NormalizedInput) => isValidInput(input, userAddressList))) {
+            reject(new Error('Invalid input list on the created Transaction'));
+          }
+          const inputsSum = normalizedTx.inputs
+            .map((input) => Number(input.amount))
+            .reduce((prevAmount, currAmount) => prevAmount + currAmount);
+          const outputsSum = normalizedTx.outputs
+            .map((output) => Number(output.amount))
+            .reduce((prevAmount, currAmount) => prevAmount + currAmount);
+          const feeToPay = new SatoshiBig(inputsSum - outputsSum, 'satoshi');
+          if (feeToPay.gt(feeAmountCalculated)) {
+            reject(new Error('There was an unexpected increase of the calculated fee'));
+          }
           const expectedChangeAddress = changeAddress || normalizedTx.inputs[0].address;
           const { valid, reason } = areValidOutputs(
             normalizedTx.outputs, powPegAddress,

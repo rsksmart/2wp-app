@@ -1,16 +1,16 @@
 <template>
   <div class="transactions">
     <v-col offset="2" cols="8">
-      <v-row v-if="isLiqualityWallet" justify="center" class="mx-0">
+      <v-row v-if="isLiqualityWallet" class="mx-0 justify-center">
         <h1>Enable {{ walletName }} wallet</h1>
       </v-row>
-      <v-row v-else justify="center" class="mx-0">
+      <v-row v-else class="mx-0 justify-center">
         <h1>Connect your {{ walletName }}</h1>
       </v-row>
-      <v-row v-if="isHdWallet" justify="center" class="ma-0 mb-10">
+      <v-row v-if="isHdWallet" class="ma-0 mb-10 justify-center">
         <p class="ma-0">(Keep your {{ walletName }} close so you can authorize access)</p>
       </v-row>
-      <v-row justify="center">
+      <v-row class="justify-center">
         <v-col id="connect-device-steps" class="mb-10" cols="12">
           <v-row class="ma-0">
             <v-col cols="1">

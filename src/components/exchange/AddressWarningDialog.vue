@@ -15,7 +15,7 @@
             Do you want to continue?
           </p>
         </v-col>
-        <v-row class="mx-0 mb-8 mt-3" justify="space-around">
+        <v-row class="mx-0 mb-8 mt-3 justify-space-around">
           <v-col class="d-flex justify-center">
             <v-btn width="100" height="40" dense
                    outlined rounded color="#000000" @click="closeDialog">

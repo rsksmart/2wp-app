@@ -19,6 +19,7 @@ import Mobile from '@/views/Mobile.vue';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import { Action } from 'vuex-class';
 import * as constants from '@/store/constants';
+import { vuetifyNonce } from '@/plugins/vuetify';
 
 @Component({
   components: {
@@ -32,7 +33,30 @@ export default class App extends Vue {
 
   @Action(constants.SESSION_ADD_BITCOIN_PRICE, { namespace: 'web3Session' }) getBtcPrice!: () => void;
 
-  mounted() {
+  // eslint-disable-next-line class-methods-use-this
+  get contentSecurityPolicy(): string {
+    const envVariables = EnvironmentAccessorService.getEnvironmentVariables();
+    let response = '';
+    response = `
+    style-src 'self' 'unsafe-inline' ;
+    script-src 'self' 'nonce-${vuetifyNonce}' 'unsafe-eval';
+    img-src data: https:;
+    connect-src 'self' ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://api.coingecko.com ;
+    object-src 'none';
+    frame-src https://connect.trezor.io;
+    worker-src 'none';
+    `;
+    return response;
+  }
+
+  appendCSP():void {
+    const metaTag: HTMLMetaElement = document.createElement<'meta'>('meta');
+    metaTag.httpEquiv = 'Content-Security-policy';
+    metaTag.content = this.contentSecurityPolicy;
+    document.head.appendChild(metaTag);
+  }
+
+  appendHotjar(): void {
     const hotjarID = EnvironmentAccessorService.getEnvironmentVariables().vueAppHotjarId;
     this.scriptTag = document.createElement('script');
     this.scriptTag.type = 'text/javascript';
@@ -43,13 +67,14 @@ export default class App extends Vue {
       + 'r=o.createElement("script");r.async=1;'
       + 'r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;'
       + 'a.appendChild(r);'
-    + '})(window,document,"https://static.hotjar.com/c/hotjar-",".js?sv=");';
-
+      + '})(window,document,"https://static.hotjar.com/c/hotjar-",".js?sv=");';
     document.body.appendChild(this.scriptTag);
   }
 
   created() {
     this.getBtcPrice();
+    this.appendHotjar();
+    this.appendCSP();
   }
 }
 </script>

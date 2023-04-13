@@ -5,12 +5,12 @@
         <v-row class="mx-0 mb-5 d-flex justify-center">
           <h1 class="text-center">Transaction status</h1>
         </v-row>
-        <v-row class="mx-0 mt-10 mb-8" justify="center">
+        <v-row class="mx-0 mt-10 mb-8 justify-center" >
           <p class="subtitle">Enter your
             transaction hash in the textbox below
             to check the status of your operation</p>
         </v-row>
-        <v-row justify="center" class="mx-0">
+        <v-row class="mx-0 justify-center">
           <v-col cols="7" md="8" xl="7" lg="7">
             <v-text-field dense outlined hide-details
                           append-icon="mdi-magnify"
@@ -29,7 +29,7 @@
             </v-row>
           </v-col>
         </v-row>
-        <v-row justify="center"  v-if="showStatus" class="mx-0 mt-5 mb-0">
+        <v-row v-if="showStatus" class="mx-0 mt-5 mb-0 justify-center">
           <div class="mt-4 mb-0 status" :class="activeMessage.activeMessageStyle">
             {{ activeMessage.statusMessage }}
           </div>
@@ -49,7 +49,7 @@
             && isPegOut"
           :txId ="txId"
         />
-        <v-row justify="center" class="mx-0 mt-5">
+        <v-row class="mx-0 mt-5 justify-center">
           <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
             <v-btn rounded outlined color="#000000" width="110" @click="back">
               <span>Go home</span>

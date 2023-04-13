@@ -15,7 +15,7 @@
         Press <strong>Send</strong> when you finish.
       </p>
     </v-row>
-    <v-row id="instructions-trezor" justify="center" class="mx-0">
+    <v-row id="instructions-trezor" class="mx-0 justify-center">
       <v-col cols="3">
         <v-row class="mx-0 d-flex justify-center">
           <v-img src="@/assets/exchange/rootstock_black.png" height="40" contain/>

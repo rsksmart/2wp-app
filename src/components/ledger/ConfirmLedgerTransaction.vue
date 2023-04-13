@@ -15,9 +15,9 @@
         Press <strong>Send</strong> when you finish.
       </p>
     </v-row>
-    <v-row id="instructions-ledger" justify="center" class="mx-0">
+    <v-row id="instructions-ledger" class="mx-0 justify-center">
       <v-col id="instruction-1" cols="3" xl="3">
-        <v-row justify="center" class="mx-0">
+        <v-row class="mx-0 justify-center">
           <v-img src="@/assets/exchange/rootstock_black.png" height="40" contain/>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">

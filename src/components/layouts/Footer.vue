@@ -1,7 +1,7 @@
 <template>
     <v-footer padless color="white" class="footer-rsk d-flex justify-center">
       <v-col cols="11" class="pb-0">
-        <v-row justify="center" align="start" class="mx-0 py-md-0 py-xl-6">
+        <v-row align="start" class="mx-0 py-md-0 py-xl-6 justify-center">
           <v-col>
               <v-row class="footer-logo mx-0" align="end">
                 <span>Built by</span>
@@ -15,7 +15,7 @@
             <p>Copyright © 2023 IOV Labs All rights reserved</p>
           </v-col>
           <v-col cols="7" class="pt-4">
-            <v-row justify="center" class="mx-0 footer-links">
+            <v-row class="mx-0 footer-links justify-center">
               <a href="https://www.iovlabs.org/" target="_blank">
                 About IOV Labs
               </a>
@@ -23,13 +23,13 @@
               <a href="https://rootstock.io/terms-conditions/" target="_blank">
                 Terms & Conditions
               </a>
-              <a :href="urlApi" target="_blank">Api Version: {{obtainApiVersion}}</a>
+              <a :href="urlApi" target="_blank">Api Version: {{apiVersion}}</a>
               <a :href="url" target="_blank">App Version: {{$store.getters.appVersion}}</a>
               <a v-if="false">Documentation</a>
             </v-row>
           </v-col>
           <v-col class="pt-1">
-            <v-row justify="end" class="mx-0 footer-icons">
+            <v-row class="mx-0 footer-icons justify-end">
               <a href="https://twitter.com/rootstock_io" target="_blank">
                 <v-icon>mdi-twitter</v-icon>
               </a>
@@ -59,13 +59,17 @@ export default class FooterRsk extends Vue {
 
   urlApi = `https://github.com/rsksmart/2wp-api/releases/tag/v${this.apiVersion}`;
 
-  get obtainApiVersion() {
+  obtainApiVersion() {
     ApiService.getApiInformation()
       .then((res: ApiInformation) => {
         this.apiVersion = res.version;
         this.urlApi = `https://github.com/rsksmart/2wp-api/releases/tag/v${this.apiVersion}`;
       });
     return this.apiVersion;
+  }
+
+  created() {
+    this.obtainApiVersion();
   }
 }
 </script>

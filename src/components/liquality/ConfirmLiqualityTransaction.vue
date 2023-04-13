@@ -15,7 +15,7 @@
         Press <strong>Send</strong> when you finish.
       </p>
     </v-row>
-    <v-row id="instructions-trezor" justify="center" class="mx-0">
+    <v-row id="instructions-trezor" class="mx-0 justify-center">
       <v-col cols="4">
       </v-col>
       <v-col cols="4">
@@ -34,7 +34,7 @@
       <v-col class="px-0" cols="4">
         <fieldset class="confirmation-box">
           <legend align="center" class="px-4">See on liquality</legend>
-          <v-row justify="left" class="mt-5 mx-3 line-box-bottom">
+          <v-row justify="start" class="mt-5 mx-3 line-box-bottom">
             <v-col cols="2" class="d-flex flex-column align-left px-0">
               <h3>
                 {{
@@ -64,7 +64,7 @@
             </v-col>
           </v-row>
 
-           <v-row justify="left" class="mx-3 line-box-bottom">
+           <v-row justify="start" class="mx-3 line-box-bottom">
             <v-col class="pa-0 pb-2 d-flex flex-column align-left">
               <span class="breakable-address my-5">
                 {{ this.pegInTxState.normalizedTx.outputs[1].address }}
@@ -78,7 +78,7 @@
           </v-row>
 
           <v-row v-if="this.pegInTxState.normalizedTx.outputs[2]"
-          justify="left" class="mx-3 line-box-bottom">
+          justify="start" class="mx-3 line-box-bottom">
             <v-col class="pa-0 pb-4 d-flex flex-column align-left">
               <span class="breakable-address my-5">
                 {{ this.pegInTxState.normalizedTx.outputs[2].address }}
@@ -100,7 +100,7 @@
             </v-col>
           </v-row>
 
-          <v-row justify="left" class="mx-2 my-3">
+          <v-row justify="start" class="mx-2 my-3">
             <v-col class="pa-0 pb-2 d-flex flex-column align-left">
               <v-row class="pa-0 ma-0">
                 <span class="grayish">

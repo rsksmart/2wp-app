@@ -1,6 +1,6 @@
 <template>
   <v-container v-if="type && orientation">
-    <v-row justify="center" class="mt-7 mx-0 pb-4">
+    <v-row class="mt-7 mx-0 pb-4 justify-center">
       <h2 v-if="type === transactionTypes.PEGIN" class="text-center tx-text">
         Transaction summary:
       </h2>

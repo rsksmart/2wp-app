@@ -4,7 +4,7 @@
            md="9"
            lg="8"
            xl="7">
-      <v-row justify="center" class="mx-0 pb-4">
+      <v-row class="mx-0 pb-4 justify-center">
         <h3 class="text-center tx-text">Advanced data:</h3>
       </v-row>
       <v-row class="d-flex justify-center mb-n3">

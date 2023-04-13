@@ -1,6 +1,6 @@
 <template>
   <v-container fluid class="exchange">
-    <v-row justify="center" class="mx-0">
+    <v-row class="mx-0 justify-center">
       <v-col>
         <v-row class="mx-0 mb-5 d-flex justify-center">
           <h2>Bridging {{environmentContext.getBtcTicker()}}
@@ -10,7 +10,7 @@
           <v-row class="mx-0 mt-10 d-flex justify-center">
             <p class="text-center">Select your {{environmentContext.getBtcText()}} wallet</p>
           </v-row>
-          <v-row justify="center" class="ma-0">
+          <v-row class="ma-0 justify-center">
             <v-col cols="4" class="d-flex justify-center">
               <v-btn outlined class="wallet-button-thin"
                      @click="setBitcoinWallet(storeConstants.WALLET_LEDGER)"
