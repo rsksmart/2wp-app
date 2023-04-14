@@ -44,7 +44,8 @@
                 </v-col>
                 <v-col v-else cols="4" class="pb-0 px-0">
                   <v-row class="derive-button ml-1 mx-0 d-flex justify-center">
-                    <v-btn :disabled="!isReadyToSign"
+                    <v-btn :disabled="!isReadyToSign ||
+                      injectedProvider == appConstants.RLOGIN_LIQUALITY_WALLET"
                       outlined rounded
                       width="100%" height="38"
                       @click="openAddressDialog" >
@@ -54,6 +55,14 @@
                     </v-btn>
                   </v-row>
                 </v-col>
+                <v-container v-if="injectedProvider === appConstants.RLOGIN_LIQUALITY_WALLET"
+                  style="font-size: 14px;">
+                  <div>
+                    As you are using Liquality, you need to follow
+                    <a :href=appConstants.RSK_PEGOUT_DOCUMENTATION_URL class="d-inline blackish a"
+                        target='_blank'> this documentation</a> to get the destination address.
+                  </div>
+                </v-container>
               </v-row>
             </v-col>
           </v-row>
@@ -129,6 +138,10 @@ export default class PegOutForm extends Vue {
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
+  injectedProvider = '';
+
+  appConstants = constants;
+
   recipientAddress = '';
 
   showAddressDialog = false;
@@ -175,7 +188,10 @@ export default class PegOutForm extends Vue {
   }
 
   switchDeriveButton(): void {
-    console.log('======================================');
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    this.injectedProvider = this.session.rLoginInstance?.providerController.injectedProvider.name;
+    //
     this.isReadyToSign = !this.isReadyToSign;
   }
 
