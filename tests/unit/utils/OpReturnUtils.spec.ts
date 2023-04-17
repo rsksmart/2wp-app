@@ -1,7 +1,7 @@
-import { isValidOpReturn } from '../../../src/utils/OpReturnUtils';
-import { NormalizedOutput } from '../../../src/types';
-import * as constants from '../../../src/store/constants';
-import { EnvironmentAccessorService } from '../../../src/services/enviroment-accessor.service';
+import { isValidOpReturnOutput } from '@/utils/OpReturnUtils';
+import { NormalizedOutput } from '@/types';
+import * as constants from '@/store/constants';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 const initEnvironment = () => {
   const defaultEnvironmentVariables = {
@@ -11,10 +11,6 @@ const initEnvironment = () => {
 };
 describe('function: isValidOptReturn', () => {
   beforeEach(initEnvironment);
-  it('opReturn empty', async () => {
-    const result = isValidOpReturn([], 'destinationAddress', 'refundAddress');
-    expect(result).toBe(false);
-  });
 
   it('destinationAddress empty', async () => {
     const opReturn = '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa014a74c48b9e3a5644adb734ab536cab6ae28e85ce';
@@ -22,22 +18,8 @@ describe('function: isValidOptReturn', () => {
       amount: '0',
       op_return_data: opReturn,
     };
-    const result = isValidOpReturn([normalizedOutput], '', 'mzBc4XEFSdzCDcTxAgf6EZXgsZWpztRhef');
+    const result = isValidOpReturnOutput(normalizedOutput, '', 'mzBc4XEFSdzCDcTxAgf6EZXgsZWpztRhef');
     expect(result).toBe(false);
-  });
-
-  it('opReturn is not the first one value in the array', () => {
-    const opReturn = '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa01ccc198c15d8344c73da67a75509a85a8f4226636';
-    const normalizedOutput: NormalizedOutput = {
-      amount: '0',
-      op_return_data: opReturn,
-    };
-    const normalizedOutputNoOpReturn: NormalizedOutput = {
-      amount: '1',
-      op_return_data: undefined,
-    };
-    const result = isValidOpReturn([normalizedOutput, normalizedOutputNoOpReturn], '0x224d0b72bab9342f898c633ef187abff8a96c0fa', 'mzBc4XEFSdzCDcTxAgf6EZXgsZWpztRhef');
-    expect(result).toBe(true);
   });
 
   it('wrong value for RSK destination address', async () => {
@@ -46,7 +28,7 @@ describe('function: isValidOptReturn', () => {
       amount: '0',
       op_return_data: opReturn,
     };
-    const result = isValidOpReturn([normalizedOutput], '0x224d0b72bab9342f898c633ef187abff8a96c0fa', 'mzBc4XEFSdzCDcTxAgf6EZXgsZWpztRhef');
+    const result = isValidOpReturnOutput(normalizedOutput, '0x224d0b72bab9342f898c633ef187abff8a96c0fa', 'mzBc4XEFSdzCDcTxAgf6EZXgsZWpztRhef');
     expect(result).toBe(false);
   });
 
@@ -56,7 +38,7 @@ describe('function: isValidOptReturn', () => {
       amount: '0',
       op_return_data: opReturn,
     };
-    const result = isValidOpReturn([normalizedOutput], '', '');
+    const result = isValidOpReturnOutput(normalizedOutput, '', '');
     expect(result).toBe(false);
   });
 
@@ -66,7 +48,7 @@ describe('function: isValidOptReturn', () => {
       amount: '0',
       op_return_data: opReturn,
     };
-    const result = isValidOpReturn([normalizedOutput], '', '');
+    const result = isValidOpReturnOutput(normalizedOutput, '', '');
     expect(result).toBe(false);
   });
 
@@ -76,7 +58,7 @@ describe('function: isValidOptReturn', () => {
       amount: '0',
       op_return_data: opReturn,
     };
-    const result = isValidOpReturn([normalizedOutput], '0x224d0b72bab9342f898c633ef187abff8a96c0fa', '');
+    const result = isValidOpReturnOutput(normalizedOutput, '0x224d0b72bab9342f898c633ef187abff8a96c0fa', '');
     expect(result).toBe(false);
   });
 
@@ -86,7 +68,7 @@ describe('function: isValidOptReturn', () => {
       amount: '0',
       op_return_data: opReturn,
     };
-    const result = isValidOpReturn([normalizedOutput], '0x224d0b72bab9342f898c633ef187abff8a96c0fa', 'mzBc4XEFSdzCDcTxAgf6EZXgsZWpztRhef');
+    const result = isValidOpReturnOutput(normalizedOutput, '0x224d0b72bab9342f898c633ef187abff8a96c0fa', 'mzBc4XEFSdzCDcTxAgf6EZXgsZWpztRhef');
     expect(result).toBe(true);
   });
 
@@ -96,7 +78,7 @@ describe('function: isValidOptReturn', () => {
       amount: '0',
       op_return_data: opReturn,
     };
-    const result = isValidOpReturn([normalizedOutput], '0x224d0b72bab9342f898c633ef187abff8a96c0fa', '2MxKEf2su6FGAUfCEAHreGFQvEYrfYNHvL7');
+    const result = isValidOpReturnOutput(normalizedOutput, '0x224d0b72bab9342f898c633ef187abff8a96c0fa', '2MxKEf2su6FGAUfCEAHreGFQvEYrfYNHvL7');
     expect(result).toBe(true);
   });
 
@@ -106,7 +88,7 @@ describe('function: isValidOptReturn', () => {
       amount: '0',
       op_return_data: opReturn,
     };
-    const result = isValidOpReturn([normalizedOutput], '0x224d0b72bab9342f898c633ef187abff8a96c0fa', '2MxKEf2su6FGAUfCEAHreGFQvEYrfYNHvL7');
+    const result = isValidOpReturnOutput(normalizedOutput, '0x224d0b72bab9342f898c633ef187abff8a96c0fa', '2MxKEf2su6FGAUfCEAHreGFQvEYrfYNHvL7');
     expect(result).toBe(false);
   });
   it('opReturn without refund address', async () => {
@@ -115,7 +97,17 @@ describe('function: isValidOptReturn', () => {
       amount: '0',
       op_return_data: opReturn,
     };
-    const result = isValidOpReturn([normalizedOutput], '0x224d0b72bab9342f898c633ef187abff8a96c0fa', '');
+    const result = isValidOpReturnOutput(normalizedOutput, '0x224d0b72bab9342f898c633ef187abff8a96c0fa', '');
     expect(result).toBeTruthy();
+  });
+  it('output with address field set', async () => {
+    const opReturn = '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa';
+    const normalizedOutput: NormalizedOutput = {
+      amount: '0',
+      op_return_data: opReturn,
+      address: 'mzBc4XEFSdzCDcTxAgf6EZXgsZWpztRhef',
+    };
+    const result = isValidOpReturnOutput(normalizedOutput, '0x224d0b72bab9342f898c633ef187abff8a96c0fa', '');
+    expect(result).toBe(false);
   });
 });

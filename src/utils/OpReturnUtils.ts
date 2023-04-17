@@ -56,36 +56,33 @@ function getRefundAddress(addressRefundInfo: string): string {
   return refundAddress;
 }
 
-export function isValidOpReturn(
-  outputs: NormalizedOutput[],
+export function isValidOpReturnOutput(
+  output: NormalizedOutput,
   destinationRskAddress: string,
   refundBtcAddress: string,
 ): boolean {
-  let validOpReturnOutputs = 0;
-  for (let i = 0; outputs && i < outputs.length; i += 1) {
-    const output: NormalizedOutput = outputs[i];
-    if (output.op_return_data
-      && (output.op_return_data.length === 50 || output.op_return_data.length === 92)
-      && output.op_return_data.substr(0, 10).startsWith('52534b5401')
-      && output.amount === '0'
-    ) { // Includes version 01 in the same if
-      const opReturnDestAddress = output.op_return_data.substring(10, 50);
-      const destinationRskAddressFound = opReturnDestAddress.startsWith('0x') ? opReturnDestAddress : `0x${opReturnDestAddress}`;
-      if (destinationRskAddress === destinationRskAddressFound) {
-        try {
-          if (!refundBtcAddress && output.op_return_data.length === 50) {
-            validOpReturnOutputs += 1;
-          } else {
-            const refundBtcAddressFound = getRefundAddress(output.op_return_data.substring(50, 92));
-            if (refundBtcAddress === refundBtcAddressFound) {
-              validOpReturnOutputs += 1;
-            }
-          }
-        } catch {
-          return false;
+  let validOpReturn = false;
+  if (output.op_return_data
+    && (output.op_return_data.length === 50 || output.op_return_data.length === 92)
+    && output.op_return_data.substr(0, 10).startsWith('52534b5401')
+    && output.amount === '0'
+    && !output.address
+  ) { // Includes version 01 in the same if
+    const opReturnDestAddress = output.op_return_data.substring(10, 50);
+    const destinationRskAddressFound = opReturnDestAddress.startsWith('0x') ? opReturnDestAddress : `0x${opReturnDestAddress}`;
+    if (destinationRskAddress === destinationRskAddressFound) {
+      try {
+        if (!refundBtcAddress && output.op_return_data.length === 50) {
+          validOpReturn = true;
         }
+        const refundBtcAddressFound = output.op_return_data.length === 92 ? getRefundAddress(output.op_return_data.substring(50, 92)) : '';
+        if (refundBtcAddressFound && refundBtcAddress === refundBtcAddressFound) {
+          validOpReturn = true;
+        }
+      } catch {
+        return false;
       }
     }
   }
-  return validOpReturnOutputs === 1;
+  return validOpReturn;
 }
