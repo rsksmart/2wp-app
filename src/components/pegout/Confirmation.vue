@@ -7,9 +7,12 @@
         </h1>
       </v-col>
     </v-row>
-     <v-row class="mx-0 my-8 d-flex justify-center">
-      <p class="text-center">
+     <v-row class="mx-0 my-8 flex-column text-center">
+      <p>
         You can follow the conversion from the status page.
+      </p>
+      <p class="mt-4">
+        Click <a class="d-inline" href="https://developers.rsk.co/guides/two-way-peg-app/getting-started/#getting-funds" target="_blank" >here</a> to know how to get your funds at the end of the peg-out process.
       </p>
     </v-row>
     <v-row class="mx-0 my-8">
