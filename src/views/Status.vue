@@ -6,9 +6,9 @@
           <h1 class="text-center">Transaction status</h1>
         </v-row>
         <v-row class="mx-0 mt-10 mb-4" justify="center">
-          <p class="subtitle">Enter your
-            transaction hash in the textbox below
-            to check the status of your operation</p>
+          <p class="subtitle">Enter the
+            transaction id in the textbox below
+            to check the status of the operation</p>
         </v-row>
         <v-row justify="center" class="mx-0">
           <v-col cols="7" md="8" xl="7" lg="7" class="pa-0">
