@@ -213,3 +213,5 @@ export const SUPPORTED_NETWORKS = {
     explorerUrl: 'https://explorer.testnet.rsk.co',
   },
 };
+
+export const GETTING_FUNDS_DOCS_URL = 'https://developers.rsk.co/guides/two-way-peg-app/getting-started/#getting-funds';

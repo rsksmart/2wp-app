@@ -12,7 +12,12 @@
         You can follow the conversion from the status page.
       </p>
       <p class="mt-4">
-        Click <a class="d-inline" href="https://developers.rsk.co/guides/two-way-peg-app/getting-started/#getting-funds" target="_blank" >here</a> to know how to get your funds at the end of the peg-out process.
+        Click
+        <a
+          class="d-inline blackish"
+          :href=appConstants.GETTING_FUNDS_DOCS_URL
+          target="_blank" >here</a>
+        to know how to get your funds at the end of the peg-out process.
       </p>
     </v-row>
     <v-row class="mx-0 my-8">
@@ -56,6 +61,8 @@ import * as constants from '@/store/constants';
 })
 
 export default class Confirmation extends Vue {
+  appConstants = constants;
+
   typeSummary = TxStatusType.PEGOUT;
 
   orientationSummary = TxSummaryOrientation.HORIZONTAL;
