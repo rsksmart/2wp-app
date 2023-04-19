@@ -214,4 +214,4 @@ export const SUPPORTED_NETWORKS = {
   },
 };
 
-export const GETTING_FUNDS_DOCS_URL = 'https://developers.rsk.co/guides/two-way-peg-app/getting-started/#getting-funds';
+export const GETTING_FUNDS_DOCUMENTATION_URL = 'https://developers.rsk.co/guides/two-way-peg-app/getting-started/#getting-funds';
