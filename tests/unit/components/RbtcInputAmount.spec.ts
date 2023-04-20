@@ -44,6 +44,7 @@ describe('RbtcInputAmount', () => {
       btcEstimatedFee: new SatoshiBig(0, 'satoshi'),
     };
     sessionState = {
+      account: '0xb3801eA8451ff89a081A0291A135dDdaB6786536',
       btcDerivedAddress: '',
       balance: new WeiBig('0.5', 'rbtc'),
       enabled: false,
