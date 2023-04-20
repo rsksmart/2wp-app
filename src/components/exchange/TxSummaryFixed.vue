@@ -11,16 +11,7 @@
              md="9"
              lg="8"
              xl="7">
-        <v-row class="d-flex justify-center mb-n3">
-          <v-btn class="btn-focus-out" fab x-small outlined color="green" @click="switchExpand"
-                 v-bind:class="[this.over ? 'expand-btn-active' : 'expand-btn-inactive']"
-                 @mouseover="over = true" @mouseleave="over = false">
-            <span class="content">
-              {{ expanded ? '-' : '+'}}
-            </span>
-          </v-btn>
-        </v-row>
-        <div class="box-pegin box" v-show="expanded">
+        <div class="box-pegin box">
           <v-row>
             <v-col class="box-col bitcoin-col" cols="6">
               <v-row class="status-title">
@@ -508,8 +499,6 @@ export default class TxSummaryFixed extends Vue {
 
   @Prop() isRejected !: boolean;
 
-  expanded = true;
-
   over = false;
 
   fixedUSDDecimals = 2;
@@ -523,11 +512,6 @@ export default class TxSummaryFixed extends Vue {
   txType = TxStatusType;
 
   @State('web3Session') sessionState!: SessionState;
-
-  @Emit()
-  switchExpand() {
-    this.expanded = !this.expanded;
-  }
 
   get fromTitle() {
     return this.type === TxStatusType.PEGIN ? 'Bitcoin' : 'Rootstock';
