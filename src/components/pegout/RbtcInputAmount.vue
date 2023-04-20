@@ -14,6 +14,7 @@
                  class="input-box-outline" id="amount-field">
             <v-col cols="8" class="d-flex align-center">
               <v-text-field
+                :disabled="!isWalletConnected"
                 v-model="rbtcAmount" color="#F8F5F5"
                 class="amount-input"
                 placeholder="Add amount" type="number" step="0.00000001"
@@ -101,6 +102,10 @@ export default class RbtcInputAmount extends Vue {
   @State('pegOutTx') pegOutTxState!: PegOutTxState;
 
   @State('web3Session') web3SessionState!: SessionState;
+
+  @Action(constants.PEGOUT_TX_INIT, { namespace: 'pegOutTx' }) initPegoutTx !: () => Promise<void>;
+
+  @Action(constants.PEGOUT_TX_CLEAR, { namespace: 'pegOutTx' }) clearState !: () => void;
 
   @Action(constants.PEGOUT_TX_ADD_AMOUNT, { namespace: 'pegOutTx' }) setRbtcAmount !: (amount: WeiBig) => void;
 
@@ -228,13 +233,27 @@ export default class RbtcInputAmount extends Vue {
     return false;
   }
 
+  get isWalletConnected(): boolean {
+    return this.web3SessionState.account !== undefined;
+  }
+
   @Watch('pegOutTxState.selectedFee')
   @Watch('rbtcAmount')
   checkAmount() {
+    if (!this.isWalletConnected) return;
     this.stepState = !this.insufficientAmount && isRBTCAmountValidRegex(this.rbtcAmount)
       ? 'valid' : 'error';
     this.setValidAmount(this.stepState === 'valid');
     this.amountStyle = this.stepState === 'valid' ? 'black-box' : 'yellow-box';
+  }
+
+  @Watch('web3SessionState.account')
+  clearStateWhenWalletIsDisconnected() {
+    if (!this.isWalletConnected) {
+      this.clearState();
+      this.initPegoutTx();
+      this.rbtcAmount = '';
+    }
   }
 }
 </script>
