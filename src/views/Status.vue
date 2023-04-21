@@ -12,24 +12,30 @@
         </v-row>
         <v-row justify="center" class="mx-0">
           <v-col cols="7" md="8" xl="7" lg="7" class="pa-0">
-            <v-text-field dense outlined hide-details
-                          append-icon="mdi-magnify"
-                          @click:append="getPegStatus"
-                          v-model="txId"
-                          @keyup.enter="getPegStatus"
-                          v-bind:color="
-                          activeMessage.error ? '#F6C61B': '#C4C4C4'"
-                          :label="'Transaction id'"
-                          v-bind:class=" activeMessage.error
-                          ? 'status-text-field-error' : ''"/>
-            <v-row class="mx-0 pl-1 pt-1" v-if=" activeMessage.error">
+          <v-row>
+              <v-text-field dense outlined hide-details
+                            v-model="txId"
+                            v-bind:color="'#C4C4C4'"
+                            :label="'Transaction id'"
+                            v-bind:class="activeClass"/>
+              <v-btn :disabled="!isValidTxId" icon class="mx-2"
+                      @click="getPegStatus" @keyup.enter="getPegStatus">
+                <v-icon>mdi-magnify</v-icon>
+              </v-btn>
+          </v-row>
+              <v-row v-if="!isValidTxId && txId" class="mx-0 pl-1 pt-1">
                 <span class="yellowish">
+                  {{notValidTxIdMessage}}
+                </span>
+              </v-row>
+              <v-row class="mx-0 pl-1 pt-1" v-if="activeMessage.error && isValidTxId">
+                <span class="redish">
                   {{activeMessage.errorMessage}}
                 </span>
-            </v-row>
-          </v-col>
+              </v-row>
+              </v-col>
         </v-row>
-        <v-row justify="center"  v-if="showStatus" class="mx-0 mt-5 mb-0">
+        <v-row justify="center" v-if="showStatus" class="mx-0 mt-5 mb-0">
           <div class="mt-4 mb-0 status text-center"
                :class="activeMessage.activeMessageStyle">
             {{ activeMessage.statusMessage }}
@@ -140,6 +146,10 @@ export default class Status extends Vue {
       && !!this.activeMessage.statusMessage;
   }
 
+  get isValidTxId() {
+    return this.regexValidationTxId();
+  }
+
   get isRejected() {
     return this.status.txDetails?.status === 'REJECTED';
   }
@@ -150,6 +160,31 @@ export default class Status extends Vue {
 
   get isPegOut(): boolean {
     return this.status.type === TxStatusType.PEGOUT;
+  }
+
+  get notValidTxIdMessage(): string {
+    let message = '';
+    if (!this.regexValidationTxId()) {
+      message = 'The transaction id must be a valid one.';
+    }
+    return message;
+  }
+
+  regexValidationTxId() {
+    const regx = new RegExp('\\b0x[0-9A-Fa-f]{64}$');
+    const isValid = regx.test(this.txId);
+    return isValid;
+  }
+
+  get activeClass(): string {
+    let activeClass = '';
+    if (!this.isValidTxId && this.txId) {
+      activeClass = 'status-text-field-warning';
+    } else if (this.activeMessage.error && this.txId) {
+      activeClass = 'status-text-field-error';
+    }
+
+    return activeClass;
   }
 
   @Emit()
