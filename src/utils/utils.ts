@@ -189,6 +189,11 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
           break;
       }
       break;
+    case TxStatusType.INVALID_DATA:
+      activeMessageStyle = 'statusRejected';
+      error = true;
+      errorMessage = 'The hash does not match any 2wp operation.';
+      break;
     case TxStatusType.UNSET_STATUS:
       activeMessageStyle = 'statusProgress';
       break;
