@@ -1,7 +1,7 @@
-import * as constants from '../../../src/store/constants';
-import { getAccountType } from '../../../src/utils/utils';
-import { deriveBatchAddresses } from '../../../src/utils';
-import { Purpose, WalletAddress } from '../../../src/types';
+import { getAccountType } from '@/utils/utils';
+import * as constants from '@/store/constants';
+import { deriveBatchAddresses } from '@/utils';
+import { Purpose, WalletAddress } from '@/types';
 import { utilsTestData } from '../../utils/testData';
 
 describe('Utils', () => {
