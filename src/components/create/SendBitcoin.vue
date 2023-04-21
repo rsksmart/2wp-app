@@ -46,7 +46,7 @@ import TrezorTxBuilder from '@/middleware/TxBuilder/TrezorTxBuilder';
 import DeviceErrorDialog from '@/components/exchange/DeviceErrorDialog.vue';
 import ConnectDevice from '@/components/exchange/ConnectDevice.vue';
 import TxErrorDialog from '@/components/exchange/TxErrorDialog.vue';
-import { Machine } from '@/services/utils';
+import { Machine } from '@/utils/utils';
 import LedgerTxBuilder from '@/middleware/TxBuilder/LedgerTxBuilder';
 import LiqualityTxBuilder from '@/middleware/TxBuilder/LiqualityTxBuilder';
 import TxBuilder from '@/middleware/TxBuilder/TxBuilder';

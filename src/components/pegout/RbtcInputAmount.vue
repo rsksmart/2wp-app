@@ -76,7 +76,7 @@ import {
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import { Action, Getter, State } from 'vuex-class';
 import * as constants from '@/store/constants';
-import { isRBTCAmountValidRegex } from '@/services/utils';
+import { isRBTCAmountValidRegex } from '@/utils/utils';
 import Web3 from 'web3';
 import {
   PegOutTxState, SatoshiBig, SessionState, WeiBig,

@@ -524,13 +524,13 @@ import {
   TxSummaryOrientation,
 } from '@/types';
 import TxSummaryField from '@/components/exchange/TxSummaryField.vue';
-import { formatTxId, getBtcAddressExplorerUrl, getBtcTxExplorerUrl } from '@/services/utils';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import { State } from 'vuex-class';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import * as constants from '@/store/constants';
 import Big from 'big.js';
 import { getChunkedValue } from '@/utils';
+import { formatTxId, getBtcAddressExplorerUrl, getBtcTxExplorerUrl } from '@/utils/utils';
 
 @Component({
   components: {
