@@ -24,7 +24,7 @@
 import {
   Component, Vue,
 } from 'vue-property-decorator';
-import { getMainLogo } from '../services/utils';
+import { getMainLogo } from '@/utils/utils';
 
 @Component({
   components: {},

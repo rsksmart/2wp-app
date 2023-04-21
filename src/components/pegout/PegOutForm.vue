@@ -130,7 +130,7 @@ import RbtcInputAmount from '@/components/pegout/RbtcInputAmount.vue';
 import RskWalletConnection from '@/components/pegout/RskWalletConnection.vue';
 import AddressDialog from '@/components/pegout/AddressDialog.vue';
 import { TxStatusType } from '@/types/store';
-import { Machine } from '@/services/utils';
+import { Machine } from '@/utils/utils';
 import { TxSummaryOrientation } from '@/types/Status';
 import { Action, Getter, State } from 'vuex-class';
 import * as constants from '@/store/constants';
