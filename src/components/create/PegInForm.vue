@@ -70,7 +70,7 @@ import RskAddressInput from '@/components/create/RskAddressInput.vue';
 import BtcFeeSelect from '@/components/create/BtcFeeSelect.vue';
 import { PegInTxState } from '@/types/pegInTx';
 import * as constants from '@/store/constants';
-import { Machine } from '@/services/utils';
+import { Machine } from '@/utils/utils';
 import SatoshiBig from '@/types/SatoshiBig';
 import AddressWarningDialog from '@/components/exchange/AddressWarningDialog.vue';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';

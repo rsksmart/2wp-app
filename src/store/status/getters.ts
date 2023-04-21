@@ -3,7 +3,7 @@ import {
   RootState, TxStatus, TxStatusMessage, TxStatusType,
 } from '@/types';
 import * as constants from '@/store/constants';
-import { setStatusMessage } from '@/services/utils';
+import { setStatusMessage } from '@/utils/utils';
 
 export const getters: GetterTree<TxStatus, RootState> = {
   [constants.STATUS_IS_REJECTED]: (state: TxStatus): boolean => {

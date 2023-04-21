@@ -20,7 +20,7 @@ import { Vue, Component, Emit } from 'vue-property-decorator';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import * as constants from '@/store/constants';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
-import { getMainLogo } from '@/services/utils';
+import { getMainLogo } from '@/utils/utils';
 
 @Component
 export default class Top extends Vue {
