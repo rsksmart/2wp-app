@@ -112,9 +112,6 @@ export default class ApiService {
           if (!response.data.type) {
             return reject(new Error('Empty response from server'));
           }
-          if (response.data.type === 'INVALID_DATA') {
-            return reject(new Error('Invalid data was provided. Check the transaction id and try again'));
-          }
           if (response.data.type === 'UNEXPECTED_ERROR') {
             return reject(new Error('There was an unexpected error. Try again later.'));
           }
