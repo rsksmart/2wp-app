@@ -36,7 +36,7 @@ import {
   Component, Prop,
   Vue,
 } from 'vue-property-decorator';
-import { Machine } from '@/services/utils';
+import { Machine } from '@/utils/utils';
 import { TxStatusType } from '@/types/store';
 import { TxSummaryOrientation } from '@/types/Status';
 import { Getter, State, Action } from 'vuex-class';

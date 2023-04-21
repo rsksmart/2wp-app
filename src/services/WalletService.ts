@@ -7,7 +7,7 @@ import {
 } from '@/types';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import { deriveBatchAddresses } from '@/utils';
-import { convertToRequestBalance, getAccountType } from '@/services/utils';
+import { convertToRequestBalance, getAccountType } from '@/utils/utils';
 
 export default abstract class WalletService {
   protected network: AppNetwork;

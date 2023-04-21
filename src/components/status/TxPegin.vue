@@ -160,7 +160,7 @@ import {
 } from '@/types';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import * as constants from '@/store/constants';
-import { getTime, setStatusMessage } from '@/services/utils';
+import { getTime, setStatusMessage } from '@/utils/utils';
 import TxSummaryFixed from '@/components/exchange/TxSummaryFixed.vue';
 
 @Component({

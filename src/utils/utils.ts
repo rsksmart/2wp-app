@@ -98,6 +98,7 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
 
   let error = false;
   let errorMessage = '';
+
   switch (txType) {
     case TxStatusType.PEGIN:
       switch (status) {
@@ -188,6 +189,11 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
           errorMessage = 'The input transaction is not valid, please check it and try again';
           break;
       }
+      break;
+    case TxStatusType.INVALID_DATA:
+      activeMessageStyle = 'statusRejected';
+      error = true;
+      errorMessage = 'The hash does not match any 2wp operation.';
       break;
     case TxStatusType.UNSET_STATUS:
       activeMessageStyle = 'statusProgress';

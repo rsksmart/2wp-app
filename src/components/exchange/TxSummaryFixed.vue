@@ -488,7 +488,7 @@ import {
   TxStatusType,
   TxSummaryOrientation,
 } from '@/types';
-import { formatTxId, getBtcAddressExplorerUrl, getBtcTxExplorerUrl } from '@/services/utils';
+import { formatTxId, getBtcAddressExplorerUrl, getBtcTxExplorerUrl } from '@/utils/utils';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import { State } from 'vuex-class';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
