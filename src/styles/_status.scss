@@ -245,10 +245,24 @@
   > .v-input__control
   > .v-input__slot
   fieldset {
-    color: #F6C61B;
+    color: #FF0000;
   }
 
   .status-text-field-error.theme--light.v-text-field--outlined
+  > .v-input__control
+  > .v-input__slot
+  fieldset {
+    color: #FF0000;
+  }
+
+  .status-text-field-warning.theme--light.v-text-field--outlined:not(.v-input--is-focused):not(.v-input--has-state)
+  > .v-input__control
+  > .v-input__slot
+  fieldset {
+    color: #F6C61B;
+  }
+
+  .status-text-field-warning.theme--light.v-text-field--outlined
   > .v-input__control
   > .v-input__slot
   fieldset {
