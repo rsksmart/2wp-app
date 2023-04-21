@@ -65,7 +65,7 @@ import {
   Component, Emit,
   Vue,
 } from 'vue-property-decorator';
-import { getBtcTxExplorerUrl } from '@/services/utils';
+import { getBtcTxExplorerUrl } from '@/utils/utils';
 
 @Component
 export default class Success extends Vue {

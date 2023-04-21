@@ -75,7 +75,7 @@ import SatoshiBig from '@/types/SatoshiBig';
 import { BtcAccount, PegInTxState } from '@/types/pegInTx';
 import * as constants from '@/store/constants';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
-import { isBTCAmountValidRegex } from '@/services/utils';
+import { isBTCAmountValidRegex } from '@/utils/utils';
 
 @Component({
 })

@@ -512,7 +512,7 @@ import {
   PegOutTxState,
   WeiBig,
 } from '@/types';
-import { formatTxId, getBtcTxExplorerUrl } from '@/services/utils';
+import { formatTxId, getBtcTxExplorerUrl } from '@/utils/utils';
 import { TxStatusType } from '@/types/store';
 import { TxSummaryOrientation } from '@/types/Status';
 import { getChunkedValue } from '@/utils/common';

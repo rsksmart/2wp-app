@@ -1,5 +1,5 @@
 import * as constants from '../../../src/store/constants';
-import { getAccountType } from '../../../src/services/utils';
+import { getAccountType } from '../../../src/utils/utils';
 import { deriveBatchAddresses } from '../../../src/utils';
 import { Purpose, WalletAddress } from '../../../src/types';
 import { utilsTestData } from '../../utils/testData';

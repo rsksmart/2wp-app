@@ -13,7 +13,7 @@ import { Action } from 'vuex-class';
 import * as constants from '@/store/constants';
 import PegOutForm from '@/components/pegout/PegOutForm.vue';
 import Confirmation from '@/components/pegout/Confirmation.vue';
-import { Machine } from '@/services/utils';
+import { Machine } from '@/utils/utils';
 
 @Component({
   components: {
