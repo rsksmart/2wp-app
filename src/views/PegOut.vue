@@ -40,6 +40,7 @@ export default class PegOut extends Vue {
   @Emit()
   changePage(componentName: string) {
     this.currentComponent = componentName;
+    window.scrollTo(0, 0);
   }
 }
 </script>
