@@ -117,10 +117,10 @@ import { Action, State } from 'vuex-class';
 import SelectBitcoinWallet from '@/components/exchange/SelectBitcoinWallet.vue';
 import * as constants from '@/store/constants';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
-import { isAllowedCurrentBrowser } from '@/services/utils';
 import {
   SessionState, TransactionType, PegInTxState, WalletAddress,
 } from '@/types';
+import { isAllowedCurrentBrowser } from '@/utils/utils';
 
 @Component({
   components: {
