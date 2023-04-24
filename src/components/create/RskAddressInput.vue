@@ -156,7 +156,7 @@ export default class RskAddressInput extends Vue {
   }
 
   regexValidationAddress() {
-    const regx = new RegExp('\\b0x[0-9A-Fa-f]{40}$');
+    const regx = new RegExp(/^(0x[a-fA-F0-9]{64}|[a-fA-F0-9]{64})$/);
     return regx.test(this.rskAddressSelected);
   }
 
