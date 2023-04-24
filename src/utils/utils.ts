@@ -98,6 +98,7 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
 
   let error = false;
   let errorMessage = '';
+
   switch (txType) {
     case TxStatusType.PEGIN:
       switch (status) {
