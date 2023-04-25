@@ -74,7 +74,13 @@
                       <v-row>
                         <v-col cols="12"
                                class="col-address-button d-flex flex-column justify-end">
-                          <span class="breakable-address status-text-ellipsis">
+                          <tx-summary-field v-if="type === txType.PEGOUT"
+                            textStyles="breakable-address status-text-ellipsis"
+                            :textValue="senderValue"
+                            id="senderAddress"
+                            @copyToClipboard="copyToClipboard"
+                          />
+                          <span v-else class="breakable-address status-text-ellipsis">
                             {{ senderValue }}
                           </span>
                         </v-col>
@@ -127,9 +133,12 @@
                   </v-row>
                   <v-row>
                     <v-col class="form-field-summary">
-                      <span class="status-text-ellipsis">
-                        {{ federationAddress}}
-                      </span>
+                      <tx-summary-field
+                        textStyles="status-text-ellipsis"
+                        :textValue="federationAddress"
+                        id="federationAddress"
+                        @copyToClipboard="copyToClipboard"
+                      />
                     </v-col>
                   </v-row>
                 </v-col>
@@ -158,9 +167,12 @@
                       <v-row class="justify-end">
                         <v-col cols="11"
                                class="col-address-button d-flex flex-column">
-                          <span class="breakable-address status-text-ellipsis">
-                            {{ summary.txId }}
-                          </span>
+                          <tx-summary-field
+                            textStyles="breakable-address status-text-ellipsis"
+                            @copyToClipboard="copyToClipboard"
+                            id="txId"
+                            :textValue="summary.txId"
+                            />
                         </v-col>
                         <v-col cols="1" class="col-address-button">
                           <v-btn @click="openExplorerTx" icon color="#C4C4C4" x-small>
@@ -205,9 +217,15 @@
                     <v-col class="form-field-summary">
                       <v-row class="justify-end">
                         <v-col cols="11" class="col-address-button d-flex flex-column text-right">
-                            <span class="breakable-address status-text-ellipsis">
-                              {{recipientAddress}}
-                            </span>
+                          <tx-summary-field v-if="recipientAddress  !== '-'"
+                            @copyToClipboard="copyToClipboard"
+                            textStyles="breakable-address status-text-ellipsis"
+                            id="recipientAddress"
+                            :textValue="recipientAddress"
+                          />
+                          <span v-else textStyles="breakable-address status-text-ellipsis">
+                            -
+                          </span>
                         </v-col>
                         <v-col v-if="recipientAddress !== '-'" cols="1" class="col-address-button">
                           <v-btn @click="openExplorerToAddress" icon color="#C4C4C4" x-small>
@@ -488,6 +506,7 @@ import {
   TxStatusType,
   TxSummaryOrientation,
 } from '@/types';
+import TxSummaryField from '@/components/exchange/TxSummaryField.vue';
 import { formatTxId, getBtcAddressExplorerUrl, getBtcTxExplorerUrl } from '@/services/utils';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import { State } from 'vuex-class';
@@ -496,7 +515,11 @@ import * as constants from '@/store/constants';
 import Big from 'big.js';
 import { getChunkedValue } from '@/utils';
 
-@Component
+@Component({
+  components: {
+    TxSummaryField,
+  },
+})
 export default class TxSummaryFixed extends Vue {
   @Prop() initialExpand!: boolean;
 
@@ -654,6 +677,12 @@ export default class TxSummaryFixed extends Vue {
       fee = this.summary.estimatedFee;
     }
     return fee;
+  }
+
+  copyToClipboard(id: string) {
+    if (id === 'txId' || id === 'federationAddress' || id === 'senderAddress' || id === 'recipientAddress') {
+      navigator.clipboard.writeText(this.summary[id] || '');
+    }
   }
 
   openExplorerTx() {
