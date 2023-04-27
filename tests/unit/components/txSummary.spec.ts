@@ -6,7 +6,7 @@ import * as constants from '@/store/constants';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import sinon from 'sinon';
 import {
-  NormalizedSummary, PegoutStatus, SatoshiBig, TxStatusType, TxSummaryOrientation, WeiBig,
+  NormalizedSummary, SatoshiBig, TxStatusType, TxSummaryOrientation, WeiBig,
 } from '@/types';
 
 const localVue = createLocalVue();
