@@ -1,5 +1,5 @@
 <template>
-  <div class="py-4">
+  <div class="py-4" >
     <v-row class="align-start mx-0">
       <v-col cols="auto" class="pl-0">
         <div v-bind:class="[focus ?
@@ -60,7 +60,7 @@
               <v-row class="mx-0 d-flex justify-center">
                 <v-btn outlined rounded color="#000000" width="100%" height="38"
                   class="select-wallet-button"
-                  @click="connectWallet" >
+                  @click="connectWallet" id="wallet-connection">
                   <span class="blackish">Connect wallet</span>
                 </v-btn>
               </v-row>
