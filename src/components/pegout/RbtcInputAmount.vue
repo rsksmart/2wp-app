@@ -10,7 +10,8 @@
           Enter the amount you want to send:
         </p>
         <v-row class="d-cols-wht mt-2 ml-1">
-          <v-col cols="5" v-bind:class="[amountStyle]" class="input-box-outline" >
+          <v-col cols="5" v-bind:class="[amountStyle]"
+                 class="input-box-outline" id="amount-field">
             <v-col cols="8" class="d-flex align-center">
               <v-text-field
                 v-model="rbtcAmount" color="#F8F5F5"
@@ -46,7 +47,7 @@
               <v-btn :disabled="enableButton"
                 outlined rounded
                 width="100%" height="38"
-                @click="setMax" >
+                @click="setMax" id="max-btn">
                 <span>
                  Use max available balance
                 </span>

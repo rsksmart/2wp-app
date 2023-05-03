@@ -50,7 +50,7 @@
                   <v-row class="derive-button ml-1 mx-0 d-flex justify-center">
                     <v-btn :disabled="!isReadyToSign ||
                       injectedProvider == appConstants.RLOGIN_LIQUALITY_WALLET"
-                      outlined rounded
+                      outlined rounded id="derivation-addr-btn"
                       width="100%" height="38"
                       @click="openAddressDialog" >
                       <span>
@@ -92,9 +92,9 @@
           <span>Back</span>
         </v-btn>
       </v-col>
-      <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0">
+      <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0" >
         <v-btn v-if="!pegOutFormState.matches(['loading'])" rounded color="#000000"
-                @click="send"
+                @click="send" id="send-btn"
                 :disabled="!isReadyToCreate || pegOutFormState.matches(['goingHome'])">
           <span class="whiteish">Send</span>
           <v-icon class="ml-2" color="#fff">mdi-send-outline</v-icon>
@@ -167,7 +167,7 @@ export default class PegOutForm extends Vue {
   tourSteps = [
     {
       target: '#wallet-connection',
-      content: 'Click to select the rsk wallet where your rbtc are stored',
+      content: `Click to select the rsk wallet where your ${this.environmentContext.getRbtcTicker()} are stored`,
       params: {
         highlight: true,
         isFirst: true,
@@ -175,16 +175,23 @@ export default class PegOutForm extends Vue {
     },
     {
       target: '#amount-field',
-      content: 'Input the required amount!',
+      content: `Input the amount you want to convert into ${this.environmentContext.getBtcTicker()}`,
       params: {
         highlight: true,
-        isFirst: false,
         isLast: false,
       },
     },
     {
       target: '#max-btn',
-      content: 'You can check the status of a previous transaction in the PowPeg!',
+      content: 'If you want to send all your available balance in the wallet',
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#derivation-addr-btn',
+      content: 'If you want to derive your destination address click here and sign the message',
       params: {
         highlight: true,
         isLast: false,
@@ -192,7 +199,7 @@ export default class PegOutForm extends Vue {
     },
     {
       target: '#summary-sender-address',
-      content: 'You can check the status of a previous transaction in the PowPeg!',
+      content: `This is the address in Rootstock where the ${this.environmentContext.getRbtcTicker()} will be transferred from`,
       params: {
         highlight: true,
         isLast: true,
@@ -200,7 +207,7 @@ export default class PegOutForm extends Vue {
     },
     {
       target: '#summary-amount',
-      content: 'You can check the status of a previous transaction in the PowPeg!',
+      content: `This is the amount you will send to convert into ${this.environmentContext.getBtcTicker()}`,
       params: {
         highlight: true,
         isLast: false,
@@ -208,7 +215,7 @@ export default class PegOutForm extends Vue {
     },
     {
       target: '#summary-tx-fee',
-      content: 'You can check the status of a previous transaction in the PowPeg!',
+      content: `The estimated fee required by the network in ${this.environmentContext.getBtcTicker()}. Also called <strong>Gas</strong> `,
       params: {
         highlight: true,
         isLast: false,
@@ -216,7 +223,31 @@ export default class PegOutForm extends Vue {
     },
     {
       target: '#summary-btc-destination',
-      content: 'You can check the status of a previous transaction in the PowPeg!',
+      content: `This is the address where the ${this.environmentContext.getBtcTicker()} will be sent`,
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#summary-estimated-fee',
+      content: `The estimated fee required by the protocol in ${this.environmentContext.getBtcTicker()}`,
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#summary-btc-estimated-amount',
+      content: 'Based on the estimated fee and the amount transferred, this is the amount that will be in your destination address',
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#send-btn',
+      content: 'When the form fields were fill, click to sign the transaction',
       params: {
         highlight: true,
         isLast: true,
