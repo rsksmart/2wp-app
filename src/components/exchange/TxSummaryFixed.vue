@@ -286,14 +286,14 @@
           <h2 id="summary-title-from">{{fromTitle}}</h2>
         </v-row>
         <!-- Sender -->
-        <v-container class="pb-0 pl-0">
+        <v-container class="pb-0 pl-0" >
           <v-row class="mx-0">
             <h1 class="boldie">
               {{ type === txType.PEGOUT ? 'Sender address:' : 'Device account:' }}
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="mark">
+            <v-container class="mark" id="summary-sender-address">
               <p v-bind:class="{'grayish': senderValue === VALUE_INCOMPLETE_MESSAGE}">
                 {{ senderValue }}
               </p>
@@ -319,12 +319,12 @@
         </v-container>
 
         <!-- Amount -->
-        <v-container class="pb-0 pl-0">
+        <v-container class="pb-0 pl-0" >
           <v-row class="mx-0">
             <h1 class="boldie">{{ currencyFromTicker }}s:</h1>
           </v-row>
           <div class="form-field pt-2 pb-2 pl-0">
-            <v-container class="mark">
+            <v-container class="mark" id="summary-amount">
               <p v-bind:class="{'grayish': amount === '0'}">
                 {{ amount }} {{ currencyFromTicker }}
               </p>
@@ -366,12 +366,12 @@
         </v-container>
 
         <!-- Gas -->
-        <v-container v-if="type === txType.PEGOUT" class="pb-0 pl-0">
+        <v-container v-if="type === txType.PEGOUT" class="pb-0 pl-0" >
           <v-row class="mx-0">
             <h1 class="boldie">Transaction fee:</h1>
           </v-row>
           <div class="form-field pt-2 pb-2 pl-0">
-            <v-container class="mark">
+            <v-container class="mark" id="summary-tx-fee">
               <p v-bind:class="{'grayish': summary.gas === 0}">
                 {{ summary.gas }} {{currencyFromTicker}}
               </p>
@@ -390,14 +390,14 @@
         </v-container>
 
         <!-- Recipient -->
-        <v-container v-if="type === txType.PEGOUT" class="pb-0 pl-0">
+        <v-container v-if="type === txType.PEGOUT" class="pb-0 pl-0" >
           <v-row class="justify-end mx-0">
             <h1 class="boldie">
               Bitcoin destination address:
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="mark">
+            <v-container class="mark" id="summary-btc-destination">
               <p v-bind:class="{'grayish': recipientAddress === VALUE_INCOMPLETE_MESSAGE}"
                  class="text-end">
                 {{ recipientAddress }}
@@ -429,7 +429,7 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="mark">
+            <v-container class="mark" id="summary-estimated-fee">
               <p v-bind:class="{'grayish': summary.fee === 0}"
                  class="text-end">
                 {{ summary.fee }}
@@ -447,7 +447,7 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="mark">
+            <v-container class="mark" id="summary-btc-estimated-amount">
               <p v-bind:class="{'grayish': summary.amountReceivedString === '0'}"
                  class="text-end">
                 {{ summary.amountReceivedString }} {{currencyToTicker}}
@@ -464,7 +464,7 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="mark">
+            <v-container class="mark" id="summary-btc-estimated-amount">
               <p v-bind:class="{'grayish': total === '0'}" class="text-end">
                 {{ amount }}  {{currencyToTicker}}
               </p>
