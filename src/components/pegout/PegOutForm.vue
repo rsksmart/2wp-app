@@ -2,7 +2,7 @@
 <v-container fluid class="exchange-form normalized-height container
   max-width mx-6 mt-6">
   <v-container>
-    <v-tour name="pegOutTour" :steps="tourSteps">
+    <v-tour name="pegOutTour" :steps="tourSteps" :callbacks="tourCallBacks">
     </v-tour>
   </v-container>
   <v-col class="px-0">
@@ -183,7 +183,7 @@ export default class PegOutForm extends Vue {
     },
     {
       target: '#max-btn',
-      content: 'If you want to send all your available balance in the wallet',
+      content: 'Click here if you want to send all the available balance in your wallet.',
       params: {
         highlight: true,
         isLast: false,
@@ -215,7 +215,7 @@ export default class PegOutForm extends Vue {
     },
     {
       target: '#summary-tx-fee',
-      content: `The estimated fee required by the network in ${this.environmentContext.getBtcTicker()}. Also called <strong>Gas</strong> `,
+      content: `The estimated fee required by the network in ${this.environmentContext.getBtcTicker()}. Also called <strong>gas</strong> `,
       params: {
         highlight: true,
         isLast: false,
@@ -239,7 +239,7 @@ export default class PegOutForm extends Vue {
     },
     {
       target: '#summary-btc-estimated-amount',
-      content: 'Based on the estimated fee and the amount transferred, this is the amount that will be in your destination address',
+      content: 'Based on the estimated fee and the amount transferred, this is the estimated final amount that will be transferred to the destination address.',
       params: {
         highlight: true,
         isLast: false,
@@ -254,6 +254,10 @@ export default class PegOutForm extends Vue {
       },
     },
   ];
+
+  tourCallBacks = {
+    onFinish: () => localStorage.setItem('ONBOARDED_USER_PEGOUT', 'true'),
+  };
 
   @State('web3Session') session !: SessionState;
 
@@ -333,7 +337,10 @@ export default class PegOutForm extends Vue {
   }
 
   mounted() {
-    this.$tours.pegOutTour.start();
+    const newUser = localStorage.getItem('ONBOARDED_USER_PEGOUT') !== 'true';
+    if (newUser) {
+      this.$tours.pegOutTour.start();
+    }
   }
 }
 </script>
