@@ -48,6 +48,7 @@ export const actions: ActionTree<SessionState, RootState> = {
         'custom-trezor': {
           ...trezorProviderOptions,
           options: {
+            dPath: "m/44'/37310'/0'/0/0",
             manifestEmail: EnvironmentAccessorService
               .getEnvironmentVariables().vueAppManifestEmail,
             manifestAppUrl: EnvironmentAccessorService
