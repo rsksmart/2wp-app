@@ -167,7 +167,7 @@ export default class PegOutForm extends Vue {
   tourSteps = [
     {
       target: '#wallet-connection',
-      content: `Click to select the rsk wallet where your ${this.environmentContext.getRbtcTicker()} are stored`,
+      content: `Click to select the Rootstock wallet where your ${this.environmentContext.getRbtcTicker()} are stored`,
       params: {
         highlight: true,
         isFirst: true,
