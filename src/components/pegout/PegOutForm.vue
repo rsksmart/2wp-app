@@ -55,10 +55,11 @@
                     </v-btn>
                   </v-row>
                 </v-col>
-                <v-container v-if="injectedProvider === appConstants.RLOGIN_LIQUALITY_WALLET"
+                <v-container v-if="injectedProvider
+                                  && injectedProvider != appConstants.RLOGIN_METAMASK_WALLET"
                   style="font-size: 14px;">
                   <div>
-                    As you are using Liquality, you need to follow
+                    As you are not using MetaMask, you need to follow
                     <a :href=appConstants.RSK_PEGOUT_DOCUMENTATION_URL class="d-inline blackish a"
                         target='_blank'> this documentation</a> to get the destination address.
                   </div>
