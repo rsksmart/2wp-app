@@ -152,7 +152,8 @@
                     <v-tooltip right>
                       <template v-slot:activator="{ on, attrs }">
                         <v-icon small color="#000000"
-                                v-bind="attrs" v-on="on">
+                                v-bind="attrs" v-on="on"
+                                class="tooltip-info-icon">
                           mdi-information
                         </v-icon>
                       </template>
@@ -202,14 +203,26 @@
                     <v-tooltip right>
                       <template v-slot:activator="{ on, attrs }">
                         <v-icon small color="#000000"
-                                v-bind="attrs" v-on="on">
-                          mdi-information
+                            v-if="recipientAddress === '-'"
+                            @click="openDerivationAddressDocumentation"
+                            v-bind="attrs" v-on="on"
+                            class="tooltip-clickable-icon">
+                            mdi-information
+                        </v-icon>
+                        <v-icon v-else
+                            small color="#000000"
+                            v-bind="attrs" v-on="on"
+                            class="tooltip-info-icon">
+                            mdi-information
                         </v-icon>
                       </template>
                       <p class="tooltip-form mb-0">
-                        This is the {{networkToText}}
+                        This is the {{networkToText}} destination
                         address where the
                         {{networkToText}} will be delivered.
+                      </p>
+                      <p v-if="recipientAddress === '-'" class="tooltip-form mb-0">
+                        Click here to know how to get it.
                       </p>
                     </v-tooltip>
                   </v-row>
@@ -545,6 +558,8 @@ export default class TxSummaryFixed extends Vue {
 
   txType = TxStatusType;
 
+  appConstants = constants;
+
   @State('web3Session') sessionState!: SessionState;
 
   @Emit()
@@ -707,6 +722,11 @@ export default class TxSummaryFixed extends Vue {
     } else {
       window.open(getBtcAddressExplorerUrl(this.summary.recipientAddress || ''), '_blank');
     }
+  }
+
+  @Emit()
+  openDerivationAddressDocumentation() {
+    window.open(`${this.appConstants.RSK_PEGOUT_DOCUMENTATION_URL}`);
   }
 }
 </script>
