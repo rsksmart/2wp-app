@@ -1,5 +1,9 @@
 import { createLocalVue, mount } from '@vue/test-utils';
 import AddressWarningDialog from '@/components/exchange/AddressWarningDialog.vue';
+import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
+import { EnvironmentContext } from '@/providers/types';
+import * as constants from '@/store/constants';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import Vuetify from 'vuetify';
 
 function findByText(wrap: any, selector: string, text: string | RegExp) {
@@ -10,8 +14,14 @@ const localVue = createLocalVue();
 let vuetify: any;
 
 describe('AddressWarningDialog', () => {
+  const defaultEnvironmentVariables = {
+    vueAppCoin: constants.BTC_NETWORK_TESTNET,
+  };
+  let environmentContext: EnvironmentContext;
   beforeEach(() => {
     vuetify = new Vuetify();
+    EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
+    environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
   });
   it('should emit "continue" event when "continue" button is clicked', () => {
     const wrapper = mount(AddressWarningDialog, {
