@@ -305,4 +305,153 @@ describe('Api Service', () => {
         .then((apiInfo: ApiInformation) => expect(apiInfo.version).toEqual('1.1.0'));
     });
   });
+
+  describe('Function: getTxStatus', () => {
+    const txId = 'txId';
+    afterEach(() => {
+      sinon.restore();
+    });
+    it('should reject promise with error "No data was returned"', async () => {
+      sinon.stub(axios, 'get').resolves({ data: null });
+      expect(ApiService.getTxStatus(txId)).rejects.toEqual(new Error('No data was returned'));
+    });
+    it('should reject promise with error "Empty response from server"', async () => {
+      sinon.stub(axios, 'get').resolves({ data: { type: null } });
+      expect(ApiService.getTxStatus(txId)).rejects.toEqual(new Error('Empty response from server'));
+    });
+    it('should reject promise with error, if data type is invalid', async () => {
+      sinon.stub(axios, 'get').resolves({ data: { type: 'INVALID_DATA' } });
+      expect(ApiService.getTxStatus(txId)).rejects.toEqual(new Error('Invalid data was provided. Check the transaction id and try again'));
+    });
+    it('should reject promise with error, if data type is unexpected error', async () => {
+      sinon.stub(axios, 'get').resolves({ data: { type: 'UNEXPECTED_ERROR' } });
+      expect(ApiService.getTxStatus(txId)).rejects.toEqual(new Error('There was an unexpected error. Try again later.'));
+    });
+    it('should resolve promise, if data type is unexpected error', async () => {
+      sinon.stub(axios, 'get').resolves({ data: { txDetails: { status: 'RECEIVED' }, type: 'PEGOUT' } });
+      const txStatus = await ApiService.getTxStatus(txId);
+      expect(txStatus).toEqual({ txDetails: { status: 'RECEIVED' }, type: 'PEGOUT' });
+    });
+  });
+
+  describe('Function: areUnusedAddresses', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+    it('should return a list of unused addresses', async () => {
+      sinon.stub(axios, 'post').resolves({ data: [{ }] });
+      const addressList = await ApiService.areUnusedAddresses(['address1', 'address2']);
+      return expect(addressList).not.toBeNull();
+    });
+  });
+
+  describe('Function: getTxHex', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+    it('should resolve with the transaction hex if successful', async () => {
+      const txId = 'transactionId';
+      const expectedHex = 'transactionHex';
+      const response = { data: { hex: expectedHex } };
+      const axiosGetStub = sinon.stub(axios, 'get').resolves(response);
+      const result = await ApiService.getTxHex(txId);
+      expect(axiosGetStub.calledOnceWithExactly(`${ApiService.baseURL}/tx?tx=${txId}`)).toBe(true);
+      expect(result).toBe(expectedHex);
+    });
+    it('should reject with an error message if an error occurs', async () => {
+      const txId = 'transactionId';
+      const expectedError = 'Error message';
+      const response = { data: { error: expectedError } };
+      sinon.stub(axios, 'get').resolves(response);
+      try {
+        await ApiService.getTxHex(txId);
+        // should never be reached
+        expect(true).toBe(false);
+      } catch (error) {
+        expect(error).toBe(expectedError);
+      }
+    });
+  });
+
+  describe('Function: broadcast', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+    it('should resolve with the transaction ID if successful', async () => {
+      const signedRawTx = 'signedRawTransaction';
+      const expectedTxId = 'transactionId';
+      const response = { data: { txId: expectedTxId } };
+      const axiosPostStub = sinon.stub(axios, 'post').resolves(response);
+      const result = await ApiService.broadcast(signedRawTx);
+      expect(axiosPostStub.calledOnceWithExactly(`${ApiService.baseURL}/broadcast`, { data: signedRawTx })).toBe(true);
+      expect(result).toBe(expectedTxId);
+    });
+    it('should reject with an error message if an error occurs', async () => {
+      const signedRawTx = 'signedRawTransaction';
+      const expectedError = 'Error message';
+      const response = { data: { error: expectedError } };
+      sinon.stub(axios, 'post').resolves(response);
+      try {
+        await ApiService.broadcast(signedRawTx);
+        // should never be reached
+        expect(true).toBe(false);
+      } catch (error) {
+        expect(error).toBe(expectedError);
+      }
+    });
+  });
+
+  describe('Function: getTxFee', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+    it('should resolve with the fee amount data if successful', async () => {
+      const sessionId = 'session123';
+      const amount = 10;
+      const accountType = 'type1';
+      const expectedResponse = { data: {} };
+      const axiosPostStub = sinon.stub(axios, 'post').resolves(expectedResponse);
+      const result = await ApiService.getTxFee(sessionId, amount, accountType);
+      expect(axiosPostStub.calledOnceWithExactly(`${ApiService.baseURL}/tx-fee`, {
+        sessionId,
+        amount,
+        accountType,
+      })).toBe(true);
+      expect(result).toEqual(expectedResponse.data);
+    });
+  });
+
+  describe('Function: getBalances', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+    it('should resolve with the account balance if successful', async () => {
+      const sessionId = 'session123';
+      const addressList = [
+        { address: 'address1' },
+        { address: 'address2' },
+      ];
+      const expectedResponse = { data: {} };
+      const axiosPostStub = sinon.stub(axios, 'post').resolves(expectedResponse);
+      const result = await ApiService.getBalances(sessionId, addressList);
+      expect(axiosPostStub.calledOnceWithExactly(`${ApiService.baseURL}/balance`, {
+        sessionId,
+        addressList,
+      })).toBe(true);
+      expect(result).toEqual(expectedResponse.data);
+    });
+  });
+
+  describe('Function: getPeginConfiguration', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+    it('should resolve with the Pegin configuration if successful', async () => {
+      const expectedResponse = { data: {} };
+      const axiosGetStub = sinon.stub(axios, 'get').resolves(expectedResponse);
+      const result = await ApiService.getPeginConfiguration();
+      expect(axiosGetStub.calledOnceWithExactly(`${ApiService.baseURL}/pegin-configuration`)).toBe(true);
+      expect(result).toEqual(expectedResponse.data);
+    });
+  });
 });
