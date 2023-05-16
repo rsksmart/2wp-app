@@ -42,4 +42,18 @@ export class BridgeService {
         .catch(reject);
     });
   }
+
+  public getNextPegoutCreationBlockAt(blockNumber: number): Promise<number> {
+    return new Promise<number>((resolve, reject) => {
+      this.bridgeContract.defaultBlock = blockNumber;
+      this.bridgeContract.methods
+        .getNextPegoutCreationBlockNumber()
+        .call()
+        .then((creationBlock: number) => {
+          this.bridgeContract.defaultBlock = 'latest';
+          resolve(creationBlock);
+        })
+        .catch(reject);
+    });
+  }
 }
