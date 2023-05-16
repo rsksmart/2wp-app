@@ -180,6 +180,7 @@ export const STATUS_SET_BTC_ESTIMATED_FEE = 'STATUS_SET_BTC_ESTIMATED_FEE';
 // Status getters
 export const STATUS_IS_REJECTED = 'STATUS_IS_REJECTED';
 export const STATUS_GET_ACTIVE_MESSAGE = 'STATUS_GET_ACTIVE_MESSAGE';
+export const STATUS_GET_ESTIMATED_RELEASE_TIME_IN_MINUTES = 'STATUS_GET_ESTIMATED_RELEASE_TIME_IN_MINUTES';
 export const PEGOUT_TX_SET_BITCOIN_PRICE = 'PEGOUT_TX_SET_BITCOIN_PRICE';
 export const MAX_ADJACENT_UNUSED_ADDRESSES = 20;
 
@@ -216,3 +217,7 @@ export const SUPPORTED_NETWORKS = {
 };
 
 export const GETTING_FUNDS_DOCUMENTATION_URL = 'https://developers.rsk.co/guides/two-way-peg-app/getting-started/#getting-funds';
+// Peg-out status
+export const PEGOUT_SIGNING_BLOCKS_GAP = 30;
+export const PEGOUT_REQUIRED_CONFIRMATIONS = 4000;
+export const BLOCKS_PER_YEAR = 1000000;
