@@ -3,7 +3,7 @@ export const WALLET_TREZOR = 'WALLET_TREZOR';
 export const WALLET_LIQUALITY = 'WALLET_LIQUALITY';
 
 export const RLOGIN_LIQUALITY_WALLET = 'Liquality';
-export const RSK_PEGOUT_DOCUMENTATION_URL = 'https://developers.rsk.co/rsk/rbtc/conversion/networks/mainnet/#rbtc-to-btc-conversion';
+export const RSK_PEGOUT_DOCUMENTATION_URL = 'https://dev.rootstock.io/guides/two-way-peg-app/advanced-operations/';
 
 // devices
 export const IS_TREZOR_CONNECTED = 'IS_TREZOR_CONNECTED';
