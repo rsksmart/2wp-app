@@ -67,6 +67,8 @@ import EnvironmentContextProviderService from '@/providers/EnvironmentContextPro
 export default class PegoutProgressBar extends Vue {
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
+  @Getter(constants.STATUS_GET_ESTIMATED_RELEASE_TIME_IN_MINUTES, { namespace: 'status' }) eventualEstimatedReleaseTimeInMinutes!: Promise<number>;
+
   colors = {
     blue: '#3D7DA1',
     gray: '#8c8c8c',
@@ -100,6 +102,8 @@ export default class PegoutProgressBar extends Vue {
     btc: this.borderColor.gray,
     rbtc: this.borderColor.gray,
   };
+
+  timeLeftInMinutes = -1;
 
   @State('status') txStatus!: TxStatus;
 
@@ -173,6 +177,15 @@ export default class PegoutProgressBar extends Vue {
 
   get showRejectedMsg() {
     return this.currentStatus === PegoutStatus.REJECTED;
+  }
+
+  created():void {
+    this.eventualEstimatedReleaseTimeInMinutes
+      .then((timeLeftInMinutes) => {
+        if (timeLeftInMinutes) {
+          this.timeLeftInMinutes = timeLeftInMinutes;
+        }
+      });
   }
 }
 </script>
