@@ -49,9 +49,9 @@ export class BridgeService {
       this.bridgeContract.methods
         .getNextPegoutCreationBlockNumber()
         .call()
-        .then((creationBlock: number) => {
+        .then((creationBlock: string) => {
           this.bridgeContract.defaultBlock = 'latest';
-          resolve(creationBlock);
+          resolve(Number(creationBlock));
         })
         .catch(reject);
     });

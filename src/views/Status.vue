@@ -33,6 +33,9 @@
           <div class="mt-4 mb-0 status text-center"
                :class="activeMessage.activeMessageStyle">
             {{ activeMessage.statusMessage }}
+            <v-row v-if="showTimeLeft" class="mt-1 mb-0 text-center d-flex justify-center">
+              <p class="subtitle blueish">Estimated time: {{releaseTimeText}}</p>
+            </v-row>
           </div>
         </v-row>
       </v-container>
@@ -73,12 +76,19 @@
 import {
   Component, Emit, Prop, Vue, Watch,
 } from 'vue-property-decorator';
-import { State, Action, Getter } from 'vuex-class';
+import { Action, Getter, State } from 'vuex-class';
 import TxPegout from '@/components/status/TxPegout.vue';
 import TxPegin from '@/components/status/TxPegin.vue';
 import {
-  MiningSpeedFee, PeginStatus, TxData, PegInTxState,
-  TxStatusType, PegoutStatusDataModel, TxStatus, TxStatusMessage,
+  MiningSpeedFee,
+  PeginStatus,
+  PegInTxState,
+  PegoutStatus,
+  PegoutStatusDataModel,
+  TxData,
+  TxStatus,
+  TxStatusMessage,
+  TxStatusType,
 } from '@/types';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 import * as constants from '@/store/constants';
@@ -134,6 +144,8 @@ export default class Status extends Vue {
 
   @Getter(constants.STATUS_GET_ACTIVE_MESSAGE, { namespace: 'status' }) activeMessage !: TxStatusMessage;
 
+  @Getter(constants.STATUS_GET_RELEASE_TIME_TEXT, { namespace: 'status' }) releaseTimeText !: string;
+
   get showStatus() {
     return !this.loading
       && !this.activeMessage.error
@@ -150,6 +162,14 @@ export default class Status extends Vue {
 
   get isPegOut(): boolean {
     return this.status.type === TxStatusType.PEGOUT;
+  }
+
+  get showTimeLeft(): boolean {
+    const txDetails = this.status.txDetails as PegoutStatusDataModel;
+    return this.status.type === TxStatusType.PEGOUT
+      && (txDetails.status === PegoutStatus.WAITING_FOR_CONFIRMATION
+        || txDetails.status === PegoutStatus.RECEIVED
+        || txDetails.status === PegoutStatus.WAITING_FOR_SIGNATURE);
   }
 
   @Emit()
