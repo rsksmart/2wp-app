@@ -1,10 +1,15 @@
 import { ActionTree } from 'vuex';
 import {
+  PegoutStatusDataModel,
   RootState, SatoshiBig, TxStatus, TxStatusType,
 } from '@/types';
 import * as constants from '@/store/constants';
 import { ApiService } from '@/services';
 import { BridgeService } from '@/services/BridgeService';
+import Web3 from 'web3';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import { STATUS_SET_ESTIMATED_RELEASE_TIME_IN_MINUTES } from '@/store/constants';
+import moment from 'moment';
 
 export const actions: ActionTree<TxStatus, RootState> = {
   [constants.STATUS_CLEAR]: ({ commit }) => {
@@ -18,6 +23,7 @@ export const actions: ActionTree<TxStatus, RootState> = {
       .then(([status]) => {
         commit(constants.STATUS_SET_TX_DETAILS, status.txDetails);
         commit(constants.STATUS_SET_TX_TYPE, status.type);
+        return dispatch(constants.STATUS_GET_ESTIMATED_RELEASE_TIME_IN_MINUTES);
       })
       .catch(() => {
         commit(constants.STATUS_SET_TX_DETAILS, undefined);
@@ -37,4 +43,30 @@ export const actions: ActionTree<TxStatus, RootState> = {
         commit(constants.STATUS_SET_BTC_ESTIMATED_FEE, new SatoshiBig(0, 'satoshi'));
       });
   },
+  [constants.STATUS_GET_ESTIMATED_RELEASE_TIME_IN_MINUTES]: ({ state, commit })
+    : Promise<void> => new Promise<void>((resolve, reject) => {
+      const bridgeService = new BridgeService();
+      const web3 = new Web3(EnvironmentAccessorService.getEnvironmentVariables().vueAppRskNodeHost);
+      if (state.txDetails) {
+        const status = state.txDetails as PegoutStatusDataModel;
+        web3.eth.getTransaction(status.originatingRskTxHash)
+          .then(({ blockNumber }) => {
+            if (!blockNumber) reject(new Error('The tx are not mined yet'));
+            return Promise.all([
+              web3.eth.getBlockNumber(),
+              bridgeService.getNextPegoutCreationBlockAt(blockNumber ?? 0),
+            ]);
+          })
+          .then(([currentBlock, nextPegoutCreationBlock]) => {
+            const estimatedBlocksLeft = nextPegoutCreationBlock
+            + constants.PEGOUT_REQUIRED_CONFIRMATIONS
+            + constants.PEGOUT_SIGNING_BLOCKS_GAP - currentBlock;
+            const estimatedMinutes = estimatedBlocksLeft
+            * ((365.25 * 1440) / constants.BLOCKS_PER_YEAR);
+            commit(STATUS_SET_ESTIMATED_RELEASE_TIME_IN_MINUTES, moment.duration(estimatedMinutes, 'minutes'));
+          })
+          .catch(reject);
+      }
+      resolve();
+    }),
 };
