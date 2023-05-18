@@ -149,7 +149,7 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
     case TxStatusType.PEGOUT:
       switch (status) {
         case PegoutStatus.RECEIVED:
-          statusMessage = 'Your peg-out is being processed \n Estimated time 34 hours';
+          statusMessage = 'Your peg-out is being processed';
           activeMessageStyle = 'statusProgress';
           isRejected = false;
           break;
@@ -179,7 +179,7 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
           isRejected = false;
           break;
         case PegoutStatus.WAITING_FOR_SIGNATURE:
-          statusMessage = 'Your peg-out is being processed \n Estimated time 10 minutes';
+          statusMessage = 'Your peg-out is being processed';
           activeMessageStyle = 'statusProgress';
           isRejected = false;
           break;

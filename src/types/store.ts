@@ -1,5 +1,6 @@
 import { PegStatus } from '@/store/constants';
 import SatoshiBig from '@/types/SatoshiBig';
+import { Duration } from 'moment/moment';
 
 export interface RootState {
   [x: string]: any;
@@ -65,4 +66,5 @@ export interface TxStatus {
   txDetails?: PeginStatus | PegoutStatusDataModel;
   type: TxStatusType;
   pegOutEstimatedFee: SatoshiBig;
+  estimatedReleaseTimeInMinutes: Duration;
 }
