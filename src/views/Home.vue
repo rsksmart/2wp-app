@@ -120,7 +120,7 @@ import EnvironmentContextProviderService from '@/providers/EnvironmentContextPro
 import {
   SessionState, TransactionType, PegInTxState, WalletAddress,
 } from '@/types';
-import { isAllowedCurrentBrowser } from '@/utils/utils';
+import { isAllowedCurrentBrowser } from '@/utils';
 
 @Component({
   components: {

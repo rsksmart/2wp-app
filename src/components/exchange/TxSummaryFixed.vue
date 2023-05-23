@@ -529,8 +529,9 @@ import { State } from 'vuex-class';
 import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 import * as constants from '@/store/constants';
 import Big from 'big.js';
-import { getChunkedValue } from '@/utils';
-import { formatTxId, getBtcAddressExplorerUrl, getBtcTxExplorerUrl } from '@/utils/utils';
+import {
+  formatTxId, getBtcAddressExplorerUrl, getBtcTxExplorerUrl, getChunkedValue,
+} from '@/utils';
 
 @Component({
   components: {
