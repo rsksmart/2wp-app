@@ -261,7 +261,7 @@ export default class SendBitcoin extends Vue {
   async clear(): Promise<void> {
     this.showErrorDialog = false;
     this.showTxErrorDialog = false;
-    this.deviceError = 'test';
+    this.deviceError = 'Unexpected error';
     this.sendBitcoinState = 'idle';
     this.confirmTxState = new Machine('idle');
     this.currentComponent = 'PegInForm';
