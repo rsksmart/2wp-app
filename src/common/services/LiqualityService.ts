@@ -57,7 +57,7 @@ export default class LiqualityService extends WalletService {
 
   private static unableToRetrieveInfo(): LiqualityError {
     const error = new LiqualityError();
-    error.message = "Unable to retrieve information from Liquality. Check that it's the only wallet extension enabled.";
+    error.message = 'Unable to retrieve information from Liquality. Make sure is the only wallet extension enabled and try again.';
     error.messageInstallationToUser = '';
     error.installationLink = '';
     return error;
@@ -79,9 +79,10 @@ export default class LiqualityService extends WalletService {
           }),
         ]))
         .then(([changeAddreses, noChangeAddresses]) => {
-          if (!changeAddreses) {
+          if (!changeAddreses || !noChangeAddresses) {
             reject(LiqualityService.unableToRetrieveInfo());
           }
+
           const addresses = noChangeAddresses as LiqualityGetAddressesResponse[];
           addresses.concat(changeAddreses as LiqualityGetAddressesResponse[])
             .forEach((liqualityAddress: LiqualityGetAddressesResponse) => {
@@ -126,7 +127,7 @@ export default class LiqualityService extends WalletService {
           }),
         ]))
         .then(([changeAddreses, noChangeAddresses]) => {
-          if (!changeAddreses) {
+          if (!changeAddreses || !noChangeAddresses) {
             reject(LiqualityService.unableToRetrieveInfo());
           }
           const addresses = noChangeAddresses as LiqualityGetAddressesResponse[];
