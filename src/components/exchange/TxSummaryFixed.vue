@@ -66,7 +66,7 @@
                 <v-col>
                   <v-row>
                     <span class="status-subtitle">
-                      {{ type === txType.PEGOUT ? 'Sender address:' : 'Device account:' }}
+                      {{ type === txType.PEGOUT ? 'Sender address:' : 'Device account' }}
                     </span>
                   </v-row>
                   <v-row>
@@ -304,15 +304,21 @@
           <h2 id="summary-title-from">{{fromTitle}}</h2>
         </v-row>
         <!-- Sender -->
-        <v-container class="px-0 py-2">
+        <v-container
+          :class="{'px-0 py-2': type === txType.PEGOUT,  'pb-0 pl-0': type === txType.PEGIN}">
           <v-row class="mx-0">
             <h1 class="boldie">
               {{ type === txType.PEGOUT ? 'Sender address' : 'Device account:' }}
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="pa-0">
+            <v-container v-if="type === txType.PEGOUT" class="pa-0">
               <p class="light-grayish">
+                {{ senderValue }}
+              </p>
+            </v-container>
+            <v-container v-else class="mark" id="summary-sender-address">
+              <p v-bind:class="{'grayish': senderValue === VALUE_INCOMPLETE_MESSAGE}">
                 {{ senderValue }}
               </p>
             </v-container>
@@ -337,13 +343,23 @@
         </v-container>
 
         <!-- Amount -->
-        <v-container class="px-0 py-2">
+        <v-container
+          :class="{'px-0 py-2': type === txType.PEGOUT,  'pb-0 pl-0': type === txType.PEGIN}">
           <v-row class="mx-0">
-            <h1 class="boldie">Amount</h1>
+            <h1 class="boldie">
+              {{ type === txType.PEGOUT
+              ? 'Amount'
+              : currencyFromTicker + 's:' }}
+            </h1>
           </v-row>
-          <div class="form-field pt-2 pl-0">
-            <v-container class="pa-0">
+          <div class="form-field pt-2 pl-0" :class="{'pb-2' : type === txType.PEGIN}">
+            <v-container v-if="type === txType.PEGOUT" class="pa-0">
               <p class="light-grayish">
+                {{ amount }} {{ currencyFromTicker }}
+              </p>
+            </v-container>
+            <v-container v-else class="mark" id="summary-amount">
+              <p :class="{'grayish': amount === '0'}">
                 {{ amount }} {{ currencyFromTicker }}
               </p>
             </v-container>
@@ -396,12 +412,12 @@
             </v-container>
           </div>
         </v-container>
-        <v-divider />
+        <v-divider v-if="type === txType.PEGOUT" />
       </v-container>
 
       <v-container class="pa-0 pt-4">
 
-        <v-container class="pa-0">
+        <v-container :class="[type === txType.PEGOUT ? 'pa-0' : 'pb-0 pl-0']">
           <v-row class="mx-0 mb-2 justify-end">
             <h2>{{ toTitle }}</h2>
           </v-row>
