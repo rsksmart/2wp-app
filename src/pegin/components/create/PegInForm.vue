@@ -1,6 +1,12 @@
 <template>
   <v-container fluid class="exchange normalized-height container
   max-width mx-6">
+  <v-container>
+      <div class="tourStyle">
+        <v-tour name="pegInTour" :steps="tourSteps" :callbacks="tourCallBacks">
+        </v-tour>
+      </div>
+    </v-container>
     <v-col class="exchange-form px-0">
       <v-row class="mx-0">
         <v-col cols="1" class="pa-0 d-flex align-center">
@@ -10,6 +16,15 @@
         <v-col class="px-0">
          <h1 class="justify-center text-left">Send {{environmentContext.getBtcTicker()}}.
             Get {{environmentContext.getRbtcTicker()}}.</h1>
+        </v-col>
+        <v-col style="margin-left: 15%;">
+          <div>
+            <v-btn class="tour-button" id="first-step" @click="startVueTour()">?</v-btn>
+            <span>You don't know how to proceed?</span>
+          </div>
+          <div>
+            <span>Click the button to start an introduction tour! </span>
+          </div>
         </v-col>
       </v-row>
       <v-row class="mx-0 mt-2">
@@ -102,6 +117,93 @@ export default class PegInForm extends Vue {
 
   orientationSummary = TxSummaryOrientation.VERTICAL;
 
+  tourSteps = [
+    {
+      target: '#amount-field',
+      content: `Input the amount you want to convert into ${this.environmentContext.getRbtcTicker()}`,
+      params: {
+        highlight: true,
+        isFirst: true,
+      },
+    },
+    {
+      target: '#select-rsk-address-btn',
+      content: 'If you want to directly connect your RSK wallet click here and confirm',
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#select-tx-fee',
+      content: 'Choose the tx speed. The faster the transaction, the higher the fee.',
+      params: {
+        highlight: true,
+        isLast: true,
+      },
+    },
+    {
+      target: '#summary-sender-address',
+      content: `This is the address in Bitcoin where the ${this.environmentContext.getBtcTicker()} will be transferred from`,
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#summary-amount',
+      content: `This is the amount you will send to convert into ${this.environmentContext.getRbtcTicker()}`,
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#summary-tx-fee',
+      content: `The estimated fee required by the network in ${this.environmentContext.getBtcTicker()}. Also called <strong>gas</strong>`,
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#summary-tx-total',
+      content: 'The estimated total amount to send, considering the selected amount and the gas',
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#summary-rsk-destination',
+      content: `This is the address where the ${this.environmentContext.getRbtcTicker()} will be sent`,
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#summary-rsk-estimated-amount',
+      content: 'Based on the estimated fee and the amount transferred, this is the estimated final amount that will be transferred to the destination address.',
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#send-btn',
+      content: 'When the form fields were fill, click to sign the transaction',
+      params: {
+        highlight: true,
+        isLast: true,
+      },
+    },
+  ];
+
+  tourCallBacks = {
+    onFinish: () => localStorage.setItem('ONBOARDED_USER_PEGOUT', 'true'),
+  };
+
   @State('pegInTx') pegInTxState!: PegInTxState;
 
   @Getter(constants.PEGIN_TX_GET_REFUND_ADDRESS, { namespace: 'pegInTx' }) refundAddress!: string;
@@ -184,6 +286,12 @@ export default class PegInForm extends Vue {
       feeLevel: this.pegInTxState.selectedFee,
       accountType: this.pegInTxState.selectedAccount,
     };
+  }
+
+  @Emit()
+  startVueTour() {
+    localStorage.setItem('ONBOARDED_USER_PEGIN', 'false');
+    this.$tours.pegInTour.start();
   }
 }
 </script>
