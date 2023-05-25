@@ -1,13 +1,13 @@
 import sinon from 'sinon';
-import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
-import * as constants from '@/store/constants';
-import { LiqualityService, WalletService } from '@/services';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import * as constants from '@/common/store/constants';
+import { LiqualityService, WalletService } from '@/common/services';
 import {
   LiqualityAddress,
   LiqualityMethods,
   LiqualityRequestArgs,
   LiqualityResponse,
-} from '@/types';
+} from '@/common/types';
 import { mockedData } from '../../utils/mockedData';
 import MockedBtcProvider from '../../utils/MockedBtcProvider';
 

@@ -1,6 +1,6 @@
-import { getBtcAddressFromSignedMessage } from '@/utils';
-import * as constants from '../../../src/store/constants';
-import { EnvironmentAccessorService } from '../../../src/services/enviroment-accessor.service';
+import { getBtcAddressFromSignedMessage } from '@/common/utils';
+import * as constants from '../../../src/common/store/constants';
+import { EnvironmentAccessorService } from '../../../src/common/services/enviroment-accessor.service';
 
 const initEnvironment = () => {
   const defaultEnvironmentVariables = {

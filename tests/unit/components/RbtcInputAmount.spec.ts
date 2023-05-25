@@ -1,16 +1,16 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex, { Store } from 'vuex';
 import Vuetify from 'vuetify';
-import RbtcInputAmount from '@/components/pegout/RbtcInputAmount.vue';
 import {
   PegOutTxState, RootState, SatoshiBig, SessionState,
-} from '@/types';
-import * as constants from '@/store/constants';
-import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
-import { pegOutTx } from '@/store/pegoutTx';
-import WeiBig from '@/types/WeiBig';
-import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
-import { EnvironmentContext } from '@/providers/types';
+} from '@/common/types';
+import * as constants from '@/common/store/constants';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import { pegOutTx } from '@/pegout/store/pegoutTx';
+import WeiBig from '@/common/types/WeiBig';
+import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
+import { EnvironmentContext } from '@/common/providers/types';
+import RbtcInputAmount from '../../../src/pegout/components/RbtcInputAmount.vue';
 
 const localVue = createLocalVue();
 let vuetify:any;

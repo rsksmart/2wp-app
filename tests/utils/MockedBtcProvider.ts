@@ -3,7 +3,7 @@ import {
   LiqualityRequestArgs,
   LiqualityResponse,
   WindowBitcoinProvider,
-} from '@/types';
+} from '@/common/types';
 
 export default class MockedBtcProvider implements WindowBitcoinProvider {
   // eslint-disable-next-line class-methods-use-this
