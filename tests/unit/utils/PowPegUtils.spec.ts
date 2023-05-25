@@ -1,7 +1,7 @@
-import { NormalizedOutput } from '../../../src/types';
-import { areValidOutputs, isValidPowPegOutput } from '../../../src/utils';
-import * as constants from '../../../src/store/constants';
-import { EnvironmentAccessorService } from '../../../src/services/enviroment-accessor.service';
+import { NormalizedOutput } from '../../../src/common/types';
+import { areValidOutputs, isValidPowPegOutput } from '../../../src/common/utils';
+import * as constants from '../../../src/common/store/constants';
+import { EnvironmentAccessorService } from '../../../src/common/services/enviroment-accessor.service';
 
 const defaultEnvironmentVariables = {
   vueAppCoin: constants.BTC_NETWORK_TESTNET,

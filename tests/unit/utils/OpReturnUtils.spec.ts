@@ -1,7 +1,7 @@
-import { isValidOpReturnOutput } from '@/utils/OpReturnUtils';
-import { NormalizedOutput } from '@/types';
-import * as constants from '@/store/constants';
-import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import { isValidOpReturnOutput } from '@/common/utils/OpReturnUtils';
+import { NormalizedOutput } from '@/common/types';
+import * as constants from '@/common/store/constants';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
 const initEnvironment = () => {
   const defaultEnvironmentVariables = {

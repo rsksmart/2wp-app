@@ -13,13 +13,13 @@
 <script lang="ts">
 import Vue from 'vue';
 import { Component } from 'vue-property-decorator';
-import Top from '@/components/layouts/Top.vue';
-import FooterRsk from '@/components/layouts/Footer.vue';
-import Mobile from '@/views/Mobile.vue';
-import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import Top from '@/common/components/layouts/Top.vue';
+import FooterRsk from '@/common/components/layouts/Footer.vue';
+import Mobile from '@/common/views/Mobile.vue';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { Action } from 'vuex-class';
-import * as constants from '@/store/constants';
-import { vuetifyNonce } from '@/plugins/vuetify';
+import * as constants from '@/common/store/constants';
+import { vuetifyNonce } from '@/common/plugins/vuetify';
 
 @Component({
   components: {

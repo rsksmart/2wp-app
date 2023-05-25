@@ -1,14 +1,14 @@
 import Vue from 'vue';
 import Web3 from 'web3';
-import { AppNetwork } from '@/types';
+import { AppNetwork } from '@/common/types';
 import VueTour from 'vue-tour';
-import * as constants from './store/constants';
+import * as constants from './common/store/constants';
 import App from './App.vue';
-import router from './router';
-import store from './store';
-import { vuetify } from './plugins/vuetify';
-import '@/styles/main.scss';
-import { EnvironmentAccessorService } from './services/enviroment-accessor.service';
+import router from './common/router';
+import store from './common/store';
+import { vuetify } from './common/plugins/vuetify';
+import '@/common/styles/main.scss';
+import { EnvironmentAccessorService } from './common/services/enviroment-accessor.service';
 
 require('vue-tour/dist/vue-tour.css');
 
@@ -27,10 +27,6 @@ const defaultEnvironmentVariables = {
   vueAppCoin: constants.BTC_NETWORK_TESTNET as AppNetwork,
   vueAppManifestEmail: '',
   vueAppManifestAppUrl: '',
-  vueAppWalletMaxCallTrezor: '1',
-  vueAppWalletAddressesPerCallTrezor: '10',
-  vueAppWalletMaxCallLedger: '2',
-  vueAppWalletAddressesPerCallLedger: '2',
   vueAppHotjarId: '',
   pegoutMinValue: 0.004,
   pegoutMaxValue: 1,
