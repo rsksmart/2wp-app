@@ -1,13 +1,13 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
 import Vuetify from 'vuetify';
-import TxSummaryFixed from '@/components/exchange/TxSummaryFixed.vue';
-import * as constants from '@/store/constants';
-import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
+import * as constants from '@/common/store/constants';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import sinon from 'sinon';
 import {
   NormalizedSummary, SatoshiBig, TxStatusType, TxSummaryOrientation, WeiBig,
-} from '@/types';
+} from '@/common/types';
 
 const localVue = createLocalVue();
 let vuetify:any;
