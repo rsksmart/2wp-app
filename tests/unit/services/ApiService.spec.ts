@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   NormalizedInput, NormalizedOutput, NormalizedTx, SatoshiBig,
-} from '@/types';
-import ApiService from '@/services/ApiService';
+} from '@/common/types';
+import ApiService from '@/common/services/ApiService';
 import axios, { AxiosResponse } from 'axios';
 import sinon from 'sinon';
-import { BridgeService } from '@/services/BridgeService';
-import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
-import * as constants from '@/store/constants';
-import { ApiInformation } from '../../../src/types/ApiInformation';
+import { BridgeService } from '@/common/services/BridgeService';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import * as constants from '@/common/store/constants';
+import { ApiInformation } from '../../../src/common/types/ApiInformation';
 
 const powPegAddress = 'powPegAddress';
 const outputs1: NormalizedOutput[] = [

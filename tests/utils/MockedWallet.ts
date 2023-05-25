@@ -1,9 +1,9 @@
 import {
   BtcAccount,
   LedgerSignedTx, TrezorSignedTx, Tx, WalletAddress,
-} from '@/types';
-import { WalletService } from '@/services';
-import * as constants from '@/store/constants';
+} from '@/common/types';
+import { WalletService } from '@/common/services';
+import * as constants from '@/common/store/constants';
 
 interface TestCase {
   accountAddresses: WalletAddress[];

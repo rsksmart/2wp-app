@@ -1,5 +1,5 @@
-import * as constants from '@/store/constants';
-import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import * as constants from '@/common/store/constants';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
 const initEnvironment = () => {
   const defaultEnvironmentVariables = {

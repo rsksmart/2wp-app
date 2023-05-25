@@ -1,5 +1,5 @@
 import * as bitcoin from 'bitcoinjs-lib';
-import { Purpose } from '@/types';
+import { Purpose } from '@/common/types';
 
 declare module '@swan-bitcoin/xpub-lib'{
 

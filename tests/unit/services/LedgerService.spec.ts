@@ -1,10 +1,10 @@
 import sinon from 'sinon';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import Transport from '@ledgerhq/hw-transport';
-import * as constants from '@/store/constants';
-import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
-import { LedgerService, WalletService } from '@/services';
-import { BtcAccount, LedgerjsTransaction } from '@/types';
+import * as constants from '@/common/store/constants';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import { LedgerService, WalletService } from '@/common/services';
+import { BtcAccount, LedgerjsTransaction } from '@/common/types';
 import { mockedData } from '../../utils/mockedData';
 
 const initEnvironment = () => {

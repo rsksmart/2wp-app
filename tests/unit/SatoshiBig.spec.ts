@@ -1,5 +1,5 @@
 import Big from 'big.js';
-import SatoshiBig from '@/types/SatoshiBig';
+import SatoshiBig from '@/common/types/SatoshiBig';
 
 describe('SatoshiBig', () => {
   it('should be a valid instance passing string, integer and big values', () => {
