@@ -24,7 +24,7 @@ describe('DeviceErrorDialog', () => {
         messageInstallationToUser: '',
       },
     });
-    await wrapper.find('.whiteish').trigger('click');
+    await wrapper.get('#err-dialog-close').trigger('click');
     expect(wrapper.emitted('closeErrorDialog')).toBeTruthy();
   });
 });
