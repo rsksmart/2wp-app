@@ -32,7 +32,8 @@
           <v-btn width="200" height="50" dense outlined rounded color="#000000" @click="toExchange">
             <span class="blackish">Return to home</span>
           </v-btn>
-          <v-btn width="145" height="50" dense rounded color="#000000" @click="closeErrorDialog">
+          <v-btn id="err-dialog-close" width="145" height="50" dense
+                 rounded color="#000000" @click="closeErrorDialog">
             <span class="whiteish">Close</span>
           </v-btn>
         </v-row>
