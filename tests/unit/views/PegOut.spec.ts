@@ -1,6 +1,7 @@
 import PegOut from '@/views/PegOut.vue';
 import { createLocalVue, mount } from '@vue/test-utils';
 import Vuex, { Store } from 'vuex';
+import VueTour from 'vue-tour';
 import Vuetify from 'vuetify';
 import {
   PegOutTxState, RootState, SatoshiBig, SessionState,
@@ -28,6 +29,7 @@ describe('PegOut view', () => {
       defaultEnvironmentVariables,
     );
     localVue.use(Vuex);
+    localVue.use(VueTour);
     state = {
       amountToTransfer: new WeiBig(0, 'wei'),
       validAmount: false,
