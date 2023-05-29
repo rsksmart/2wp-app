@@ -5,8 +5,8 @@ import { EnvironmentAccessorService } from '@/common/services/enviroment-accesso
 
 export class BridgeService {
   private bridgeContract: Contract;
-
   private web3: Web3;
+  private TOTAL_RBTC_STOCK = 21000000;
 
   constructor() {
     this.web3 = new Web3(EnvironmentAccessorService.getEnvironmentVariables().vueAppRskNodeHost);
@@ -20,6 +20,66 @@ export class BridgeService {
         .call()
         .then(resolve)
         .catch(reject);
+    });
+  }
+
+  public getMinPeginValue(): Promise<number> {
+    return new Promise<number>((resolve, reject) => {
+      this.bridgeContract.methods
+        .getMinimumLockTxValue()
+        .call()
+        .then((minValue: string) => resolve(Number(minValue)))
+        .catch((reason: any) => {
+          reject(reason);
+        });
+    });
+  }
+
+  public getLockingCapAmount(): Promise<number> {
+    return new Promise<number>((resolve, reject) => {
+      this.bridgeContract.methods
+        .getLockingCap()
+        .call()
+        .then((lockingCap: string) => resolve(Number(lockingCap)))
+        .catch((reason: any) => {
+          reject(reason);
+        });
+    });
+  }
+
+  public getRbtcInCirculation(): Promise<number> {
+    return new Promise<number>((resolve, reject) => {
+      this.web3.eth
+        .getBalance(bridge.address)
+        .then((balance: string) => {
+          const amount =
+            Number(
+              this.web3.utils.toWei(
+                this.web3.utils.toBN(this.TOTAL_RBTC_STOCK),
+              ),
+            ) - Number(balance);
+          resolve(amount);
+        })
+        .catch(reason => {
+          reject(reason);
+        });
+    });
+  }
+
+  public getPeginAvailability(): Promise<number> {
+    return new Promise<number>((resolve, reject) => {
+      Promise.all([this.getLockingCapAmount(), this.getRbtcInCirculation()])
+        .then(([lockingCap, rbtcInCirculation]) => {
+          const rbtcInCirculationToSatoshis = Math.round(rbtcInCirculation / 1e10);
+          let availability = lockingCap - rbtcInCirculationToSatoshis;
+          availability = availability > 0 ? availability : 0
+          const maxAllowed = process.env.MAX_AMOUNT_ALLOWED_IN_SATOSHI
+            ? Number(process.env.MAX_AMOUNT_ALLOWED_IN_SATOSHI) : Infinity;
+          resolve(Math.min(availability, maxAllowed));
+        })
+        .catch(reason => {
+          reject(reason);
+        });
     });
   }
 
