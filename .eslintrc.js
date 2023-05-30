@@ -18,7 +18,7 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'error',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     'no-shadow': 'warn',
-    '@typescript-eslint/no-shadow': ['error'],
+    '@typescript-eslint/no-shadow': ['warn'],
     camelcase: 'error',
     'no-use-before-define': 'error',
     '@typescript-eslint/ban-types': 'error',
