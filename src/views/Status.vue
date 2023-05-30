@@ -28,7 +28,8 @@
                   {{notValidTxIdMessage}}
                 </span>
               </v-row>
-              <v-row class="mx-0 pl-1 pt-1" v-if="activeMessage.error && isValidTxId">
+              <v-row class="mx-0 pl-1 pt-1" v-if="activeMessage.error && isValidTxId
+                      && txId === txIdProp">
                 <span class="redish">
                   {{activeMessage.errorMessage}}
                 </span>
@@ -199,7 +200,7 @@ export default class Status extends Vue {
     let activeClass = '';
     if (!this.isValidTxId && this.txId) {
       activeClass = 'status-text-field-warning';
-    } else if (this.activeMessage.error && this.txId) {
+    } else if (this.activeMessage.error && this.txId && this.txId === this.txIdProp) {
       activeClass = 'status-text-field-error';
     }
     return activeClass;
