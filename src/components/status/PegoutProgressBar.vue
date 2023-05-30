@@ -31,9 +31,10 @@
                 </v-row>
               </div>
               <v-progress-linear
-                class="progress-bar-status"
+                class="progress-bar-status_new"
                 :value="percentage"
                 :color="currentBarColor"
+                style="opacity: 75%;"
                 height="19"/>
               <div class="d-flex justify-end">
                 <div class="bitcoin-icon-yellow">

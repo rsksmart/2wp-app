@@ -58,7 +58,7 @@
               </div>
 
               <v-progress-linear
-                class="progress-bar-status"
+                class="progress-bar-status_new"
                 :value="btcConfirmationsPercentage"
                 :color="currentBtcBarColor"
                 height="19" />
@@ -100,7 +100,7 @@
             <v-col class="confirm-percentage pa-0">
               <v-row>
                 <v-progress-linear
-                class="progress-bar-status"
+                class="progress-bar-status_new"
                 :value="rskConfirmationsPercentage"
                 :color="currentRskBarColor"
                 height="19"/>
