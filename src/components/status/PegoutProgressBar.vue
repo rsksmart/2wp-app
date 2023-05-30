@@ -34,7 +34,7 @@
                 class="progress-bar-status_new"
                 :value="percentage"
                 :color="currentBarColor"
-                style="opacity: 75%;"
+                style="opacity: 75% !important;"
                 height="19"/>
               <div class="d-flex justify-end">
                 <div class="bitcoin-icon-yellow">
