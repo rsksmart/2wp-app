@@ -5,7 +5,9 @@ import { EnvironmentAccessorService } from '@/common/services/enviroment-accesso
 
 export class BridgeService {
   private bridgeContract: Contract;
+
   private web3: Web3;
+
   private TOTAL_RBTC_STOCK = 21000000;
 
   constructor() {
@@ -52,15 +54,14 @@ export class BridgeService {
       this.web3.eth
         .getBalance(bridge.address)
         .then((balance: string) => {
-          const amount =
-            Number(
-              this.web3.utils.toWei(
-                this.web3.utils.toBN(this.TOTAL_RBTC_STOCK),
-              ),
-            ) - Number(balance);
+          const amount = Number(
+            this.web3.utils.toWei(
+              this.web3.utils.toBN(this.TOTAL_RBTC_STOCK),
+            ),
+          ) - Number(balance);
           resolve(amount);
         })
-        .catch(reason => {
+        .catch((reason) => {
           reject(reason);
         });
     });
@@ -72,12 +73,12 @@ export class BridgeService {
         .then(([lockingCap, rbtcInCirculation]) => {
           const rbtcInCirculationToSatoshis = Math.round(rbtcInCirculation / 1e10);
           let availability = lockingCap - rbtcInCirculationToSatoshis;
-          availability = availability > 0 ? availability : 0
+          availability = availability > 0 ? availability : 0;
           const maxAllowed = process.env.MAX_AMOUNT_ALLOWED_IN_SATOSHI
             ? Number(process.env.MAX_AMOUNT_ALLOWED_IN_SATOSHI) : Infinity;
           resolve(Math.min(availability, maxAllowed));
         })
-        .catch(reason => {
+        .catch((reason) => {
           reject(reason);
         });
     });
