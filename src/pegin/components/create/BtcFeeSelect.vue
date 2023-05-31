@@ -13,6 +13,7 @@
           <v-col cols="11 pl-0">
             <v-row class="mx-0" id="select-tx-fee">
               <v-slider v-model="txFeeIndex" :tick-labels="transactionFees" :max="2"
+                        :disabled="isTourActive"
                         :color="txFeeColor" :track-color="txFeeColor" step="1"
                         @focus="focus = true"
                         @blur="focus = false"
@@ -57,7 +58,7 @@
 
 <script lang="ts">
 import {
-  Component, Emit, Vue,
+  Component, Emit, Prop, Vue,
 } from 'vue-property-decorator';
 import { Action, Getter, State } from 'vuex-class';
 import * as constants from '@/common/store/constants';
@@ -68,6 +69,8 @@ import { SessionState } from '@/common/types';
 @Component({
 })
 export default class BtcFeeSelect extends Vue {
+  @Prop() isTourActive !: boolean;
+
   @State('pegInTx') pegInTxState!: PegInTxState;
 
   @State('web3Session') web3SessionState!: SessionState;
