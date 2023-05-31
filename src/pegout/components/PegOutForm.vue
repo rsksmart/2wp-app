@@ -33,7 +33,7 @@
           :isTourActive="isTourActive"
           @switchDeriveButton="switchDeriveButton"/>
         <v-divider color="#C4C4C4"/>
-        <rbtc-input-amount :enableButton="!isReadyToSign"/>
+        <rbtc-input-amount :enableButton="!isReadyToSign" :isTourActive="isTourActive"/>
         <v-divider color="#C4C4C4"/>
         <div class="form-step pb-0 pt-3 mb-3">
           <v-row class="mx-0 align-start">
@@ -274,11 +274,18 @@ export default class PegOutForm extends Vue {
     onFinish: () => {
       this.handleTourFinish();
     },
+    onSkip: () => {
+      this.handleSkipTour();
+    },
   };
 
   handleTourFinish() {
     this.isTourActive = false;
     localStorage.setItem('ONBOARDED_USER_PEGOUT', 'true');
+  }
+
+  handleSkipTour() {
+    this.isTourActive = false;
   }
 
   @State('web3Session') session !: SessionState;
