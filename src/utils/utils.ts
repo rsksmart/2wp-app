@@ -138,7 +138,7 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
           break;
         case constants.PegStatus.ERROR_NOT_A_PEGIN:
           error = true;
-          errorMessage = 'Unfortunately this is not recognized as a Peg in transaction, please check it and try again';
+          errorMessage = 'Unfortunately this is not recognized as a peg-in transaction, please check it and try again';
           break;
         case constants.PegStatus.ERROR_UNEXPECTED:
           error = true;
@@ -155,14 +155,18 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
           isRejected = false;
           break;
         case PegoutStatus.NOT_FOUND:
-          statusMessage = 'Unfortunately this is not recognized as a Peg out transaction, please check it and try again';
+          statusMessage = 'Unfortunately this is not recognized as a peg-out transaction, please check it and try again';
           activeMessageStyle = 'statusRejected';
           isRejected = true;
+          error = true;
+          errorMessage = 'Unfortunately this is not recognized as a peg-out transaction, please check it and try again';
           break;
         case PegoutStatus.NOT_PEGOUT_TX:
-          statusMessage = 'Unfortunately this is not recognized as a Peg out transaction, please check it and try again';
+          statusMessage = 'Unfortunately this is not recognized as a peg-out transaction, please check it and try again';
           activeMessageStyle = 'statusRejected';
           isRejected = true;
+          error = true;
+          errorMessage = 'Unfortunately this is not recognized as a peg-out transaction, please check it and try again';
           break;
         case PegoutStatus.RELEASE_BTC:
           statusMessage = 'Congratulations! Your peg-out was processed';
