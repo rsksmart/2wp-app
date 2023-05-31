@@ -37,7 +37,7 @@ jobs:
           VUE_APP_RSK_NODE_HOST='https://public-node.rsk.co'
           VUE_APP_RSK_EXPLORER='https://explorer.rsk.co/'
           VUE_APP_WALLET_ADDRESSES_HARD_STOP=100
-          VUE_APP_WALLET_ADDRESS_PER_CALL=5
+          VUE_APP_WALLET_ADDRESS_PER_CALL=20
           npm run-script build
 
       - name: Configure AWS credentials
