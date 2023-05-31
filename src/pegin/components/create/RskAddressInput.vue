@@ -65,13 +65,15 @@
             </v-col>
             <v-col cols="4" class="pb-0 px-0">
               <v-row class="mx-0 mb-4 d-flex justify-start">
-                <span class="text-center">Choose address from a wallet</span>
+                <span class="text-center" id="select-rsk-address-text">
+                  Choose address from a wallet
+                </span>
               </v-row>
               <v-row class="mx-0 d-flex justify-center">
                 <v-btn outlined rounded color="#000000" width="100%" height="38"
                   class="select-wallet-button"
                   @click="selectRLoginWallet"
-                  id="select-rsk-address-btn">
+                  >
                   <span class="blackish">Connect wallet</span>
                 </v-btn>
               </v-row>
