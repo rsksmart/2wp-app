@@ -16,6 +16,7 @@
               <v-text-field
                 :disabled="!isWalletConnected"
                 v-model="rbtcAmount" color="#F8F5F5"
+                :disabled="isTourActive"
                 class="amount-input"
                 placeholder="Add amount" type="number" step="0.00000001"
                 @focus="focus = true"
@@ -98,6 +99,8 @@ export default class RbtcInputAmount extends Vue {
   isReadyToSign = false;
 
   @Prop() enableButton !: boolean;
+
+  @Prop() isTourActive !: boolean;
 
   @State('pegOutTx') pegOutTxState!: PegOutTxState;
 
