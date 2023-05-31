@@ -30,6 +30,7 @@
     <v-row class="exchange-form">
       <v-col cols="8" lg="8" >
         <rsk-wallet-connection
+          :isTourActive="isTourActive"
           @switchDeriveButton="switchDeriveButton"/>
         <v-divider color="#C4C4C4"/>
         <rbtc-input-amount :enableButton="!isReadyToSign"/>
@@ -176,6 +177,8 @@ export default class PegOutForm extends Vue {
 
   isReadyToSign = false;
 
+  isTourActive = false;
+
   tourSteps = [
     {
       target: '#wallet-connection',
@@ -268,8 +271,15 @@ export default class PegOutForm extends Vue {
   ];
 
   tourCallBacks = {
-    onFinish: () => localStorage.setItem('ONBOARDED_USER_PEGOUT', 'true'),
+    onFinish: () => {
+      this.handleTourFinish();
+    },
   };
+
+  handleTourFinish() {
+    this.isTourActive = false;
+    localStorage.setItem('ONBOARDED_USER_PEGOUT', 'true');
+  }
 
   @State('web3Session') session !: SessionState;
 
@@ -351,12 +361,16 @@ export default class PegOutForm extends Vue {
   @Emit()
   startVueTour() {
     this.$tours.pegOutTour.start();
+    this.isTourActive = true;
   }
 
   mounted() {
     const newUser = localStorage.getItem('ONBOARDED_USER_PEGOUT') !== 'true';
     if (newUser) {
       this.$tours.pegOutTour.start();
+      this.isTourActive = true;
+    } else {
+      this.isTourActive = false;
     }
   }
 }
