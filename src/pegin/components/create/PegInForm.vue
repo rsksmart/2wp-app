@@ -128,8 +128,8 @@ export default class PegInForm extends Vue {
       },
     },
     {
-      target: '#select-rsk-address-btn',
-      content: 'If you want to directly connect your RSK wallet click here and confirm',
+      target: '#select-rsk-address-text',
+      content: 'If you want to directly connect your RSK wallet click the button bellow and confirm',
       params: {
         highlight: true,
         isLast: false,
