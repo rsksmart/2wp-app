@@ -10,17 +10,17 @@ export default class PeginConfigurationService {
         bridgeService.getFederationAddress(),
         bridgeService.getPeginAvailability(),
       ])
-      .then(([minValue, federationAddress, availability]) => {
-        const peginConf: PeginConfiguration = ({
-          minValue,
-          maxValue: availability,
-          federationAddress,
-          // sessionId should be remove eventually
-          sessionId: '',
-        });
-        resolve(peginConf);
-      })
-      .catch(reject);
+        .then(([minValue, federationAddress, availability]) => {
+          const peginConf: PeginConfiguration = ({
+            minValue,
+            maxValue: availability,
+            federationAddress,
+            // sessionId should be remove eventually
+            sessionId: '',
+          });
+          resolve(peginConf);
+        })
+        .catch(reject);
     });
   }
 }
