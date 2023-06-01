@@ -10,7 +10,6 @@ export const getClearPeginTxState = (): PegInTxState => ({
     minValue: 0,
     maxValue: 0,
     federationAddress: '',
-    btcConfirmations: 100,
     sessionId: '',
   },
   sessionId: '',
