@@ -14,9 +14,8 @@
                  class="input-box-outline" id="amount-field">
             <v-col cols="8" class="d-flex align-center">
               <v-text-field
-                :disabled="!isWalletConnected"
+                :disabled="!isWalletConnected || isTourActive"
                 v-model="rbtcAmount" color="#F8F5F5"
-                :disabled="isTourActive"
                 class="amount-input"
                 placeholder="Add amount" type="number" step="0.00000001"
                 @focus="focus = true"
