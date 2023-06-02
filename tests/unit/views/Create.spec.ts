@@ -1,14 +1,14 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex, { Store } from 'vuex';
 import Vuetify from 'vuetify';
-import Create from '@/views/Create.vue';
-import * as constants from '@/store/constants';
+import Create from '@/pegin/views/Create.vue';
+import * as constants from '@/common/store/constants';
 import {
   PegInTxState, RootState, SatoshiBig, SessionState, WeiBig,
-} from '@/types';
-import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
-import { pegInTx } from '@/store/peginTx';
-import { pegOutTx } from '@/store/pegoutTx';
+} from '@/common/types';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import { pegInTx } from '@/pegin/store/peginTx';
+import { pegOutTx } from '@/pegout/store/pegoutTx';
 
 const localVue = createLocalVue();
 let vuetify: any;

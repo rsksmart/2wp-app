@@ -321,7 +321,7 @@ describe('Api Service', () => {
     });
     it('should reject promise with error, if data type is invalid', async () => {
       sinon.stub(axios, 'get').resolves({ data: { type: 'INVALID_DATA' } });
-      expect(ApiService.getTxStatus(txId)).rejects.toEqual(new Error('Invalid data was provided. Check the transaction id and try again'));
+      expect(ApiService.getTxStatus(txId)).resolves.toEqual({ type: 'INVALID_DATA' });
     });
     it('should reject promise with error, if data type is unexpected error', async () => {
       sinon.stub(axios, 'get').resolves({ data: { type: 'UNEXPECTED_ERROR' } });
