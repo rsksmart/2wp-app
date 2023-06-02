@@ -2,13 +2,14 @@ import { bridge } from '@rsksmart/rsk-precompiled-abis';
 import Web3 from 'web3';
 import { Contract } from 'web3-eth-contract';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import * as constants from '@/common/store/constants';
 
 export class BridgeService {
   private bridgeContract: Contract;
 
   private web3: Web3;
 
-  private TOTAL_RBTC_STOCK = 21000000;
+  private totalRbtcStock = constants.TOTAL_RBTC_STOCK;
 
   constructor() {
     this.web3 = new Web3(EnvironmentAccessorService.getEnvironmentVariables().vueAppRskNodeHost);
@@ -31,9 +32,7 @@ export class BridgeService {
         .getMinimumLockTxValue()
         .call()
         .then((minValue: string) => resolve(Number(minValue)))
-        .catch((reason: any) => {
-          reject(reason);
-        });
+        .catch(reject);
     });
   }
 
@@ -43,9 +42,7 @@ export class BridgeService {
         .getLockingCap()
         .call()
         .then((lockingCap: string) => resolve(Number(lockingCap)))
-        .catch((reason: any) => {
-          reject(reason);
-        });
+        .catch(reject);
     });
   }
 
@@ -56,7 +53,7 @@ export class BridgeService {
         .then((balance: string) => {
           const amount = Number(
             this.web3.utils.toWei(
-              this.web3.utils.toBN(this.TOTAL_RBTC_STOCK),
+              this.web3.utils.toBN(this.totalRbtcStock),
             ),
           ) - Number(balance);
           resolve(amount);
@@ -74,8 +71,10 @@ export class BridgeService {
           const rbtcInCirculationToSatoshis = Math.round(rbtcInCirculation / 1e10);
           let availability = lockingCap - rbtcInCirculationToSatoshis;
           availability = availability > 0 ? availability : 0;
-          const maxAllowed = process.env.MAX_AMOUNT_ALLOWED_IN_SATOSHI
-            ? Number(process.env.MAX_AMOUNT_ALLOWED_IN_SATOSHI) : Infinity;
+          const maxAllowed = EnvironmentAccessorService
+            .getEnvironmentVariables().maxAmountAllowedInSatoshis
+            ? Number(EnvironmentAccessorService
+              .getEnvironmentVariables().maxAmountAllowedInSatoshis) : Infinity;
           resolve(Math.min(availability, maxAllowed));
         })
         .catch((reason) => {

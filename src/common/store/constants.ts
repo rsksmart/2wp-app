@@ -6,6 +6,8 @@ export const RLOGIN_LIQUALITY_WALLET = 'Liquality';
 export const RSK_PEGOUT_DOCUMENTATION_URL = 'https://dev.rootstock.io/rsk/rbtc/conversion/networks/#rbtc-to-btc-conversion';
 export const RLOGIN_METAMASK_WALLET = 'MetaMask';
 
+export const TOTAL_RBTC_STOCK = 21000000;
+
 // devices
 export const IS_TREZOR_CONNECTED = 'IS_TREZOR_CONNECTED';
 
