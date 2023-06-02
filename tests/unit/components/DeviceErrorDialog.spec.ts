@@ -1,5 +1,5 @@
 import { createLocalVue, mount } from '@vue/test-utils';
-import DeviceErrorDialog from '@/components/exchange/DeviceErrorDialog.vue';
+import DeviceErrorDialog from '@/common/components/exchange/DeviceErrorDialog.vue';
 import Vuetify from 'vuetify';
 
 const localVue = createLocalVue();

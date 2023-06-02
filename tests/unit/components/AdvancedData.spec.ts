@@ -1,5 +1,5 @@
 import { createLocalVue, mount } from '@vue/test-utils';
-import AdvancedData from '@/components/exchange/AdvancedData.vue';
+import AdvancedData from '@/common/components/exchange/AdvancedData.vue';
 import Vuetify from 'vuetify';
 
 const localVue = createLocalVue();

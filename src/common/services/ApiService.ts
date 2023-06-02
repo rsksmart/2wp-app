@@ -7,7 +7,7 @@ import {
   NormalizedInput,
   NormalizedTx,
   SatoshiBig,
-  TxStatus,
+  TxStatus, TxStatusType,
 } from '@/common/types';
 import { areValidOutputs, isValidInput } from '@/common/utils';
 import { BridgeService } from '@/common/services/BridgeService';
@@ -133,7 +133,7 @@ export default class ApiService {
           if (!response.data.type) {
             return reject(new Error('Empty response from server'));
           }
-          if (response.data.type === 'UNEXPECTED_ERROR') {
+          if (response.data.type === TxStatusType.UNEXPECTED_ERROR) {
             return reject(new Error('There was an unexpected error. Try again later.'));
           }
           return resolve(response.data);

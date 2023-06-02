@@ -1,9 +1,9 @@
 import { createLocalVue, mount } from '@vue/test-utils';
-import AddressWarningDialog from '@/components/exchange/AddressWarningDialog.vue';
-import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
-import { EnvironmentContext } from '@/providers/types';
-import * as constants from '@/store/constants';
-import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
+import AddressWarningDialog from '@/common/components/exchange/AddressWarningDialog.vue';
+import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
+import { EnvironmentContext } from '@/common/providers/types';
+import * as constants from '@/common/store/constants';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import Vuetify from 'vuetify';
 
 function findByText(wrap: any, selector: string, text: string | RegExp) {
