@@ -15,7 +15,7 @@ export default class PeginConfigurationService {
             minValue,
             maxValue: availability,
             federationAddress,
-            // sessionId should be remove eventually
+            // sessionId should be removed eventually
             sessionId: '',
           });
           resolve(peginConf);
