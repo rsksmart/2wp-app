@@ -1,15 +1,15 @@
-import PegIn from '@/views/PegIn.vue';
+import PegIn from '@/pegin/views/PegIn.vue';
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex, { Store } from 'vuex';
 import Vuetify from 'vuetify';
 import {
   PegInTxState, RootState, SatoshiBig, SessionState, WeiBig,
-} from '@/types';
-import * as constants from '@/store/constants';
-import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
-import { pegInTx } from '@/store/peginTx';
-import SelectBitcoinWallet from '@/components/exchange/SelectBitcoinWallet.vue';
-import BtcToRbtcDialog from '@/components/exchange/BtcToRbtcDialog.vue';
+} from '@/common/types';
+import * as constants from '@/common/store/constants';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import { pegInTx } from '@/pegin/store/peginTx';
+import SelectBitcoinWallet from '@/common/components/exchange/SelectBitcoinWallet.vue';
+import BtcToRbtcDialog from '@/common/components/exchange/BtcToRbtcDialog.vue';
 
 const localVue = createLocalVue();
 let vuetify: any;

@@ -1,16 +1,16 @@
-import PegOut from '@/views/PegOut.vue';
+import PegOut from '@/pegout/views/PegOut.vue';
 import { createLocalVue, mount } from '@vue/test-utils';
 import Vuex, { Store } from 'vuex';
 import VueTour from 'vue-tour';
 import Vuetify from 'vuetify';
 import {
   PegOutTxState, RootState, SatoshiBig, SessionState,
-} from '@/types';
-import * as constants from '@/store/constants';
-import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
-import { pegOutTx } from '@/store/pegoutTx';
-import WeiBig from '@/types/WeiBig';
-import PegOutForm from '@/components/pegout/PegOutForm.vue';
+} from '@/common/types';
+import * as constants from '@/common/store/constants';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import { pegOutTx } from '@/pegout/store/pegoutTx';
+import WeiBig from '@/common/types/WeiBig';
+import PegOutForm from '@/pegout/components/PegOutForm.vue';
 
 const localVue = createLocalVue();
 let vuetify: any;
