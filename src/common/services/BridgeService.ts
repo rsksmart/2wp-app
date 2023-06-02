@@ -71,10 +71,10 @@ export class BridgeService {
           const rbtcInCirculationToSatoshis = Math.round(rbtcInCirculation / 1e10);
           let availability = lockingCap - rbtcInCirculationToSatoshis;
           availability = availability > 0 ? availability : 0;
-          const maxAllowed = EnvironmentAccessorService
-            .getEnvironmentVariables().maxAmountAllowedInSatoshis
-            ? Number(EnvironmentAccessorService
-              .getEnvironmentVariables().maxAmountAllowedInSatoshis) : Infinity;
+          const maxAllowed = EnvironmentAccessorService.getEnvironmentVariables()
+            .maxAmountAllowedInSatoshis ? Number(EnvironmentAccessorService
+              .getEnvironmentVariables().maxAmountAllowedInSatoshis)
+            : Infinity;
           resolve(Math.min(availability, maxAllowed));
         })
         .catch((reason) => {
