@@ -39,6 +39,8 @@ export class EnvironmentVariables {
 
   public burnDustValue: number;
 
+  public maxAmountAllowedInSatoshis: number;
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(defaultValues: any = {}) {
     this.vueAppCoin = process.env.VUE_APP_COIN || defaultValues.vueAppCoin;
@@ -78,5 +80,7 @@ export class EnvironmentVariables {
         || (defaultValues.miningSpeedBlock ? defaultValues.miningSpeedBlock.slow : 0),
     };
     this.burnDustValue = Number(process.env.BURN_DUST_VALUE) || defaultValues.burnDustValue;
+    this.maxAmountAllowedInSatoshis = process.env.VUE_APP_MAX_AMOUNT_ALLOWED_IN_SATOSHI
+      || defaultValues.maxAmountAllowedInSatoshis;
   }
 }
