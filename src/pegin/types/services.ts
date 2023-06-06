@@ -10,3 +10,29 @@ export interface FeeSelection {
   fee: Fee,
   selectedUtxoList: Utxo[];
 }
+
+export interface BlockbookUtxo {
+  // address: string;
+  txid: string;
+  vout: number;
+  value: string;
+  height?: number;
+  confirmations: number;
+  coinbase?: boolean;
+  lockTime?: number;
+}
+
+export interface BalanceWithUtxos {
+  legacy: {
+    balance: SatoshiBig;
+    utxos: Array<BlockbookUtxo>
+  }
+  segwit: {
+    balance: SatoshiBig;
+    utxos: Array<BlockbookUtxo>
+  }
+  nativeSegwit: {
+    balance: SatoshiBig;
+    utxos: Array<BlockbookUtxo>
+  }
+}
