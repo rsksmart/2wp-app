@@ -35,6 +35,7 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "text-encoding": "^0.7.0",
+    "pegin-address-verifier": "git+https://git@github.com/rsksmart/pegin-address-verifier.git#0.3.0",
     "tiny-secp256k1": "^1.1.6",
     "trezor-connect": "^8.1.19",
     "vue": "^2.6.11",
