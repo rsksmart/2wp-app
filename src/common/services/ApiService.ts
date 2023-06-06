@@ -13,6 +13,7 @@ import { areValidOutputs, isValidInput } from '@/common/utils';
 import { BridgeService } from '@/common/services/BridgeService';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { ApiInformation } from '@/common/types/ApiInformation';
+import { BlockbookUtxo } from '@/pegin/types/services';
 
 export default class ApiService {
   static get baseURL(): string {
@@ -26,6 +27,14 @@ export default class ApiService {
         sessionId,
         addressList,
       })
+        .then((response) => resolve(response.data))
+        .catch(reject);
+    });
+  }
+
+  public static getUtxos(addressList: string[]): Promise<BlockbookUtxo[]> {
+    return new Promise<BlockbookUtxo[]>((resolve, reject) => {
+      axios.post(`${this.baseURL}/utxo`, { addressList })
         .then((response) => resolve(response.data))
         .catch(reject);
     });
