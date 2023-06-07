@@ -16,13 +16,27 @@ interface TestCase {
     nativeSegwit: string;
   }
 }
-
 export default class MockedWallet extends WalletService {
   testCase:TestCase;
 
   constructor(testCase: TestCase) {
     super();
     this.testCase = testCase;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  areEnoughUnusedAddresses() {
+    return true;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  isConnected() {
+    return Promise.resolve(true);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  reconnect() {
+    return Promise.resolve();
   }
 
   setAddresses(walletAddresses: WalletAddress[]): void {
