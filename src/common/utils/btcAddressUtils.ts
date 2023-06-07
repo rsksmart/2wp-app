@@ -5,8 +5,8 @@ import * as bitcoin from 'bitcoinjs-lib';
 import {
   arrayify, computePublicKey, hashMessage, recoverPublicKey,
 } from 'ethers/lib/utils';
+import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { deriveAddress, NETWORKS, bitcoinJsNetwork } from './xPubUtils';
-import EnvironmentContextProviderService from '../providers/EnvironmentContextProvider';
 
 export function getPubKeyFromRskSignedMessage2(signedMessage:string, hashedMessage: string)
   : Buffer {
