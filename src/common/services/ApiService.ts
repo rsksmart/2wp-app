@@ -23,7 +23,7 @@ export default class ApiService {
   public static getBalances(sessionId: string,
     addressList?: RequestBalance[]): Promise<AccountBalance> {
     return new Promise((resolve, reject) => {
-      axios.post(`${this.baseURL}/balance`, {
+      axios.post(`${ApiService.baseURL}/balance`, {
         sessionId,
         addressList,
       })
@@ -34,7 +34,7 @@ export default class ApiService {
 
   public static getUtxos(addressList: string[]): Promise<BlockbookUtxo[]> {
     return new Promise<BlockbookUtxo[]>((resolve, reject) => {
-      axios.post(`${this.baseURL}/utxo`, { addressList })
+      axios.post(`${ApiService.baseURL}/utxo`, { addressList })
         .then((response) => resolve(response.data))
         .catch(reject);
     });
@@ -42,7 +42,7 @@ export default class ApiService {
 
   public static getPeginConfiguration(): Promise<PeginConfiguration> {
     return new Promise<PeginConfiguration>((resolve, reject) => {
-      axios.get(`${this.baseURL}/pegin-configuration`)
+      axios.get(`${ApiService.baseURL}/pegin-configuration`)
         .then((response) => resolve(response.data))
         .catch(reject);
     });
@@ -51,7 +51,7 @@ export default class ApiService {
   public static getTxFee(sessionId: string, amount: number,
     accountType: string): Promise<FeeAmountDataResponse> {
     return new Promise<FeeAmountDataResponse>((resolve, reject) => {
-      axios.post(`${this.baseURL}/tx-fee`, {
+      axios.post(`${ApiService.baseURL}/tx-fee`, {
         sessionId,
         amount,
         accountType,
@@ -68,7 +68,7 @@ export default class ApiService {
     const bridgeService = new BridgeService();
     return new Promise<NormalizedTx>((resolve, reject) => {
       Promise.all([
-        axios.post(`${this.baseURL}/pegin-tx`, {
+        axios.post(`${ApiService.baseURL}/pegin-tx`, {
           amountToTransferInSatoshi,
           refundAddress,
           recipient: recipient.slice(2),
@@ -112,7 +112,7 @@ export default class ApiService {
 
   public static broadcast(signedRawTx: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-      axios.post(`${this.baseURL}/broadcast`, {
+      axios.post(`${ApiService.baseURL}/broadcast`, {
         data: signedRawTx,
       })
         .then((response) => {
@@ -125,7 +125,7 @@ export default class ApiService {
 
   public static getTxHex(txId: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-      axios.get(`${this.baseURL}/tx?tx=${txId}`)
+      axios.get(`${ApiService.baseURL}/tx?tx=${txId}`)
         .then((response) => {
           if (response.data.error) reject(response.data.error);
           resolve(response.data.hex);
@@ -136,7 +136,7 @@ export default class ApiService {
 
   public static getTxStatus(txId: string): Promise<TxStatus> {
     return new Promise<TxStatus>((resolve, reject) => {
-      axios.get(`${this.baseURL}/tx-status/${txId}`)
+      axios.get(`${ApiService.baseURL}/tx-status/${txId}`)
         .then((response) => {
           if (!response.data) {
             return reject(new Error('No data was returned'));
@@ -155,7 +155,7 @@ export default class ApiService {
 
   public static areUnusedAddresses(addressList: string[]): Promise<AddressStatus[]> {
     return new Promise<AddressStatus[]>((resolve, reject) => {
-      axios.post(`${this.baseURL}/unusedAddreses`, {
+      axios.post(`${ApiService.baseURL}/unusedAddreses`, {
         addressList,
       })
         .then((response) => resolve(response.data.data))
@@ -165,7 +165,7 @@ export default class ApiService {
 
   public static getApiInformation(): Promise<ApiInformation> {
     return new Promise<ApiInformation>((resolve, reject) => {
-      axios.get(`${this.baseURL}/api`)
+      axios.get(`${ApiService.baseURL}/api`)
         .then((response) => resolve(response.data))
         .catch(reject);
     });
