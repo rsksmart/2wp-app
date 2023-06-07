@@ -23,7 +23,7 @@ describe('Balance Service', () => {
     sinon.restore();
   });
 
-  it.only('should resolve a balance with a list of UTXOs for each address type', () => {
+  it('should resolve a balance with a list of UTXOs for each address type', () => {
     const legacyAddresses = [
       {
         address: 'mzMCEHDUAZaKL9BXt9SzasFPUUqM77TqP1',
