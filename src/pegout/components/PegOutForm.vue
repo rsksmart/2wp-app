@@ -198,7 +198,7 @@ export default class PegOutForm extends Vue {
     },
     {
       target: '#max-btn',
-      content: 'Click here if you want to send all the available balance in your wallet.',
+      content: 'Click here if you want to send all the available balance in your wallet',
       params: {
         highlight: true,
         isLast: false,
@@ -230,7 +230,7 @@ export default class PegOutForm extends Vue {
     },
     {
       target: '#summary-tx-fee',
-      content: `The estimated fee required by the network in ${this.environmentContext.getBtcTicker()}. Also called <strong>gas</strong> `,
+      content: `The estimated fee required by the network in ${this.environmentContext.getBtcTicker()}`,
       params: {
         highlight: true,
         isLast: false,
@@ -238,7 +238,7 @@ export default class PegOutForm extends Vue {
     },
     {
       target: '#summary-btc-destination',
-      content: `This is the address where the ${this.environmentContext.getBtcTicker()} will be sent`,
+      content: `This is the address where the ${this.environmentContext.getBtcTicker()} will be received`,
       params: {
         highlight: true,
         isLast: false,
@@ -254,7 +254,7 @@ export default class PegOutForm extends Vue {
     },
     {
       target: '#summary-btc-estimated-amount',
-      content: 'Based on the estimated fee and the amount transferred, this is the estimated final amount that will be transferred to the destination address.',
+      content: 'Based on the estimated fee and the amount transferred, this is the estimated final amount that will be transferred to the destination address',
       params: {
         highlight: true,
         isLast: false,
@@ -262,7 +262,7 @@ export default class PegOutForm extends Vue {
     },
     {
       target: '#send-btn',
-      content: 'When the form fields were fill, click to sign the transaction',
+      content: 'When the form fields were filled, click here to sign the transaction',
       params: {
         highlight: true,
         isLast: true,
