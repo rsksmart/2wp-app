@@ -553,7 +553,7 @@ export default class TxSummaryFixed extends Vue {
 
   fixedUSDDecimals = 2;
 
-  VALUE_INCOMPLETE_MESSAGE = 'Not Found';
+  VALUE_INCOMPLETE_MESSAGE = '-';
 
   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
