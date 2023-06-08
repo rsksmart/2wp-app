@@ -46,7 +46,7 @@ export interface AccountBalance {
 }
 
 export interface Fee {
-  amount: number;
+  amount: number | SatoshiBig;
   enoughBalance: boolean;
 }
 export interface FeeAmountDataResponse {

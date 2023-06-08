@@ -27,6 +27,16 @@ const defaultEnvironmentVariables = {
   vueAppHotjarId: '',
   pegoutMinValue: 0.004,
   pegoutMaxValue: 1,
+  minFeePerKb: {
+    fast: 8,
+    average: 5,
+    slow: 2,
+  },
+  miningSpeedBlock: {
+    fast: 1,
+    average: 6,
+    slow: 12,
+  },
 };
 
 EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
