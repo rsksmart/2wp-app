@@ -159,4 +159,12 @@ export default class ApiService {
         .catch(reject);
     });
   }
+
+  static estimateFee(blockNumber: number):Promise<SatoshiBig> {
+    return new Promise<SatoshiBig>((resolve, reject) => {
+      axios.get(`${this.baseURL}/estimatefee/${blockNumber}`)
+        .then((response) => resolve(new SatoshiBig(response.data, 'btc')))
+        .catch(reject);
+    });
+  }
 }
