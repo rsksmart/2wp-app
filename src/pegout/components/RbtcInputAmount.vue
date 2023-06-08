@@ -118,7 +118,6 @@ export default class RbtcInputAmount extends Vue {
   @Getter(constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE, { namespace: 'pegOutTx' }) estimatedBtcToReceive !: SatoshiBig;
 
   switchDeriveButton(): void {
-    console.log('====================================== 2');
     this.isReadyToSign = !this.isReadyToSign;
   }
 

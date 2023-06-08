@@ -1,7 +1,5 @@
 import { createLocalVue, mount } from '@vue/test-utils';
 import AddressWarningDialog from '@/common/components/exchange/AddressWarningDialog.vue';
-import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { EnvironmentContext } from '@/common/providers/types';
 import * as constants from '@/common/store/constants';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import Vuetify from 'vuetify';
@@ -17,11 +15,9 @@ describe('AddressWarningDialog', () => {
   const defaultEnvironmentVariables = {
     vueAppCoin: constants.BTC_NETWORK_TESTNET,
   };
-  let environmentContext: EnvironmentContext;
   beforeEach(() => {
     vuetify = new Vuetify();
     EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
-    environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
   });
   it('should emit "continue" event when "continue" button is clicked', () => {
     const wrapper = mount(AddressWarningDialog, {
