@@ -316,7 +316,7 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container v-if="type === txType.PEGOUT" class="pa-0" id="summary-sender-address">
+            <v-container v-if="type === txType.PEGOUT" class="pa-0">
               <p class="light-grayish">
                 {{ senderValue }}
               </p>
@@ -357,7 +357,7 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0" :class="{'pb-2' : type === txType.PEGIN}">
-            <v-container v-if="type === txType.PEGOUT" class="pa-0" id="summary-amount">
+            <v-container v-if="type === txType.PEGOUT" class="pa-0">
               <p class="light-grayish">
                 {{ amount }} {{ currencyFromTicker }}
               </p>
@@ -409,7 +409,7 @@
             <h1 class="boldie">Gas</h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="pa-0" id="summary-tx-fee">
+            <v-container class="pa-0">
               <p class="light-grayish">
                 {{ summary.gas }} {{currencyFromTicker}}
               </p>
@@ -435,7 +435,7 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="pa-0" id="summary-btc-destination">
+            <v-container class="pa-0">
               <p class="light-grayish text-end">
                 {{ recipientAddress }}
               </p>
@@ -466,7 +466,7 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="pa-0" id="summary-estimated-fee">
+            <v-container class="pa-0">
               <p class="light-grayish text-end">
                 {{ summary.fee }}
                 {{ currencyToTicker }}
@@ -483,7 +483,7 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="pa-0" id="summary-btc-estimated-amount">
+            <v-container class="pa-0">
               <p class="light-grayish text-end">
                 {{ summary.amountReceivedString }} {{currencyToTicker}}
               </p>
