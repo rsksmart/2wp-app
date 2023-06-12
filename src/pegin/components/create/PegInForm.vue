@@ -139,7 +139,7 @@ export default class PegInForm extends Vue {
     },
     {
       target: '#select-tx-fee',
-      content: 'Choose the tx speed. The faster the transaction, the higher the fee',
+      content: 'Choose the tx speed. The faster the transaction, the higher the fee.',
       params: {
         highlight: true,
         isLast: true,
@@ -163,7 +163,7 @@ export default class PegInForm extends Vue {
     },
     {
       target: '#summary-tx-fee',
-      content: `The estimated fee required by the network in ${this.environmentContext.getBtcTicker()}`,
+      content: `The estimated fee required by the network in ${this.environmentContext.getBtcTicker()}. Also called <strong>gas</strong>`,
       params: {
         highlight: true,
         isLast: false,
@@ -171,7 +171,7 @@ export default class PegInForm extends Vue {
     },
     {
       target: '#summary-tx-total',
-      content: 'The estimated total amount to send, considering the selected amount and the fee',
+      content: 'The estimated total amount to send, considering the selected amount and the gas',
       params: {
         highlight: true,
         isLast: false,
@@ -179,7 +179,7 @@ export default class PegInForm extends Vue {
     },
     {
       target: '#summary-rsk-destination',
-      content: `This is the address where the ${this.environmentContext.getRbtcTicker()} will be received`,
+      content: `This is the address where the ${this.environmentContext.getRbtcTicker()} will be sent`,
       params: {
         highlight: true,
         isLast: false,
@@ -187,7 +187,7 @@ export default class PegInForm extends Vue {
     },
     {
       target: '#summary-rsk-estimated-amount',
-      content: 'Based on the estimated fee and the amount transferred, this is the estimated final amount that will be transferred to the destination address',
+      content: 'Based on the estimated fee and the amount transferred, this is the estimated final amount that will be transferred to the destination address.',
       params: {
         highlight: true,
         isLast: false,
@@ -195,7 +195,7 @@ export default class PegInForm extends Vue {
     },
     {
       target: '#send-btn',
-      content: 'When the form fields were filled, click here to sign the transaction',
+      content: 'When the form fields were filled, click to sign the transaction',
       params: {
         highlight: true,
         isLast: true,
