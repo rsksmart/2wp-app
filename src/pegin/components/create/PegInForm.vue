@@ -31,11 +31,11 @@
         <v-col id="options-col" cols="8" lg="7" class="pa-0">
           <peg-in-account-select/>
           <v-divider color="#C4C4C4"/>
-          <btc-input-amount :isTourActive="isTourActive"/>
+          <btc-input-amount/>
           <v-divider color="#C4C4C4"/>
-          <rsk-address-input :isTourActive="isTourActive" @state="setRskAddressState"/>
+          <rsk-address-input @state="setRskAddressState"/>
           <v-divider color="#C4C4C4"/>
-          <btc-fee-select :isTourActive="isTourActive"/>
+          <btc-fee-select/>
         </v-col>
         <v-col id="summary-col" cols="4" lg="4">
           <tx-summary-fixed
@@ -118,8 +118,6 @@ export default class PegInForm extends Vue {
 
   orientationSummary = TxSummaryOrientation.VERTICAL;
 
-  isTourActive = false;
-
   tourSteps = [
     {
       target: '#amount-field',
@@ -130,8 +128,8 @@ export default class PegInForm extends Vue {
       },
     },
     {
-      target: '#select-rsk-address-btn',
-      content: 'If you want to directly connect your RSK wallet click here and confirm',
+      target: '#select-rsk-address-text',
+      content: 'If you want to directly connect your RSK wallet click the button bellow and confirm',
       params: {
         highlight: true,
         isLast: false,
@@ -204,18 +202,8 @@ export default class PegInForm extends Vue {
   ];
 
   tourCallBacks = {
-    onFinish: () => this.handleTourFinish(),
-    onSkip: () => this.handleSkipTour(),
+    onFinish: () => localStorage.setItem('ONBOARDED_USER_PEGIN', 'true'),
   };
-
-  handleTourFinish() {
-    this.isTourActive = false;
-    localStorage.setItem('ONBOARDED_USER_PEGIN', 'true');
-  }
-
-  handleSkipTour() {
-    this.isTourActive = false;
-  }
 
   @State('pegInTx') pegInTxState!: PegInTxState;
 
@@ -303,17 +291,14 @@ export default class PegInForm extends Vue {
 
   @Emit()
   startVueTour() {
+    localStorage.setItem('ONBOARDED_USER_PEGIN', 'false');
     this.$tours.pegInTour.start();
-    this.isTourActive = true;
   }
 
   mounted() {
     const newUser = localStorage.getItem('ONBOARDED_USER_PEGIN') !== 'true';
     if (newUser) {
       this.$tours.pegInTour.start();
-      this.isTourActive = true;
-    } else {
-      this.isTourActive = false;
     }
   }
 }
