@@ -2,10 +2,8 @@
 <v-container fluid class="exchange-form normalized-height container
   max-width mx-6 mt-6">
   <v-container>
-      <div class="tourStyle">
-        <v-tour name="pegOutTour" :steps="tourSteps" :callbacks="tourCallBacks">
-        </v-tour>
-      </div>
+    <v-tour name="pegOutTour" :steps="tourSteps" :callbacks="tourCallBacks">
+    </v-tour>
   </v-container>
   <v-col class="px-0">
     <v-row class="mx-0">
@@ -16,15 +14,6 @@
         <v-col class="px-0">
          <h1 class="justify-center text-left">Send {{environmentContext.getRbtcTicker()}}.
           Get {{environmentContext.getBtcTicker()}}.</h1>
-        </v-col>
-        <v-col style="margin-left: 15%;" class="text-right">
-          <div>
-            <v-btn class="tour-button" id="first-step" @click="startVueTour()">?</v-btn>
-            <span>You don't know how to proceed?</span>
-          </div>
-          <div>
-            <span>Click the button to start an introduction tour! </span>
-          </div>
         </v-col>
       </v-row>
     <v-row class="exchange-form">
@@ -348,10 +337,11 @@ export default class PegOutForm extends Vue {
     return this.nextPage;
   }
 
-  @Emit()
-  startVueTour() {
-    localStorage.setItem('ONBOARDED_USER_PEGIN', 'false');
-    this.$tours.pegOutTour.start();
+  mounted() {
+    const newUser = localStorage.getItem('ONBOARDED_USER_PEGOUT') !== 'true';
+    if (newUser) {
+      this.$tours.pegOutTour.start();
+    }
   }
 }
 </script>
