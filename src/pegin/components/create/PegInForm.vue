@@ -55,8 +55,7 @@
         <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0">
           <v-btn v-if="!pegInFormState.matches(['loading'])" rounded color="#000000"
                  @click="sendTx"
-                 :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])"
-                 id="send-btn">
+                 :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])">
             <span class="whiteish">Continue</span>
             <v-icon class="ml-2" color="#fff">mdi-send-outline</v-icon>
           </v-btn>
@@ -202,7 +201,7 @@ export default class PegInForm extends Vue {
   ];
 
   tourCallBacks = {
-    onFinish: () => localStorage.setItem('ONBOARDED_USER_PEGIN', 'true'),
+    onFinish: () => localStorage.setItem('ONBOARDED_USER_PEGOUT', 'true'),
   };
 
   @State('pegInTx') pegInTxState!: PegInTxState;
@@ -293,13 +292,6 @@ export default class PegInForm extends Vue {
   startVueTour() {
     localStorage.setItem('ONBOARDED_USER_PEGIN', 'false');
     this.$tours.pegInTour.start();
-  }
-
-  mounted() {
-    const newUser = localStorage.getItem('ONBOARDED_USER_PEGIN') !== 'true';
-    if (newUser) {
-      this.$tours.pegInTour.start();
-    }
   }
 }
 </script>
