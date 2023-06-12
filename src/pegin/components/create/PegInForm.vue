@@ -195,7 +195,7 @@ export default class PegInForm extends Vue {
     },
     {
       target: '#send-btn',
-      content: 'When the form fields were filled, click to sign the transaction',
+      content: 'When the form fields were fill, click to sign the transaction',
       params: {
         highlight: true,
         isLast: true,
