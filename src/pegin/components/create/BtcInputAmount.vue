@@ -10,8 +10,7 @@
           Enter the amount you want to send:
         </p>
         <v-row class="mx-0 mt-4 pb-0 d-flex align-center">
-          <v-col cols="4" v-bind:class="[amountStyle]"
-                class="input-box-outline" id="amount-field">
+          <v-col cols="4" v-bind:class="[amountStyle]" class="input-box-outline">
             <v-col cols="8" class="pa-0 pl-1">
               <v-text-field solo hide-details full-width single-line flat
                             class="amount-input"

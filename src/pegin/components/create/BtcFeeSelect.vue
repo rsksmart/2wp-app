@@ -11,7 +11,7 @@
         </p>
         <v-row class="mx-0 mt-4 d-flex justify-start">
           <v-col cols="11 pl-0">
-            <v-row class="mx-0" id="select-tx-fee">
+            <v-row class="mx-0">
               <v-slider v-model="txFeeIndex" :tick-labels="transactionFees" :max="2"
                         :color="txFeeColor" :track-color="txFeeColor" step="1"
                         @focus="focus = true"
