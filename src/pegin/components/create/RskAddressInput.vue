@@ -61,7 +61,7 @@
               </v-row>
             </v-col>
             <v-col cols="1" class="d-flex justify-center pb-0">
-              <div class="divider"></div>
+              <div class="divider"/>
             </v-col>
             <v-col cols="4" class="pb-0 px-0">
               <v-row class="mx-0 mb-4 d-flex justify-start">
@@ -70,8 +70,7 @@
               <v-row class="mx-0 d-flex justify-center">
                 <v-btn outlined rounded color="#000000" width="100%" height="38"
                   class="select-wallet-button"
-                  @click="selectRLoginWallet"
-                  id="select-rsk-address-btn">
+                  @click="selectRLoginWallet" >
                   <span class="blackish">Connect wallet</span>
                 </v-btn>
               </v-row>
