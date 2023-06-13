@@ -29,7 +29,6 @@ describe('PegOut view', () => {
       defaultEnvironmentVariables,
     );
     localVue.use(Vuex);
-    localVue.use(VueTour);
     state = {
       amountToTransfer: new WeiBig(0, 'wei'),
       validAmount: false,
