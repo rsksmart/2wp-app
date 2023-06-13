@@ -151,6 +151,7 @@ export const PEGIN_TX_IS_HD_WALLET = 'PEGIN_TX_IS_HD_WALLET';
 
 // Session getters
 export const SESSION_IN_TX_FLOW = 'SESSION_IN_TX_FLOW';
+export const SESSION_IS_LEDGER_CONNECTED = 'SESSION_IS_LEDGER_CONNECTED';
 
 // environment
 export const BTC_NETWORK_MAINNET = 'main';
