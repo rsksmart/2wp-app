@@ -1,10 +1,8 @@
 import Vue from 'vue';
 import Vuetify from 'vuetify';
-import VueTour from 'vue-tour';
 import { TextEncoder, TextDecoder } from 'text-encoding';
 
 Vue.use(Vuetify);
-Vue.use(VueTour);
 Vue.config.productionTip = false;
 
 // Polyfill TextEncoder if it doesn't exist
