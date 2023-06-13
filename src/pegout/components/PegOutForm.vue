@@ -100,6 +100,10 @@
                               indeterminate color="#000000" class="mr-10"/>
       </v-col>
     </v-row>
+    <v-row class="mx-0 justify-center"
+           v-if="pegOutFormState.matches(['loading']) && isLedgerConnected">
+      See your ledger device to confirm your transaction.
+    </v-row>
   </v-col>
   <template v-if="showTxErrorDialog">
     <tx-error-dialog :showTxErrorDialog="showTxErrorDialog"
@@ -172,6 +176,8 @@ export default class PegOutForm extends Vue {
   @Getter(constants.PEGOUT_TX_GET_SAFE_TX_FEE, { namespace: 'pegOutTx' }) safeFee !: WeiBig;
 
   @Getter(constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE, { namespace: 'pegOutTx' }) estimatedBtcToReceive !: SatoshiBig;
+
+  @Getter(constants.SESSION_IS_LEDGER_CONNECTED, { namespace: 'web3Session' }) isLedgerConnected !: boolean;
 
   @Emit()
   closeAddressDialog() {
