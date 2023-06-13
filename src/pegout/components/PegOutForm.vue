@@ -1,10 +1,6 @@
 <template>
 <v-container fluid class="exchange-form normalized-height container
   max-width mx-6 mt-6">
-  <v-container>
-    <v-tour name="pegOutTour" :steps="tourSteps" :callbacks="tourCallBacks">
-    </v-tour>
-  </v-container>
   <v-col class="px-0">
     <v-row class="mx-0">
         <v-col cols="1" class="pa-0 d-flex align-center">
@@ -165,101 +161,6 @@ export default class PegOutForm extends Vue {
 
   isReadyToSign = false;
 
-  tourSteps = [
-    {
-      target: '#wallet-connection',
-      content: `Click to select the Rootstock wallet where your ${this.environmentContext.getRbtcTicker()} are stored`,
-      params: {
-        highlight: true,
-        isFirst: true,
-      },
-    },
-    {
-      target: '#amount-field',
-      content: `Input the amount you want to convert into ${this.environmentContext.getBtcTicker()}`,
-      params: {
-        highlight: true,
-        isLast: false,
-      },
-    },
-    {
-      target: '#max-btn',
-      content: 'Click here if you want to send all the available balance in your wallet.',
-      params: {
-        highlight: true,
-        isLast: false,
-      },
-    },
-    {
-      target: '#derivation-addr-btn',
-      content: 'If you want to derive your destination address click here and sign the message',
-      params: {
-        highlight: true,
-        isLast: false,
-      },
-    },
-    {
-      target: '#summary-sender-address',
-      content: `This is the address in Rootstock where the ${this.environmentContext.getRbtcTicker()} will be transferred from`,
-      params: {
-        highlight: true,
-        isLast: true,
-      },
-    },
-    {
-      target: '#summary-amount',
-      content: `This is the amount you will send to convert into ${this.environmentContext.getBtcTicker()}`,
-      params: {
-        highlight: true,
-        isLast: false,
-      },
-    },
-    {
-      target: '#summary-tx-fee',
-      content: `The estimated fee required by the network in ${this.environmentContext.getBtcTicker()}. Also called <strong>gas</strong> `,
-      params: {
-        highlight: true,
-        isLast: false,
-      },
-    },
-    {
-      target: '#summary-btc-destination',
-      content: `This is the address where the ${this.environmentContext.getBtcTicker()} will be sent`,
-      params: {
-        highlight: true,
-        isLast: false,
-      },
-    },
-    {
-      target: '#summary-estimated-fee',
-      content: `The estimated fee required by the protocol in ${this.environmentContext.getBtcTicker()}`,
-      params: {
-        highlight: true,
-        isLast: false,
-      },
-    },
-    {
-      target: '#summary-btc-estimated-amount',
-      content: 'Based on the estimated fee and the amount transferred, this is the estimated final amount that will be transferred to the destination address.',
-      params: {
-        highlight: true,
-        isLast: false,
-      },
-    },
-    {
-      target: '#send-btn',
-      content: 'When the form fields were fill, click to sign the transaction',
-      params: {
-        highlight: true,
-        isLast: true,
-      },
-    },
-  ];
-
-  tourCallBacks = {
-    onFinish: () => localStorage.setItem('ONBOARDED_USER_PEGOUT', 'true'),
-  };
-
   @State('web3Session') session !: SessionState;
 
   @State('pegOutTx') pegOutTxState !: PegOutTxState;
@@ -335,13 +236,6 @@ export default class PegOutForm extends Vue {
   @Emit('changePage')
   changePage() {
     return this.nextPage;
-  }
-
-  mounted() {
-    const newUser = localStorage.getItem('ONBOARDED_USER_PEGOUT') !== 'true';
-    if (newUser) {
-      this.$tours.pegOutTour.start();
-    }
   }
 }
 </script>

@@ -16,10 +16,10 @@
             {{environmentContext.getRbtcTicker()}}</h2>
           </v-row>
           <template>
-            <v-row class="mx-0 mt-10 d-flex justify-center" id="token-conversion">
+            <v-row class="mx-0 mt-10 d-flex justify-center">
               <p>Select your token conversion</p>
             </v-row>
-            <v-row justify="center" class="ma-0" id="exchange">
+            <v-row justify="center" class="ma-0">
               <v-col cols="4" class="d-flex justify-end pb-0">
                 <v-btn @click="selectPegIn" :disabled="!isAllowedBrowser" outlined
                        v-bind:class="[ this.btnWalletClass, btcToRbtc ? 'selected' : '' ]">
@@ -75,7 +75,7 @@
             <v-row class="mx-0 mt-10 d-flex justify-center">
               <p>Or check the status of your transaction</p>
             </v-row>
-            <v-row class="d-flex justify-center pt-4" id="status">
+            <v-row class="d-flex justify-center pt-4">
               <v-btn @click="toPegInStatus" outlined
                      v-bind:class="[ this.btnWalletClass, STATUS ? 'selected' : '' ]"
                      :disabled="!isAllowedBrowser">
