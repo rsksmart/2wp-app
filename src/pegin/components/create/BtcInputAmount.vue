@@ -10,9 +10,11 @@
           Enter the amount you want to send:
         </p>
         <v-row class="mx-0 mt-4 pb-0 d-flex align-center">
-          <v-col cols="4" v-bind:class="[amountStyle]" class="input-box-outline">
+          <v-col cols="4" v-bind:class="[amountStyle]"
+                class="input-box-outline" id="amount-field">
             <v-col cols="8" class="pa-0 pl-1">
               <v-text-field solo hide-details full-width single-line flat
+                            :disabled="isTourActive"
                             class="amount-input"
                             placeholder="add amount"
                             v-model="bitcoinAmount" type="number"
@@ -68,7 +70,7 @@
 
 <script lang="ts">
 import {
-  Component, Emit, Vue, Watch,
+  Component, Emit, Prop, Vue, Watch,
 } from 'vue-property-decorator';
 import { Action, Getter, State } from 'vuex-class';
 import SatoshiBig from '@/common/types/SatoshiBig';
@@ -89,6 +91,8 @@ export default class BtcInputAmount extends Vue {
   bitcoinAmount = '';
 
   stepState: 'unused' | 'done' | 'error' = 'unused';
+
+  @Prop() isTourActive !: boolean;
 
   @State('pegInTx') pegInTxState!: PegInTxState;
 

@@ -378,7 +378,7 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="mark">
+            <v-container class="mark" id="summary-tx-fee">
               <p v-bind:class="{'grayish': summary.fee === 0}">
                 {{ summary.fee }}
                 {{ currencyFromTicker }}
@@ -395,7 +395,7 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="mark">
+            <v-container class="mark" id="summary-tx-total">
               <p v-bind:class="{'grayish': total === '0'}">
                 {{ total }} {{currencyFromTicker}}
               </p>
@@ -449,7 +449,7 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="mark">
+            <v-container class="mark" id="summary-rsk-destination">
               <p v-bind:class="{'grayish': recipientAddress === VALUE_INCOMPLETE_MESSAGE}"
                  class="text-end">
                 {{ recipientAddress }}
@@ -499,7 +499,7 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="mark" id="summary-btc-estimated-amount">
+            <v-container class="mark" id="summary-rsk-estimated-amount">
               <p v-bind:class="{'grayish': total === '0'}" class="text-end">
                 {{ amount }}  {{currencyToTicker}}
               </p>
