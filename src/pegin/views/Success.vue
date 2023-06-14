@@ -3,7 +3,7 @@
     <div class="transactions">
       <v-row class="mx-0 py-3 d-flex justify-center">
         <h1 class="text-center ma-0">
-          Your RBTC is on its way!
+          Your {{environmentContext.getRbtcTicker()}} is on its way!
         </h1>
       </v-row>
       <v-row class="mx-0 my-8 d-flex justify-center">
@@ -42,6 +42,7 @@ import {
 import { Getter, State } from 'vuex-class';
 import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
 import * as constants from '@/common/store/constants';
+import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 
 @Component({
   components: {
@@ -55,6 +56,8 @@ export default class Success extends Vue {
   typeSummary = TxStatusType.PEGIN;
 
   orientationSummary = TxSummaryOrientation.HORIZONTAL;
+
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
   @State('pegInTx') peginTxState!: PegInTxState;
 
