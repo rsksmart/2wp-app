@@ -15,7 +15,9 @@ import { EnvironmentAccessorService } from '@/common/services/enviroment-accesso
 import { ApiInformation } from '@/common/types/ApiInformation';
 
 export default class ApiService {
-  static baseURL = EnvironmentAccessorService.getEnvironmentVariables().vueAppApiBaseUrl;
+  static get baseURL(): string {
+    return EnvironmentAccessorService.getEnvironmentVariables().vueAppApiBaseUrl;
+  }
 
   public static getBalances(sessionId: string,
     addressList?: RequestBalance[]): Promise<AccountBalance> {
@@ -162,7 +164,7 @@ export default class ApiService {
 
   static estimateFee(blockNumber: number):Promise<SatoshiBig> {
     return new Promise<SatoshiBig>((resolve, reject) => {
-      axios.get(`${this.baseURL}/estimatefee/${blockNumber}`)
+      axios.get(`${ApiService.baseURL}/estimatefee/${blockNumber}`)
         .then((response) => resolve(new SatoshiBig(response.data, 'btc')))
         .catch(reject);
     });
