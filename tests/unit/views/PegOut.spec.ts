@@ -3,6 +3,7 @@ import {
   createLocalVue, mount, Wrapper,
 } from '@vue/test-utils';
 import Vuex, { Store } from 'vuex';
+import VueTour from 'vue-tour';
 import Vuetify from 'vuetify';
 import {
   PegOutTxState, RootState, SatoshiBig, SessionState,
