@@ -15,6 +15,7 @@ import WeiBig from '@/common/types/WeiBig';
 import PegOutForm from '@/pegout/components/PegOutForm.vue';
 
 const localVue = createLocalVue();
+localVue.use(VueTour);
 let vuetify: typeof Vuetify;
 let store: Store<RootState>;
 let state: PegOutTxState;
