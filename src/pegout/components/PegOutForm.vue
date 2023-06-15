@@ -1,5 +1,11 @@
 <template>
 <v-container fluid class="mt-0">
+  <v-container>
+      <div class="tourStyle">
+        <v-tour name="pegOutTour" :steps="tourSteps" :callbacks="tourCallBacks">
+        </v-tour>
+      </div>
+  </v-container>
   <v-col class="container pa-0">
     <v-row class="mx-0">
         <v-col cols="1" class="pa-0 d-flex align-center">
@@ -11,13 +17,24 @@
           Send {{environmentContext.getRbtcTicker()}}.
           Get {{environmentContext.getBtcTicker()}}.</h1>
         </v-col>
+        <v-col style="margin-left: 15%;" class="text-right">
+          <div>
+            <v-btn class="tour-button" id="first-step" @click="startVueTour()">?</v-btn>
+            <span>You don't know how to proceed?</span>
+          </div>
+          <div>
+            <span>Click the button to start an introduction tour! </span>
+          </div>
+        </v-col>
       </v-row>
     <v-row class="exchange-form mt-2 mx-0 justify-space-between">
       <v-col cols="8" lg="7" class="pa-0" >
         <rsk-wallet-connection
+          :isTourActive="isTourActive"
           @switchDeriveButton="switchDeriveButton"/>
         <v-divider color="#C4C4C4"/>
-        <rbtc-input-amount :enableButton="!isReadyToSign"/>
+        <rbtc-input-amount :enableButton="!isReadyToSign"
+                          :isTourActive="isTourActive"/>
         <v-divider color="#C4C4C4"/>
         <div class="form-step py-4">
           <v-row class="mx-0 align-start">
@@ -165,6 +182,117 @@ export default class PegOutForm extends Vue {
 
   isReadyToSign = false;
 
+  isTourActive = false;
+
+  tourSteps = [
+    {
+      target: '#wallet-connection',
+      content: `Click to select the Rootstock wallet where your ${this.environmentContext.getRbtcTicker()} are stored`,
+      params: {
+        highlight: true,
+        isFirst: true,
+      },
+    },
+    {
+      target: '#amount-field',
+      content: `Input the amount you want to convert into ${this.environmentContext.getBtcTicker()}`,
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#max-btn',
+      content: 'Click here if you want to send all the available balance in your wallet',
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#derivation-addr-btn',
+      content: 'If you want to derive your destination address click here and sign the message',
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#summary-sender-address',
+      content: `This is the address in Rootstock where the ${this.environmentContext.getRbtcTicker()} will be transferred from`,
+      params: {
+        highlight: true,
+        isLast: true,
+      },
+    },
+    {
+      target: '#summary-amount',
+      content: `This is the amount you will send to convert into ${this.environmentContext.getBtcTicker()}`,
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#summary-tx-fee',
+      content: `The estimated fee required by the network in ${this.environmentContext.getBtcTicker()}`,
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#summary-btc-destination',
+      content: `This is the address where the ${this.environmentContext.getBtcTicker()} will be received`,
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#summary-estimated-fee',
+      content: `The estimated fee required by the protocol in ${this.environmentContext.getBtcTicker()}`,
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#summary-btc-estimated-amount',
+      content: 'Based on the estimated fee and the amount transferred, this is the estimated final amount that will be transferred to the destination address',
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#send-btn',
+      content: 'When the form fields were filled, click here to sign the transaction',
+      params: {
+        highlight: true,
+        isLast: true,
+      },
+    },
+  ];
+
+  tourCallBacks = {
+    onFinish: () => {
+      this.handleTourFinish();
+    },
+    onSkip: () => {
+      this.handleSkipTour();
+    },
+  };
+
+  handleTourFinish() {
+    this.isTourActive = false;
+    localStorage.setItem('ONBOARDED_USER_PEGOUT', 'true');
+  }
+
+  handleSkipTour() {
+    this.isTourActive = false;
+  }
+
   @State('web3Session') session !: SessionState;
 
   @State('pegOutTx') pegOutTxState !: PegOutTxState;
@@ -242,6 +370,22 @@ export default class PegOutForm extends Vue {
   @Emit('changePage')
   changePage() {
     return this.nextPage;
+  }
+
+  @Emit()
+  startVueTour() {
+    this.$tours.pegOutTour.start();
+    this.isTourActive = true;
+  }
+
+  mounted() {
+    const newUser = localStorage.getItem('ONBOARDED_USER_PEGOUT') !== 'true';
+    if (newUser) {
+      this.$tours.pegOutTour.start();
+      this.isTourActive = true;
+    } else {
+      this.isTourActive = false;
+    }
   }
 }
 </script>

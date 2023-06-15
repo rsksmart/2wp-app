@@ -316,7 +316,7 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="pa-0">
+            <v-container class="pa-0" id="summary-sender-address">
               <p class="light-grayish">{{ senderValue }}</p>
             </v-container>
           </div>
@@ -347,7 +347,7 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="pa-0">
+            <v-container class="pa-0" id="summary-amount">
               <p class="light-grayish">
                 {{ amount }} {{ currencyFromTicker }}
               </p>
@@ -394,7 +394,7 @@
             <h1 class="boldie">Gas</h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="pa-0">
+            <v-container class="pa-0" id="summary-tx-fee">
               <p class="light-grayish">
                 {{ summary.gas }} {{currencyFromTicker}}
               </p>
@@ -422,7 +422,7 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="pa-0">
+            <v-container class="pa-0" id="summary-btc-destination">
               <p class="light-grayish text-end">
                 {{ recipientAddress }}
               </p>
@@ -438,7 +438,7 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="pa-0">
+            <v-container class="pa-0" id="summary-estimated-fee">
               <p class="light-grayish text-end">
                 {{ summary.fee }}
                 {{ currencyToTicker }}
@@ -455,7 +455,7 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="pa-0">
+            <v-container class="pa-0" id="summary-btc-estimated-amount">
               <p class="light-grayish text-end">
                 {{ summary.amountReceivedString }} {{currencyToTicker}}
               </p>
