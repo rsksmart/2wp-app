@@ -60,6 +60,7 @@
               <v-row class="mx-0 d-flex justify-center">
                 <v-btn outlined rounded color="#000000" width="100%" height="38"
                   class="select-wallet-button"
+                  :disabled="isTourActive"
                   @click="connectWallet" id="wallet-connection">
                   <span class="blackish">Connect wallet</span>
                 </v-btn>
@@ -73,7 +74,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Emit, Vue } from 'vue-property-decorator';
+import {
+  Component, Emit, Prop, Vue,
+} from 'vue-property-decorator';
 import { Action, State } from 'vuex-class';
 import { PegOutTxState, SessionState } from '@/common/types';
 import * as constants from '@/common/store/constants';
@@ -86,6 +89,8 @@ export default class RskWalletConnection extends Vue {
   useWeb3Wallet = false;
 
   isValidPegOutAddress = true;
+
+  @Prop() isTourActive !: boolean;
 
   @State('pegOutTx') pegOutTxState!: PegOutTxState;
 
