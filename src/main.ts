@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Web3 from 'web3';
 import { AppNetwork } from '@/common/types';
+import VueTour from 'vue-tour';
 import * as constants from './common/store/constants';
 import App from './App.vue';
 import router from './common/router';
@@ -8,6 +9,8 @@ import store from './common/store';
 import { vuetify } from './common/plugins/vuetify';
 import '@/common/styles/main.scss';
 import { EnvironmentAccessorService } from './common/services/enviroment-accessor.service';
+
+require('vue-tour/dist/vue-tour.css');
 
 Vue.config.productionTip = false;
 Vue.prototype.$web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
@@ -41,6 +44,8 @@ const defaultEnvironmentVariables = {
 };
 
 EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
+
+Vue.use(VueTour);
 
 new Vue({
   router,
