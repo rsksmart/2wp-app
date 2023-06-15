@@ -363,7 +363,7 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="pa-0">
+            <v-container class="pa-0" id="summary-tx-fee">
               <p class="light-grayish">
                 {{ summary.fee }}
                 {{ currencyFromTicker }}
@@ -380,7 +380,7 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="pa-0">
+            <v-container class="pa-0" id="summary-tx-total">
               <p class="light-grayish">
                 {{ total }} {{currencyFromTicker}}
               </p>
@@ -471,7 +471,7 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="pa-0" id="summary-btc-estimated-amount">
+            <v-container class="pa-0" id="summary-rsk-estimated-amount">
               <p class="light-grayish text-end">
                 {{ amount }}  {{currencyToTicker}}
               </p>
