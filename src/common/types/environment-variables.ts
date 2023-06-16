@@ -37,6 +37,8 @@ export class EnvironmentVariables {
     slow: number;
   };
 
+  public burnDustValue: number;
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(defaultValues: any = {}) {
     this.vueAppCoin = process.env.VUE_APP_COIN || defaultValues.vueAppCoin;
@@ -75,5 +77,6 @@ export class EnvironmentVariables {
       slow: process.env.VUE_APP_SLOW_MINING_BLOCK
         || (defaultValues.miningSpeedBlock ? defaultValues.miningSpeedBlock.slow : 0),
     };
+    this.burnDustValue = Number(process.env.BURN_DUST_VALUE) || defaultValues.burnDustValue;
   }
 }
