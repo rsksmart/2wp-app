@@ -37,6 +37,7 @@ const defaultEnvironmentVariables = {
     average: 6,
     slow: 12,
   },
+  burnDustValue: 2000,
 };
 
 EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
