@@ -120,3 +120,5 @@ export interface NormalizedSummary {
   selectedAccount?: string;
   federationAddress?: string;
 }
+export type AddressType = 'BITCOIN_LEGACY_ADDRESS' | 'BITCOIN_SEGWIT_ADDRESS' | 'BITCOIN_NATIVE_SEGWIT_ADDRESS' |
+ 'BITCOIN_MULTISIGNATURE_ADDRESS' | 'BITCOIN_UNKNOWN_ADDRESS_TYPE';
