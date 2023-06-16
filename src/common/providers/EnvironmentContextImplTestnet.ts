@@ -1,4 +1,4 @@
-import { EnvironmentContext } from './types';
+import { AddressRegexPattern, EnvironmentContext } from './types';
 
 export default class EnvironmentContextImplTestnet implements EnvironmentContext {
   // eslint-disable-next-line no-useless-constructor, @typescript-eslint/no-empty-function
@@ -36,5 +36,14 @@ export default class EnvironmentContextImplTestnet implements EnvironmentContext
   // eslint-disable-next-line class-methods-use-this
   getBtcLedgerAppName() {
     return 'Bitcoin Test';
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getAddressRegexPattern(): AddressRegexPattern {
+    return {
+      legacy: new RegExp('^[mn][1-9A-HJ-NP-Za-km-z]{26,35}'),
+      segwit: new RegExp('^[2][1-9A-HJ-NP-Za-km-z]{26,35}'),
+      nativeSegwit: new RegExp('^[tb1][0-9A-HJ-NP-Za-z]{41,62}'),
+    };
   }
 }
