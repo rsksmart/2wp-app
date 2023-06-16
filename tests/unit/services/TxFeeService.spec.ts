@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 import axios from 'axios';
 import { SatoshiBig, Utxo } from '../../../src/common/types';
-import TxFeeService from '../../../src/pegin/services';
+import { TxFeeService } from '../../../src/pegin/services';
 import * as constants from '../../../src/common/store/constants';
 import { EnvironmentAccessorService } from '../../../src/common/services/enviroment-accessor.service';
 
