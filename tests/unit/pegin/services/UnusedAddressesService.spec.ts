@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { UnusedAddressesService } from '@/pegin/services/UnusedAddressesService';
+import { UnusedAddressesService } from '@/pegin/services';
 import { AddressInfo } from '@/pegin/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import * as constants from '@/common/store/constants';

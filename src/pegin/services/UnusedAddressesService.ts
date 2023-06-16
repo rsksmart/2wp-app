@@ -3,7 +3,7 @@ import { AddressStatus, SatoshiBig } from '@/common/types';
 import axios from 'axios';
 import { AddressInfo } from '../types';
 
-export class UnusedAddressesService {
+export default class UnusedAddressesService {
   private static getAddressInfo(address: string): Promise<AddressInfo> {
     const baseUrl = EnvironmentAccessorService.getEnvironmentVariables().vueAppApiBaseUrl;
 
