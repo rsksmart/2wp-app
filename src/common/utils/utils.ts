@@ -149,6 +149,11 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
       break;
     case TxStatusType.PEGOUT:
       switch (status) {
+        case PegoutStatus.PENDING:
+          statusMessage = 'Your peg-out is waiting to be mined';
+          activeMessageStyle = 'statusProgress';
+          isRejected = false;
+          break;
         case PegoutStatus.RECEIVED:
           statusMessage = 'Your peg-out is being processed';
           activeMessageStyle = 'statusProgress';
