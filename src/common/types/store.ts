@@ -31,6 +31,7 @@ export interface PeginStatus {
 }
 
 export enum PegoutStatus {
+  PENDING = 'PENDING',
   RECEIVED = 'RECEIVED',
   REJECTED = 'REJECTED',
   WAITING_FOR_CONFIRMATION = 'WAITING_FOR_CONFIRMATION',
