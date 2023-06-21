@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="px-md-0">
+  <v-container fluid class="mt-0">
     <template v-if="!peginTxState.walletDataReady">
       <connect-device @continueToForm="startAskingForBalance"
                       :sendBitcoinState="sendBitcoinState"/>

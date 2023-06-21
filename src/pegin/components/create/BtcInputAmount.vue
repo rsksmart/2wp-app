@@ -14,7 +14,7 @@
             <v-col cols="8" class="pa-0 pl-1">
               <v-text-field solo hide-details full-width single-line flat
                             class="amount-input"
-                            placeholder="add amount"
+                            placeholder="Add amount"
                             v-model="bitcoinAmount" type="number"
                             step="0.00000001"
                             @keydown="blockLetterKeyDown"
