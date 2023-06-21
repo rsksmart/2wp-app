@@ -1,19 +1,19 @@
 <template>
-<v-container fluid class="exchange-form normalized-height container
-  max-width mx-6 mt-6">
-  <v-col class="px-0">
+<v-container fluid class="mt-0">
+  <v-col class="container pa-0">
     <v-row class="mx-0">
         <v-col cols="1" class="pa-0 d-flex align-center">
           <v-img position="center left"
                  src="@/assets/exchange/arrow.png" height="40" contain/>
         </v-col>
-        <v-col class="px-0">
-         <h1 class="justify-center text-left">Send {{environmentContext.getRbtcTicker()}}.
+        <v-col class="exchange-form mt-0 px-0">
+         <h1 class="justify-center text-left">
+          Send {{environmentContext.getRbtcTicker()}}.
           Get {{environmentContext.getBtcTicker()}}.</h1>
         </v-col>
       </v-row>
-    <v-row class="exchange-form">
-      <v-col cols="8" lg="8" >
+    <v-row class="exchange-form mt-2 mx-0">
+      <v-col cols="8" lg="7" class="pa-0" >
         <rsk-wallet-connection
           @switchDeriveButton="switchDeriveButton"/>
         <v-divider color="#C4C4C4"/>
