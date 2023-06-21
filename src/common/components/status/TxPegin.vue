@@ -298,7 +298,6 @@ export default class TxPegin extends Vue {
   @Emit('setMessage')
   setMessage() {
     if (this.txStatus.txDetails) {
-      console.log('pegInStatus.status');
       return setStatusMessage(TxStatusType.PEGIN, this.txStatus.txDetails.status);
     }
     return '';
