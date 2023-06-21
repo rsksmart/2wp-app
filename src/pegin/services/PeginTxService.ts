@@ -4,7 +4,7 @@ import {
 } from '@/common/types';
 import { validateAddress } from '@/common/utils';
 import * as constants from '@/common/store/constants';
-import bitcoin from 'bitcoinjs-lib';
+import * as bitcoin from 'bitcoinjs-lib';
 
 export default class PeginTxService {
   private static getRskOutput(recipientAddress: string, refundAddress: string): NormalizedOutput {
