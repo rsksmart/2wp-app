@@ -7,7 +7,7 @@
       </v-col>
       <v-col class="pl-0">
         <p v-bind:class="{'boldie': focus}">
-          Connect your Rootstock wallet :
+          Connect your Rootstock wallet:
         </p>
         <v-row class="mx-0 mt-4">
           <template v-if="useWeb3Wallet && web3Address">
