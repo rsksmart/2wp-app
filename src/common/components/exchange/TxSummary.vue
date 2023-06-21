@@ -598,7 +598,6 @@ export default class TxSummary extends Vue {
 
   openBtcExplorer() {
     const txWithout0x = this.txId.substring(2, (this.txId.length));
-    console.log(txWithout0x);
     window.open(getBtcTxExplorerUrl(txWithout0x), '_blank');
   }
 
