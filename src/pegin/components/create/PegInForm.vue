@@ -1,7 +1,6 @@
 <template>
-  <v-container fluid class="exchange normalized-height container
-  max-width mx-6">
-    <v-col class="exchange-form px-0">
+  <v-container fluid class="pa-0">
+    <v-col class="exchange-form pa-0 ma-0">
       <v-row class="mx-0">
         <v-col cols="1" class="pa-0 d-flex align-center">
           <v-img position="center left"

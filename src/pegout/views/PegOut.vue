@@ -1,6 +1,5 @@
 <template>
-  <v-container fluid class="exchange normalized-height container
-  max-width mx-6 pt-6">
+  <v-container fluid class="exchange container max-width mx-6">
     <component :is="currentComponent"
     :confirmTxState="confirmTxState"
     @changePage="changePage"/>
