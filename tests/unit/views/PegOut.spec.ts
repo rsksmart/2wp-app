@@ -1,5 +1,7 @@
 import PegOut from '@/pegout/views/PegOut.vue';
-import { createLocalVue, mount } from '@vue/test-utils';
+import {
+  createLocalVue, mount, Wrapper,
+} from '@vue/test-utils';
 import Vuex, { Store } from 'vuex';
 import Vuetify from 'vuetify';
 import {
@@ -12,7 +14,7 @@ import WeiBig from '@/common/types/WeiBig';
 import PegOutForm from '@/pegout/components/PegOutForm.vue';
 
 const localVue = createLocalVue();
-let vuetify: any;
+let vuetify: typeof Vuetify;
 let store: Store<RootState>;
 let state: PegOutTxState;
 let sessionState: SessionState;
@@ -69,16 +71,18 @@ describe('PegOut view', () => {
   });
 
   it('should initially render the PegOutForm component', () => {
-    const wrapper = mount(PegOut, {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const wrapper: Wrapper<PegOut & {[key: string]: any}> = mount(PegOut, {
       store,
       localVue,
       vuetify,
     });
-    expect((wrapper.vm as any).currentComponent).toBe('PegOutForm');
+    expect((wrapper.vm).currentComponent).toBe('PegOutForm');
   });
 
   it('should render the Confirmation component on page change', async () => {
-    const wrapper = mount(PegOut, {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const wrapper: Wrapper<PegOut & {[key: string]: any}> = mount(PegOut, {
       store,
       localVue,
       vuetify,
@@ -86,6 +90,6 @@ describe('PegOut view', () => {
     const childWrapper = wrapper.findComponent(PegOutForm);
     childWrapper.vm.$emit('changePage', 'Confirmation');
     expect(childWrapper.emitted('changePage')).toBeTruthy();
-    expect((wrapper.vm as any).currentComponent).toBe('Confirmation');
+    expect((wrapper.vm).currentComponent).toBe('Confirmation');
   });
 });
