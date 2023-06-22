@@ -3,7 +3,7 @@ import DeviceErrorDialog from '@/common/components/exchange/DeviceErrorDialog.vu
 import Vuetify from 'vuetify';
 
 const localVue = createLocalVue();
-let vuetify: any;
+let vuetify: typeof Vuetify;
 
 describe('DeviceErrorDialog', () => {
   beforeEach(() => {
