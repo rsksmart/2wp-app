@@ -44,7 +44,7 @@ describe('PeginTx Service', () => {
     rskRecipientAddress: '224d0b72bab9342f898c633ef187abff8a96c0fa',
     changeAddress: '',
   };
-  it('should build a normalized tx', () => {
+  it('should build a normalized tx with legacy refund address', () => {
     const normalizedTx = {
       coin: 'test',
       inputs: [
@@ -80,5 +80,78 @@ describe('PeginTx Service', () => {
       ],
     };
     expect(PeginTxService.buildNormalizedTx(denormalizedTx)).toEqual(normalizedTx);
+  });
+  it('should build a normalized tx with segwit refund address', () => {
+    const data = { ...denormalizedTx };
+    data.refundAddress = '2MxKEf2su6FGAUfCEAHreGFQvEYrfYNHvL7';
+    const normalizedTx = {
+      coin: 'test',
+      inputs: [
+        {
+          address: 'address',
+          prev_hash: 'txid-1',
+          amount: '1000000',
+          address_n: [0],
+          prev_index: 0,
+        },
+        {
+          address: 'address',
+          prev_hash: 'txid-2',
+          amount: '2000000',
+          address_n: [0],
+          prev_index: 1,
+        },
+      ],
+      outputs: [
+        {
+          address: denormalizedTx.federationAddress,
+          amount: denormalizedTx.amountToTransfer.toSatoshiString(),
+        },
+        {
+          amount: '0',
+          op_return_data:
+            '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa02379ad9b7ba73bdc1e29e286e014d4e2e1f6884e3',
+        },
+        {
+          address: denormalizedTx.changeAddress,
+          amount: '1450000',
+        },
+      ],
+    };
+    expect(PeginTxService.buildNormalizedTx(data)).toEqual(normalizedTx);
+  });
+  it('should build a normalized tx without an output change if amount < dust', () => {
+    const data = {
+      selectedUtxoList: [
+        {
+          txid: '',
+          amount: 30000,
+          address: '',
+          path: '',
+          derivationArray: [0],
+          vout: 0,
+        },
+        {
+          txid: '',
+          amount: 5000,
+          address: '',
+          path: '',
+          derivationArray: [0],
+          vout: 0,
+        },
+      ],
+      totalFee: new SatoshiBig(6000, 'satoshi'),
+      amountToTransfer: new SatoshiBig(28000, 'satoshi'),
+      federationAddress: '',
+      refundAddress: 'mzBc4XEFSdzCDcTxAgf6EZXgsZWpztRhef',
+      rskRecipientAddress: '224d0b72bab9342f898c633ef187abff8a96c0fa',
+      changeAddress: '',
+    };
+    expect(PeginTxService.buildNormalizedTx(data).outputs.length).toEqual(2);
+  });
+  it('should throw an error with native segwit refund address', () => {
+    const data = { ...denormalizedTx };
+    data.refundAddress = 'tb1qtanvhhl8ve32tcdxkrsamyy6vq5p62ctdv89l0';
+    expect(() => PeginTxService.buildNormalizedTx(data)).toThrow();
   });
 });
