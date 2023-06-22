@@ -1,5 +1,5 @@
 import PegIn from '@/pegin/views/PegIn.vue';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { createLocalVue, shallowMount, Wrapper } from '@vue/test-utils';
 import Vuex, { Store } from 'vuex';
 import Vuetify from 'vuetify';
 import {
@@ -12,7 +12,7 @@ import SelectBitcoinWallet from '@/common/components/exchange/SelectBitcoinWalle
 import BtcToRbtcDialog from '@/common/components/exchange/BtcToRbtcDialog.vue';
 
 const localVue = createLocalVue();
-let vuetify: any;
+let vuetify: typeof Vuetify;
 let store: Store<RootState>;
 let state: Partial<PegInTxState>;
 let sessionState: SessionState;
@@ -88,7 +88,8 @@ describe('PegIn view', () => {
   });
 
   it('should render SelectBitcoinWallet component', () => {
-    const wrapper = shallowMount(PegIn, {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const wrapper: Wrapper<PegIn & {[key: string]: any}> = shallowMount(PegIn, {
       store,
       localVue,
       vuetify,
@@ -98,14 +99,15 @@ describe('PegIn view', () => {
   });
 
   it('should render BtcToRbtcDialog component', () => {
-    const wrapper = shallowMount(PegIn, {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const wrapper: Wrapper<PegIn & {[key: string]: any}> = shallowMount(PegIn, {
       store,
       localVue,
       vuetify,
     });
     wrapper.setData({ showDialog: true });
     const btcToRbtcDialogComponent = wrapper.findComponent(BtcToRbtcDialog);
-    expect((wrapper.vm as any).showDialog).toBe(true);
+    expect((wrapper.vm).showDialog).toBe(true);
     expect(btcToRbtcDialogComponent.exists()).toBeTruthy();
   });
 });
