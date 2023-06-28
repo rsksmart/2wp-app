@@ -9,8 +9,8 @@
         <p v-bind:class="{'boldie': focus}">
           Enter the amount you want to send:
         </p>
-        <v-row class="d-cols-wht mt-2 ml-1">
-          <v-col cols="5" v-bind:class="[amountStyle]"
+        <v-row class="d-cols-wht ma-0 mt-4">
+          <v-col cols="4" v-bind:class="[amountStyle]"
                  class="input-box-outline" id="amount-field">
             <v-col cols="8" class="d-flex align-center">
               <v-text-field
@@ -43,7 +43,7 @@
               </v-col>
             </v-row>
           </v-col>
-          <v-col cols="4" class="pb-0 px-0">
+          <v-col cols="4" class="pa-0 pt-4">
             <v-row class="derive-button mx-0 d-flex justify-center">
               <v-btn :disabled="enableButton"
                 outlined rounded
