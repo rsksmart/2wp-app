@@ -42,8 +42,8 @@
                     </v-row>
                   </div>
                 </v-col>
-                <v-col v-else cols="4" class="pb-0 px-0">
-                  <v-row class="derive-button ml-1 mx-0 d-flex justify-center">
+                <v-col v-else cols="5" class="pb-0 px-0">
+                  <v-row class="derive-button mx-0 d-flex justify-center">
                     <v-btn :disabled="!isReadyToSign ||
                       injectedProvider != appConstants.RLOGIN_METAMASK_WALLET"
                       outlined rounded id="derivation-addr-btn"
