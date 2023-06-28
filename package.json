@@ -17,7 +17,7 @@
     "@rsksmart/rlogin": "^1.4.1",
     "@rsksmart/rlogin-ledger-provider": "^1.0.2",
     "@rsksmart/rlogin-trezor-provider": "^1.0.2",
-    "@rsksmart/rsk-precompiled-abis": "^5.0.0-HOP",
+    "@rsksmart/rsk-precompiled-abis": "^5.0.0-FINGERROOT",
     "@rsksmart/rsk-utils": "^1.1.0",
     "@swan-bitcoin/xpub-lib": "^0.1.5",
     "@types/big.js": "^6.1.1",
