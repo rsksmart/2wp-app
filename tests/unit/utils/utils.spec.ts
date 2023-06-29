@@ -1,9 +1,20 @@
 import * as constants from '@/common/store/constants';
-import { deriveBatchAddresses, getAccountType } from '@/common/utils';
-import { Purpose, WalletAddress } from '@/common/types';
+import { deriveBatchAddresses, getAccountType, getEstimatedFee } from '@/common/utils';
+import { Purpose, SatoshiBig, WalletAddress } from '@/common/types';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import { BridgeService } from '@/common/services/BridgeService';
+import sinon from 'sinon';
 import { utilsTestData } from '../../utils/testData';
 
+const initEnvironment = () => {
+  const defaultEnvironmentVariables = {
+    vueAppRskNodeHost: '',
+  };
+  EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
+};
+
 describe('Utils', () => {
+  beforeEach(initEnvironment);
   describe('getAccountType:', () => {
     it('should get account type on testnet', () => {
       const testCase = [
@@ -112,6 +123,31 @@ describe('Utils', () => {
         expect(walletAddress.address).toEqual(testData.address);
         expect(walletAddress.derivationPath).toEqual(testData.derivationPath);
       });
+    });
+  });
+  describe('getEstimatedFee', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+    it('should return a satoshi big', () => {
+      sinon.stub(BridgeService.prototype, 'getEstimatedFeesForNextPegOutEvent').resolves(0);
+      sinon.stub(BridgeService.prototype, 'getQueuedPegoutsCount').resolves(0);
+      getEstimatedFee().then((fee) => {
+        expect(fee).toBeInstanceOf(SatoshiBig);
+        expect(fee.toSatoshiString()).toEqual('0');
+      });
+    });
+    it('should resolve the estimation', () => {
+      sinon.stub(BridgeService.prototype, 'getEstimatedFeesForNextPegOutEvent').resolves(100000);
+      sinon.stub(BridgeService.prototype, 'getQueuedPegoutsCount').resolves(0);
+      getEstimatedFee().then((fee) => {
+        expect(fee.toSatoshiString()).toEqual('100000');
+      });
+    });
+    it('should reject if cannot get info from bridge', () => {
+      sinon.stub(BridgeService.prototype, 'getEstimatedFeesForNextPegOutEvent').rejects();
+      sinon.stub(BridgeService.prototype, 'getQueuedPegoutsCount').resolves(1);
+      expect(getEstimatedFee()).rejects.toThrow();
     });
   });
 });
