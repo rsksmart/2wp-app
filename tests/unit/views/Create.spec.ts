@@ -38,7 +38,6 @@ describe('Create component', () => {
         minValue: 0,
         maxValue: 1,
         federationAddress: '',
-        btcConfirmations: 100,
         sessionId: '',
       },
       sessionId: '',
