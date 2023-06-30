@@ -5,7 +5,7 @@
         <div v-bind:class="[focus ?
               'number-filled' : 'number']">2</div>
       </v-col>
-      <v-col class="pl-0 mb-4">
+      <v-col class="pl-0">
         <p v-bind:class="{'boldie': focus}">
           Enter the amount you want to send:
         </p>
@@ -56,10 +56,10 @@
           </v-col>
           <v-col/>
         </v-row>
-        <v-row v-if="stepState === 'error'" class="mx-0">
-                <span class="yellowish">
-                  {{amountErrorMessage}}
-                </span>
+        <v-row class="mx-0" style="min-height: 17px;">
+          <span v-if="stepState === 'error'" class="yellowish">
+            {{amountErrorMessage}}
+          </span>
         </v-row>
       </v-col>
     </v-row>
