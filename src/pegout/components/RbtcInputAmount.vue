@@ -1,15 +1,15 @@
 <template>
-  <div class="form-step mt-5 mb-0 py-0">
+  <div class="form-step ma-0 py-4">
     <v-row class="align-start mx-0">
       <v-col cols="auto" class="pl-0">
         <div v-bind:class="[focus ?
               'number-filled' : 'number']">2</div>
       </v-col>
-      <v-col class="px-0 mb-3">
+      <v-col class="px-0 pb-2">
         <p v-bind:class="{'boldie': focus}">
           Enter the amount you want to send:
         </p>
-        <v-row class="d-cols-wht ma-0 mt-4">
+        <v-row class="d-cols-wht ma-0 mt-7">
           <v-col cols="4" v-bind:class="[amountStyle]"
                  class="input-box-outline" id="amount-field">
             <v-col cols="8" class="d-flex align-center">
@@ -56,10 +56,10 @@
             </v-row>
           </v-col>
         </v-row>
-        <v-row v-if="stepState === 'error'" class="mx-0 error-max-balance">
-                <span class="yellowish" id="rbtc-error-msg">
-                  {{amountErrorMessage}}
-                </span>
+        <v-row class="mx-0 mt-2 error-max-balance" style="min-height: 17px;">
+          <span v-if="stepState === 'error'" class="yellowish" id="rbtc-error-msg">
+            {{amountErrorMessage}}
+          </span>
         </v-row>
       </v-col>
     </v-row>
