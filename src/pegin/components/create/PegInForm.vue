@@ -11,7 +11,7 @@
             Get {{environmentContext.getRbtcTicker()}}.</h1>
         </v-col>
       </v-row>
-      <v-row class="mx-0 mt-2">
+      <v-row class="mx-0 mt-2 justify-space-between">
         <v-col id="options-col" cols="8" lg="7" class="pa-0">
           <peg-in-account-select/>
           <v-divider color="#C4C4C4"/>
