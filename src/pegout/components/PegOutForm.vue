@@ -12,14 +12,14 @@
           Get {{environmentContext.getBtcTicker()}}.</h1>
         </v-col>
       </v-row>
-    <v-row class="exchange-form mt-2 mx-0">
+    <v-row class="exchange-form mt-2 mx-0 justify-space-between">
       <v-col cols="8" lg="7" class="pa-0" >
         <rsk-wallet-connection
           @switchDeriveButton="switchDeriveButton"/>
         <v-divider color="#C4C4C4"/>
         <rbtc-input-amount :enableButton="!isReadyToSign"/>
         <v-divider color="#C4C4C4"/>
-        <div class="form-step pb-0 pt-3 mb-3">
+        <div class="form-step py-4">
           <v-row class="mx-0 align-start">
             <v-col cols="auto" class="pl-0">
               <div v-bind:class="[focus ?
@@ -29,7 +29,7 @@
               <p v-bind:class="{'boldie': focus}">
                 (Optional) Verify your Bitcoin destination address:
               </p>
-              <v-row class="ma-0 mt-2 pa-0">
+              <v-row class="ma-0 mt-4 pa-0">
                 <v-col v-if="session.btcDerivedAddress" cols="7" class="p-0">
                   <div class="container">
                     <v-row class="mx-0">
@@ -57,12 +57,12 @@
                 </v-col>
                 <v-container v-if="injectedProvider
                                   && injectedProvider != appConstants.RLOGIN_METAMASK_WALLET"
-                  style="font-size: 14px;">
-                  <div>
+                  class="pl-0">
+                  <span class="blackish" style="font-size: 14px;">
                     As you are not using MetaMask, you need to follow
                     <a :href=appConstants.RSK_PEGOUT_DOCUMENTATION_URL class="d-inline blackish a"
                         target='_blank'> this documentation</a> to get the destination address.
-                  </div>
+                  </span>
                 </v-container>
               </v-row>
             </v-col>
@@ -81,7 +81,7 @@
       <address-dialog @switchDeriveButton="switchDeriveButton"
        @closeDialog="closeAddressDialog"/>
     </v-row>
-    <v-row class="mx-0">
+    <v-row class="mx-0 mt-2">
       <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
         <v-btn @click="back"
         rounded outlined color="#000000" width="110"
