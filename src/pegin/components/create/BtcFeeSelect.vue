@@ -1,5 +1,5 @@
 <template>
-  <div id="option-4" class="py-4">
+  <div id="option-4" class="pt-4 pb-2">
     <v-row class="align-start mx-0">
       <v-col cols="auto" class="pl-0">
         <div v-bind:class="[focus ?
