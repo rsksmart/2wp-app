@@ -604,7 +604,6 @@ export default class TxSummary extends Vue {
   openRskExplorer() {
     const url = this.getRskExplorerUrl();
     const urlWithTx = `${url}/tx/${this.txId}`;
-    console.log(urlWithTx);
     window.open(urlWithTx, '_blank');
   }
 
