@@ -45,7 +45,7 @@
                 <v-col v-else cols="4" class="pb-0 px-0">
                   <v-row class="derive-button ml-1 mx-0 d-flex justify-center">
                     <v-btn :disabled="!isReadyToSign ||
-                      injectedProvider == appConstants.RLOGIN_LIQUALITY_WALLET"
+                      injectedProvider != appConstants.RLOGIN_METAMASK_WALLET"
                       outlined rounded id="derivation-addr-btn"
                       width="100%" height="38"
                       @click="openAddressDialog" >
@@ -192,6 +192,14 @@ export default class PegOutForm extends Vue {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     this.injectedProvider = this.session.rLoginInstance?.providerController.injectedProvider.name;
+    const rlObject = this.session.rLogin;
+    const isLedger = rlObject?.provider.isLedger;
+    const isTrezor = rlObject?.provider.isTrezor;
+
+    if (isLedger || isTrezor) {
+      this.injectedProvider = 'HardwareWallets';
+    }
+
     //
     this.isReadyToSign = !this.isReadyToSign;
   }
