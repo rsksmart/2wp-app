@@ -49,7 +49,12 @@
                       class="icon-status-image icon-btc-image d-flex justify-center"
                       src="@/assets/status/btc.png" height="78" contain/>
                   </v-row>
-                  <v-row class="mt-5">
+                  <v-row class="mt-5" v-if="isMainNet()">
+                    <div class="label-network-main">
+                      <h1>{{environmentContext.getBtcText()}} Network</h1>
+                    </div>
+                  </v-row>
+                   <v-row class="mt-5" v-else>
                     <v-col>
                       <h1>{{environmentContext.getBtcText()}} Network</h1>
                     </v-col>
@@ -162,6 +167,7 @@ import EnvironmentContextProviderService from '@/common/providers/EnvironmentCon
 import * as constants from '@/common/store/constants';
 import { getTime, setStatusMessage } from '@/common/utils';
 import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
 @Component({
   components: {
@@ -233,6 +239,12 @@ export default class TxPegin extends Vue {
   @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) peginInit!: () => void;
 
   @Action(constants.PEGIN_TX_ADD_RSK_ADDRESS, { namespace: 'pegInTx' }) setRskAddress!: (address: string) => void;
+
+  // eslint-disable-next-line class-methods-use-this
+  isMainNet(): boolean {
+    return EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin
+    === constants.BTC_NETWORK_MAINNET;
+  }
 
   get btcConfirmationsAreDone() {
     return this.btcConfirmations >= this.btcConfirmationsRequired;
