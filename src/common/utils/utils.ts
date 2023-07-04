@@ -1,10 +1,17 @@
 import * as Bowser from 'bowser';
 import * as constants from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import {
-  AppNetwork, TxStatusType, TxStatusMessage, WalletAddress, RequestBalance, PegoutStatus,
-} from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import {
+  AppNetwork,
+  TxStatusType,
+  TxStatusMessage,
+  WalletAddress,
+  RequestBalance,
+  PegoutStatus,
+  SatoshiBig,
+} from '@/common/types';
+import { BridgeService } from '@/common/services/BridgeService';
 
 export function getAccountType(address: string, network: AppNetwork): string {
   const [legacyTestReg, segwitTestReg, nativeTestReg] = network === constants.BTC_NETWORK_MAINNET
@@ -46,6 +53,21 @@ export function getBtcTxExplorerUrl(txId: string) {
 
 export function getBtcAddressExplorerUrl(address: string) {
   return `${getBtcBaseExplorerUrl()}/address/${address}`;
+}
+
+export function getEstimatedFee(): Promise<SatoshiBig> {
+  return new Promise<SatoshiBig>((resolve, reject) => {
+    const bridgeService = new BridgeService();
+    Promise.all([
+      bridgeService.getEstimatedFeesForNextPegOutEvent(),
+      bridgeService.getQueuedPegoutsCount(),
+    ])
+      .then(([nextPegoutCost, pegoutQueueCount]) => {
+        const estimatedFee = nextPegoutCost / (pegoutQueueCount + 1);
+        resolve(new SatoshiBig(estimatedFee, 'satoshi'));
+      })
+      .catch(reject);
+  });
 }
 
 export class Machine<States extends string> {
