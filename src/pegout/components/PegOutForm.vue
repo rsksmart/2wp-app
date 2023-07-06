@@ -235,7 +235,7 @@ export default class PegOutForm extends Vue {
     },
     {
       target: '#summary-tx-fee',
-      content: `The estimated fee required by the network in ${this.environmentContext.getBtcTicker()}`,
+      content: `The estimated fee required by the network in ${this.environmentContext.getRbtcTicker()}`,
       params: {
         highlight: true,
         isLast: false,
