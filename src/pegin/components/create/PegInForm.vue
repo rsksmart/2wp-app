@@ -16,7 +16,7 @@
          <h1 class="justify-center text-left">Send {{environmentContext.getBtcTicker()}}.
             Get {{environmentContext.getRbtcTicker()}}.</h1>
         </v-col>
-        <v-col style="margin-left: 15%;">
+        <div class="pa-3">
           <div>
             <v-btn class="tour-button" id="first-step" @click="startVueTour()">?</v-btn>
             <span>You don't know how to proceed?</span>
@@ -24,7 +24,7 @@
           <div>
             <span>Click the button to start an introduction tour! </span>
           </div>
-        </v-col>
+        </div>
       </v-row>
       <v-row class="mx-0 mt-2 justify-space-between">
         <v-col id="options-col" cols="8" lg="7" class="pa-0">
