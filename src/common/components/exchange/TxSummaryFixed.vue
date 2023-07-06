@@ -422,7 +422,10 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="pa-0" id="summary-btc-destination">
+            <v-container class="pa-0" :id="[type === txType.PEGOUT
+              ? 'summary-btc-destination'
+              : 'summary-rsk-destination'
+            ]">
               <p class="light-grayish text-end">
                 {{ recipientAddress }}
               </p>
