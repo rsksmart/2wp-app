@@ -16,15 +16,6 @@
          <h1 class="justify-center text-left">Send {{environmentContext.getBtcTicker()}}.
             Get {{environmentContext.getRbtcTicker()}}.</h1>
         </v-col>
-        <div class="pa-3">
-          <div>
-            <v-btn class="tour-button" id="first-step" @click="startVueTour()">?</v-btn>
-            <span>You don't know how to proceed?</span>
-          </div>
-          <div>
-            <span>Click the button to start an introduction tour! </span>
-          </div>
-        </div>
       </v-row>
       <v-row class="mx-0 mt-2 justify-space-between">
         <v-col id="options-col" cols="8" lg="7" class="pa-0">
@@ -42,7 +33,13 @@
             :summary="pegInFormSummary"
             :initialExpand="true"
             :type="typeSummary"
-            :orientation="orientationSummary"/>
+            :orientation="orientationSummary"
+          />
+          <v-btn color="#747272"
+            class="mt-2 pa-1" small rounded text id="first-step" @click="startVueTour()">
+          <v-icon>mdi-help-circle</v-icon>
+          <span>You don't know how to proceed?</span>
+          </v-btn>
         </v-col>
       </v-row>
       <v-row class="mx-0">
