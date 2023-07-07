@@ -89,7 +89,7 @@
                   </v-row>
                   <v-row>
                     <v-col class="form-field-summary">
-                      <v-row class="mx-0 mb-2">
+                      <v-row class="mx-0">
                         <span id="amount">
                           {{ amount }} {{ currencyFromTicker }}
                         </span>
@@ -160,7 +160,7 @@
                         <v-col cols="11"
                                class="col-address-button d-flex flex-column">
                           <tx-summary-field
-                            textStyles="breakable-address status-text-ellipsis"
+                            textStyles="breakable-address status-text-ellipsis field-with-icon-text"
                             @copyToClipboard="copyToClipboard"
                             id="txId"
                             :textValue="summary.txId"
@@ -223,7 +223,7 @@
                         <v-col cols="11" class="col-address-button d-flex flex-column text-right">
                           <tx-summary-field v-if="recipientAddress  !== '-'"
                             @copyToClipboard="copyToClipboard"
-                            textStyles="breakable-address status-text-ellipsis"
+                            textStyles="breakable-address status-text-ellipsis field-with-icon-text"
                             id="recipientAddress"
                             :textValue="recipientAddress"
                           />
@@ -251,7 +251,7 @@
                   </v-row>
                   <v-row>
                     <v-col class="form-field-summary">
-                      <v-row class="justify-end mx-0 mb-2">
+                      <v-row class="justify-end mx-0">
                         <span>{{ amountToReceive }}</span>
                       </v-row>
                     </v-col>
@@ -269,7 +269,7 @@
                   </v-row>
                   <v-row>
                     <v-col class="form-field-summary">
-                      <v-row class="justify-end mx-0 mb-2">
+                      <v-row class="justify-end mx-0">
                         <span id="summary-horizontal-value-fee">{{ safeFeeString === '0' ? '-'
                           : safeFeeString + ' ' + environmentContext.getBtcTicker() }}
                         </span>
@@ -287,7 +287,7 @@
                   </v-row>
                   <v-row>
                     <v-col class="form-field-summary">
-                      <v-row class="justify-end mx-0 mb-2">
+                      <v-row class="justify-end mx-0">
                         <span>{{ total }} {{ currencyFromTicker }}</span>
                       </v-row>
                     </v-col>

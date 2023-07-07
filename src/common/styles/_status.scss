@@ -451,6 +451,10 @@
   position: relative;
 }
 
+.icon-status-image > .v-image__image {
+  background-size: 76px 76px;
+}
+
 .icon-btc-image::after {
   left: -62px;
 }
