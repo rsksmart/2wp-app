@@ -17,15 +17,6 @@
           Send {{environmentContext.getRbtcTicker()}}.
           Get {{environmentContext.getBtcTicker()}}.</h1>
         </v-col>
-        <div class="exchange-form mt-0 pa-3">
-          <div>
-            <v-btn class="tour-button" id="first-step" @click="startVueTour()">?</v-btn>
-            <span>You don't know how to proceed?</span>
-          </div>
-          <div>
-            <span>Click the button to start an introduction tour! </span>
-          </div>
-        </div>
       </v-row>
     <v-row class="exchange-form mt-2 mx-0 justify-space-between">
       <v-col cols="8" lg="7" class="pa-0" >
@@ -91,14 +82,20 @@
           :summary="pegOutFormSummary"
           :initialExpand="true"
           :type="typeSummary"
-          :orientation="orientationSummary"/>
+          :orientation="orientationSummary"
+        />
+        <v-btn color="#747272"
+          class="help-btn mt-2 pa-1" small rounded text id="first-step" @click="startVueTour()">
+          <v-icon>mdi-help-circle</v-icon>
+          <span>You don't know how to proceed?</span>
+        </v-btn>
       </v-col>
     </v-row>
     <v-row v-if="showAddressDialog">
       <address-dialog @switchDeriveButton="switchDeriveButton"
        @closeDialog="closeAddressDialog"/>
     </v-row>
-    <v-row class="mx-0 mt-2">
+    <v-row class="mx-0 mt-6">
       <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
         <v-btn @click="back"
         rounded outlined color="#000000" width="110"
