@@ -487,7 +487,7 @@
 <script lang="ts">
 import {
   Component, Emit, Prop, Vue,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 import {
   NormalizedSummary,
   SatoshiBig,

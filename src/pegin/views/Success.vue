@@ -34,7 +34,7 @@
 import {
   Component, Emit,
   Vue,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 import { getBtcTxExplorerUrl } from '@/common/utils';
 import {
   NormalizedSummary, PegInTxState, SatoshiBig, TxStatusType, TxSummaryOrientation,

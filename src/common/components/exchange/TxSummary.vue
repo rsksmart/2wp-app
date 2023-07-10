@@ -499,7 +499,7 @@
 <script lang="ts">
 import {
   Component, Emit, Vue, Prop,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 import Big from 'big.js';
 import { State, Getter } from 'vuex-class';
 import * as constants from '@/common/store/constants';

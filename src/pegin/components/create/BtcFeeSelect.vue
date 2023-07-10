@@ -58,7 +58,7 @@
 <script lang="ts">
 import {
   Component, Emit, Vue,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 import { Action, Getter, State } from 'vuex-class';
 import * as constants from '@/common/store/constants';
 import { MiningSpeedFee, PegInTxState } from '@/common/types/pegInTx';

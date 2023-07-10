@@ -3,8 +3,9 @@
   "version": "1.5.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview",
     "test": "vue-cli-service test:unit --setupTestFrameworkScriptFile=./tests/setup.js --coverageReporters=lcov --collect-coverage",
     "test:unit": "vue-cli-service test:unit --setupTestFrameworkScriptFile=./tests/setup.js --coverageReporters=lcov --collect-coverage",
     "lint": "vue-cli-service lint",
@@ -41,6 +42,7 @@
     "vue": "^3.3.4",
     "vue-router": "^3.2.0",
     "vuetify": "^3.3.7",
+    "vuex": "^4.1.0",
     "web3": "^4.0.2",
     "web3-eth-contract": "^4.0.2"
   },

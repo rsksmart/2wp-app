@@ -82,7 +82,7 @@
 <script lang="ts">
 import {
   Component, Emit, Prop, Vue, Watch,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 import { State, Action, Getter } from 'vuex-class';
 import TxPegout from '@/common/components/status/TxPegout.vue';
 import TxPegin from '@/common/components/status/TxPegin.vue';

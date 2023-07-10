@@ -126,7 +126,7 @@
 <script lang="ts">
 import {
   Component, Emit, Vue,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 import { Getter, State } from 'vuex-class';
 import Big from 'big.js';
 import { PegInTxState } from '@/common/types/pegInTx';

@@ -151,7 +151,7 @@ import {
   Prop,
   Emit,
   Watch,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 import { Action, State, Getter } from 'vuex-class';
 import {
   PeginStatus,

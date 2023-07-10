@@ -47,7 +47,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-facing-decorator';
 import { ApiInformation } from '@/common/types/ApiInformation';
 import { ApiService } from '@/common/services';
 

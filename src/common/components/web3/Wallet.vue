@@ -158,7 +158,7 @@
 <script lang="ts">
 import {
   Vue, Component, Prop, Emit,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 import { Action } from 'vuex-class';
 import * as constants from '@/common/store/constants';
 import MetaMask from '@/assets/web3/metamask.png';

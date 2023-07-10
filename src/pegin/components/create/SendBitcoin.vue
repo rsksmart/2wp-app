@@ -33,7 +33,7 @@
 import {
   Component, Emit,
   Vue,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 import { Action, Getter, State } from 'vuex-class';
 import PegInForm from '@/pegin/components/create/PegInForm.vue';
 import ConfirmTrezorTransaction from '@/pegin/components/trezor/ConfirmTrezorTransaction.vue';

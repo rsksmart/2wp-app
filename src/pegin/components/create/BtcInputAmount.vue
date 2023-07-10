@@ -69,7 +69,7 @@
 <script lang="ts">
 import {
   Component, Emit, Vue, Watch,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 import { Action, Getter, State } from 'vuex-class';
 import SatoshiBig from '@/common/types/SatoshiBig';
 import { BtcAccount, PegInTxState } from '@/common/types/pegInTx';

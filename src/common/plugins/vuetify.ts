@@ -1,13 +1,17 @@
-import Vue from 'vue';
-import Vuetify from 'vuetify/lib';
-import crypto from 'crypto';
-
-Vue.use(Vuetify);
+import 'vuetify/styles'
+import { createVuetify } from 'vuetify'
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
+import crypto from "crypto";
 
 export const vuetifyNonce = crypto.randomBytes(8).toString('hex');
 
-export const vuetify = new Vuetify({
+export const vuetify = createVuetify({
+  components,
+  directives,
   theme: {
-    options: { cspNonce: vuetifyNonce },
+    options: {
+      cspNonce: vuetifyNonce,
+    },
   },
 });

@@ -113,7 +113,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Emit } from 'vue-property-decorator';
+import { Component, Vue, Emit } from 'vue-facing-decorator';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import RbtcInputAmount from '@/pegout/components/RbtcInputAmount.vue';
 import RskWalletConnection from '@/pegout/components/RskWalletConnection.vue';

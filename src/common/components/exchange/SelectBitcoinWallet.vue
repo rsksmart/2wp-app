@@ -52,7 +52,7 @@
 <script lang="ts">
 import {
   Vue, Component, Emit,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 import { Action, State } from 'vuex-class';
 import * as constants from '@/common/store/constants';
 import { BtcWallet, PegInTxState } from '@/common/types/pegInTx';

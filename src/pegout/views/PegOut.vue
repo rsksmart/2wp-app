@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Emit } from 'vue-property-decorator';
+import { Component, Vue, Emit } from 'vue-facing-decorator';
 import { Action } from 'vuex-class';
 import * as constants from '@/common/store/constants';
 import PegOutForm from '@/pegout/components/PegOutForm.vue';

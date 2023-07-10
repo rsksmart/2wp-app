@@ -61,7 +61,7 @@
 <script lang="ts">
 import {
   Component, Emit, Vue,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 import { Getter, State, Action } from 'vuex-class';
 import PegInAccountSelect from '@/pegin/components/create/PegInAccountSelect.vue';
 import BtcInputAmount from '@/pegin/components/create/BtcInputAmount.vue';

@@ -73,7 +73,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Emit, Vue } from 'vue-property-decorator';
+import { Component, Emit, Vue } from 'vue-facing-decorator';
 import { Action, State } from 'vuex-class';
 import { PegOutTxState, SessionState } from '@/common/types';
 import * as constants from '@/common/store/constants';

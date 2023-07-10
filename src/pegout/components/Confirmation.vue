@@ -43,7 +43,7 @@
 import {
   Component, Prop,
   Vue,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 import { Machine } from '@/common/utils';
 import { TxStatusType } from '@/common/types/store';
 import { TxSummaryOrientation } from '@/common/types/Status';

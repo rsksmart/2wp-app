@@ -72,7 +72,7 @@ import {
   Vue,
   Watch,
   Prop,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { Action, Getter, State } from 'vuex-class';
 import * as constants from '@/common/store/constants';

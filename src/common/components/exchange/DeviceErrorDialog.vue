@@ -45,7 +45,7 @@
 <script lang="ts">
 import {
   Component, Prop, Emit, Vue,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 import WarningIcon from '@/assets/warning.png';
 
 @Component

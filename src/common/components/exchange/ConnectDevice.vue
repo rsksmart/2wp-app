@@ -81,7 +81,7 @@
 <script lang="ts">
 import {
   Component, Prop, Vue, Emit, Watch,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 import { Getter, State, Action } from 'vuex-class';
 import * as constants from '@/common/store/constants';
 import { PegInTxState } from '@/common/types/pegInTx';

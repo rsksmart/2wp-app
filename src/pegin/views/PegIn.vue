@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Emit, Vue } from 'vue-property-decorator';
+import { Component, Emit, Vue } from 'vue-facing-decorator';
 import SelectBitcoinWallet from '@/common/components/exchange/SelectBitcoinWallet.vue';
 import BtcToRbtcDialog from '@/common/components/exchange/BtcToRbtcDialog.vue';
 

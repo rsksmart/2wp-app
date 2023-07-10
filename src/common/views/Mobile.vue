@@ -23,7 +23,7 @@
 
 import {
   Component, Vue,
-} from 'vue-property-decorator';
+} from 'vue-facing-decorator';
 import { getMainLogo } from '../utils/utils';
 
 @Component({
