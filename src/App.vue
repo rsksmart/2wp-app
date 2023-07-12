@@ -38,10 +38,11 @@ export default class App extends Vue {
     const envVariables = EnvironmentAccessorService.getEnvironmentVariables();
     let response = '';
     response = `
-    style-src 'self' 'unsafe-inline' ;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
     script-src 'self' 'nonce-${vuetifyNonce}' 'unsafe-eval';
+    script-src-elem 'self' 'unsafe-inline' https://script.hotjar.com https://static.hotjar.com;
     img-src data: https:;
-    connect-src 'self' ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://api.coingecko.com ;
+    connect-src 'self' 'unsafe-inline' ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://api.coingecko.com https://*.hotjar.com https://*.hotjar.io wss://*.hotjar.com;
     object-src 'none';
     frame-src https://connect.trezor.io;
     worker-src 'none';
