@@ -19,13 +19,13 @@
               <a href="https://www.iovlabs.org/" target="_blank">
                 About IOV Labs
               </a>
-              <a href="https://open-rsk-dev.slack.com/messages/support" target="_blank">Help</a>
+              <a href="https://dev.rootstock.io/guides/two-way-peg-app/" target="_blank">Help</a>
+              <a href="https://open-rsk-dev.slack.com/messages/support" target="_blank">Support</a>
               <a href="https://rootstock.io/terms-conditions/" target="_blank">
                 Terms & Conditions
               </a>
               <a :href="urlApi" target="_blank">Api Version: {{apiVersion}}</a>
               <a :href="url" target="_blank">App Version: {{$store.getters.appVersion}}</a>
-              <a v-if="false">Documentation</a>
             </v-row>
           </v-col>
           <v-col class="pt-1">
