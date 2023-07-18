@@ -37,20 +37,20 @@
               <p v-bind:class="{'boldie': focus}">
                 (Optional) Verify your Bitcoin destination address:
               </p>
-              <v-row class="ma-0 mt-4 pa-0">
-                <v-col v-if="session.btcDerivedAddress" cols="7" class="p-0">
-                  <div class="container">
+              <v-row class="ma-0 mt-4 pa-0 pl-1">
+                <v-col v-if="session.btcDerivedAddress" cols="7" class="pa-0">
+                  <div class="pa-0 container">
                     <v-row class="mx-0">
                       <span>Address derived</span>
                     </v-row>
                     <v-row class="mx-0 d-flex align-center">
-                      <p class="mb-0 account">
+                      <p class="mb-0 pt-1 account">
                         {{session.btcDerivedAddress}}
                       </p>
                     </v-row>
                   </div>
                 </v-col>
-                <v-col v-else cols="5" class="pb-0 px-0">
+                <v-col v-else cols="5" class="pa-0 px-0">
                   <v-row class="derive-button mx-0 d-flex justify-center">
                     <v-btn :disabled="!isReadyToSign ||
                       injectedProvider != appConstants.RLOGIN_METAMASK_WALLET"
