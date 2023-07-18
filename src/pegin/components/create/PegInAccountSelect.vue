@@ -14,7 +14,7 @@
           }}
         </p>
         <v-row class="mx-0 mt-4">
-          <v-col cols="7" class="pl-0 pb-0">
+          <v-col cols="7" class="pa-0 pl-1">
             <v-select
               v-if="!isLiquality"
               v-model="btcAccountTypeSelected" :items="accountBalances" color="#fff"
