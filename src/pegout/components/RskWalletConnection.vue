@@ -13,7 +13,10 @@
           <template v-if="useWeb3Wallet && web3Address">
              <div class="pl-1">
               <v-row class="mx-0">
-                <v-col class="pl-0">
+                <span>Wallet connected</span>
+              </v-row>
+              <v-row class="mx-0">
+                <v-col class="pl-0 pt-1">
                    <p class="mb-0 account">
                      {{ address }} -
                      {{ web3SessionState.balance.toRBTCTrimmedString() }}

@@ -1,5 +1,5 @@
 <template>
-  <div id="option-4" class="pt-4 pb-2">
+  <div id="option-4" class="py-4">
     <v-row class="align-start mx-0">
       <v-col cols="auto" class="pl-0">
         <div v-bind:class="[focus ?
@@ -10,7 +10,7 @@
           Select transaction fee:
         </p>
         <v-row class="mx-0 mt-4 d-flex justify-start">
-          <v-col cols="11 pl-0">
+          <v-col cols="11 pa-0 pl-1">
             <v-row class="mx-0" id="select-tx-fee">
               <v-slider v-model="txFeeIndex" :tick-labels="transactionFees" :max="2"
                         :disabled="isTourActive"
@@ -46,8 +46,8 @@
             </v-row>
           </v-col>
         </v-row>
-        <v-row v-if="showErrorMessage" class="mx-0 mt-0 d-flex justify-start">
-          <span class="message-error-fee">
+        <v-row class="pl-1 mx-0 mt-1 d-flex justify-start" style="min-height: 17px;">
+          <span v-if="showErrorMessage" class="message-error-fee">
             You don't have the balance for this fee + amount
           </span>
         </v-row>
@@ -95,7 +95,7 @@ export default class BtcFeeSelect extends Vue {
     let color;
     if (this.txFeeIndex === 0) color = '#F6C61B';
     if (this.txFeeIndex === 1) color = '#737778';
-    if (this.txFeeIndex === 2) color = '#000000';
+    if (this.txFeeIndex === 2) color = '#00B43C';
     return color;
   }
 
