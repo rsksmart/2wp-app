@@ -5,14 +5,14 @@
         <div v-bind:class="[focus ?
               'number-filled' : 'number']">2</div>
       </v-col>
-      <v-col class="px-0 pb-2">
+      <v-col class="px-0">
         <p v-bind:class="{'boldie': focus}">
           Enter the amount you want to send:
         </p>
-        <v-row class="d-cols-wht ma-0 mt-7">
+        <v-row class="d-flex align-center ma-0 mt-4 pl-1">
           <v-col cols="4" v-bind:class="[amountStyle]"
                  class="input-box-outline" id="amount-field">
-            <v-col cols="8" class="d-flex align-center">
+            <v-col cols="8" class="pa-0 pl-1">
               <v-text-field
                 :disabled="!isWalletConnected || isTourActive"
                 v-model="rbtcAmount" color="#F8F5F5"
@@ -24,39 +24,55 @@
                 @keydown="blockLetterKeyDown"
                 solo hide-details full-width single-line flat/>
             </v-col>
-            <v-col cols="4" class="ma-0 pa-0">
+            <v-col cols="4" class="pa-0">
               <v-row>
-                <v-img src="@/assets/exchange/rbtc.png" height="30" contain/>
+                <v-col cols="4" class="pa-0">
+                  <v-img src="@/assets/exchange/rbtc.png" height="20" contain/>
+                </v-col>
+                <v-col cols="7" class="pa-0 d-flex align-center">
+                  <span>{{environmentContext.getRbtcTicker()}}</span>
+                </v-col>
               </v-row>
             </v-col>
           </v-col>
-          <v-col cols="1" class="py-0 d-flex justify-center">
+          <v-col cols="1" class="d-flex justify-center">
             <v-icon color="#000">mdi-arrow-right</v-icon>
           </v-col>
-          <v-col cols="5" class="pa-0 d-flex align-center">
-            <v-row class="ma-0 pa-0">
-              <v-col class="ma-0 pa-0 d-flex align-center">
-                <span>{{estimatedBtcToReceive.toBTCTrimmedString()}}</span>
-              </v-col>
-              <v-col class="ma-0 pa-0 d-flex align-center">
-                <v-img src="@/assets/exchange/btc.png" height="30" contain/>
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col cols="4" class="pa-0 pt-4">
-            <v-row class="derive-button mx-0 d-flex justify-center">
-              <v-btn :disabled="enableButton"
-                outlined rounded
-                width="100%" height="38"
-                @click="setMax" id="max-btn">
-                <span>
-                 Use max available balance
-                </span>
-              </v-btn>
-            </v-row>
+          <v-col cols="4" class="pa-0 input-box-flat">
+            <v-col cols="8" class="pa-0 pl-1">
+              <v-text-field
+                solo hide-details full-width single-line flat readonly
+                class="amount-input"
+                placeholder="0"
+                v-model="btcAmount"
+                type="number"/>
+            </v-col>
+            <v-col cols="4" class="pa-0">
+              <v-row>
+                <v-col cols="5" class="pa-0">
+                  <v-img src="@/assets/exchange/btc.png" height="20" contain/>
+                </v-col>
+                <v-col cols="7" class="pa-0 d-flex align-center">
+                  <span>{{environmentContext.getBtcTicker()}}</span>
+                </v-col>
+              </v-row>
+            </v-col>
           </v-col>
         </v-row>
-        <v-row class="mx-0 mt-2 error-max-balance" style="min-height: 17px;">
+        <v-col cols="4" class="pa-0 pt-2 pl-1">
+          <v-row class="derive-button mx-0 d-flex justify-center">
+            <v-btn
+              :disabled="enableButton"
+              outlined rounded
+              width="100%" height="38"
+              @click="setMax" id="max-btn">
+              <span>
+                Use max available balance
+              </span>
+            </v-btn>
+          </v-row>
+        </v-col>
+        <v-row class="mx-0 pt-1 error-max-balance" style="min-height: 17px;">
           <span v-if="stepState === 'error'" class="yellowish" id="rbtc-error-msg">
             {{amountErrorMessage}}
           </span>
@@ -139,6 +155,13 @@ export default class RbtcInputAmount extends Vue {
   updateStore() {
     this.setRbtcAmount(new WeiBig(this.rbtcAmount, 'rbtc'));
     this.calculateTxFee();
+  }
+
+  get btcAmount() {
+    if (!this.rbtcAmount) {
+      return null;
+    }
+    return this.estimatedBtcToReceive.toBTCTrimmedString();
   }
 
   get amountErrorMessage() {

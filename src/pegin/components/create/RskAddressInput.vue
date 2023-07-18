@@ -10,13 +10,13 @@
           Enter or select the {{environmentContext.getRskText()}} address where
           {{environmentContext.getRbtcTicker()}} will be deposited:
         </p>
-        <v-row class="mx-0 mt-4">
+        <v-row class="mx-0 mt-4 pl-1">
           <template v-if="useWeb3Wallet && web3Address">
-            <div class="container">
+            <div class="pa-0 container">
               <v-row class="mx-0">
                 <span>Wallet connected</span>
               </v-row>
-              <v-row class="mx-0 d-flex align-center">
+              <v-row class="mx-0 d-flex align-center pt-1">
                 <p class="mb-0 account">{{ web3Address }}</p>
               </v-row>
               <v-row class="mx-0"
@@ -26,11 +26,11 @@
                         {{validAddressMessage}}
                       </span>
               </v-row>
-              <v-row class="mx-0">
-                <v-btn class="pa-0" text @click="disconnectWallet">
+              <v-col cols="4" class="pa-0 mx-0 mt-3">
+                <v-btn class="pa-0" outlined rounded width="100%" @click="disconnectWallet">
                   <span class="blackish">Disconnect wallet</span>
                 </v-btn>
-              </v-row>
+              </v-col>
             </div>
           </template>
           <template v-else>
