@@ -417,8 +417,9 @@
           <v-row class="justify-end mx-0">
             <h1 class="boldie">
               {{ type === txType.PEGOUT ?
-              'Recipient address'
-              : environmentContext.getRbtcTicker() + ' destination address' }}
+              environmentContext.getBtcTicker()
+              : environmentContext.getRbtcTicker() }}
+              destination address
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
@@ -538,6 +539,8 @@ export default class TxSummaryFixed extends Vue {
 
   appConstants = constants;
 
+  maxLengthForChunked = 25;
+
   @State('web3Session') sessionState!: SessionState;
 
   get fromTitle() {
@@ -644,11 +647,6 @@ export default class TxSummaryFixed extends Vue {
       return this.summary.selectedAccount;
     }
     return this.VALUE_INCOMPLETE_MESSAGE;
-  }
-
-  get maxLengthForChunked(): number {
-    return this.orientation === TxSummaryOrientation.VERTICAL
-      ? 15 : 25;
   }
 
   get safeFeeString(): string {
