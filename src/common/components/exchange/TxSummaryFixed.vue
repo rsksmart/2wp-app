@@ -324,15 +324,13 @@
 
         <!-- Refund -->
         <v-container v-if="summary.refundAddress"
-                     class="pb-0 pl-0">
+                     class="px-0 py-2">
           <v-row class="mx-0">
             <h1 class="boldie">Refund address</h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="mark">
-              <p>
-                {{ refundAddress }}
-              </p>
+            <v-container class="pa-0">
+              <p class="light-grayish">{{ refundAddress }}</p>
             </v-container>
           </div>
         </v-container>
