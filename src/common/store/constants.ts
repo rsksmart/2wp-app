@@ -6,6 +6,8 @@ export const RLOGIN_LIQUALITY_WALLET = 'Liquality';
 export const RSK_PEGOUT_DOCUMENTATION_URL = 'https://dev.rootstock.io/rsk/rbtc/conversion/networks/#rbtc-to-btc-conversion';
 export const RLOGIN_METAMASK_WALLET = 'MetaMask';
 
+export const TOTAL_RBTC_STOCK = 21000000;
+
 // devices
 export const IS_TREZOR_CONNECTED = 'IS_TREZOR_CONNECTED';
 
@@ -18,6 +20,7 @@ export const BITCOIN_LEGACY_ADDRESS = 'BITCOIN_LEGACY_ADDRESS';
 export const BITCOIN_SEGWIT_ADDRESS = 'BITCOIN_SEGWIT_ADDRESS';
 export const BITCOIN_NATIVE_SEGWIT_ADDRESS = 'BITCOIN_NATIVE_SEGWIT_ADDRESS';
 export const BITCOIN_MULTISIGNATURE_ADDRESS = 'BITCOIN_MULTISIGNATURE_ADDRESS';
+export const BITCOIN_UNKNOWN_ADDRESS_TYPE = 'BITCOIN_UNKNOWN_ADDRESS_TYPE';
 
 // Fee Level
 export const BITCOIN_SLOW_FEE_LEVEL = 'BITCOIN_SLOW_FEE_LEVEL';
@@ -151,6 +154,7 @@ export const PEGIN_TX_IS_HD_WALLET = 'PEGIN_TX_IS_HD_WALLET';
 
 // Session getters
 export const SESSION_IN_TX_FLOW = 'SESSION_IN_TX_FLOW';
+export const SESSION_IS_LEDGER_CONNECTED = 'SESSION_IS_LEDGER_CONNECTED';
 
 // environment
 export const BTC_NETWORK_MAINNET = 'main';
@@ -223,3 +227,21 @@ export const GETTING_FUNDS_DOCUMENTATION_URL = 'https://developers.rsk.co/guides
 export const PEGOUT_SIGNING_BLOCKS_GAP = 30;
 export const PEGOUT_REQUIRED_CONFIRMATIONS = 4000;
 export const BLOCKS_PER_YEAR = 1237553;
+
+// pegin tx
+/**
+ * taken from: https://en.bitcoin.it/wiki/Transaction#General_format_of_a_Bitcoin_transaction_.28inside_a_block.29
+ * Tx header: 10 (generic header) + inputs count (is a varint, it will be usually 1 byte,
+ * with 2 bytes we should be covered) + 1 byte (outputs count)
+ * inputs: 32 (prev tx hash) + 4 (prev tx output index) + ~70 (signature, 71 to be sure)
+ * + 34 (public key) + 4 (sequence nbr)
+ * outputs: 8 (value) + 24 (output script)
+ */
+export const BITCOIN_TX_HEADER_SIZE_IN_BYTES = 13;
+export const BITCOIN_TX_OUTPUT_SIZE_IN_BYTES = 32;
+export const BITCOIN_TX_INPUT_SIZE_IN_BYTES = 145;
+
+export const BITCOIN_MIN_SATOSHI_FEE = 280;
+export const BITCOIN_MAX_SATOSHI_FEE = 5000000;
+
+export const BURN_DUST_MAX_VALUE = 30000;

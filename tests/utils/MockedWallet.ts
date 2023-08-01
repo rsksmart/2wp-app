@@ -16,7 +16,6 @@ interface TestCase {
     nativeSegwit: string;
   }
 }
-
 export default class MockedWallet extends WalletService {
   testCase:TestCase;
 
@@ -66,5 +65,20 @@ export default class MockedWallet extends WalletService {
       default:
         return Promise.resolve(this.testCase.xpub.legacy);
     }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  isConnected(): Promise<boolean> {
+    return Promise.resolve(false);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  reconnect(): Promise<void> {
+    return Promise.resolve();
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  areEnoughUnusedAddresses(): boolean {
+    return false;
   }
 }

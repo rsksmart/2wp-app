@@ -1,63 +1,33 @@
 <template>
-  <div class="transactions">
-    <v-row class="mx-0 my-8 d-flex justify-center">
-      <h1 class="text-center ma-0">
-        Your transaction was successfully sent!
-      </h1>
-    </v-row>
-    <v-row class="mx-0 d-flex justify-center">
-      <span class="text-center">
-        Take note of the transaction id shown below, it will be useful for you to check the status
-        of the process
-      </span>
-    </v-row>
-    <v-row id="tx-id-box" justify="center" class="mx-0">
-      <v-col class="tracking-box">
-        <div class="mx-0 box">
-          <v-container>
-            <v-row class="mx-0" justify="center">
-              <v-col cols="10" class="d-flex flex-column align-start" >
-                <v-row class="mx-0 mb-1">
-                  <h3>Transaction id:</h3>
-                </v-row>
-                <v-row class="mx-0 mb-2 ml-2">
-                  <span>{{ txId }}</span>
-                </v-row>
-              </v-col>
-              <v-col cols="2" class="d-flex flex-column align-end">
-                <v-btn icon @click="copyTxId">
-                  <v-img src="@/assets/wallet-icons/copy.png" height="24" width="22" contain/>
-                </v-btn>
-              </v-col>
-            </v-row>
-            <v-divider  color="#C4C4C4"/>
-            <v-row class="mx-0">
-              <v-col>
-                <v-row class="mx-0 mb-1">
-                  <h3>Transaction link: </h3>
-                </v-row>
-                <v-row class="mx-0 mb-2 ml-2">
-                  <a class="listTitle" target="_blank" :href="btcExplorerUrl">
-                    {{ chunkedBtcExplorerUrl }}
-                  </a>
-                </v-row>
-              </v-col>
-              <v-col cols="2" class="d-flex justify-end">
-                <v-btn icon @click="copyUrl">
-                  <v-img src="@/assets/wallet-icons/copy.png" height="24" width="22" contain/>
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-container>
-        </div>
-        <v-row class="mx-0 my-5 d-flex justify-center dialog">
-          <v-btn rounded class="big_button" color="#000000" @click="toTxStatus">
-            <span class="whiteish">Go to status page</span>
-          </v-btn>
-        </v-row>
-      </v-col>
-    </v-row>
-  </div>
+<v-container fluid class="exchange normalized-height container max-width mx-6 pt-6">
+    <div class="transactions">
+      <v-row class="mx-0 py-3 d-flex justify-center">
+        <h1 class="text-center ma-0">
+          Your {{environmentContext.getRbtcTicker()}} is on its way!
+        </h1>
+      </v-row>
+      <v-row class="mx-0 my-8 d-flex justify-center">
+        <p class="text-center">
+          You can follow the conversion from the status page.
+        </p>
+      </v-row>
+      <v-row id="tx-id-box" justify="center" class="mx-0">
+        <v-col>
+          <v-row>
+            <tx-summary-fixed
+              :summary="successPeginSummary"
+              :type="typeSummary"
+              :orientation="orientationSummary"/>
+          </v-row>
+          <v-row class="mx-0 my-8 d-flex justify-end">
+            <v-btn rounded class="big_button" color="#000000" @click="toTxStatus">
+              <span class="whiteish">Go to status page</span>
+            </v-btn>
+          </v-row>
+        </v-col>
+      </v-row>
+    </div>
+</v-container>
 </template>
 
 <script lang="ts">
@@ -66,12 +36,43 @@ import {
   Vue,
 } from 'vue-property-decorator';
 import { getBtcTxExplorerUrl } from '@/common/utils';
+import {
+  NormalizedSummary, PegInTxState, SatoshiBig, TxStatusType, TxSummaryOrientation,
+} from '@/common/types';
+import { Getter, State } from 'vuex-class';
+import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
+import * as constants from '@/common/store/constants';
+import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 
-@Component
+@Component({
+  components: {
+    TxSummaryFixed,
+  },
+})
+
 export default class Success extends Vue {
-  email = '';
-
   txId = '';
+
+  typeSummary = TxStatusType.PEGIN;
+
+  orientationSummary = TxSummaryOrientation.HORIZONTAL;
+
+  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+
+  @State('pegInTx') peginTxState!: PegInTxState;
+
+  @Getter(constants.PEGIN_TX_GET_SAFE_TX_FEE, { namespace: 'pegInTx' }) safeFee!: SatoshiBig;
+
+  get successPeginSummary(): NormalizedSummary {
+    return {
+      amountFromString: this.peginTxState.amountToTransfer.toBTCTrimmedString(),
+      amountReceivedString: this.peginTxState.amountToTransfer.toBTCTrimmedString(),
+      fee: Number(this.safeFee.toBTCTrimmedString()),
+      recipientAddress: this.peginTxState.rskAddressSelected,
+      txId: this.txId,
+      federationAddress: this.peginTxState.peginConfiguration.federationAddress,
+    };
+  }
 
   get btcExplorerUrl() {
     return getBtcTxExplorerUrl(this.txId);

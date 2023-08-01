@@ -13,7 +13,7 @@ import { EnvironmentContext } from '@/common/providers/types';
 import RbtcInputAmount from '../../../src/pegout/components/RbtcInputAmount.vue';
 
 const localVue = createLocalVue();
-let vuetify:any;
+let vuetify: typeof Vuetify;
 let store: Store<RootState>;
 let state:PegOutTxState;
 let sessionState: SessionState;

@@ -2,11 +2,14 @@ import { bridge } from '@rsksmart/rsk-precompiled-abis';
 import Web3 from 'web3';
 import { Contract } from 'web3-eth-contract';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import * as constants from '@/common/store/constants';
 
 export class BridgeService {
   private bridgeContract: Contract;
 
   private web3: Web3;
+
+  private totalRbtcStock = constants.TOTAL_RBTC_STOCK;
 
   constructor() {
     this.web3 = new Web3(EnvironmentAccessorService.getEnvironmentVariables().vueAppRskNodeHost);
@@ -20,6 +23,63 @@ export class BridgeService {
         .call()
         .then(resolve)
         .catch(reject);
+    });
+  }
+
+  public getMinPeginValue(): Promise<number> {
+    return new Promise<number>((resolve, reject) => {
+      this.bridgeContract.methods
+        .getMinimumLockTxValue()
+        .call()
+        .then((minValue: string) => resolve(Number(minValue)))
+        .catch(reject);
+    });
+  }
+
+  public getLockingCapAmount(): Promise<number> {
+    return new Promise<number>((resolve, reject) => {
+      this.bridgeContract.methods
+        .getLockingCap()
+        .call()
+        .then((lockingCap: string) => resolve(Number(lockingCap)))
+        .catch(reject);
+    });
+  }
+
+  public getRbtcInCirculation(): Promise<number> {
+    return new Promise<number>((resolve, reject) => {
+      this.web3.eth
+        .getBalance(bridge.address)
+        .then((balance: string) => {
+          const amount = Number(
+            this.web3.utils.toWei(
+              this.web3.utils.toBN(this.totalRbtcStock),
+            ),
+          ) - Number(balance);
+          resolve(amount);
+        })
+        .catch((reason) => {
+          reject(reason);
+        });
+    });
+  }
+
+  public getPeginAvailability(): Promise<number> {
+    return new Promise<number>((resolve, reject) => {
+      Promise.all([this.getLockingCapAmount(), this.getRbtcInCirculation()])
+        .then(([lockingCap, rbtcInCirculation]) => {
+          const rbtcInCirculationToSatoshis = Math.round(rbtcInCirculation / 1e10);
+          let availability = lockingCap - rbtcInCirculationToSatoshis;
+          availability = availability > 0 ? availability : 0;
+          const maxAllowed = EnvironmentAccessorService.getEnvironmentVariables()
+            .maxAmountAllowedInSatoshis ? Number(EnvironmentAccessorService
+              .getEnvironmentVariables().maxAmountAllowedInSatoshis)
+            : Infinity;
+          resolve(Math.min(availability, maxAllowed));
+        })
+        .catch((reason) => {
+          reject(reason);
+        });
     });
   }
 

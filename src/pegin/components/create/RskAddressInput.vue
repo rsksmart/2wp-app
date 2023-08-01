@@ -10,13 +10,13 @@
           Enter or select the {{environmentContext.getRskText()}} address where
           {{environmentContext.getRbtcTicker()}} will be deposited:
         </p>
-        <v-row class="mx-0 mt-4">
+        <v-row class="mx-0 mt-4 pl-1">
           <template v-if="useWeb3Wallet && web3Address">
-            <div class="container">
+            <div class="pa-0 container">
               <v-row class="mx-0">
                 <span>Wallet connected</span>
               </v-row>
-              <v-row class="mx-0 d-flex align-center">
+              <v-row class="mx-0 d-flex align-center pt-1">
                 <p class="mb-0 account">{{ web3Address }}</p>
               </v-row>
               <v-row class="mx-0"
@@ -26,11 +26,11 @@
                         {{validAddressMessage}}
                       </span>
               </v-row>
-              <v-row class="mx-0">
-                <v-btn class="pa-0" text @click="disconnectWallet">
+              <v-col cols="4" class="pa-0 mx-0 mt-3">
+                <v-btn class="pa-0" outlined rounded width="100%" @click="disconnectWallet">
                   <span class="blackish">Disconnect wallet</span>
                 </v-btn>
-              </v-row>
+              </v-col>
             </div>
           </template>
           <template v-else>
@@ -61,16 +61,20 @@
               </v-row>
             </v-col>
             <v-col cols="1" class="d-flex justify-center pb-0">
-              <div class="divider"/>
+              <div class="divider"></div>
             </v-col>
             <v-col cols="4" class="pb-0 px-0">
               <v-row class="mx-0 mb-4 d-flex justify-start">
-                <span class="text-center">Choose address from a wallet</span>
+                <span class="text-center">
+                  Choose address from a wallet
+                </span>
               </v-row>
               <v-row class="mx-0 d-flex justify-center">
                 <v-btn outlined rounded color="#000000" width="100%" height="38"
                   class="select-wallet-button"
-                  @click="selectRLoginWallet" >
+                  :disabled="isTourActive"
+                  @click="selectRLoginWallet"
+                  id="select-rsk-address-btn">
                   <span class="blackish">Connect wallet</span>
                 </v-btn>
               </v-row>
@@ -84,7 +88,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Emit, Vue } from 'vue-property-decorator';
+import {
+  Component, Emit, Prop, Vue,
+} from 'vue-property-decorator';
 import { Action, State } from 'vuex-class';
 import * as rskUtils from '@rsksmart/rsk-utils';
 import { PegInTxState } from '@/common/types/pegInTx';
@@ -111,6 +117,8 @@ export default class RskAddressInput extends Vue {
   VALUE_INCOMPLETE_MESSAGE = 'Not completed';
 
   rskAddressSelected = '';
+
+  @Prop() isTourActive !: boolean;
 
   @State('web3Session') web3SessionState!: SessionState;
 

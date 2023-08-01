@@ -2,7 +2,7 @@ import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 
 interface TransportRequest {
   resolve: (value: (PromiseLike<TransportWebUSB> | TransportWebUSB)) => void;
-  reject: (reason?: any) => void;
+  reject: (reason?: string) => void;
 }
 interface GenericLedgerRequestFn<Type> {
   (transport: TransportWebUSB): Promise<Type>;
@@ -83,9 +83,7 @@ export default class LedgerTransportService {
           request.resolve(this.transportWebUsb);
         })
         .catch(request.reject);
-    } else {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
+    } else if (request) {
       request.resolve(this.transportWebUsb);
     }
   }

@@ -1,27 +1,23 @@
-import { createLocalVue, mount } from '@vue/test-utils';
+import { createLocalVue, mount, Wrapper } from '@vue/test-utils';
 import AddressWarningDialog from '@/common/components/exchange/AddressWarningDialog.vue';
-import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { EnvironmentContext } from '@/common/providers/types';
 import * as constants from '@/common/store/constants';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import Vuetify from 'vuetify';
 
-function findByText(wrap: any, selector: string, text: string | RegExp) {
-  return wrap.findAll(selector).filter((n: any) => n.text().match(text));
+function findByText(wrap: Wrapper<Vue>, selector: string, text: string | RegExp) {
+  return wrap.findAll(selector).filter((n: Wrapper<Vue>) => n.text().match(text));
 }
 
 const localVue = createLocalVue();
-let vuetify: any;
+let vuetify: typeof Vuetify;
 
 describe('AddressWarningDialog', () => {
   const defaultEnvironmentVariables = {
     vueAppCoin: constants.BTC_NETWORK_TESTNET,
   };
-  let environmentContext: EnvironmentContext;
   beforeEach(() => {
     vuetify = new Vuetify();
     EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
-    environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
   });
   it('should emit "continue" event when "continue" button is clicked', () => {
     const wrapper = mount(AddressWarningDialog, {

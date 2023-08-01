@@ -30,7 +30,6 @@ export interface PeginConfiguration {
   maxValue: number; // SatoshiBN
   federationAddress: string;
   feePerKb?: number; // SatoshiBN
-  btcConfirmations: number;
   sessionId: string;
   id?: number;
 }

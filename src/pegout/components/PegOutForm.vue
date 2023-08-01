@@ -1,25 +1,33 @@
 <template>
-<v-container fluid class="exchange-form normalized-height container
-  max-width mx-6 mt-6">
-  <v-col class="px-0">
+<v-container fluid class="mt-0">
+  <v-container>
+      <div class="tourStyle">
+        <v-tour name="pegOutTour" :steps="tourSteps" :callbacks="tourCallBacks">
+        </v-tour>
+      </div>
+  </v-container>
+  <v-col class="container pa-0">
     <v-row class="mx-0">
         <v-col cols="1" class="pa-0 d-flex align-center">
           <v-img position="center left"
                  src="@/assets/exchange/arrow.png" height="40" contain/>
         </v-col>
-        <v-col class="px-0">
-         <h1 class="justify-center text-left">Send {{environmentContext.getRbtcTicker()}}.
+        <v-col class="exchange-form mt-0 px-0">
+         <h1 class="justify-center text-left">
+          Send {{environmentContext.getRbtcTicker()}}.
           Get {{environmentContext.getBtcTicker()}}.</h1>
         </v-col>
       </v-row>
-    <v-row class="exchange-form">
-      <v-col cols="8" lg="8" >
+    <v-row class="exchange-form mt-2 mx-0 justify-space-between">
+      <v-col cols="8" lg="7" class="pa-0" >
         <rsk-wallet-connection
+          :isTourActive="isTourActive"
           @switchDeriveButton="switchDeriveButton"/>
         <v-divider color="#C4C4C4"/>
-        <rbtc-input-amount :enableButton="!isReadyToSign"/>
+        <rbtc-input-amount :enableButton="!isReadyToSign"
+                          :isTourActive="isTourActive"/>
         <v-divider color="#C4C4C4"/>
-        <div class="form-step pb-0 pt-3 mb-3">
+        <div class="form-step py-4">
           <v-row class="mx-0 align-start">
             <v-col cols="auto" class="pl-0">
               <div v-bind:class="[focus ?
@@ -29,21 +37,21 @@
               <p v-bind:class="{'boldie': focus}">
                 (Optional) Verify your Bitcoin destination address:
               </p>
-              <v-row class="ma-0 mt-2 pa-0">
-                <v-col v-if="session.btcDerivedAddress" cols="7" class="p-0">
-                  <div class="container">
+              <v-row class="ma-0 mt-4 pa-0 pl-1">
+                <v-col v-if="session.btcDerivedAddress" cols="7" class="pa-0">
+                  <div class="pa-0 container">
                     <v-row class="mx-0">
                       <span>Address derived</span>
                     </v-row>
                     <v-row class="mx-0 d-flex align-center">
-                      <p class="mb-0 account">
+                      <p class="mb-0 pt-1 account">
                         {{session.btcDerivedAddress}}
                       </p>
                     </v-row>
                   </div>
                 </v-col>
-                <v-col v-else cols="4" class="pb-0 px-0">
-                  <v-row class="derive-button ml-1 mx-0 d-flex justify-center">
+                <v-col v-else cols="5" class="pa-0 px-0">
+                  <v-row class="derive-button mx-0 d-flex justify-center">
                     <v-btn :disabled="!isReadyToSign ||
                       injectedProvider != appConstants.RLOGIN_METAMASK_WALLET"
                       outlined rounded id="derivation-addr-btn"
@@ -57,12 +65,12 @@
                 </v-col>
                 <v-container v-if="injectedProvider
                                   && injectedProvider != appConstants.RLOGIN_METAMASK_WALLET"
-                  style="font-size: 14px;">
-                  <div>
+                  class="pl-0">
+                  <span class="blackish" style="font-size: 14px;">
                     As you are not using MetaMask, you need to follow
                     <a :href=appConstants.RSK_PEGOUT_DOCUMENTATION_URL class="d-inline blackish a"
                         target='_blank'> this documentation</a> to get the destination address.
-                  </div>
+                  </span>
                 </v-container>
               </v-row>
             </v-col>
@@ -74,14 +82,20 @@
           :summary="pegOutFormSummary"
           :initialExpand="true"
           :type="typeSummary"
-          :orientation="orientationSummary"/>
+          :orientation="orientationSummary"
+        />
+        <v-btn color="#747272"
+          class="help-btn mt-2 pa-1" small rounded text id="first-step" @click="startVueTour()">
+          <v-icon>mdi-help-circle</v-icon>
+          <span>You don't know how to proceed?</span>
+        </v-btn>
       </v-col>
     </v-row>
     <v-row v-if="showAddressDialog">
       <address-dialog @switchDeriveButton="switchDeriveButton"
        @closeDialog="closeAddressDialog"/>
     </v-row>
-    <v-row class="mx-0">
+    <v-row class="mx-0 mt-6">
       <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
         <v-btn @click="back"
         rounded outlined color="#000000" width="110"
@@ -99,6 +113,10 @@
         <v-progress-circular v-if="pegOutFormState.matches(['loading'])"
                               indeterminate color="#000000" class="mr-10"/>
       </v-col>
+    </v-row>
+    <v-row class="mx-0 justify-center"
+           v-if="pegOutFormState.matches(['loading']) && isLedgerConnected">
+      See your ledger device to confirm your transaction.
     </v-row>
   </v-col>
   <template v-if="showTxErrorDialog">
@@ -161,6 +179,117 @@ export default class PegOutForm extends Vue {
 
   isReadyToSign = false;
 
+  isTourActive = false;
+
+  tourSteps = [
+    {
+      target: '#wallet-connection',
+      content: `Click to select the Rootstock wallet where your ${this.environmentContext.getRbtcTicker()} are stored`,
+      params: {
+        highlight: true,
+        isFirst: true,
+      },
+    },
+    {
+      target: '#amount-field',
+      content: `Input the amount you want to convert into ${this.environmentContext.getBtcTicker()}`,
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#max-btn',
+      content: 'Click here if you want to send all the available balance in your wallet',
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#derivation-addr-btn',
+      content: 'If you want to derive your destination address click here and sign the message',
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#summary-sender-address',
+      content: `This is the address in Rootstock where the ${this.environmentContext.getRbtcTicker()} will be transferred from`,
+      params: {
+        highlight: true,
+        isLast: true,
+      },
+    },
+    {
+      target: '#summary-amount',
+      content: `This is the amount you will send to convert into ${this.environmentContext.getBtcTicker()}`,
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#summary-tx-fee',
+      content: `The estimated fee required by the network in ${this.environmentContext.getRbtcTicker()}`,
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#summary-btc-destination',
+      content: `This is the address where the ${this.environmentContext.getBtcTicker()} will be received`,
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#summary-estimated-fee',
+      content: `The estimated fee required by the protocol in ${this.environmentContext.getBtcTicker()}`,
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#summary-btc-estimated-amount',
+      content: 'Based on the estimated fee and the amount transferred, this is the estimated final amount that will be transferred to the destination address',
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#send-btn',
+      content: 'When the form fields were filled, click here to sign the transaction',
+      params: {
+        highlight: true,
+        isLast: true,
+      },
+    },
+  ];
+
+  tourCallBacks = {
+    onFinish: () => {
+      this.handleTourFinish();
+    },
+    onSkip: () => {
+      this.handleSkipTour();
+    },
+  };
+
+  handleTourFinish() {
+    this.isTourActive = false;
+    localStorage.setItem('ONBOARDED_USER_PEGOUT', 'true');
+  }
+
+  handleSkipTour() {
+    this.isTourActive = false;
+  }
+
   @State('web3Session') session !: SessionState;
 
   @State('pegOutTx') pegOutTxState !: PegOutTxState;
@@ -172,6 +301,8 @@ export default class PegOutForm extends Vue {
   @Getter(constants.PEGOUT_TX_GET_SAFE_TX_FEE, { namespace: 'pegOutTx' }) safeFee !: WeiBig;
 
   @Getter(constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE, { namespace: 'pegOutTx' }) estimatedBtcToReceive !: SatoshiBig;
+
+  @Getter(constants.SESSION_IS_LEDGER_CONNECTED, { namespace: 'web3Session' }) isLedgerConnected !: boolean;
 
   @Emit()
   closeAddressDialog() {
@@ -244,6 +375,22 @@ export default class PegOutForm extends Vue {
   @Emit('changePage')
   changePage() {
     return this.nextPage;
+  }
+
+  @Emit()
+  startVueTour() {
+    this.$tours.pegOutTour.start();
+    this.isTourActive = true;
+  }
+
+  mounted() {
+    const newUser = localStorage.getItem('ONBOARDED_USER_PEGOUT') !== 'true';
+    if (newUser) {
+      this.$tours.pegOutTour.start();
+      this.isTourActive = true;
+    } else {
+      this.isTourActive = false;
+    }
   }
 }
 </script>

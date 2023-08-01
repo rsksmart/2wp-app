@@ -35,7 +35,7 @@ export default abstract class TxBuilder {
     sessionId: string;
     accountType: string;
   }): Promise<NormalizedTx> {
-    const walletAddresses: WalletAddress[] = store.state.pegInTx.addressList as WalletAddress[];
+    const walletAddresses: WalletAddress[] = store.state.pegInTx?.addressList as WalletAddress[];
     const userAddressList = walletAddresses.map((walletAddress) => walletAddress.address);
     const feeAmountCalculated: SatoshiBig = store.getters[`pegInTx/${constants.PEGIN_TX_GET_SAFE_TX_FEE}`] as SatoshiBig;
     const normalizedTx = await ApiService.createPeginTx(

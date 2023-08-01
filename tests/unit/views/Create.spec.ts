@@ -1,4 +1,4 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { createLocalVue, shallowMount, Wrapper } from '@vue/test-utils';
 import Vuex, { Store } from 'vuex';
 import Vuetify from 'vuetify';
 import Create from '@/pegin/views/Create.vue';
@@ -11,7 +11,7 @@ import { pegInTx } from '@/pegin/store/peginTx';
 import { pegOutTx } from '@/pegout/store/pegoutTx';
 
 const localVue = createLocalVue();
-let vuetify: any;
+let vuetify: typeof Vuetify;
 let state: Partial<PegInTxState>;
 let store: Store<RootState>;
 let sessionState: SessionState;
@@ -38,7 +38,6 @@ describe('Create component', () => {
         minValue: 0,
         maxValue: 1,
         federationAddress: '',
-        btcConfirmations: 100,
         sessionId: '',
       },
       sessionId: '',
@@ -91,7 +90,8 @@ describe('Create component', () => {
     const $router = {
       push,
     };
-    const wrapper = shallowMount(Create, {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const wrapper: Wrapper<Create & {[key: string]: any}> = shallowMount(Create, {
       store,
       localVue,
       vuetify,
@@ -99,7 +99,7 @@ describe('Create component', () => {
         $router,
       },
     });
-    const vm = wrapper.vm as any;
+    const { vm } = wrapper;
     vm.clear = jest.fn();
     vm.init = jest.fn();
     vm.initPegin = jest.fn();

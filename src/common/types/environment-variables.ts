@@ -25,6 +25,22 @@ export class EnvironmentVariables {
 
   public pegoutMaxValue: number;
 
+  public minFeePerKb: {
+    fast: number;
+    average: number;
+    slow: number;
+  };
+
+  public miningSpeedBlock: {
+    fast: number;
+    average: number;
+    slow: number;
+  };
+
+  public burnDustValue: number;
+
+  public maxAmountAllowedInSatoshis: number;
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(defaultValues: any = {}) {
     this.vueAppCoin = process.env.VUE_APP_COIN || defaultValues.vueAppCoin;
@@ -47,5 +63,24 @@ export class EnvironmentVariables {
       || defaultValues.pegoutMinValue;
     this.pegoutMaxValue = process.env.VUE_APP_PEGOUT_MAX_AMOUNT_ALLOWED_IN_RBTC
       || defaultValues.pegoutMaxValue;
+    this.minFeePerKb = {
+      fast: process.env.VUE_APP_FEE_PER_KB_FAST_MIN
+        || (defaultValues.minFeePerKb ? defaultValues.minFeePerKb.fast : 0),
+      average: process.env.VUE_APP_FEE_PER_KB_AVERAGE_MIN
+        || (defaultValues.minFeePerKb ? defaultValues.minFeePerKb.average : 0),
+      slow: process.env.VUE_APP_FEE_PER_KB_SLOW_MIN
+        || (defaultValues.minFeePerKb ? defaultValues.minFeePerKb.slow : 0),
+    };
+    this.miningSpeedBlock = {
+      fast: process.env.VUE_APP_FAST_MINING_BLOCK
+        || (defaultValues.miningSpeedBlock ? defaultValues.miningSpeedBlock.fast : 0),
+      average: process.env.VUE_APP_AVERAGE_MINING_BLOCK
+        || (defaultValues.miningSpeedBlock ? defaultValues.miningSpeedBlock.average : 0),
+      slow: process.env.VUE_APP_SLOW_MINING_BLOCK
+        || (defaultValues.miningSpeedBlock ? defaultValues.miningSpeedBlock.slow : 0),
+    };
+    this.burnDustValue = Number(process.env.BURN_DUST_VALUE) || defaultValues.burnDustValue;
+    this.maxAmountAllowedInSatoshis = process.env.VUE_APP_MAX_AMOUNT_ALLOWED_IN_SATOSHI
+      || defaultValues.maxAmountAllowedInSatoshis;
   }
 }

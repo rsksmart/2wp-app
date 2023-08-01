@@ -29,6 +29,7 @@
     },
     "lib": [
       "esnext",
+      "es6",
       "dom",
       "dom.iterable",
       "scripthost"
@@ -38,8 +39,8 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "tests2/**/*.ts",
-    "tests2/**/*.tsx"
+    "tests/**/*.ts",
+    "tests/**/*.tsx"
   ],
   "exclude": [
     "node_modules"

@@ -1,10 +1,11 @@
-import { Purpose } from '@/common/types';
+import { AddressType, Purpose } from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import * as constants from '@/common/store/constants';
 import * as bitcoin from 'bitcoinjs-lib';
 import {
   arrayify, computePublicKey, hashMessage, recoverPublicKey,
 } from 'ethers/lib/utils';
+import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { deriveAddress, NETWORKS, bitcoinJsNetwork } from './xPubUtils';
 
 export function getPubKeyFromRskSignedMessage2(signedMessage:string, hashedMessage: string)
@@ -28,4 +29,24 @@ export function getBtcAddressFromSignedMessage(
     pubkey: pubEcpair.publicKey,
     network,
   });
+}
+
+export function validateAddress(address: string): {valid: boolean; addressType: AddressType} {
+  const addressRegexp = EnvironmentContextProviderService
+    .getEnvironmentContext().getAddressRegexPattern();
+  let addressType: AddressType = constants.BITCOIN_UNKNOWN_ADDRESS_TYPE;
+  let valid = false;
+  if (addressRegexp.legacy.test(address)) {
+    addressType = constants.BITCOIN_LEGACY_ADDRESS;
+    valid = true;
+  }
+  if (addressRegexp.segwit.test(address)) {
+    addressType = constants.BITCOIN_SEGWIT_ADDRESS;
+    valid = true;
+  }
+  if (addressRegexp.nativeSegwit.test(address)) {
+    addressType = constants.BITCOIN_NATIVE_SEGWIT_ADDRESS;
+    valid = true;
+  }
+  return { valid, addressType };
 }

@@ -1,3 +1,5 @@
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=rsksmart_2wp-app&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=rsksmart_2wp-app)
+
 # 2wp-app
 This is the front end application for 2-Way-Peg solution.
 The solution will be a **web interface (this app)**, which integrates with a Rest API, which in turn communicates with internal services such as the blockchain node and databases. In addition, a daemon/worker will be created that will be responsible for obtaining data from the blockchain and changing the status of the transaction.
@@ -39,23 +41,7 @@ docker-compose up
 ### Testing
 To execute unit tests, run:
 ```shel
-npm run test:unit
-```
-It should execute 6 test suites with 28 tests in total.
-
-Like this example:
-```
- PASS  tests/unit/PowPegUtils.spec.ts
- PASS  tests/unit/SatoshiBig.spec.ts
- PASS  tests/unit/utils.spec.ts
- PASS  tests/unit/OpReturnUtils.spec.ts
- PASS  tests/unit/txSummary.spec.ts
- PASS  tests/unit/ApiService.spec.ts
-
-Test Suites: 6 passed, 6 total
-Tests:       28 passed, 28 total
-Snapshots:   0 total
-Time:        2.809s
+npm run test
 ```
 
 ### Running Lint

@@ -1,7 +1,12 @@
 <template>
-  <v-container fluid class="exchange normalized-height container
-  max-width mx-6">
-    <v-col class="exchange-form px-0">
+  <v-container fluid class="pa-0">
+  <v-container>
+      <div class="tourStyle">
+        <v-tour name="pegInTour" :steps="tourSteps" :callbacks="tourCallBacks">
+        </v-tour>
+      </div>
+    </v-container>
+    <v-col class="exchange-form pa-0 ma-0">
       <v-row class="mx-0">
         <v-col cols="1" class="pa-0 d-flex align-center">
           <v-img position="center left"
@@ -12,22 +17,29 @@
             Get {{environmentContext.getRbtcTicker()}}.</h1>
         </v-col>
       </v-row>
-      <v-row class="mx-0 mt-2">
+      <v-row class="mx-0 mt-2 justify-space-between">
         <v-col id="options-col" cols="8" lg="7" class="pa-0">
           <peg-in-account-select/>
           <v-divider color="#C4C4C4"/>
-          <btc-input-amount/>
+          <btc-input-amount :isTourActive="isTourActive"/>
           <v-divider color="#C4C4C4"/>
-          <rsk-address-input @state="setRskAddressState"/>
+          <rsk-address-input  :isTourActive="isTourActive"
+                              @state="setRskAddressState"/>
           <v-divider color="#C4C4C4"/>
-          <btc-fee-select/>
+          <btc-fee-select :isTourActive="isTourActive"/>
         </v-col>
         <v-col id="summary-col" cols="4" lg="4">
           <tx-summary-fixed
             :summary="pegInFormSummary"
             :initialExpand="true"
             :type="typeSummary"
-            :orientation="orientationSummary"/>
+            :orientation="orientationSummary"
+          />
+          <v-btn color="#747272"
+            class="mt-2 pa-1" small rounded text id="first-step" @click="startVueTour()">
+          <v-icon>mdi-help-circle</v-icon>
+          <span>You don't know how to proceed?</span>
+          </v-btn>
         </v-col>
       </v-row>
       <v-row class="mx-0">
@@ -40,7 +52,8 @@
         <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0">
           <v-btn v-if="!pegInFormState.matches(['loading'])" rounded color="#000000"
                  @click="sendTx"
-                 :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])">
+                 :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])"
+                 id="send-btn">
             <span class="whiteish">Continue</span>
             <v-icon class="ml-2" color="#fff">mdi-send-outline</v-icon>
           </v-btn>
@@ -102,6 +115,105 @@ export default class PegInForm extends Vue {
 
   orientationSummary = TxSummaryOrientation.VERTICAL;
 
+  isTourActive = false;
+
+  tourSteps = [
+    {
+      target: '#amount-field',
+      content: `Input the amount you want to convert into ${this.environmentContext.getRbtcTicker()}`,
+      params: {
+        highlight: true,
+        isFirst: true,
+      },
+    },
+    {
+      target: '#select-rsk-address-btn',
+      content: 'If you want to directly connect your RSK wallet click here and confirm',
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#select-tx-fee',
+      content: 'Choose the tx speed. The faster the transaction, the higher the fee',
+      params: {
+        highlight: true,
+        isLast: true,
+      },
+    },
+    {
+      target: '#summary-sender-address',
+      content: `This is the address in Bitcoin where the ${this.environmentContext.getBtcTicker()} will be transferred from`,
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#summary-amount',
+      content: `This is the amount you will send to convert into ${this.environmentContext.getRbtcTicker()}`,
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#summary-tx-fee',
+      content: `The estimated fee required by the network in ${this.environmentContext.getBtcTicker()}`,
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#summary-tx-total',
+      content: 'The estimated total amount to send, considering the selected amount and the fee',
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#summary-rsk-destination',
+      content: `This is the address where the ${this.environmentContext.getRbtcTicker()} will be received`,
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#summary-rsk-estimated-amount',
+      content: 'Based on the estimated fee and the amount transferred, this is the estimated final amount that will be transferred to the destination address',
+      params: {
+        highlight: true,
+        isLast: false,
+      },
+    },
+    {
+      target: '#send-btn',
+      content: 'When the form fields were filled, click here to sign the transaction',
+      params: {
+        highlight: true,
+        isLast: true,
+      },
+    },
+  ];
+
+  tourCallBacks = {
+    onFinish: () => this.handleTourFinish(),
+    onSkip: () => this.handleSkipTour(),
+  };
+
+  handleTourFinish() {
+    this.isTourActive = false;
+    localStorage.setItem('ONBOARDED_USER_PEGIN', 'true');
+  }
+
+  handleSkipTour() {
+    this.isTourActive = false;
+  }
+
   @State('pegInTx') pegInTxState!: PegInTxState;
 
   @Getter(constants.PEGIN_TX_GET_REFUND_ADDRESS, { namespace: 'pegInTx' }) refundAddress!: string;
@@ -112,7 +224,7 @@ export default class PegInForm extends Vue {
 
   @Getter(constants.PEGIN_TX_GET_ENOUGH_FEE_VALUE, { namespace: 'pegInTx' }) enoughBalanceSelectedFee !: boolean;
 
-  @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: any;
+  @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: Promise<void>;
 
   backHome() {
     this.pegInFormState.send('goingHome');
@@ -184,6 +296,22 @@ export default class PegInForm extends Vue {
       feeLevel: this.pegInTxState.selectedFee,
       accountType: this.pegInTxState.selectedAccount,
     };
+  }
+
+  @Emit()
+  startVueTour() {
+    this.$tours.pegInTour.start();
+    this.isTourActive = true;
+  }
+
+  mounted() {
+    const newUser = localStorage.getItem('ONBOARDED_USER_PEGIN') !== 'true';
+    if (newUser) {
+      this.$tours.pegInTour.start();
+      this.isTourActive = true;
+    } else {
+      this.isTourActive = false;
+    }
   }
 }
 </script>

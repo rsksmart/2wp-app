@@ -177,7 +177,7 @@
   }
 
   .summary-box {
-    border: 0.5px solid #BFBFBF;
+    border: 1px solid #C4C4C4;
     box-sizing: border-box;
     border-radius: 30px;
     background: #fff;
@@ -223,7 +223,8 @@
   }
 
   .message-error-fee {
-    line-height: 12px;
+    font-weight: bold;
+    line-height: 17px;
     word-break: break-word;
     overflow-wrap: break-word;
     color: #ff5252 !important;
@@ -281,9 +282,12 @@
   .wallet-address-input {
     font-size: 13px;
     .v-input__slot {
-      padding: 0 5px !important;
+      padding: 0 0 0 4px !important;
     }
     $text-field-affix-color: black;
+  }
+  .v-text-field .v-label {
+    max-width: 100%;
   }
 }
 
@@ -362,4 +366,9 @@
   background-color: #F8F5F5;
   border-radius: 5px;
   padding: 10px 7px !important;
+  max-height: 37px;
+}
+
+.field-with-icon-text {
+  line-height: 18px;
 }

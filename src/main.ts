@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Web3 from 'web3';
 import { AppNetwork } from '@/common/types';
+import VueTour from 'vue-tour';
 import * as constants from './common/store/constants';
 import App from './App.vue';
 import router from './common/router';
@@ -8,6 +9,8 @@ import store from './common/store';
 import { vuetify } from './common/plugins/vuetify';
 import '@/common/styles/main.scss';
 import { EnvironmentAccessorService } from './common/services/enviroment-accessor.service';
+
+require('vue-tour/dist/vue-tour.css');
 
 Vue.config.productionTip = false;
 Vue.prototype.$web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
@@ -27,9 +30,22 @@ const defaultEnvironmentVariables = {
   vueAppHotjarId: '',
   pegoutMinValue: 0.004,
   pegoutMaxValue: 1,
+  minFeePerKb: {
+    fast: 8,
+    average: 5,
+    slow: 2,
+  },
+  miningSpeedBlock: {
+    fast: 1,
+    average: 6,
+    slow: 12,
+  },
+  burnDustValue: 2000,
 };
 
 EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
+
+Vue.use(VueTour);
 
 new Vue({
   router,

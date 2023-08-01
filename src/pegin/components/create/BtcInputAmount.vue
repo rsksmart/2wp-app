@@ -5,16 +5,18 @@
         <div v-bind:class="[focus ?
               'number-filled' : 'number']">2</div>
       </v-col>
-      <v-col class="pl-0 mb-4">
+      <v-col class="pl-0">
         <p v-bind:class="{'boldie': focus}">
           Enter the amount you want to send:
         </p>
-        <v-row class="mx-0 mt-4 pb-0 d-flex align-center">
-          <v-col cols="4" v-bind:class="[amountStyle]" class="input-box-outline">
+        <v-row class="pl-1 mx-0 mt-4 pb-0 d-flex align-center">
+          <v-col cols="4" v-bind:class="[amountStyle]"
+                class="input-box-outline" id="amount-field">
             <v-col cols="8" class="pa-0 pl-1">
               <v-text-field solo hide-details full-width single-line flat
+              :disabled="isTourActive"
                             class="amount-input"
-                            placeholder="add amount"
+                            placeholder="Add amount"
                             v-model="bitcoinAmount" type="number"
                             step="0.00000001"
                             @keydown="blockLetterKeyDown"
@@ -40,6 +42,7 @@
             <v-col cols="8" class="pa-0 pl-1">
               <v-text-field
               class="amount-input"
+              placeholder="0"
               solo hide-details full-width single-line flat readonly
                             v-model="rbtcAmount" type="number"/>
             </v-col>
@@ -54,12 +57,11 @@
               </v-row>
             </v-col>
           </v-col>
-          <v-col/>
         </v-row>
-        <v-row v-if="stepState === 'error'" class="mx-0">
-                <span class="yellowish">
-                  {{amountErrorMessage}}
-                </span>
+        <v-row class="pl-1 mx-0" style="min-height: 17px;">
+          <span v-if="stepState === 'error'" class="yellowish">
+            {{amountErrorMessage}}
+          </span>
         </v-row>
       </v-col>
     </v-row>
@@ -68,7 +70,7 @@
 
 <script lang="ts">
 import {
-  Component, Emit, Vue, Watch,
+  Component, Emit, Prop, Vue, Watch,
 } from 'vue-property-decorator';
 import { Action, Getter, State } from 'vuex-class';
 import SatoshiBig from '@/common/types/SatoshiBig';
@@ -89,6 +91,8 @@ export default class BtcInputAmount extends Vue {
   bitcoinAmount = '';
 
   stepState: 'unused' | 'done' | 'error' = 'unused';
+
+  @Prop() isTourActive !: boolean;
 
   @State('pegInTx') pegInTxState!: PegInTxState;
 

@@ -7,13 +7,16 @@
       </v-col>
       <v-col class="pl-0">
         <p v-bind:class="{'boldie': focus}">
-          Connect your Rootstock wallet :
+          Connect your Rootstock wallet:
         </p>
         <v-row class="mx-0 mt-4">
           <template v-if="useWeb3Wallet && web3Address">
              <div class="pl-1">
               <v-row class="mx-0">
-                <v-col>
+                <span>Wallet connected</span>
+              </v-row>
+              <v-row class="mx-0">
+                <v-col class="pl-0 pt-1">
                    <p class="mb-0 account">
                      {{ address }} -
                      {{ web3SessionState.balance.toRBTCTrimmedString() }}
@@ -22,7 +25,7 @@
                 </v-col>
               </v-row>
               <v-row class="mx-0">
-                <v-col cols="4" class="pb-0 px-0">
+                <v-col cols="4" class="pa-0 pt-1">
                   <v-row class="derive-button mx-0 d-flex justify-center">
                     <v-btn
                       @click="disconnectWallet"
@@ -60,6 +63,7 @@
               <v-row class="mx-0 d-flex justify-center">
                 <v-btn outlined rounded color="#000000" width="100%" height="38"
                   class="select-wallet-button"
+                  :disabled="isTourActive"
                   @click="connectWallet" id="wallet-connection">
                   <span class="blackish">Connect wallet</span>
                 </v-btn>
@@ -73,7 +77,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Emit, Vue } from 'vue-property-decorator';
+import {
+  Component, Emit, Prop, Vue,
+} from 'vue-property-decorator';
 import { Action, State } from 'vuex-class';
 import { PegOutTxState, SessionState } from '@/common/types';
 import * as constants from '@/common/store/constants';
@@ -86,6 +92,8 @@ export default class RskWalletConnection extends Vue {
   useWeb3Wallet = false;
 
   isValidPegOutAddress = true;
+
+  @Prop() isTourActive !: boolean;
 
   @State('pegOutTx') pegOutTxState!: PegOutTxState;
 
