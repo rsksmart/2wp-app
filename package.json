@@ -14,7 +14,7 @@
     "@ledgerhq/hw-app-btc": "6.27.1",
     "@ledgerhq/hw-transport": "6.27.1",
     "@ledgerhq/hw-transport-webusb": "6.27.1",
-    "@rsksmart/rlogin": "^1.5.2",
+    "@rsksmart/rlogin": "^1.5.3-beta.1",
     "@rsksmart/rlogin-ledger-provider": "^1.0.2",
     "@rsksmart/rlogin-trezor-provider": "^1.0.2",
     "@rsksmart/rsk-precompiled-abis": "^5.0.0-FINGERROOT",
