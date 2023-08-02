@@ -10,7 +10,7 @@
       <v-row class="d-flex justify-center mb-n3">
         <v-btn class="btn-focus-out" fab x-small outlined color="green" @click="switchExpand"
                v-bind:class="[this.over ? 'expand-btn-active' : 'expand-btn-inactive']"
-               @mouseover="over = true" @mouseleave="over = false">
+               @mouseover="over.value = true" @mouseleave="over.value = false">
           <span class="content">
             {{ expanded ? '-' : '+'}}
           </span>
@@ -35,28 +35,48 @@
 </template>
 
 <script lang="ts">
-import {
-  Component, Emit, Prop,
-  Vue,
-} from 'vue-facing-decorator';
 
-@Component
-export default class AdvancedData extends Vue {
-  @Prop() initialExpand!: boolean;
+import { ref } from 'vue';
 
-  @Prop() rawTx!: string;
+export default {
+  name: 'AdvancedData',
+  props: {
+    initialExpand: Boolean,
+    rawTx: String,
+  },
+  setup(props) {
+    const expanded = ref(props.initialExpand);
+    const over = ref(false);
 
-  expanded = false;
+    function switchExpand() {
+      expanded.value = !expanded.value;
+    }
 
-  over = false;
-
-  @Emit()
-  switchExpand() {
-    this.expanded = !this.expanded;
-  }
-
-  created() {
-    this.expanded = this.initialExpand;
+    return {
+      expanded,
+      over,
+      switchExpand,
+    };
   }
 }
+
+// @Component
+// export default class AdvancedData extends Vue {
+//   @Prop() initialExpand!: boolean;
+//
+//   @Prop() rawTx!: string;
+//
+//   expanded = false;
+//
+//   over = false;
+//
+//   @Emit()
+//   switchExpand() {
+//     this.expanded = !this.expanded;
+//   }
+//
+//   created() {
+//     this.expanded = this.initialExpand;
+//   }
+// }
 </script>

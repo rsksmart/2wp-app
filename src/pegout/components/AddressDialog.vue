@@ -32,31 +32,57 @@
 </template>
 
 <script lang="ts">
-import {
-  Component, Emit, Vue,
-} from 'vue-facing-decorator';
-import { Action } from 'vuex-class';
 import * as constants from '@/common/store/constants';
+import { ref } from 'vue';
+import { useAction } from '@/common/store/helper';
 
-@Component
-export default class AddressDialog extends Vue {
-  messageToBeSigned = 'Sign this message to derive your Bitcoin address';
+export default {
+  name: 'AddressDialog',
+  setup(_, context) {
+    const messageToBeSigned = 'Sign this message to derive your Bitcoin address';
+    const showAddressDialog = ref(true);
 
-  showAddressDialog = true;
+    const signMessage = useAction('web3Session', constants.SESSION_SIGN_MESSAGE);
 
-  @Action(constants.SESSION_SIGN_MESSAGE, { namespace: 'web3Session' }) signMessage !: (message: string) => Promise<void>;
+    function toSign() {
+      signMessage(messageToBeSigned)
+        .then(() => {
+          closeDialog();
+        });
+    }
 
-  @Emit()
-  toSign() {
-    this.signMessage(this.messageToBeSigned)
-      .then(() => {
-        this.closeDialog();
-      });
-  }
+    function closeDialog() {
+      return context.emit('closeDialog', showAddressDialog.value);
+    }
 
-  @Emit('closeDialog')
-  closeDialog() {
-    return this.showAddressDialog;
+    return {
+      showAddressDialog,
+      messageToBeSigned,
+      closeDialog,
+      toSign,
+    };
   }
 }
+
+// @Component
+// class AddressDialog extends Vue {
+//   messageToBeSigned = 'Sign this message to derive your Bitcoin address';
+//
+//   showAddressDialog = true;
+//
+//   @Action(constants.SESSION_SIGN_MESSAGE, { namespace: 'web3Session' }) signMessage !: (message: string) => Promise<void>;
+//
+//   @Emit()
+//   toSign() {
+//     this.signMessage(this.messageToBeSigned)
+//       .then(() => {
+//         this.closeDialog();
+//       });
+//   }
+//
+//   @Emit('closeDialog')
+//   closeDialog() {
+//     return this.showAddressDialog;
+//   }
+// }
 </script>

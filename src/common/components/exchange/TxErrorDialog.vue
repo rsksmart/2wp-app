@@ -25,28 +25,50 @@
 </template>
 
 <script lang="ts">
-import {
-  Component, Prop, Emit, Vue,
-} from 'vue-facing-decorator';
 import WarningIcon from '@/assets/warning.png';
 
-@Component
-export default class TxErrorDialog extends Vue {
-  @Prop() showTxErrorDialog!: boolean;
+export default {
+  name: 'TxErrorDialog',
+  props: {
+    showTxErrorDialog: Boolean,
+    errorMessage: String,
+  },
+  setup(props, context) {
+    const warningIconPath = WarningIcon;
 
-  @Prop() errorMessage!: string;
+    function toExchange() {
+      window.location.href = '/';
+    }
 
-  warningIconPath = WarningIcon;
+    function closeErrorDialog() {
+      context.emit('closeErrorDialog', props.showTxErrorDialog);
+    }
 
-  @Emit()
-  // eslint-disable-next-line class-methods-use-this
-  toExchange() {
-    window.location.href = '/';
-  }
-
-  @Emit('closeErrorDialog')
-  closeErrorDialog() {
-    return this.showTxErrorDialog;
+    return {
+      warningIconPath,
+      toExchange,
+      closeErrorDialog,
+    };
   }
 }
+
+// @Component
+// class TxErrorDialog extends Vue {
+//   @Prop() showTxErrorDialog!: boolean;
+//
+//   @Prop() errorMessage!: string;
+//
+//   warningIconPath = WarningIcon;
+//
+//   @Emit()
+//   // eslint-disable-next-line class-methods-use-this
+//   toExchange() {
+//     window.location.href = '/';
+//   }
+//
+//   @Emit('closeErrorDialog')
+//   closeErrorDialog() {
+//     return this.showTxErrorDialog;
+//   }
+// }
 </script>

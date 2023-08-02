@@ -34,30 +34,52 @@
 </template>
 
 <script lang="ts">
-import {
-  Component, Prop, Emit, Vue,
-} from 'vue-facing-decorator';
 import WarningImage from '@/assets/warning.png';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 
-@Component
-export default class AddressWarningDialog extends Vue {
-  @Prop() showDialog!: boolean;
+export default {
+  name: 'AddressWarningDialog',
+  props: {
+    showDialog: Boolean,
+    address: String,
+  },
+  setup(props, context) {
+    const iconPath = WarningImage;
+    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
-  @Prop() address!: string;
-
-  iconPath = WarningImage;
-
-  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-
-  @Emit('continue')
-  send() {
-    return this.showDialog;
+  function send() {
+    context.emit('continue', props.showDialog);
   }
 
-  @Emit('cancel')
-  closeDialog() {
-    return this.showDialog;
+  function cancel() {
+    context.emit('cancel', props.showDialog);
+  }
+
+    return {
+      iconPath,
+      environmentContext,
+    };
   }
 }
+
+// @Component
+// class AddressWarningDialog extends Vue {
+//   @Prop() showDialog!: boolean;
+//
+//   @Prop() address!: string;
+//
+//   iconPath = WarningImage;
+//
+//   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+//
+//   @Emit('continue')
+//   send() {
+//     return this.showDialog;
+//   }
+//
+//   @Emit('cancel')
+//   closeDialog() {
+//     return this.showDialog;
+//   }
+// }
 </script>

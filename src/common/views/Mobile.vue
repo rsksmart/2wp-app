@@ -20,20 +20,26 @@
 </template>
 
 <script lang="ts">
-
-import {
-  Component, Vue,
-} from 'vue-facing-decorator';
 import { getMainLogo } from '../utils/utils';
+import { computed } from 'vue';
 
-@Component({
-  components: {},
-})
-export default class Mobile extends Vue {
-  // eslint-disable-next-line class-methods-use-this
-  get logo() {
-    return getMainLogo();
+export default {
+  name: 'Mobile',
+  setup(){
+    const logo = computed(() => getMainLogo());
+    return {
+      logo,
+    };
   }
 }
 
+// @Component({
+//   components: {},
+// })
+// class Mobile extends Vue {
+//   // eslint-disable-next-line class-methods-use-this
+//   get logo() {
+//     return getMainLogo();
+//   }
+// }
 </script>

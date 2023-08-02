@@ -39,26 +39,47 @@
 </template>
 
 <script lang="ts">
-import {
-  Component, Prop, Emit,
-  Vue,
-} from 'vue-facing-decorator';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
+import { ref } from 'vue';
 
-@Component
-export default class BtcToRbtcDialog extends Vue {
-  @Prop() showDialog!: boolean;
+export default {
+  name: 'BtcToRbtcDialog',
+  props: {
+    showDialog: Boolean,
+  },
+  setup(props, context) {
+    const checkbox = ref(false);
+    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
-  checkbox = false;
-
-  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-
-  @Emit('closeDialog')
-  closeDialog() {
-    if (this.checkbox === true) {
-      localStorage.setItem('BTRD_COOKIE_DISABLED', 'true');
+    function closeDialog() {
+      if (checkbox.value === true) {
+        localStorage.setItem('BTRD_COOKIE_DISABLED', 'true');
+      }
+      return context.emit('closeDialog', props.showDialog);
     }
-    return this.showDialog;
+
+    return {
+      checkbox,
+      environmentContext,
+    };
   }
 }
+
+
+// @Component
+// export default class BtcToRbtcDialog extends Vue {
+//   @Prop() showDialog!: boolean;
+//
+//   checkbox = false;
+//
+//   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+//
+//   @Emit('closeDialog')
+//   closeDialog() {
+//     if (this.checkbox === true) {
+//       localStorage.setItem('BTRD_COOKIE_DISABLED', 'true');
+//     }
+//     return this.showDialog;
+//   }
+// }
 </script>

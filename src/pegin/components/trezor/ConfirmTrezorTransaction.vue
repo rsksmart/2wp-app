@@ -192,11 +192,6 @@
 </template>
 
 <script lang="ts">
-import {
-  Component, Emit, Prop,
-  Vue,
-} from 'vue-facing-decorator';
-import { Getter, State, Action } from 'vuex-class';
 import TrezorTxBuilder from '@/pegin/middleware/TxBuilder/TrezorTxBuilder';
 import {
   NormalizedSummary,
@@ -213,130 +208,260 @@ import * as constants from '@/common/store/constants';
 import { TxStatusType } from '@/common/types/store';
 import { TxSummaryOrientation } from '@/common/types/Status';
 import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
+import { computed, PropType, ref } from 'vue';
+import { useGetter, useState } from '@/common/store/helper';
 
-@Component({
+export default {
+  name: 'ConfirmTrezorTransaction',
   components: {
     TxSummaryFixed,
     AdvancedData,
   },
-})
-export default class ConfirmTrezorTransaction extends Vue {
-  txId = '';
+  props: {
+    confirmTxState: {
+      type: Object as PropType<Machine < 'idle' | 'loading' | 'error' | 'goingHome' >>,
+      required: true,
+    },
+    txBuilder: {
+      type: Object as PropType<TrezorTxBuilder>,
+      required: true,
+    },
+  },
+  setup(props, context) {
+    const txId = ref('');
+    const rawTx = ref('');
+    const typeSummary = TxStatusType.PEGIN;
+    const orientationSummary = TxSummaryOrientation.HORIZONTAL;
+    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
-  rawTx = '';
+    const pegInTxState = useState<PegInTxState>('pegInTx');
+    const walletService = useGetter<WalletService>('pegInTx', constants.PEGIN_TX_GET_WALLET_SERVICE);
+    const refundAddress = useGetter<String>('pegInTx', constants.PEGIN_TX_GET_REFUND_ADDRESS);
+    const accountBalanceText = useGetter<String>('pegInTx', constants.PEGIN_TX_GET_ACCOUNT_BALANCE_TEXT);
+    const safeFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
 
-  typeSummary = TxStatusType.PEGIN;
-
-  orientationSummary = TxSummaryOrientation.HORIZONTAL;
-
-  @Prop() confirmTxState!: Machine<
-    'idle'
-    | 'loading'
-    | 'error'
-    | 'goingHome'
-  >;
-
-  @Prop() txBuilder!: TrezorTxBuilder;
-
-  @State('pegInTx') pegInTxState!: PegInTxState;
-
-  @Action(constants.PEGIN_TX_STOP_ASKING_FOR_BALANCE, { namespace: 'pegInTx' }) stopAskingForBalance !: () => Promise<void>;
-
-  @Getter(constants.PEGIN_TX_GET_SAFE_TX_FEE, { namespace: 'pegInTx' }) safeFee!: SatoshiBig;
-
-  @Getter(constants.PEGIN_TX_GET_WALLET_SERVICE, { namespace: 'pegInTx' }) walletService!: WalletService;
-
-  @Getter(constants.PEGIN_TX_GET_REFUND_ADDRESS, { namespace: 'pegInTx' }) refundAddress!: string;
-
-  @Getter(constants.PEGIN_TX_GET_ACCOUNT_BALANCE_TEXT, { namespace: 'pegInTx' }) accountBalanceText!: string;
-
-  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-
-  @Emit('successConfirmation')
-  async toTrackId() {
-    let txError = '';
-    this.confirmTxState.send('loading');
-    await this.walletService.stopAskingForBalance()
-      .then(() => this.txBuilder.buildTx(this.pegInTxState.normalizedTx))
-      .then((tx: TrezorTx) => this.walletService.sign(tx) as Promise<TrezorSignedTx>)
-      .then((trezorSignedTx: TrezorSignedTx) => ApiService
-        .broadcast(trezorSignedTx.payload.serializedTx))
-      .then((txId) => {
-        this.txId = txId;
-      })
-      .catch((err) => {
-        this.confirmTxState.send('error');
-        txError = err.message;
-      });
-    return [txError, this.txId];
-  }
-
-  backHome() {
-    this.confirmTxState.send('goingHome');
-    this.$router.go(0);
-  }
-
-  @Emit('toPegInForm')
-  async toPegInForm() {
-    this.confirmTxState.send('loading');
-    return 'PegInForm';
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  cropAddress(address: string):string {
-    return `${address.substr(0, 6)}...${address.substr(address.length - 6, address.length)}`;
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  splitString(s: string): string[] {
-    return s.match(/.{1,16}/g) ?? [];
-  }
-
-  get opReturnData(): string {
-    const opReturnDataOutput = this.pegInTxState.normalizedTx.outputs[0] ?? { script_type: '' };
-    return opReturnDataOutput.op_return_data
-      ? `${opReturnDataOutput.op_return_data.substr(0, 45)}...`
-      : 'OP_RETURN data not found';
-  }
-
-  get rskFederationAddress():string {
-    return this.pegInTxState.normalizedTx.outputs[1]?.address?.trim() ?? `${this.environmentContext.getBtcText()} Powpeg address not found`;
-  }
-
-  get changeAddress(): string {
-    const [, , change] = this.pegInTxState.normalizedTx.outputs;
-    if (change && change.address) {
-      return change.address;
+    async function toTrackId() {
+      let txError = '';
+      props.confirmTxState.send('loading');
+      await walletService.value.stopAskingForBalance()
+        .then(() => props.txBuilder.buildTx(this.pegInTxState.normalizedTx))
+        .then((tx: TrezorTx) => walletService.value.sign(tx) as Promise<TrezorSignedTx>)
+        .then((trezorSignedTx: TrezorSignedTx) => ApiService
+          .broadcast(trezorSignedTx.payload.serializedTx))
+        .then((id) => {
+          txId.value = id;
+        })
+        .catch((err) => {
+          props.confirmTxState.send('error');
+          txError = err.message;
+        });
+      context.emit('successConfirmation', [txError, txId]);
     }
-    return 'Change address not found';
-  }
 
-  get changeAmount(): string {
-    const changeAmount = new SatoshiBig(this.pegInTxState.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
-    return changeAmount.toBTCTrimmedString();
-  }
+    async function toPegInForm() {
+      props.confirmTxState.send('loading');
+      context.emit('toPegInForm', 'PegInForm');
+    }
 
-  get computedFullAmount(): string {
-    const changeAmount = new SatoshiBig(this.pegInTxState.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
-    return this.pegInTxState.amountToTransfer.plus(this.safeFee)
-      .plus(changeAmount)
-      .toBTCTrimmedString();
-  }
+    function cropAddress(address: string):string {
+      return `${address.substr(0, 6)}...${address.substr(address.length - 6, address.length)}`;
+    }
 
-  get confirmTrezorTxSummary(): NormalizedSummary {
+    function splitString(s: string): string[] {
+      return s.match(/.{1,16}/g) ?? [];
+    }
+
+    const opReturnData = computed((): string => {
+      const opReturnDataOutput = pegInTxState.value.normalizedTx.outputs[0] ?? { script_type: '' };
+      return opReturnDataOutput.op_return_data
+        ? `${opReturnDataOutput.op_return_data.substr(0, 45)}...`
+        : 'OP_RETURN data not found';
+    });
+
+    const rskFederationAddress = computed(():string => {
+      return pegInTxState.value.normalizedTx.outputs[1]?.address?.trim() ?? `${environmentContext.getBtcText()} Powpeg address not found`;
+    });
+
+    const changeAddress = computed((): string => {
+      const [, , change] = pegInTxState.value.normalizedTx.outputs;
+      if (change && change.address) {
+        return change.address;
+      }
+      return 'Change address not found';
+    });
+
+    const changeAmount = computed((): string => {
+      const changeAmount = new SatoshiBig(pegInTxState.value.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
+      return changeAmount.toBTCTrimmedString();
+    });
+
+    const computedFullAmount = computed((): string => {
+      const changeAmount = new SatoshiBig(pegInTxState.value.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
+      return pegInTxState.value.amountToTransfer.plus(safeFee.value)
+        .plus(changeAmount)
+        .toBTCTrimmedString();
+    });
+
+    const confirmTrezorTxSummary = computed((): NormalizedSummary => {
+      return {
+        amountFromString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
+        amountReceivedString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
+        fee: Number(safeFee.value.toBTCTrimmedString()),
+        recipientAddress: pegInTxState.value.rskAddressSelected,
+        refundAddress: refundAddress.value,
+        selectedAccount: accountBalanceText.value,
+        federationAddress: pegInTxState.value.peginConfiguration.federationAddress,
+      };
+    });
+
+    props.txBuilder.getUnsignedRawTx(pegInTxState.value.normalizedTx)
+      .then((tx) => rawTx.value = tx);
+
     return {
-      amountFromString: this.pegInTxState.amountToTransfer.toBTCTrimmedString(),
-      amountReceivedString: this.pegInTxState.amountToTransfer.toBTCTrimmedString(),
-      fee: Number(this.safeFee.toBTCTrimmedString()),
-      recipientAddress: this.pegInTxState.rskAddressSelected,
-      refundAddress: this.refundAddress,
-      selectedAccount: this.accountBalanceText,
-      federationAddress: this.pegInTxState.peginConfiguration.federationAddress,
+      environmentContext,
+      changeAmount,
+      splitString,
+      opReturnData,
+      pegInTxState,
+      rskFederationAddress,
+      cropAddress,
+      changeAddress,
+      computedFullAmount,
+      safeFee,
+      confirmTrezorTxSummary,
+      orientationSummary,
+      typeSummary,
+      rawTx,
+      toPegInForm,
+      toTrackId,
     };
-  }
-
-  async created() {
-    this.rawTx = await this.txBuilder.getUnsignedRawTx(this.pegInTxState.normalizedTx);
-  }
+  },
 }
+
+//
+// @Component({
+//   components: {
+//     TxSummaryFixed,
+//     AdvancedData,
+//   },
+// })
+// class ConfirmTrezorTransaction extends Vue {
+//   txId = '';
+//
+//   rawTx = '';
+//
+//   typeSummary = TxStatusType.PEGIN;
+//
+//   orientationSummary = TxSummaryOrientation.HORIZONTAL;
+//
+//   @Prop() confirmTxState!: Machine<
+//     'idle'
+//     | 'loading'
+//     | 'error'
+//     | 'goingHome'
+//   >;
+//
+//   @Prop() txBuilder!: TrezorTxBuilder;
+//
+//   @State('pegInTx') pegInTxState!: PegInTxState;
+//
+//   @Action(constants.PEGIN_TX_STOP_ASKING_FOR_BALANCE, { namespace: 'pegInTx' }) stopAskingForBalance !: () => Promise<void>;
+//
+//   @Getter(constants.PEGIN_TX_GET_SAFE_TX_FEE, { namespace: 'pegInTx' }) safeFee!: SatoshiBig;
+//
+//   @Getter(constants.PEGIN_TX_GET_WALLET_SERVICE, { namespace: 'pegInTx' }) walletService!: WalletService;
+//
+//   @Getter(constants.PEGIN_TX_GET_REFUND_ADDRESS, { namespace: 'pegInTx' }) refundAddress!: string;
+//
+//   @Getter(constants.PEGIN_TX_GET_ACCOUNT_BALANCE_TEXT, { namespace: 'pegInTx' }) accountBalanceText!: string;
+//
+//   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+//
+//   @Emit('successConfirmation')
+//   async toTrackId() {
+//     let txError = '';
+//     this.confirmTxState.send('loading');
+//     await this.walletService.stopAskingForBalance()
+//       .then(() => this.txBuilder.buildTx(this.pegInTxState.normalizedTx))
+//       .then((tx: TrezorTx) => this.walletService.sign(tx) as Promise<TrezorSignedTx>)
+//       .then((trezorSignedTx: TrezorSignedTx) => ApiService
+//         .broadcast(trezorSignedTx.payload.serializedTx))
+//       .then((txId) => {
+//         this.txId = txId;
+//       })
+//       .catch((err) => {
+//         this.confirmTxState.send('error');
+//         txError = err.message;
+//       });
+//     return [txError, this.txId];
+//   }
+//
+//   backHome() {
+//     this.confirmTxState.send('goingHome');
+//     this.$router.go(0);
+//   }
+//
+//   @Emit('toPegInForm')
+//   async toPegInForm() {
+//     this.confirmTxState.send('loading');
+//     return 'PegInForm';
+//   }
+//
+//   // eslint-disable-next-line class-methods-use-this
+//   cropAddress(address: string):string {
+//     return `${address.substr(0, 6)}...${address.substr(address.length - 6, address.length)}`;
+//   }
+//
+//   // eslint-disable-next-line class-methods-use-this
+//   splitString(s: string): string[] {
+//     return s.match(/.{1,16}/g) ?? [];
+//   }
+//
+//   get opReturnData(): string {
+//     const opReturnDataOutput = this.pegInTxState.normalizedTx.outputs[0] ?? { script_type: '' };
+//     return opReturnDataOutput.op_return_data
+//       ? `${opReturnDataOutput.op_return_data.substr(0, 45)}...`
+//       : 'OP_RETURN data not found';
+//   }
+//
+//   get rskFederationAddress():string {
+//     return this.pegInTxState.normalizedTx.outputs[1]?.address?.trim() ?? `${this.environmentContext.getBtcText()} Powpeg address not found`;
+//   }
+//
+//   get changeAddress(): string {
+//     const [, , change] = this.pegInTxState.normalizedTx.outputs;
+//     if (change && change.address) {
+//       return change.address;
+//     }
+//     return 'Change address not found';
+//   }
+//
+//   get changeAmount(): string {
+//     const changeAmount = new SatoshiBig(this.pegInTxState.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
+//     return changeAmount.toBTCTrimmedString();
+//   }
+//
+//   get computedFullAmount(): string {
+//     const changeAmount = new SatoshiBig(this.pegInTxState.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
+//     return this.pegInTxState.amountToTransfer.plus(this.safeFee)
+//       .plus(changeAmount)
+//       .toBTCTrimmedString();
+//   }
+//
+//   get confirmTrezorTxSummary(): NormalizedSummary {
+//     return {
+//       amountFromString: this.pegInTxState.amountToTransfer.toBTCTrimmedString(),
+//       amountReceivedString: this.pegInTxState.amountToTransfer.toBTCTrimmedString(),
+//       fee: Number(this.safeFee.toBTCTrimmedString()),
+//       recipientAddress: this.pegInTxState.rskAddressSelected,
+//       refundAddress: this.refundAddress,
+//       selectedAccount: this.accountBalanceText,
+//       federationAddress: this.pegInTxState.peginConfiguration.federationAddress,
+//     };
+//   }
+//
+//   async created() {
+//     this.rawTx = await this.txBuilder.getUnsignedRawTx(this.pegInTxState.normalizedTx);
+//   }
+// }
 </script>

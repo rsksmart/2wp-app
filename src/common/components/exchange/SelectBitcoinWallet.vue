@@ -50,71 +50,131 @@
 </template>
 
 <script lang="ts">
-import {
-  Vue, Component, Emit,
-} from 'vue-facing-decorator';
-import { Action, State } from 'vuex-class';
 import * as constants from '@/common/store/constants';
-import { BtcWallet, PegInTxState } from '@/common/types/pegInTx';
+import { BtcWallet } from '@/common/types/pegInTx';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
+import { ref } from 'vue';
+import { useAction, useStateAttribute } from '@/common/store/helper';
+import { useRouter } from 'vue-router';
 
-@Component
-export default class SelectBitcoinWallet extends Vue {
-  selectedWallet = '';
+export default {
+  name: 'SelectBitcoinWallet',
+  setup() {
+    const selectedWallet = ref('');
+    const showBack = ref(true);
+    const router = useRouter();
+    const storeConstants = constants;
+    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
-  storeConstants = constants;
+    const { bitcoinWallet } = useStateAttribute('pegInTx', ['bitcoinWallet']);
+    const addBitcoinWallet = useAction('pegInTx', constants.PEGIN_TX_ADD_BITCOIN_WALLET);
 
-  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-
-  @State('pegInTx') peginTxState!: PegInTxState;
-
-  @Action(constants.PEGIN_TX_ADD_BITCOIN_WALLET, { namespace: 'pegInTx' }) addBitcoinWallet !: (wallet: BtcWallet) => void;
-
-  // eslint-disable-next-line class-methods-use-this
-  get showBack() {
-    return true;
-  }
-
-  @Emit()
-  reset(): void {
-    this.selectedWallet = '';
-  }
-
-  @Emit()
-  setBitcoinWallet(wallet: BtcWallet): void {
-    this.addBitcoinWallet(wallet);
-    this.toSendBitcoin();
-  }
-
-  @Emit()
-  back():void {
-    this.reset();
-    this.$router.push({ name: 'Home' });
-  }
-
-  @Emit()
-  toSendBitcoin(): void {
-    let wallet: string;
-    const TYPES_WALLETS = { WALLET_TREZOR: 'WALLET_TREZOR', WALLET_LEDGER: 'WALLET_LEDGER', WALLET_LIQUALITY: 'WALLET_LIQUALITY' };
-    switch (this.peginTxState.bitcoinWallet) {
-      case TYPES_WALLETS.WALLET_TREZOR:
-        wallet = 'trezor';
-        break;
-      case TYPES_WALLETS.WALLET_LEDGER:
-        wallet = 'ledger';
-        break;
-      case TYPES_WALLETS.WALLET_LIQUALITY:
-        wallet = 'liquality';
-        break;
-      default:
-        wallet = '';
-        break;
+    function reset(): void {
+      selectedWallet.value = '';
     }
-    if (wallet) {
-      this.$router.push({ name: 'Create', params: { wallet } });
-    } else {
-      this.$router.push({ name: 'Home' });
+
+    function back():void {
+      reset();
+      router.push({ name: 'Home' });
     }
+
+    function toSendBitcoin(): void {
+      let wallet: string;
+      const TYPES_WALLETS = { WALLET_TREZOR: 'WALLET_TREZOR', WALLET_LEDGER: 'WALLET_LEDGER', WALLET_LIQUALITY: 'WALLET_LIQUALITY' };
+      switch (bitcoinWallet) {
+        case TYPES_WALLETS.WALLET_TREZOR:
+          wallet = 'trezor';
+          break;
+        case TYPES_WALLETS.WALLET_LEDGER:
+          wallet = 'ledger';
+          break;
+        case TYPES_WALLETS.WALLET_LIQUALITY:
+          wallet = 'liquality';
+          break;
+        default:
+          wallet = '';
+          break;
+      }
+      if (wallet) {
+        router.push({ name: 'Create', params: { wallet } });
+      } else {
+        router.push({ name: 'Home' });
+      }
+    }
+
+    function setBitcoinWallet(wallet: BtcWallet): void {
+      addBitcoinWallet(wallet);
+      toSendBitcoin();
+    }
+
+    return {
+      selectedWallet,
+      storeConstants,
+      environmentContext,
+      showBack,
+      back,
+      setBitcoinWallet,
+    };
   }
 }
+
+// @Component
+// class SelectBitcoinWallet extends Vue {
+//   selectedWallet = '';
+//
+//   storeConstants = constants;
+//
+//   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+//
+//   @State('pegInTx') peginTxState!: PegInTxState;
+//
+//   @Action(constants.PEGIN_TX_ADD_BITCOIN_WALLET, { namespace: 'pegInTx' }) addBitcoinWallet !: (wallet: BtcWallet) => void;
+//
+//   // eslint-disable-next-line class-methods-use-this
+//   get showBack() {
+//     return true;
+//   }
+//
+//   @Emit()
+//   reset(): void {
+//     this.selectedWallet = '';
+//   }
+//
+//   @Emit()
+//   setBitcoinWallet(wallet: BtcWallet): void {
+//     this.addBitcoinWallet(wallet);
+//     this.toSendBitcoin();
+//   }
+//
+//   @Emit()
+//   back():void {
+//     this.reset();
+//     this.$router.push({ name: 'Home' });
+//   }
+//
+//   @Emit()
+//   toSendBitcoin(): void {
+//     let wallet: string;
+//     const TYPES_WALLETS = { WALLET_TREZOR: 'WALLET_TREZOR', WALLET_LEDGER: 'WALLET_LEDGER', WALLET_LIQUALITY: 'WALLET_LIQUALITY' };
+//     switch (this.peginTxState.bitcoinWallet) {
+//       case TYPES_WALLETS.WALLET_TREZOR:
+//         wallet = 'trezor';
+//         break;
+//       case TYPES_WALLETS.WALLET_LEDGER:
+//         wallet = 'ledger';
+//         break;
+//       case TYPES_WALLETS.WALLET_LIQUALITY:
+//         wallet = 'liquality';
+//         break;
+//       default:
+//         wallet = '';
+//         break;
+//     }
+//     if (wallet) {
+//       this.$router.push({ name: 'Create', params: { wallet } });
+//     } else {
+//       this.$router.push({ name: 'Home' });
+//     }
+//   }
+// }
 </script>

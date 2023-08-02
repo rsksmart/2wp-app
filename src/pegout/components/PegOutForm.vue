@@ -45,7 +45,7 @@
                 <v-col v-else cols="5" class="pb-0 px-0">
                   <v-row class="derive-button mx-0 d-flex justify-center">
                     <v-btn :disabled="!isReadyToSign ||
-                      injectedProvider == appConstants.RLOGIN_LIQUALITY_WALLET"
+                      injectedProvider === appConstants.RLOGIN_LIQUALITY_WALLET"
                       outlined rounded id="derivation-addr-btn"
                       width="100%" height="38"
                       @click="openAddressDialog" >
@@ -56,7 +56,7 @@
                   </v-row>
                 </v-col>
                 <v-container v-if="injectedProvider
-                                  && injectedProvider != appConstants.RLOGIN_METAMASK_WALLET"
+                                  && injectedProvider !== appConstants.RLOGIN_METAMASK_WALLET"
                   class="pl-0">
                   <span class="blackish" style="font-size: 14px;">
                     As you are not using MetaMask, you need to follow
@@ -113,7 +113,6 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Emit } from 'vue-facing-decorator';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import RbtcInputAmount from '@/pegout/components/RbtcInputAmount.vue';
 import RskWalletConnection from '@/pegout/components/RskWalletConnection.vue';
@@ -121,15 +120,18 @@ import AddressDialog from '@/pegout/components/AddressDialog.vue';
 import { TxStatusType } from '@/common/types/store';
 import { Machine } from '@/common/utils';
 import { TxSummaryOrientation } from '@/common/types/Status';
-import { Action, Getter, State } from 'vuex-class';
 import * as constants from '@/common/store/constants';
 import TxErrorDialog from '@/common/components/exchange/TxErrorDialog.vue';
 import {
   NormalizedSummary, PegOutTxState, SatoshiBig, SessionState, WeiBig,
 } from '@/common/types';
 import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
+import { computed, ref } from 'vue';
+import { useAction, useGetter, useState } from '@/common/store/helper';
+import { useRouter } from 'vue-router';
 
-@Component({
+export default {
+  name: 'PegOutForm',
   components: {
     AddressDialog,
     RbtcInputAmount,
@@ -137,111 +139,226 @@ import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
     TxSummaryFixed,
     TxErrorDialog,
   },
-})
-export default class PegOutForm extends Vue {
-  pegOutFormState: Machine<'loading' | 'goingHome' | 'fill'> = new Machine('fill');
+  setup(_, context) {
+    const pegOutFormState = ref<Machine<'loading' | 'goingHome' | 'fill'>>(new Machine('fill'));
+    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+    const injectedProvider = ref('');
+    const appConstants = constants;
+    const showAddressDialog = ref(false);
+    const focus = ref(false);
+    const nextPage = 'Confirmation';
+    const typeSummary = TxStatusType.PEGOUT;
+    const orientationSummary = TxSummaryOrientation.VERTICAL;
+    const showTxErrorDialog = ref(false);
+    const txError = ref('');
+    const isReadyToSign = ref(false);
 
-  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+    const session = useState<SessionState>('web3Session');
+    const pegOutTxState = useState<PegOutTxState>('pegOutTx');
+    const sendTx = useAction('pegOutTx', constants.PEGOUT_TX_SEND);
+    const isEnoughBalance = useGetter<boolean>('pegOutTx', constants.PEGOUT_TX_IS_ENOUGH_BALANCE);
+    const safeFee = useGetter<WeiBig>('pegOutTx', constants.PEGOUT_TX_GET_SAFE_TX_FEE);
+    const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
+    const isLedgerConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_LEDGER_CONNECTED);
 
-  injectedProvider = '';
+    const isReadyToCreate = computed((): boolean => {
+      return isEnoughBalance.value
+        && !!session.value.account;
+    });
 
-  appConstants = constants;
+    const pegOutFormSummary = computed((): NormalizedSummary => {
+      return {
+        amountFromString: pegOutTxState.value.amountToTransfer.toRBTCTrimmedString(),
+        amountReceivedString: estimatedBtcToReceive.value.toBTCTrimmedString(),
+        fee: Number(pegOutTxState.value.btcEstimatedFee.toBTCTrimmedString()),
+        recipientAddress: session.value.btcDerivedAddress,
+        senderAddress: session.value.account,
+        gas: Number(safeFee.value.toRBTCTrimmedString()),
+      };
+    });
 
-  recipientAddress = '';
+    function closeAddressDialog() {
+      showAddressDialog.value = false;
+    }
 
-  showAddressDialog = false;
+    function back():void {
+      const router = useRouter();
+      router.push({ name: 'Home' });
+    }
 
-  focus = false;
+    function openAddressDialog() {
+      showAddressDialog.value = true;
+    }
 
-  nextPage = 'Confirmation';
+    function switchDeriveButton(): void {
+      // @ts-ignore
+      injectedProvider.value = session.value.rLoginInstance?.providerController.injectedProvider.name;
+      isReadyToSign.value = !isReadyToSign.value;
+    }
 
-  typeSummary = TxStatusType.PEGOUT;
+    function send() {
+      pegOutFormState.value.send('loading');
+      sendTx()
+        .then(() => {
+          changePage();
+        })
+        .catch((error:Error) => {
+          txError.value = error.message;
+          showTxErrorDialog.value = true;
+        })
+        .finally(() => {
+          pegOutFormState.value.send('fill');
+        });
+    }
 
-  orientationSummary = TxSummaryOrientation.VERTICAL;
+    function closeTxErrorDialog() {
+      showTxErrorDialog.value = false;
+    }
 
-  showTxErrorDialog = false;
+    function changePage() {
+      context.emit('', nextPage);
+    }
 
-  txError = '';
-
-  isReadyToSign = false;
-
-  @State('web3Session') session !: SessionState;
-
-  @State('pegOutTx') pegOutTxState !: PegOutTxState;
-
-  @Action(constants.PEGOUT_TX_SEND, { namespace: 'pegOutTx' }) sendTx !: () => Promise<void>;
-
-  @Getter(constants.PEGOUT_TX_IS_ENOUGH_BALANCE, { namespace: 'pegOutTx' }) isEnoughBalance !: boolean;
-
-  @Getter(constants.PEGOUT_TX_GET_SAFE_TX_FEE, { namespace: 'pegOutTx' }) safeFee !: WeiBig;
-
-  @Getter(constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE, { namespace: 'pegOutTx' }) estimatedBtcToReceive !: SatoshiBig;
-
-  @Getter(constants.SESSION_IS_LEDGER_CONNECTED, { namespace: 'web3Session' }) isLedgerConnected !: boolean;
-
-  @Emit()
-  closeAddressDialog() {
-    this.showAddressDialog = false;
-  }
-
-  @Emit()
-  back():void {
-    this.$router.push({ name: 'Home' });
-  }
-
-  @Emit()
-  openAddressDialog() {
-    this.showAddressDialog = true;
-  }
-
-  switchDeriveButton(): void {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    this.injectedProvider = this.session.rLoginInstance?.providerController.injectedProvider.name;
-    //
-    this.isReadyToSign = !this.isReadyToSign;
-  }
-
-  @Emit()
-  send() {
-    this.pegOutFormState.send('loading');
-    this.sendTx()
-      .then(() => {
-        this.changePage();
-      })
-      .catch((error:Error) => {
-        this.txError = error.message;
-        this.showTxErrorDialog = true;
-      })
-      .finally(() => {
-        this.pegOutFormState.send('fill');
-      });
-  }
-
-  get isReadyToCreate(): boolean {
-    return this.isEnoughBalance
-      && !!this.session.account;
-  }
-
-  get pegOutFormSummary(): NormalizedSummary {
     return {
-      amountFromString: this.pegOutTxState.amountToTransfer.toRBTCTrimmedString(),
-      amountReceivedString: this.estimatedBtcToReceive.toBTCTrimmedString(),
-      fee: Number(this.pegOutTxState.btcEstimatedFee.toBTCTrimmedString()),
-      recipientAddress: this.session.btcDerivedAddress,
-      senderAddress: this.session.account,
-      gas: Number(this.safeFee.toRBTCTrimmedString()),
+      environmentContext,
+      switchDeriveButton,
+      isReadyToSign,
+      session,
+      injectedProvider,
+      appConstants,
+      openAddressDialog,
+      pegOutFormSummary,
+      typeSummary,
+      orientationSummary,
+      showAddressDialog,
+      closeAddressDialog,
+      back,
+      pegOutFormState,
+      send,
+      isReadyToCreate,
+      isLedgerConnected,
+      showTxErrorDialog,
+      txError,
+      closeTxErrorDialog,
+      focus,
     };
   }
-
-  @Emit()
-  closeTxErrorDialog() {
-    this.showTxErrorDialog = false;
-  }
-
-  @Emit('changePage')
-  changePage() {
-    return this.nextPage;
-  }
 }
+
+
+// @Component({
+//   components: {
+//     AddressDialog,
+//     RbtcInputAmount,
+//     RskWalletConnection,
+//     TxSummaryFixed,
+//     TxErrorDialog,
+//   },
+// })
+// class PegOutForm extends Vue {
+//   pegOutFormState: Machine<'loading' | 'goingHome' | 'fill'> = new Machine('fill');
+//
+//   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+//
+//   injectedProvider = '';
+//
+//   appConstants = constants;
+//
+//   recipientAddress = '';
+//
+//   showAddressDialog = false;
+//
+//   focus = false;
+//
+//   nextPage = 'Confirmation';
+//
+//   typeSummary = TxStatusType.PEGOUT;
+//
+//   orientationSummary = TxSummaryOrientation.VERTICAL;
+//
+//   showTxErrorDialog = false;
+//
+//   txError = '';
+//
+//   isReadyToSign = false;
+//
+//   @State('web3Session') session !: SessionState;
+//
+//   @State('pegOutTx') pegOutTxState !: PegOutTxState;
+//
+//   @Action(constants.PEGOUT_TX_SEND, { namespace: 'pegOutTx' }) sendTx !: () => Promise<void>;
+//
+//   @Getter(constants.PEGOUT_TX_IS_ENOUGH_BALANCE, { namespace: 'pegOutTx' }) isEnoughBalance !: boolean;
+//
+//   @Getter(constants.PEGOUT_TX_GET_SAFE_TX_FEE, { namespace: 'pegOutTx' }) safeFee !: WeiBig;
+//
+//   @Getter(constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE, { namespace: 'pegOutTx' }) estimatedBtcToReceive !: SatoshiBig;
+//
+//   @Getter(constants.SESSION_IS_LEDGER_CONNECTED, { namespace: 'web3Session' }) isLedgerConnected !: boolean;
+//
+//   @Emit()
+//   closeAddressDialog() {
+//     this.showAddressDialog = false;
+//   }
+//
+//   @Emit()
+//   back():void {
+//     this.$router.push({ name: 'Home' });
+//   }
+//
+//   @Emit()
+//   openAddressDialog() {
+//     this.showAddressDialog = true;
+//   }
+//
+//   switchDeriveButton(): void {
+//     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//     // @ts-ignore
+//     this.injectedProvider = this.session.rLoginInstance?.providerController.injectedProvider.name;
+//     //
+//     this.isReadyToSign = !this.isReadyToSign;
+//   }
+//
+//   @Emit()
+//   send() {
+//     this.pegOutFormState.send('loading');
+//     this.sendTx()
+//       .then(() => {
+//         this.changePage();
+//       })
+//       .catch((error:Error) => {
+//         this.txError = error.message;
+//         this.showTxErrorDialog = true;
+//       })
+//       .finally(() => {
+//         this.pegOutFormState.send('fill');
+//       });
+//   }
+//
+//   get isReadyToCreate(): boolean {
+//     return this.isEnoughBalance
+//       && !!this.session.account;
+//   }
+//
+//   get pegOutFormSummary(): NormalizedSummary {
+//     return {
+//       amountFromString: this.pegOutTxState.amountToTransfer.toRBTCTrimmedString(),
+//       amountReceivedString: this.estimatedBtcToReceive.toBTCTrimmedString(),
+//       fee: Number(this.pegOutTxState.btcEstimatedFee.toBTCTrimmedString()),
+//       recipientAddress: this.session.btcDerivedAddress,
+//       senderAddress: this.session.account,
+//       gas: Number(this.safeFee.toRBTCTrimmedString()),
+//     };
+//   }
+//
+//   @Emit()
+//   closeTxErrorDialog() {
+//     this.showTxErrorDialog = false;
+//   }
+//
+//   @Emit('changePage')
+//   changePage() {
+//     return this.nextPage;
+//   }
+// }
 </script>

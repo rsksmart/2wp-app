@@ -9,26 +9,50 @@
 </template>
 
 <script lang="ts">
-import { Component, Emit, Vue } from 'vue-facing-decorator';
 import SelectBitcoinWallet from '@/common/components/exchange/SelectBitcoinWallet.vue';
 import BtcToRbtcDialog from '@/common/components/exchange/BtcToRbtcDialog.vue';
+import { onBeforeMount, ref } from 'vue';
 
-@Component({
+export default {
+  name: 'PegIn',
   components: {
     SelectBitcoinWallet,
     BtcToRbtcDialog,
   },
-})
-export default class PegIn extends Vue {
-  showDialog = false;
+  setup() {
+    const showDialog = ref(false);
 
-  @Emit()
-  closeDialog() {
-    this.showDialog = false;
-  }
+    function closeDialog() {
+      showDialog.value = false;
+    }
 
-  beforeMount() {
-    this.showDialog = localStorage.getItem('BTRD_COOKIE_DISABLED') !== 'true';
+    onBeforeMount(() => {
+      showDialog.value = localStorage.getItem('BTRD_COOKIE_DISABLED') !== 'true';
+    });
+
+    return {
+      showDialog,
+      closeDialog,
+    };
   }
 }
+//
+// @Component({
+//   components: {
+//     SelectBitcoinWallet,
+//     BtcToRbtcDialog,
+//   },
+// })
+// class PegIn extends Vue {
+//   showDialog = false;
+//
+//   @Emit()
+//   closeDialog() {
+//     this.showDialog = false;
+//   }
+//
+//   beforeMount() {
+//     this.showDialog = localStorage.getItem('BTRD_COOKIE_DISABLED') !== 'true';
+//   }
+// }
 </script>

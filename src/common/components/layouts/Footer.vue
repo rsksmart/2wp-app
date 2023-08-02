@@ -24,7 +24,7 @@
                 Terms & Conditions
               </a>
               <a :href="urlApi" target="_blank">Api Version: {{apiVersion}}</a>
-              <a :href="url" target="_blank">App Version: {{$store.getters.appVersion}}</a>
+              <a :href="url" target="_blank">App Version: {{appVersion}}</a>
               <a v-if="false">Documentation</a>
             </v-row>
           </v-col>
@@ -47,29 +47,55 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-facing-decorator';
 import { ApiInformation } from '@/common/types/ApiInformation';
 import { ApiService } from '@/common/services';
+import { computed, ref } from 'vue';
+import { useStore } from 'vuex';
+import { RootState } from '@/common/types';
 
-@Component
-export default class FooterRsk extends Vue {
-  apiVersion = '0';
+export default {
+  name: 'FooterRsk',
+  setup() {
+    const apiVersion = ref('0');
+    const store = useStore<RootState>();
+    const appVersion = computed<String>(() => store.getters['appVersion']);
 
-  url = `https://github.com/rsksmart/2wp-app/releases/tag/v${this.$store.getters.appVersion}`;
+    const url = computed(() => `https://github.com/rsksmart/2wp-app/releases/tag/v${appVersion.value}`);
+    const urlApi = computed(() => `https://github.com/rsksmart/2wp-api/releases/tag/v${apiVersion.value}`);
 
-  urlApi = `https://github.com/rsksmart/2wp-api/releases/tag/v${this.apiVersion}`;
-
-  obtainApiVersion() {
     ApiService.getApiInformation()
       .then((res: ApiInformation) => {
-        this.apiVersion = res.version;
-        this.urlApi = `https://github.com/rsksmart/2wp-api/releases/tag/v${this.apiVersion}`;
+        apiVersion.value = res.version;
       });
-    return this.apiVersion;
-  }
 
-  created() {
-    this.obtainApiVersion();
+    return {
+      urlApi,
+      url,
+      appVersion,
+      apiVersion,
+    };
   }
 }
+
+// @Component
+// class FooterRsk extends Vue {
+//   apiVersion = '0';
+//
+//   url = `https://github.com/rsksmart/2wp-app/releases/tag/v${this.$store.getters.appVersion}`;
+//
+//   urlApi = `https://github.com/rsksmart/2wp-api/releases/tag/v${this.apiVersion}`;
+//
+//   obtainApiVersion() {
+//     ApiService.getApiInformation()
+//       .then((res: ApiInformation) => {
+//         this.apiVersion = res.version;
+//         this.urlApi = `https://github.com/rsksmart/2wp-api/releases/tag/v${this.apiVersion}`;
+//       });
+//     return this.apiVersion;
+//   }
+//
+//   created() {
+//     this.obtainApiVersion();
+//   }
+// }
 </script>

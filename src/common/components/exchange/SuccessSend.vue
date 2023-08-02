@@ -26,14 +26,21 @@
 </template>
 
 <script lang="ts">
-import {
-  Component,
-  Vue,
-} from 'vue-facing-decorator';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 
-@Component
-export default class SuccessSend extends Vue {
-  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+export default {
+  name: 'SuccessSend',
+  setup() {
+    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+
+    return {
+      environmentContext,
+    };
+  }
 }
+
+// @Component
+// class SuccessSend extends Vue {
+//   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+// }
 </script>

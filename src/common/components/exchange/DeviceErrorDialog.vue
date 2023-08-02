@@ -43,38 +43,65 @@
 </template>
 
 <script lang="ts">
-import {
-  Component, Prop, Emit, Vue,
-} from 'vue-facing-decorator';
 import WarningIcon from '@/assets/warning.png';
 
-@Component
-export default class DeviceErrorDialog extends Vue {
-  @Prop() showErrorDialog!: boolean;
+export default {
+  name: 'DeviceErrorDialog',
+  props: {
+    showErrorDialog: Boolean,
+    errorMessage: String,
+    errorType: String,
+    urlToMoreInformation: String,
+    messageToUserOnLink: String,
+    installationLink: String,
+    messageInstallationToUser: String,
+  },
+  setup(props, context) {
+    const warningIconPath = WarningIcon;
 
-  @Prop() errorMessage!: string;
+    function toExchange() {
+      window.location.href = '/';
+    }
 
-  @Prop() errorType!: string;
+    function closeErrorDialog() {
+      context.emit('closeErrorDialog', props.showErrorDialog);
+    }
 
-  @Prop() urlToMoreInformation!: string;
-
-  @Prop() messageToUserOnLink!: string;
-
-  @Prop() installationLink!: string;
-
-  @Prop() messageInstallationToUser!: string;
-
-  warningIconPath = WarningIcon;
-
-  @Emit()
-  // eslint-disable-next-line class-methods-use-this
-  toExchange() {
-    window.location.href = '/';
-  }
-
-  @Emit('closeErrorDialog')
-  closeErrorDialog() {
-    return this.showErrorDialog;
+    return {
+      warningIconPath,
+      toExchange,
+      closeErrorDialog,
+    };
   }
 }
+
+// @Component
+// class DeviceErrorDialog extends Vue {
+//   @Prop() showErrorDialog!: boolean;
+//
+//   @Prop() errorMessage!: string;
+//
+//   @Prop() errorType!: string;
+//
+//   @Prop() urlToMoreInformation!: string;
+//
+//   @Prop() messageToUserOnLink!: string;
+//
+//   @Prop() installationLink!: string;
+//
+//   @Prop() messageInstallationToUser!: string;
+//
+//   warningIconPath = WarningIcon;
+//
+//   @Emit()
+//   // eslint-disable-next-line class-methods-use-this
+//   toExchange() {
+//     window.location.href = '/';
+//   }
+//
+//   @Emit('closeErrorDialog')
+//   closeErrorDialog() {
+//     return this.showErrorDialog;
+//   }
+// }
 </script>
