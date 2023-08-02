@@ -5,12 +5,13 @@
       <top/>
       <v-row class="d-flex justify-center">
         <router-view/>
+        this is the app
       </v-row>
       <footer-rsk/>
     </div>
   </v-app>
 </template>
-<script setup lang="ts">
+<script lang="ts">
 import { computed } from 'vue';
 import Top from '@/common/components/layouts/Top.vue';
 import FooterRsk from '@/common/components/layouts/Footer.vue';
@@ -21,11 +22,17 @@ import { vuetifyNonce } from '@/common/plugins/vuetify';
 import { useAction, useStateAttribute } from '@/common/store/helper';
 
 export default {
+  name: 'App',
+  components: {
+    Top,
+    FooterRsk,
+    Mobile,
+  },
   setup() {
     let scriptTag: HTMLScriptElement;
 
-    const { bitcoinPrice } = useStateAttribute('web3Session', ['bitcoinPrice'] );
-    const getBtcPrice = useAction('web3Session', constants.SESSION_ADD_BITCOIN_PRICE);
+    // const { bitcoinPrice } = useStateAttribute('web3Session', 'bitcoinPrice' );
+    // const getBtcPrice = useAction('web3Session', constants.SESSION_ADD_BITCOIN_PRICE);
 
     const contentSecurityPolicy = computed((): string => {
       const envVariables = EnvironmentAccessorService.getEnvironmentVariables();
@@ -33,7 +40,7 @@ export default {
       response = `
       style-src 'self' 'unsafe-inline' ;
       script-src 'self' 'nonce-${vuetifyNonce}' 'unsafe-eval';
-      img-src data: https:;
+      img-src data: http:;
       connect-src 'self' ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://api.coingecko.com ;
       object-src 'none';
       frame-src https://connect.trezor.io;
@@ -64,7 +71,7 @@ export default {
       document.body.appendChild(scriptTag);
     }
 
-    getBtcPrice();
+    // getBtcPrice();
     appendHotjar();
     appendCSP();
 
@@ -72,3 +79,6 @@ export default {
   },
 }
 </script>
+<style>
+@import "@/common/styles/_site.scss";
+</style>
