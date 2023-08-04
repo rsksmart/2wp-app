@@ -7,7 +7,6 @@ import { RootState } from '@/common/types';
 // import { pegOutTx } from '@/pegout/store/pegoutTx';
 import { version } from '../../../package.json';
 
-
 const store: StoreOptions<RootState> = {
   state: {
     version: version || '0',

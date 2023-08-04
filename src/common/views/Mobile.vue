@@ -2,7 +2,7 @@
   <v-container v-if="smAndDown" class="mobile" fluid>
     <v-row class="mobile-content mx-0">
       <v-col class="py-0">
-        <v-img position="center center" :src="logo"
+        <v-img position="center center" :src="require('@/assets/logo-rootstock-black.png')"
                v-bind:height="sm ? 175 : 105" contain/>
       </v-col>
       <v-col cols="12" class="text-center d-flex flex-column align-center py-0">
@@ -20,21 +20,20 @@
 </template>
 
 <script lang="ts">
-import logo from '@/assets/logo-rootstock-black.png';
-import { useDisplay } from "vuetify";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { useDisplay } from 'vuetify';
 
 export default {
-  name: 'Mobile',
-  setup(){
-    const { sm, smAndDown } = useDisplay()
+  name: 'MobileView',
+  setup() {
+    const { sm, smAndDown } = useDisplay();
 
     return {
-      logo,
       sm,
       smAndDown,
     };
-  }
-}
+  },
+};
 
 // @Component({
 //   components: {},

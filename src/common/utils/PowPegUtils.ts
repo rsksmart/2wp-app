@@ -1,11 +1,13 @@
+import * as bitcoin from 'bitcoinjs-lib';
 import { NormalizedInput, NormalizedOutput } from '@/common/types';
 import { isValidOpReturnOutput } from '@/common/utils/OpReturnUtils';
-import * as bitcoin from 'bitcoinjs-lib';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import * as constants from '@/common/store/constants';
 
 export function isValidPowPegOutput(
-  output: NormalizedOutput, powPegAddress: string, amountToTransfer: string,
+  output: NormalizedOutput,
+  powPegAddress: string,
+  amountToTransfer: string,
 ): boolean {
   return !!(
     output.address
@@ -20,9 +22,12 @@ export function isValidChangeOutput(output: NormalizedOutput, changeAddress: str
 }
 
 export function areValidOutputs(
-  outputs: NormalizedOutput[], powPegAddress: string,
-  amountToTransfer: string, changeAddress: string,
-  destinationRskAddress: string, refundBtcAddress: string,
+  outputs: NormalizedOutput[],
+  powPegAddress: string,
+  amountToTransfer: string,
+  changeAddress: string,
+  destinationRskAddress: string,
+  refundBtcAddress: string,
 ): { valid: boolean; reason: string } {
   const response = {
     valid: false,

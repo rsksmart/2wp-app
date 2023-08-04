@@ -17,9 +17,9 @@ import Top from '@/common/components/layouts/Top.vue';
 import FooterRsk from '@/common/components/layouts/Footer.vue';
 import Mobile from '@/common/views/Mobile.vue';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
-import * as constants from '@/common/store/constants';
+// import * as constants from '@/common/store/constants';
 import { vuetifyNonce } from '@/common/plugins/vuetify';
-import { useAction, useStateAttribute } from '@/common/store/helper';
+// import { useAction, useStateAttribute } from '@/common/store/helper';
 
 export default {
   name: 'App',
@@ -38,9 +38,10 @@ export default {
       const envVariables = EnvironmentAccessorService.getEnvironmentVariables();
       let response = '';
       response = `
-      style-src 'self' 'unsafe-inline' ;
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
       script-src 'self' 'nonce-${vuetifyNonce}' 'unsafe-eval';
-      img-src data: http:;
+      script-src-elem 'self' 'unsafe-inline' https://script.hotjar.com https://static.hotjar.com;
+      img-src data: https:;
       connect-src 'self' ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://api.coingecko.com ;
       object-src 'none';
       frame-src https://connect.trezor.io;
@@ -77,8 +78,5 @@ export default {
 
     return {};
   },
-}
+};
 </script>
-<style>
-@import "@/common/styles/_site.scss";
-</style>

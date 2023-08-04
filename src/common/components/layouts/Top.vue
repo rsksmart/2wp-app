@@ -3,11 +3,11 @@
     <v-row justify="center">
       <v-col cols="11" class="d-flex flex-column align-start px-0">
         <v-col cols="auto" class="top-logo">
-          <v-col cols="auto" class="px-0 pb-1">
+          <v-col cols="auto" class="pa-0">
             <v-img @click="toExchange" position="center left"
-                   :src="logo"
+                   :src="require('@/assets/logo-rootstock-black.png')"
                    :alt="`${environmentContext.getRskText()} Two Way Peg`"
-                   height="65" width="180" contain class="rsk-main-logo"/>
+                   height="75" width="180" contain class="rsk-main-logo pa-0"/>
           </v-col>
         </v-col>
       </v-col>
@@ -16,25 +16,23 @@
 </template>
 
 <script lang="ts">
+import { useRoute, useRouter } from 'vue-router';
+import { computed } from 'vue';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import * as constants from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { getMainLogo } from '@/common/utils';
-import { useRoute, useRouter } from 'vue-router';
-import { computed } from 'vue';
 
 export default {
-  name: 'Top',
+  name: 'TopBar',
   setup() {
     const router = useRouter();
     const route = useRoute();
     const environmentVariables = EnvironmentAccessorService.getEnvironmentVariables();
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-    const logo = getMainLogo();
 
-    const isTestNet = computed(() => {
-      return environmentVariables.vueAppCoin === constants.BTC_NETWORK_TESTNET;
-    });
+    const isTestNet = computed(
+      () => environmentVariables.vueAppCoin === constants.BTC_NETWORK_TESTNET,
+    );
 
     function toExchange() {
       if (route.name !== 'Home') router.push({ name: 'Home' });
@@ -45,10 +43,9 @@ export default {
       environmentContext,
       isTestNet,
       toExchange,
-      logo,
     };
-  }
-}
+  },
+};
 
 // @Component
 // class Top extends Vue {

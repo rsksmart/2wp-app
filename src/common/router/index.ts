@@ -1,17 +1,17 @@
-import {createRouter, createWebHistory, RouteRecordRaw} from "vue-router";
-import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
+// import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 // import Home from '@/common/views/Home.vue';
 import Test from '@/common/views/Test.vue';
-import * as constants from '@/common/store/constants';
+// import store from '@/common/store';
+// import * as constants from '@/common/store/constants';
 // import {useStore} from "vuex";
-
 
 const routes: Readonly<RouteRecordRaw[]> = [
   {
     path: '/',
     name: 'Test',
     component: Test,
-  }
+  },
   // {
   //   path: '/',
   //   name: 'Home',
@@ -20,6 +20,7 @@ const routes: Readonly<RouteRecordRaw[]> = [
   // {
   //   path: '/status/txId/:txId',
   //   name: 'Status',
+  // eslint-disable-next-line max-len
   //   component: () => import(/* webpackChunkName: "transactions" */ '../../status/views/Status.vue'),
   //   props: (route) => ({ txIdProp: route.params.txId }),
   // },
@@ -31,6 +32,7 @@ const routes: Readonly<RouteRecordRaw[]> = [
   // {
   //   path: '/pegin',
   //   name: 'PegIn',
+  // eslint-disable-next-line max-len
   //   component: () => import(/* webpackChunkName: "transactions" */ '../../pegin/views/PegIn.vue'),
   // },
   // {
@@ -41,11 +43,13 @@ const routes: Readonly<RouteRecordRaw[]> = [
   // {
   //   path: '/pegin/:wallet/create',
   //   name: 'Create',
+  // eslint-disable-next-line max-len
   //   component: () => import(/* webpackChunkName: "pegin-create" */ '../../pegin/views/Create.vue'),
   // },
   // {
   //   path: '/pegin/success/:txId',
   //   name: 'Success',
+  // eslint-disable-next-line max-len
   //   component: () => import(/* webpackChunkName: "transactions" */ '../../pegin/views/Success.vue'),
   // },
 ];

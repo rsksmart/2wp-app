@@ -54,6 +54,7 @@ export class BridgeService {
           const amount = Number(
             this.web3.utils.toWei(
               this.web3.utils.toBN(this.totalRbtcStock),
+              'wei',
             ),
           ) - Number(balance);
           resolve(amount);

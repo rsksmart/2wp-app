@@ -40,8 +40,11 @@ export default class EnvironmentContextImpl implements EnvironmentContext {
   // eslint-disable-next-line class-methods-use-this
   getAddressRegexPattern(): AddressRegexPattern {
     return {
+      // eslint-disable-next-line prefer-regex-literals
       legacy: new RegExp('^[1][1-9A-HJ-NP-Za-km-z]{26,35}'),
+      // eslint-disable-next-line prefer-regex-literals
       segwit: new RegExp('^[3][1-9A-HJ-NP-Za-km-z]{26,35}'),
+      // eslint-disable-next-line prefer-regex-literals
       nativeSegwit: new RegExp('^[bc1][0-9A-HJ-NP-Za-z]{41,62}'),
     };
   }
