@@ -17,9 +17,9 @@ import Top from '@/common/components/layouts/Top.vue';
 import FooterRsk from '@/common/components/layouts/Footer.vue';
 import Mobile from '@/common/views/Mobile.vue';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
-// import * as constants from '@/common/store/constants';
+import * as constants from '@/common/store/constants';
 import { vuetifyNonce } from '@/common/plugins/vuetify';
-// import { useAction, useStateAttribute } from '@/common/store/helper';
+import { useAction } from '@/common/store/helper';
 
 export default {
   name: 'App',
@@ -30,9 +30,7 @@ export default {
   },
   setup() {
     let scriptTag: HTMLScriptElement;
-
-    // const { bitcoinPrice } = useStateAttribute('web3Session', 'bitcoinPrice' );
-    // const getBtcPrice = useAction('web3Session', constants.SESSION_ADD_BITCOIN_PRICE);
+    const getBtcPrice = useAction('web3Session', constants.SESSION_ADD_BITCOIN_PRICE);
 
     const contentSecurityPolicy = computed((): string => {
       const envVariables = EnvironmentAccessorService.getEnvironmentVariables();
@@ -72,7 +70,7 @@ export default {
       document.body.appendChild(scriptTag);
     }
 
-    // getBtcPrice();
+    getBtcPrice();
     appendHotjar();
     appendCSP();
 

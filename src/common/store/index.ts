@@ -1,7 +1,7 @@
 import { createStore, StoreOptions } from 'vuex';
 import { RootState } from '@/common/types';
 // import { pegInTx } from '@/pegin/store/peginTx';
-// import { web3Session } from './session';
+import { web3Session } from './session';
 // import { view } from './view';
 // import { status } from '@/status/store/status';
 // import { pegOutTx } from '@/pegout/store/pegoutTx';
@@ -14,13 +14,13 @@ const store: StoreOptions<RootState> = {
   getters: {
     appVersion: (state) => state.version,
   },
-  // modules: {
+  modules: {
   //   pegInTx,
-  //   web3Session,
+    web3Session,
   //   view,
   //   status,
   //   pegOutTx,
-  // },
+  },
 };
 
 export default createStore(store);

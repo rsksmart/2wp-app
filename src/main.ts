@@ -5,7 +5,7 @@ import { EnvironmentAccessorService } from '@/common/services/enviroment-accesso
 import * as constants from '@/common/store/constants';
 import App from './App.vue';
 import router from './common/router';
-import store from './store';
+import store from './common/store';
 import { vuetify } from './common/plugins/vuetify';
 import '@/common/styles/main.scss';
 

@@ -14,6 +14,10 @@ module.exports = defineConfig({
         crypto: require.resolve('crypto-browserify'),
         stream: require.resolve('stream-browserify'),
         assert: require.resolve('assert'),
+        url: require.resolve('url/'),
+        os: require.resolve('os-browserify/browser'),
+        https: require.resolve('https-browserify'),
+        http: require.resolve('stream-http'),
       },
     },
     plugins: [
