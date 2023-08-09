@@ -14,7 +14,7 @@
         <div class="box-pegin box">
           <v-row>
             <v-col class="box-col bitcoin-col" cols="6">
-              <v-row class="status-title">
+              <v-row class="status-title pl-4 pt-6">
                 <span>{{ fromTitle }}</span>
               </v-row>
 
@@ -23,18 +23,18 @@
                 <v-col>
                   <v-row>
                     <span class="status-subtitle">Refund Address</span>
-                    <v-tooltip right>
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-icon small color="#000000"
-                                v-bind="attrs" v-on="on">
-                          mdi-information
-                        </v-icon>
-                      </template>
-                      <p class="tooltip-form mb-0">
-                        Rejected transactions will be refunded to this
-                        {{environmentContext.getBtcText()}} address.
-                      </p>
-                    </v-tooltip>
+                      <v-tooltip>
+                        <template v-slot:activator="{ props }">
+                          <v-btn icon v-bind="props">
+                            <v-icon size="small" icon="mdiInformation">
+                            </v-icon>
+                          </v-btn>
+                          </template>
+                          <p class="tooltip-form mb-0">
+                            Rejected transactions will be refunded to this
+                            {{environmentContext.getBtcText()}} address.
+                          </p>
+                      </v-tooltip>
                   </v-row>
                   <v-row>
                     <v-col class="form-field-summary">
@@ -57,7 +57,7 @@
                 <v-col>
                   <v-row>
                     <span class="status-subtitle">
-                      {{ type === txType.PEGOUT ? 'Sender address:' : 'Device account' }}
+                      {{ type === txType.PEGOUT ? 'Sender address' : 'Device account' }}
                     </span>
                   </v-row>
                   <v-row>
@@ -89,7 +89,7 @@
                   </v-row>
                   <v-row>
                     <v-col class="form-field-summary">
-                      <v-row class="mx-0 mb-2">
+                      <v-row class="ma-0">
                         <span id="amount">
                           {{ amount }} {{ currencyFromTicker }}
                         </span>
@@ -105,10 +105,11 @@
                   <v-row>
                     <span class="status-subtitle">PowPeg Address</span>
                     <v-tooltip right>
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-icon small color="#000000"
-                                v-bind="attrs" v-on="on">
-                          mdi-information
+                      <template v-slot:activator="{props}">
+                        <v-icon small
+                                :icon="mdiInformation"
+                                color="#000000"
+                                v-bind="props.attrs" v-on="props.on">
                         </v-icon>
                       </template>
                       <p class="tooltip-form mb-0">
@@ -140,23 +141,22 @@
                 <v-col>
                   <v-row>
                     <span class="status-subtitle">Transaction hash</span>
-                    <v-tooltip right>
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-icon small color="#000000"
-                                v-bind="attrs" v-on="on"
-                                class="tooltip-info-icon">
-                          mdi-information
-                        </v-icon>
-                      </template>
-                      <p class="tooltip-form mb-0">
-                        Verify the transaction on
-                        {{networkFromText}} block explorer.
-                      </p>
-                    </v-tooltip>
+                    <v-tooltip>
+                        <template v-slot:activator="{ props }">
+                          <v-btn icon size="small"
+                                variant="plain" v-bind="props" density="compact">
+                            <v-icon class="tooltip-info-icon" size="small" :icon="mdiInformation">
+                            </v-icon>
+                          </v-btn>
+                          </template>
+                          <p class="tooltip-form mb-0">
+                            Verify the transaction on {{networkFromText}} block explorer.
+                          </p>
+                      </v-tooltip>
                   </v-row>
                   <v-row>
                     <v-col class="form-field-summary">
-                      <v-row class="justify-end">
+                      <v-row class="justify-end align-center">
                         <v-col cols="11"
                                class="col-address-button d-flex flex-column">
                           <tx-summary-field
@@ -166,9 +166,11 @@
                             :textValue="summary.txId"
                             />
                         </v-col>
-                        <v-col cols="1" class="col-address-button">
-                          <v-btn @click="openExplorerTx" icon color="#C4C4C4" x-small>
-                            <v-icon>mdi-open-in-new</v-icon>
+                        <v-col cols="1" class="col-address-button pa-0">
+                          <v-btn @click="openExplorerTx" icon density="compact"
+                              size="small"
+                              variant="plain">
+                            <v-icon :icon="mdiOpenInNew"></v-icon>
                           </v-btn>
                         </v-col>
                       </v-row>
@@ -182,7 +184,7 @@
             <v-divider inset vertical/>
 
             <v-col class="box-col rsk-col" cols="6">
-              <v-row class="status-title justify-end">
+              <v-row class="status-title justify-end pr-4 pt-6">
                 <span>{{ toTitle }}</span>
               </v-row>
 
@@ -191,20 +193,32 @@
                 <v-col>
                   <v-row class="justify-end">
                     <span class="status-subtitle">Recipient</span>
-                    <v-tooltip right>
-                      <template v-slot:activator="{ on, attrs }">
+                    <v-tooltip>
+                        <template v-slot:activator="{ props }">
+                          <v-btn icon size="small" variant="plain" v-bind="props" density="compact">
+                            <v-icon class="tooltip-info-icon" size="small" :icon="mdiInformation">
+                            </v-icon>
+                          </v-btn>
+                          </template>
+                          <p class="tooltip-form mb-0">
+                            This is the {{networkToText}} destination address
+                            where the {{networkToText}} will be delivered.
+                          </p>
+                      </v-tooltip>
+                    <!-- <v-tooltip right>
+                      <template v-slot:activator="{props}">
                         <v-icon small color="#000000"
+                            :icon="mdiInformation"
                             v-if="recipientAddress === '-'"
                             @click="openDerivationAddressDocumentation"
-                            v-bind="attrs" v-on="on"
+                            v-bind="props.attrs" v-on="props.on"
                             class="tooltip-clickable-icon">
-                            mdi-information
                         </v-icon>
                         <v-icon v-else
+                            :icon="mdiInformation"
                             small color="#000000"
-                            v-bind="attrs" v-on="on"
+                            v-bind="props.attrs" v-on="props.on"
                             class="tooltip-info-icon">
-                            mdi-information
                         </v-icon>
                       </template>
                       <p class="tooltip-form mb-0">
@@ -215,12 +229,12 @@
                       <p v-if="recipientAddress === '-'" class="tooltip-form mb-0">
                         Click here to know how to get it.
                       </p>
-                    </v-tooltip>
+                    </v-tooltip> -->
                   </v-row>
                   <v-row>
                     <v-col class="form-field-summary">
-                      <v-row class="justify-end">
-                        <v-col cols="11" class="col-address-button d-flex flex-column text-right">
+                      <v-row class="justify-end align-center">
+                        <v-col cols="11" class="col-address-button d-flex flex-column text-right ">
                           <tx-summary-field v-if="recipientAddress  !== '-'"
                             @copyToClipboard="copyToClipboard"
                             textStyles="breakable-address status-text-ellipsis"
@@ -231,9 +245,12 @@
                             -
                           </span>
                         </v-col>
-                        <v-col v-if="recipientAddress !== '-'" cols="1" class="col-address-button">
-                          <v-btn @click="openExplorerToAddress" icon color="#C4C4C4" x-small>
-                            <v-icon color="#000000">mdi-open-in-new</v-icon>
+                        <v-col v-if="recipientAddress !== '-'" cols="1"
+                          class="col-address-button pa-0">
+                          <v-btn @click="openExplorerToAddress" icon
+                          density="compact"
+                          size="small" variant="plain">
+                            <v-icon color="#000000" :icon="mdiOpenInNew"></v-icon>
                           </v-btn>
                         </v-col>
                       </v-row>
@@ -251,7 +268,7 @@
                   </v-row>
                   <v-row>
                     <v-col class="form-field-summary">
-                      <v-row class="justify-end mx-0 mb-2">
+                      <v-row class="justify-end ma-0">
                         <span>{{ amountToReceive }}</span>
                       </v-row>
                     </v-col>
@@ -269,7 +286,7 @@
                   </v-row>
                   <v-row>
                     <v-col class="form-field-summary">
-                      <v-row class="justify-end mx-0 mb-2">
+                      <v-row class="justify-end ma-0">
                         <span id="summary-horizontal-value-fee">{{ safeFeeString === '0' ? '-'
                           : safeFeeString + ' ' + environmentContext.getBtcTicker() }}
                         </span>
@@ -312,7 +329,7 @@
         <v-container class="px-0 py-2">
           <v-row class="mx-0">
             <h1 class="boldie">
-              {{ type === txType.PEGOUT ? 'Sender address' : accountLabel }}
+              {{ type === txType.PEGOUT ? 'Sender address' : 'Device account' }}
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
@@ -341,7 +358,9 @@
         <v-container class="px-0 py-2">
           <v-row class="mx-0">
             <h1 class="boldie">
-              Amount
+              {{ type === txType.PEGOUT
+              ? 'Amount'
+              : currencyFromTicker + 's' }}
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
@@ -483,37 +502,42 @@
 </template>
 
 <script lang="ts">
+import Big from 'big.js';
+import {
+  computed, ref, PropType, defineComponent,
+} from 'vue';
+import { mdiInformation, mdiOpenInNew } from '@mdi/js';
+import {
+  formatTxId, getBtcAddressExplorerUrl, getBtcTxExplorerUrl, getChunkedValue,
+} from '@/common/utils';
+import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import * as constants from '@/common/store/constants';
 import {
   NormalizedSummary,
   SatoshiBig,
   TxStatusType,
   TxSummaryOrientation,
 } from '@/common/types';
-import TxSummaryField from '@/common/components/exchange/TxSummaryField.vue';
-import {
-  formatTxId, getBtcAddressExplorerUrl, getBtcTxExplorerUrl, getChunkedValue, PegInTxState
-} from '@/common/utils';
-import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
-import * as constants from '@/common/store/constants';
-import Big from 'big.js';
-import { computed, ref, PropType } from 'vue';
 import { useStateAttribute } from '@/common/store/helper';
+import TxSummaryField from '@/common/components/exchange/TxSummaryField.vue';
 
-export default {
+export default defineComponent({
   name: 'TxSummaryFixed',
   components: {
     TxSummaryField,
   },
   props: {
     initialExpand: Boolean,
-    summary: Object as PropType<NormalizedSummary>,
-    type: TxStatusType,
-    orientation: TxSummaryOrientation,
+    summary: {
+      type: Object as PropType<NormalizedSummary>,
+      required: true,
+    },
+    type: String as PropType<TxStatusType>,
+    orientation: String as PropType<TxSummaryOrientation>,
     isRejected: Boolean,
-    walletName: String,
   },
-  setup(props, context) {
+  setup(props) {
     const over = ref(false);
     const fixedUSDDecimals = 2;
     const VALUE_INCOMPLETE_MESSAGE = '-';
@@ -524,42 +548,56 @@ export default {
 
     const bitcoinPrice = useStateAttribute<number>('web3Session', 'bitcoinPrice');
 
-    const fromTitle = computed(() => {
-      return props.type === TxStatusType.PEGIN ? 'Bitcoin' : 'Rootstock';
-    });
+    const fromTitle = computed(() => (props.type === TxStatusType.PEGIN ? 'Bitcoin' : 'Rootstock'));
 
-    const toTitle = computed(() => {
-      return props.type === TxStatusType.PEGIN ? 'Rootstock' : 'Bitcoin';
-    });
+    const toTitle = computed(() => (props.type === TxStatusType.PEGIN ? 'Rootstock' : 'Bitcoin'));
 
     const computedRefundAddress = computed((): string => {
       let refundAddress = VALUE_INCOMPLETE_MESSAGE;
-      if (props.summary && props.summary.refundAddress) {
+      if (props.summary?.refundAddress) {
         refundAddress = props.summary.refundAddress;
       }
       return refundAddress;
     });
 
-    const currencyFromTicker = computed(() => {
-      return props.type === TxStatusType.PEGIN ? environmentContext.getBtcTicker()
-        : environmentContext.getRbtcTicker();
-    });
+    const currencyFromTicker = computed(() => (
+      props.type === TxStatusType.PEGIN
+        ? environmentContext.getBtcTicker()
+        : environmentContext.getRbtcTicker()
+    ));
 
-    const currencyToTicker = computed(() => {
-      return props.type === TxStatusType.PEGIN ? environmentContext.getRbtcTicker()
-        : environmentContext.getBtcTicker();
-    });
+    const currencyToTicker = computed(() => (
+      props.type === TxStatusType.PEGIN
+        ? environmentContext.getRbtcTicker()
+        : environmentContext.getBtcTicker()
+    ));
 
-    const amount = computed((): string => {
-      return props.summary?.amountFromString || VALUE_INCOMPLETE_MESSAGE;
-    });
+    const amount = computed(
+      (): string => props.summary?.amountFromString || VALUE_INCOMPLETE_MESSAGE,
+    );
 
     const amountToReceive = computed((): string => {
       if (!props.summary?.amountReceivedString || props.summary.amountReceivedString === '0') {
         return '-';
       }
-      return `${props.summary.amountReceivedString} ${currencyToTicker}`;
+      return `${props.summary.amountReceivedString} ${currencyToTicker.value}`;
     });
+
+    const safeFee = computed((): number => {
+      let fee = props.summary?.fee ?? 0;
+      if (
+        (!props.summary?.fee || props.summary.fee === 0)
+          && props.type === TxStatusType.PEGOUT
+          && props.summary?.estimatedFee
+      ) {
+        fee = props.summary.estimatedFee;
+      }
+      return fee;
+    });
+
+    const safeFeeString = computed(
+      () => new SatoshiBig(safeFee.value.toString(), 'btc').toBTCTrimmedString(),
+    );
 
     const total = computed((): string => {
       const amount = new Big(props.summary?.amountFromString || '0');
@@ -581,16 +619,16 @@ export default {
     });
 
     const totalUSD = computed((): string => {
-      const total = total.value === VALUE_INCOMPLETE_MESSAGE ? 0 : total;
-      const amount = new SatoshiBig(total, 'btc');
+      const totalValue = total.value === VALUE_INCOMPLETE_MESSAGE ? 0 : total.value;
+      const amount = new SatoshiBig(totalValue, 'btc');
       if (!amount || !bitcoinPrice) return VALUE_INCOMPLETE_MESSAGE;
       return amount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
     });
 
-    const federationAddress = computed((): string => {
-      return props.summary && props.summary.federationAddress
-        ? formatTxId(props.summary.federationAddress) : VALUE_INCOMPLETE_MESSAGE;
-    });
+    const federationAddress = computed((): string => (
+      props.summary?.federationAddress
+        ? formatTxId(props.summary.federationAddress)
+        : VALUE_INCOMPLETE_MESSAGE));
 
     const networkFromText = computed((): string => {
       if (props.type === TxStatusType.PEGIN) {
@@ -606,17 +644,17 @@ export default {
       return environmentContext.getBtcText();
     });
 
-    const recipientAddress = computed(():string => {
-      return (!props.summary || !props.summary.recipientAddress || this.summary?.recipientAddress === '0x')
-        ? '-'
-        : getChunkedValue(props.summary.recipientAddress, maxLengthForChunked.value);
-    });
+    const maxLengthForChunked = computed((): number => (
+      props.orientation === TxSummaryOrientation.VERTICAL ? 15 : 25));
 
-    const refundAddress = computed((): string => {
-      return props.summary?.refundAddress
-        ? getChunkedValue(props.summary.refundAddress, maxLengthForChunked.value)
-        : VALUE_INCOMPLETE_MESSAGE;
-    });
+    const recipientAddress = computed(() => (
+      (!props.summary?.recipientAddress || props.summary?.recipientAddress === '0x')
+        ? '-'
+        : getChunkedValue(props.summary.recipientAddress, maxLengthForChunked.value)));
+
+    const refundAddress = computed((): string => (props.summary?.refundAddress
+      ? getChunkedValue(props.summary.refundAddress, maxLengthForChunked.value)
+      : VALUE_INCOMPLETE_MESSAGE));
 
     const senderValue = computed(():string => {
       if (props.summary?.senderAddress) {
@@ -626,36 +664,6 @@ export default {
         return props.summary.selectedAccount;
       }
       return VALUE_INCOMPLETE_MESSAGE;
-    });
-
-    const maxLengthForChunked = computed((): number => {
-      return props.orientation === TxSummaryOrientation.VERTICAL
-        ? 15 : 25;
-    });
-
-    const safeFeeString = computed((): string => {
-      return new SatoshiBig(safeFee.value.toString(), 'btc').toBTCTrimmedString();
-    });
-
-    const accountLabel = computed((): string => {
-      const isLedger = props.walletName === 'Trezor';
-      const isTrezor = props.walletName === 'Ledger';
-      if (isLedger || isTrezor) {
-        return 'Device account';
-      }
-      return 'Sender account';
-    });
-
-    const safeFee = computed((): number => {
-      let fee = props.summary?.fee ?? 0;
-      if (
-        (!props.summary?.fee || props.summary.fee === 0)
-        && props.type === TxStatusType.PEGOUT
-        && props.summary?.estimatedFee
-      ) {
-        fee = props.summary.estimatedFee;
-      }
-      return fee;
     });
 
     function copyToClipboard(id: string) {
@@ -691,7 +699,6 @@ export default {
       window.open(`${appConstants.RSK_PEGOUT_DOCUMENTATION_URL}`);
     }
 
-
     return {
       over,
       VALUE_INCOMPLETE_MESSAGE,
@@ -722,8 +729,9 @@ export default {
       openExplorerTx,
       openExplorerToAddress,
       openDerivationAddressDocumentation,
-      accountLabel,
+      mdiInformation,
+      mdiOpenInNew,
     };
-  }
-}
-<script>
+  },
+});
+</script>
