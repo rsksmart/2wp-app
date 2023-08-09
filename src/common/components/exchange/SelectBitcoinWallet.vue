@@ -50,13 +50,12 @@
 </template>
 
 <script lang="ts">
-import { Action, State } from 'vuex-class';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import * as constants from '@/common/store/constants';
 import { BtcWallet } from '@/common/types/pegInTx';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { ref } from 'vue';
 import { useAction, useStateAttribute } from '@/common/store/helper';
-import { useRouter } from 'vue-router';
 
 export default {
   name: 'SelectBitcoinWallet',
@@ -67,8 +66,9 @@ export default {
     const storeConstants = constants;
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
-    const { bitcoinWallet } = useStateAttribute('pegInTx', ['bitcoinWallet']);
+    const bitcoinWallet = useStateAttribute<BtcWallet>('pegInTx', 'bitcoinWallet');
     const addBitcoinWallet = useAction('pegInTx', constants.PEGIN_TX_ADD_BITCOIN_WALLET);
+
     function reset(): void {
       selectedWallet.value = '';
     }
@@ -80,8 +80,12 @@ export default {
 
     function toSendBitcoin(): void {
       let wallet: string;
-      const TYPES_WALLETS = { WALLET_TREZOR: 'WALLET_TREZOR', WALLET_LEDGER: 'WALLET_LEDGER', WALLET_LIQUALITY: 'WALLET_LIQUALITY' };
-      switch (bitcoinWallet) {
+      const TYPES_WALLETS = {
+        WALLET_TREZOR: 'WALLET_TREZOR',
+        WALLET_LEDGER: 'WALLET_LEDGER',
+        WALLET_LIQUALITY: 'WALLET_LIQUALITY',
+      };
+      switch (bitcoinWallet.value) {
         case TYPES_WALLETS.WALLET_TREZOR:
           wallet = 'trezor';
           break;
@@ -115,6 +119,6 @@ export default {
       back,
       setBitcoinWallet,
     };
-  }
-}
+  },
+};
 </script>

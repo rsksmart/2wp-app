@@ -1,11 +1,10 @@
 <template>
-  <v-app style="z-index: 0 !important;" class="d-flex">
+  <v-app style="z-index: 0 !important; position: relative;" class="d-flex">
     <mobile />
     <div class="custom-background">
       <top/>
-      <v-row class="d-flex justify-center">
+      <v-row class="d-flex justify-center ma-0">
         <router-view/>
-        this is the app
       </v-row>
       <footer-rsk/>
     </div>

@@ -1,13 +1,11 @@
-import Vue from 'vue';
-import Vuex, { createStore, StoreOptions } from 'vuex';
+import { createStore, StoreOptions } from 'vuex';
 import { RootState } from '@/common/types';
-import { pegInTx } from '@/pegin/store/peginTx';
+import { status } from '@/status/store';
+import { pegInTx } from '@/pegin/store';
 import { web3Session } from './session';
-import { view } from './view';
-import { status } from '@/status/store/status';
-import { pegOutTx } from '@/pegout/store/pegoutTx';
+// import { view } from './view';
+// import { pegOutTx } from '@/pegout/store/pegoutTx';
 import { version } from '../../../package.json';
-
 
 const store: StoreOptions<RootState> = {
   state: {
@@ -19,9 +17,9 @@ const store: StoreOptions<RootState> = {
   modules: {
     pegInTx,
     web3Session,
-    view,
+    //   view,
     status,
-    pegOutTx,
+  //   pegOutTx,
   },
 };
 

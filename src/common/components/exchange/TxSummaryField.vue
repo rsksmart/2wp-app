@@ -1,12 +1,13 @@
 <template>
-  <v-tooltip v-model="isTooltipShowed" top :open-on-click="false" :open-on-hover="false">
-    <template v-slot:activator="{ attrs }">
-      <span
+    <v-tooltip v-model="isTooltipShowed" >
+      <template v-slot:activator="{props}">
+        <span
         :class="textStyles"
         :id="id"
         @dblclick="handleDblClick"
-        v-bind="attrs"
-      >
+        style="cursor: default;"
+        v-bind="props.attrs"
+        >
         {{ textValue }}
       </span>
     </template>
@@ -15,9 +16,9 @@
 </template>
 
 <script lang="ts">
-import { ref } from 'vue';
+import { ref, defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
   name: 'TxSummaryField',
   props: {
     textStyles: String,
@@ -37,6 +38,6 @@ export default {
       isTooltipShowed,
       handleDblClick,
     };
-  }
-}
+  },
+});
 </script>

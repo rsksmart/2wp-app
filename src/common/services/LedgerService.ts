@@ -99,17 +99,11 @@ export default class LedgerService extends WalletService {
     let addressList: Array<WalletAddress> = [];
     const { legacy, segwit, nativeSegwit } = this.addressesToFetch;
     addressList = addressList.concat(
-      this.getDerivedAddresses(
-        legacy.count, legacy.lastIndex, constants.BITCOIN_LEGACY_ADDRESS,
-      ),
+      this.getDerivedAddresses(legacy.count, legacy.lastIndex, constants.BITCOIN_LEGACY_ADDRESS),
     ).concat(
-      this.getDerivedAddresses(
-        segwit.count, segwit.lastIndex, constants.BITCOIN_SEGWIT_ADDRESS,
-      ),
+      this.getDerivedAddresses(segwit.count, segwit.lastIndex, constants.BITCOIN_SEGWIT_ADDRESS),
     ).concat(
-      this.getDerivedAddresses(
-        nativeSegwit.count, nativeSegwit.lastIndex, constants.BITCOIN_NATIVE_SEGWIT_ADDRESS,
-      ),
+      this.getDerivedAddresses(nativeSegwit.count, nativeSegwit.lastIndex, constants.BITCOIN_NATIVE_SEGWIT_ADDRESS),
     );
     return addressList;
   }

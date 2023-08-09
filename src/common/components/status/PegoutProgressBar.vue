@@ -9,7 +9,7 @@
                 <v-row>
                   <v-img v-bind:class="bordersStyle.rbtc"
                     class="icon-status-image icon-rbtc-image d-flex justify-center"
-                    src="@/assets/status/rbtc.png" height="78" contain/>
+                    :src="require('@/assets/status/rbtc.png')" height="78" contain/>
                 </v-row>
               </div>
               <div>
@@ -32,16 +32,15 @@
               </div>
               <v-progress-linear
                 class="progress-bar-status_new"
-                :value="percentage"
+                :model-value="percentage"
                 :color="currentBarColor"
-                style="opacity: 75% !important;"
                 height="19"/>
               <div class="d-flex justify-end">
                 <div class="bitcoin-icon-yellow">
                   <v-row>
                     <v-img v-bind:class="bordersStyle.btc"
                       class="icon-status-image icon-btc-image-pegout d-flex justify-center"
-                      src="@/assets/status/btc.png" height="78" contain/>
+                      :src="require('@/assets/status/btc.png')" height="78" contain/>
                   </v-row>
                 </div>
               </div>
@@ -54,13 +53,16 @@
 </template>
 
 <script lang="ts">
+/* eslint-disable */
+import {
+  computed, reactive, ref, watch, defineComponent,
+} from 'vue';
 import * as constants from '@/common/store/constants';
 import { PegoutStatus, PegoutStatusDataModel } from '@/common/types';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { computed, reactive, ref } from 'vue';
 import { useGetter, useStateAttribute } from '@/common/store/helper';
 
-export default {
+export default defineComponent({
   name: 'PegoutProgressBar',
   setup() {
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
@@ -93,76 +95,58 @@ export default {
 
     const txDetails = useStateAttribute<PegoutStatusDataModel>('status', 'txDetails');
 
-    const isRejected = useGetter<Boolean>('status', constants.STATUS_IS_REJECTED);
+    const isRejected = useGetter<boolean>('status', constants.STATUS_IS_REJECTED);
+
+    const currentStatus = computed(() => txDetails.value.status);
+
+    const showRejectedMsg = computed(() => currentStatus.value === PegoutStatus.REJECTED);
 
     const percentage = computed(() => {
-      let percentage;
       switch (txDetails.value.status) {
         case PegoutStatus.REJECTED:
           currentBarColor.value = colors.yellow;
           bordersStyle.rbtc = borderColor.yellow;
           bordersStyle.btc = borderColor.gray;
-
           firstCircle.value = circleColor.yellow;
-          percentage = 15;
-          break;
+          return 15;
         case PegoutStatus.WAITING_FOR_SIGNATURE:
           currentBarColor.value = colors.blue;
           bordersStyle.rbtc = borderColor.blue;
           bordersStyle.btc = borderColor.gray;
-
           firstCircle.value = circleColor.blue;
           secondCircle.value = circleColor.blue;
           thirdCircle.value = circleColor.blue;
-          percentage = 90;
-          break;
+          return 90;
         case PegoutStatus.RECEIVED:
           currentBarColor.value = colors.blue;
           bordersStyle.rbtc = borderColor.blue;
           bordersStyle.btc = borderColor.gray;
-
-          this.firstCircle = circleColor.blue;
-          percentage = 30;
-          break;
+          firstCircle.value = circleColor.blue;
+          return 30;
         case PegoutStatus.WAITING_FOR_CONFIRMATION:
           currentBarColor.value = colors.blue;
           bordersStyle.rbtc = borderColor.blue;
           bordersStyle.btc = borderColor.gray;
-
           firstCircle.value = circleColor.blue;
           secondCircle.value = circleColor.blue;
-          percentage = 60;
-          break;
+          return 60;
         case PegoutStatus.RELEASE_BTC:
           currentBarColor.value = colors.green;
           bordersStyle.rbtc = borderColor.green;
           bordersStyle.btc = borderColor.green;
-
           firstCircle.value = circleColor.green;
           secondCircle.value = circleColor.green;
           thirdCircle.value = circleColor.green;
-          percentage = 100;
-          break;
+          return 100;
         default:
           currentBarColor.value = colors.gray;
           bordersStyle.rbtc = borderColor.gray;
           bordersStyle.btc = borderColor.gray;
-
           firstCircle.value = circleColor.gray;
           secondCircle.value = circleColor.gray;
           thirdCircle.value = circleColor.gray;
-          percentage = 0;
-          break;
+          return 0;
       }
-      return percentage;
-    });
-
-    const currentStatus = computed(() => {
-      return txDetails.value.status;
-    });
-
-    const showRejectedMsg = computed(() => {
-      return currentStatus.value === PegoutStatus.REJECTED;
     });
 
     return {
@@ -177,6 +161,6 @@ export default {
       currentStatus,
       showRejectedMsg,
     };
-  }
-}
+  },
+});
 </script>
