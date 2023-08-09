@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar color="#fff" elevation="0" class="mx-8 top">
+  <v-app-bar color="#fff" elevation="0" class="mx-8 top" style="position: relative; height: 80px;">
     <v-row justify="center">
       <v-col cols="11" class="d-flex flex-column align-start px-0">
         <v-col cols="auto" class="top-logo">

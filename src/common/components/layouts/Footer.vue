@@ -1,5 +1,5 @@
 <template>
-    <v-footer padless color="white" class="footer-rsk d-flex justify-center">
+    <v-footer padless color="white" class="footer-rsk d-flex justify-center align-end">
       <v-col cols="11" class="pb-0">
         <v-row justify="center" align="start" class="mx-0 py-md-0 py-xl-6">
           <v-col>
@@ -30,16 +30,19 @@
           </v-col>
           <v-col class="pt-1">
             <v-row justify="end" class="mx-0 footer-icons">
-<!--              TODO: remove dot when icon renders-->
-              <a href="https://twitter.com/rootstock_io" target="_blank">
-                .<v-icon icon="mdi-twitter"></v-icon>
-              </a>
-              <a href="https://github.com/rsksmart/2wp-app" target="_blank">
-                .<v-icon icon="mdi-github"></v-icon>
-              </a>
-              <a href="https://open-rsk-dev.slack.com/messages/support" target="_blank">
-                .<v-icon icon="mdi-slack"></v-icon>
-              </a>
+              <v-btn variant="plain" href="https://twitter.com/rootstock_io" target="_blank"
+                density="compact"
+                :icon="mdiTwitter">
+              </v-btn>
+              <v-btn variant="plain" href="https://github.com/rsksmart/2wp-app"  target="_blank"
+                density="compact"
+                :icon="mdiGithub">
+              </v-btn>
+              <v-btn variant="plain"
+                density="compact"
+                href="https://open-rsk-dev.slack.com/messages/support" target="_blank"
+                :icon="mdiSlack">
+              </v-btn>
             </v-row>
           </v-col>
         </v-row>
@@ -50,6 +53,7 @@
 <script lang="ts">
 import { computed, ref } from 'vue';
 import { useStore } from 'vuex';
+import { mdiTwitter, mdiSlack, mdiGithub } from '@mdi/js';
 import { ApiInformation } from '@/common/types/ApiInformation';
 import { ApiService } from '@/common/services';
 
@@ -73,6 +77,9 @@ export default {
       url,
       appVersion,
       apiVersion,
+      mdiTwitter,
+      mdiSlack,
+      mdiGithub,
     };
   },
 };

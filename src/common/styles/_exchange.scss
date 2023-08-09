@@ -42,6 +42,10 @@
     .wallet-button-content {
       color: #000000 !important;
     }
+
+    span.wallet-button-content {
+      padding-top: 10px;
+    }
   }
 
   .wallet-button:hover {
