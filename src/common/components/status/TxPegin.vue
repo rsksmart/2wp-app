@@ -69,8 +69,8 @@
                   {{btcConfirmations}}/{{btcConfirmationsRequired}} confirmations
                 </h5>
                 <v-tooltip right>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-icon x-small color="teal darken-2" v-bind="attrs" v-on="on">
+                  <template v-slot:activator="{props}">
+                    <v-icon x-small color="teal darken-2" v-bind="props.attrs" v-on="props.on">
                       mdi-information
                     </v-icon>
                   </template>
@@ -146,6 +146,9 @@
 
 <script lang="ts">
 import {
+  computed, reactive, ref, watch, defineComponent,
+} from 'vue';
+import {
   PeginStatus,
   SatoshiBig,
   TxStatusType, TxSummaryOrientation, NormalizedSummary, TxStatusMessage,
@@ -153,14 +156,13 @@ import {
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import * as constants from '@/common/store/constants';
 import { getTime, setStatusMessage } from '@/common/utils';
-import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
-import { computed, reactive, ref, watch } from 'vue';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
+import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
 
-export default {
+export default defineComponent({
   name: 'TxPegin',
   components: {
-    TxSummaryFixed
+    TxSummaryFixed,
   },
   props: {
     txId: String,
@@ -208,28 +210,24 @@ export default {
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
     const txDetails = useStateAttribute<PeginStatus>('status', 'txDetails');
-    const type = useStateAttribute<TxStatusType>('status', 'type');
+    // const type = useStateAttribute<TxStatusType>('status', 'type');
     const isRejected = useGetter<boolean>('status', constants.STATUS_IS_REJECTED);
     const setAmount = useAction('pegInTx', constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER);
     const peginInit = useAction('pegInTx', constants.PEGIN_TX_INIT);
     const setRskAddress = useAction('pegInTx', constants.PEGIN_TX_ADD_RSK_ADDRESS);
 
-    watch(txDetails.value.status, setMessage);
+    const btcConfirmationsAreDone = computed(
+      () => btcConfirmations.value >= btcConfirmationsRequired.value,
+    );
 
-    const btcConfirmationsAreDone = computed(() => {
-      return btcConfirmations.value >= btcConfirmationsRequired.value;
-    });
+    const rskConfirmationsAreDone = computed(
+      () => txDetails.value.status === constants.PegStatus.CONFIRMED,
+    );
 
-    const rskConfirmationsAreDone = computed(() => {
-      return txDetails.value.status === constants.PegStatus.CONFIRMED;
-    });
-
-    const showSteps = computed((): boolean => {
-      return type.value !== TxStatusType.UNSET_STATUS;
-    });
+    // const showSteps = computed((): boolean => type.value !== TxStatusType.UNSET_STATUS);
 
     const txPeginSummary = computed((): NormalizedSummary => {
-      const status = txDetails.value as PeginStatus;
+      const status = txDetails.value;
       return {
         amountFromString: status.btc.amountTransferred.toString(),
         amountReceivedString: status.btc.amountTransferred.toString(),
@@ -243,7 +241,7 @@ export default {
 
     function refreshPercentage() {
       if (txDetails) {
-        const { btc } = txDetails as PeginStatus;
+        const { btc } = txDetails.value;
         btcConfirmationsRequired.value = btc.requiredConfirmation;
         btcConfirmations.value = btc.confirmations ?? 0;
         btcConfirmations.value = btcConfirmations.value > btcConfirmationsRequired.value
@@ -260,7 +258,7 @@ export default {
     }
 
     function setSummaryData() {
-      const { btc, rsk } = txDetails.value as PeginStatus;
+      const { btc, rsk } = txDetails.value;
       const txData = {
         amount: new SatoshiBig(btc.amountTransferred, 'btc'),
         refundAddress: btc.refundAddress,
@@ -276,11 +274,11 @@ export default {
     }
 
     function setMessage() {
-      let msg: TxStatusMessage;
+      let msg: TxStatusMessage | string = '';
       if (txDetails) {
         msg = setStatusMessage(TxStatusType.PEGIN, txDetails.value.status);
       }
-      context.emit('setMessage', msg ?? '');
+      context.emit('setMessage', msg);
     }
 
     function setProgressColor() {
@@ -318,7 +316,7 @@ export default {
     function setCircleColor() {
       if (btcConfirmationsPercentage.value <= 50) {
         btcCircleColor.value = circleColor.gray;
-      } else if (btcConfirmationsPercentage > 50
+      } else if (btcConfirmationsPercentage.value > 50
         && btcConfirmationsPercentage.value <= 100) {
         btcCircleColor.value = circleColor.blue;
       }
@@ -334,12 +332,13 @@ export default {
       }
     }
 
+    watch(() => txDetails.value.status, setMessage);
+
     setSummaryData();
     refreshPercentage();
     setMessage();
     setProgressColor();
     setCircleColor();
-
 
     return {
       currentFee,
@@ -362,6 +361,6 @@ export default {
       rskConfirmationsAreDone,
       isRejected,
     };
-  }
-}
+  },
+});
 </script>
