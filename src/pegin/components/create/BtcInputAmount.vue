@@ -58,6 +58,19 @@
             </v-col>
           </v-col>
         </v-row>
+        <v-col cols="4" class="pa-0 pt-2 pl-1">
+          <v-row class="derive-button mx-0 d-flex justify-center">
+            <v-btn
+              :disabled="!enableButton"
+              outlined rounded
+              width="100%" height="38"
+              @click="setMax" id="max-btn">
+              <span>
+                Use max available balance
+              </span>
+            </v-btn>
+          </v-row>
+        </v-col>
         <v-row class="pl-1 mx-0" style="min-height: 17px;">
           <span v-if="stepState === 'error'" class="yellowish">
             {{amountErrorMessage}}
@@ -92,6 +105,8 @@ export default class BtcInputAmount extends Vue {
 
   stepState: 'unused' | 'done' | 'error' = 'unused';
 
+  @Prop() enableButton !: boolean;
+
   @Prop() isTourActive !: boolean;
 
   @State('pegInTx') pegInTxState!: PegInTxState;
@@ -118,6 +133,31 @@ export default class BtcInputAmount extends Vue {
 
   get safeAmount(): SatoshiBig {
     return new SatoshiBig(this.bitcoinAmount, 'btc');
+  }
+
+  async setMax() {
+    this.fillMaxValueAvailable();
+    this.calculateTxFee()
+      .then(() => {
+        this.fillMaxValueAvailable();
+        this.updateStore();
+      })
+      .then(() => {
+        this.fillMaxValueAvailable();
+        this.updateStore();
+      })
+      .catch(console.error);
+  }
+
+  fillMaxValueAvailable() {
+    if (this.selectedAccountBalance.gt('0')) {
+      let tempValue = this.selectedAccountBalance;
+      tempValue = this.selectedAccountBalance.minus(this.safeTxFee);
+      tempValue = this.selectedAccountBalance.minus(this.safeTxFee);
+      this.bitcoinAmount = tempValue.toBTCTrimmedString();
+      this.pegInTxState.amountToTransfer = tempValue;
+      this.pegInTxState.isValidAmountToTransfer = true;
+    }
   }
 
   get amountErrorMessage() { // mayor rework
@@ -235,9 +275,10 @@ export default class BtcInputAmount extends Vue {
     }
   }
 
-  @Watch('pegInTxState.selectedAccount')
+  @Watch('state')
   accountChanged() {
     if (this.stepState !== 'unused') {
+      this.enableButton = true;
       this.checkStep();
       this.calculateTxFee();
       this.amountStyle = this.stepState === 'done' ? 'black-box' : 'yellow-box';

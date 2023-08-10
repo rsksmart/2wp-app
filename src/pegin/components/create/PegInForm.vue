@@ -21,7 +21,9 @@
         <v-col id="options-col" cols="8" lg="7" class="pa-0">
           <peg-in-account-select/>
           <v-divider color="#C4C4C4"/>
-          <btc-input-amount :isTourActive="isTourActive"/>
+          <btc-input-amount
+            :isTourActive="isTourActive"
+            :enableButton="enablesMaxAmountButton"/>
           <v-divider color="#C4C4C4"/>
           <rsk-address-input  :isTourActive="isTourActive"
                               @state="setRskAddressState"/>
@@ -116,6 +118,8 @@ export default class PegInForm extends Vue {
   orientationSummary = TxSummaryOrientation.VERTICAL;
 
   isTourActive = false;
+
+  enabledMaxAmountButton = false;
 
   tourSteps = [
     {
@@ -212,6 +216,7 @@ export default class PegInForm extends Vue {
 
   handleSkipTour() {
     this.isTourActive = false;
+    localStorage.setItem('ONBOARDED_USER_PEGIN', 'true');
   }
 
   @State('pegInTx') pegInTxState!: PegInTxState;
@@ -247,6 +252,14 @@ export default class PegInForm extends Vue {
         break;
     }
     return fee;
+  }
+
+  get enablesMaxAmountButton(): boolean {
+    if (!this.enabledMaxAmountButton) {
+      this.enabledMaxAmountButton = !this.pegInTxState.loadingFee
+      && !this.pegInTxState.loadingBalance;
+    }
+    return this.enabledMaxAmountButton;
   }
 
   get isReadyToCreate(): boolean {
