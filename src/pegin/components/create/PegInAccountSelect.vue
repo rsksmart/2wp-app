@@ -5,7 +5,7 @@
         <div v-bind:class="[focus ?
               'number-filled' : 'number']">1</div>
       </v-col>
-      <v-col class="pl-0">
+      <v-col class="pa-4 pl-0">
         <p v-bind:class="{'boldie': focus}">
           {{
             isLiquality ?
@@ -13,42 +13,46 @@
             'Select ' + environmentContext.getBtcText() + ' account to send from:'
           }}
         </p>
-        <v-row class="mx-0 mt-4">
-          <v-col cols="7" class="pa-0 pl-1">
+        <v-row class="ma-0 mt-4">
+          <v-col cols="7" class="pa-0">
             <v-select
               v-if="!isLiquality"
-              v-model="btcAccountTypeSelected" :items="accountBalances" color="#fff"
+              v-model="btcAccountTypeSelected" :items="accountBalances" item-title="text"
               class="account-select"
-              label="Select the account" solo dense
+              variant="solo"
+              density="compact"
+              hide-details
+              single-line
+              placeholder="Select the account"
               @focus="focus = true"
               @blur="focus = false"
               :disabled="isLiquality"
-              @change="accountChanged"/>
+              @update:model-value="accountChanged"/>
             <p class="label-liquality" v-if="isLiquality">
               {{ accountBalances[2].text }}
-            <p/>
+            </p>
           </v-col>
-          <v-col v-if="!isLiquality" cols="1" class="pb-0 pt-5">
-            <v-tooltip right>
-              <template v-slot:activator="{ on, attrs }">
+          <v-col v-if="!isLiquality" cols="1" class="d-flex align-center pl-2 py-0">
+            <v-tooltip>
+              <template v-slot:activator="{props}">
                 <v-icon
-                  small
+                  size="small"
                   color="teal darken-2"
-                  v-bind="attrs"
-                  v-on="on"
+                  v-bind="props"
+                  :icon="mdiInformation"
                 >
-                  mdi-information
                 </v-icon>
               </template>
               <span>
-                Listed amounts represent the balance using
-                addresses from your first account including change.
+                Listed amounts represent the balance <br/>
+                using addresses from your first account <br/>
+                including change.
               </span>
             </v-tooltip>
           </v-col>
-          <v-col v-if="loadingBalance" cols="4" class="d-flex align-start pa-0">
-            <v-row class="d-flex justify-start pt-6 ma-0">
-              <span class="d-flex align-center">Loading balances   </span>
+          <v-col v-if="loadingBalance" cols="4" class="d-flex align-center py-0">
+            <v-row class="d-flex justify-center ma-0">
+              <span class="d-flex align-center">Loading balances</span>
               <v-progress-circular
                 size="17"
                 width="2"
@@ -65,14 +69,15 @@
 </template>
 
 <script lang="ts">
+import { ref, watch, defineComponent } from 'vue';
+import { mdiInformation } from '@mdi/js';
 import * as constants from '@/common/store/constants';
 import { BtcAccount, BtcWallet } from '@/common/types/pegInTx';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { ref, watch } from 'vue';
 import { useAction, useStateAttribute } from '@/common/store/helper';
 import { AccountBalance } from '@/common/types';
 
-export default {
+export default defineComponent({
   name: 'PegInAccountSelect',
   setup(_, context) {
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
@@ -83,16 +88,15 @@ export default {
       value: string;
       disabled: boolean;
     }[]>([]);
-    const btcAccountTypeSelected = ref('');
-
-    const selectedAccount  = useStateAttribute<BtcAccount>('pegInTx', 'selectedAccount');
-    const bitcoinWallet  = useStateAttribute<BtcWallet>('pegInTx', 'bitcoinWallet');
-    const balances  = useStateAttribute<AccountBalance>('pegInTx', 'balances');
-    const loadingBalance  = useStateAttribute<Boolean>('pegInTx', 'loadingBalance');
+    const btcAccountTypeSelected = ref<BtcAccount>(constants.BITCOIN_NATIVE_SEGWIT_ADDRESS);
+    const selectedAccount = useStateAttribute<BtcAccount>('pegInTx', 'selectedAccount');
+    const bitcoinWallet = useStateAttribute<BtcWallet>('pegInTx', 'bitcoinWallet');
+    const balances = useStateAttribute<AccountBalance>('pegInTx', 'balances');
+    const loadingBalance = useStateAttribute<boolean>('pegInTx', 'loadingBalance');
     const selectAccount = useAction('pegInTx', constants.PEGIN_TX_SELECT_ACCOUNT_TYPE);
     const calculateTxFee = useAction('pegInTx', constants.PEGIN_TX_CALCULATE_TX_FEE);
 
-    function accountChanged(account:BtcAccount) {
+    function accountChanged(account: BtcAccount) {
       selectAccount(account);
       calculateTxFee();
       context.emit('accountChanged', account);
@@ -171,7 +175,8 @@ export default {
       btcAccountTypeSelected,
       loadingBalance,
       accountChanged,
+      mdiInformation,
     };
-  }
-}
+  },
+});
 </script>

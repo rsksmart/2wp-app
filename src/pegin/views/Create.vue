@@ -5,13 +5,14 @@
 </template>
 
 <script lang="ts">
-import * as constants from '@/common/store/constants';
-import SendBitcoin from '@/pegin/components/create/SendBitcoin.vue';
-import { useAction } from '@/common/store/helper';
+import { defineComponent } from 'vue';
 import { useRouter } from 'vue-router';
+import * as constants from '@/common/store/constants';
+import { useAction } from '@/common/store/helper';
+import SendBitcoin from '@/pegin/components/create/SendBitcoin.vue';
 
-export default {
-  name: 'Create',
+export default defineComponent({
+  name: 'CreatePegIn',
   components: {
     SendBitcoin,
   },
@@ -31,6 +32,6 @@ export default {
     return {
       back,
     };
-  }
-}
+  },
+});
 </script>

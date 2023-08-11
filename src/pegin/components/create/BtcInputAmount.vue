@@ -9,10 +9,12 @@
         <p v-bind:class="{'boldie': focus}">
           Enter the amount you want to send:
         </p>
-        <v-row class="pl-1 mt-4 pb-0 d-flex align-center">
+        <v-row class="mx-0 mt-4 pb-0 d-flex align-center">
           <v-col cols="4" v-bind:class="[amountStyle]" class="input-box-outline">
             <v-col cols="8" class="pa-0 pl-1">
               <v-text-field solo hide-details full-width single-line flat
+                            variant="solo"
+                            density="compact"
                             class="amount-input"
                             placeholder="Add amount"
                             v-model="bitcoinAmount" type="number"
@@ -23,9 +25,9 @@
                             @change="updateStore()"/>
             </v-col>
             <v-col cols="4" class="pa-0">
-              <v-row>
+              <v-row class="ma-0">
                 <v-col cols="5" class="pa-0">
-                  <v-img src="@/assets/exchange/btc.png" height="20" contain/>
+                  <v-img :src="require('@/assets/exchange/btc.png')" height="20" contain/>
                 </v-col>
                 <v-col cols="7" class="pa-0 d-flex align-center">
                   <span>{{environmentContext.getBtcTicker()}}</span>
@@ -34,20 +36,20 @@
             </v-col>
           </v-col>
           <v-col cols="1" class="d-flex justify-center">
-            <v-icon color="#000">mdi-arrow-right</v-icon>
+            <v-icon :icon="mdiArrowRight" color="#000"></v-icon>
           </v-col>
           <v-col cols="4" class="pa-0 input-box-flat">
             <v-col cols="8" class="pa-0 pl-1">
               <v-text-field
               class="amount-input"
-              placeholder="0"
               solo hide-details full-width single-line flat readonly
-              v-model="rbtcAmount" type="number"/>
+              variant="plain"
+                            v-model="rbtcAmount" type="number"/>
             </v-col>
             <v-col cols="4" class="pa-0">
-              <v-row>
+              <v-row class="ma-0">
                 <v-col cols="5" class="pa-0">
-                  <v-img src="@/assets/exchange/rbtc.png" height="20" contain/>
+                  <v-img :src="require('@/assets/exchange/rbtc.png')" height="20" contain/>
                 </v-col>
                 <v-col cols="7" class="pa-0 d-flex align-center">
                   <span>{{environmentContext.getRbtcTicker()}}</span>
@@ -57,7 +59,7 @@
           </v-col>
           <v-col/>
         </v-row>
-        <v-row class="pl-1" style="min-height: 17px;">
+        <v-row class="pt-3 ma-0" style="min-height: 17px;">
           <span v-if="stepState === 'error'" class="yellowish">
             {{amountErrorMessage}}
           </span>
@@ -68,6 +70,10 @@
 </template>
 
 <script lang="ts">
+import {
+  computed, ref, watch, defineComponent,
+} from 'vue';
+import { mdiArrowRight } from '@mdi/js';
 import SatoshiBig from '@/common/types/SatoshiBig';
 import {
   BtcAccount,
@@ -77,11 +83,10 @@ import {
 import * as constants from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { isBTCAmountValidRegex } from '@/common/utils';
-import { computed, ref, watch } from 'vue';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import { FeeAmountData } from '@/common/types';
 
-export default {
+export default defineComponent({
   name: 'BtcInputAmount',
   setup(_, context) {
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
@@ -90,28 +95,40 @@ export default {
     const bitcoinAmount = ref('');
     const stepState = ref<'unused' | 'done' | 'error'>('unused');
 
-    const calculatedFees  = useStateAttribute<FeeAmountData>('pegInTx', 'calculatedFees');
-    const selectedFee  = useStateAttribute<MiningSpeedFee>('pegInTx', 'selectedFee');
-    const selectedAccount  = useStateAttribute<BtcAccount>('pegInTx', 'selectedAccount');
-    const peginConfiguration  = useStateAttribute<PeginConfiguration>('pegInTx', 'peginConfiguration');
-    const amountToTransfer  = useStateAttribute<SatoshiBig>('pegInTx', 'amountToTransfer');
+    const calculatedFees = useStateAttribute<FeeAmountData>('pegInTx', 'calculatedFees');
+    const selectedFee = useStateAttribute<MiningSpeedFee>('pegInTx', 'selectedFee');
+    const selectedAccount = useStateAttribute<BtcAccount>('pegInTx', 'selectedAccount');
+    const peginConfiguration = useStateAttribute<PeginConfiguration>('pegInTx', 'peginConfiguration');
+    const amountToTransfer = useStateAttribute<SatoshiBig>('pegInTx', 'amountToTransfer');
 
     const setBtcAmount = useAction('pegInTx', constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER);
     const calculateTxFee = useAction('pegInTx', constants.PEGIN_TX_CALCULATE_TX_FEE);
     const setIsValidAmount = useAction('pegInTx', constants.PEGIN_TX_ADD_IS_VALID_AMOUNT);
     const selectedAccountBalance = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SELECTED_BALANCE);
-    const enoughBalanceSelectedFee = useGetter<Boolean>('pegInTx', constants.PEGIN_TX_GET_ENOUGH_FEE_VALUE);
+    const enoughBalanceSelectedFee = useGetter<boolean>('pegInTx', constants.PEGIN_TX_GET_ENOUGH_FEE_VALUE);
 
-    const isBTCAmountValidNumberRegex = computed(() => {
-      return isBTCAmountValidRegex(bitcoinAmount.value);
-    });
+    const isBTCAmountValidNumberRegex = computed(() => isBTCAmountValidRegex(bitcoinAmount.value));
 
-    const rbtcAmount = computed(() => {
-      return bitcoinAmount.value;
-    });
+    const rbtcAmount = computed(() => bitcoinAmount.value);
 
-    const safeAmount = computed((): SatoshiBig => {
-      return new SatoshiBig(bitcoinAmount.value, 'btc');
+    const safeAmount = computed((): SatoshiBig => new SatoshiBig(bitcoinAmount.value, 'btc'));
+
+    const safeTxFee = computed((): SatoshiBig => {
+      let fee = new SatoshiBig('0', 'satoshi');
+      switch (selectedFee.value) {
+        case constants.BITCOIN_AVERAGE_FEE_LEVEL:
+          fee = calculatedFees.value.average.amount;
+          break;
+        case constants.BITCOIN_FAST_FEE_LEVEL:
+          fee = calculatedFees.value.fast.amount;
+          break;
+        case constants.BITCOIN_SLOW_FEE_LEVEL:
+          fee = calculatedFees.value.slow.amount;
+          break;
+        default:
+          break;
+      }
+      return fee;
     });
 
     const amountErrorMessage = computed(() => { // mayor rework
@@ -124,13 +141,13 @@ export default {
       if (!selectedAccount.value) {
         return 'Please, select an account first';
       }
-      if (bitcoinAmount.toString() === '') {
+      if (bitcoinAmount.value.toString() === '') {
         return 'Please, enter an amount';
       }
-      if (bitcoinAmount.toString() === '0') {
+      if (bitcoinAmount.value.toString() === '0') {
         return 'Please, enter an amount';
       }
-      if (!isBTCAmountValidNumberRegex) {
+      if (!isBTCAmountValidNumberRegex.value) {
         return 'The amount must be a valid Bitcoin value';
       }
       if (safeAmount.value.lt(minValue)) {
@@ -146,24 +163,6 @@ export default {
         return `The maximum accepted value is ${maxValue.toBTCTrimmedString()} ${environmentContext.getBtcTicker()}`;
       }
       return 'Invalid format';
-    });
-
-    const safeTxFee = computed((): SatoshiBig => {
-      let fee = new SatoshiBig('0', 'satoshi');
-      switch (selectedFee) {
-        case constants.BITCOIN_AVERAGE_FEE_LEVEL:
-          fee = calculatedFees.value.average.amount;
-          break;
-        case constants.BITCOIN_FAST_FEE_LEVEL:
-          fee = calculatedFees.value.fast.amount;
-          break;
-        case constants.BITCOIN_SLOW_FEE_LEVEL:
-          fee = calculatedFees.value.slow.amount;
-          break;
-        default:
-          break;
-      }
-      return fee;
     });
 
     const insufficientAmount = computed(() => {
@@ -182,7 +181,6 @@ export default {
       return false;
     });
 
-
     function blockLetterKeyDown(e: KeyboardEvent) {
       if (bitcoinAmount.value.toString().length > 15
         && !(e.key === 'Backspace'
@@ -196,6 +194,13 @@ export default {
       if (e.key === '-') e.preventDefault();
     }
 
+    function checkStep() {
+      stepState.value = isBTCAmountValidNumberRegex.value && !insufficientAmount.value
+        ? 'done' : 'error';
+      setIsValidAmount(stepState.value === 'done');
+      context.emit('stepState', stepState.value);
+    }
+
     function updateStore() {
       setBtcAmount(safeAmount.value);
       checkStep();
@@ -204,13 +209,6 @@ export default {
           checkStep();
         })
         .catch(console.error);
-    }
-
-    function checkStep() {
-      stepState.value = isBTCAmountValidNumberRegex.value && !insufficientAmount.value
-        ? 'done' : 'error';
-      setIsValidAmount(stepState.value === 'done');
-      context.emit('stepState', stepState.value);
     }
 
     function watchBitcoinAmount() {
@@ -238,7 +236,6 @@ export default {
     watch(selectedAccountBalance, watchBTCAccountTypeSelected);
     watch(selectedAccount, accountChanged);
 
-
     const isInitialValue = amountToTransfer.value.toBTCString() === '0.00000000';
     if (!isInitialValue) {
       bitcoinAmount.value = amountToTransfer.value.toBTCString();
@@ -253,8 +250,9 @@ export default {
       blockLetterKeyDown,
       updateStore,
       rbtcAmount,
-      amountErrorMessage
+      amountErrorMessage,
+      mdiArrowRight,
     };
-  }
-}
+  },
+});
 </script>

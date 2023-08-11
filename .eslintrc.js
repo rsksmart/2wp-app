@@ -25,6 +25,7 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': 'error',
     'import/no-cycle': 'off',
     'max-len': ['warn', { code: 100, ignoreComments: true, ignoreTemplateLiterals: true }],
+    'vuejs-accessibility/mouse-events-have-key-events': 'off',
   },
   overrides: [
     {
