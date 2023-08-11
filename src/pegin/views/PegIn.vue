@@ -9,11 +9,11 @@
 </template>
 
 <script lang="ts">
+import { onBeforeMount, ref, defineComponent } from 'vue';
 import SelectBitcoinWallet from '@/common/components/exchange/SelectBitcoinWallet.vue';
 import BtcToRbtcDialog from '@/common/components/exchange/BtcToRbtcDialog.vue';
-import { onBeforeMount, ref } from 'vue';
 
-export default {
+export default defineComponent({
   name: 'PegIn',
   components: {
     SelectBitcoinWallet,
@@ -34,6 +34,6 @@ export default {
       showDialog,
       closeDialog,
     };
-  }
-}
+  },
+});
 </script>

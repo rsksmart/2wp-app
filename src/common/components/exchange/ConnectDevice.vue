@@ -1,14 +1,14 @@
 <template>
   <div class="transactions">
     <v-col offset="2" cols="8">
-      <v-row v-if="isLiqualityWallet" justify="center" class="mx-0">
+      <v-row v-if="isLiqualityWallet" justify="center" class="mx-0 mb-1">
         <h1>Enable {{ walletName }} wallet</h1>
       </v-row>
-      <v-row v-else justify="center" class="mx-0">
+      <v-row v-else justify="center" class="mx-0 mb-1">
         <h1>Connect your {{ walletName }}</h1>
       </v-row>
-      <v-row v-if="isHdWallet" justify="center" class="ma-0 mb-10">
-        <p class="ma-0">(Keep your {{ walletName }} close so you can authorize access)</p>
+      <v-row v-if="isHdWallet" justify="center" class="ma-0 mb-6">
+        <p>(Keep your {{ walletName }} close so you can authorize access)</p>
       </v-row>
       <v-row justify="center">
         <v-col id="connect-device-steps" class="mb-10" cols="12">
@@ -57,7 +57,7 @@
 
       <v-row class="mx-0 mt-5">
         <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
-          <v-btn rounded outlined color="#000000" width="110"
+          <v-btn rounded variant="outlined" color="#000000" width="110"
                  :disabled="sendBitcoinState === 'error' || sendBitcoinState === 'loading'"
                  @click="back">
             <span>Back</span>
@@ -79,18 +79,16 @@
 </template>
 
 <script lang="ts">
+import {
+  computed, onBeforeMount, PropType, watch, defineComponent,
+} from 'vue';
+import { useRouter } from 'vue-router';
 import * as constants from '@/common/store/constants';
-import LedgerConnect from '@/assets/exchange/ledger/connect_ledger.png';
-import TrezorConnect from '@/assets/exchange/trezor/connect_trezor.png';
-import LiqualityConnect from '@/assets/exchange/liquality/connect_liquality.png';
-import Connect from '@/assets/exchange/wallet.png';
 import { SendBitcoinState } from '@/common/types';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { computed, onBeforeMount, PropType, watch } from 'vue';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
-import { useRouter } from 'vue-router';
 
-export default {
+export default defineComponent({
   name: 'ConnectDevice',
   props: {
     device: String,
@@ -101,25 +99,31 @@ export default {
     const router = useRouter();
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
-    const { bitcoinWallet } = useStateAttribute('pegInTx', ['bitcoinWallet']);
-    const walletName = useGetter<String>('pegInTx', constants.WALLET_NAME);
-    const isHdWallet = useGetter<Boolean>('pegInTx', constants.PEGIN_TX_IS_HD_WALLET);
+    const bitcoinWallet = useStateAttribute('pegInTx', 'bitcoinWallet');
+    const walletName = useGetter<string>('pegInTx', constants.WALLET_NAME);
+    const isHdWallet = useGetter<boolean>('pegInTx', constants.PEGIN_TX_IS_HD_WALLET);
     const clearStore = useAction('pegInTx', constants.PEGIN_TX_CLEAR_STATE);
 
     const deviceImagePath = computed(() => {
-      if (bitcoinWallet === constants.WALLET_LEDGER) return LedgerConnect;
-      if (bitcoinWallet === constants.WALLET_TREZOR) return TrezorConnect;
-      if (bitcoinWallet === constants.WALLET_LIQUALITY) return LiqualityConnect;
-      return Connect;
+      if (bitcoinWallet.value === constants.WALLET_LEDGER) {
+        // eslint-disable-next-line global-require, import/no-dynamic-require
+        return require('@/assets/exchange/ledger/connect_ledger.png');
+      }
+      if (bitcoinWallet.value === constants.WALLET_TREZOR) {
+        // eslint-disable-next-line global-require, import/no-dynamic-require
+        return require('@/assets/exchange/trezor/connect_trezor.png');
+      }
+      if (bitcoinWallet.value === constants.WALLET_LIQUALITY) {
+        // eslint-disable-next-line global-require, import/no-dynamic-require
+        return require('@/assets/exchange/liquality/connect_liquality.png');
+      }
+      // eslint-disable-next-line global-require, import/no-dynamic-require
+      return require('@/assets/exchange/wallet.png');
     });
 
-    const isLedgerWallet = computed(() => {
-      return bitcoinWallet === constants.WALLET_LEDGER;
-    });
+    const isLedgerWallet = computed(() => bitcoinWallet.value === constants.WALLET_LEDGER);
 
-    const isLiqualityWallet = computed(() => {
-      return bitcoinWallet === constants.WALLET_LIQUALITY;
-    })
+    const isLiqualityWallet = computed(() => bitcoinWallet.value === constants.WALLET_LIQUALITY);
 
     function continueToForm() {
       context.emit('continueToForm', bitcoinWallet);
@@ -134,7 +138,7 @@ export default {
       continueToForm();
     }
 
-    watch(props.showDialog, () => {
+    watch(() => props.showDialog, () => {
       continueToForm();
     });
 
@@ -155,6 +159,6 @@ export default {
       continueToForm,
       back,
     };
-  }
-}
+  },
+});
 </script>

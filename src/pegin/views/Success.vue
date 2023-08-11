@@ -31,18 +31,18 @@
 </template>
 
 <script lang="ts">
+import { computed, ref, defineComponent } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import {
   NormalizedSummary, PegInTxState, SatoshiBig, TxStatusType, TxSummaryOrientation,
 } from '@/common/types';
 import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
 import * as constants from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { computed, ref } from 'vue';
 import { useGetter, useState } from '@/common/store/helper';
-import { useRoute, useRouter } from 'vue-router';
 
-export default {
-  name: 'Success',
+export default defineComponent({
+  name: 'SuccessPegIn',
   components: {
     TxSummaryFixed,
   },
@@ -56,23 +56,21 @@ export default {
     const peginTxState = useState<PegInTxState>('pegInTx');
     const safeFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
 
-    const successPeginSummary = computed((): NormalizedSummary => {
-      return {
-        amountFromString: peginTxState.value.amountToTransfer.toBTCTrimmedString(),
-        amountReceivedString: peginTxState.value.amountToTransfer.toBTCTrimmedString(),
-        fee: Number(safeFee.value.toBTCTrimmedString()),
-        recipientAddress: peginTxState.value.rskAddressSelected,
-        txId: txId.value,
-        federationAddress: peginTxState.value.peginConfiguration.federationAddress,
-      };
-    });
+    const successPeginSummary = computed((): NormalizedSummary => ({
+      amountFromString: peginTxState.value.amountToTransfer.toBTCTrimmedString(),
+      amountReceivedString: peginTxState.value.amountToTransfer.toBTCTrimmedString(),
+      fee: Number(safeFee.value.toBTCTrimmedString()),
+      recipientAddress: peginTxState.value.rskAddressSelected,
+      txId: txId.value,
+      federationAddress: peginTxState.value.peginConfiguration.federationAddress,
+    }));
 
     function toTxStatus() {
       const router = useRouter();
       router.push({ name: 'Status', params: { txId: txId.value } });
     }
 
-    txId.value = route.params.txId as String;
+    txId.value = route.params.txId as string;
 
     return {
       environmentContext,
@@ -81,6 +79,6 @@ export default {
       orientationSummary,
       toTxStatus,
     };
-  }
-}
+  },
+});
 </script>

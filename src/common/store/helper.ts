@@ -20,7 +20,7 @@ export function useGetters(module: string, getters: string[]) {
 export function useAction(module: string, action: string) {
   const store = useStore();
   // eslint-disable-next-line
-  return async (param?:any): Promise<void> => store.dispatch(`${module}/${action}`, param);
+  return async (param?: any): Promise<void> => store.dispatch(`${module}/${action}`, param);
 }
 
 export function useGetter<T>(module: string, getter: string): ComputedRef<T> {

@@ -2,26 +2,23 @@
   <v-container fluid class="pa-0">
     <v-col class="exchange-form pa-0 ma-0">
       <v-row class="mx-0">
-        <v-col cols="1" class="pa-0 d-flex align-center">
+        <v-col cols="1" class="pa-0 d-flex align-center" style="margin-left: -26px;">
           <v-img position="center left"
-                 src="@/assets/exchange/arrow.png" height="40" contain/>
+                 :src="require('@/assets/exchange/arrow.png')" height="40" contain/>
         </v-col>
         <v-col class="px-0">
          <h1 class="justify-center text-left">Send {{environmentContext.getBtcTicker()}}.
             Get {{environmentContext.getRbtcTicker()}}.</h1>
         </v-col>
       </v-row>
-      <v-row class="mx-0 mt-2 justify-space-between">
+      <v-row class="mx-0 mt-6 justify-space-between">
         <v-col id="options-col" cols="8" lg="7" class="pa-0">
           <peg-in-account-select/>
-          <v-divider color="#C4C4C4"/>
-          <btc-input-amount
-            :isTourActive="isTourActive"
-            :enableButton="enablesMaxAmountButton"/>
-          />
-          <v-divider color="#C4C4C4"/>
+          <v-divider />
+          <btc-input-amount/>
+          <v-divider />
           <rsk-address-input @state="setRskAddressState"/>
-          <v-divider color="#C4C4C4"/>
+          <v-divider />
           <btc-fee-select/>
         </v-col>
         <v-col id="summary-col" cols="4" lg="4">
@@ -32,19 +29,25 @@
             :orientation="orientationSummary"/>
         </v-col>
       </v-row>
-      <v-row class="mx-0">
+      <v-row class="mx-0 mt-12">
         <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
-          <v-btn rounded outlined color="#000000" width="110" @click="back"
+          <v-btn rounded variant="outlined" color="#000000" width="110" @click="back"
                  :disabled="pegInFormState.matches(['loading', 'goingHome'])">
             <span>Back</span>
           </v-btn>
         </v-col>
         <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0">
-          <v-btn v-if="!pegInFormState.matches(['loading'])" rounded color="#000000"
+          <v-btn v-if="!pegInFormState.matches(['loading'])" rounded
+                  variant="flat"
+                  color="black"
                  @click="sendTx"
-                 :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])">
+                 :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])"
+                 :append-icon="mdiSendOutline"
+                 >
+            <template v-slot:append>
+              <v-icon color="white"></v-icon>
+            </template>
             <span class="whiteish">Continue</span>
-            <v-icon class="ml-2" color="#fff">mdi-send-outline</v-icon>
           </v-btn>
           <v-progress-circular v-if="pegInFormState.matches(['loading'])"
                                indeterminate color="#000000" class="mr-10"/>
@@ -62,6 +65,8 @@
 </template>
 
 <script lang="ts">
+import { computed, ref, defineComponent } from 'vue';
+import { mdiSendOutline } from '@mdi/js';
 import PegInAccountSelect from '@/pegin/components/create/PegInAccountSelect.vue';
 import BtcInputAmount from '@/pegin/components/create/BtcInputAmount.vue';
 import RskAddressInput from '@/pegin/components/create/RskAddressInput.vue';
@@ -70,16 +75,15 @@ import { PegInTxState } from '@/common/types/pegInTx';
 import * as constants from '@/common/store/constants';
 import { Machine } from '@/common/utils';
 import SatoshiBig from '@/common/types/SatoshiBig';
-import AddressWarningDialog from '@/common/components/exchange/AddressWarningDialog.vue';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { TxStatusType } from '@/common/types/store';
 import { TxSummaryOrientation } from '@/common/types/Status';
 import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
 import { NormalizedSummary } from '@/common/types';
-import { computed, ref } from 'vue';
 import { useGetter, useState } from '@/common/store/helper';
+import AddressWarningDialog from '@/common/components/exchange/AddressWarningDialog.vue';
 
-export default {
+export default defineComponent({
   name: 'PegInForm',
   components: {
     PegInAccountSelect,
@@ -95,48 +99,30 @@ export default {
     const rskAddressState = ref('invalid');
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const typeSummary = TxStatusType.PEGIN;
-    let enabledMaxAmountButton = false;
     const orientationSummary = TxSummaryOrientation.VERTICAL;
 
     const pegInTxState = useState<PegInTxState>('pegInTx');
 
-    const refundAddress = useGetter<String>('pegInTx', constants.PEGIN_TX_GET_REFUND_ADDRESS);
+    const refundAddress = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_REFUND_ADDRESS);
     const safeFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
-    const accountBalanceText = useGetter<String>('pegInTx', constants.PEGIN_TX_GET_ACCOUNT_BALANCE_TEXT);
-    const enoughBalanceSelectedFee = useGetter<Boolean>('pegInTx', constants.PEGIN_TX_GET_ENOUGH_FEE_VALUE);
+    const accountBalanceText = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_ACCOUNT_BALANCE_TEXT);
+    const enoughBalanceSelectedFee = useGetter<boolean>('pegInTx', constants.PEGIN_TX_GET_ENOUGH_FEE_VALUE);
 
-    const isReadyToCreate = computed((): boolean => {
-      return pegInTxState.value.isValidAmountToTransfer
+    const isReadyToCreate = computed((): boolean => pegInTxState.value.isValidAmountToTransfer
         && !pegInTxState.value.loadingFee
         && rskAddressState.value !== 'invalid'
         && enoughBalanceSelectedFee.value
-        && pegInTxState.value.rskAddressSelected !== '';
-    });
+        && pegInTxState.value.rskAddressSelected !== '');
 
-    const enablesMaxAmountButton = computed((): boolean => {
-      if (!enabledMaxAmountButton) {
-        enabledMaxAmountButton = !pegInTxState.loadingFee
-        && !pegInTxState.loadingBalance;
-      }
-      return enabledMaxAmountButton;
-    }
-
-    const pegInFormSummary = computed((): NormalizedSummary => {
-      return {
-        amountFromString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
-        amountReceivedString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
-        fee: Number(safeFee.value.toBTCString()),
-        recipientAddress: pegInTxState.value.rskAddressSelected,
-        refundAddress: refundAddress.value,
-        selectedAccount: accountBalanceText.value,
-        federationAddress: pegInTxState.value.peginConfiguration.federationAddress,
-      };
-    });
-
-    function sendTx() {
-      if (rskAddressState.value === 'warning') showWarningMessage.value = true;
-      else createTx();
-    }
+    const pegInFormSummary = computed((): NormalizedSummary => ({
+      amountFromString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
+      amountReceivedString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
+      fee: Number(safeFee.value.toBTCString()),
+      recipientAddress: pegInTxState.value.rskAddressSelected,
+      refundAddress: refundAddress.value,
+      selectedAccount: accountBalanceText.value,
+      federationAddress: pegInTxState.value.peginConfiguration.federationAddress,
+    }));
 
     function setRskAddressState(state: string) {
       rskAddressState.value = state;
@@ -159,6 +145,11 @@ export default {
       });
     }
 
+    function sendTx() {
+      if (rskAddressState.value === 'warning') showWarningMessage.value = true;
+      else createTx();
+    }
+
     return {
       pegInFormState,
       showWarningMessage,
@@ -173,7 +164,8 @@ export default {
       isReadyToCreate,
       pegInTxState,
       createTx,
+      mdiSendOutline,
     };
-  }
-}
+  },
+});
 </script>

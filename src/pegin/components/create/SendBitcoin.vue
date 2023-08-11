@@ -30,6 +30,8 @@
 </template>
 
 <script lang="ts">
+import { ref, defineComponent } from 'vue';
+import { useRouter } from 'vue-router';
 import PegInForm from '@/pegin/components/create/PegInForm.vue';
 import ConfirmTrezorTransaction from '@/pegin/components/trezor/ConfirmTrezorTransaction.vue';
 import ConfirmLedgerTransaction from '@/pegin/components/ledger/ConfirmLedgerTransaction.vue';
@@ -37,20 +39,18 @@ import * as constants from '@/common/store/constants';
 import {
   NormalizedTx, SendBitcoinState, SatoshiBig, BtcWallet, LiqualityError,
 } from '@/common/types';
-import TrezorTxBuilder from '@/pegin/middleware/TxBuilder/TrezorTxBuilder';
-import DeviceErrorDialog from '@/common/components/exchange/DeviceErrorDialog.vue';
-import ConnectDevice from '@/common/components/exchange/ConnectDevice.vue';
-import TxErrorDialog from '@/common/components/exchange/TxErrorDialog.vue';
 import { Machine, getClearPeginTxState } from '@/common/utils';
+import ConfirmLiqualityTransaction from '@/pegin/components/liquality/ConfirmLiqualityTransaction.vue';
+import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
+import TrezorTxBuilder from '@/pegin/middleware/TxBuilder/TrezorTxBuilder';
 import LedgerTxBuilder from '@/pegin/middleware/TxBuilder/LedgerTxBuilder';
 import LiqualityTxBuilder from '@/pegin/middleware/TxBuilder/LiqualityTxBuilder';
 import TxBuilder from '@/pegin/middleware/TxBuilder/TxBuilder';
-import ConfirmLiqualityTransaction from '@/pegin/components/liquality/ConfirmLiqualityTransaction.vue';
-import { ref } from 'vue';
-import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
-import { useRouter } from 'vue-router';
+import DeviceErrorDialog from '@/common/components/exchange/DeviceErrorDialog.vue';
+import ConnectDevice from '@/common/components/exchange/ConnectDevice.vue';
+import TxErrorDialog from '@/common/components/exchange/TxErrorDialog.vue';
 
-export default {
+export default defineComponent({
   name: 'SendBitcoin',
   components: {
     PegInForm,
@@ -83,7 +83,7 @@ export default {
     const txBuilder = ref<TxBuilder>();
 
     const bitcoinWallet = useStateAttribute<BtcWallet>('pegInTx', 'bitcoinWallet');
-    const sessionId = useStateAttribute<String>('pegInTx', 'sessionId');
+    const sessionId = useStateAttribute<string>('pegInTx', 'sessionId');
     const walletDataReady = useStateAttribute<boolean>('pegInTx', 'walletDataReady');
     const startAskingForBalanceStore = useAction('pegInTx', constants.PEGIN_TX_START_ASKING_FOR_BALANCE);
     const stopAskingForBalance = useAction('pegInTx', constants.PEGIN_TX_STOP_ASKING_FOR_BALANCE);
@@ -92,7 +92,7 @@ export default {
     const clearStore = useAction('pegInTx', constants.PEGIN_TX_CLEAR_STATE);
     const init = useAction('pegInTx', constants.PEGIN_TX_INIT);
     const setBtcWallet = useAction('pegInTx', constants.PEGIN_TX_ADD_BITCOIN_WALLET);
-    const getChangeAddress = useGetter<(accountType: String)=> String>('pegInTx', constants.PEGIN_TX_GET_CHANGE_ADDRESS);
+    const getChangeAddress = useGetter<(accountType: string)=> string>('pegInTx', constants.PEGIN_TX_GET_CHANGE_ADDRESS);
 
     async function toConfirmTx({
       amountToTransferInSatoshi,
@@ -143,7 +143,7 @@ export default {
       addNormalizedTx(getClearPeginTxState().normalizedTx);
     }
 
-    function toTrackingId([error , txHash]: string[]) {
+    function toTrackingId([error, txHash]: string[]) {
       if (error !== '') {
         txError.value = error;
         showTxErrorDialog.value = true;
@@ -186,38 +186,19 @@ export default {
         });
     }
 
-    async function backToConnectDevice() {
-      await clear();
-      await clearAccount();
-      let wallet: BtcWallet;
-      if (bitcoinWallet.value) {
-        wallet = bitcoinWallet.value;
-      } else {
-        await back();
-      }
-      await clearStore();
-      init()
-        .then(() => setBtcWallet(wallet));
-    }
-
-    async function back() {
-      await stopAskingForBalance();
-      context.emit('back');
-    }
-
     function setTxBuilder():void {
-      switch (this.peginTxState.bitcoinWallet) {
+      switch (bitcoinWallet.value) {
         case constants.WALLET_TREZOR:
-          this.txBuilder = new TrezorTxBuilder();
+          txBuilder.value = new TrezorTxBuilder();
           break;
         case constants.WALLET_LEDGER:
-          this.txBuilder = new LedgerTxBuilder();
+          txBuilder.value = new LedgerTxBuilder();
           break;
         case constants.WALLET_LIQUALITY:
-          this.txBuilder = new LiqualityTxBuilder();
+          txBuilder.value = new LiqualityTxBuilder();
           break;
         default:
-          this.txBuilder = new TrezorTxBuilder();
+          txBuilder.value = new TrezorTxBuilder();
           break;
       }
     }
@@ -233,6 +214,25 @@ export default {
       txError.value = '';
       setTxBuilder();
       await stopAskingForBalance();
+    }
+
+    async function back() {
+      await stopAskingForBalance();
+      context.emit('back');
+    }
+
+    async function backToConnectDevice() {
+      await clear();
+      await clearAccount();
+      let wallet: BtcWallet;
+      if (bitcoinWallet.value) {
+        wallet = bitcoinWallet.value;
+      } else {
+        await back();
+      }
+      await clearStore();
+      init()
+        .then(() => setBtcWallet(wallet));
     }
 
     setTxBuilder();
@@ -262,5 +262,5 @@ export default {
       walletDataReady,
     };
   },
-}
+});
 </script>

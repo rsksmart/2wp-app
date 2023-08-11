@@ -2,13 +2,13 @@
   <div class="transactions">
     <v-row class="mx-0 d-flex justify-center">
       <v-col cols="10" lg="8" xl="6" class="d-flex justify-center">
-        <h1 class="text-center">Confirm transaction on your device</h1>
+        <h1 class="text-center">Confirm transaction details</h1>
       </v-col>
     </v-row>
     <v-row class="mx-0 my-8 d-flex justify-center">
       <p class="text-center">
         Make sure the amount, address and transaction fee displayed
-        on the Trezor device are correct.
+        on the Liquality wallet are correct.
         <br>
         To prevent malware attacks, double-check the address with the recipient.
         <br>
@@ -16,150 +16,117 @@
       </p>
     </v-row>
     <v-row id="instructions-trezor" justify="center" class="mx-0">
-      <v-col cols="3">
-        <v-row class="mx-0 d-flex justify-center">
-          <v-img src="@/assets/exchange/rootstock_black.png" height="40" contain/>
-        </v-row>
+      <v-col cols="4">
+      </v-col>
+      <v-col cols="4">
         <v-row class="mx-0 d-flex justify-center">
           <h4 class="text-center">
-          <div class="number">1</div>Confirm on {{environmentContext.getRskText()}}</h4>
-        </v-row>
-      </v-col>
-      <v-col cols="3">
-        <v-row class="mx-0">
-          <v-img src="@/assets/exchange/trezor/transfer.png" height="40" contain/>
-        </v-row>
-        <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center"><div class="number">2</div>Confirm funds transfer</h4>
-        </v-row>
-      </v-col>
-      <v-col v-if="parseFloat(changeAmount) > 0" cols="3">
-        <v-row class="mx-0">
-          <v-img src="@/assets/exchange/trezor/change.png" height="40" contain/>
-        </v-row>
-        <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center"><div class="number">3</div>Confirm change address</h4>
-        </v-row>
-      </v-col>
-      <v-col cols="3">
-        <v-row class="mx-0">
-          <v-img src="@/assets/exchange/trezor/fee.png" height="40" contain/>
-        </v-row>
-        <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center">
-            <div class="number">
-              {{ parseFloat(changeAmount) > 0 ? 4 : 3 }}
-            </div>
-            Confirm transaction fee
+            Transaction information
           </h4>
         </v-row>
       </v-col>
+      <v-col cols="4">
+      </v-col>
     </v-row>
     <v-row justify="center" class="mx-0">
-      <v-col cols="3">
+       <v-col class="pr-0" cols="4">
+      </v-col>
+      <v-col class="px-0" cols="4">
         <fieldset class="confirmation-box">
-          <legend align="center" class="px-4">See on Trezor</legend>
-          <v-row justify="center" class="mt-5 mx-0"><span>Confirm</span></v-row>
-          <v-row justify="center" align="start" class="mt-5 mx-0 text-center">
-            <span>
-            OP_RETURN
-            </span>
-            <v-tooltip right>
-              <template v-slot:activator="{ on, attrs }">
-                <v-icon small color="black" v-bind="attrs" v-on="on" class="ml-2">
-                  mdi-information
-                </v-icon>
-              </template>
-              <p class="tooltip-form mb-0">
-                The OP_RETURN is an output with information
-                required for the {{environmentContext.getRskText()}} network.
-              </p>
-            </v-tooltip>
-          </v-row>
-          <v-row justify="center" class="mt-5 mx-0 d-none d-lg-block">
-            <v-col class="pa-0 d-flex flex-column align-center">
-              <span v-for="value in splitString(opReturnData)" :key="value">
-                {{ value }}
-              </span>
+          <legend class="px-4">See on liquality</legend>
+          <v-row justify="start" class="mt-5 mx-3 line-box-bottom">
+            <v-col cols="2" class="d-flex flex-column align-left px-0">
+              <h3>
+                {{
+                  convertAmount(pegInTxState.normalizedTx.outputs[0].amount)
+                }}
+              </h3>
+            </v-col>
+            <v-col cols="10" class="d-flex px-0 flex-column align-left">
+              <v-tooltip right>
+                <template v-slot:activator="{props}">
+                  <v-icon
+                    small
+                    class="icon-left"
+                    color="teal darken-2"
+                    v-bind="props.attrs"
+                    v-on="props.on"
+                  >
+                    mdi-information
+                  </v-icon>
+                </template>
+                <p class="tooltip-form mb-0">
+                 This output only contains metadata required by
+                 RSK to process the peg-in, therefore it doesn't
+                 include any value.
+                </p>
+              </v-tooltip>
             </v-col>
           </v-row>
-          <v-row justify="center" class="mt-5 mx-0 d-lg-none">
-            <v-col class="pa-0 px-4 d-flex flex-column align-center">
-              <span class="breakable-address">
-                {{ opReturnData }}
+
+           <v-row justify="start" class="mx-3 line-box-bottom">
+            <v-col class="pa-0 pb-2 d-flex flex-column align-left">
+              <span class="breakable-address my-5">
+                {{ pegInTxState.normalizedTx.outputs[1].address }}
               </span>
+              <h3>
+                {{
+                  convertAmount(pegInTxState.normalizedTx.outputs[1].amount)
+                }}
+              </h3>
             </v-col>
           </v-row>
-          <v-row justify="center" class="mt-5 mb-3 mx-0">Confirm</v-row>
+
+          <v-row v-if="pegInTxState.normalizedTx.outputs[2]"
+          justify="start" class="mx-3 line-box-bottom">
+            <v-col class="pa-0 pb-4 d-flex flex-column align-left">
+              <span class="breakable-address my-5">
+                {{ pegInTxState.normalizedTx.outputs[2].address }}
+              </span>
+              <div class="d-flex">
+                <div class="liquality-info">
+                  <h3>
+                    {{
+                      convertAmount(pegInTxState.normalizedTx.outputs[2].amount)
+                    }}
+                  </h3>
+                </div>
+                <div class="liquality-info">
+                  <span class="wallet-tag">
+                    My Wallet
+                  </span>
+                </div>
+              </div>
+            </v-col>
+          </v-row>
+
+          <v-row justify="start" class="mx-2 my-3">
+            <v-col class="pa-0 pb-2 d-flex flex-column align-left">
+              <v-row class="pa-0 ma-0">
+                <span class="grayish">
+                Fee: {{ fee + ' ' + environmentContext.getBtcTicker() }}
+              </span>
+              </v-row>
+              <v-row class="pa-0 mb-0 mt-1 mx-0">
+                <span class="grayish">
+                Please make sure to check that the fee this transaction is paying
+                  is along your expectations.
+              </span>
+              </v-row>
+            </v-col>
+          </v-row>
         </fieldset>
       </v-col>
-      <v-col cols="3">
-        <fieldset class="confirmation-box">
-          <legend align="center" class="px-4">See on Trezor</legend>
-          <v-row justify="center" class="mt-5 mx-0">Confirm sending</v-row>
-          <v-row justify="center" class="mt-5 mx-0 text-center" >
-            Amount: {{pegInTxState.amountToTransfer.toBTCTrimmedString()}}
-          </v-row>
-          <v-row justify="center" class="mt-5 mx-0 d-none d-lg-block">
-            <v-col class="pa-0 d-flex flex-column align-center">
-              <span v-for="value in splitString(rskFederationAddress)" :key="value">
-                {{ value }}
-              </span>
-            </v-col>
-          </v-row>
-          <v-row justify="center" class="mt-5 mx-0 d-lg-none">
-            <span>
-              {{cropAddress(rskFederationAddress)}}
-            </span>
-          </v-row>
-          <v-row justify="center" class="mt-5 mb-3 mx-0">Confirm</v-row>
-        </fieldset>
-      </v-col>
-      <v-col v-if="parseFloat(changeAmount) > 0" cols="3">
-        <fieldset class="confirmation-box">
-          <legend align="center" class="px-4">See on Trezor</legend>
-          <v-row justify="center" class="mt-5 mx-0">Confirm sending</v-row>
-          <v-row justify="center" class="mt-5 mx-0 text-center">Amount: {{changeAmount}}</v-row>
-          <v-row justify="center" class="mt-5 mx-0 d-none d-lg-block">
-            <v-col class="pa-0 d-flex flex-column align-center">
-              <span v-for="value in splitString(changeAddress)" :key="value">
-                {{ value }}
-              </span>
-            </v-col>
-          </v-row>
-          <v-row justify="center" class="mt-5 mx-0 d-lg-none">
-            <span>
-              {{cropAddress(changeAddress)}}
-            </span>
-          </v-row>
-          <v-row justify="center" class="mt-5 mb-3 mx-0">Confirm</v-row>
-        </fieldset>
-      </v-col>
-      <v-col cols="3">
-        <fieldset class="confirmation-box">
-          <legend align="center" class="px-4">See on Trezor</legend>
-          <v-row justify="center" class="mt-5 mx-0">Really send</v-row>
-          <v-row justify="center" class="mt-5 mx-0 text-center">
-            Amount: {{computedFullAmount}}
-          </v-row>
-          <v-row justify="center" class="mt-5 mx-0 text-center">
-            Fee: {{safeFee.toBTCTrimmedString()}}
-          </v-row>
-          <v-row justify="center" class="mt-4 mx-0 text-center">
-            Please make sure to check that the fee this transaction is paying
-            is along your expectations.
-          </v-row>
-          <v-row justify="center" class="mt-5 mb-3 mx-0">Confirm</v-row>
-        </fieldset>
+      <v-col class="pl-0" cols="4">
       </v-col>
     </v-row>
     <v-divider/>
     <v-row class="mx-0 my-8">
       <tx-summary-fixed
-        :summary="confirmTrezorTxSummary"
+        :summary="confirmLiqualityTxSummary"
         :initialExpand="true"
-        :type='typeSummary'
-        :orientation='orientationSummary'/>
+        :type="typeSummary"
+        :orientation="orientationSummary"/>
     </v-row>
     <v-row class="mx-0 my-8">
       <advanced-data :rawTx="rawTx" :initial-expand="false"/>
@@ -181,7 +148,7 @@
     <v-row v-if="confirmTxState.matches(['loading'])" class="mx-0 d-flex justify-center">
       <v-col>
         <v-row class="mx-0 mb-5 d-flex justify-center">
-          See your Trezor device to confirm your transaction!
+          See Liquality wallet to confirm your transaction!
         </v-row>
         <v-row class="mx-0 mb-5 mt-10 d-flex justify-center">
           <v-progress-circular indeterminate :size="60" :width="8" color="#000000" />
@@ -192,10 +159,12 @@
 </template>
 
 <script lang="ts">
-import TrezorTxBuilder from '@/pegin/middleware/TxBuilder/TrezorTxBuilder';
 import {
-  NormalizedSummary,
-  TrezorSignedTx, TrezorTx,
+  computed, ref, PropType, defineComponent,
+} from 'vue';
+import {
+  LiqualitySignedTx,
+  LiqualityTx, NormalizedSummary,
 } from '@/common/types';
 import ApiService from '@/common/services/ApiService';
 import SatoshiBig from '@/common/types/SatoshiBig';
@@ -205,14 +174,14 @@ import { Machine } from '@/common/utils';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { PegInTxState } from '@/common/types/pegInTx';
 import * as constants from '@/common/store/constants';
+import LiqualityTxBuilder from '@/pegin/middleware/TxBuilder/LiqualityTxBuilder';
 import { TxStatusType } from '@/common/types/store';
 import { TxSummaryOrientation } from '@/common/types/Status';
 import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
-import { computed, PropType, ref } from 'vue';
 import { useGetter, useState } from '@/common/store/helper';
 
-export default {
-  name: 'ConfirmTrezorTransaction',
+export default defineComponent({
+  name: 'ConfirmLiqualityTransaction',
   components: {
     TxSummaryFixed,
     AdvancedData,
@@ -223,7 +192,7 @@ export default {
       required: true,
     },
     txBuilder: {
-      type: Object as PropType<TrezorTxBuilder>,
+      type: Object as PropType<LiqualityTxBuilder>,
       required: true,
     },
   },
@@ -232,24 +201,40 @@ export default {
     const rawTx = ref('');
     const typeSummary = TxStatusType.PEGIN;
     const orientationSummary = TxSummaryOrientation.HORIZONTAL;
+    const VALUE_INCOMPLETE_MESSAGE = 'Not Found';
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
     const pegInTxState = useState<PegInTxState>('pegInTx');
     const walletService = useGetter<WalletService>('pegInTx', constants.PEGIN_TX_GET_WALLET_SERVICE);
-    const refundAddress = useGetter<String>('pegInTx', constants.PEGIN_TX_GET_REFUND_ADDRESS);
-    const accountBalanceText = useGetter<String>('pegInTx', constants.PEGIN_TX_GET_ACCOUNT_BALANCE_TEXT);
+    const accountBalanceText = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_ACCOUNT_BALANCE_TEXT);
     const safeFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
+
+    const feeBTC = computed(():SatoshiBig => safeFee.value);
+
+    const fee = computed((): string => {
+      if (!feeBTC.value) return VALUE_INCOMPLETE_MESSAGE;
+      return feeBTC.value.toBTCString();
+    });
+
+    const confirmLiqualityTxSummary = computed((): NormalizedSummary => ({
+      amountFromString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
+      amountReceivedString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
+      fee: Number(safeFee.value.toBTCTrimmedString()),
+      recipientAddress: pegInTxState.value.rskAddressSelected,
+      selectedAccount: accountBalanceText.value,
+      federationAddress: pegInTxState.value.peginConfiguration.federationAddress,
+    }));
 
     async function toTrackId() {
       let txError = '';
       props.confirmTxState.send('loading');
       await walletService.value.stopAskingForBalance()
-        .then(() => props.txBuilder.buildTx(this.pegInTxState.normalizedTx))
-        .then((tx: TrezorTx) => walletService.value.sign(tx) as Promise<TrezorSignedTx>)
-        .then((trezorSignedTx: TrezorSignedTx) => ApiService
-          .broadcast(trezorSignedTx.payload.serializedTx))
-        .then((id) => {
-          txId.value = id;
+        .then(() => props.txBuilder.buildTx(pegInTxState.value.normalizedTx))
+        .then((tx: LiqualityTx) => walletService.value.sign(tx) as Promise<LiqualitySignedTx>)
+        .then((liqualitySignedTx: LiqualitySignedTx) => ApiService
+          .broadcast(liqualitySignedTx.signedTx))
+        .then((txHash) => {
+          txId.value = txHash;
         })
         .catch((err) => {
           props.confirmTxState.send('error');
@@ -263,78 +248,26 @@ export default {
       context.emit('toPegInForm', 'PegInForm');
     }
 
-    function cropAddress(address: string):string {
-      return `${address.substr(0, 6)}...${address.substr(address.length - 6, address.length)}`;
+    function convertAmount(amount: string) {
+      const satoshiAmount = amount === '0' ? 0 : new SatoshiBig(amount, 'satoshi').toBTCString();
+      return `${satoshiAmount} ${environmentContext.getBtcTicker()}`;
     }
 
-    function splitString(s: string): string[] {
-      return s.match(/.{1,16}/g) ?? [];
-    }
-
-    const opReturnData = computed((): string => {
-      const opReturnDataOutput = pegInTxState.value.normalizedTx.outputs[0] ?? { script_type: '' };
-      return opReturnDataOutput.op_return_data
-        ? `${opReturnDataOutput.op_return_data.substr(0, 45)}...`
-        : 'OP_RETURN data not found';
-    });
-
-    const rskFederationAddress = computed(():string => {
-      return pegInTxState.value.normalizedTx.outputs[1]?.address?.trim() ?? `${environmentContext.getBtcText()} Powpeg address not found`;
-    });
-
-    const changeAddress = computed((): string => {
-      const [, , change] = pegInTxState.value.normalizedTx.outputs;
-      if (change && change.address) {
-        return change.address;
-      }
-      return 'Change address not found';
-    });
-
-    const changeAmount = computed((): string => {
-      const changeAmount = new SatoshiBig(pegInTxState.value.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
-      return changeAmount.toBTCTrimmedString();
-    });
-
-    const computedFullAmount = computed((): string => {
-      const changeAmount = new SatoshiBig(pegInTxState.value.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
-      return pegInTxState.value.amountToTransfer.plus(safeFee.value)
-        .plus(changeAmount)
-        .toBTCTrimmedString();
-    });
-
-    const confirmTrezorTxSummary = computed((): NormalizedSummary => {
-      return {
-        amountFromString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
-        amountReceivedString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
-        fee: Number(safeFee.value.toBTCTrimmedString()),
-        recipientAddress: pegInTxState.value.rskAddressSelected,
-        refundAddress: refundAddress.value,
-        selectedAccount: accountBalanceText.value,
-        federationAddress: pegInTxState.value.peginConfiguration.federationAddress,
-      };
-    });
-
-    props.txBuilder.getUnsignedRawTx(pegInTxState.value.normalizedTx)
-      .then((tx) => rawTx.value = tx);
+    // eslint-disable-next-line
+    props.txBuilder.getUnsignedRawTx(pegInTxState.value.normalizedTx).then((tx) => rawTx.value = tx);
 
     return {
-      environmentContext,
-      changeAmount,
-      splitString,
-      opReturnData,
+      convertAmount,
       pegInTxState,
-      rskFederationAddress,
-      cropAddress,
-      changeAddress,
-      computedFullAmount,
-      safeFee,
-      confirmTrezorTxSummary,
-      orientationSummary,
+      fee,
+      environmentContext,
+      confirmLiqualityTxSummary,
       typeSummary,
+      orientationSummary,
       rawTx,
       toPegInForm,
       toTrackId,
     };
   },
-}
+});
 </script>

@@ -22,29 +22,26 @@ const routes: Readonly<RouteRecordRaw[]> = [
     name: 'StatusSearch',
     component: () => import(/* webpackChunkName: "status-search" */ '../../status/views/Status.vue'),
   },
-  // {
-  //   path: '/pegin',
-  //   name: 'PegIn',
-  // eslint-disable-next-line max-len
-  //   component: () => import(/* webpackChunkName: "transactions" */ '../../pegin/views/PegIn.vue'),
-  // },
+  {
+    path: '/pegin',
+    name: 'PegIn',
+    component: () => import(/* webpackChunkName: "pegin" */ '../../pegin/views/PegIn.vue'),
+  },
   // {
   //   path: '/pegout',
   //   name: 'PegOut',
   //   component: () => import(/* webpackChunkName: "pegout" */ '../../pegout/views/PegOut.vue'),
   // },
-  // {
-  //   path: '/pegin/:wallet/create',
-  //   name: 'Create',
-  // eslint-disable-next-line max-len
-  //   component: () => import(/* webpackChunkName: "pegin-create" */ '../../pegin/views/Create.vue'),
-  // },
-  // {
-  //   path: '/pegin/success/:txId',
-  //   name: 'Success',
-  // eslint-disable-next-line max-len
-  //   component: () => import(/* webpackChunkName: "transactions" */ '../../pegin/views/Success.vue'),
-  // },
+  {
+    path: '/pegin/:wallet/create',
+    name: 'Create',
+    component: () => import(/* webpackChunkName: "pegin-create" */ '../../pegin/views/Create.vue'),
+  },
+  {
+    path: '/pegin/success/:txId',
+    name: 'Success',
+    component: () => import(/* webpackChunkName: "pegin-success" */ '../../pegin/views/Success.vue'),
+  },
 ];
 
 const history = createWebHistory(EnvironmentAccessorService.getEnvironmentVariables().baseUrl);
