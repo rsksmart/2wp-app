@@ -1,6 +1,6 @@
 <template>
   <div id="option-3" class="py-4">
-    <v-row class="align-start mx-0">
+    <v-row class="align-start ma-0">
       <v-col cols="auto" class="pl-0">
         <div v-bind:class="[focus ?
               'number-filled' : 'number']">3</div>
@@ -10,13 +10,13 @@
           Enter or select the {{environmentContext.getRskText()}} address where
           {{environmentContext.getRbtcTicker()}} will be deposited:
         </p>
-        <v-row class="mx-0 mt-4 pl-1">
+        <v-row class="ma-0 mt-4">
           <template v-if="useWeb3Wallet && web3Address">
-            <div class="pa-0 container">
-              <v-row class="mx-0">
+            <div class="container">
+              <v-row class="ma-0">
                 <span>Wallet connected</span>
               </v-row>
-              <v-row class="mx-0 d-flex align-center pt-1">
+              <v-row class="ma-0 mt-1 d-flex align-center">
                 <p class="mb-0 account">{{ web3Address }}</p>
               </v-row>
               <v-row class="mx-0"
@@ -26,11 +26,13 @@
                         {{validAddressMessage}}
                       </span>
               </v-row>
-              <v-col cols="4" class="pa-0 mx-0 mt-3">
-                <v-btn class="pa-0" outlined rounded width="100%" @click="disconnectWallet">
+              <v-row class="ma-0 mt-2">
+                <v-btn class="pa-0" rounded variant="outlined"
+                        @click="disconnectWallet"
+                        style="min-width: 140px;">
                   <span class="blackish">Disconnect wallet</span>
                 </v-btn>
-              </v-col>
+              </v-row>
             </div>
           </template>
           <template v-else>
@@ -41,15 +43,17 @@
                 </span>
               </v-row>
               <v-row :class="[isValidRskAddress || !rskAddressSelected ?
-                     'black-box' : 'yellow-box' ]"
-                     class="input-box-outline mx-0 pa-0 pl-0" >
+                     'black-box' : 'yellow-box']"
+                     class="ma-0 pa-0 input-box-outline" >
                 <v-text-field
                   v-model="rskAddressSelected"
-                  class="wallet-address-input"
-                  solo dense
                   flat
                   hide-details
-                  :label="`Select or paste the ${environmentContext.getRskText()} address`"
+                  single-line
+                  persistent-placeholder
+                  density="compact"
+                  variant="solo"
+                  :placeholder="`Select or paste the ${environmentContext.getRskText()} address`"
                   @focus="focus = true"
                   @blur="focus = false"
                   @change="checkStep"/>
@@ -60,7 +64,7 @@
                       </span>
               </v-row>
             </v-col>
-            <v-col cols="1" class="d-flex justify-center pb-0">
+            <v-col cols="1" class="d-flex justify-center py-0">
               <div class="divider"/>
             </v-col>
             <v-col cols="4" class="pb-0 px-0">
@@ -68,7 +72,7 @@
                 <span class="text-center">Choose address from a wallet</span>
               </v-row>
               <v-row class="mx-0 d-flex justify-center">
-                <v-btn outlined rounded color="#000000" width="100%" height="38"
+                <v-btn variant="outlined" rounded color="#000000" width="100%" height="38"
                   class="select-wallet-button"
                   @click="selectRLoginWallet" >
                   <span class="blackish">Connect wallet</span>
@@ -78,20 +82,19 @@
           </template>
         </v-row>
       </v-col>
-      <v-icon color="#C4C4C4">mdi-info-outlined</v-icon>
     </v-row>
   </div>
 </template>
 
 <script lang="ts">
 import * as rskUtils from '@rsksmart/rsk-utils';
+import { computed, ref, defineComponent } from 'vue';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import * as constants from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { computed, ref } from 'vue';
 import { useAction, useStateAttribute } from '@/common/store/helper';
 
-export default {
+export default defineComponent({
   name: 'RskAddressInput',
   setup(_, context) {
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
@@ -103,27 +106,16 @@ export default {
     const VALUE_INCOMPLETE_MESSAGE = 'Not completed';
     const rskAddressSelected = ref('');
 
-    const account = useStateAttribute<String>('web3Session', 'account');
-    const storeRskAddressSelected = useStateAttribute<String>('pegInTx', 'rskAddressSelected');
+    const account = useStateAttribute<string>('web3Session', 'account');
+    const storeRskAddressSelected = useStateAttribute<string>('pegInTx', 'rskAddressSelected');
 
     const clearAccount = useAction('web3Session', constants.WEB3_SESSION_CLEAR_ACCOUNT);
     const setRskAddress = useAction('pegInTx', constants.PEGIN_TX_ADD_RSK_ADDRESS);
     const connectWeb3 = useAction('web3Session', constants.SESSION_CONNECT_WEB3);
 
-    const web3Address = computed(() => {
-      return account.value ?? '';
-    });
+    const web3Address = computed(() => account.value ?? '');
 
-    const isValidRskAddress = computed(() => {
-      return !useWeb3Wallet
-        ? rskUtils.isValidChecksumAddress(computedRskAddress.value, CHAIN_ID) : true;
-    });
-
-    const isValidPegInAddress = computed(() => {
-      return rskUtils.isAddress(computedRskAddress.value, CHAIN_ID) && computedRskAddress.value.startsWith('0x');
-    });
-
-    const computedRskAddress = computed<String>((): String => {
+    const computedRskAddress = computed<string>((): string => {
       if (rskAddressSelected.value !== ''
         && rskUtils.isAddress(rskAddressSelected)) {
         return rskAddressSelected.value;
@@ -134,27 +126,45 @@ export default {
       return VALUE_INCOMPLETE_MESSAGE;
     });
 
+    const isValidRskAddress = computed(() => (!useWeb3Wallet.value
+      ? rskUtils.isValidChecksumAddress(computedRskAddress.value, CHAIN_ID) : true));
+
+    const isValidPegInAddress = computed(
+      () => rskUtils.isAddress(computedRskAddress.value, CHAIN_ID)
+            && computedRskAddress.value.startsWith('0x'),
+    );
+
+    function regexValidationAddress() {
+      const regx = /^(0x[a-fA-F0-9]{64}|[a-fA-F0-9]{64})$/;
+      return regx.test(rskAddressSelected.value);
+    }
+
+    function checkStep(): string {
+      if (!isValidPegInAddress.value) {
+        setRskAddress('');
+        return 'invalid';
+      }
+      setRskAddress(computedRskAddress);
+      context.emit('state', isValidRskAddress.value ? 'valid' : 'warning');
+      return '';
+    }
+
     const validAddressMessage = computed(() => {
       let message = '';
-      if (!regexValidationAddress()) message = 'The RSK recipient address must be a valid RSK address';
-      else if (!isValidPegInAddress.value) message = 'This is an invalid address';
+      if (!regexValidationAddress()) {
+        message = 'The RSK recipient address must be a valid RSK address';
+      } else if (!isValidPegInAddress.value) message = 'This is an invalid address';
       else if (!isValidRskAddress.value) message = `This may not be a valid address on the ${environmentContext.getRskText()} network. Please check.`;
       checkStep();
       return message;
     });
 
-    function regexValidationAddress() {
-      const regx = new RegExp(/^(0x[a-fA-F0-9]{64}|[a-fA-F0-9]{64})$/);
-      return regx.test(rskAddressSelected.value);
-    }
-
-    function checkStep():string {
-      if (!isValidPegInAddress) {
-        setRskAddress('');
-        return 'invalid';
-      }
-      setRskAddress(computedRskAddress);
-      context.emit('state', isValidRskAddress ? 'valid' : 'warning');
+    function disconnectWallet() {
+      clearAccount();
+      useWeb3Wallet.value = false;
+      rskAddressSelected.value = '';
+      web3Wallet.value = false;
+      setRskAddress('');
     }
 
     function selectRLoginWallet() {
@@ -165,20 +175,13 @@ export default {
         .then(() => {
           focus.value = false;
           checkStep();
-        }).catch(() => {
-        if (web3Address.value) {
-          disconnectWallet();
-        }
-      });
+        }).catch((e) => {
+          console.log(e);
+          if (web3Address.value) {
+            disconnectWallet();
+          }
+        });
       web3Wallet.value = true;
-    }
-
-    function disconnectWallet() {
-      clearAccount();
-      useWeb3Wallet.value = false;
-      rskAddressSelected.value = '';
-      web3Wallet.value = false;
-      setRskAddress('');
     }
 
     if (storeRskAddressSelected.value) {
@@ -204,6 +207,6 @@ export default {
       selectRLoginWallet,
       checkStep,
     };
-  }
-}
+  },
+});
 </script>

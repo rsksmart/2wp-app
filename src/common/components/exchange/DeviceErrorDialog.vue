@@ -1,10 +1,10 @@
 <template>
-  <v-dialog v-model="showErrorDialog" width="470" persistent>
+  <v-dialog v-model="show" width="470" persistent>
     <v-card class="container dialog">
-      <v-row class="mx-0 mt-4 d-flex justify-center">
-        <v-img :src="warningIconPath" height="47" contain />
+      <v-row class="mx-0 mt-6 d-flex justify-center">
+        <v-img :src="require('@/assets/warning.png')" height="47" contain />
       </v-row>
-      <v-row class="mx-0 mt-3 mb-3 d-flex justify-center">
+      <v-row class="mx-0 mt-6 mb-3 d-flex justify-center">
         <h2>ERROR CONNECTING TO WALLET</h2>
       </v-row>
       <v-col cols="12" align-self="center" class="pt-0" v-if="errorType">
@@ -14,8 +14,8 @@
             <a target='_blank' :href='urlToMoreInformation'>{{messageToUserOnLink}}</a>
           </p>
         </v-col>
-        <v-row class="mx-0 mb-10" justify="space-around">
-          <v-btn width="200" height="50" dense outlined rounded color="#000000" @click="toExchange">
+        <v-row class="mx-0 my-6" justify="space-around">
+          <v-btn width="200" height="50" variant="outlined" rounded color="#000000" @click="toExchange">
             <span class="blackish">Return to home</span>
           </v-btn>
           <v-btn v-if="installationLink && messageInstallationToUser" width="145" height="50"
@@ -28,8 +28,8 @@
         <v-col offset="3" cols="6">
           <p class="justify-center"><span v-html="errorMessage"></span></p>
         </v-col>
-        <v-row class="mx-0 mb-10" justify="space-around">
-          <v-btn width="200" height="50" dense outlined rounded color="#000000" @click="toExchange">
+        <v-row class="mx-0 my-6" justify="space-around">
+          <v-btn width="200" height="50" variant="outlined" rounded color="#000000" @click="toExchange">
             <span class="blackish">Return to home</span>
           </v-btn>
           <v-btn id="err-dialog-close" width="145" height="50" dense
@@ -43,9 +43,9 @@
 </template>
 
 <script lang="ts">
-import WarningIcon from '@/assets/warning.png';
+import { ref, defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
   name: 'DeviceErrorDialog',
   props: {
     showErrorDialog: Boolean,
@@ -57,7 +57,7 @@ export default {
     messageInstallationToUser: String,
   },
   setup(props, context) {
-    const warningIconPath = WarningIcon;
+    const show = ref(props.showErrorDialog);
 
     function toExchange() {
       window.location.href = '/';
@@ -68,10 +68,10 @@ export default {
     }
 
     return {
-      warningIconPath,
       toExchange,
       closeErrorDialog,
+      show,
     };
-  }
-}
+  },
+});
 </script>

@@ -31,18 +31,18 @@
 </template>
 
 <script lang="ts">
+import { computed, ref, defineComponent } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import {
   NormalizedSummary, PegInTxState, SatoshiBig, TxStatusType, TxSummaryOrientation,
 } from '@/common/types';
 import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
 import * as constants from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { computed, ref } from 'vue';
 import { useGetter, useState } from '@/common/store/helper';
-import { useRoute, useRouter } from 'vue-router';
 
-export default {
-  name: 'Success',
+export default defineComponent({
+  name: 'SuccessPegIn',
   components: {
     TxSummaryFixed,
   },
@@ -79,5 +79,5 @@ export default {
       toTxStatus,
     };
   },
-};
+});
 </script>

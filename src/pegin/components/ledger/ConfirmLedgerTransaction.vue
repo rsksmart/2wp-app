@@ -60,7 +60,7 @@
     <v-row justify="center" class="mx-0">
       <v-col cols="3" >
         <fieldset class="confirmation-box">
-          <legend align="center" class="px-4">See on Ledger</legend>
+          <legend class="px-4">See on Ledger</legend>
           <v-row justify="center" class="mt-5 mx-0 text-center">Review output #1</v-row>
           <v-row justify="center" class="mt-5 mx-0 text-center">Amount: 0</v-row>
           <v-row justify="center" align="start" class="mt-5 mx-0 text-center" >
@@ -68,8 +68,8 @@
               OP_RETURN
             </span>
             <v-tooltip right>
-              <template v-slot:activator="{ on, attrs }">
-                <v-icon small color="black" v-bind="attrs" v-on="on" class="ml-2">
+              <template v-slot:activator="{props}">
+                <v-icon small color="black" v-bind="props.attrs" v-on="props.on" class="ml-2">
                   mdi-information
                 </v-icon>
               </template>
@@ -84,7 +84,7 @@
       </v-col>
       <v-col cols="3" >
         <fieldset class="confirmation-box">
-          <legend align="center" class="px-4">See on Ledger</legend>
+          <legend class="px-4">See on Ledger</legend>
           <v-row justify="center" class="mt-5 mx-0 text-center">Review output #2</v-row>
           <v-row justify="center" class="mt-5 mx-0 text-center">
             Amount: {{pegInTxState.amountToTransfer.toBTCTrimmedString()}}
@@ -106,7 +106,7 @@
       </v-col>
       <v-col v-if="parseFloat(changeAmount) > 0" cols="3" >
         <fieldset class="confirmation-box">
-          <legend align="center" class="px-4">See on Ledger</legend>
+          <legend class="px-4">See on Ledger</legend>
           <v-row justify="center" class="mt-5 mx-0 text-center">Review output #3</v-row>
           <v-row justify="center" class="mt-5 mx-0 text-center">Amount: {{changeAmount}}</v-row>
           <v-row justify="center" class="mt-5 mx-0 d-none d-lg-block">
@@ -126,7 +126,7 @@
       </v-col>
       <v-col cols="3" >
         <fieldset class="confirmation-box">
-          <legend align="center" class="px-4">See on Ledger</legend>
+          <legend class="px-4">See on Ledger</legend>
           <v-row justify="center" class="mt-5 mx-0 text-center">Confirm transaction</v-row>
           <v-row justify="center" class="mt-5 mx-0 text-center" >
             Fees: {{safeFee.toBTCTrimmedString()}}
@@ -179,10 +179,12 @@
 
 <script lang="ts">
 import {
+  computed, PropType, ref, defineComponent, onBeforeMount,
+} from 'vue';
+import {
   LedgerTx, LedgerSignedTx, NormalizedSummary,
 } from '@/common/types';
 import ApiService from '@/common/services/ApiService';
-import AdvancedData from '@/common/components/exchange/AdvancedData.vue';
 import SatoshiBig from '@/common/types/SatoshiBig';
 import LedgerTxBuilder from '@/pegin/middleware/TxBuilder/LedgerTxBuilder';
 import { WalletService } from '@/common/services';
@@ -193,17 +195,20 @@ import * as constants from '@/common/store/constants';
 import { TxStatusType } from '@/common/types/store';
 import { TxSummaryOrientation } from '@/common/types/Status';
 import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
-import { computed, PropType, ref, onBeforeMount } from 'vue';
 import { useGetter, useState } from '@/common/store/helper';
+import AdvancedData from '@/common/components/exchange/AdvancedData.vue';
 
-export default {
+export default defineComponent({
   name: 'ConfirmLedgerTransaction',
   components: {
     TxSummaryFixed,
     AdvancedData,
   },
   props: {
-    confirmTxState: Object as PropType<Machine< 'idle' | 'loading' | 'error' >>,
+    confirmTxState: {
+      type: Object as PropType<Machine< 'idle' | 'loading' | 'error' >>,
+      required: true,
+    },
     txBuilder: Object as PropType<LedgerTxBuilder>,
   },
   setup(props, context) {
@@ -215,13 +220,11 @@ export default {
 
     const pegInTxState = useState<PegInTxState>('pegInTx');
     const walletService = useGetter<WalletService>('pegInTx', constants.PEGIN_TX_GET_WALLET_SERVICE);
-    const refundAddress = useGetter<String>('pegInTx', constants.PEGIN_TX_GET_REFUND_ADDRESS);
-    const accountBalanceText = useGetter<String>('pegInTx', constants.PEGIN_TX_GET_ACCOUNT_BALANCE_TEXT);
+    const refundAddress = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_REFUND_ADDRESS);
+    const accountBalanceText = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_ACCOUNT_BALANCE_TEXT);
     const safeFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
 
-    const rskFederationAddress = computed(():string => {
-      return pegInTxState.value.normalizedTx.outputs[1]?.address?.trim() ?? `${environmentContext.getBtcText()} Powpeg address not found`;
-    });
+    const rskFederationAddress = computed(():string => pegInTxState.value.normalizedTx.outputs[1]?.address?.trim() ?? `${environmentContext.getBtcText()} Powpeg address not found`);
 
     const changeAddress = computed((): string => {
       const [, , change] = pegInTxState.value.normalizedTx.outputs;
@@ -236,17 +239,15 @@ export default {
       return changeAmount.toBTCTrimmedString();
     });
 
-    const confirmLedgerTxSummary = computed((): NormalizedSummary => {
-      return {
-        amountFromString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
-        amountReceivedString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
-        fee: Number(safeFee.value.toBTCTrimmedString()),
-        recipientAddress: pegInTxState.value.rskAddressSelected,
-        refundAddress: refundAddress.value,
-        selectedAccount: accountBalanceText.value,
-        federationAddress: pegInTxState.value.peginConfiguration.federationAddress,
-      };
-    });
+    const confirmLedgerTxSummary = computed((): NormalizedSummary => ({
+      amountFromString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
+      amountReceivedString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
+      fee: Number(safeFee.value.toBTCTrimmedString()),
+      recipientAddress: pegInTxState.value.rskAddressSelected,
+      refundAddress: refundAddress.value,
+      selectedAccount: accountBalanceText.value,
+      federationAddress: pegInTxState.value.peginConfiguration.federationAddress,
+    }));
 
     async function toTrackId() {
       let txError = '';
@@ -262,7 +263,7 @@ export default {
         .then(() => {
           if (pegInTxState.value.selectedAccount && props.txBuilder) {
             return props.txBuilder
-              .buildTx(this.pegInTxState.normalizedTx, pegInTxState.value.selectedAccount);
+              .buildTx(pegInTxState.value.normalizedTx, pegInTxState.value.selectedAccount);
           }
           throw new Error('The account type is not set');
         })
@@ -344,5 +345,5 @@ export default {
       toTrackId,
     };
   },
-};
+});
 </script>
