@@ -63,12 +63,13 @@ export const actions: ActionTree<SessionState, RootState> = {
       rLogin.connect()
         .then((rLoginResponse) => {
           const web3 = new Web3(rLoginResponse.provider);
-          app.config.globalProperties.$web3 = web3;
+          // app.config.globalProperties.$web3 = web3;
           commit(constants.SESSION_IS_ENABLED, true);
           commit(constants.SESSION_SET_RLOGIN, rLoginResponse);
           commit(constants.SESSION_SET_RLOGIN_INSTANCE, rLogin);
           commit(constants.SESSION_SET_WEB3_INSTANCE, web3);
-          return app.config.globalProperties.$web3.eth.getAccounts();
+          // return app.config.globalProperties.$web3.eth.getAccounts();
+          return web3.eth.getAccounts();
         }).then((accounts) => {
           resolve(commit(constants.SESSION_SET_ACCOUNT, accounts[0]));
         })

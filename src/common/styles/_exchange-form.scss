@@ -68,16 +68,21 @@
     color: #737778;
   }
 
+  .v-field__input {
+    font-size: 13px;
+    padding: 0;
+    &>input {
+      height: 37px;
+      margin: 0;
+    }
+  }
+
   .input-box-outline {
     padding: 0 !important;
     background: #FFFFFF;
     border: 1px solid #D9D9D9;
     box-sizing: border-box;
     border-radius: 5px;
-    .flat {
-      background: #FFFFFF;
-      box-sizing: border-box;
-    }
     height: 37px;
     display: flex;
     align-items: center;
@@ -88,7 +93,6 @@
       margin: 0 !important;
       height: 33px !important;
       min-height: 35px !important;
-      background: #FFFFFF !important;
     }
 
     input::-webkit-inner-spin-button {
@@ -144,9 +148,6 @@
     border: 1px solid #008CFF !important;
   }
 
-  .black-box {
-    border: 1px solid #000000 !important;
-  }
 
   .input-box-flat {
     background: #fff;
@@ -263,6 +264,7 @@
 .account-select {
   .v-select__selection {
     font-size: 13px;
+    margin-inline-start: 12px !important;
   }
 }
 
@@ -271,7 +273,7 @@
 }
 
 .wallet-label-container {
-  padding: 12px 6px 12px 12px !important;
+  padding: 12px 6px 12px 0px !important;
   label {
     font-size: 13px !important;
   }
@@ -362,4 +364,20 @@
   background-color: #F8F5F5;
   border-radius: 5px;
   padding: 10px 7px !important;
+}
+
+.v-slider-track__ticks .v-slider-track__tick:nth-child(1) {
+  left: 12px;
+}
+
+.v-slider-track__ticks .v-slider-track__tick:nth-child(2) {
+  left: 50%;
+}
+
+.v-slider-track__ticks .v-slider-track__tick:nth-child(3) {
+  left: 100%;
+}
+
+.v-btn--disabled.v-btn--variant-flat {
+  opacity: 0.5;
 }

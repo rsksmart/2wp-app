@@ -321,13 +321,13 @@
            class="mx-0 pa-6 summary-box">
       <!-- Top section -->
       <v-container class="pa-0">
-        <v-row class="mx-0 mb-2">
+        <v-row class="ma-0 mb-2">
           <h2 id="summary-title-from">{{fromTitle}}</h2>
         </v-row>
 
         <!-- Sender -->
         <v-container class="px-0 py-2">
-          <v-row class="mx-0">
+          <v-row class="ma-0">
             <h1 class="boldie">
               {{ type === txType.PEGOUT ? 'Sender address' : 'Device account' }}
             </h1>
@@ -341,13 +341,13 @@
 
         <!-- Refund -->
         <v-container v-if="summary.refundAddress"
-                     class="pb-0 pl-0">
-          <v-row class="mx-0">
+                     class="px-0 py-2">
+          <v-row class="ma-0">
             <h1 class="boldie">Refund address</h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="mark">
-              <p>
+            <v-container class="pa-0">
+              <p class="light-grayish">
                 {{ refundAddress }}
               </p>
             </v-container>
@@ -356,11 +356,9 @@
 
         <!-- Amount -->
         <v-container class="px-0 py-2">
-          <v-row class="mx-0">
+          <v-row class="ma-0">
             <h1 class="boldie">
-              {{ type === txType.PEGOUT
-              ? 'Amount'
-              : currencyFromTicker + 's' }}
+              Amount
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
@@ -374,7 +372,7 @@
 
         <!-- Fee PEGIN -->
         <v-container v-if="type === txType.PEGIN" class="px-0 py-2">
-          <v-row class="mx-0">
+          <v-row class="ma-0">
             <h1 class="boldie">
              Transaction fee
             </h1>
@@ -391,7 +389,7 @@
 
         <!-- Total -->
         <v-container  v-if="type === txType.PEGIN" class="px-0 pt-2 pb-4">
-          <v-row class="mx-0">
+          <v-row class="ma-0">
             <h1 class="boldie">
               Transaction total
             </h1>
@@ -418,20 +416,20 @@
             </v-container>
           </div>
         </v-container>
-        <v-divider color="#C4C4C4"/>
+        <v-divider />
       </v-container>
 
       <!-- Bottom section -->
       <v-container class="pa-0 pt-4">
         <v-container class="pa-0">
-          <v-row class="mx-0 mb-2 justify-end">
+          <v-row class="ma-0 mb-2 justify-end">
             <h2>{{ toTitle }}</h2>
           </v-row>
         </v-container>
 
         <!-- Recipient -->
         <v-container class="px-0 py-2">
-          <v-row class="justify-end mx-0">
+          <v-row class="justify-end ma-0">
             <h1 class="boldie">
               {{ type === txType.PEGOUT ?
               'Recipient address'
@@ -482,7 +480,7 @@
 
         <!-- Pegin RBTC to receive -->
         <v-container  v-if="type === txType.PEGIN" class="pa-0 pt-2">
-          <v-row class="justify-end mx-0">
+          <v-row class="justify-end ma-0">
             <h1 class="boldie">
                {{environmentContext.getRbtcTicker()}} to receive
             </h1>
