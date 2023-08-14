@@ -15,7 +15,7 @@
         Press <strong>Send</strong> when you finish.
       </p>
     </v-row>
-    <v-row id="instructions-trezor" justify="center" class="mx-0">
+    <v-row id="instructions-trezor" justify="center" class="ma-0">
       <v-col cols="4">
       </v-col>
       <v-col cols="4">
@@ -28,7 +28,7 @@
       <v-col cols="4">
       </v-col>
     </v-row>
-    <v-row justify="center" class="mx-0">
+    <v-row justify="center" class="ma-0">
        <v-col class="pr-0" cols="4">
       </v-col>
       <v-col class="px-0" cols="4">
@@ -42,18 +42,13 @@
                 }}
               </h3>
             </v-col>
-            <v-col cols="10" class="d-flex px-0 flex-column align-left">
-              <v-tooltip right>
+            <v-col cols="10" class="d-flex px-0 flex-column align-left justify-center">
+              <v-tooltip>
                 <template v-slot:activator="{props}">
-                  <v-icon
-                    small
-                    class="icon-left"
-                    color="teal darken-2"
-                    v-bind="props.attrs"
-                    v-on="props.on"
-                  >
-                    mdi-information
-                  </v-icon>
+                  <v-btn icon size="small" variant="plain" v-bind="props" density="compact">
+                    <v-icon class="tooltip-info-icon" size="small" :icon="mdiInformation">
+                    </v-icon>
+                  </v-btn>
                 </template>
                 <p class="tooltip-form mb-0">
                  This output only contains metadata required by
@@ -101,7 +96,7 @@
           </v-row>
 
           <v-row justify="start" class="mx-2 my-3">
-            <v-col class="pa-0 pb-2 d-flex flex-column align-left">
+            <v-col class="pa-0 py-2 d-flex flex-column align-left">
               <v-row class="pa-0 ma-0">
                 <span class="grayish">
                 Fee: {{ fee + ' ' + environmentContext.getBtcTicker() }}
@@ -133,7 +128,7 @@
     </v-row>
     <v-row v-if="confirmTxState.matches(['idle', 'error', 'goingHome'])" class="ma-0">
       <v-col cols="2" class="d-flex justify-start ma-0 py-0">
-        <v-btn rounded outlined color="#000000" width="110" @click="toPegInForm"
+        <v-btn rounded variant="outlined" color="#000000" width="110" @click="toPegInForm"
                :disabled="confirmTxState.matches(['error', 'goingHome', 'loading'])">
           <span>Back</span>
         </v-btn>
@@ -162,6 +157,7 @@
 import {
   computed, ref, PropType, defineComponent,
 } from 'vue';
+import { mdiInformation } from '@mdi/js';
 import {
   LiqualitySignedTx,
   LiqualityTx, NormalizedSummary,
@@ -240,7 +236,7 @@ export default defineComponent({
           props.confirmTxState.send('error');
           txError = err.message;
         });
-      context.emit('successConfirmation', [txError, txId]);
+      context.emit('successConfirmation', [txError, txId.value]);
     }
 
     async function toPegInForm() {
@@ -267,6 +263,7 @@ export default defineComponent({
       rawTx,
       toPegInForm,
       toTrackId,
+      mdiInformation,
     };
   },
 });

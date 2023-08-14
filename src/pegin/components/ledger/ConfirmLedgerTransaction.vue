@@ -15,10 +15,10 @@
         Press <strong>Send</strong> when you finish.
       </p>
     </v-row>
-    <v-row id="instructions-ledger" justify="center" class="mx-0">
+    <v-row id="instructions-ledger" justify="center" class="ma-0">
       <v-col id="instruction-1" cols="3" xl="3">
-        <v-row justify="center" class="mx-0">
-          <v-img src="@/assets/exchange/rootstock_black.png" height="40" contain/>
+        <v-row justify="center" class="ma-0">
+          <v-img :src="require('@/assets/exchange/rootstock_black.png')" height="40" contain/>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
           <h4 class="text-center">
@@ -28,24 +28,24 @@
         </v-row>
       </v-col>
       <v-col id="instruction-2" cols="3" xl="3">
-        <v-row justify="center" class="mx-0">
-          <v-img src="@/assets/exchange/trezor/transfer.png" height="40" contain/>
+        <v-row justify="center" class="ma-0">
+          <v-img :src="require('@/assets/exchange/trezor/transfer.png')" height="40" contain/>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
           <h4 class="text-center"><span class="number">2</span>Confirm funds transfer</h4>
         </v-row>
       </v-col>
       <v-col v-if="parseFloat(changeAmount) > 0" id="instruction-3" cols="3" xl="3">
-        <v-row justify="center" class="mx-0">
-          <v-img src="@/assets/exchange/trezor/change.png" height="40" contain/>
+        <v-row justify="center" class="ma-0">
+          <v-img :src="require('@/assets/exchange/trezor/change.png')" height="40" contain/>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
           <h4 class="text-center"><span class="number">3</span>Confirm change address</h4>
         </v-row>
       </v-col>
       <v-col id="instruction-4" cols="3" xl="3">
-        <v-row justify="center" class="mx-0">
-          <v-img src="@/assets/exchange/trezor/fee.png" height="40" contain/>
+        <v-row justify="center" class="ma-0">
+          <v-img :src="require('@/assets/exchange/trezor/fee.png')" height="40" contain/>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
           <h4 class="text-center">
@@ -57,7 +57,7 @@
         </v-row>
       </v-col>
     </v-row>
-    <v-row justify="center" class="mx-0">
+    <v-row justify="center" class="ma-0">
       <v-col cols="3" >
         <fieldset class="confirmation-box">
           <legend class="px-4">See on Ledger</legend>
@@ -152,7 +152,7 @@
     </v-row>
     <v-row v-if="confirmTxState.matches(['idle', 'error', 'goingHome'])" class="ma-0">
       <v-col cols="2" class="d-flex justify-start ma-0 py-0">
-        <v-btn rounded outlined color="#000000" width="110" @click="toPegInForm"
+        <v-btn rounded variant="outlined" color="#000000" width="110" @click="toPegInForm"
                :disabled="confirmTxState.matches(['error', 'goingHome', 'loading'])">
           <span>Back</span>
         </v-btn>
@@ -290,7 +290,7 @@ export default defineComponent({
               break;
           }
         });
-      context.emit('successConfirmation', [txError, txId]);
+      context.emit('successConfirmation', [txError, txId.value]);
     }
 
     function toPegInForm() {
