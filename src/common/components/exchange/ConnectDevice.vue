@@ -92,7 +92,7 @@ export default defineComponent({
   name: 'ConnectDevice',
   props: {
     device: String,
-    sendBitcoinState: Object as PropType<SendBitcoinState>,
+    sendBitcoinState: String as PropType<SendBitcoinState>,
     showDialog: Boolean,
   },
   setup(props, context) {

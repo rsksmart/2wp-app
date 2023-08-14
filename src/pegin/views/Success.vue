@@ -49,6 +49,7 @@ export default defineComponent({
   setup() {
     const txId = ref('');
     const route = useRoute();
+    const router = useRouter();
     const typeSummary = TxStatusType.PEGIN;
     const orientationSummary = TxSummaryOrientation.HORIZONTAL;
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
@@ -66,7 +67,6 @@ export default defineComponent({
     }));
 
     function toTxStatus() {
-      const router = useRouter();
       router.push({ name: 'Status', params: { txId: txId.value } });
     }
 

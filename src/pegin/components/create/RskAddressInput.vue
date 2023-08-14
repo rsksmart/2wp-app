@@ -139,14 +139,16 @@ export default defineComponent({
       return regx.test(rskAddressSelected.value);
     }
 
-    function checkStep(): string {
+    function checkStep() {
+      let state;
       if (!isValidPegInAddress.value) {
         setRskAddress('');
-        return 'invalid';
+        state = 'invalid';
+      } else {
+        setRskAddress(computedRskAddress.value);
+        state = isValidRskAddress.value ? 'valid' : 'warning';
       }
-      setRskAddress(computedRskAddress);
-      context.emit('state', isValidRskAddress.value ? 'valid' : 'warning');
-      return '';
+      context.emit('state', state);
     }
 
     const validAddressMessage = computed(() => {
