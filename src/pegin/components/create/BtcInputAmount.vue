@@ -151,9 +151,7 @@ export default class BtcInputAmount extends Vue {
 
   fillMaxValueAvailable() {
     if (this.selectedAccountBalance.gt('0')) {
-      let tempValue = this.selectedAccountBalance;
-      tempValue = this.selectedAccountBalance.minus(this.safeTxFee);
-      tempValue = this.selectedAccountBalance.minus(this.safeTxFee);
+      const tempValue = this.selectedAccountBalance.minus(this.safeTxFee);
       this.bitcoinAmount = tempValue.toBTCTrimmedString();
       this.pegInTxState.amountToTransfer = tempValue;
       this.pegInTxState.isValidAmountToTransfer = true;
