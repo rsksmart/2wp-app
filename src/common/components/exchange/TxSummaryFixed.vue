@@ -23,18 +23,18 @@
                 <v-col>
                   <v-row>
                     <span class="status-subtitle">Refund Address</span>
-                      <v-tooltip>
-                        <template v-slot:activator="{ props }">
-                          <v-btn icon v-bind="props">
-                            <v-icon size="small" icon="mdiInformation">
-                            </v-icon>
-                          </v-btn>
-                          </template>
-                          <p class="tooltip-form mb-0">
-                            Rejected transactions will be refunded to this
-                            {{environmentContext.getBtcText()}} address.
-                          </p>
-                      </v-tooltip>
+                    <v-tooltip>
+                      <template v-slot:activator="{ props }">
+                        <v-btn icon size="small" variant="plain" v-bind="props" density="compact">
+                          <v-icon class="tooltip-info-icon" size="small" :icon="mdiInformation">
+                          </v-icon>
+                        </v-btn>
+                      </template>
+                        <p class="tooltip-form mb-0">
+                          Rejected transactions will be refunded to this
+                          {{environmentContext.getBtcText()}} address.
+                        </p>
+                    </v-tooltip>
                   </v-row>
                   <v-row>
                     <v-col class="form-field-summary">
@@ -104,24 +104,23 @@
                 <v-col>
                   <v-row>
                     <span class="status-subtitle">PowPeg Address</span>
-                    <v-tooltip right>
-                      <template v-slot:activator="{props}">
-                        <v-icon small
-                                :icon="mdiInformation"
-                                color="#000000"
-                                v-bind="props.attrs" v-on="props.on">
+                  <v-tooltip>
+                    <template v-slot:activator="{ props }">
+                      <v-btn icon size="small" variant="plain" v-bind="props" density="compact">
+                        <v-icon class="tooltip-info-icon" size="small" :icon="mdiInformation">
                         </v-icon>
-                      </template>
-                      <p class="tooltip-form mb-0">
-                        This is the {{environmentContext.getBtcText()}}
-                        address where your {{environmentContext.getBtcTicker()}}s
+                      </v-btn>
+                    </template>
+                    <p class="tooltip-form mb-0">
+                        This is the {{ environmentContext.getBtcText() }}
+                        address where your {{ environmentContext.getBtcTicker() }}s
                         are sent for conversion.
-                      </p>
-                      <p class="tooltip-form mb-0">
+                    </p>
+                    <p class="tooltip-form mb-0">
                         Validate this in your device before
                         confirming the transaction.
-                      </p>
-                    </v-tooltip>
+                    </p>
+                  </v-tooltip>
                   </v-row>
                   <v-row>
                     <v-col class="form-field-summary">
@@ -196,7 +195,16 @@
                     <v-tooltip>
                         <template v-slot:activator="{ props }">
                           <v-btn icon size="small" variant="plain" v-bind="props" density="compact">
-                            <v-icon class="tooltip-info-icon" size="small" :icon="mdiInformation">
+                            <v-icon v-if="recipientAddress === '-'"
+                                  class="tooltip-clickable-icon"
+                                  size="small"
+                                  :icon="mdiInformation"
+                                  @click="openDerivationAddressDocumentation">
+                            </v-icon>
+                            <v-icon v-else
+                                  class="tooltip-info-icon"
+                                  size="small"
+                                  :icon="mdiInformation">
                             </v-icon>
                           </v-btn>
                           </template>
@@ -204,32 +212,10 @@
                             This is the {{networkToText}} destination address
                             where the {{networkToText}} will be delivered.
                           </p>
+                          <p v-if="recipientAddress === '-'" class="tooltip-form mb-0">
+                            Click here to know how to get it.
+                          </p>
                       </v-tooltip>
-                    <!-- <v-tooltip right>
-                      <template v-slot:activator="{props}">
-                        <v-icon small color="#000000"
-                            :icon="mdiInformation"
-                            v-if="recipientAddress === '-'"
-                            @click="openDerivationAddressDocumentation"
-                            v-bind="props.attrs" v-on="props.on"
-                            class="tooltip-clickable-icon">
-                        </v-icon>
-                        <v-icon v-else
-                            :icon="mdiInformation"
-                            small color="#000000"
-                            v-bind="props.attrs" v-on="props.on"
-                            class="tooltip-info-icon">
-                        </v-icon>
-                      </template>
-                      <p class="tooltip-form mb-0">
-                        This is the {{networkToText}} destination
-                        address where the
-                        {{networkToText}} will be delivered.
-                      </p>
-                      <p v-if="recipientAddress === '-'" class="tooltip-form mb-0">
-                        Click here to know how to get it.
-                      </p>
-                    </v-tooltip> -->
                   </v-row>
                   <v-row>
                     <v-col class="form-field-summary">
@@ -304,7 +290,7 @@
                   </v-row>
                   <v-row>
                     <v-col class="form-field-summary">
-                      <v-row class="justify-end mx-0 mb-2">
+                      <v-row class="justify-end ma-0">
                         <span>{{ total }} {{ currencyFromTicker }}</span>
                       </v-row>
                     </v-col>
