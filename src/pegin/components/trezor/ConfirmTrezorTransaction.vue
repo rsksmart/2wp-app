@@ -18,7 +18,7 @@
     <v-row id="instructions-trezor" justify="center" class="mx-0">
       <v-col cols="3">
         <v-row class="mx-0 d-flex justify-center">
-          <v-img src="@/assets/exchange/rootstock_black.png" height="40" contain/>
+          <v-img :src="require('@/assets/exchange/rootstock_black.png')" height="40" contain/>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
           <h4 class="text-center">
@@ -27,7 +27,7 @@
       </v-col>
       <v-col cols="3">
         <v-row class="mx-0">
-          <v-img src="@/assets/exchange/trezor/transfer.png" height="40" contain/>
+          <v-img :src="require('@/assets/exchange/trezor/transfer.png')" height="40" contain/>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
           <h4 class="text-center"><div class="number">2</div>Confirm funds transfer</h4>
@@ -35,7 +35,7 @@
       </v-col>
       <v-col v-if="parseFloat(changeAmount) > 0" cols="3">
         <v-row class="mx-0">
-          <v-img src="@/assets/exchange/trezor/change.png" height="40" contain/>
+          <v-img :src="require('@/assets/exchange/trezor/change.png')" height="40" contain/>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
           <h4 class="text-center"><div class="number">3</div>Confirm change address</h4>
@@ -43,7 +43,7 @@
       </v-col>
       <v-col cols="3">
         <v-row class="mx-0">
-          <v-img src="@/assets/exchange/trezor/fee.png" height="40" contain/>
+          <v-img :src="require('@/assets/exchange/trezor/fee.png')" height="40" contain/>
         </v-row>
         <v-row class="mx-0 d-flex justify-center">
           <h4 class="text-center">
@@ -257,7 +257,7 @@ export default defineComponent({
           props.confirmTxState.send('error');
           txError = err.message;
         });
-      context.emit('successConfirmation', [txError, txId]);
+      context.emit('successConfirmation', [txError, txId.value]);
     }
 
     async function toPegInForm() {

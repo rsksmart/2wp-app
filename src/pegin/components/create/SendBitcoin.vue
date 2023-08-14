@@ -81,6 +81,7 @@ export default defineComponent({
       | 'goingHome'
       >>(new Machine('idle'));
     const txBuilder = ref<TxBuilder>();
+    const router = useRouter();
 
     const bitcoinWallet = useStateAttribute<BtcWallet>('pegInTx', 'bitcoinWallet');
     const sessionId = useStateAttribute<string>('pegInTx', 'sessionId');
@@ -149,8 +150,7 @@ export default defineComponent({
         showTxErrorDialog.value = true;
         txId.value = txHash;
       } else if (txHash) {
-        const router = useRouter();
-        router.push({ name: 'Success', params: { txHash } });
+        router.push({ name: 'Success', params: { txId: txHash } });
       }
     }
 

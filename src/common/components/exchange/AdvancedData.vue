@@ -8,7 +8,7 @@
         <h3 class="text-center tx-text">Advanced data:</h3>
       </v-row>
       <v-row class="d-flex justify-center mb-n3">
-        <v-btn class="btn-focus-out" fab x-small outlined color="green" @click="switchExpand"
+        <v-btn class="btn-focus-out" size="x-small" variant="outlined" rounded @click="switchExpand"
                v-bind:class="[over ? 'expand-btn-active' : 'expand-btn-inactive']"
                @mouseover="over = true" @mouseleave="over = false">
           <span class="content">
