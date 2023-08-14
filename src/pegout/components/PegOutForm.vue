@@ -288,6 +288,7 @@ export default class PegOutForm extends Vue {
 
   handleSkipTour() {
     this.isTourActive = false;
+    localStorage.setItem('ONBOARDED_USER_PEGOUT', 'true');
   }
 
   @State('web3Session') session !: SessionState;
