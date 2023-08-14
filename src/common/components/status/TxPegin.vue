@@ -12,14 +12,14 @@
                     <v-img class="icon-status-image
                       icon-rootstock-image-reject
                       icon-status-border-yellow d-flex justify-center"
-                      src="@/assets/status/rootstock.png" height="78" contain/>
+                      :src="require('@/assets/status/rootstock.png')" height="78" contain/>
                   </v-row>
                   <v-row class="mt-4">
                     <h1>{{environmentContext.getRskText()}} Network</h1>
                   </v-row>
                 </div>
                 <v-progress-linear
-                  :value="btcConfirmationsPercentage"
+                  :model-value="btcConfirmationsPercentage"
                   color="#F6C61B"
                   height="19"/>
                 <div class="d-flex justify-end">
@@ -28,7 +28,7 @@
                       <v-img class="icon-status-image
                         icon-btc-image-reject
                         icon-status-border-yellow d-flex justify-center"
-                        src="@/assets/status/btc.png" height="78" contain/>
+                        :src="require('@/assets/status/btc.png')" height="78" contain/>
                     </v-row>
                     <v-row class="mt-4">
                       <h1>Refund {{environmentContext.getBtcText()}} address</h1>
@@ -47,9 +47,9 @@
                   <v-row>
                     <v-img v-bind:class="bordersStyle.btc"
                       class="icon-status-image icon-btc-image d-flex justify-center"
-                      src="@/assets/status/btc.png" height="78" contain/>
+                      :src="require('@/assets/status/btc.png')" height="78" contain/>
                   </v-row>
-                  <v-row class="mt-5">
+                  <v-row class="pt-6">
                     <v-col>
                       <h1>{{environmentContext.getBtcText()}} Network</h1>
                     </v-col>
@@ -59,7 +59,7 @@
 
               <v-progress-linear
                 class="progress-bar-status_new"
-                :value="btcConfirmationsPercentage"
+                :model-value="btcConfirmationsPercentage"
                 :color="currentBtcBarColor"
                 height="19" />
 
@@ -68,10 +68,9 @@
                 <h5>
                   {{btcConfirmations}}/{{btcConfirmationsRequired}} confirmations
                 </h5>
-                <v-tooltip right>
+                <v-tooltip>
                   <template v-slot:activator="{props}">
-                    <v-icon x-small color="teal darken-2" v-bind="props.attrs" v-on="props.on">
-                      mdi-information
+                    <v-icon size="x-small" v-bind="props" :icon="mdiInformation">
                     </v-icon>
                   </template>
                   <p class="tooltip-form mb-0">
@@ -79,7 +78,7 @@
                   </p>
                 </v-tooltip>
               </v-row>
-              <v-row v-if="!btcConfirmationsAreDone" justify="center" class="mt-2 pa-0">
+              <v-row v-if="!btcConfirmationsAreDone" justify="center" class="mt-4 pa-0">
                 <h5>
                   Estimated time left: {{leftBtcTime}} hours
                 </h5>
@@ -90,15 +89,15 @@
                 <v-row>
                   <v-img v-bind:class="bordersStyle.rootstock"
                     class="icon-status-image icon-rootstock-image d-flex justify-center"
-                    src="@/assets/status/rootstock.png" height="78" contain/>
+                    :src="require('@/assets/status/rootstock.png')" height="78" contain/>
                 </v-row>
-                <v-row class="mt-5">
+                <v-row class="pt-6">
                   <h1>{{environmentContext.getRskText()}} Network</h1>
                 </v-row>
               </div>
             </v-col>
             <v-col class="confirm-percentage pa-0">
-              <v-row>
+              <v-row class="ma-0">
                 <v-progress-linear
                 class="progress-bar-status_new"
                 :value="rskConfirmationsPercentage"
@@ -106,7 +105,7 @@
                 height="19"/>
                 <div v-bind:class="`rsk-circle ${rskCircleColor}`"></div>
 
-                <v-row justify="center" class="mt-2 mx-0 pa-0 mb-0 confirmations-message" >
+                <v-row justify="center" class="mt-3 mx-0 pa-0 mb-0 confirmations-message" >
                   <h6 v-if="!rskConfirmationsAreDone">
                     Usually takes around 20 minutes
                   </h6>
@@ -117,9 +116,9 @@
                     <v-row>
                       <v-img v-bind:class="bordersStyle.rbtc"
                         class="icon-status-image icon-rbtc-image d-flex justify-center"
-                        src="@/assets/status/rbtc.png" height="78" contain/>
+                        :src="require('@/assets/status/rbtc.png')" height="78" contain/>
                     </v-row>
-                    <v-row class="justify-center mt-5">
+                    <v-row class="justify-center pt-10">
                       <h1
                       :style="rskConfirmationsPercentage === 100 ?
                       `color:#00B520;` : ``">
@@ -134,7 +133,7 @@
         </v-col>
       </v-row>
     </v-container>
-    <v-row class="mt-12">
+    <v-row class="pt-4 mt-12">
       <tx-summary-fixed
         :summary="txPeginSummary"
         :initialExpand="true"
@@ -148,6 +147,7 @@
 import {
   computed, reactive, ref, watch, defineComponent,
 } from 'vue';
+import { mdiInformation } from '@mdi/js';
 import {
   PeginStatus,
   SatoshiBig,
@@ -360,6 +360,7 @@ export default defineComponent({
       btcConfirmationsAreDone,
       rskConfirmationsAreDone,
       isRejected,
+      mdiInformation,
     };
   },
 });
