@@ -7,14 +7,16 @@
 </template>
 
 <script lang="ts">
+import { ref, defineComponent } from 'vue';
 import * as constants from '@/common/store/constants';
 import PegOutForm from '@/pegout/components/PegOutForm.vue';
 import { Machine } from '@/common/utils';
-import { ref } from 'vue';
 import { useAction } from '@/common/store/helper';
-
-export default {
+export default defineComponent({
   name: 'PegOut',
+  components: {
+    PegOutForm,
+  },
   setup() {
     const currentComponent = ref('PegOutForm');
     const confirmTxState = ref<Machine<
@@ -23,21 +25,17 @@ export default {
       | 'error'
       | 'goingHome'
       > >(new Machine('idle'));
-
     const init = useAction('pegOutTx', constants.PEGOUT_TX_INIT);
-
     function changePage(componentName: string) {
       currentComponent.value = componentName;
       window.scrollTo(0, 0);
     }
-
     init();
-
     return {
       currentComponent,
       confirmTxState,
       changePage,
     };
-  }
-}
+  },
+});
 </script>
