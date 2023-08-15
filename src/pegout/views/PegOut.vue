@@ -12,10 +12,13 @@ import * as constants from '@/common/store/constants';
 import PegOutForm from '@/pegout/components/PegOutForm.vue';
 import { Machine } from '@/common/utils';
 import { useAction } from '@/common/store/helper';
+import Confirmation from '../components/Confirmation.vue';
+
 export default defineComponent({
   name: 'PegOut',
   components: {
     PegOutForm,
+    Confirmation,
   },
   setup() {
     const currentComponent = ref('PegOutForm');
