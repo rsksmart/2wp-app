@@ -455,6 +455,10 @@
   left: -25px;
 }
 
+.v-img.icon-status-image.pegout.icon-rbtc-image::after {
+  left: 0;
+}
+
 .icon-status-image::after {
   content: "";
   width: 78px;
