@@ -2,7 +2,6 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import { useStore } from 'vuex';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import Home from '@/common/views/Home.vue';
-// import store from '@/common/store';
 import * as constants from '@/common/store/constants';
 
 const routes: Readonly<RouteRecordRaw[]> = [
@@ -20,18 +19,19 @@ const routes: Readonly<RouteRecordRaw[]> = [
   {
     path: '/status',
     name: 'StatusSearch',
-    component: () => import(/* webpackChunkName: "status-search" */ '../../status/views/Status.vue'),
+    component:
+      () => import(/* webpackChunkName: "status-search" */ '../../status/views/Status.vue'),
   },
   {
     path: '/pegin',
     name: 'PegIn',
     component: () => import(/* webpackChunkName: "pegin" */ '../../pegin/views/PegIn.vue'),
   },
-  // {
-  //   path: '/pegout',
-  //   name: 'PegOut',
-  //   component: () => import(/* webpackChunkName: "pegout" */ '../../pegout/views/PegOut.vue'),
-  // },
+  {
+    path: '/pegout',
+    name: 'PegOut',
+    component: () => import(/* webpackChunkName: "pegout" */ '../../pegout/views/PegOut.vue'),
+  },
   {
     path: '/pegin/:wallet/create',
     name: 'Create',
@@ -40,7 +40,8 @@ const routes: Readonly<RouteRecordRaw[]> = [
   {
     path: '/pegin/success/:txId',
     name: 'Success',
-    component: () => import(/* webpackChunkName: "pegin-success" */ '../../pegin/views/Success.vue'),
+    component:
+      () => import(/* webpackChunkName: "pegin-success" */ '../../pegin/views/Success.vue'),
   },
 ];
 

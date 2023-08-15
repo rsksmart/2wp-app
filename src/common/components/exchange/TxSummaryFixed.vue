@@ -390,8 +390,8 @@
         </v-container>
 
         <!-- Gas -->
-        <v-container v-if="type === txType.PEGOUT" class="px-0 pt-2 pb-4">
-          <v-row class="mx-0">
+        <v-container v-if="type === txType.PEGOUT" class="px-0 py-2">
+          <v-row class="ma-0">
             <h1 class="boldie">Gas</h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
@@ -433,7 +433,7 @@
 
         <!-- Fee PEGOUT -->
         <v-container v-if="type === txType.PEGOUT" class="px-0 py-2">
-          <v-row class="justify-end mx-0">
+          <v-row class="justify-end ma-0">
             <h1 class="boldie">
              Estimated fee to pay
             </h1>
@@ -449,8 +449,8 @@
         </v-container>
 
         <!-- Estimated BTC to receive -->
-        <v-container v-if="type === txType.PEGOUT" class="pa-0 pt-2">
-          <v-row class="justify-end mx-0">
+        <v-container v-if="type === txType.PEGOUT" class="px-0 py-2">
+          <v-row class="justify-end ma-0">
             <h1 class="boldie">
               Estimated {{environmentContext.getBtcTicker()}} to receive
             </h1>

@@ -2,9 +2,9 @@ import { createStore, StoreOptions } from 'vuex';
 import { RootState } from '@/common/types';
 import { status } from '@/status/store';
 import { pegInTx } from '@/pegin/store';
+import { pegOutTx } from '@/pegout/store/pegoutTx';
 import { web3Session } from './session';
 import { view } from './view';
-// import { pegOutTx } from '@/pegout/store/pegoutTx';
 import { version } from '../../../package.json';
 
 const store: StoreOptions<RootState> = {
@@ -19,7 +19,7 @@ const store: StoreOptions<RootState> = {
     web3Session,
     view,
     status,
-  //   pegOutTx,
+    pegOutTx,
   },
 };
 
