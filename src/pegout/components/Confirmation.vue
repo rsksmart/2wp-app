@@ -40,6 +40,8 @@
 </template>
 
 <script lang="ts">
+import { computed, PropType, defineComponent } from 'vue';
+import { useRouter } from 'vue-router';
 import { Machine } from '@/common/utils';
 import { TxStatusType } from '@/common/types/store';
 import { TxSummaryOrientation } from '@/common/types/Status';
@@ -48,18 +50,18 @@ import {
 } from '@/common/types';
 import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
 import * as constants from '@/common/store/constants';
-import { useAction, useGetter, useState, useStateAttribute } from '@/common/store/helper';
-import { computed, PropType } from 'vue';
-import { useRouter } from 'vue-router';
-
-export default {
-  name: 'Confirmation',
+import {
+  useAction, useGetter, useState, useStateAttribute,
+} from '@/common/store/helper';
+export default defineComponent({
+  name: 'ConfirmationPegout',
   components: {
     TxSummaryFixed,
   },
   props: {
     confirmTxState: {
-      type: Object as PropType<Machine<'idle' | 'loading' | 'error' | 'goingHome'>>
+      type: Object as PropType<Machine<'idle' | 'loading' | 'error' | 'goingHome'>>,
+      required: true,
     },
   },
   setup() {
@@ -67,25 +69,20 @@ export default {
     const typeSummary = TxStatusType.PEGOUT;
     const orientationSummary = TxSummaryOrientation.HORIZONTAL;
     const router = useRouter();
-
     const pegoutTxState = useState<PegOutTxState>('pegOutTx');
-    const btcDerivedAddress = useStateAttribute<String>('web3Session', 'btcDerivedAddress');
-    const account = useStateAttribute<String>('web3Session', 'account');
+    const btcDerivedAddress = useStateAttribute<string>('web3Session', 'btcDerivedAddress');
+    const account = useStateAttribute<string>('web3Session', 'account');
     const clearStatus = useAction('status', constants.STATUS_CLEAR);
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
-
-    const successPegOutSummary = computed((): NormalizedSummary => {
-      return {
-        amountFromString: pegoutTxState.value.amountToTransfer.toRBTCTrimmedString(),
-        amountReceivedString: estimatedBtcToReceive.value.toBTCTrimmedString(),
-        estimatedFee: Number(pegoutTxState.value.btcEstimatedFee.toBTCTrimmedString()),
-        recipientAddress: btcDerivedAddress.value,
-        senderAddress: account.value,
-        txId: pegoutTxState.value.txHash,
-        gas: Number(pegoutTxState.value.efectivePaidFee?.toRBTCTrimmedString()),
-      };
-    });
-
+    const successPegOutSummary = computed((): NormalizedSummary => ({
+      amountFromString: pegoutTxState.value.amountToTransfer.toRBTCTrimmedString(),
+      amountReceivedString: estimatedBtcToReceive.value.toBTCTrimmedString(),
+      estimatedFee: Number(pegoutTxState.value.btcEstimatedFee.toBTCTrimmedString()),
+      recipientAddress: btcDerivedAddress.value,
+      senderAddress: account.value,
+      txId: pegoutTxState.value.txHash,
+      gas: Number(pegoutTxState.value.efectivePaidFee?.toRBTCTrimmedString()),
+    }));
     function goToStatus() {
       clearStatus();
       router.push({
@@ -93,7 +90,6 @@ export default {
         params: { txId: String(pegoutTxState.value.txHash) },
       });
     }
-
     return {
       appConstants,
       successPegOutSummary,
@@ -101,6 +97,6 @@ export default {
       orientationSummary,
       goToStatus,
     };
-  }
-}
+  },
+});
 </script>
