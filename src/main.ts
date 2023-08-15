@@ -35,16 +35,15 @@ EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVari
 
 const app = createApp(App);
 
-app.config.globalProperties.$web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
+app.config.globalProperties.$web3 = new Web3(Web3.givenProvider || 'wss://localhost:8545');
+export const useGlobals = () => app.config.globalProperties;
 app.use(router);
 app.use(vuetify);
 app.use(store);
 app.mount('#app');
 
-// Vue.prototype.$web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
 if (window.ethereum) {
   window.ethereum.on('accountsChanged', await store.dispatch(`web3Session/${constants.WEB3_SESSION_GET_ACCOUNT}`));
 }
-// Vue.config.productionTip = false;
 
 export default app;

@@ -8,7 +8,7 @@
               <div class="rsk-icon-green">
                 <v-row>
                   <v-img v-bind:class="bordersStyle.rbtc"
-                    class="icon-status-image icon-rbtc-image d-flex justify-center"
+                    class="icon-status-image pegout icon-rbtc-image d-flex justify-center"
                     :src="require('@/assets/status/rbtc.png')" height="78" contain/>
                 </v-row>
               </div>

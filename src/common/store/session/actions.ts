@@ -11,7 +11,7 @@ import {
 } from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { getBtcAddressFromSignedMessage } from '@/common/utils';
-import app from '@/main';
+import { useGlobals } from '@/main';
 
 export const actions: ActionTree<SessionState, RootState> = {
   [constants.SESSION_CONNECT_WEB3]: ({ commit, state }): Promise<void> => {
@@ -81,11 +81,13 @@ export const actions: ActionTree<SessionState, RootState> = {
     });
   },
   [constants.WEB3_SESSION_GET_ACCOUNT]: async ({ commit }) => {
-    const accounts = await app.config.globalProperties.$web3.eth.getAccounts();
+    const { $web3 } = useGlobals();
+    const accounts = await $web3.eth.getAccounts();
     commit(constants.SESSION_SET_ACCOUNT, accounts[0]);
   },
   [constants.WEB3_SESSION_ADD_BALANCE]: async ({ commit, state }) => {
-    const balance = await app.config.globalProperties.$web3.eth.getBalance(state.account);
+    const { $web3 } = useGlobals();
+    const balance = await $web3.eth.getBalance(state.account as string);
     return commit(constants.WEB3_SESSION_SET_BALANCE, new WeiBig(balance, 'wei'));
   },
   [constants.WEB3_SESSION_CLEAR_ACCOUNT]: async ({ commit }) => {
