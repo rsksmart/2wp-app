@@ -24,7 +24,13 @@ module.exports = {
     '@typescript-eslint/ban-types': 'error',
     '@typescript-eslint/no-unused-vars': 'error',
     'import/no-cycle': 'off',
-    'max-len': ['warn', { code: 100, ignoreComments: true, ignoreTemplateLiterals: true }],
+    'max-len': ['warn', {
+      code: 100,
+      ignoreComments: true,
+      ignoreTemplateLiterals: true,
+      ignoreStrings: true,
+      ignoreUrls: true,
+    }],
     'vuejs-accessibility/mouse-events-have-key-events': 'off',
   },
   overrides: [

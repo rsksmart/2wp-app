@@ -1,9 +1,9 @@
 import axios from 'axios';
+import sinon from 'sinon';
 import { UnusedAddressesService } from '@/pegin/services';
 import { AddressInfo } from '@/pegin/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import * as constants from '@/common/store/constants';
-import sinon from 'sinon';
 
 const API_URL = 'https://api.url';
 
