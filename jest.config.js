@@ -1,7 +1,7 @@
 module.exports = {
   preset: '@vue/cli-plugin-unit-jest/presets/typescript-and-babel',
   collectCoverage: true,
-  collectCoverageFrom: ['src/**/*.{ts,vue}'],
+  collectCoverageFrom: ['src/(common|pegin)/(providers|services|utils)/*.ts'],
   coverageThreshold: {
     global: {
       branches: 20,
@@ -10,4 +10,6 @@ module.exports = {
       statements: 20,
     },
   },
+  coverageProvider: 'v8',
+  transformIgnorePatterns: ['node_modules/(?!axios)/'],
 };

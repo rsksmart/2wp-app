@@ -1,10 +1,10 @@
+import * as bitcoin from 'bitcoinjs-lib';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import {
   NormalizedOutput, NormalizedTx, SatoshiBig, Utxo,
 } from '@/common/types';
 import { validateAddress } from '@/common/utils';
 import * as constants from '@/common/store/constants';
-import * as bitcoin from 'bitcoinjs-lib';
 
 export default class PeginTxService {
   private static getRskOutput(recipientAddress: string, refundAddress: string): NormalizedOutput {
