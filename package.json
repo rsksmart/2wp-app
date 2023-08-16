@@ -6,7 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "test": "vue-cli-service test:unit --setupTestFrameworkScriptFile=./tests/setup.js --coverageReporters=lcov --collect-coverage",
-    "test:unit": "vue-cli-service test:unit --setupTestFrameworkScriptFile=./tests/setup.js --coverageReporters=lcov --collect-coverage",
+    "test:unit": "vue-cli-service test:unit --setupTestFrameworkScriptFile=./tests/setup.js --env=./tests/jsdom-env.js --coverageReporters=lcov --collect-coverage",
     "lint": "vue-cli-service lint",
     "scanner": "npx sonar-scanner"
   },
@@ -38,6 +38,7 @@
     "crypto-browserify": "^3.12.0",
     "ethers": "^5.7.2",
     "https-browserify": "^1.0.0",
+    "jest-environment-jsdom": "^27.5.1",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "os-browserify": "^0.3.0",
