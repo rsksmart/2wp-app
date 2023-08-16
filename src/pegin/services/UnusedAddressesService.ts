@@ -1,6 +1,6 @@
+import axios from 'axios';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { AddressStatus, SatoshiBig } from '@/common/types';
-import axios from 'axios';
 import { AddressInfo } from '../types';
 
 export default class UnusedAddressesService {

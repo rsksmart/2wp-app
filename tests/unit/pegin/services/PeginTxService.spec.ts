@@ -1,8 +1,8 @@
+import sinon from 'sinon';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import * as constants from '@/common/store/constants';
 import { SatoshiBig } from '@/common/types';
 import { PeginTxService } from '@/pegin/services';
-import sinon from 'sinon';
 
 function setEnvironment() {
   const defaultEnvironmentVariables = {
