@@ -59,24 +59,4 @@ export default defineComponent({
     };
   },
 });
-
-// @Component
-// export default class AdvancedData extends Vue {
-//   @Prop() initialExpand!: boolean;
-//
-//   @Prop() rawTx!: string;
-//
-//   expanded = false;
-//
-//   over = false;
-//
-//   @Emit()
-//   switchExpand() {
-//     this.expanded = !this.expanded;
-//   }
-//
-//   created() {
-//     this.expanded = this.initialExpand;
-//   }
-// }
 </script>

@@ -584,29 +584,23 @@ export default defineComponent({
     );
 
     const total = computed((): string => {
-      const amount = new Big(props.summary?.amountFromString || '0');
+      const amountFromProps = new Big(props.summary?.amountFromString || '0');
       const fee = new Big(safeFee.value);
-      return amount.plus(fee).toString() || VALUE_INCOMPLETE_MESSAGE;
+      return amountFromProps.plus(fee).toString() || VALUE_INCOMPLETE_MESSAGE;
     });
 
     const amountUSD = computed((): string => {
-      const amount = new SatoshiBig(props.summary?.amountFromString || 0, 'btc');
-      if (!amount || !bitcoinPrice) return VALUE_INCOMPLETE_MESSAGE;
+      const btcAmount = new SatoshiBig(props.summary?.amountFromString || 0, 'btc');
+      if (!btcAmount || !bitcoinPrice) return VALUE_INCOMPLETE_MESSAGE;
       // TODO: check casting accuracy
-      return amount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
-    });
-
-    const amountToReceiveUSD = computed((): string => {
-      const amount = new SatoshiBig(props.summary?.amountReceivedString || 0, 'btc');
-      if (!amount || !bitcoinPrice) return VALUE_INCOMPLETE_MESSAGE;
-      return amount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
+      return btcAmount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
     });
 
     const totalUSD = computed((): string => {
       const totalValue = total.value === VALUE_INCOMPLETE_MESSAGE ? 0 : total.value;
-      const amount = new SatoshiBig(totalValue, 'btc');
-      if (!amount || !bitcoinPrice) return VALUE_INCOMPLETE_MESSAGE;
-      return amount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
+      const totalAmount = new SatoshiBig(totalValue, 'btc');
+      if (!totalAmount || !bitcoinPrice) return VALUE_INCOMPLETE_MESSAGE;
+      return totalAmount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
     });
 
     const federationAddress = computed((): string => (
@@ -699,7 +693,6 @@ export default defineComponent({
       amountToReceive,
       total,
       amountUSD,
-      amountToReceiveUSD,
       totalUSD,
       federationAddress,
       networkFromText,

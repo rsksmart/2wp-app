@@ -146,21 +146,21 @@ export default {
     const btnWalletClass = computed(() => (isAllowedBrowser ? 'wallet-button mb-0' : 'wallet-button-disabled mb-0'));
 
     const btcIcon = computed(() => {
-      const btcIcon = isAllowedBrowser ? 'btc.png' : 'btc-disable.png';
+      const btcIconName = isAllowedBrowser ? 'btc.png' : 'btc-disable.png';
       // eslint-disable-next-line global-require, import/no-dynamic-require
-      return require(`@/assets/exchange/${btcIcon}`);
+      return require(`@/assets/exchange/${btcIconName}`);
     });
 
     const rbtcIcon = computed(() => {
-      const rbtcIcon = isAllowedBrowser ? 'rbtc.png' : 'rbtc-disable';
+      const rbtcIconName = isAllowedBrowser ? 'rbtc.png' : 'rbtc-disable';
       // eslint-disable-next-line global-require, import/no-dynamic-require
-      return require(`@/assets/exchange/${rbtcIcon}`);
+      return require(`@/assets/exchange/${rbtcIconName}`);
     });
 
     const statusIcon = computed(() => {
-      const statusIcon = isAllowedBrowser ? 'status-icon.svg' : 'status-icon-disabled.svg';
+      const statusIconName = isAllowedBrowser ? 'status-icon.svg' : 'status-icon-disabled.svg';
       // eslint-disable-next-line global-require, import/no-dynamic-require
-      return require(`@/assets/status/${statusIcon}`);
+      return require(`@/assets/status/${statusIconName}`);
     });
 
     function selectPegIn(): void {
