@@ -53,9 +53,9 @@
 </template>
 
 <script lang="ts">
-/* eslint-disable */
+/* eslint-disable vue/no-side-effects-in-computed-properties */
 import {
-  computed, reactive, ref, watch, defineComponent,
+  computed, reactive, ref, defineComponent,
 } from 'vue';
 import * as constants from '@/common/store/constants';
 import { PegoutStatus, PegoutStatusDataModel } from '@/common/types';

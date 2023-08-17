@@ -22,7 +22,7 @@
       </v-row>
       <v-row class="mx-0 mb-3 mt-3">
         <v-img
-        :src="require(`@/assets/exchange/trezor/${environmentContext.getBtcTicker().toLowerCase()}_conversion.png`)"
+        :src="imgSrc"
         height="135" min-width="500"
         />
       </v-row>
@@ -37,7 +37,7 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent } from 'vue';
+import { ref, defineComponent, computed } from 'vue';
 import { mdiCloseCircleOutline } from '@mdi/js';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 
@@ -50,6 +50,12 @@ export default defineComponent({
     const show = ref(props.showDialog);
     const checkbox = ref(false);
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+
+    const imgSrc = computed(() => {
+      const ticker = environmentContext.getBtcTicker().toLowerCase();
+      // eslint-disable-next-line global-require, import/no-dynamic-require
+      return require(`@/assets/exchange/trezor/${ticker}_conversion.png`);
+    });
 
     function closeDialog() {
       if (checkbox.value === true) {
@@ -64,24 +70,8 @@ export default defineComponent({
       closeDialog,
       show,
       mdiCloseCircleOutline,
+      imgSrc,
     };
   },
 });
-
-// @Component
-// export default class BtcToRbtcDialog extends Vue {
-//   @Prop() showDialog!: boolean;
-//
-//   checkbox = false;
-//
-//   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-//
-//   @Emit('closeDialog')
-//   closeDialog() {
-//     if (this.checkbox === true) {
-//       localStorage.setItem('BTRD_COOKIE_DISABLED', 'true');
-//     }
-//     return this.showDialog;
-//   }
-// }
 </script>

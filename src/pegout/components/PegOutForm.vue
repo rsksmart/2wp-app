@@ -182,7 +182,8 @@ export default defineComponent({
     function switchDeriveButton(): void {
       // eslint-disable-next-line
       // @ts-ignore
-      injectedProvider.value = session.value.rLoginInstance?.providerController.injectedProvider.name;
+      const provider = session.value.rLoginInstance?.providerController.injectedProvider.name;
+      injectedProvider.value = provider;
       isReadyToSign.value = !isReadyToSign.value;
     }
     function changePage() {

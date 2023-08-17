@@ -143,7 +143,7 @@ export default defineComponent({
       return message;
     });
 
-    const activeClass = computed((): string => {
+    const computedActiveClass = computed((): string => {
       let activeClass = '';
       if (!isValidTxId.value && txId.value) {
         activeClass = 'status-text-field-warning';
@@ -194,7 +194,7 @@ export default defineComponent({
 
     return {
       txId,
-      activeClass,
+      computedActiveClass,
       isValidTxId,
       getPegStatus,
       notValidTxIdMessage,

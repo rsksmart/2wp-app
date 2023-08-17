@@ -48,7 +48,9 @@
                   disabled
                   flat
                   hide-details
-                  :placeholder="`Connect your wallet to select the ${environmentContext.getRbtcTicker()} address`"
+                  :placeholder="`
+                    Connect your wallet to select the ${environmentContext.getRbtcTicker()} address
+                    `"
                   @focus="focus = true"
                   @blur="focus = false"/>
               </v-row>

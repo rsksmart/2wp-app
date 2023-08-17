@@ -63,25 +63,4 @@ export default defineComponent({
     };
   },
 });
-
-// @Component
-// class AddressWarningDialog extends Vue {
-//   @Prop() showDialog!: boolean;
-//
-//   @Prop() address!: string;
-//
-//   iconPath = WarningImage;
-//
-//   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-//
-//   @Emit('continue')
-//   send() {
-//     return this.showDialog;
-//   }
-//
-//   @Emit('cancel')
-//   closeDialog() {
-//     return this.showDialog;
-//   }
-// }
 </script>

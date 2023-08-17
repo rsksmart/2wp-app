@@ -103,7 +103,11 @@ export default class LedgerService extends WalletService {
     ).concat(
       this.getDerivedAddresses(segwit.count, segwit.lastIndex, constants.BITCOIN_SEGWIT_ADDRESS),
     ).concat(
-      this.getDerivedAddresses(nativeSegwit.count, nativeSegwit.lastIndex, constants.BITCOIN_NATIVE_SEGWIT_ADDRESS),
+      this.getDerivedAddresses(
+        nativeSegwit.count,
+        nativeSegwit.lastIndex,
+        constants.BITCOIN_NATIVE_SEGWIT_ADDRESS,
+      ),
     );
     return addressList;
   }
