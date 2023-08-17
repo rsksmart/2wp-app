@@ -235,8 +235,8 @@ export default defineComponent({
     });
 
     const changeAmount = computed(() => {
-      const changeAmount = new SatoshiBig(pegInTxState.value.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
-      return changeAmount.toBTCTrimmedString();
+      const changeAmountInSB = new SatoshiBig(pegInTxState.value.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
+      return changeAmountInSB.toBTCTrimmedString();
     });
 
     const confirmLedgerTxSummary = computed((): NormalizedSummary => ({

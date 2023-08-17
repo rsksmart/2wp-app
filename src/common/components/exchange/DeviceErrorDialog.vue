@@ -15,7 +15,8 @@
           </p>
         </v-col>
         <v-row class="mx-0 my-6" justify="space-around">
-          <v-btn width="200" height="50" variant="outlined" rounded color="#000000" @click="toExchange">
+          <v-btn width="200" height="50" variant="outlined" rounded color="#000000"
+            @click="toExchange">
             <span class="blackish">Return to home</span>
           </v-btn>
           <v-btn v-if="installationLink && messageInstallationToUser" width="145" height="50"
@@ -29,7 +30,9 @@
           <p class="justify-center"><span v-html="errorMessage"></span></p>
         </v-col>
         <v-row class="mx-0 my-6" justify="space-around">
-          <v-btn width="200" height="50" variant="outlined" rounded color="#000000" @click="toExchange">
+          <v-btn width="200" height="50" variant="outlined" rounded color="#000000"
+            @click="toExchange"
+          >
             <span class="blackish">Return to home</span>
           </v-btn>
           <v-btn id="err-dialog-close" width="145" height="50" dense

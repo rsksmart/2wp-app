@@ -210,7 +210,6 @@ export default defineComponent({
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
     const txDetails = useStateAttribute<PeginStatus>('status', 'txDetails');
-    // const type = useStateAttribute<TxStatusType>('status', 'type');
     const isRejected = useGetter<boolean>('status', constants.STATUS_IS_REJECTED);
     const setAmount = useAction('pegInTx', constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER);
     const peginInit = useAction('pegInTx', constants.PEGIN_TX_INIT);
@@ -223,8 +222,6 @@ export default defineComponent({
     const rskConfirmationsAreDone = computed(
       () => txDetails.value.status === constants.PegStatus.CONFIRMED,
     );
-
-    // const showSteps = computed((): boolean => type.value !== TxStatusType.UNSET_STATUS);
 
     const txPeginSummary = computed((): NormalizedSummary => {
       const status = txDetails.value;
