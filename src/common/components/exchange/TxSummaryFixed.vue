@@ -584,29 +584,23 @@ export default defineComponent({
     );
 
     const total = computed((): string => {
-      const amount = new Big(props.summary?.amountFromString || '0');
+      const amountFromProps = new Big(props.summary?.amountFromString || '0');
       const fee = new Big(safeFee.value);
-      return amount.plus(fee).toString() || VALUE_INCOMPLETE_MESSAGE;
+      return amountFromProps.plus(fee).toString() || VALUE_INCOMPLETE_MESSAGE;
     });
 
     const amountUSD = computed((): string => {
-      const amount = new SatoshiBig(props.summary?.amountFromString || 0, 'btc');
-      if (!amount || !bitcoinPrice) return VALUE_INCOMPLETE_MESSAGE;
+      const btcAmount = new SatoshiBig(props.summary?.amountFromString || 0, 'btc');
+      if (!btcAmount || !bitcoinPrice) return VALUE_INCOMPLETE_MESSAGE;
       // TODO: check casting accuracy
-      return amount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
-    });
-
-    const amountToReceiveUSD = computed((): string => {
-      const amount = new SatoshiBig(props.summary?.amountReceivedString || 0, 'btc');
-      if (!amount || !bitcoinPrice) return VALUE_INCOMPLETE_MESSAGE;
-      return amount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
+      return btcAmount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
     });
 
     const totalUSD = computed((): string => {
       const totalValue = total.value === VALUE_INCOMPLETE_MESSAGE ? 0 : total.value;
-      const amount = new SatoshiBig(totalValue, 'btc');
-      if (!amount || !bitcoinPrice) return VALUE_INCOMPLETE_MESSAGE;
-      return amount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
+      const totalAmount = new SatoshiBig(totalValue, 'btc');
+      if (!totalAmount || !bitcoinPrice) return VALUE_INCOMPLETE_MESSAGE;
+      return totalAmount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
     });
 
     const federationAddress = computed((): string => (
@@ -699,7 +693,6 @@ export default defineComponent({
       amountToReceive,
       total,
       amountUSD,
-      amountToReceiveUSD,
       totalUSD,
       federationAddress,
       networkFromText,
@@ -718,199 +711,4 @@ export default defineComponent({
     };
   },
 });
-//
-// @Component({
-//   components: {
-//     TxSummaryField,
-//   },
-// })
-// class TxSummaryFixed extends Vue {
-//   @Prop() initialExpand!: boolean;
-//
-//   @Prop() summary!: NormalizedSummary;
-//
-//   @Prop() type!: TxStatusType;
-//
-//   @Prop() orientation !: TxSummaryOrientation;
-//
-//   @Prop() isRejected !: boolean;
-//
-//   over = false;
-//
-//   fixedUSDDecimals = 2;
-//
-//   VALUE_INCOMPLETE_MESSAGE = '-';
-//
-//   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-//
-//   orientationTypes = TxSummaryOrientation;
-//
-//   txType = TxStatusType;
-//
-//   appConstants = constants;
-//
-//   @State('web3Session') sessionState!: SessionState;
-//
-//   get fromTitle() {
-//     return this.type === TxStatusType.PEGIN ? 'Bitcoin' : 'Rootstock';
-//   }
-//
-//   get toTitle() {
-//     return this.type === TxStatusType.PEGIN ? 'Rootstock' : 'Bitcoin';
-//   }
-//
-//   get computedRefundAddress(): string {
-//     let refundAddress = this.VALUE_INCOMPLETE_MESSAGE;
-//     if (this.summary.refundAddress) {
-//       refundAddress = this.summary.refundAddress;
-//     }
-//     return refundAddress;
-//   }
-//
-//   get currencyFromTicker() {
-//     return this.type === TxStatusType.PEGIN ? this.environmentContext.getBtcTicker()
-//       : this.environmentContext.getRbtcTicker();
-//   }
-//
-//   get currencyToTicker() {
-//     return this.type === TxStatusType.PEGIN ? this.environmentContext.getRbtcTicker()
-//       : this.environmentContext.getBtcTicker();
-//   }
-//
-//   get amount(): string {
-//     return this.summary.amountFromString || this.VALUE_INCOMPLETE_MESSAGE;
-//   }
-//
-//   get amountToReceive(): string {
-//     if (!this.summary.amountReceivedString || this.summary.amountReceivedString === '0') {
-//       return '-';
-//     }
-//     return `${this.summary.amountReceivedString} ${this.currencyToTicker}`;
-//   }
-//
-//   get total(): string {
-//     const amount = new Big(this.summary.amountFromString);
-//     const fee = new Big(this.safeFee);
-//     return amount.plus(fee).toString() || this.VALUE_INCOMPLETE_MESSAGE;
-//   }
-//
-//   get amountUSD(): string {
-//     const amount = new SatoshiBig(this.summary.amountFromString || 0, 'btc');
-//     const { bitcoinPrice } = this.sessionState;
-//     if (!amount || !bitcoinPrice) return this.VALUE_INCOMPLETE_MESSAGE;
-//     return amount.toUSDFromBTCString(bitcoinPrice, this.fixedUSDDecimals);
-//   }
-//
-//   get amountToReceiveUSD(): string {
-//     const amount = new SatoshiBig(this.summary.amountReceivedString || 0, 'btc');
-//     const { bitcoinPrice } = this.sessionState;
-//     if (!amount || !bitcoinPrice) return this.VALUE_INCOMPLETE_MESSAGE;
-//     return amount.toUSDFromBTCString(bitcoinPrice, this.fixedUSDDecimals);
-//   }
-//
-//   get totalUSD(): string {
-//     const total = this.total === this.VALUE_INCOMPLETE_MESSAGE ? 0 : this.total;
-//     const amount = new SatoshiBig(total, 'btc');
-//     const { bitcoinPrice } = this.sessionState;
-//     if (!amount || !bitcoinPrice) return this.VALUE_INCOMPLETE_MESSAGE;
-//     return amount.toUSDFromBTCString(bitcoinPrice, this.fixedUSDDecimals);
-//   }
-//
-//   get federationAddress(): string {
-//     return this.summary.federationAddress
-//       ? formatTxId(this.summary.federationAddress) : this.VALUE_INCOMPLETE_MESSAGE;
-//   }
-//
-//   get networkFromText(): string {
-//     if (this.type === TxStatusType.PEGIN) {
-//       return this.environmentContext.getBtcText();
-//     }
-//     return this.environmentContext.getRskText();
-//   }
-//
-//   get networkToText(): string {
-//     if (this.type === TxStatusType.PEGIN) {
-//       return this.environmentContext.getRskText();
-//     }
-//     return this.environmentContext.getBtcText();
-//   }
-//
-//   get recipientAddress():string {
-//     return (!this.summary.recipientAddress || this.summary.recipientAddress === '0x')
-//       ? '-'
-//       : getChunkedValue(this.summary.recipientAddress, this.maxLengthForChunked);
-//   }
-//
-//   get refundAddress(): string {
-//     return this.summary.refundAddress
-//       ? getChunkedValue(this.summary.refundAddress, this.maxLengthForChunked)
-//       : this.VALUE_INCOMPLETE_MESSAGE;
-//   }
-//
-//   get senderValue():string {
-//     if (this.summary.senderAddress) {
-//       return getChunkedValue(this.summary.senderAddress, this.maxLengthForChunked);
-//     }
-//     if (this.summary.selectedAccount) {
-//       return this.summary.selectedAccount;
-//     }
-//     return this.VALUE_INCOMPLETE_MESSAGE;
-//   }
-//
-//   get maxLengthForChunked(): number {
-//     return this.orientation === TxSummaryOrientation.VERTICAL
-//       ? 15 : 25;
-//   }
-//
-//   get safeFeeString(): string {
-//     return new SatoshiBig(this.safeFee.toString(), 'btc').toBTCTrimmedString();
-//   }
-//
-//   get safeFee(): number {
-//     let fee = this.summary.fee ?? 0;
-//     if (
-//       (!this.summary.fee || this.summary.fee === 0)
-//       && this.type === TxStatusType.PEGOUT
-//       && this.summary.estimatedFee
-//     ) {
-//       fee = this.summary.estimatedFee;
-//     }
-//     return fee;
-//   }
-//
-//   copyToClipboard(id: string) {
-//     if (id === 'txId' || id === 'federationAddress' || id === 'senderAddress' || id === 'recipientAddress') {
-//       navigator.clipboard.writeText(this.summary[id] || '');
-//     }
-//   }
-//
-//   openExplorerTx() {
-//     const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_MAINNET ? '' : '.testnet';
-//     const explorerRSK = `https://explorer${network}.rsk.co`;
-//     const sanitizedTxId = this.summary.txId?.startsWith('0x')
-//       ? this.summary.txId?.substring(2, (this.summary.txId?.length))
-//       : this.summary.txId;
-//     if (this.type === TxStatusType.PEGIN) {
-//       window.open(getBtcTxExplorerUrl(sanitizedTxId || ''), '_blank');
-//     } else {
-//       window.open(`${explorerRSK}/tx/${this.summary.txId}`, '_blank');
-//     }
-//   }
-//
-//   @Emit()
-//   openExplorerToAddress() {
-//     const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_MAINNET ? '' : '.testnet';
-//     const explorerRSK = `https://explorer${network}.rsk.co`;
-//     if (this.type === TxStatusType.PEGIN) {
-//       window.open(`${explorerRSK}/address/${this.summary.recipientAddress}`, '_blank');
-//     } else {
-//       window.open(getBtcAddressExplorerUrl(this.summary.recipientAddress || ''), '_blank');
-//     }
-//   }
-//
-//   @Emit()
-//   openDerivationAddressDocumentation() {
-//     window.open(`${this.appConstants.RSK_PEGOUT_DOCUMENTATION_URL}`);
-//   }
-// }
 </script>

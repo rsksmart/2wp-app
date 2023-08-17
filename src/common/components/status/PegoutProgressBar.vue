@@ -53,9 +53,9 @@
 </template>
 
 <script lang="ts">
-/* eslint-disable */
+/* eslint-disable vue/no-side-effects-in-computed-properties */
 import {
-  computed, reactive, ref, watch, defineComponent,
+  computed, reactive, ref, defineComponent,
 } from 'vue';
 import * as constants from '@/common/store/constants';
 import { PegoutStatus, PegoutStatusDataModel } from '@/common/types';
@@ -163,117 +163,4 @@ export default defineComponent({
     };
   },
 });
-
-// @Component({})
-// class PegoutProgressBar extends Vue {
-//   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-//
-//   colors = {
-//     blue: '#3D7DA1',
-//     gray: '#8c8c8c',
-//     green: '#9CE07B',
-//     yellow: '#F6C61B',
-//   };
-//
-//   circleColor = {
-//     blue: 'circle-blue',
-//     gray: 'circle-gray',
-//     green: 'circle-green',
-//     yellow: 'circle-yellow',
-//   };
-//
-//   borderColor = {
-//     blue: 'icon-status-border-blue',
-//     gray: 'icon-status-border-gray',
-//     green: 'icon-status-border-green',
-//     yellow: 'icon-status-border-yellow',
-//   };
-//
-//   currentBarColor = this.colors.gray;
-//
-//   firstCircle = this.circleColor.gray;
-//
-//   secondCircle = this.circleColor.gray;
-//
-//   thirdCircle = this.circleColor.gray;
-//
-//   bordersStyle = {
-//     btc: this.borderColor.gray,
-//     rbtc: this.borderColor.gray,
-//   };
-//
-//   @State('status') txStatus!: TxStatus;
-//
-//   @Getter(constants.STATUS_IS_REJECTED, { namespace: 'status' }) isRejected!: boolean;
-//
-//   get percentage() {
-//     let percentage;
-//     switch (this.txStatus.txDetails?.status) {
-//       case PegoutStatus.REJECTED:
-//         this.currentBarColor = this.colors.yellow;
-//         this.bordersStyle.rbtc = this.borderColor.yellow;
-//         this.bordersStyle.btc = this.borderColor.gray;
-//
-//         this.firstCircle = this.circleColor.yellow;
-//         percentage = 15;
-//         break;
-//       case PegoutStatus.WAITING_FOR_SIGNATURE:
-//         this.currentBarColor = this.colors.blue;
-//         this.bordersStyle.rbtc = this.borderColor.blue;
-//         this.bordersStyle.btc = this.borderColor.gray;
-//
-//         this.firstCircle = this.circleColor.blue;
-//         this.secondCircle = this.circleColor.blue;
-//         this.thirdCircle = this.circleColor.blue;
-//         percentage = 90;
-//         break;
-//       case PegoutStatus.RECEIVED:
-//         this.currentBarColor = this.colors.blue;
-//         this.bordersStyle.rbtc = this.borderColor.blue;
-//         this.bordersStyle.btc = this.borderColor.gray;
-//
-//         this.firstCircle = this.circleColor.blue;
-//         percentage = 30;
-//         break;
-//       case PegoutStatus.WAITING_FOR_CONFIRMATION:
-//         this.currentBarColor = this.colors.blue;
-//         this.bordersStyle.rbtc = this.borderColor.blue;
-//         this.bordersStyle.btc = this.borderColor.gray;
-//
-//         this.firstCircle = this.circleColor.blue;
-//         this.secondCircle = this.circleColor.blue;
-//         percentage = 60;
-//         break;
-//       case PegoutStatus.RELEASE_BTC:
-//         this.currentBarColor = this.colors.green;
-//         this.bordersStyle.rbtc = this.borderColor.green;
-//         this.bordersStyle.btc = this.borderColor.green;
-//
-//         this.firstCircle = this.circleColor.green;
-//         this.secondCircle = this.circleColor.green;
-//         this.thirdCircle = this.circleColor.green;
-//         percentage = 100;
-//         break;
-//       default:
-//         this.currentBarColor = this.colors.gray;
-//         this.bordersStyle.rbtc = this.borderColor.gray;
-//         this.bordersStyle.btc = this.borderColor.gray;
-//
-//         this.firstCircle = this.circleColor.gray;
-//         this.secondCircle = this.circleColor.gray;
-//         this.thirdCircle = this.circleColor.gray;
-//         percentage = 0;
-//         break;
-//     }
-//     return percentage;
-//   }
-//
-//   get currentStatus() {
-//     return this.txStatus.txDetails?.status;
-//   }
-//
-//   get showRejectedMsg() {
-//     return this.currentStatus === PegoutStatus.REJECTED;
-//   }
-// }
 </script>

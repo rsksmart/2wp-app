@@ -83,26 +83,4 @@ export default {
     };
   },
 };
-
-// @Component
-// class FooterRsk extends Vue {
-//   apiVersion = '0';
-//
-//   url = `https://github.com/rsksmart/2wp-app/releases/tag/v${this.$store.getters.appVersion}`;
-//
-//   urlApi = `https://github.com/rsksmart/2wp-api/releases/tag/v${this.apiVersion}`;
-//
-//   obtainApiVersion() {
-//     ApiService.getApiInformation()
-//       .then((res: ApiInformation) => {
-//         this.apiVersion = res.version;
-//         this.urlApi = `https://github.com/rsksmart/2wp-api/releases/tag/v${this.apiVersion}`;
-//       });
-//     return this.apiVersion;
-//   }
-//
-//   created() {
-//     this.obtainApiVersion();
-//   }
-// }
 </script>

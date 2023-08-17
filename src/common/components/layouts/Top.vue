@@ -46,25 +46,4 @@ export default {
     };
   },
 };
-
-// @Component
-// class Top extends Vue {
-//   environmentVariables = EnvironmentAccessorService.getEnvironmentVariables();
-//
-//   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-//
-//   @Emit()
-//   toExchange() {
-//     if (this.$router.currentRoute.name !== 'Home') this.$router.push({ name: 'Home' });
-//   }
-//
-//   get isTestNet() {
-//     return this.environmentVariables.vueAppCoin === constants.BTC_NETWORK_TESTNET;
-//   }
-//
-//   // eslint-disable-next-line class-methods-use-this
-//   get logo() {
-//     return getMainLogo();
-//   }
-// }
 </script>

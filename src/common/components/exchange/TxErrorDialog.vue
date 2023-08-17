@@ -12,7 +12,8 @@
           <p class="justify-center">{{ errorMessage }}</p>
         </v-col>
         <v-row class="ma-0 my-4" justify="space-around">
-          <v-btn width="200" height="50" variant="outlined" rounded color="#000000" @click="toExchange">
+          <v-btn width="200" height="50" variant="outlined" rounded color="#000000"
+            @click="toExchange">
             <span class="blackish">Return to home</span>
           </v-btn>
           <v-btn width="145" height="50" dense rounded color="#000000" @click="closeErrorDialog">
@@ -51,24 +52,4 @@ export default defineComponent({
     };
   },
 });
-
-// @Component
-// class TxErrorDialog extends Vue {
-//   @Prop() showTxErrorDialog!: boolean;
-//
-//   @Prop() errorMessage!: string;
-//
-//   warningIconPath = WarningIcon;
-//
-//   @Emit()
-//   // eslint-disable-next-line class-methods-use-this
-//   toExchange() {
-//     window.location.href = '/';
-//   }
-//
-//   @Emit('closeErrorDialog')
-//   closeErrorDialog() {
-//     return this.showTxErrorDialog;
-//   }
-// }
 </script>

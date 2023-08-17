@@ -34,16 +34,6 @@ export default {
     };
   },
 };
-
-// @Component({
-//   components: {},
-// })
-// class Mobile extends Vue {
-//   // eslint-disable-next-line class-methods-use-this
-//   get logo() {
-//     return getMainLogo();
-//   }
-// }
 </script>
 <style>
 @import "@/common/styles/_mobile.scss";

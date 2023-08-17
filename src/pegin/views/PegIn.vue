@@ -36,23 +36,4 @@ export default defineComponent({
     };
   },
 });
-//
-// @Component({
-//   components: {
-//     SelectBitcoinWallet,
-//     BtcToRbtcDialog,
-//   },
-// })
-// class PegIn extends Vue {
-//   showDialog = false;
-//
-//   @Emit()
-//   closeDialog() {
-//     this.showDialog = false;
-//   }
-//
-//   beforeMount() {
-//     this.showDialog = localStorage.getItem('BTRD_COOKIE_DISABLED') !== 'true';
-//   }
-// }
 </script>

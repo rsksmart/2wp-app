@@ -63,26 +63,4 @@ export default defineComponent({
     };
   },
 });
-
-// @Component
-// class AddressDialog extends Vue {
-//   messageToBeSigned = 'Sign this message to derive your Bitcoin address';
-//
-//   showAddressDialog = true;
-//
-//   @Action(constants.SESSION_SIGN_MESSAGE, { namespace: 'web3Session' }) signMessage !: (message: string) => Promise<void>;
-//
-//   @Emit()
-//   toSign() {
-//     this.signMessage(this.messageToBeSigned)
-//       .then(() => {
-//         this.closeDialog();
-//       });
-//   }
-//
-//   @Emit('closeDialog')
-//   closeDialog() {
-//     return this.showAddressDialog;
-//   }
-// }
 </script>

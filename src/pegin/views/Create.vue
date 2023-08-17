@@ -34,27 +34,4 @@ export default defineComponent({
     };
   },
 });
-
-// @Component({
-//   components: {
-//     SendBitcoin,
-//   },
-// })
-// class Create extends Vue {
-//   @Action(constants.PEGIN_TX_ADD_BITCOIN_WALLET, { namespace: 'pegInTx' }) setBitcoinWallet !: (wallet: BtcWallet) => void;
-//
-//   @Action(constants.PEGIN_TX_CLEAR_STATE, { namespace: 'pegInTx' }) clear !: () => void;
-//
-//   @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) initPegin !: () => void;
-//
-//   @Action(constants.PEGOUT_TX_INIT, { namespace: 'pegOutTx' }) init !: () => void;
-//
-//   @Emit()
-//   back() {
-//     this.clear();
-//     this.init();
-//     this.initPegin();
-//     this.$router.push({ name: 'Home' });
-//   }
-// }
 </script>

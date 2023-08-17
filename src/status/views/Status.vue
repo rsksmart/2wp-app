@@ -143,7 +143,7 @@ export default defineComponent({
       return message;
     });
 
-    const activeClass = computed((): string => {
+    const computedActiveClass = computed((): string => {
       let activeClass = '';
       if (!isValidTxId.value && txId.value) {
         activeClass = 'status-text-field-warning';
@@ -194,7 +194,7 @@ export default defineComponent({
 
     return {
       txId,
-      activeClass,
+      computedActiveClass,
       isValidTxId,
       getPegStatus,
       notValidTxIdMessage,
@@ -210,155 +210,4 @@ export default defineComponent({
     };
   },
 });
-
-//
-// @Component({
-//   components: {
-//     TxPegout,
-//     TxPegin,
-//   },
-// })
-// class Status extends Vue {
-//   txData?: TxData;
-//
-//   txId = '';
-//
-//   txType = TxStatusType.PEGIN;
-//
-//   pegInStatus!: PeginStatus;
-//
-//   pegOutStatus!: PegoutStatusDataModel;
-//
-//   loading = false;
-//
-//   rskConfirmationsPercentage = 0;
-//
-//   leftBtcTime = '';
-//
-//   btcConfirmationsRequired!: number;
-//
-//   currentRefundAddress = '';
-//
-//   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-//
-//   @Prop({ default: '' }) txIdProp!: string;
-//
-//   @State('pegInTx') peginTxState!: PegInTxState;
-//
-//   @State('status') status!: TxStatus;
-//
-//   @Action(constants.STATUS_GET_TX_STATUS, { namespace: 'status' }) setTxStatus !: (txId: string) => Promise<void>;
-//
-//   @Action(constants.STATUS_CLEAR, { namespace: 'status' }) clearStatus !: () => void;
-//
-//   @Action(constants.PEGIN_TX_ADD_BITCOIN_PRICE, { namespace: 'pegInTx' }) getBtcPrice !: () => Promise<void>;
-//
-//   @Action(constants.PEGIN_TX_SELECT_FEE_LEVEL, { namespace: 'pegInTx' }) setSelectedFee !: (feeLevel: MiningSpeedFee) => void;
-//
-//   @Action(constants.PEGIN_TX_ADD_STATUS_SAFE_FEE, { namespace: 'pegInTx' }) setSafeFee !: (fee: string) => void;
-//
-//   @Action(constants.PEGIN_TX_ADD_STATUS_REFUND_ADDRESS, { namespace: 'pegInTx' }) setRefundAddress !: (fee: string) => void;
-//
-//   @Action(constants.PEGIN_TX_ADD_STATUS_TX_ID, { namespace: 'pegInTx' }) setTxId !: (txId: string) => void;
-//
-//   @Getter(constants.STATUS_GET_ACTIVE_MESSAGE, { namespace: 'status' }) activeMessage !: TxStatusMessage;
-//
-//   @Getter(constants.STATUS_GET_RELEASE_TIME_TEXT, { namespace: 'status' }) releaseTimeText !: string;
-//
-//   get showStatus() {
-//     return !this.loading
-//       && !this.activeMessage.error
-//       && !!this.activeMessage.statusMessage;
-//   }
-//
-//   get isValidTxId() {
-//     return this.regexValidationTxId();
-//   }
-//
-//   get isRejected() {
-//     return this.status.txDetails?.status === 'REJECTED';
-//   }
-//
-//   get isPegIn(): boolean {
-//     return this.status.type === TxStatusType.PEGIN;
-//   }
-//
-//   get isPegOut(): boolean {
-//     return this.status.type === TxStatusType.PEGOUT;
-//   }
-//
-//   get showTimeLeft(): boolean {
-//     const txDetails = this.status.txDetails as PegoutStatusDataModel;
-//     return this.status.type === TxStatusType.PEGOUT
-//       && (txDetails.status === PegoutStatus.WAITING_FOR_CONFIRMATION
-//         || txDetails.status === PegoutStatus.RECEIVED
-//         || txDetails.status === PegoutStatus.WAITING_FOR_SIGNATURE);
-//   }
-//
-//   get notValidTxIdMessage(): string {
-//     let message = '';
-//     if (!this.regexValidationTxId()) {
-//       message = 'The transaction id must be a valid one.';
-//     }
-//     return message;
-//   }
-//
-//   regexValidationTxId() {
-//     const regx = new RegExp(/^(0x[a-fA-F0-9]{64}|[a-fA-F0-9]{64})$/);
-//     return regx.test(this.txId);
-//   }
-//
-//   get activeClass(): string {
-//     let activeClass = '';
-//     if (!this.isValidTxId && this.txId) {
-//       activeClass = 'status-text-field-warning';
-//     } else if (this.activeMessage.error && this.txId && this.txId === this.txIdProp) {
-//       activeClass = 'status-text-field-error';
-//     }
-//     return activeClass;
-//   }
-//
-//   @Emit()
-//   getPegStatus() {
-//     if (this.$route.path !== `/status/txId/${this.txId}`) {
-//       this.$router.push({
-//         name: 'Status',
-//         params: { txId: this.txId },
-//       });
-//     } else if (this.txId !== '') {
-//       this.clean();
-//       this.loading = true;
-//       this.setTxStatus(this.txId)
-//         .then(() => {
-//           this.loading = false;
-//         });
-//     }
-//   }
-//
-//   @Emit()
-//   clean() {
-//     this.clearStatus();
-//     this.loading = false;
-//   }
-//
-//   @Watch('$route', { immediate: true, deep: true })
-//   onUrlChange() {
-//     if (this.txIdProp) {
-//       this.txId = this.txIdProp ?? '';
-//       this.getPegStatus();
-//     } else {
-//       this.clean();
-//     }
-//   }
-//
-//   @Emit()
-//   back() {
-//     this.$router.replace({ name: 'Home' });
-//   }
-//
-//   async created() {
-//     this.clearStatus();
-//     await this.getBtcPrice();
-//   }
-// }
 </script>

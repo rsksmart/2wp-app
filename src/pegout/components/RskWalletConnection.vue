@@ -48,7 +48,9 @@
                   disabled
                   flat
                   hide-details
-                  :placeholder="`Connect your wallet to select the ${environmentContext.getRbtcTicker()} address`"
+                  :placeholder="`
+                    Connect your wallet to select the ${environmentContext.getRbtcTicker()} address
+                    `"
                   @focus="focus = true"
                   @blur="focus = false"/>
               </v-row>
@@ -133,59 +135,4 @@ export default defineComponent({
     };
   },
 });
-//
-// @Component({})
-// class RskWalletConnection extends Vue {
-//   focus = false;
-//
-//   useWeb3Wallet = false;
-//
-//   isValidPegOutAddress = true;
-//
-//   @State('pegOutTx') pegOutTxState!: PegOutTxState;
-//
-//   @State('web3Session') web3SessionState!: SessionState;
-//
-//   @Action(constants.SESSION_CONNECT_WEB3, { namespace: 'web3Session' }) connectWeb3 !: () => Promise<void>;
-//
-//   @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: () => void;
-//
-//   @Action(constants.WEB3_SESSION_ADD_BALANCE, { namespace: 'web3Session' }) getBalance !: () => Promise<void>;
-//
-//   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-//
-//   get web3Address() {
-//     return this.web3SessionState.account ?? '';
-//   }
-//
-//   disconnectWallet() {
-//     this.focus = true;
-//     this.clearAccount();
-//     this.switchSignature();
-//   }
-//
-//   connectWallet(): Promise<void> {
-//     this.useWeb3Wallet = true;
-//     this.focus = true;
-//     return this.connectWeb3()
-//       .then(() => {
-//         this.focus = false;
-//         this.getBalance();
-//         this.switchSignature();
-//       })
-//       .catch(() => {
-//         this.focus = false;
-//         this.clearAccount();
-//       });
-//   }
-//
-//   @Emit('switchDeriveButton')
-//   switchSignature(): boolean {
-//     return this.web3SessionState.account !== undefined;
-//   }
-//
-//   get address(): string {
-//     return this.web3SessionState.account ? this.web3SessionState.account : '';
-//   }
-// }
 </script>

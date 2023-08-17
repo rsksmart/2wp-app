@@ -40,22 +40,4 @@ export default defineComponent({
     };
   },
 });
-
-// @Component
-// class TxSummaryField extends Vue {
-//   @Prop() textStyles !: string;
-//
-//   @Prop() textValue !: string;
-//
-//   @Prop() id !: string;
-//
-//   isTooltipShowed = false;
-//
-//   @Emit('copyToClipboard')
-//   handleDblClick() {
-//     this.isTooltipShowed = true;
-//     setTimeout(() => { this.isTooltipShowed = false; }, 1000);
-//     return this.id;
-//   }
-// }
 </script>

@@ -146,21 +146,21 @@ export default {
     const btnWalletClass = computed(() => (isAllowedBrowser ? 'wallet-button mb-0' : 'wallet-button-disabled mb-0'));
 
     const btcIcon = computed(() => {
-      const btcIcon = isAllowedBrowser ? 'btc.png' : 'btc-disable.png';
+      const btcIconName = isAllowedBrowser ? 'btc.png' : 'btc-disable.png';
       // eslint-disable-next-line global-require, import/no-dynamic-require
-      return require(`@/assets/exchange/${btcIcon}`);
+      return require(`@/assets/exchange/${btcIconName}`);
     });
 
     const rbtcIcon = computed(() => {
-      const rbtcIcon = isAllowedBrowser ? 'rbtc.png' : 'rbtc-disable';
+      const rbtcIconName = isAllowedBrowser ? 'rbtc.png' : 'rbtc-disable';
       // eslint-disable-next-line global-require, import/no-dynamic-require
-      return require(`@/assets/exchange/${rbtcIcon}`);
+      return require(`@/assets/exchange/${rbtcIconName}`);
     });
 
     const statusIcon = computed(() => {
-      const statusIcon = isAllowedBrowser ? 'status-icon.svg' : 'status-icon-disabled.svg';
+      const statusIconName = isAllowedBrowser ? 'status-icon.svg' : 'status-icon-disabled.svg';
       // eslint-disable-next-line global-require, import/no-dynamic-require
-      return require(`@/assets/status/${statusIcon}`);
+      return require(`@/assets/status/${statusIconName}`);
     });
 
     function selectPegIn(): void {
@@ -201,94 +201,4 @@ export default {
     };
   },
 };
-
-// @Component({
-//   components: {
-//     SelectBitcoinWallet,
-//   },
-// })
-// class Home extends Vue {
-//   STATUS = false;
-//
-//   browser = Bowser.getParser(window.navigator.userAgent);
-//
-//   environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-//
-//   isAllowedBrowser = isAllowedCurrentBrowser();
-//
-//   addresses: WalletAddress[] = [];
-//
-//   @State('pegInTx') peginTxState!: PegInTxState;
-//
-//   @State('web3Session') sessionState!: SessionState;
-//
-//   @Action(constants.PEGIN_TX_CLEAR_STATE, { namespace: 'pegInTx' }) clear !: () => void;
-//
-//   @Action(constants.PEGOUT_TX_CLEAR, { namespace: 'pegOutTx' }) clearPegOut !: () => void;
-//
-//   @Action(constants.SESSION_CLEAR, { namespace: 'web3Session' }) clearSession !: () => void;
-//
-//   @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) initPegin !: () => Promise<void>;
-//
-//   @Action(constants.PEGOUT_TX_INIT, { namespace: 'pegOutTx' }) init !: () => Promise<void>;
-//
-//   @Action(constants.SESSION_ADD_TX_TYPE, { namespace: 'web3Session' }) addPeg!: (peg: TransactionType) => void;
-//
-//   get btcToRbtc(): boolean {
-//     return this.sessionState.txType === constants.PEG_IN_TRANSACTION_TYPE;
-//   }
-//
-//   get rbtcToBtc(): boolean {
-//     return this.sessionState.txType === constants.PEG_OUT_TRANSACTION_TYPE;
-//   }
-//
-//   @Emit()
-//   selectPegIn(): void {
-//     this.addPeg(constants.PEG_IN_TRANSACTION_TYPE);
-//     this.$router.push({ name: 'PegIn' });
-//   }
-//
-//   @Emit()
-//   selectPegOut(): void {
-//     this.$router.push({ name: 'PegOut' });
-//   }
-//
-//   @Emit()
-//   toPegInStatus(): void {
-//     this.STATUS = true;
-//     if (this.$route.path !== '/status') this.$router.push('/status');
-//   }
-//
-//   async created() {
-//     this.clear();
-//     this.clearPegOut();
-//     this.clearSession();
-//     this.addPeg(undefined);
-//     await this.init();
-//     await this.initPegin();
-//     this.STATUS = false;
-//   }
-//
-//   get btnWalletClass() {
-//     return this.isAllowedBrowser ? 'wallet-button mb-0' : 'wallet-button-disabled mb-0';
-//   }
-//
-//   get btcIcon() {
-//     const btcIcon = this.isAllowedBrowser ? 'btc.png' : 'btc-disable.png';
-//     // eslint-disable-next-line global-require, import/no-dynamic-require
-//     return require(`@/assets/exchange/${btcIcon}`);
-//   }
-//
-//   get rbtcIcon() {
-//     const rbtcIcon = this.isAllowedBrowser ? 'rbtc.png' : 'rbtc-disable';
-//     // eslint-disable-next-line global-require, import/no-dynamic-require
-//     return require(`@/assets/exchange/${rbtcIcon}`);
-//   }
-//
-//   get statusIcon() {
-//     const statusIcon = this.isAllowedBrowser ? 'status-icon.svg' : 'status-icon-disabled.svg';
-//     // eslint-disable-next-line global-require, import/no-dynamic-require
-//     return require(`@/assets/status/${statusIcon}`);
-//   }
-// }
 </script>
