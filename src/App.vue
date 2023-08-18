@@ -40,9 +40,9 @@ export default class App extends Vue {
     response = `
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
     script-src 'self' 'nonce-${vuetifyNonce}' 'unsafe-eval';
-    script-src-elem 'self' 'unsafe-inline' https://www.clarity.ms;
+    script-src-elem 'self' 'unsafe-inline' https://www.clarity.ms https://*.clarity.ms https://api.coingecko.com/;
     img-src data: https:;
-    connect-src 'self' 'unsafe-inline' ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://api.coingecko.com https://www.clarity.ms;
+    connect-src 'self' 'unsafe-inline' https://*.clarity.ms ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://api.coingecko.com https://www.clarity.ms;
     object-src 'none';
     frame-src https://connect.trezor.io;
     worker-src 'none';

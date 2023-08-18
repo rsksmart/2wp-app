@@ -142,26 +142,23 @@ export default class BtcInputAmount extends Vue {
         this.fillMaxValueAvailable();
         this.updateStore();
       })
-      .then(() => {
-        this.fillMaxValueAvailable();
-        this.updateStore();
-      })
       .catch(console.error);
   }
 
   fillMaxValueAvailable() {
-    if (this.selectedAccountBalance.gt('0')) {
-      const tempValue = this.selectedAccountBalance.minus(this.safeTxFee);
-      this.bitcoinAmount = tempValue.toBTCTrimmedString();
-      this.pegInTxState.amountToTransfer = tempValue;
-      this.pegInTxState.isValidAmountToTransfer = true;
-    }
+    const tempValue = this.selectedAccountBalance.minus(this.safeTxFee);
+    this.bitcoinAmount = tempValue.toBTCTrimmedString();
+    this.pegInTxState.amountToTransfer = tempValue;
+    this.pegInTxState.isValidAmountToTransfer = this.selectedAccountBalance.gt('0');
   }
 
   get amountErrorMessage() { // mayor rework
     const feePlusAmount: SatoshiBig = this.safeAmount.plus(this.safeTxFee);
     const minValue: SatoshiBig = new SatoshiBig(this.pegInTxState.peginConfiguration.minValue, 'satoshi');
     const maxValue: SatoshiBig = new SatoshiBig(this.pegInTxState.peginConfiguration.maxValue, 'satoshi');
+    if (this.selectedAccountBalance.eq('0') && !this.pegInTxState.isValidAmountToTransfer) {
+      return 'Selected account has no balance';
+    }
     if (!this.selectedAccountBalance) {
       return 'Please, select account first';
     }
