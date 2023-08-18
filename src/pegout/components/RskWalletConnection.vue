@@ -41,16 +41,15 @@
             <v-col cols="7" class="wallet-label-container">
               <v-row class="input-box-outline-readonly ma-0 pa-0 pl-0" >
                 <v-text-field
-                  v-model="address"
                   class="wallet-address-input"
                   density="compact"
                   variant="solo"
                   disabled
                   flat
                   hide-details
-                  :placeholder="`
-                    Connect your wallet to select the ${environmentContext.getRbtcTicker()} address
-                    `"
+                  :placeholder="
+                  `Connect your wallet to select the ${environmentContext.getRbtcTicker()} address`
+                  "
                   @focus="focus = true"
                   @blur="focus = false"/>
               </v-row>
