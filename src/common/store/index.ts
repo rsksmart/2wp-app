@@ -5,11 +5,11 @@ import { pegInTx } from '@/pegin/store';
 import { pegOutTx } from '@/pegout/store/pegoutTx';
 import { web3Session } from './session';
 import { view } from './view';
-import { version } from '../../../package.json';
+import pkg from '../../../package.json';
 
 const store: StoreOptions<RootState> = {
   state: {
-    version: version || '0',
+    version: pkg.version || '0',
   },
   getters: {
     appVersion: (state) => state.version,
