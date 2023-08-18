@@ -113,6 +113,8 @@ export default class RbtcInputAmount extends Vue {
 
   isReadyToSign = false;
 
+  isMaxValueZero = false;
+
   @Prop() enableButton !: boolean;
 
   @Prop() isTourActive !: boolean;
@@ -171,6 +173,9 @@ export default class RbtcInputAmount extends Vue {
     if (this.rbtcAmount.toString() === '') {
       return 'Please, enter an amount';
     }
+    if (this.rbtcAmount.toString() === '0' && this.isMaxValueZero) {
+      return 'Selected account has no balance';
+    }
     if (this.rbtcAmount.toString() === '0') {
       return 'Please, enter an amount';
     }
@@ -193,7 +198,14 @@ export default class RbtcInputAmount extends Vue {
   }
 
   async setMax() {
+    this.isMaxValueZero = false;
     const { balance } = this.web3SessionState;
+    if (balance.lte('0')) {
+      this.rbtcAmount = balance.toRBTCTrimmedString();
+      this.setRbtcAmount(balance);
+      this.isMaxValueZero = true;
+      return;
+    }
     const fee = await this.calculateFeeByAmount(balance);
     const maxAmount = balance.minus(fee);
     this.rbtcAmount = maxAmount.toRBTCTrimmedString();
@@ -277,6 +289,7 @@ export default class RbtcInputAmount extends Vue {
       this.clearState();
       this.initPegoutTx();
       this.rbtcAmount = '';
+      this.isMaxValueZero = false;
     }
   }
 }
