@@ -245,3 +245,12 @@ export const BITCOIN_MIN_SATOSHI_FEE = 280;
 export const BITCOIN_MAX_SATOSHI_FEE = 5000000;
 
 export const BURN_DUST_MAX_VALUE = 30000;
+
+// Account regex types
+export const TESTNET_ADDRESS_LEGACY = '^[mn][1-9A-HJ-NP-Za-km-z]{26,35}';
+export const TESTNET_ADDRESS_SEGWIT = '^[2][1-9A-HJ-NP-Za-km-z]{26,35}';
+export const TESTNET_ADDRESS_NSEGWIT = '^[tb1][0-9A-HJ-NP-Za-z]{41,62}';
+
+export const MAINNET_ADDRESS_LEGACY = '^[1][1-9A-HJ-NP-Za-km-z]{26,35}';
+export const MAINNET_ADDRESS_SEGWIT = '^[3][1-9A-HJ-NP-Za-km-z]{26,35}';
+export const MAINNET_ADDRESS_NSEGWIT = '^[bc1][0-9A-HJ-NP-Za-z]{41,62}';

@@ -16,14 +16,14 @@ import { BridgeService } from '@/common/services/BridgeService';
 export function getAccountType(address: string, network: AppNetwork): string {
   const [legacyTestReg, segwitTestReg, nativeTestReg] = network === constants.BTC_NETWORK_MAINNET
     ? [
-      /^[1][1-9A-HJ-NP-Za-km-z]{26,35}/,
-      /^[3][1-9A-HJ-NP-Za-km-z]{26,35}/,
-      /^[b][0-9A-HJ-NP-Za-z]{26,41}/,
+      new RegExp(constants.MAINNET_ADDRESS_LEGACY),
+      new RegExp(constants.MAINNET_ADDRESS_SEGWIT),
+      new RegExp(constants.MAINNET_ADDRESS_NSEGWIT),
     ]
     : [
-      /^[mn][1-9A-HJ-NP-Za-km-z]{26,35}/,
-      /^[2][1-9A-HJ-NP-Za-km-z]{26,35}/,
-      /^[tb][0-9A-HJ-NP-Za-z]{26,41}/,
+      new RegExp(constants.TESTNET_ADDRESS_LEGACY),
+      new RegExp(constants.TESTNET_ADDRESS_SEGWIT),
+      new RegExp(constants.TESTNET_ADDRESS_NSEGWIT),
     ];
   if (legacyTestReg.test(address)) return constants.BITCOIN_LEGACY_ADDRESS;
   if (segwitTestReg.test(address)) return constants.BITCOIN_SEGWIT_ADDRESS;

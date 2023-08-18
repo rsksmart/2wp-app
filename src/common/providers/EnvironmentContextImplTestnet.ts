@@ -1,3 +1,4 @@
+import * as constants from '@/common/store/constants';
 import { AddressRegexPattern, EnvironmentContext } from './types';
 
 export default class EnvironmentContextImplTestnet implements EnvironmentContext {
@@ -41,9 +42,9 @@ export default class EnvironmentContextImplTestnet implements EnvironmentContext
   // eslint-disable-next-line class-methods-use-this
   getAddressRegexPattern(): AddressRegexPattern {
     return {
-      legacy: new RegExp('^[mn][1-9A-HJ-NP-Za-km-z]{26,35}'),
-      segwit: new RegExp('^[2][1-9A-HJ-NP-Za-km-z]{26,35}'),
-      nativeSegwit: new RegExp('^[tb1][0-9A-HJ-NP-Za-z]{41,62}'),
+      legacy: new RegExp(constants.TESTNET_ADDRESS_LEGACY),
+      segwit: new RegExp(constants.TESTNET_ADDRESS_SEGWIT),
+      nativeSegwit: new RegExp(constants.TESTNET_ADDRESS_NSEGWIT),
     };
   }
 }
