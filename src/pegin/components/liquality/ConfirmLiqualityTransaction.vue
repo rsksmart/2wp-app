@@ -29,9 +29,7 @@
       </v-col>
     </v-row>
     <v-row justify="center" class="mx-0">
-       <v-col class="pr-0" cols="4">
-      </v-col>
-      <v-col class="px-0" cols="4">
+      <v-col class="px-0" cols="5">
         <fieldset class="confirmation-box">
           <legend align="center" class="px-4">See on liquality</legend>
           <v-row justify="left" class="mt-5 mx-3 line-box-bottom">
@@ -116,8 +114,6 @@
             </v-col>
           </v-row>
         </fieldset>
-      </v-col>
-      <v-col class="pl-0" cols="4">
       </v-col>
     </v-row>
     <v-divider/>
