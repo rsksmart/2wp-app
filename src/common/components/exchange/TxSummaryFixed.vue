@@ -312,7 +312,7 @@
         <v-container class="px-0 py-2">
           <v-row class="mx-0">
             <h1 class="boldie">
-              {{ type === txType.PEGOUT ? 'Sender address' : 'Device account' }}
+              {{ type === txType.PEGOUT ? 'Sender address' : accountLabel }}
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
@@ -339,9 +339,7 @@
         <v-container class="px-0 py-2">
           <v-row class="mx-0">
             <h1 class="boldie">
-              {{ type === txType.PEGOUT
-              ? 'Amount'
-              : currencyFromTicker + 's' }}
+              Amount
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
@@ -492,6 +490,7 @@ import {
 } from 'vue-property-decorator';
 import {
   NormalizedSummary,
+  PegInTxState,
   SatoshiBig,
   SessionState,
   TxStatusType,
@@ -502,7 +501,7 @@ import {
   formatTxId, getBtcAddressExplorerUrl, getBtcTxExplorerUrl, getChunkedValue,
 } from '@/common/utils';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { State } from 'vuex-class';
+import { Getter, State } from 'vuex-class';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import * as constants from '@/common/store/constants';
 import Big from 'big.js';
@@ -540,6 +539,10 @@ export default class TxSummaryFixed extends Vue {
   maxLengthForChunked = 25;
 
   @State('web3Session') sessionState!: SessionState;
+
+  @State('pegInTx') peginTxState!: PegInTxState;
+
+  @Getter(constants.WALLET_NAME, { namespace: 'pegInTx' }) walletName!: string;
 
   get fromTitle() {
     return this.type === TxStatusType.PEGIN ? 'Bitcoin' : 'Rootstock';
@@ -661,6 +664,15 @@ export default class TxSummaryFixed extends Vue {
       fee = this.summary.estimatedFee;
     }
     return fee;
+  }
+
+  get accountLabel(): string {
+    const isLedger = this.walletName === 'Trezor';
+    const isTrezor = this.walletName === 'Ledger';
+    if (isLedger || isTrezor) {
+      return 'Device account';
+    }
+    return 'Sender account';
   }
 
   copyToClipboard(id: string) {
