@@ -9,7 +9,7 @@
         <p v-bind:class="{'boldie': focus}">
           Enter the amount you want to send:
         </p>
-        <v-row class="mx-0 mt-4 pb-0 d-flex align-center">
+        <v-row class="ma-0 mt-4 pb-0 d-flex align-center">
           <v-col cols="4" v-bind:class="[amountStyle]" class="input-box-outline">
             <v-col cols="8" class="pa-0 pl-1">
               <v-text-field solo hide-details full-width single-line flat
@@ -59,7 +59,20 @@
           </v-col>
           <v-col/>
         </v-row>
-        <v-row class="pt-3 ma-0" style="min-height: 17px;">
+        <v-col cols="4" class="pa-0">
+          <v-row class="derive-button ma-0 d-flex justify-center">
+            <v-btn
+              :disabled="!enableButton"
+              outlined rounded
+              width="100%" height="38"
+              @click="setMax" id="max-btn">
+              <span>
+                Use max available balance
+              </span>
+            </v-btn>
+          </v-row>
+        </v-col>
+        <v-row class="pt-1 ma-0" style="min-height: 17px;">
           <span v-if="stepState === 'error'" class="yellowish">
             {{amountErrorMessage}}
           </span>
@@ -85,10 +98,15 @@ import EnvironmentContextProviderService from '@/common/providers/EnvironmentCon
 import { isBTCAmountValidRegex } from '@/common/utils';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import { FeeAmountData } from '@/common/types';
+import { pegInTx } from '@/pegin/store';
 
 export default defineComponent({
   name: 'BtcInputAmount',
-  setup(_, context) {
+  props: {
+    enableButton: Boolean,
+  },
+  setup(props, context) {
+    const enableButton = ref(props.enableButton);
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const focus = ref(false);
     const amountStyle = ref('');
@@ -100,6 +118,7 @@ export default defineComponent({
     const selectedAccount = useStateAttribute<BtcAccount>('pegInTx', 'selectedAccount');
     const peginConfiguration = useStateAttribute<PeginConfiguration>('pegInTx', 'peginConfiguration');
     const amountToTransfer = useStateAttribute<SatoshiBig>('pegInTx', 'amountToTransfer');
+    const isValidAmountToTransfer = useStateAttribute<boolean>('pegInTx', 'isValidAmountToTransfer');
 
     const setBtcAmount = useAction('pegInTx', constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER);
     const calculateTxFee = useAction('pegInTx', constants.PEGIN_TX_CALCULATE_TX_FEE);
@@ -135,6 +154,9 @@ export default defineComponent({
       const feePlusAmount: SatoshiBig = safeAmount.value.plus(safeTxFee.value);
       const minValue: SatoshiBig = new SatoshiBig(peginConfiguration.value.minValue, 'satoshi');
       const maxValue: SatoshiBig = new SatoshiBig(peginConfiguration.value.maxValue, 'satoshi');
+      if (selectedAccountBalance.value.eq('0') && !isValidAmountToTransfer.value) {
+        return 'Selected account has no balance';
+      }
       if (!selectedAccountBalance) {
         return 'Please, select account first';
       }
@@ -211,6 +233,23 @@ export default defineComponent({
         .catch(console.error);
     }
 
+    function fillMaxValueAvailable() {
+      const tempValue = selectedAccountBalance.value.minus(safeTxFee.value);
+      bitcoinAmount.value = tempValue.toBTCTrimmedString();
+      setBtcAmount(tempValue);
+      setIsValidAmount(selectedAccountBalance.value.gt('0'));
+    }
+
+    async function setMax() {
+      fillMaxValueAvailable();
+      calculateTxFee()
+        .then(() => {
+          fillMaxValueAvailable();
+          updateStore();
+        })
+        .catch(console.error);
+    }
+
     function watchBitcoinAmount() {
       checkStep();
       amountStyle.value = stepState.value === 'done' ? 'black-box' : 'yellow-box';
@@ -225,6 +264,7 @@ export default defineComponent({
 
     function accountChanged() {
       if (stepState.value !== 'unused') {
+        enableButton.value = true;
         checkStep();
         calculateTxFee();
         amountStyle.value = stepState.value === 'done' ? 'black-box' : 'yellow-box';
@@ -234,7 +274,7 @@ export default defineComponent({
     watch(selectedFee, checkStep);
     watch(bitcoinAmount, watchBitcoinAmount);
     watch(selectedAccountBalance, watchBTCAccountTypeSelected);
-    watch(selectedAccount, accountChanged);
+    watch(pegInTx, accountChanged);
 
     const isInitialValue = amountToTransfer.value.toBTCString() === '0.00000000';
     if (!isInitialValue) {
@@ -252,6 +292,7 @@ export default defineComponent({
       rbtcAmount,
       amountErrorMessage,
       mdiArrowRight,
+      setMax,
     };
   },
 });
