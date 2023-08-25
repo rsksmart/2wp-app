@@ -1,80 +1,54 @@
-import * as bitcoin from 'bitcoinjs-lib';
-import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
-import {
-  NormalizedOutput, NormalizedTx, SatoshiBig, Utxo,
-} from '@/common/types';
+import { SatoshiBig, WalletAddress } from '@/common/types';
 import { validateAddress } from '@/common/utils';
 import * as constants from '@/common/store/constants';
+import ApiService from '@/common/services/ApiService';
+import { BalanceWithUtxos, BlockbookUtxo } from '../types/services';
 
-export default class PeginTxService {
-  private static getRskOutput(recipientAddress: string, refundAddress: string): NormalizedOutput {
-    const output: NormalizedOutput = {
-      amount: '0',
-      op_return_data: `52534b5401${recipientAddress}`,
-    };
-    const { addressType: refundAddressType } = validateAddress(refundAddress);
-    const hash = bitcoin.address.fromBase58Check(refundAddress).hash.toString('hex');
-    switch (refundAddressType) {
-      case constants.BITCOIN_LEGACY_ADDRESS:
-        output.op_return_data += `01${hash}`;
-        break;
-      case constants.BITCOIN_SEGWIT_ADDRESS:
-        output.op_return_data += `02${hash}`;
-        break;
-      default:
-        throw new Error(`Invalid refund address ${refundAddress}}`);
-    }
-    return output;
-  }
+function balanceFromUtxosInSatoshis(utxoList: BlockbookUtxo[]) {
+  return utxoList.map((utxo) => new SatoshiBig(utxo.value, 'satoshi'))
+    .reduce((acc, curr) => acc.plus(curr), new SatoshiBig(0, 'satoshi'));
+}
 
-  public static buildNormalizedTx({
-    selectedUtxoList,
-    totalFee,
-    amountToTransfer,
-    federationAddress,
-    refundAddress,
-    rskRecipientAddress,
-    changeAddress,
-  }: {
-    selectedUtxoList: Utxo[];
-    totalFee: SatoshiBig;
-    amountToTransfer: SatoshiBig;
-    federationAddress: string;
-    refundAddress: string;
-    rskRecipientAddress: string;
-    changeAddress: string;
-  }): NormalizedTx {
-    const normalizedTx: NormalizedTx = {
-      coin: EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
-      inputs: [],
-      outputs: [],
+export default class BalanceService {
+  public static getBalances(addressList: WalletAddress[]): Promise<BalanceWithUtxos> {
+    const addresses: {legacy: string[], segwit: string[], nativeSegwit: string[]} = {
+      legacy: [],
+      segwit: [],
+      nativeSegwit: [],
     };
-    normalizedTx.inputs = selectedUtxoList.map((utxo) => ({
-      address: utxo.address ?? '',
-      prev_hash: utxo.txid,
-      amount: utxo.amount.toString(),
-      address_n: utxo.derivationArray,
-      prev_index: utxo.vout,
-    }));
-    const federationOutput: NormalizedOutput = {
-      address: federationAddress,
-      amount: amountToTransfer.toSatoshiString(),
-    };
-    normalizedTx.outputs.push(federationOutput);
-    normalizedTx.outputs.push(this.getRskOutput(rskRecipientAddress, refundAddress));
-    const totalBalance = selectedUtxoList.reduce((acc, { amount }) => acc + amount, 0);
-    const totalBalanceInSatoshis = new SatoshiBig(totalBalance, 'satoshi');
-    const changeOutput: NormalizedOutput = {
-      address: changeAddress,
-      amount: totalBalanceInSatoshis.minus(amountToTransfer).minus(totalFee).toSatoshiString(),
-    };
-    const burnDustValue = Math.min(
-      EnvironmentAccessorService.getEnvironmentVariables().burnDustValue,
-      constants.BURN_DUST_MAX_VALUE,
-    );
-    if (Number(changeOutput.amount) > burnDustValue) {
-      normalizedTx.outputs.push(changeOutput);
-    }
-    return normalizedTx;
+
+    return new Promise((resolve, reject) => {
+      addressList.forEach(({ address }) => {
+        const { addressType } = validateAddress(address);
+        switch (addressType) {
+          case constants.BITCOIN_LEGACY_ADDRESS:
+            addresses.legacy.push(address);
+            break;
+          case constants.BITCOIN_SEGWIT_ADDRESS:
+            addresses.segwit.push(address);
+            break;
+          case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
+            addresses.nativeSegwit.push(address);
+            break;
+          default:
+            reject(new Error('Invalid address type'));
+        }
+      });
+
+      Promise.all([
+        ApiService.getUtxos(addresses.legacy),
+        ApiService.getUtxos(addresses.segwit),
+        ApiService.getUtxos(addresses.nativeSegwit)])
+        .then(([legacyUtxos, segwitUtxos, nativeSegwitUtxos]) => {
+          resolve({
+            legacy: { balance: balanceFromUtxosInSatoshis(legacyUtxos), utxos: legacyUtxos },
+            segwit: { balance: balanceFromUtxosInSatoshis(segwitUtxos), utxos: segwitUtxos },
+            nativeSegwit: {
+              balance: balanceFromUtxosInSatoshis(nativeSegwitUtxos),
+              utxos: nativeSegwitUtxos,
+            },
+          });
+        }).catch(reject);
+    });
   }
 }
