@@ -161,7 +161,6 @@
     .v-text-field fieldset, .v-text-field .v-input__control, .v-text-field .v-input__slot {
       padding: 0 !important;
       margin: 0 !important;
-      height: 32px !important;
       min-height: 34px !important;
       background: #fff !important;
     }
@@ -384,4 +383,8 @@
 
 .v-field.v-field--disabled.v-field--flat.v-field--variant-solo {
   opacity: 1;
+}
+
+.v-field__input {
+  padding: 0 !important;
 }
