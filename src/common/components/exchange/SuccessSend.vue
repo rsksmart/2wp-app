@@ -36,6 +36,6 @@ export default {
     return {
       environmentContext,
     };
-  }
-}
+  },
+};
 </script>

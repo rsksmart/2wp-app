@@ -11,14 +11,16 @@ import { deriveAddress, NETWORKS, bitcoinJsNetwork } from './xPubUtils';
 export function getPubKeyFromRskSignedMessage2(signedMessage:string, hashedMessage: string)
   : Buffer {
   const recoveredPk = recoverPublicKey(
-    arrayify(hashMessage(arrayify(hashedMessage))), signedMessage,
+    arrayify(hashMessage(arrayify(hashedMessage))),
+    signedMessage,
   );
   const newCompressedPK = computePublicKey(recoveredPk, true).substring(2);
   return Buffer.from(newCompressedPK, 'hex');
 }
 
 export function getBtcAddressFromSignedMessage(
-  signedMessage:string, hashedMessage: string,
+  signedMessage:string,
+  hashedMessage: string,
 ): string {
   const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin
   === constants.BTC_NETWORK_MAINNET ? NETWORKS.MAINNET : NETWORKS.TESTNET;

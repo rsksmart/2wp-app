@@ -17,8 +17,8 @@ import FooterRsk from '@/common/components/layouts/Footer.vue';
 import Mobile from '@/common/views/Mobile.vue';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import * as constants from '@/common/store/constants';
-import { vuetifyNonce } from '@/common/plugins/vuetify';
 import { useAction } from '@/common/store/helper';
+import { vuetifyNonce } from '@/common/plugins/vuetify';
 
 export default {
   name: 'App',
