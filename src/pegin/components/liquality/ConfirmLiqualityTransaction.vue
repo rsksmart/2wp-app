@@ -201,7 +201,6 @@ export default defineComponent({
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const pegInTxState = useState<PegInTxState>('pegInTx');
     const walletService = useGetter<WalletService>('pegInTx', constants.PEGIN_TX_GET_WALLET_SERVICE);
-    const refundAddress = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_REFUND_ADDRESS);
     const accountBalanceText = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_ACCOUNT_BALANCE_TEXT);
     const safeFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
 
@@ -249,10 +248,6 @@ export default defineComponent({
       return `${satoshiAmount} ${environmentContext.getBtcTicker()}`;
     }
 
-    function splitString(s: string): string[] {
-      return s.match(/.{1,16}/g) ?? [];
-    }
-
     function appendClarityScript(): void {
       const amountFromString = pegInTxState.value.amountToTransfer.toBTCTrimmedString();
       const vueAppClarityId = 'ibn9mzxbfg';
@@ -267,49 +262,6 @@ export default defineComponent({
       scriptTag.text = `clarity("set", "pegin_using_liquality_value", "${amountFromString}");`;
       document.body.appendChild(scriptTag);
     }
-
-    const opReturnData = computed((): string => {
-      const opReturnDataOutput = pegInTxState.value.normalizedTx.outputs[0] ?? { script_type: '' };
-      return opReturnDataOutput.op_return_data
-        ? `${opReturnDataOutput.op_return_data.substr(0, 45)}...`
-        : 'OP_RETURN data not found';
-    });
-
-    const rskFederationAddress = computed(():string => {
-      return pegInTxState.value.normalizedTx.outputs[1]?.address?.trim() ?? `${environmentContext.getBtcText()} Powpeg address not found`;
-    });
-
-    const changeAddress = computed((): string => {
-      const [, , change] = pegInTxState.value.normalizedTx.outputs;
-      if (change && change.address) {
-        return change.address;
-      }
-      return 'Change address not found';
-    });
-
-    const changeAmount = computed((): string => {
-      const changeAmount = new SatoshiBig(pegInTxState.value.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
-      return changeAmount.toBTCTrimmedString();
-    });
-
-    const computedFullAmount = computed((): string => {
-      const changeAmount = new SatoshiBig(pegInTxState.value.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
-      return pegInTxState.value.amountToTransfer.plus(safeFee.value)
-        .plus(changeAmount)
-        .toBTCTrimmedString();
-    });
-
-    const confirmTrezorTxSummary = computed((): NormalizedSummary => {
-      return {
-        amountFromString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
-        amountReceivedString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
-        fee: Number(safeFee.value.toBTCTrimmedString()),
-        recipientAddress: pegInTxState.value.rskAddressSelected,
-        refundAddress: refundAddress.value,
-        selectedAccount: accountBalanceText.value,
-        federationAddress: pegInTxState.value.peginConfiguration.federationAddress,
-      };
-    });
 
     onBeforeMount(appendClarityScript);
 

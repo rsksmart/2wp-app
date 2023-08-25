@@ -37,9 +37,9 @@ export default {
       response = `
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
       script-src 'self' 'nonce-${vuetifyNonce}' 'unsafe-eval';
-      script-src-elem 'self' 'unsafe-inline' https://script.hotjar.com https://static.hotjar.com;
+      script-src-elem 'self' 'unsafe-inline' https://www.clarity.ms https://*.clarity.ms https://api.coingecko.com/;
       img-src data: https:;
-      connect-src 'self' ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://api.coingecko.com ;
+      connect-src 'self' 'unsafe-inline' https://*.clarity.ms ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://api.coingecko.com https://www.clarity.ms;
       object-src 'none';
       frame-src https://connect.trezor.io;
       worker-src 'none';
