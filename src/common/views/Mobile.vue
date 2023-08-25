@@ -20,8 +20,8 @@
 </template>
 
 <script lang="ts">
-import { getMainLogo } from '../utils/utils';
 import { computed } from 'vue';
+import { getMainLogo } from '../utils/utils';
 
 export default {
   name: 'Mobile',

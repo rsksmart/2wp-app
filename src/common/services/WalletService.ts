@@ -1,6 +1,6 @@
 import * as constants from '@/common/store/constants';
 import SatoshiBig from '@/common/types/SatoshiBig';
-import { ApiService } from '@/common/services/index';
+import { ApiService } from '@/common/services';
 import { Purpose, SignedTx, WalletCount } from '@/common/types/Wallets';
 import {
   AccountBalance, AddressStatus, AppNetwork, BtcAccount, Tx, WalletAddress,
@@ -98,8 +98,12 @@ export default abstract class WalletService {
     return `${accountPath}${coinPath}/${accountIdx}'`;
   }
 
-  protected getDerivationPath(accountType: string, accountIdx: number, change: boolean,
-    addressIdx: number): string {
+  protected getDerivationPath(
+    accountType: string,
+    accountIdx: number,
+    change: boolean,
+    addressIdx: number,
+  ): string {
     const changePath: string = change ? '/1' : '/0';
     return `${this.getAccountPath(accountType, accountIdx)}${changePath}/${addressIdx}`;
   }
@@ -203,9 +207,11 @@ export default abstract class WalletService {
       }
       this.loadingBalances = false;
       this.informSubscribers(this.balanceAccumulated, []);
-    } catch (error) {
-      if (!error.message) {
-        error.message = 'Error fetching balance';
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        if (!error.message) {
+          error.message = 'Error fetching balance';
+        }
       }
       throw error;
     } finally {
