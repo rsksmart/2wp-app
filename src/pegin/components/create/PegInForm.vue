@@ -15,7 +15,7 @@
         <v-col id="options-col" cols="8" lg="7" class="pa-0">
           <peg-in-account-select/>
           <v-divider />
-          <btc-input-amount/>
+          <btc-input-amount :enable-button="true"/>
           <v-divider />
           <rsk-address-input @state="setRskAddressState"/>
           <v-divider />

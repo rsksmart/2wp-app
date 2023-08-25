@@ -315,7 +315,7 @@
         <v-container class="px-0 py-2">
           <v-row class="ma-0">
             <h1 class="boldie">
-              {{ type === txType.PEGOUT ? 'Sender address' : 'Device account' }}
+              {{ type === txType.PEGOUT ? 'Sender address' : accountLabel }}
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
@@ -503,7 +503,7 @@ import {
   TxStatusType,
   TxSummaryOrientation,
 } from '@/common/types';
-import { useStateAttribute } from '@/common/store/helper';
+import { useGetter, useStateAttribute } from '@/common/store/helper';
 import TxSummaryField from '@/common/components/exchange/TxSummaryField.vue';
 
 export default defineComponent({
@@ -532,6 +532,8 @@ export default defineComponent({
 
     const bitcoinPrice = useStateAttribute<number>('web3Session', 'bitcoinPrice');
 
+    const walletName = useGetter<string>('pegInTx', constants.WALLET_NAME);
+
     const fromTitle = computed(() => (props.type === TxStatusType.PEGIN ? 'Bitcoin' : 'Rootstock'));
 
     const toTitle = computed(() => (props.type === TxStatusType.PEGIN ? 'Rootstock' : 'Bitcoin'));
@@ -542,6 +544,15 @@ export default defineComponent({
         refundAddress = props.summary.refundAddress;
       }
       return refundAddress;
+    });
+
+    const accountLabel = computed((): string => {
+      const isLedger = walletName.value === 'Trezor';
+      const isTrezor = walletName.value === 'Ledger';
+      if (isLedger || isTrezor) {
+        return 'Device account';
+      }
+      return 'Sender account';
     });
 
     const currencyFromTicker = computed(() => (
@@ -708,6 +719,7 @@ export default defineComponent({
       openDerivationAddressDocumentation,
       mdiInformation,
       mdiOpenInNew,
+      accountLabel,
     };
   },
 });
