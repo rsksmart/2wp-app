@@ -32,88 +32,52 @@
 
 <script lang="ts">
 import {
-  Component, Emit,
-  Vue,
-} from 'vue-property-decorator';
-import { getBtcTxExplorerUrl } from '@/common/utils';
-import {
   NormalizedSummary, PegInTxState, SatoshiBig, TxStatusType, TxSummaryOrientation,
 } from '@/common/types';
-import { Getter, State } from 'vuex-class';
 import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
 import * as constants from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
+import { computed, ref } from 'vue';
+import { useGetter, useState } from '@/common/store/helper';
+import { useRoute, useRouter } from 'vue-router';
 
-@Component({
+export default {
+  name: 'Success',
   components: {
     TxSummaryFixed,
   },
-})
+  setup() {
+    const txId = ref('');
+    const route = useRoute();
+    const typeSummary = TxStatusType.PEGIN;
+    const orientationSummary = TxSummaryOrientation.HORIZONTAL;
+    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+    const peginTxState = useState<PegInTxState>('pegInTx');
+    const safeFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
 
-export default class Success extends Vue {
-  scriptTag?: HTMLScriptElement;
+    const successPeginSummary = computed((): NormalizedSummary => ({
+      amountFromString: peginTxState.value.amountToTransfer.toBTCTrimmedString(),
+      amountReceivedString: peginTxState.value.amountToTransfer.toBTCTrimmedString(),
+      fee: Number(safeFee.value.toBTCTrimmedString()),
+      recipientAddress: peginTxState.value.rskAddressSelected,
+      txId: txId.value,
+      federationAddress: peginTxState.value.peginConfiguration.federationAddress,
+    }));
 
-  txId = '';
+    function toTxStatus() {
+      const router = useRouter();
+      router.push({ name: 'Status', params: { txId: txId.value } });
+    }
 
-  typeSummary = TxStatusType.PEGIN;
+    txId.value = route.params.txId as string;
 
-  orientationSummary = TxSummaryOrientation.HORIZONTAL;
-
-  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-
-  @State('pegInTx') peginTxState!: PegInTxState;
-
-  @Getter(constants.PEGIN_TX_GET_SAFE_TX_FEE, { namespace: 'pegInTx' }) safeFee!: SatoshiBig;
-
-  get successPeginSummary(): NormalizedSummary {
     return {
-      amountFromString: this.peginTxState.amountToTransfer.toBTCTrimmedString(),
-      amountReceivedString: this.peginTxState.amountToTransfer.toBTCTrimmedString(),
-      fee: Number(this.safeFee.toBTCTrimmedString()),
-      recipientAddress: this.peginTxState.rskAddressSelected,
-      txId: this.txId,
-      federationAddress: this.peginTxState.peginConfiguration.federationAddress,
+      environmentContext,
+      successPeginSummary,
+      typeSummary,
+      orientationSummary,
+      toTxStatus,
     };
-  }
-
-  get btcExplorerUrl() {
-    return getBtcTxExplorerUrl(this.txId);
-  }
-
-  get chunkedBtcExplorerUrl() {
-    return `${this.btcExplorerUrl.substr(0, 30)}...${this.btcExplorerUrl.substr(104, 108)}`;
-  }
-
-  get chunkedTxId() {
-    return `${this.txId.substr(0, 30)}...${this.txId.substr(60, 64)}`;
-  }
-
-  @Emit()
-  toTxStatus() {
-    this.$router.push({ name: 'Status', params: { txId: this.txId } });
-  }
-
-  @Emit()
-  copyUrl() {
-    navigator.clipboard.writeText(this.btcExplorerUrl);
-  }
-
-  @Emit()
-  copyTxId() {
-    navigator.clipboard.writeText(this.txId);
-  }
-
-  created() {
-    this.txId = this.$route.params.txId;
-  }
-
-  // beforeMount() {
-  //   const amountFromString = this.peginTxState.amountToTransfer.toBTCTrimmedString();
-  //   this.scriptTag = document.createElement('script');
-  //   this.scriptTag.type = 'text/javascript';
-  //   this.scriptTag.text = 'clarity("set", "pegin_tx", "1");';
-  //   this.scriptTag.text = `clarity("set", "pegin_tx_value", "${amountFromString}");`;
-  //   document.body.appendChild(this.scriptTag);
-  // }
-}
+  },
+};
 </script>

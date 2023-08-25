@@ -79,72 +79,82 @@
 </template>
 
 <script lang="ts">
-import {
-  Component, Prop, Vue, Emit, Watch,
-} from 'vue-property-decorator';
-import { Getter, State, Action } from 'vuex-class';
 import * as constants from '@/common/store/constants';
-import { PegInTxState } from '@/common/types/pegInTx';
 import LedgerConnect from '@/assets/exchange/ledger/connect_ledger.png';
 import TrezorConnect from '@/assets/exchange/trezor/connect_trezor.png';
 import LiqualityConnect from '@/assets/exchange/liquality/connect_liquality.png';
 import Connect from '@/assets/exchange/wallet.png';
 import { SendBitcoinState } from '@/common/types';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
+import { computed, onBeforeMount, PropType, watch } from 'vue';
+import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
+import { useRouter } from 'vue-router';
 
-@Component
-export default class ConnectDevice extends Vue {
-  @Prop() device!: string;
+export default {
+  name: 'ConnectDevice',
+  props: {
+    device: String,
+    sendBitcoinState: Object as PropType<SendBitcoinState>,
+    showDialog: Boolean,
+  },
+  setup(props, context) {
+    const router = useRouter();
+    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
-  @Prop() sendBitcoinState!: SendBitcoinState;
+    const { bitcoinWallet } = useStateAttribute('pegInTx', ['bitcoinWallet']);
+    const walletName = useGetter<String>('pegInTx', constants.WALLET_NAME);
+    const isHdWallet = useGetter<Boolean>('pegInTx', constants.PEGIN_TX_IS_HD_WALLET);
+    const clearStore = useAction('pegInTx', constants.PEGIN_TX_CLEAR_STATE);
 
-  @Prop() showDialog!: boolean;
+    const deviceImagePath = computed(() => {
+      if (bitcoinWallet === constants.WALLET_LEDGER) return LedgerConnect;
+      if (bitcoinWallet === constants.WALLET_TREZOR) return TrezorConnect;
+      if (bitcoinWallet === constants.WALLET_LIQUALITY) return LiqualityConnect;
+      return Connect;
+    });
 
-  @State('pegInTx') peginTxState!: PegInTxState;
+    const isLedgerWallet = computed(() => {
+      return bitcoinWallet === constants.WALLET_LEDGER;
+    });
 
-  @Getter(constants.WALLET_NAME, { namespace: 'pegInTx' }) walletName!: string;
+    const isLiqualityWallet = computed(() => {
+      return bitcoinWallet === constants.WALLET_LIQUALITY;
+    })
 
-  @Getter(constants.PEGIN_TX_IS_HD_WALLET, { namespace: 'pegInTx' }) isHdWallet!: boolean;
-
-  @Action(constants.PEGIN_TX_CLEAR_STATE, { namespace: 'pegInTx' }) clearStore !: () => void;
-
-  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-
-  get deviceImagePath() {
-    if (this.peginTxState.bitcoinWallet === constants.WALLET_LEDGER) return LedgerConnect;
-    if (this.peginTxState.bitcoinWallet === constants.WALLET_TREZOR) return TrezorConnect;
-    if (this.peginTxState.bitcoinWallet === constants.WALLET_LIQUALITY) return LiqualityConnect;
-    return Connect;
-  }
-
-  get isLedgerWallet() {
-    return this.peginTxState.bitcoinWallet === constants.WALLET_LEDGER;
-  }
-
-  get isLiqualityWallet() {
-    return this.peginTxState.bitcoinWallet === constants.WALLET_LIQUALITY;
-  }
-
-  @Emit('continueToForm')
-  continueToForm() {
-    return this.peginTxState.bitcoinWallet;
-  }
-
-  beforeMount() {
-    if (!this.showDialog) {
-      this.tryConnect();
+    function continueToForm() {
+      context.emit('continueToForm', bitcoinWallet);
     }
-  }
 
-  @Watch('showDialog')
-  tryConnect() {
-    this.continueToForm();
-  }
+    function back() {
+      clearStore();
+      router.push({ name: 'PegIn' });
+    }
 
-  @Emit()
-  back() {
-    this.clearStore();
-    this.$router.push({ name: 'PegIn' });
+    function tryConnect() {
+      continueToForm();
+    }
+
+    watch(props.showDialog, () => {
+      continueToForm();
+    });
+
+    onBeforeMount(() => {
+      if (!props.showDialog) {
+        tryConnect();
+      }
+    });
+
+    return {
+      environmentContext,
+      walletName,
+      isHdWallet,
+      clearStore,
+      deviceImagePath,
+      isLedgerWallet,
+      isLiqualityWallet,
+      continueToForm,
+      back,
+    };
   }
 }
 </script>

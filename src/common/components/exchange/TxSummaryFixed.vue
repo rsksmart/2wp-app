@@ -89,7 +89,7 @@
                   </v-row>
                   <v-row>
                     <v-col class="form-field-summary">
-                      <v-row class="mx-0">
+                      <v-row class="mx-0 mb-2">
                         <span id="amount">
                           {{ amount }} {{ currencyFromTicker }}
                         </span>
@@ -160,7 +160,7 @@
                         <v-col cols="11"
                                class="col-address-button d-flex flex-column">
                           <tx-summary-field
-                            textStyles="breakable-address status-text-ellipsis field-with-icon-text"
+                            textStyles="breakable-address status-text-ellipsis"
                             @copyToClipboard="copyToClipboard"
                             id="txId"
                             :textValue="summary.txId"
@@ -223,7 +223,7 @@
                         <v-col cols="11" class="col-address-button d-flex flex-column text-right">
                           <tx-summary-field v-if="recipientAddress  !== '-'"
                             @copyToClipboard="copyToClipboard"
-                            textStyles="breakable-address status-text-ellipsis field-with-icon-text"
+                            textStyles="breakable-address status-text-ellipsis"
                             id="recipientAddress"
                             :textValue="recipientAddress"
                           />
@@ -251,7 +251,7 @@
                   </v-row>
                   <v-row>
                     <v-col class="form-field-summary">
-                      <v-row class="justify-end mx-0">
+                      <v-row class="justify-end mx-0 mb-2">
                         <span>{{ amountToReceive }}</span>
                       </v-row>
                     </v-col>
@@ -269,7 +269,7 @@
                   </v-row>
                   <v-row>
                     <v-col class="form-field-summary">
-                      <v-row class="justify-end mx-0">
+                      <v-row class="justify-end mx-0 mb-2">
                         <span id="summary-horizontal-value-fee">{{ safeFeeString === '0' ? '-'
                           : safeFeeString + ' ' + environmentContext.getBtcTicker() }}
                         </span>
@@ -287,7 +287,7 @@
                   </v-row>
                   <v-row>
                     <v-col class="form-field-summary">
-                      <v-row class="justify-end mx-0">
+                      <v-row class="justify-end mx-0 mb-2">
                         <span>{{ total }} {{ currencyFromTicker }}</span>
                       </v-row>
                     </v-col>
@@ -316,7 +316,7 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="pa-0" id="summary-sender-address">
+            <v-container class="pa-0">
               <p class="light-grayish">{{ senderValue }}</p>
             </v-container>
           </div>
@@ -324,13 +324,15 @@
 
         <!-- Refund -->
         <v-container v-if="summary.refundAddress"
-                     class="px-0 py-2">
+                     class="pb-0 pl-0">
           <v-row class="mx-0">
             <h1 class="boldie">Refund address</h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="pa-0">
-              <p class="light-grayish">{{ refundAddress }}</p>
+            <v-container class="mark">
+              <p>
+                {{ refundAddress }}
+              </p>
             </v-container>
           </div>
         </v-container>
@@ -343,7 +345,7 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="pa-0" id="summary-amount">
+            <v-container class="pa-0">
               <p class="light-grayish">
                 {{ amount }} {{ currencyFromTicker }}
               </p>
@@ -359,7 +361,7 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="pa-0" id="summary-tx-fee">
+            <v-container class="pa-0">
               <p class="light-grayish">
                 {{ summary.fee }}
                 {{ currencyFromTicker }}
@@ -376,7 +378,7 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="pa-0" id="summary-tx-total">
+            <v-container class="pa-0">
               <p class="light-grayish">
                 {{ total }} {{currencyFromTicker}}
               </p>
@@ -390,7 +392,7 @@
             <h1 class="boldie">Gas</h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="pa-0" id="summary-tx-fee">
+            <v-container class="pa-0">
               <p class="light-grayish">
                 {{ summary.gas }} {{currencyFromTicker}}
               </p>
@@ -413,16 +415,12 @@
           <v-row class="justify-end mx-0">
             <h1 class="boldie">
               {{ type === txType.PEGOUT ?
-              environmentContext.getBtcTicker()
-              : environmentContext.getRbtcTicker() }}
-              destination address
+              'Recipient address'
+              : environmentContext.getRbtcTicker() + ' destination address' }}
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="pa-0" :id="[type === txType.PEGOUT
-              ? 'summary-btc-destination'
-              : 'summary-rsk-destination'
-            ]">
+            <v-container class="pa-0">
               <p class="light-grayish text-end">
                 {{ recipientAddress }}
               </p>
@@ -438,7 +436,7 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="pa-0" id="summary-estimated-fee">
+            <v-container class="pa-0">
               <p class="light-grayish text-end">
                 {{ summary.fee }}
                 {{ currencyToTicker }}
@@ -455,7 +453,7 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="pa-0" id="summary-btc-estimated-amount">
+            <v-container class="pa-0">
               <p class="light-grayish text-end">
                 {{ summary.amountReceivedString }} {{currencyToTicker}}
               </p>
@@ -471,7 +469,7 @@
             </h1>
           </v-row>
           <div class="form-field pt-2 pl-0">
-            <v-container class="pa-0" id="summary-rsk-estimated-amount">
+            <v-container class="pa-0" id="summary-btc-estimated-amount">
               <p class="light-grayish text-end">
                 {{ amount }}  {{currencyToTicker}}
               </p>
@@ -486,228 +484,246 @@
 
 <script lang="ts">
 import {
-  Component, Emit, Prop, Vue,
-} from 'vue-property-decorator';
-import {
   NormalizedSummary,
-  PegInTxState,
   SatoshiBig,
-  SessionState,
   TxStatusType,
   TxSummaryOrientation,
 } from '@/common/types';
 import TxSummaryField from '@/common/components/exchange/TxSummaryField.vue';
 import {
-  formatTxId, getBtcAddressExplorerUrl, getBtcTxExplorerUrl, getChunkedValue,
+  formatTxId, getBtcAddressExplorerUrl, getBtcTxExplorerUrl, getChunkedValue, PegInTxState
 } from '@/common/utils';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { Getter, State } from 'vuex-class';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import * as constants from '@/common/store/constants';
 import Big from 'big.js';
+import { computed, ref, PropType } from 'vue';
+import { useStateAttribute } from '@/common/store/helper';
 
-@Component({
+export default {
+  name: 'TxSummaryFixed',
   components: {
     TxSummaryField,
   },
-})
-export default class TxSummaryFixed extends Vue {
-  @Prop() initialExpand!: boolean;
+  props: {
+    initialExpand: Boolean,
+    summary: Object as PropType<NormalizedSummary>,
+    type: TxStatusType,
+    orientation: TxSummaryOrientation,
+    isRejected: Boolean,
+    walletName: String,
+  },
+  setup(props, context) {
+    const over = ref(false);
+    const fixedUSDDecimals = 2;
+    const VALUE_INCOMPLETE_MESSAGE = '-';
+    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+    const orientationTypes = TxSummaryOrientation;
+    const txType = TxStatusType;
+    const appConstants = constants;
 
-  @Prop() summary!: NormalizedSummary;
+    const bitcoinPrice = useStateAttribute<number>('web3Session', 'bitcoinPrice');
 
-  @Prop() type!: TxStatusType;
+    const fromTitle = computed(() => {
+      return props.type === TxStatusType.PEGIN ? 'Bitcoin' : 'Rootstock';
+    });
 
-  @Prop() orientation !: TxSummaryOrientation;
+    const toTitle = computed(() => {
+      return props.type === TxStatusType.PEGIN ? 'Rootstock' : 'Bitcoin';
+    });
 
-  @Prop() isRejected !: boolean;
+    const computedRefundAddress = computed((): string => {
+      let refundAddress = VALUE_INCOMPLETE_MESSAGE;
+      if (props.summary && props.summary.refundAddress) {
+        refundAddress = props.summary.refundAddress;
+      }
+      return refundAddress;
+    });
 
-  over = false;
+    const currencyFromTicker = computed(() => {
+      return props.type === TxStatusType.PEGIN ? environmentContext.getBtcTicker()
+        : environmentContext.getRbtcTicker();
+    });
 
-  fixedUSDDecimals = 2;
+    const currencyToTicker = computed(() => {
+      return props.type === TxStatusType.PEGIN ? environmentContext.getRbtcTicker()
+        : environmentContext.getBtcTicker();
+    });
 
-  VALUE_INCOMPLETE_MESSAGE = '-';
+    const amount = computed((): string => {
+      return props.summary?.amountFromString || VALUE_INCOMPLETE_MESSAGE;
+    });
 
-  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+    const amountToReceive = computed((): string => {
+      if (!props.summary?.amountReceivedString || props.summary.amountReceivedString === '0') {
+        return '-';
+      }
+      return `${props.summary.amountReceivedString} ${currencyToTicker}`;
+    });
 
-  orientationTypes = TxSummaryOrientation;
+    const total = computed((): string => {
+      const amount = new Big(props.summary?.amountFromString || '0');
+      const fee = new Big(safeFee.value);
+      return amount.plus(fee).toString() || VALUE_INCOMPLETE_MESSAGE;
+    });
 
-  txType = TxStatusType;
+    const amountUSD = computed((): string => {
+      const amount = new SatoshiBig(props.summary?.amountFromString || 0, 'btc');
+      if (!amount || !bitcoinPrice) return VALUE_INCOMPLETE_MESSAGE;
+      // TODO: check casting accuracy
+      return amount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
+    });
 
-  appConstants = constants;
+    const amountToReceiveUSD = computed((): string => {
+      const amount = new SatoshiBig(props.summary?.amountReceivedString || 0, 'btc');
+      if (!amount || !bitcoinPrice) return VALUE_INCOMPLETE_MESSAGE;
+      return amount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
+    });
 
-  maxLengthForChunked = 25;
+    const totalUSD = computed((): string => {
+      const total = total.value === VALUE_INCOMPLETE_MESSAGE ? 0 : total;
+      const amount = new SatoshiBig(total, 'btc');
+      if (!amount || !bitcoinPrice) return VALUE_INCOMPLETE_MESSAGE;
+      return amount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
+    });
 
-  @State('web3Session') sessionState!: SessionState;
+    const federationAddress = computed((): string => {
+      return props.summary && props.summary.federationAddress
+        ? formatTxId(props.summary.federationAddress) : VALUE_INCOMPLETE_MESSAGE;
+    });
 
-  @State('pegInTx') peginTxState!: PegInTxState;
+    const networkFromText = computed((): string => {
+      if (props.type === TxStatusType.PEGIN) {
+        return environmentContext.getBtcText();
+      }
+      return environmentContext.getRskText();
+    });
 
-  @Getter(constants.WALLET_NAME, { namespace: 'pegInTx' }) walletName!: string;
+    const networkToText = computed((): string => {
+      if (props.type === TxStatusType.PEGIN) {
+        return environmentContext.getRskText();
+      }
+      return environmentContext.getBtcText();
+    });
 
-  get fromTitle() {
-    return this.type === TxStatusType.PEGIN ? 'Bitcoin' : 'Rootstock';
-  }
+    const recipientAddress = computed(():string => {
+      return (!props.summary || !props.summary.recipientAddress || this.summary?.recipientAddress === '0x')
+        ? '-'
+        : getChunkedValue(props.summary.recipientAddress, maxLengthForChunked.value);
+    });
 
-  get toTitle() {
-    return this.type === TxStatusType.PEGIN ? 'Rootstock' : 'Bitcoin';
-  }
+    const refundAddress = computed((): string => {
+      return props.summary?.refundAddress
+        ? getChunkedValue(props.summary.refundAddress, maxLengthForChunked.value)
+        : VALUE_INCOMPLETE_MESSAGE;
+    });
 
-  get computedRefundAddress(): string {
-    let refundAddress = this.VALUE_INCOMPLETE_MESSAGE;
-    if (this.summary.refundAddress) {
-      refundAddress = this.summary.refundAddress;
+    const senderValue = computed(():string => {
+      if (props.summary?.senderAddress) {
+        return getChunkedValue(props.summary.senderAddress, maxLengthForChunked.value);
+      }
+      if (props.summary?.selectedAccount) {
+        return props.summary.selectedAccount;
+      }
+      return VALUE_INCOMPLETE_MESSAGE;
+    });
+
+    const maxLengthForChunked = computed((): number => {
+      return props.orientation === TxSummaryOrientation.VERTICAL
+        ? 15 : 25;
+    });
+
+    const safeFeeString = computed((): string => {
+      return new SatoshiBig(safeFee.value.toString(), 'btc').toBTCTrimmedString();
+    });
+
+    const accountLabel = computed((): string => {
+      const isLedger = props.walletName === 'Trezor';
+      const isTrezor = props.walletName === 'Ledger';
+      if (isLedger || isTrezor) {
+        return 'Device account';
+      }
+      return 'Sender account';
+    });
+
+    const safeFee = computed((): number => {
+      let fee = props.summary?.fee ?? 0;
+      if (
+        (!props.summary?.fee || props.summary.fee === 0)
+        && props.type === TxStatusType.PEGOUT
+        && props.summary?.estimatedFee
+      ) {
+        fee = props.summary.estimatedFee;
+      }
+      return fee;
+    });
+
+    function copyToClipboard(id: string) {
+      if (id === 'txId' || id === 'federationAddress' || id === 'senderAddress' || id === 'recipientAddress') {
+        navigator.clipboard.writeText(props.summary?.[id] || '');
+      }
     }
-    return refundAddress;
-  }
 
-  get currencyFromTicker() {
-    return this.type === TxStatusType.PEGIN ? this.environmentContext.getBtcTicker()
-      : this.environmentContext.getRbtcTicker();
-  }
-
-  get currencyToTicker() {
-    return this.type === TxStatusType.PEGIN ? this.environmentContext.getRbtcTicker()
-      : this.environmentContext.getBtcTicker();
-  }
-
-  get amount(): string {
-    return this.summary.amountFromString || this.VALUE_INCOMPLETE_MESSAGE;
-  }
-
-  get amountToReceive(): string {
-    if (!this.summary.amountReceivedString || this.summary.amountReceivedString === '0') {
-      return '-';
+    function openExplorerTx() {
+      const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_MAINNET ? '' : '.testnet';
+      const explorerRSK = `https://explorer${network}.rsk.co`;
+      const sanitizedTxId = props.summary?.txId?.startsWith('0x')
+        ? props.summary?.txId?.substring(2, (props.summary?.txId?.length))
+        : props.summary?.txId;
+      if (props.type === TxStatusType.PEGIN) {
+        window.open(getBtcTxExplorerUrl(sanitizedTxId || ''), '_blank');
+      } else {
+        window.open(`${explorerRSK}/tx/${props.summary?.txId}`, '_blank');
+      }
     }
-    return `${this.summary.amountReceivedString} ${this.currencyToTicker}`;
-  }
 
-  get total(): string {
-    const amount = new Big(this.summary.amountFromString);
-    const fee = new Big(this.safeFee);
-    return amount.plus(fee).toString() || this.VALUE_INCOMPLETE_MESSAGE;
-  }
-
-  get amountUSD(): string {
-    const amount = new SatoshiBig(this.summary.amountFromString || 0, 'btc');
-    const { bitcoinPrice } = this.sessionState;
-    if (!amount || !bitcoinPrice) return this.VALUE_INCOMPLETE_MESSAGE;
-    return amount.toUSDFromBTCString(bitcoinPrice, this.fixedUSDDecimals);
-  }
-
-  get amountToReceiveUSD(): string {
-    const amount = new SatoshiBig(this.summary.amountReceivedString || 0, 'btc');
-    const { bitcoinPrice } = this.sessionState;
-    if (!amount || !bitcoinPrice) return this.VALUE_INCOMPLETE_MESSAGE;
-    return amount.toUSDFromBTCString(bitcoinPrice, this.fixedUSDDecimals);
-  }
-
-  get totalUSD(): string {
-    const total = this.total === this.VALUE_INCOMPLETE_MESSAGE ? 0 : this.total;
-    const amount = new SatoshiBig(total, 'btc');
-    const { bitcoinPrice } = this.sessionState;
-    if (!amount || !bitcoinPrice) return this.VALUE_INCOMPLETE_MESSAGE;
-    return amount.toUSDFromBTCString(bitcoinPrice, this.fixedUSDDecimals);
-  }
-
-  get federationAddress(): string {
-    return this.summary.federationAddress
-      ? formatTxId(this.summary.federationAddress) : this.VALUE_INCOMPLETE_MESSAGE;
-  }
-
-  get networkFromText(): string {
-    if (this.type === TxStatusType.PEGIN) {
-      return this.environmentContext.getBtcText();
+    function openExplorerToAddress() {
+      const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_MAINNET ? '' : '.testnet';
+      const explorerRSK = `https://explorer${network}.rsk.co`;
+      if (props.type === TxStatusType.PEGIN) {
+        window.open(`${explorerRSK}/address/${props.summary?.recipientAddress}`, '_blank');
+      } else {
+        window.open(getBtcAddressExplorerUrl(props.summary?.recipientAddress || ''), '_blank');
+      }
     }
-    return this.environmentContext.getRskText();
-  }
 
-  get networkToText(): string {
-    if (this.type === TxStatusType.PEGIN) {
-      return this.environmentContext.getRskText();
+    function openDerivationAddressDocumentation() {
+      window.open(`${appConstants.RSK_PEGOUT_DOCUMENTATION_URL}`);
     }
-    return this.environmentContext.getBtcText();
-  }
 
-  get recipientAddress():string {
-    return (!this.summary.recipientAddress || this.summary.recipientAddress === '0x')
-      ? '-'
-      : getChunkedValue(this.summary.recipientAddress, this.maxLengthForChunked);
-  }
 
-  get refundAddress(): string {
-    return this.summary.refundAddress
-      ? getChunkedValue(this.summary.refundAddress, this.maxLengthForChunked)
-      : this.VALUE_INCOMPLETE_MESSAGE;
-  }
-
-  get senderValue():string {
-    if (this.summary.senderAddress) {
-      return getChunkedValue(this.summary.senderAddress, this.maxLengthForChunked);
-    }
-    if (this.summary.selectedAccount) {
-      return this.summary.selectedAccount;
-    }
-    return this.VALUE_INCOMPLETE_MESSAGE;
-  }
-
-  get safeFeeString(): string {
-    return new SatoshiBig(this.safeFee.toString(), 'btc').toBTCTrimmedString();
-  }
-
-  get safeFee(): number {
-    let fee = this.summary.fee ?? 0;
-    if (
-      (!this.summary.fee || this.summary.fee === 0)
-      && this.type === TxStatusType.PEGOUT
-      && this.summary.estimatedFee
-    ) {
-      fee = this.summary.estimatedFee;
-    }
-    return fee;
-  }
-
-  get accountLabel(): string {
-    const isLedger = this.walletName === 'Trezor';
-    const isTrezor = this.walletName === 'Ledger';
-    if (isLedger || isTrezor) {
-      return 'Device account';
-    }
-    return 'Sender account';
-  }
-
-  copyToClipboard(id: string) {
-    if (id === 'txId' || id === 'federationAddress' || id === 'senderAddress' || id === 'recipientAddress') {
-      navigator.clipboard.writeText(this.summary[id] || '');
-    }
-  }
-
-  openExplorerTx() {
-    const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_MAINNET ? '' : '.testnet';
-    const explorerRSK = `https://explorer${network}.rsk.co`;
-    const sanitizedTxId = this.summary.txId?.startsWith('0x')
-      ? this.summary.txId?.substring(2, (this.summary.txId?.length))
-      : this.summary.txId;
-    if (this.type === TxStatusType.PEGIN) {
-      window.open(getBtcTxExplorerUrl(sanitizedTxId || ''), '_blank');
-    } else {
-      window.open(`${explorerRSK}/tx/${this.summary.txId}`, '_blank');
-    }
-  }
-
-  @Emit()
-  openExplorerToAddress() {
-    const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_MAINNET ? '' : '.testnet';
-    const explorerRSK = `https://explorer${network}.rsk.co`;
-    if (this.type === TxStatusType.PEGIN) {
-      window.open(`${explorerRSK}/address/${this.summary.recipientAddress}`, '_blank');
-    } else {
-      window.open(getBtcAddressExplorerUrl(this.summary.recipientAddress || ''), '_blank');
-    }
-  }
-
-  @Emit()
-  openDerivationAddressDocumentation() {
-    window.open(`${this.appConstants.RSK_PEGOUT_DOCUMENTATION_URL}`);
+    return {
+      over,
+      VALUE_INCOMPLETE_MESSAGE,
+      environmentContext,
+      orientationTypes,
+      txType,
+      appConstants,
+      fromTitle,
+      toTitle,
+      computedRefundAddress,
+      currencyFromTicker,
+      currencyToTicker,
+      amount,
+      amountToReceive,
+      total,
+      amountUSD,
+      amountToReceiveUSD,
+      totalUSD,
+      federationAddress,
+      networkFromText,
+      networkToText,
+      recipientAddress,
+      refundAddress,
+      senderValue,
+      safeFeeString,
+      safeFee,
+      copyToClipboard,
+      openExplorerTx,
+      openExplorerToAddress,
+      openDerivationAddressDocumentation,
+      accountLabel,
+    };
   }
 }
-</script>
+<script>

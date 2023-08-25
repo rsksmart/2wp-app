@@ -11,9 +11,8 @@
         </p>
         <v-row class="mx-0 mt-4 d-flex justify-start">
           <v-col cols="11 pa-0 pl-1">
-            <v-row class="mx-0" id="select-tx-fee">
+            <v-row class="mx-0">
               <v-slider v-model="txFeeIndex" :tick-labels="transactionFees" :max="2"
-                        :disabled="isTourActive"
                         :color="txFeeColor" :track-color="txFeeColor" step="1"
                         @focus="focus = true"
                         @blur="focus = false"
@@ -57,118 +56,124 @@
 </template>
 
 <script lang="ts">
-import {
-  Component, Emit, Prop, Vue,
-} from 'vue-property-decorator';
-import { Action, Getter, State } from 'vuex-class';
 import * as constants from '@/common/store/constants';
-import { MiningSpeedFee, PegInTxState } from '@/common/types/pegInTx';
+import { MiningSpeedFee } from '@/common/types/pegInTx';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { SessionState } from '@/common/types';
+import { FeeAmountData } from '@/common/types';
+import { computed, onBeforeMount, ref } from 'vue';
+import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 
-@Component({
-})
-export default class BtcFeeSelect extends Vue {
-  @Prop() isTourActive !: boolean;
+export default {
+  name: 'BtcFeeSelect',
+  setup() {
+    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+    const focus = ref(false);
+    const hasChange = ref(false);
+    const txFeeIndex = ref(1);
+    const fixedUSDDecimals = 2;
+    const transactionFees = ['Slow', 'Average', 'Fast'];
 
-  @State('pegInTx') pegInTxState!: PegInTxState;
+    const bitcoinPrice  = useStateAttribute<number>('web3Session', 'bitcoinPrice');
+    const account  = useStateAttribute<string>('web3Session', 'account');
+    const calculatedFees  = useStateAttribute<FeeAmountData>('pegInTx', 'calculatedFees');
+    const selectedFee  = useStateAttribute<MiningSpeedFee>('pegInTx', 'selectedFee');
+    const isEnoughBalance = useGetter<Boolean>('pegInTx', constants.PEGIN_TX_IS_ENOUGH_BALANCE);
+    const setSelectedFee = useAction('pegInTx', constants.PEGIN_TX_SELECT_FEE_LEVEL);
 
-  @State('web3Session') web3SessionState!: SessionState;
+    const txFeeColor = computed(() => {
+      let color;
+      if (txFeeIndex.value === 0) color = '#F6C61B';
+      if (txFeeIndex.value === 1) color = '#737778';
+      if (txFeeIndex.value === 2) color = '#00B43C';
+      return color;
+    });
 
-  @Action(constants.PEGIN_TX_SELECT_FEE_LEVEL, { namespace: 'pegInTx' }) setSelectedFee !: (feeLevel: MiningSpeedFee) => void;
+    const slowFee = computed(() => {
+      return calculatedFees.value.slow.amount.toBTCString();
+    });
 
-  @Getter(constants.PEGIN_TX_IS_ENOUGH_BALANCE, { namespace: 'pegInTx' }) isEnoughBalance !: boolean;
+    const slowFeeUSD = computed(() => {
+      return calculatedFees.value.slow
+        .amount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
+    });
 
-  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+    const averageFee = computed(() => {
+      return calculatedFees.value.average.amount.toBTCString();
+    });
 
-  focus = false;
+    const averageFeeUSD = computed(() => {
+      return calculatedFees.value.average
+        .amount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
+    });
 
-  hasChange = false;
+    const fastFee = computed(() => {
+      return calculatedFees.value.fast.amount.toBTCString();
+    });
 
-  txFeeIndex = 1;
+    const fastFeeUSD = computed(() => {
+      return calculatedFees.value.fast
+        .amount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
+    });
 
-  fixedUSDDecimals = 2;
+    const showErrorMessage = computed(() => {
+      return !isEnoughBalance.value
+        && !account.value
+        && hasChange.value;
+    });
 
-  transactionFees = ['Slow', 'Average', 'Fast'];
-
-  get txFeeColor() {
-    let color;
-    if (this.txFeeIndex === 0) color = '#F6C61B';
-    if (this.txFeeIndex === 1) color = '#737778';
-    if (this.txFeeIndex === 2) color = '#00B43C';
-    return color;
-  }
-
-  get slowFee() {
-    return this.pegInTxState.calculatedFees.slow.amount.toBTCString();
-  }
-
-  get slowFeeUSD() {
-    return this.pegInTxState.calculatedFees.slow
-      .amount.toUSDFromBTCString(this.pegInTxState.bitcoinPrice, this.fixedUSDDecimals);
-  }
-
-  get averageFee() {
-    return this.pegInTxState.calculatedFees.average.amount.toBTCString();
-  }
-
-  get averageFeeUSD() {
-    return this.pegInTxState.calculatedFees.average
-      .amount.toUSDFromBTCString(this.pegInTxState.bitcoinPrice, this.fixedUSDDecimals);
-  }
-
-  get fastFee() {
-    return this.pegInTxState.calculatedFees.fast.amount.toBTCString();
-  }
-
-  get fastFeeUSD() {
-    return this.pegInTxState.calculatedFees.fast
-      .amount.toUSDFromBTCString(this.pegInTxState.bitcoinPrice, this.fixedUSDDecimals);
-  }
-
-  get showErrorMessage() {
-    return !this.isEnoughBalance
-    && !this.web3SessionState.account
-    && this.hasChange;
-  }
-
-  @Emit()
-  updateStore() {
-    let selectedFee: MiningSpeedFee;
-    this.hasChange = true;
-    switch (this.txFeeIndex) {
-      case 0:
-        selectedFee = constants.BITCOIN_SLOW_FEE_LEVEL;
-        break;
-      case 1:
-        selectedFee = constants.BITCOIN_AVERAGE_FEE_LEVEL;
-        break;
-      case 2:
-        selectedFee = constants.BITCOIN_FAST_FEE_LEVEL;
-        break;
-      default:
-        selectedFee = constants.BITCOIN_AVERAGE_FEE_LEVEL;
-        break;
-    }
-    this.setSelectedFee(selectedFee);
-  }
-
-  beforeMount() {
-    let selectedFee = 1;
-    if (this.pegInTxState && this.pegInTxState.selectedFee) {
-      switch (this.pegInTxState.selectedFee) {
-        case constants.BITCOIN_SLOW_FEE_LEVEL:
-          selectedFee = 0;
+    function updateStore() {
+      let userSelectedFee: MiningSpeedFee;
+      hasChange.value = true;
+      switch (txFeeIndex.value) {
+        case 0:
+          userSelectedFee = constants.BITCOIN_SLOW_FEE_LEVEL;
           break;
-        case constants.BITCOIN_FAST_FEE_LEVEL:
-          selectedFee = 2;
+        case 1:
+          userSelectedFee = constants.BITCOIN_AVERAGE_FEE_LEVEL;
+          break;
+        case 2:
+          userSelectedFee = constants.BITCOIN_FAST_FEE_LEVEL;
           break;
         default:
-          selectedFee = 1;
+          userSelectedFee = constants.BITCOIN_AVERAGE_FEE_LEVEL;
           break;
       }
+      setSelectedFee(userSelectedFee);
     }
-    this.txFeeIndex = selectedFee;
+
+    onBeforeMount(() => {
+      let selectedFeeIdx = 1;
+      if (selectedFee) {
+        switch (selectedFee) {
+          case constants.BITCOIN_SLOW_FEE_LEVEL:
+            selectedFeeIdx = 0;
+            break;
+          case constants.BITCOIN_FAST_FEE_LEVEL:
+            selectedFeeIdx = 2;
+            break;
+          default:
+            selectedFeeIdx = 1;
+            break;
+        }
+      }
+      txFeeIndex.value = selectedFeeIdx;
+    });
+
+    return {
+      txFeeColor,
+      txFeeIndex,
+      transactionFees,
+      updateStore,
+      focus,
+      environmentContext,
+      slowFee,
+      averageFee,
+      fastFee,
+      slowFeeUSD,
+      averageFeeUSD,
+      fastFeeUSD,
+      showErrorMessage,
+    };
   }
 }
 </script>

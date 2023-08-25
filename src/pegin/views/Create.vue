@@ -5,34 +5,32 @@
 </template>
 
 <script lang="ts">
-import {
-  Component, Emit, Vue,
-} from 'vue-property-decorator';
-import { Action } from 'vuex-class';
-import { BtcWallet } from '@/common/types/pegInTx';
 import * as constants from '@/common/store/constants';
 import SendBitcoin from '@/pegin/components/create/SendBitcoin.vue';
+import { useAction } from '@/common/store/helper';
+import { useRouter } from 'vue-router';
 
-@Component({
+export default {
+  name: 'Create',
   components: {
     SendBitcoin,
   },
-})
-export default class Create extends Vue {
-  @Action(constants.PEGIN_TX_ADD_BITCOIN_WALLET, { namespace: 'pegInTx' }) setBitcoinWallet !: (wallet: BtcWallet) => void;
+  setup() {
+    const clear = useAction('pegInTx', constants.PEGIN_TX_CLEAR_STATE);
+    const initPegin = useAction('pegInTx', constants.PEGIN_TX_INIT);
+    const init = useAction('pegOutTx', constants.PEGOUT_TX_INIT);
 
-  @Action(constants.PEGIN_TX_CLEAR_STATE, { namespace: 'pegInTx' }) clear !: () => void;
+    function back() {
+      const router = useRouter();
+      clear();
+      init();
+      initPegin();
+      router.push({ name: 'Home' });
+    }
 
-  @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) initPegin !: () => void;
-
-  @Action(constants.PEGOUT_TX_INIT, { namespace: 'pegOutTx' }) init !: () => void;
-
-  @Emit()
-  back() {
-    this.clear();
-    this.init();
-    this.initPegin();
-    this.$router.push({ name: 'Home' });
+    return {
+      back,
+    };
   }
 }
 </script>

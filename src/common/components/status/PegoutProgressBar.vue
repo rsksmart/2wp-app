@@ -54,125 +54,129 @@
 </template>
 
 <script lang="ts">
-import {
-  Component,
-  Vue,
-} from 'vue-property-decorator';
-import { Getter, State } from 'vuex-class';
 import * as constants from '@/common/store/constants';
-import { TxStatus, PegoutStatus } from '@/common/types';
+import { PegoutStatus, PegoutStatusDataModel } from '@/common/types';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
+import { computed, reactive, ref } from 'vue';
+import { useGetter, useStateAttribute } from '@/common/store/helper';
 
-@Component({})
-export default class PegoutProgressBar extends Vue {
-  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+export default {
+  name: 'PegoutProgressBar',
+  setup() {
+    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+    const colors = {
+      blue: '#3D7DA1',
+      gray: '#8c8c8c',
+      green: '#9CE07B',
+      yellow: '#F6C61B',
+    };
+    const circleColor = {
+      blue: 'circle-blue',
+      gray: 'circle-gray',
+      green: 'circle-green',
+      yellow: 'circle-yellow',
+    };
+    const borderColor = {
+      blue: 'icon-status-border-blue',
+      gray: 'icon-status-border-gray',
+      green: 'icon-status-border-green',
+      yellow: 'icon-status-border-yellow',
+    };
+    const currentBarColor = ref(colors.gray);
+    const firstCircle = ref(circleColor.gray);
+    const secondCircle = ref(circleColor.gray);
+    const thirdCircle = ref(circleColor.gray);
+    const bordersStyle = reactive({
+      btc: borderColor.gray,
+      rbtc: borderColor.gray,
+    });
 
-  colors = {
-    blue: '#3D7DA1',
-    gray: '#8c8c8c',
-    green: '#9CE07B',
-    yellow: '#F6C61B',
-  };
+    const txDetails = useStateAttribute<PegoutStatusDataModel>('status', 'txDetails');
 
-  circleColor = {
-    blue: 'circle-blue',
-    gray: 'circle-gray',
-    green: 'circle-green',
-    yellow: 'circle-yellow',
-  };
+    const isRejected = useGetter<Boolean>('status', constants.STATUS_IS_REJECTED);
 
-  borderColor = {
-    blue: 'icon-status-border-blue',
-    gray: 'icon-status-border-gray',
-    green: 'icon-status-border-green',
-    yellow: 'icon-status-border-yellow',
-  };
+    const percentage = computed(() => {
+      let percentage;
+      switch (txDetails.value.status) {
+        case PegoutStatus.REJECTED:
+          currentBarColor.value = colors.yellow;
+          bordersStyle.rbtc = borderColor.yellow;
+          bordersStyle.btc = borderColor.gray;
 
-  currentBarColor = this.colors.gray;
+          firstCircle.value = circleColor.yellow;
+          percentage = 15;
+          break;
+        case PegoutStatus.WAITING_FOR_SIGNATURE:
+          currentBarColor.value = colors.blue;
+          bordersStyle.rbtc = borderColor.blue;
+          bordersStyle.btc = borderColor.gray;
 
-  firstCircle = this.circleColor.gray;
+          firstCircle.value = circleColor.blue;
+          secondCircle.value = circleColor.blue;
+          thirdCircle.value = circleColor.blue;
+          percentage = 90;
+          break;
+        case PegoutStatus.RECEIVED:
+          currentBarColor.value = colors.blue;
+          bordersStyle.rbtc = borderColor.blue;
+          bordersStyle.btc = borderColor.gray;
 
-  secondCircle = this.circleColor.gray;
+          this.firstCircle = circleColor.blue;
+          percentage = 30;
+          break;
+        case PegoutStatus.WAITING_FOR_CONFIRMATION:
+          currentBarColor.value = colors.blue;
+          bordersStyle.rbtc = borderColor.blue;
+          bordersStyle.btc = borderColor.gray;
 
-  thirdCircle = this.circleColor.gray;
+          firstCircle.value = circleColor.blue;
+          secondCircle.value = circleColor.blue;
+          percentage = 60;
+          break;
+        case PegoutStatus.RELEASE_BTC:
+          currentBarColor.value = colors.green;
+          bordersStyle.rbtc = borderColor.green;
+          bordersStyle.btc = borderColor.green;
 
-  bordersStyle = {
-    btc: this.borderColor.gray,
-    rbtc: this.borderColor.gray,
-  };
+          firstCircle.value = circleColor.green;
+          secondCircle.value = circleColor.green;
+          thirdCircle.value = circleColor.green;
+          percentage = 100;
+          break;
+        default:
+          currentBarColor.value = colors.gray;
+          bordersStyle.rbtc = borderColor.gray;
+          bordersStyle.btc = borderColor.gray;
 
-  @State('status') txStatus!: TxStatus;
+          firstCircle.value = circleColor.gray;
+          secondCircle.value = circleColor.gray;
+          thirdCircle.value = circleColor.gray;
+          percentage = 0;
+          break;
+      }
+      return percentage;
+    });
 
-  @Getter(constants.STATUS_IS_REJECTED, { namespace: 'status' }) isRejected!: boolean;
+    const currentStatus = computed(() => {
+      return txDetails.value.status;
+    });
 
-  get percentage() {
-    let percentage;
-    switch (this.txStatus.txDetails?.status) {
-      case PegoutStatus.REJECTED:
-        this.currentBarColor = this.colors.yellow;
-        this.bordersStyle.rbtc = this.borderColor.yellow;
-        this.bordersStyle.btc = this.borderColor.gray;
+    const showRejectedMsg = computed(() => {
+      return currentStatus.value === PegoutStatus.REJECTED;
+    });
 
-        this.firstCircle = this.circleColor.yellow;
-        percentage = 15;
-        break;
-      case PegoutStatus.WAITING_FOR_SIGNATURE:
-        this.currentBarColor = this.colors.blue;
-        this.bordersStyle.rbtc = this.borderColor.blue;
-        this.bordersStyle.btc = this.borderColor.gray;
-
-        this.firstCircle = this.circleColor.blue;
-        this.secondCircle = this.circleColor.blue;
-        this.thirdCircle = this.circleColor.blue;
-        percentage = 90;
-        break;
-      case PegoutStatus.RECEIVED:
-        this.currentBarColor = this.colors.blue;
-        this.bordersStyle.rbtc = this.borderColor.blue;
-        this.bordersStyle.btc = this.borderColor.gray;
-
-        this.firstCircle = this.circleColor.blue;
-        percentage = 30;
-        break;
-      case PegoutStatus.WAITING_FOR_CONFIRMATION:
-        this.currentBarColor = this.colors.blue;
-        this.bordersStyle.rbtc = this.borderColor.blue;
-        this.bordersStyle.btc = this.borderColor.gray;
-
-        this.firstCircle = this.circleColor.blue;
-        this.secondCircle = this.circleColor.blue;
-        percentage = 60;
-        break;
-      case PegoutStatus.RELEASE_BTC:
-        this.currentBarColor = this.colors.green;
-        this.bordersStyle.rbtc = this.borderColor.green;
-        this.bordersStyle.btc = this.borderColor.green;
-
-        this.firstCircle = this.circleColor.green;
-        this.secondCircle = this.circleColor.green;
-        this.thirdCircle = this.circleColor.green;
-        percentage = 100;
-        break;
-      default:
-        this.currentBarColor = this.colors.gray;
-        this.bordersStyle.rbtc = this.borderColor.gray;
-        this.bordersStyle.btc = this.borderColor.gray;
-
-        this.firstCircle = this.circleColor.gray;
-        this.secondCircle = this.circleColor.gray;
-        this.thirdCircle = this.circleColor.gray;
-        percentage = 0;
-        break;
-    }
-    return percentage;
-  }
-
-  get currentStatus() {
-    return this.txStatus.txDetails?.status;
-  }
-
-  get showRejectedMsg() {
-    return this.currentStatus === PegoutStatus.REJECTED;
+    return {
+      environmentContext,
+      currentBarColor,
+      firstCircle,
+      secondCircle,
+      thirdCircle,
+      bordersStyle,
+      isRejected,
+      percentage,
+      currentStatus,
+      showRejectedMsg,
+    };
   }
 }
 </script>
