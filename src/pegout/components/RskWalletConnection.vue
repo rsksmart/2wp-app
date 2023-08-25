@@ -79,6 +79,7 @@ import * as constants from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { useAction, useStateAttribute } from '@/common/store/helper';
 import WeiBig from '../../common/types/WeiBig';
+
 export default defineComponent({
   name: 'RskWalletConnection',
   setup(_, context) {
