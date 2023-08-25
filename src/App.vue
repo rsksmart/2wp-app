@@ -37,9 +37,9 @@ export default {
       response = `
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
       script-src 'self' 'nonce-${vuetifyNonce}' 'unsafe-eval';
-      script-src-elem 'self' 'unsafe-inline' https://script.hotjar.com https://static.hotjar.com;
+      script-src-elem 'self' 'unsafe-inline' https://www.clarity.ms https://*.clarity.ms https://api.coingecko.com/;
       img-src data: https:;
-      connect-src 'self' ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://api.coingecko.com ;
+      connect-src 'self' 'unsafe-inline' https://*.clarity.ms ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://api.coingecko.com https://www.clarity.ms;
       object-src 'none';
       frame-src https://connect.trezor.io;
       worker-src 'none';
@@ -54,23 +54,20 @@ export default {
       document.head.appendChild(metaTag);
     }
 
-    function appendHotjar(): void {
-      const hotjarID = EnvironmentAccessorService.getEnvironmentVariables().vueAppHotjarId;
+    function appendClarity(): void {
+      const { vueAppClarityId } = EnvironmentAccessorService.getEnvironmentVariables();
       scriptTag = document.createElement('script');
       scriptTag.type = 'text/javascript';
-      scriptTag.text = '(function(h,o,t,j,a,r){'
-        + 'h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};'
-        + `h._hjSettings={hjid:'${hotjarID}',hjsv:6};`
-        + 'a=o.getElementsByTagName("head")[0];'
-        + 'r=o.createElement("script");r.async=1;'
-        + 'r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;'
-        + 'a.appendChild(r);'
-        + '})(window,document,"https://static.hotjar.com/c/hotjar-",".js?sv=");';
+      scriptTag.text = '(function(c,l,a,r,i,t,y){'
+      + 'c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};'
+      + 't=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;'
+      + 'y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);'
+       + `})(window, document, 'clarity', 'script', '${vueAppClarityId}');`;
       document.body.appendChild(scriptTag);
     }
 
     getBtcPrice();
-    appendHotjar();
+    appendClarity();
     appendCSP();
 
     return {};
