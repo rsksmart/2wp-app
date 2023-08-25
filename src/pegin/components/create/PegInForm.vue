@@ -1,11 +1,5 @@
 <template>
   <v-container fluid class="pa-0">
-  <v-container>
-      <div class="tourStyle">
-        <v-tour name="pegInTour" :steps="tourSteps" :callbacks="tourCallBacks">
-        </v-tour>
-      </div>
-    </v-container>
     <v-col class="exchange-form pa-0 ma-0">
       <v-row class="mx-0">
         <v-col cols="1" class="pa-0 d-flex align-center">
@@ -24,24 +18,18 @@
           <btc-input-amount
             :isTourActive="isTourActive"
             :enableButton="enablesMaxAmountButton"/>
+          />
           <v-divider color="#C4C4C4"/>
-          <rsk-address-input  :isTourActive="isTourActive"
-                              @state="setRskAddressState"/>
+          <rsk-address-input @state="setRskAddressState"/>
           <v-divider color="#C4C4C4"/>
-          <btc-fee-select :isTourActive="isTourActive"/>
+          <btc-fee-select/>
         </v-col>
         <v-col id="summary-col" cols="4" lg="4">
           <tx-summary-fixed
             :summary="pegInFormSummary"
             :initialExpand="true"
             :type="typeSummary"
-            :orientation="orientationSummary"
-          />
-          <v-btn color="#747272"
-            class="mt-2 pa-1" small rounded text id="first-step" @click="startVueTour()">
-          <v-icon>mdi-help-circle</v-icon>
-          <span>You don't know how to proceed?</span>
-          </v-btn>
+            :orientation="orientationSummary"/>
         </v-col>
       </v-row>
       <v-row class="mx-0">
@@ -54,8 +42,7 @@
         <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0">
           <v-btn v-if="!pegInFormState.matches(['loading'])" rounded color="#000000"
                  @click="sendTx"
-                 :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])"
-                 id="send-btn">
+                 :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])">
             <span class="whiteish">Continue</span>
             <v-icon class="ml-2" color="#fff">mdi-send-outline</v-icon>
           </v-btn>
@@ -75,10 +62,6 @@
 </template>
 
 <script lang="ts">
-import {
-  Component, Emit, Vue,
-} from 'vue-property-decorator';
-import { Getter, State, Action } from 'vuex-class';
 import PegInAccountSelect from '@/pegin/components/create/PegInAccountSelect.vue';
 import BtcInputAmount from '@/pegin/components/create/BtcInputAmount.vue';
 import RskAddressInput from '@/pegin/components/create/RskAddressInput.vue';
@@ -93,8 +76,11 @@ import { TxStatusType } from '@/common/types/store';
 import { TxSummaryOrientation } from '@/common/types/Status';
 import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
 import { NormalizedSummary } from '@/common/types';
+import { computed, ref } from 'vue';
+import { useGetter, useState } from '@/common/store/helper';
 
-@Component({
+export default {
+  name: 'PegInForm',
   components: {
     PegInAccountSelect,
     BtcInputAmount,
@@ -103,228 +89,91 @@ import { NormalizedSummary } from '@/common/types';
     TxSummaryFixed,
     AddressWarningDialog,
   },
-})
-export default class PegInForm extends Vue {
-  pegInFormState: Machine<'loading' | 'goingHome' | 'fill'> = new Machine('fill');
+  setup(_, context) {
+    const pegInFormState = ref<Machine<'loading' | 'goingHome' | 'fill'>>(new Machine('fill'));
+    const showWarningMessage = ref(false);
+    const rskAddressState = ref('invalid');
+    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+    const typeSummary = TxStatusType.PEGIN;
+    let enabledMaxAmountButton = false;
+    const orientationSummary = TxSummaryOrientation.VERTICAL;
 
-  showWarningMessage = false;
+    const pegInTxState = useState<PegInTxState>('pegInTx');
 
-  rskAddressState = 'invalid';
+    const refundAddress = useGetter<String>('pegInTx', constants.PEGIN_TX_GET_REFUND_ADDRESS);
+    const safeFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
+    const accountBalanceText = useGetter<String>('pegInTx', constants.PEGIN_TX_GET_ACCOUNT_BALANCE_TEXT);
+    const enoughBalanceSelectedFee = useGetter<Boolean>('pegInTx', constants.PEGIN_TX_GET_ENOUGH_FEE_VALUE);
 
-  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+    const isReadyToCreate = computed((): boolean => {
+      return pegInTxState.value.isValidAmountToTransfer
+        && !pegInTxState.value.loadingFee
+        && rskAddressState.value !== 'invalid'
+        && enoughBalanceSelectedFee.value
+        && pegInTxState.value.rskAddressSelected !== '';
+    });
 
-  typeSummary = TxStatusType.PEGIN;
-
-  orientationSummary = TxSummaryOrientation.VERTICAL;
-
-  isTourActive = false;
-
-  enabledMaxAmountButton = false;
-
-  tourSteps = [
-    {
-      target: '#amount-field',
-      content: `Input the amount you want to convert into ${this.environmentContext.getRbtcTicker()}`,
-      params: {
-        highlight: true,
-        isFirst: true,
-      },
-    },
-    {
-      target: '#select-rsk-address-btn',
-      content: 'If you want to directly connect your RSK wallet click here and confirm',
-      params: {
-        highlight: true,
-        isLast: false,
-      },
-    },
-    {
-      target: '#select-tx-fee',
-      content: 'Choose the tx speed. The faster the transaction, the higher the fee',
-      params: {
-        highlight: true,
-        isLast: true,
-      },
-    },
-    {
-      target: '#summary-sender-address',
-      content: `This is the address in Bitcoin where the ${this.environmentContext.getBtcTicker()} will be transferred from`,
-      params: {
-        highlight: true,
-        isLast: false,
-      },
-    },
-    {
-      target: '#summary-amount',
-      content: `This is the amount you will send to convert into ${this.environmentContext.getRbtcTicker()}`,
-      params: {
-        highlight: true,
-        isLast: false,
-      },
-    },
-    {
-      target: '#summary-tx-fee',
-      content: `The estimated fee required by the network in ${this.environmentContext.getBtcTicker()}`,
-      params: {
-        highlight: true,
-        isLast: false,
-      },
-    },
-    {
-      target: '#summary-tx-total',
-      content: 'The estimated total amount to send, considering the selected amount and the fee',
-      params: {
-        highlight: true,
-        isLast: false,
-      },
-    },
-    {
-      target: '#summary-rsk-destination',
-      content: `This is the address where the ${this.environmentContext.getRbtcTicker()} will be received`,
-      params: {
-        highlight: true,
-        isLast: false,
-      },
-    },
-    {
-      target: '#summary-rsk-estimated-amount',
-      content: 'Based on the estimated fee and the amount transferred, this is the estimated final amount that will be transferred to the destination address',
-      params: {
-        highlight: true,
-        isLast: false,
-      },
-    },
-    {
-      target: '#send-btn',
-      content: 'When the form fields were filled, click here to sign the transaction',
-      params: {
-        highlight: true,
-        isLast: true,
-      },
-    },
-  ];
-
-  tourCallBacks = {
-    onFinish: () => this.handleTourFinish(),
-    onSkip: () => this.handleSkipTour(),
-  };
-
-  handleTourFinish() {
-    this.isTourActive = false;
-    localStorage.setItem('ONBOARDED_USER_PEGIN', 'true');
-  }
-
-  handleSkipTour() {
-    this.isTourActive = false;
-    localStorage.setItem('ONBOARDED_USER_PEGIN', 'true');
-  }
-
-  @State('pegInTx') pegInTxState!: PegInTxState;
-
-  @Getter(constants.PEGIN_TX_GET_REFUND_ADDRESS, { namespace: 'pegInTx' }) refundAddress!: string;
-
-  @Getter(constants.PEGIN_TX_GET_SAFE_TX_FEE, { namespace: 'pegInTx' }) safeFee!: SatoshiBig;
-
-  @Getter(constants.PEGIN_TX_GET_ACCOUNT_BALANCE_TEXT, { namespace: 'pegInTx' }) accountBalanceText!: string;
-
-  @Getter(constants.PEGIN_TX_GET_ENOUGH_FEE_VALUE, { namespace: 'pegInTx' }) enoughBalanceSelectedFee !: boolean;
-
-  @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: Promise<void>;
-
-  backHome() {
-    this.pegInFormState.send('goingHome');
-    this.$router.go(0);
-  }
-
-  get safeTxFee(): SatoshiBig {
-    let fee = new SatoshiBig('0', 'satoshi');
-    switch (this.pegInTxState.selectedFee) {
-      case constants.BITCOIN_AVERAGE_FEE_LEVEL:
-        fee = this.pegInTxState.calculatedFees.average.amount;
-        break;
-      case constants.BITCOIN_FAST_FEE_LEVEL:
-        fee = this.pegInTxState.calculatedFees.fast.amount;
-        break;
-      case constants.BITCOIN_SLOW_FEE_LEVEL:
-        fee = this.pegInTxState.calculatedFees.slow.amount;
-        break;
-      default:
-        break;
+    const enablesMaxAmountButton = computed((): boolean => {
+      if (!enabledMaxAmountButton) {
+        enabledMaxAmountButton = !pegInTxState.loadingFee
+        && !pegInTxState.loadingBalance;
+      }
+      return enabledMaxAmountButton;
     }
-    return fee;
-  }
 
-  get enablesMaxAmountButton(): boolean {
-    if (!this.enabledMaxAmountButton) {
-      this.enabledMaxAmountButton = !this.pegInTxState.loadingFee
-      && !this.pegInTxState.loadingBalance;
+    const pegInFormSummary = computed((): NormalizedSummary => {
+      return {
+        amountFromString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
+        amountReceivedString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
+        fee: Number(safeFee.value.toBTCString()),
+        recipientAddress: pegInTxState.value.rskAddressSelected,
+        refundAddress: refundAddress.value,
+        selectedAccount: accountBalanceText.value,
+        federationAddress: pegInTxState.value.peginConfiguration.federationAddress,
+      };
+    });
+
+    function sendTx() {
+      if (rskAddressState.value === 'warning') showWarningMessage.value = true;
+      else createTx();
     }
-    return this.enabledMaxAmountButton;
-  }
 
-  get isReadyToCreate(): boolean {
-    return this.pegInTxState.isValidAmountToTransfer
-      && !this.pegInTxState.loadingFee
-      && this.rskAddressState !== 'invalid'
-      && this.enoughBalanceSelectedFee
-      && this.pegInTxState.rskAddressSelected !== '';
-  }
+    function setRskAddressState(state: string) {
+      rskAddressState.value = state;
+    }
 
-  get pegInFormSummary(): NormalizedSummary {
+    function back() {
+      pegInFormState.value.send('loading');
+      context.emit('back');
+    }
+
+    function createTx() {
+      showWarningMessage.value = false;
+      pegInFormState.value.send('loading');
+      context.emit('createTx', {
+        amountToTransferInSatoshi: pegInTxState.value.amountToTransfer,
+        refundAddress: refundAddress.value,
+        recipient: pegInTxState.value.rskAddressSelected,
+        feeLevel: pegInTxState.value.selectedFee,
+        accountType: pegInTxState.value.selectedAccount,
+      });
+    }
+
     return {
-      amountFromString: this.pegInTxState.amountToTransfer.toBTCTrimmedString(),
-      amountReceivedString: this.pegInTxState.amountToTransfer.toBTCTrimmedString(),
-      fee: Number(this.safeFee.toBTCString()),
-      recipientAddress: this.pegInTxState.rskAddressSelected,
-      refundAddress: this.refundAddress,
-      selectedAccount: this.accountBalanceText,
-      federationAddress: this.pegInTxState.peginConfiguration.federationAddress,
+      pegInFormState,
+      showWarningMessage,
+      rskAddressState,
+      environmentContext,
+      typeSummary,
+      orientationSummary,
+      setRskAddressState,
+      pegInFormSummary,
+      back,
+      sendTx,
+      isReadyToCreate,
+      pegInTxState,
+      createTx,
     };
-  }
-
-  @Emit()
-  sendTx() {
-    if (this.rskAddressState === 'warning') this.showWarningMessage = true;
-    else this.createTx();
-  }
-
-  @Emit()
-  setRskAddressState(state: string) {
-    this.rskAddressState = state;
-  }
-
-  @Emit('back')
-  async back() {
-    this.pegInFormState.send('loading');
-  }
-
-  @Emit('createTx')
-  createTx() {
-    this.showWarningMessage = false;
-    this.pegInFormState.send('loading');
-    return {
-      amountToTransferInSatoshi: this.pegInTxState.amountToTransfer,
-      refundAddress: this.refundAddress,
-      recipient: this.pegInTxState.rskAddressSelected,
-      feeLevel: this.pegInTxState.selectedFee,
-      accountType: this.pegInTxState.selectedAccount,
-    };
-  }
-
-  @Emit()
-  startVueTour() {
-    this.$tours.pegInTour.start();
-    this.isTourActive = true;
-  }
-
-  mounted() {
-    const newUser = localStorage.getItem('ONBOARDED_USER_PEGIN') !== 'true';
-    if (newUser) {
-      this.$tours.pegInTour.start();
-      this.isTourActive = true;
-    } else {
-      this.isTourActive = false;
-    }
   }
 }
 </script>

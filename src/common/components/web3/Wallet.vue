@@ -13,7 +13,7 @@
             <v-row class="mx-0">
               <v-col>
                 <v-btn text color="transparent" width="200" @click="connectToMetamask"
-                       class="pa-0 ma-0 d-flex justify-center" :disabled="!this.isMetamask">
+                       class="pa-0 ma-0 d-flex justify-center" :disabled="!isMetamask">
                   <v-row class="mx-0">
                     <v-col cols="5" class="d-flex justify-center">
                       <v-img :src="metamaskImg" height="40" contain/>
@@ -156,64 +156,66 @@
 </template>
 
 <script lang="ts">
-import {
-  Vue, Component, Prop, Emit,
-} from 'vue-property-decorator';
-import { Action } from 'vuex-class';
 import * as constants from '@/common/store/constants';
 import MetaMask from '@/assets/web3/metamask.png';
 import MetaMaskDisabled from '@/assets/web3/metamask-disabled.png';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import { computed, ref } from 'vue';
+import { useAction } from '@/common/store/helper';
 
-@Component
-export default class Wallet extends Vue {
-  @Prop(Boolean) configure!: boolean;
+export default {
+  name: 'Wallet',
+  props: {
+    configure: Boolean,
+  },
+  setup(props, context) {
+    const useWeb3Wallet = ref(true);
+    const metamaskConf = ref(false);
+    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+    const vueAppRskNodeHost = EnvironmentAccessorService.getEnvironmentVariables().vueAppRskNodeHost;
+    const rskBlockExplorer = EnvironmentAccessorService.getEnvironmentVariables().vueAppRskExplorer;
 
-  @Action(constants.SESSION_CONNECT_WEB3, { namespace: 'web3Session' }) sessionConnect !: () => Promise<void>;
+    const sessionConnect = useAction('web3Session', constants.SESSION_CONNECT_WEB3);
+    const getAccount = useAction('web3Session', constants.WEB3_SESSION_GET_ACCOUNT);
 
-  @Action(constants.WEB3_SESSION_GET_ACCOUNT, { namespace: 'web3Session' }) getAccount !: () => Promise<void>;
+    const isMetamask = computed<Boolean>( () => window.ethereum.isMetaMask);
+    const metamaskImg = computed(() => {
+      return isMetamask.value ? MetaMask : MetaMaskDisabled;
+    });
 
-  useWeb3Wallet = true;
-
-  metamaskConf = false;
-
-  isMetamask = null;
-
-  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-
-  vueAppRskNodeHost = EnvironmentAccessorService.getEnvironmentVariables().vueAppRskNodeHost;
-
-  rskBlockExplorer = EnvironmentAccessorService.getEnvironmentVariables().vueAppRskExplorer;
-
-  get metamaskImg() {
-    return this.isMetamask ? MetaMask : MetaMaskDisabled;
-  }
-
-  @Emit()
-  connectToMetamask() {
-    if (this.configure) {
-      this.useWeb3Wallet = false;
-      this.metamaskConf = true;
-    } else {
-      this.useWeb3Wallet = true;
-      this.metamaskConf = false;
-      this.getWalletAddress();
+    function connectToMetamask() {
+      if (props.configure) {
+        useWeb3Wallet.value = false;
+        metamaskConf.value = true;
+      } else {
+        useWeb3Wallet.value = true;
+        metamaskConf.value = false;
+        getWalletAddress();
+      }
     }
-  }
 
-  @Emit('web3Address')
-  getWalletAddress() {
-    if (this.isMetamask) {
-      this.sessionConnect();
-      this.getAccount();
-      this.useWeb3Wallet = false;
+    function getWalletAddress() {
+      if (isMetamask.value) {
+        sessionConnect();
+        getAccount();
+        useWeb3Wallet.value = false;
+      }
+      metamaskConf.value = false;
+      context.emit('web3Address');
     }
-    this.metamaskConf = false;
-  }
 
-  created() {
-    this.isMetamask = window.ethereum.isMetaMask;
+    return {
+      useWeb3Wallet,
+      connectToMetamask,
+      isMetamask,
+      metamaskImg,
+      metamaskConf,
+      environmentContext,
+      rskBlockExplorer,
+      vueAppRskNodeHost,
+      getWalletAddress,
+    };
   }
 }
 </script>

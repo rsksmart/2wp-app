@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import { createApp } from 'vue';
 import Web3 from 'web3';
 import { AppNetwork } from '@/common/types';
 import VueTour from 'vue-tour';
@@ -9,17 +9,7 @@ import store from './common/store';
 import { vuetify } from './common/plugins/vuetify';
 import '@/common/styles/main.scss';
 import { EnvironmentAccessorService } from './common/services/enviroment-accessor.service';
-
-require('vue-tour/dist/vue-tour.css');
-
-Vue.config.productionTip = false;
-Vue.prototype.$web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
-
-if (window.ethereum) {
-  window.ethereum.on('accountsChanged', async () => {
-    await store.dispatch(`web3Session/${constants.WEB3_SESSION_GET_ACCOUNT}`);
-  });
-}
+import { useStore } from 'vuex';
 
 // These environment variables were been set at service/component layer instead of been
 // globally set up. We should consider removing them
@@ -27,7 +17,7 @@ const defaultEnvironmentVariables = {
   vueAppCoin: constants.BTC_NETWORK_TESTNET as AppNetwork,
   vueAppManifestEmail: '',
   vueAppManifestAppUrl: '',
-  vueAppClarityId: 'ibn9mzxbfg',
+  vueAppHotjarId: '',
   pegoutMinValue: 0.004,
   pegoutMaxValue: 1,
   minFeePerKb: {
@@ -45,11 +35,19 @@ const defaultEnvironmentVariables = {
 
 EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
 
-Vue.use(VueTour);
+const app = createApp(App);
 
-new Vue({
-  router,
-  store,
-  vuetify,
-  render: (h) => h(App),
-}).$mount('#app');
+app.use(router);
+app.use(vuetify);
+// app.use(store);
+app.mount('#app');
+
+// Vue.config.productionTip = false;
+
+app.config.globalProperties.$web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
+// Vue.prototype.$web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
+//
+if (window.ethereum) {
+  const store = useStore();
+  window.ethereum.on('accountsChanged', await store.dispatch(`web3Session/${constants.WEB3_SESSION_GET_ACCOUNT}`));
+}

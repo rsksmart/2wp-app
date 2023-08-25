@@ -4,7 +4,7 @@ module.exports = {
     node: true,
   },
   extends: [
-    'plugin:vue/essential',
+    'plugin:vue/vue3-essential',
     '@vue/airbnb',
     '@vue/typescript/recommended',
   ],
@@ -23,15 +23,17 @@ module.exports = {
     'no-use-before-define': 'error',
     '@typescript-eslint/ban-types': 'error',
     '@typescript-eslint/no-unused-vars': 'error',
+    'import/no-cycle': 'off',
+
   },
   overrides: [
     {
       files: [
         '**/__tests__/*.{j,t}s?(x)',
-        '**/tests2/unit/**/*.spec.{j,t}s?(x)',
+        '**/tests/unit/**/*.spec.{j,t}s?(x)',
       ],
       env: {
-        mocha: true,
+        jest: true,
       },
     },
   ],
