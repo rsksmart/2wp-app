@@ -5,8 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "test": "vue-cli-service test:unit --setupTestFrameworkScriptFile=./tests/setup.js --coverageReporters=lcov --collect-coverage",
-    "test:unit": "vue-cli-service test:unit --setupTestFrameworkScriptFile=./tests/setup.js --env=./tests/jsdom-env.js --coverageReporters=lcov --collect-coverage",
+    "test": "vue-cli-service test:unit --env=./tests/jsdom-env.js --coverageReporters=lcov --collect-coverage",
+    "test:unit": "vue-cli-service test:unit --env=./tests/jsdom-env.js --coverageReporters=lcov --collect-coverage",
     "lint": "vue-cli-service lint",
     "scanner": "npx sonar-scanner"
   },
@@ -15,9 +15,9 @@
     "@ledgerhq/hw-app-btc": "6.27.1",
     "@ledgerhq/hw-transport": "6.27.1",
     "@ledgerhq/hw-transport-webusb": "6.27.1",
-    "@rsksmart/rlogin": "^1.5.3-beta.1",
     "@mdi/font": "^7.2.96",
     "@mdi/js": "^7.2.96",
+    "@rsksmart/rlogin": "^1.5.3-beta.1",
     "@rsksmart/rlogin-ledger-provider": "^1.0.2",
     "@rsksmart/rlogin-trezor-provider": "^1.0.2",
     "@rsksmart/rsk-precompiled-abis": "^5.0.0-FINGERROOT",
@@ -58,16 +58,15 @@
     "web3-eth-contract": "^1.10.0"
   },
   "devDependencies": {
+    "@mdi/font": "^7.2.96",
     "@types/big.js": "^6.2.0",
+    "@types/chai": "^4.2.11",
     "@types/jest": "^27.5.2",
     "@types/node": "^20.4.7",
-    "@mdi/font": "^7.2.96",
-    "@types/chai": "^4.2.11",
     "@types/sinon": "^10.0.2",
     "@types/w3c-web-usb": "^1.0.4",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
-    "@vitejs/plugin-vue": "^4.2.3",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-eslint": "~5.0.0",
     "@vue/cli-plugin-router": "~5.0.0",
@@ -95,7 +94,6 @@
     "sonarqube-scanner": "^3.0.1",
     "ts-jest": "^27.1.5",
     "typescript": "^4.9.5",
-    "vite": "^4.4.2",
     "vue-facing-decorator": "^2.1.20",
     "vue-tsc": "^1.8.4"
   }

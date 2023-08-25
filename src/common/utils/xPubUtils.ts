@@ -133,7 +133,10 @@ function addressFromExtPubKey({
 }
 
 export const deriveBatchAddresses = (
-  xpub: string, purpose: Purpose, startFrom: number, batchSize: number,
+  xpub: string,
+  purpose: Purpose,
+  startFrom: number,
+  batchSize: number,
 ): Array<WalletAddress> => {
   const addresses: Array<WalletAddress> = [];
   for (let keyIndex = startFrom; keyIndex < startFrom + batchSize; keyIndex += 1) {

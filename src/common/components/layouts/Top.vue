@@ -24,7 +24,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { computed } from 'vue';
 
 export default {
-  name: 'Top',
+  name: 'TopBar',
   setup() {
     const router = useRouter();
     const route = useRoute();
@@ -32,9 +32,9 @@ export default {
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const logo = getMainLogo();
 
-    const isTestNet = computed(() => {
-      return environmentVariables.vueAppCoin === constants.BTC_NETWORK_TESTNET;
-    });
+    const isTestNet = computed(
+      () => environmentVariables.vueAppCoin === constants.BTC_NETWORK_TESTNET,
+    );
 
     function toExchange() {
       if (route.name !== 'Home') router.push({ name: 'Home' });
@@ -47,6 +47,6 @@ export default {
       toExchange,
       logo,
     };
-  }
-}
+  },
+};
 </script>

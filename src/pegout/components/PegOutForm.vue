@@ -130,6 +130,7 @@ import {
 } from '@/common/types';
 import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
 import { useAction, useGetter, useState } from '@/common/store/helper';
+
 export default defineComponent({
   name: 'PegOutForm',
   components: {

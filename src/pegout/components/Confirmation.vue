@@ -53,6 +53,7 @@ import * as constants from '@/common/store/constants';
 import {
   useAction, useGetter, useState, useStateAttribute,
 } from '@/common/store/helper';
+
 export default defineComponent({
   name: 'ConfirmationPegout',
   components: {
