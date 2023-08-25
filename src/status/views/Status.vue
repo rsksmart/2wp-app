@@ -80,166 +80,151 @@
 </template>
 
 <script lang="ts">
-import {
-  Component, Emit, Prop, Vue, Watch,
-} from 'vue-property-decorator';
-import { State, Action, Getter } from 'vuex-class';
 import TxPegout from '@/common/components/status/TxPegout.vue';
 import TxPegin from '@/common/components/status/TxPegin.vue';
 import {
-  MiningSpeedFee, PeginStatus, TxData, PegInTxState, PegoutStatus,
-  TxStatusType, PegoutStatusDataModel, TxStatus, TxStatusMessage,
+  PegoutStatus, TxStatusType,
+  PegoutStatusDataModel, TxStatus, TxStatusMessage,
 } from '@/common/types';
-import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import * as constants from '@/common/store/constants';
+import { computed, ref, watch } from 'vue';
+import { useAction, useGetter, useState } from '@/common/store/helper';
+import { useRoute, useRouter } from 'vue-router';
 
-@Component({
+export default {
+  name: 'Status',
   components: {
     TxPegout,
     TxPegin,
   },
-})
-export default class Status extends Vue {
-  txData?: TxData;
-
-  txId = '';
-
-  txType = TxStatusType.PEGIN;
-
-  pegInStatus!: PeginStatus;
-
-  pegOutStatus!: PegoutStatusDataModel;
-
-  loading = false;
-
-  rskConfirmationsPercentage = 0;
-
-  leftBtcTime = '';
-
-  btcConfirmationsRequired!: number;
-
-  currentRefundAddress = '';
-
-  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-
-  @Prop({ default: '' }) txIdProp!: string;
-
-  @State('pegInTx') peginTxState!: PegInTxState;
-
-  @State('status') status!: TxStatus;
-
-  @Action(constants.STATUS_GET_TX_STATUS, { namespace: 'status' }) setTxStatus !: (txId: string) => Promise<void>;
-
-  @Action(constants.STATUS_CLEAR, { namespace: 'status' }) clearStatus !: () => void;
-
-  @Action(constants.PEGIN_TX_ADD_BITCOIN_PRICE, { namespace: 'pegInTx' }) getBtcPrice !: () => Promise<void>;
-
-  @Action(constants.PEGIN_TX_SELECT_FEE_LEVEL, { namespace: 'pegInTx' }) setSelectedFee !: (feeLevel: MiningSpeedFee) => void;
-
-  @Action(constants.PEGIN_TX_ADD_STATUS_SAFE_FEE, { namespace: 'pegInTx' }) setSafeFee !: (fee: string) => void;
-
-  @Action(constants.PEGIN_TX_ADD_STATUS_REFUND_ADDRESS, { namespace: 'pegInTx' }) setRefundAddress !: (fee: string) => void;
-
-  @Action(constants.PEGIN_TX_ADD_STATUS_TX_ID, { namespace: 'pegInTx' }) setTxId !: (txId: string) => void;
-
-  @Getter(constants.STATUS_GET_ACTIVE_MESSAGE, { namespace: 'status' }) activeMessage !: TxStatusMessage;
-
-  @Getter(constants.STATUS_GET_RELEASE_TIME_TEXT, { namespace: 'status' }) releaseTimeText !: string;
-
-  get showStatus() {
-    return !this.loading
-      && !this.activeMessage.error
-      && !!this.activeMessage.statusMessage;
-  }
-
-  get isValidTxId() {
-    return this.regexValidationTxId();
-  }
-
-  get isRejected() {
-    return this.status.txDetails?.status === 'REJECTED';
-  }
-
-  get isPegIn(): boolean {
-    return this.status.type === TxStatusType.PEGIN;
-  }
-
-  get isPegOut(): boolean {
-    return this.status.type === TxStatusType.PEGOUT;
-  }
-
-  get showTimeLeft(): boolean {
-    const txDetails = this.status.txDetails as PegoutStatusDataModel;
-    return this.status.type === TxStatusType.PEGOUT
-      && (txDetails.status === PegoutStatus.WAITING_FOR_CONFIRMATION
-        || txDetails.status === PegoutStatus.RECEIVED
-        || txDetails.status === PegoutStatus.WAITING_FOR_SIGNATURE);
-  }
-
-  get notValidTxIdMessage(): string {
-    let message = '';
-    if (!this.regexValidationTxId()) {
-      message = 'The transaction id must be a valid one.';
+  props: {
+    txIdProp: {
+      type: String,
+      default: '',
     }
-    return message;
-  }
+  },
+  setup(props) {
+    const txId = ref('');
+    const loading = ref(false);
+    const route = useRoute();
+    const router = useRouter();
 
-  regexValidationTxId() {
-    const regx = new RegExp(/^(0x[a-fA-F0-9]{64}|[a-fA-F0-9]{64})$/);
-    return regx.test(this.txId);
-  }
+    const status = useState<TxStatus>('status');
 
-  get activeClass(): string {
-    let activeClass = '';
-    if (!this.isValidTxId && this.txId) {
-      activeClass = 'status-text-field-warning';
-    } else if (this.activeMessage.error && this.txId && this.txId === this.txIdProp) {
-      activeClass = 'status-text-field-error';
+    const setTxStatus = useAction('status', constants.STATUS_GET_TX_STATUS);
+    const clearStatus = useAction('status', constants.STATUS_CLEAR);
+    const getBtcPrice = useAction('pegInTx', constants.PEGIN_TX_ADD_BITCOIN_PRICE);
+    const activeMessage = useGetter<TxStatusMessage>('status', constants.STATUS_GET_ACTIVE_MESSAGE);
+    const releaseTimeText = useGetter<String>('status', constants.STATUS_GET_RELEASE_TIME_TEXT);
+
+
+    const showStatus = computed(() => {
+      return !loading.value
+        && !activeMessage.value.error
+        && !!activeMessage.value.statusMessage;
+    });
+
+    const isValidTxId = computed(() => {
+      return regexValidationTxId();
+    });
+
+    const isRejected = computed(() => {
+      return status.value.txDetails?.status === 'REJECTED';
+    });
+
+    const isPegIn = computed((): boolean => {
+      return status.value.type === TxStatusType.PEGIN;
+    });
+
+    const isPegOut = computed((): boolean => {
+      return status.value.type === TxStatusType.PEGOUT;
+    });
+
+    const showTimeLeft = computed((): boolean => {
+      const txDetails = status.value.txDetails as PegoutStatusDataModel;
+      return status.value.type === TxStatusType.PEGOUT
+        && (txDetails.status === PegoutStatus.WAITING_FOR_CONFIRMATION
+          || txDetails.status === PegoutStatus.RECEIVED
+          || txDetails.status === PegoutStatus.WAITING_FOR_SIGNATURE);
+    });
+
+    const notValidTxIdMessage = computed((): string => {
+      let message = '';
+      if (!regexValidationTxId()) {
+        message = 'The transaction id must be a valid one.';
+      }
+      return message;
+    });
+
+    const activeClass = computed((): string => {
+      let activeClass = '';
+      if (!isValidTxId.value && txId.value) {
+        activeClass = 'status-text-field-warning';
+      } else if (activeMessage.value.error && txId.value && txId.value === props.txIdProp) {
+        activeClass = 'status-text-field-error';
+      }
+      return activeClass;
+    });
+
+    function regexValidationTxId(): Boolean {
+      const regx = new RegExp(/^(0x[a-fA-F0-9]{64}|[a-fA-F0-9]{64})$/);
+      return regx.test(txId.value);
     }
-    return activeClass;
-  }
 
-  @Emit()
-  getPegStatus() {
-    if (this.$route.path !== `/status/txId/${this.txId}`) {
-      this.$router.push({
-        name: 'Status',
-        params: { txId: this.txId },
-      });
-    } else if (this.txId !== '') {
-      this.clean();
-      this.loading = true;
-      this.setTxStatus(this.txId)
-        .then(() => {
-          this.loading = false;
+    function getPegStatus() {
+      if (route.path !== `/status/txId/${txId.value}`) {
+        router.push({
+          name: 'Status',
+          params: { txId: txId.value },
         });
+      } else if (txId.value !== '') {
+        clean();
+        loading.value = true;
+        setTxStatus(txId.value)
+          .then(() => {
+            loading.value = false;
+          });
+      }
     }
-  }
 
-  @Emit()
-  clean() {
-    this.clearStatus();
-    this.loading = false;
-  }
-
-  @Watch('$route', { immediate: true, deep: true })
-  onUrlChange() {
-    if (this.txIdProp) {
-      this.txId = this.txIdProp ?? '';
-      this.getPegStatus();
-    } else {
-      this.clean();
+    function clean() {
+      clearStatus();
+      loading.value = false;
     }
-  }
 
-  @Emit()
-  back() {
-    this.$router.replace({ name: 'Home' });
-  }
+    function onUrlChange() {
+      if (props.txIdProp) {
+        txId.value = props.txIdProp ?? '';
+        getPegStatus();
+      } else {
+        clean();
+      }
+    }
 
-  async created() {
-    this.clearStatus();
-    await this.getBtcPrice();
+    function back() {
+      router.replace({ name: 'Home' });
+    }
+
+    watch(route, onUrlChange, { immediate: true, deep: true });
+
+    clearStatus();
+    getBtcPrice();
+
+    return {
+      txId,
+      activeClass,
+      isValidTxId,
+      getPegStatus,
+      notValidTxIdMessage,
+      activeMessage,
+      showStatus,
+      showTimeLeft,
+      releaseTimeText,
+      isPegIn,
+      isRejected,
+      isPegOut,
+      back,
+    };
   }
 }
 </script>

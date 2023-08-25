@@ -61,20 +61,16 @@
               </v-row>
             </v-col>
             <v-col cols="1" class="d-flex justify-center pb-0">
-              <div class="divider"></div>
+              <div class="divider"/>
             </v-col>
             <v-col cols="4" class="pb-0 px-0">
               <v-row class="mx-0 mb-4 d-flex justify-start">
-                <span class="text-center">
-                  Choose address from a wallet
-                </span>
+                <span class="text-center">Choose address from a wallet</span>
               </v-row>
               <v-row class="mx-0 d-flex justify-center">
                 <v-btn outlined rounded color="#000000" width="100%" height="38"
                   class="select-wallet-button"
-                  :disabled="isTourActive"
-                  @click="selectRLoginWallet"
-                  id="select-rsk-address-btn">
+                  @click="selectRLoginWallet" >
                   <span class="blackish">Connect wallet</span>
                 </v-btn>
               </v-row>
@@ -88,136 +84,126 @@
 </template>
 
 <script lang="ts">
-import {
-  Component, Emit, Prop, Vue,
-} from 'vue-property-decorator';
-import { Action, State } from 'vuex-class';
 import * as rskUtils from '@rsksmart/rsk-utils';
-import { PegInTxState } from '@/common/types/pegInTx';
-import { SessionState } from '@/common/types/session';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import * as constants from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
+import { computed, ref } from 'vue';
+import { useAction, useStateAttribute } from '@/common/store/helper';
 
-@Component({
-})
-export default class RskAddressInput extends Vue {
-  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+export default {
+  name: 'RskAddressInput',
+  setup(_, context) {
+    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+    const focus = ref(false);
+    const useWeb3Wallet = ref(false);
+    const web3Wallet = ref(false);
+    const CHAIN_ID = EnvironmentAccessorService
+      .getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_MAINNET ? 30 : 31;
+    const VALUE_INCOMPLETE_MESSAGE = 'Not completed';
+    const rskAddressSelected = ref('');
 
-  focus = false;
+    const account = useStateAttribute<String>('web3Session', 'account');
+    const storeRskAddressSelected = useStateAttribute<String>('pegInTx', 'rskAddressSelected');
 
-  useWeb3Wallet = false;
+    const clearAccount = useAction('web3Session', constants.WEB3_SESSION_CLEAR_ACCOUNT);
+    const setRskAddress = useAction('pegInTx', constants.PEGIN_TX_ADD_RSK_ADDRESS);
+    const connectWeb3 = useAction('web3Session', constants.SESSION_CONNECT_WEB3);
 
-  web3Wallet = false;
+    const web3Address = computed(() => {
+      return account.value ?? '';
+    });
 
-  CHAIN_ID =
-    EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin
-    === constants.BTC_NETWORK_MAINNET ? 30 : 31;
+    const isValidRskAddress = computed(() => {
+      return !useWeb3Wallet
+        ? rskUtils.isValidChecksumAddress(computedRskAddress.value, CHAIN_ID) : true;
+    });
 
-  VALUE_INCOMPLETE_MESSAGE = 'Not completed';
+    const isValidPegInAddress = computed(() => {
+      return rskUtils.isAddress(computedRskAddress.value, CHAIN_ID) && computedRskAddress.value.startsWith('0x');
+    });
 
-  rskAddressSelected = '';
+    const computedRskAddress = computed<String>((): String => {
+      if (rskAddressSelected.value !== ''
+        && rskUtils.isAddress(rskAddressSelected)) {
+        return rskAddressSelected.value;
+      }
+      if (useWeb3Wallet.value && web3Address.value !== '') {
+        return web3Address.value;
+      }
+      return VALUE_INCOMPLETE_MESSAGE;
+    });
 
-  @Prop() isTourActive !: boolean;
+    const validAddressMessage = computed(() => {
+      let message = '';
+      if (!regexValidationAddress()) message = 'The RSK recipient address must be a valid RSK address';
+      else if (!isValidPegInAddress.value) message = 'This is an invalid address';
+      else if (!isValidRskAddress.value) message = `This may not be a valid address on the ${environmentContext.getRskText()} network. Please check.`;
+      checkStep();
+      return message;
+    });
 
-  @State('web3Session') web3SessionState!: SessionState;
-
-  @State('pegInTx') pegInTxState!: PegInTxState;
-
-  @Action(constants.WEB3_SESSION_CLEAR_ACCOUNT, { namespace: 'web3Session' }) clearAccount !: () => void;
-
-  @Action(constants.PEGIN_TX_ADD_RSK_ADDRESS, { namespace: 'pegInTx' }) setRskAddress !: (address: string) => void;
-
-  @Action(constants.SESSION_CONNECT_WEB3, { namespace: 'web3Session' }) connectWeb3 !: () => Promise<void>;
-
-  get web3Address() {
-    return this.web3SessionState.account ?? '';
-  }
-
-  get isValidRskAddress() {
-    return !this.useWeb3Wallet
-      ? rskUtils.isValidChecksumAddress(this.computedRskAddress, this.CHAIN_ID) : true;
-  }
-
-  get isValidPegInAddress() {
-    return rskUtils.isAddress(this.computedRskAddress, this.CHAIN_ID) && this.computedRskAddress.startsWith('0x');
-  }
-
-  get computedRskAddress() {
-    if (this.rskAddressSelected !== ''
-      && rskUtils.isAddress(this.rskAddressSelected)) {
-      return this.rskAddressSelected;
+    function regexValidationAddress() {
+      const regx = new RegExp(/^(0x[a-fA-F0-9]{64}|[a-fA-F0-9]{64})$/);
+      return regx.test(rskAddressSelected.value);
     }
-    if (this.useWeb3Wallet && this.web3Address !== '') {
-      return this.web3Address;
+
+    function checkStep():string {
+      if (!isValidPegInAddress) {
+        setRskAddress('');
+        return 'invalid';
+      }
+      setRskAddress(computedRskAddress);
+      context.emit('state', isValidRskAddress ? 'valid' : 'warning');
     }
-    return this.VALUE_INCOMPLETE_MESSAGE;
-  }
 
-  get validAddressMessage() {
-    let message = '';
-    if (!this.regexValidationAddress()) message = 'The RSK recipient address must be a valid RSK address';
-    else if (!this.isValidPegInAddress) message = 'This is an invalid address';
-    else if (!this.isValidRskAddress) message = `This may not be a valid address on the ${this.environmentContext.getRskText()} network. Please check.`;
-    this.checkStep();
-    return message;
-  }
-
-  regexValidationAddress() {
-    const regx = new RegExp(/^(0x[a-fA-F0-9]{64}|[a-fA-F0-9]{64})$/);
-    return regx.test(this.rskAddressSelected);
-  }
-
-  @Emit('state')
-  checkStep():string {
-    if (!this.isValidPegInAddress) {
-      this.setRskAddress('');
-      return 'invalid';
-    }
-    this.setRskAddress(this.computedRskAddress);
-    return this.isValidRskAddress ? 'valid' : 'warning';
-  }
-
-  @Emit()
-  selectRLoginWallet() {
-    this.focus = true;
-    this.useWeb3Wallet = true;
-    this.rskAddressSelected = '';
-    this.connectWeb3()
-      .then(() => {
-        this.focus = false;
-        this.checkStep();
-      }).catch(() => {
-        if (this.web3Address) {
-          this.disconnectWallet();
+    function selectRLoginWallet() {
+      focus.value = true;
+      useWeb3Wallet.value = true;
+      rskAddressSelected.value = '';
+      connectWeb3()
+        .then(() => {
+          focus.value = false;
+          checkStep();
+        }).catch(() => {
+        if (web3Address.value) {
+          disconnectWallet();
         }
       });
-    this.web3Wallet = true;
-  }
-
-  @Emit()
-  disconnectWallet() {
-    this.clearAccount();
-    this.useWeb3Wallet = false;
-    this.rskAddressSelected = '';
-    this.web3Wallet = false;
-    this.setRskAddress('');
-  }
-
-  @Emit('error')
-  // eslint-disable-next-line class-methods-use-this
-  handleError(e: Error) {
-    return e;
-  }
-
-  created() {
-    if (this.pegInTxState.rskAddressSelected) {
-      this.focus = true;
-      this.useWeb3Wallet = true;
-      this.focus = false;
-      this.rskAddressSelected = this.pegInTxState.rskAddressSelected;
-      this.checkStep();
+      web3Wallet.value = true;
     }
+
+    function disconnectWallet() {
+      clearAccount();
+      useWeb3Wallet.value = false;
+      rskAddressSelected.value = '';
+      web3Wallet.value = false;
+      setRskAddress('');
+    }
+
+    if (storeRskAddressSelected.value) {
+      useWeb3Wallet.value = true;
+      focus.value = false;
+      rskAddressSelected.value = storeRskAddressSelected.value;
+      checkStep();
+    }
+
+    return {
+      environmentContext,
+      focus,
+      useWeb3Wallet,
+      web3Wallet,
+      rskAddressSelected,
+      VALUE_INCOMPLETE_MESSAGE,
+      CHAIN_ID,
+      web3Address,
+      isValidRskAddress,
+      isValidPegInAddress,
+      validAddressMessage,
+      disconnectWallet,
+      selectRLoginWallet,
+      checkStep,
+    };
   }
 }
 </script>

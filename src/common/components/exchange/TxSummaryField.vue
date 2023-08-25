@@ -15,25 +15,28 @@
 </template>
 
 <script lang="ts">
-import {
-  Component, Emit, Prop, Vue,
-} from 'vue-property-decorator';
+import { ref } from 'vue';
 
-@Component
-export default class TxSummaryField extends Vue {
-  @Prop() textStyles !: string;
+export default {
+  name: 'TxSummaryField',
+  props: {
+    textStyles: String,
+    textValue: String,
+    id: String,
+  },
+  setup(props, context) {
+    const isTooltipShowed = ref(false);
 
-  @Prop() textValue !: string;
+    function handleDblClick() {
+      isTooltipShowed.value = true;
+      setTimeout(() => { isTooltipShowed.value = false; }, 1000);
+      context.emit('copyToClipboard', props.id);
+    }
 
-  @Prop() id !: string;
-
-  isTooltipShowed = false;
-
-  @Emit('copyToClipboard')
-  handleDblClick() {
-    this.isTooltipShowed = true;
-    setTimeout(() => { this.isTooltipShowed = false; }, 1000);
-    return this.id;
+    return {
+      isTooltipShowed,
+      handleDblClick,
+    };
   }
 }
 </script>

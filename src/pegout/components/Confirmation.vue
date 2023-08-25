@@ -40,96 +40,81 @@
 </template>
 
 <script lang="ts">
-import {
-  Component, Prop,
-  Vue,
-} from 'vue-property-decorator';
 import { Machine } from '@/common/utils';
 import { TxStatusType } from '@/common/types/store';
 import { TxSummaryOrientation } from '@/common/types/Status';
-import { Getter, State, Action } from 'vuex-class';
 import {
-  NormalizedSummary, PegOutTxState, SatoshiBig, SessionState, WeiBig,
+  NormalizedSummary, PegOutTxState, SatoshiBig,
 } from '@/common/types';
 import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
 import * as constants from '@/common/store/constants';
+import { useAction, useGetter, useState, useStateAttribute } from '@/common/store/helper';
+import { computed, PropType, onBeforeMount } from 'vue';
+import { useRouter } from 'vue-router';
 
-@Component({
+export default {
+  name: 'Confirmation',
   components: {
     TxSummaryFixed,
   },
-})
+  props: {
+    confirmTxState: {
+      type: Object as PropType<Machine<'idle' | 'loading' | 'error' | 'goingHome'>>,
+    },
+  },
+  setup() {
+    const appConstants = constants;
+    const typeSummary = TxStatusType.PEGOUT;
+    const orientationSummary = TxSummaryOrientation.HORIZONTAL;
+    const router = useRouter();
+    const pegoutTxState = useState<PegOutTxState>('pegOutTx');
+    const btcDerivedAddress = useStateAttribute<string>('web3Session', 'btcDerivedAddress');
+    const account = useStateAttribute<string>('web3Session', 'account');
+    const clearStatus = useAction('status', constants.STATUS_CLEAR);
+    const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
 
-export default class Confirmation extends Vue {
-  scriptTag?: HTMLScriptElement;
-
-  appConstants = constants;
-
-  typeSummary = TxStatusType.PEGOUT;
-
-  orientationSummary = TxSummaryOrientation.HORIZONTAL;
-
-  @State('pegOutTx') pegoutTxState!: PegOutTxState;
-
-  @State('web3Session') session !: SessionState;
-
-  @Action(constants.PEGOUT_TX_CLEAR, { namespace: 'pegOutTx' }) clearPegOut !: () => void;
-
-  @Getter(constants.PEGOUT_TX_GET_SAFE_TX_FEE, { namespace: 'pegOutTx' }) safeFee !: WeiBig;
-
-  @Getter(constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE, { namespace: 'pegOutTx' }) estimatedBtcToReceive !: SatoshiBig;
-
-  @Action(constants.STATUS_CLEAR, { namespace: 'pegOutTx' }) clearPegOutTx !: () => Promise<void>;
-
-  @Prop() confirmTxState!: Machine<
-    'idle'
-    | 'loading'
-    | 'error'
-    | 'goingHome'
-    >;
-
-  VALUE_INCOMPLETE_MESSAGE = 'Not Found';
-
-  backPage = 'PegOutForm';
-
-  goToHome() {
-    this.clearPegOut();
-    this.$router.push({
-      name: 'Home',
+    const successPegOutSummary = computed((): NormalizedSummary => {
+      return {
+        amountFromString: pegoutTxState.value.amountToTransfer.toRBTCTrimmedString(),
+        amountReceivedString: estimatedBtcToReceive.value.toBTCTrimmedString(),
+        estimatedFee: Number(pegoutTxState.value.btcEstimatedFee.toBTCTrimmedString()),
+        recipientAddress: btcDerivedAddress.value,
+        senderAddress: account.value,
+        txId: pegoutTxState.value.txHash,
+        gas: Number(pegoutTxState.value.efectivePaidFee?.toRBTCTrimmedString()),
+      };
     });
-  }
 
-  goToStatus() {
-    this.clearPegOutTx();
-    this.$router.push({
-      name: 'Status',
-      params: { txId: String(this.pegoutTxState.txHash) },
-    });
-  }
+    function goToStatus() {
+      clearStatus();
+      router.push({
+        name: 'Status',
+        params: { txId: String(pegoutTxState.value.txHash) },
+      });
+    }
 
-  get successPegOutSummary(): NormalizedSummary {
+    function appendClarityScript(): void {
+      const vueAppClarityId = 'ibn9mzxbfg';
+      const scriptTag:HTMLScriptElement = document.createElement('script');
+      scriptTag.type = 'text/javascript';
+      scriptTag.text = '(function(c,l,a,r,i,t,y){'
+        + 'c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};'
+        + 't=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;'
+        + 'y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);'
+        + `})(window, document, 'clarity', 'script', '${vueAppClarityId}');`;
+      scriptTag.text = 'clarity("set", "pegout_tx", "true");';
+      document.body.appendChild(scriptTag);
+    }
+
+    onBeforeMount(appendClarityScript);
+
     return {
-      amountFromString: this.pegoutTxState.amountToTransfer.toRBTCTrimmedString(),
-      amountReceivedString: this.estimatedBtcToReceive.toBTCTrimmedString(),
-      estimatedFee: Number(this.pegoutTxState.btcEstimatedFee.toBTCTrimmedString()),
-      recipientAddress: this.session.btcDerivedAddress,
-      senderAddress: this.session.account,
-      txId: this.pegoutTxState.txHash,
-      gas: Number(this.pegoutTxState.efectivePaidFee?.toRBTCTrimmedString()),
+      appConstants,
+      successPegOutSummary,
+      typeSummary,
+      orientationSummary,
+      goToStatus,
     };
-  }
-
-  afterMount() {
-    const vueAppClarityId = 'ibn9mzxbfg';
-    this.scriptTag = document.createElement('script');
-    this.scriptTag.type = 'text/javascript';
-    this.scriptTag.text = '(function(c,l,a,r,i,t,y){'
-      + 'c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};'
-      + 't=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;'
-      + 'y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);'
-       + `})(window, document, 'clarity', 'script', '${vueAppClarityId}');`;
-    this.scriptTag.text = 'clarity("set", "pegout_tx", "true");';
-    document.body.appendChild(this.scriptTag);
-  }
-}
+  },
+};
 </script>

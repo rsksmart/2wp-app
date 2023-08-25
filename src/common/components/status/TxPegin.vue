@@ -49,12 +49,7 @@
                       class="icon-status-image icon-btc-image d-flex justify-center"
                       src="@/assets/status/btc.png" height="78" contain/>
                   </v-row>
-                  <v-row class="mt-5" v-if="isMainNet()">
-                    <div class="label-network-main">
-                      <h1>{{environmentContext.getBtcText()}} Network</h1>
-                    </div>
-                  </v-row>
-                   <v-row class="mt-5" v-else>
+                  <v-row class="mt-5">
                     <v-col>
                       <h1>{{environmentContext.getBtcText()}} Network</h1>
                     </v-col>
@@ -151,228 +146,222 @@
 
 <script lang="ts">
 import {
-  Component,
-  Vue,
-  Prop,
-  Emit,
-  Watch,
-} from 'vue-property-decorator';
-import { Action, State, Getter } from 'vuex-class';
-import {
   PeginStatus,
   SatoshiBig,
-  TxStatusType, TxStatus, TxSummaryOrientation, NormalizedSummary,
+  TxStatusType, TxSummaryOrientation, NormalizedSummary, TxStatusMessage,
 } from '@/common/types';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import * as constants from '@/common/store/constants';
 import { getTime, setStatusMessage } from '@/common/utils';
 import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
-import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import { computed, reactive, ref, watch } from 'vue';
+import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 
-@Component({
+export default {
+  name: 'TxPegin',
   components: {
-    TxSummaryFixed,
+    TxSummaryFixed
   },
-})
+  props: {
+    txId: String,
+  },
+  setup(props, context) {
+    const currentFee = ref(new SatoshiBig('0', 'btc'));
+    const currentRefundAddress = ref('');
+    const btcConfirmationsRequired = ref(0);
+    const btcConfirmationsPercentage = ref(0);
+    const btcConfirmations = ref(0);
+    const rskConfirmationsPercentage = ref(0);
+    const leftBtcTime = ref('');
 
-export default class TxPegin extends Vue {
-  currentFee = new SatoshiBig('0', 'btc');
+    const colors = {
+      blue: '#3D7DA1',
+      gray: '#8c8c8c',
+      green: '#9CE07B',
+    };
 
-  currentRefundAddress = '';
+    const circleColor = {
+      blue: 'circle-blue',
+      gray: 'circle-gray',
+      green: 'circle-green',
+    };
 
-  btcConfirmationsRequired!: number;
+    const borderColor = {
+      blue: 'icon-status-border-blue',
+      gray: 'icon-status-border-gray',
+      green: 'icon-status-border-green',
+    };
 
-  btcConfirmationsPercentage = 0;
+    const rskCircleColor = ref(circleColor.gray);
+    const btcCircleColor = ref(circleColor.gray);
+    const currentBtcBarColor = ref(colors.gray);
+    const currentRskBarColor = ref(colors.gray);
 
-  btcConfirmations = 0;
+    const bordersStyle = reactive({
+      btc: borderColor.gray,
+      rootstock: borderColor.gray,
+      rbtc: borderColor.gray,
+    });
 
-  rskConfirmationsPercentage = 0;
+    const typeSummary = TxStatusType.PEGIN;
+    const orientationSummary = TxSummaryOrientation.HORIZONTAL;
+    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
-  leftBtcTime = '';
+    const txDetails = useStateAttribute<PeginStatus>('status', 'txDetails');
+    const type = useStateAttribute<TxStatusType>('status', 'type');
+    const isRejected = useGetter<boolean>('status', constants.STATUS_IS_REJECTED);
+    const setAmount = useAction('pegInTx', constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER);
+    const peginInit = useAction('pegInTx', constants.PEGIN_TX_INIT);
+    const setRskAddress = useAction('pegInTx', constants.PEGIN_TX_ADD_RSK_ADDRESS);
 
-  colors = {
-    blue: '#3D7DA1',
-    gray: '#8c8c8c',
-    green: '#9CE07B',
-  };
+    watch(txDetails.value.status, setMessage);
 
-  circleColor = {
-    blue: 'circle-blue',
-    gray: 'circle-gray',
-    green: 'circle-green',
-  };
+    const btcConfirmationsAreDone = computed(() => {
+      return btcConfirmations.value >= btcConfirmationsRequired.value;
+    });
 
-  borderColor = {
-    blue: 'icon-status-border-blue',
-    gray: 'icon-status-border-gray',
-    green: 'icon-status-border-green',
-  };
+    const rskConfirmationsAreDone = computed(() => {
+      return txDetails.value.status === constants.PegStatus.CONFIRMED;
+    });
 
-  rskCircleColor = this.circleColor.gray;
+    const showSteps = computed((): boolean => {
+      return type.value !== TxStatusType.UNSET_STATUS;
+    });
 
-  btcCircleColor = this.circleColor.gray;
+    const txPeginSummary = computed((): NormalizedSummary => {
+      const status = txDetails.value as PeginStatus;
+      return {
+        amountFromString: status.btc.amountTransferred.toString(),
+        amountReceivedString: status.btc.amountTransferred.toString(),
+        fee: status.btc.fees,
+        recipientAddress: status.rsk.recipientAddress,
+        txId: status.btc.txId,
+        refundAddress: status.btc.refundAddress,
+        federationAddress: status.btc.federationAddress,
+      };
+    });
 
-  currentBtcBarColor = this.colors.gray;
+    function refreshPercentage() {
+      if (txDetails) {
+        const { btc } = txDetails as PeginStatus;
+        btcConfirmationsRequired.value = btc.requiredConfirmation;
+        btcConfirmations.value = btc.confirmations ?? 0;
+        btcConfirmations.value = btcConfirmations.value > btcConfirmationsRequired.value
+          ? btcConfirmationsRequired.value : btcConfirmations.value;
+      }
+      leftBtcTime.value = getTime((btcConfirmationsRequired.value - btcConfirmations.value) * 10);
+      btcConfirmationsPercentage.value = btcConfirmations.value <= btcConfirmationsRequired.value
+        ? (btcConfirmations.value * 100) / btcConfirmationsRequired.value : 100;
+      if (txDetails.value.status === constants.PegStatus.CONFIRMED) {
+        rskConfirmationsPercentage.value = 100;
+      } else {
+        rskConfirmationsPercentage.value = 0;
+      }
+    }
 
-  currentRskBarColor = this.colors.gray;
+    function setSummaryData() {
+      const { btc, rsk } = txDetails.value as PeginStatus;
+      const txData = {
+        amount: new SatoshiBig(btc.amountTransferred, 'btc'),
+        refundAddress: btc.refundAddress,
+        recipient: rsk.recipientAddress ? rsk.recipientAddress : '',
+        feeBTC: new SatoshiBig(btc.fees, 'btc'),
+        change: '',
+      };
+      peginInit();
+      setAmount(txData.amount);
+      currentFee.value = txData.feeBTC;
+      currentRefundAddress.value = txData.refundAddress;
+      setRskAddress(txData.recipient);
+    }
 
-  bordersStyle = {
-    btc: this.borderColor.gray,
-    rootstock: this.borderColor.gray,
-    rbtc: this.borderColor.gray,
-  };
+    function setMessage() {
+      let msg: TxStatusMessage;
+      if (txDetails) {
+        msg = setStatusMessage(TxStatusType.PEGIN, txDetails.value.status);
+      }
+      context.emit('setMessage', msg ?? '');
+    }
 
-  typeSummary = TxStatusType.PEGIN;
+    function setProgressColor() {
+      if (btcConfirmationsPercentage.value <= 1) {
+        currentBtcBarColor.value = colors.gray;
+        bordersStyle.btc = borderColor.gray;
+        bordersStyle.rootstock = borderColor.gray;
+        bordersStyle.rbtc = borderColor.gray;
+      } else if (btcConfirmationsPercentage.value > 1
+        && btcConfirmationsPercentage.value < 100) {
+        currentBtcBarColor.value = colors.blue;
 
-  orientationSummary = TxSummaryOrientation.HORIZONTAL;
+        bordersStyle.btc = borderColor.blue;
+        bordersStyle.rootstock = borderColor.gray;
+        bordersStyle.rbtc = borderColor.gray;
+      } else {
+        currentBtcBarColor.value = colors.blue;
+        currentRskBarColor.value = colors.blue;
 
-  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+        bordersStyle.btc = borderColor.blue;
+        bordersStyle.rootstock = borderColor.blue;
+        bordersStyle.rbtc = borderColor.gray;
+      }
 
-  @State('status') txStatus!: TxStatus;
+      if (rskConfirmationsPercentage.value === 100) {
+        currentBtcBarColor.value = colors.green;
+        currentRskBarColor.value = colors.green;
 
-  @Prop() txId!: string;
+        bordersStyle.btc = borderColor.green;
+        bordersStyle.rootstock = borderColor.green;
+        bordersStyle.rbtc = borderColor.green;
+      }
+    }
 
-  @Getter(constants.STATUS_IS_REJECTED, { namespace: 'status' }) isRejected!: boolean;
+    function setCircleColor() {
+      if (btcConfirmationsPercentage.value <= 50) {
+        btcCircleColor.value = circleColor.gray;
+      } else if (btcConfirmationsPercentage > 50
+        && btcConfirmationsPercentage.value <= 100) {
+        btcCircleColor.value = circleColor.blue;
+      }
 
-  @Action(constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER, { namespace: 'pegInTx' }) setAmount!: (amount: SatoshiBig) => void;
+      if (rskConfirmationsPercentage.value <= 50) {
+        rskCircleColor.value = circleColor.gray;
+      } else if (rskConfirmationsPercentage.value > 50
+        && rskConfirmationsPercentage.value < 100) {
+        rskCircleColor.value = circleColor.blue;
+      } else {
+        btcCircleColor.value = circleColor.green;
+        rskCircleColor.value = circleColor.green;
+      }
+    }
 
-  @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) peginInit!: () => void;
+    setSummaryData();
+    refreshPercentage();
+    setMessage();
+    setProgressColor();
+    setCircleColor();
 
-  @Action(constants.PEGIN_TX_ADD_RSK_ADDRESS, { namespace: 'pegInTx' }) setRskAddress!: (address: string) => void;
 
-  // eslint-disable-next-line class-methods-use-this
-  isMainNet(): boolean {
-    return EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin
-    === constants.BTC_NETWORK_MAINNET;
-  }
-
-  get btcConfirmationsAreDone() {
-    return this.btcConfirmations >= this.btcConfirmationsRequired;
-  }
-
-  get rskConfirmationsAreDone() {
-    return this.txStatus.txDetails?.status === constants.PegStatus.CONFIRMED;
-  }
-
-  get showSteps(): boolean {
-    return this.txStatus.type !== TxStatusType.UNSET_STATUS;
-  }
-
-  get txPeginSummary(): NormalizedSummary {
-    const status = this.txStatus.txDetails as PeginStatus;
     return {
-      amountFromString: status.btc.amountTransferred.toString(),
-      amountReceivedString: status.btc.amountTransferred.toString(),
-      fee: status.btc.fees,
-      recipientAddress: status.rsk.recipientAddress,
-      txId: status.btc.txId,
-      refundAddress: status.btc.refundAddress,
-      federationAddress: status.btc.federationAddress,
+      currentFee,
+      currentRefundAddress,
+      btcConfirmationsRequired,
+      btcConfirmationsPercentage,
+      btcConfirmations,
+      rskConfirmationsPercentage,
+      leftBtcTime,
+      rskCircleColor,
+      btcCircleColor,
+      currentBtcBarColor,
+      currentRskBarColor,
+      bordersStyle,
+      typeSummary,
+      orientationSummary,
+      environmentContext,
+      txPeginSummary,
+      btcConfirmationsAreDone,
+      rskConfirmationsAreDone,
+      isRejected,
     };
-  }
-
-  @Emit()
-  refreshPercentage() {
-    if (this.txStatus) {
-      const { btc } = this.txStatus.txDetails as PeginStatus;
-      this.btcConfirmationsRequired = btc.requiredConfirmation;
-      this.btcConfirmations = btc.confirmations ?? 0;
-      this.btcConfirmations = this.btcConfirmations > this.btcConfirmationsRequired
-        ? this.btcConfirmationsRequired : this.btcConfirmations;
-    }
-    this.leftBtcTime = getTime((this.btcConfirmationsRequired - this.btcConfirmations) * 10);
-    this.btcConfirmationsPercentage = this.btcConfirmations <= this.btcConfirmationsRequired
-      ? (this.btcConfirmations * 100) / this.btcConfirmationsRequired : 100;
-    if (this.txStatus.txDetails?.status === constants.PegStatus.CONFIRMED) {
-      this.rskConfirmationsPercentage = 100;
-    } else {
-      this.rskConfirmationsPercentage = 0;
-    }
-  }
-
-  setSummaryData() {
-    const { btc, rsk } = this.txStatus?.txDetails as PeginStatus;
-    const txData = {
-      amount: new SatoshiBig(btc.amountTransferred, 'btc'),
-      refundAddress: btc.refundAddress,
-      recipient: rsk.recipientAddress ? rsk.recipientAddress : '',
-      feeBTC: new SatoshiBig(btc.fees, 'btc'),
-      change: '',
-    };
-    this.peginInit();
-    this.setAmount(txData.amount);
-    this.currentFee = txData.feeBTC;
-    this.currentRefundAddress = txData.refundAddress;
-    this.setRskAddress(txData.recipient);
-  }
-
-  @Watch('pegInStatus.status')
-  @Emit('setMessage')
-  setMessage() {
-    if (this.txStatus.txDetails) {
-      return setStatusMessage(TxStatusType.PEGIN, this.txStatus.txDetails.status);
-    }
-    return '';
-  }
-
-  setProgressColor() {
-    if (this.btcConfirmationsPercentage <= 1) {
-      this.currentBtcBarColor = this.colors.gray;
-      this.bordersStyle.btc = this.borderColor.gray;
-      this.bordersStyle.rootstock = this.borderColor.gray;
-      this.bordersStyle.rbtc = this.borderColor.gray;
-    } else if (this.btcConfirmationsPercentage > 1
-    && this.btcConfirmationsPercentage < 100) {
-      this.currentBtcBarColor = this.colors.blue;
-
-      this.bordersStyle.btc = this.borderColor.blue;
-      this.bordersStyle.rootstock = this.borderColor.gray;
-      this.bordersStyle.rbtc = this.borderColor.gray;
-    } else {
-      this.currentBtcBarColor = this.colors.blue;
-      this.currentRskBarColor = this.colors.blue;
-
-      this.bordersStyle.btc = this.borderColor.blue;
-      this.bordersStyle.rootstock = this.borderColor.blue;
-      this.bordersStyle.rbtc = this.borderColor.gray;
-    }
-
-    if (this.rskConfirmationsPercentage === 100) {
-      this.currentBtcBarColor = this.colors.green;
-      this.currentRskBarColor = this.colors.green;
-
-      this.bordersStyle.btc = this.borderColor.green;
-      this.bordersStyle.rootstock = this.borderColor.green;
-      this.bordersStyle.rbtc = this.borderColor.green;
-    }
-  }
-
-  setCircleColor() {
-    if (this.btcConfirmationsPercentage <= 50) {
-      this.btcCircleColor = this.circleColor.gray;
-    } else if (this.btcConfirmationsPercentage > 50
-    && this.btcConfirmationsPercentage <= 100) {
-      this.btcCircleColor = this.circleColor.blue;
-    }
-
-    if (this.rskConfirmationsPercentage <= 50) {
-      this.rskCircleColor = this.circleColor.gray;
-    } else if (this.rskConfirmationsPercentage > 50
-    && this.rskConfirmationsPercentage < 100) {
-      this.rskCircleColor = this.circleColor.blue;
-    } else {
-      this.btcCircleColor = this.circleColor.green;
-      this.rskCircleColor = this.circleColor.green;
-    }
-  }
-
-  created() {
-    this.setSummaryData();
-    this.refreshPercentage();
-    this.setMessage();
-
-    this.setProgressColor();
-    this.setCircleColor();
   }
 }
 </script>
