@@ -58,7 +58,7 @@ export class EnvironmentVariables {
     this.vueAppWalletAddressPerCall = Number(import.meta.env.VITE_WALLET_ADDRESS_PER_CALL)
     || defaultValues.vueAppWalletAddressPerCall;
     this.vueAppRskExplorer = import.meta.env.VITE_RSK_EXPLORER || defaultValues.vueAppRskExplorer;
-    this.vueAppClarityId = import.meta..env.VITE_APP_CLARITY_ID || defaultValues.vueAppClarityId;
+    this.vueAppClarityId = import.meta.env.VITE_APP_CLARITY_ID || defaultValues.vueAppClarityId;
     this.pegoutMinValue = import.meta.env.VITE_PEGOUT_MIN_AMOUNT_ALLOWED_IN_RBTC
     || defaultValues.pegoutMinValue;
     this.pegoutMaxValue = import.meta.env.VITE_PEGOUT_MAX_AMOUNT_ALLOWED_IN_RBTC
