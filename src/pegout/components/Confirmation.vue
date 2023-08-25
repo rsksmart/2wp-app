@@ -40,7 +40,9 @@
 </template>
 
 <script lang="ts">
-import { computed, PropType, defineComponent } from 'vue';
+import {
+  computed, PropType, defineComponent, onBeforeMount,
+} from 'vue';
 import { useRouter } from 'vue-router';
 import { Machine } from '@/common/utils';
 import { TxStatusType } from '@/common/types/store';
