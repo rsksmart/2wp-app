@@ -40,9 +40,9 @@ export default class App extends Vue {
     response = `
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
     script-src 'self' 'nonce-${vuetifyNonce}' 'unsafe-eval';
-    script-src-elem 'self' 'unsafe-inline' https://www.clarity.ms https://*.clarity.ms https://api.coingecko.com/;
+    script-src-elem 'self' 'unsafe-inline' https://script.hotjar.com https://static.hotjar.comhttps://api.coingecko.com/;
     img-src data: https:;
-    connect-src 'self' 'unsafe-inline' https://*.clarity.ms ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://api.coingecko.com https://www.clarity.ms;
+    connect-src 'self' 'unsafe-inline' https://*.hotjar.com https://*.hotjar.io wss://*.hotjar.com; ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://api.coingecko.com;
     object-src 'none';
     frame-src https://connect.trezor.io;
     worker-src 'none';
@@ -57,21 +57,24 @@ export default class App extends Vue {
     document.head.appendChild(metaTag);
   }
 
-  appendClarity(): void {
-    const { vueAppClarityId } = EnvironmentAccessorService.getEnvironmentVariables();
+  appendHotjar(): void {
+    const hotjarID = EnvironmentAccessorService.getEnvironmentVariables().vueAppHotjarId;
     this.scriptTag = document.createElement('script');
     this.scriptTag.type = 'text/javascript';
-    this.scriptTag.text = '(function(c,l,a,r,i,t,y){'
-      + 'c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};'
-      + 't=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;'
-      + 'y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);'
-       + `})(window, document, 'clarity', 'script', '${vueAppClarityId}');`;
+    this.scriptTag.text = '(function(h,o,t,j,a,r){'
+      + 'h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};'
+      + `h._hjSettings={hjid:'${hotjarID}',hjsv:6};`
+      + 'a=o.getElementsByTagName("head")[0];'
+      + 'r=o.createElement("script");r.async=1;'
+      + 'r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;'
+      + 'a.appendChild(r);'
+      + '})(window,document,"https://static.hotjar.com/c/hotjar-",".js?sv=");';
     document.body.appendChild(this.scriptTag);
   }
 
-  created() {
+   created() {
     this.getBtcPrice();
-    this.appendClarity();
+    this.appendHotjar();
     this.appendCSP();
   }
 }
