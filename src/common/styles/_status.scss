@@ -59,6 +59,14 @@
     color: #000;
   }
 
+  div.v-field__field {
+    align-items: center;
+  }
+
+  div.v-field--active {
+    padding-inline-start: 16px;
+  }
+
   p {
     margin: 0 !important;
     font-family: Quicksand, sans-serif;

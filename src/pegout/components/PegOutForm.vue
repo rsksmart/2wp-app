@@ -16,9 +16,9 @@
       <v-col cols="8" lg="7" class="pa-0" >
         <rsk-wallet-connection
           @switchDeriveButton="switchDeriveButton"/>
-        <v-divider color="#C4C4C4"/>
+        <v-divider />
         <rbtc-input-amount :enableButton="!isReadyToSign"/>
-        <v-divider color="#C4C4C4"/>
+        <v-divider />
         <div class="form-step py-4">
           <v-row class="ma-0 align-start">
             <v-col cols="auto" class="pl-0">
