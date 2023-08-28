@@ -29,7 +29,7 @@ jobs:
 
       - name: Build site
         run: >
-          VUE_APP_CLARITY_ID=${{ secrets.MAINNET_VUE_APP_CLARITY_ID }}
+          VUE_APP_HOTJAR_ID=${{ secrets.MAINNET_VUE_APP_CLARITY_ID }}
           VUE_APP_COIN='main'
           VUE_APP_MANIFEST_EMAIL='user@rsk.co'
           VUE_APP_MANIFEST_APP_URL='https://app.2wp.rootstock.io'
