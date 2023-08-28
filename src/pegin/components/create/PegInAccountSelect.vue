@@ -5,7 +5,7 @@
         <div v-bind:class="[focus ?
               'number-filled' : 'number']">1</div>
       </v-col>
-      <v-col class="pa-4 pl-0">
+      <v-col class="pl-0">
         <p v-bind:class="{'boldie': focus}">
           {{
             isLiquality ?

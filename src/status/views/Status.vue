@@ -21,7 +21,7 @@
                 @click="getPegStatus" @keyup.enter="getPegStatus">
               </v-btn>
             </v-row>
-            <v-row v-if="!isValidTxId && txId" class="mx-0 pl-1 pt-1">
+            <v-row v-if="!isValidTxId && txId">
               <span class="yellowish">
                 {{ notValidTxIdMessage }}
               </span>

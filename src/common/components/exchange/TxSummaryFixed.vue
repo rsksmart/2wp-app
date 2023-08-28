@@ -1,6 +1,6 @@
 <template>
   <v-container v-if="type && orientation" class="pa-0 ma-0">
-    <v-row class="mx-0 py-4 d-flex justify-center">
+    <v-row class="ma-0 py-4 d-flex justify-center">
       <h2 class="text-center tx-text">
         Operation summary
       </h2>
@@ -304,7 +304,7 @@
       </v-col>
     </v-row>
     <v-row v-if="orientation === orientationTypes.VERTICAL"
-           class="mx-0 pa-6 summary-box">
+           class="ma-0 pa-6 summary-box">
       <!-- Top section -->
       <v-container class="pa-0">
         <v-row class="ma-0 mb-2">
