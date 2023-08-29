@@ -72,7 +72,7 @@ export default class App extends Vue {
     document.body.appendChild(this.scriptTag);
   }
 
-   created() {
+  created() {
     this.getBtcPrice();
     this.appendHotjar();
     this.appendCSP();
