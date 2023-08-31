@@ -1,7 +1,6 @@
 import Web3 from 'web3';
 import { ActionTree } from 'vuex';
 import RLogin from '@rsksmart/rlogin';
-import WalletConnectProvider from '@walletconnect/web3-provider';
 import { trezorProviderOptions } from '@rsksmart/rlogin-trezor-provider';
 import { ledgerProviderOptions } from '@rsksmart/rlogin-ledger-provider';
 import axios, { AxiosResponse } from 'axios';
@@ -38,12 +37,6 @@ export const actions: ActionTree<SessionState, RootState> = {
     const rLogin = state.rLoginInstance === undefined ? new RLogin({
       cacheProvider: false,
       providerOptions: {
-        walletconnect: {
-          package: WalletConnectProvider,
-          options: {
-            rpc: rpcUrls,
-          },
-        },
         'custom-ledger': ledgerProviderOptions,
         'custom-trezor': {
           ...trezorProviderOptions,
