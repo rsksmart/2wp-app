@@ -1,4 +1,4 @@
-import TrezorConnect, { Address, GetAddress } from 'trezor-connect';
+import TrezorConnect, { Address, GetAddress } from '@trezor/connect-web';
 import * as bitcoin from 'bitcoinjs-lib';
 import { Network } from 'bitcoinjs-lib';
 import { WalletAddress } from '@/common/types/pegInTx';
@@ -10,6 +10,7 @@ import { WalletService } from '@/common/services/index';
 import { EnvironmentAccessorService } from './enviroment-accessor.service';
 
 type TrezorCoin = 'TESTNET' | 'BTC';
+type GetAddressParams = GetAddress & { coin: TrezorCoin };
 
 export default class TrezorService extends WalletService {
   private bitcoinJsNetwork: Network;
@@ -48,8 +49,8 @@ export default class TrezorService extends WalletService {
     });
   }
 
-  private getAddressesBundle(): GetAddress[] {
-    const bundle: GetAddress[] = [];
+  private getAddressesBundle(): GetAddressParams[] {
+    const bundle: GetAddressParams[] = [];
     const { legacy, segwit, nativeSegwit } = this.addressesToFetch;
     for (
       let index: number = legacy.lastIndex; index < (legacy.lastIndex + legacy.count); index += 1

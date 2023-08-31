@@ -1,6 +1,6 @@
 import TrezorConnect, {
-  BundledResponse, Address, Success,
-} from 'trezor-connect';
+  Response, Address, Success,
+} from '@trezor/connect-web';
 import sinon from 'sinon';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import * as constants from '@/common/store/constants';
@@ -24,7 +24,6 @@ describe('TrezorService:', () => {
     sinon.stub(TrezorConnect, 'manifest').returns();
     sinon.stub(TrezorConnect, 'getAddress').callsFake(({ bundle }) => {
       const result: Success<Address[]> = {
-        id: 1,
         success: true,
         payload: [],
       };
@@ -41,7 +40,7 @@ describe('TrezorService:', () => {
         path: addressItem.path,
         serializedPath: addressItem.serializedPath,
       }));
-      return Promise.resolve(result) as BundledResponse<Address>;
+      return Promise.resolve(result) as Response<Address[]>;
     });
   });
 
