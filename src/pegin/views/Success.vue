@@ -51,6 +51,8 @@ import EnvironmentContextProviderService from '@/common/providers/EnvironmentCon
 })
 
 export default class Success extends Vue {
+  scriptTag?: HTMLScriptElement;
+
   txId = '';
 
   typeSummary = TxStatusType.PEGIN;
@@ -103,6 +105,15 @@ export default class Success extends Vue {
 
   created() {
     this.txId = this.$route.params.txId;
+  }
+
+  beforeMount() {
+    const amountFromString = this.peginTxState.amountToTransfer.toBTCTrimmedString();
+    this.scriptTag = document.createElement('script');
+    this.scriptTag.type = 'text/javascript';
+    this.scriptTag.text = 'clarity("set", "pegin_tx", "1");';
+    this.scriptTag.text = `clarity("set", "pegin_tx_value", "${amountFromString}");`;
+    document.body.appendChild(this.scriptTag);
   }
 }
 </script>
