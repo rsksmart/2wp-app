@@ -206,6 +206,8 @@ import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
   },
 })
 export default class ConfirmLedgerTransaction extends Vue {
+  scriptTag?: HTMLScriptElement;
+
   txId = '';
 
   rawTx = '';
@@ -327,6 +329,15 @@ export default class ConfirmLedgerTransaction extends Vue {
 
   async created() {
     this.rawTx = await this.txBuilder.getUnsignedRawTx(this.pegInTxState.normalizedTx);
+  }
+
+  beforeMount() {
+    const amountFromString = this.pegInTxState.amountToTransfer.toBTCTrimmedString();
+    this.scriptTag = document.createElement('script');
+    this.scriptTag.type = 'text/javascript';
+    this.scriptTag.text = 'clarity("set", "pegin_using_ledger", "1");';
+    this.scriptTag.text = `clarity("set", "pegin_using_ledger_value", "${amountFromString}");`;
+    document.body.appendChild(this.scriptTag);
   }
 }
 </script>

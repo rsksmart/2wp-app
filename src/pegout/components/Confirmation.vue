@@ -61,6 +61,8 @@ import * as constants from '@/common/store/constants';
 })
 
 export default class Confirmation extends Vue {
+  scriptTag?: HTMLScriptElement;
+
   appConstants = constants;
 
   typeSummary = TxStatusType.PEGOUT;
@@ -115,6 +117,13 @@ export default class Confirmation extends Vue {
       txId: this.pegoutTxState.txHash,
       gas: Number(this.pegoutTxState.efectivePaidFee?.toRBTCTrimmedString()),
     };
+  }
+
+  beforeMount() {
+    this.scriptTag = document.createElement('script');
+    this.scriptTag.type = 'text/javascript';
+    this.scriptTag.text = 'clarity("set", "pegout_tx", "true");';
+    document.body.appendChild(this.scriptTag);
   }
 }
 </script>
