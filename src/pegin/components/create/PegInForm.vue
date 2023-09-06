@@ -318,7 +318,7 @@ export default class PegInForm extends Vue {
   }
 
   mounted() {
-    const newUser = localStorage.getItem('ONBOARDED_USER_PEGIN') !== 'true';
+    const newUser = false; // localStorage.getItem('ONBOARDED_USER_PEGIN') !== 'true';
     if (newUser) {
       this.$tours.pegInTour.start();
       this.isTourActive = true;
