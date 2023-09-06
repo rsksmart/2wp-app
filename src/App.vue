@@ -40,9 +40,9 @@ export default class App extends Vue {
     response = `
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
     script-src 'self' 'nonce-${vuetifyNonce}' 'unsafe-eval';
-    script-src-elem 'self' 'unsafe-inline' https://script.hotjar.com https://static.hotjar.comhttps://api.coingecko.com/;
+    script-src-elem 'self' 'unsafe-inline' https://script.hotjar.com https://static.hotjar.com https://api.coingecko.com/;
     img-src data: https:;
-    connect-src 'self' 'unsafe-inline' https://*.hotjar.com https://*.hotjar.io wss://*.hotjar.com; ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://api.coingecko.com;
+    connect-src 'self' 'unsafe-inline' https://*.hotjar.com https://*.hotjar.io wss://*.hotjar.com ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://api.coingecko.com;
     object-src 'none';
     frame-src https://connect.trezor.io;
     worker-src 'none';
