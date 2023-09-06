@@ -385,7 +385,7 @@ export default class PegOutForm extends Vue {
   }
 
   mounted() {
-    const newUser = localStorage.getItem('ONBOARDED_USER_PEGOUT') !== 'true';
+    const newUser = false; // localStorage.getItem('ONBOARDED_USER_PEGOUT') !== 'true';
     if (newUser) {
       this.$tours.pegOutTour.start();
       this.isTourActive = true;
