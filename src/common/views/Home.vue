@@ -137,8 +137,6 @@ export default {
     const clear = useAction('pegInTx', constants.PEGIN_TX_CLEAR_STATE);
     const clearPegOut = useAction('pegOutTx', constants.PEGOUT_TX_CLEAR);
     const clearSession = useAction('web3Session', constants.SESSION_CLEAR);
-    const initPegin = useAction('pegInTx', constants.PEGIN_TX_INIT);
-    const init = useAction('pegOutTx', constants.PEGOUT_TX_INIT);
     const addPeg = useAction('web3Session', constants.SESSION_ADD_TX_TYPE);
 
     const btcToRbtc = computed((): boolean => txType.value === constants.PEG_IN_TRANSACTION_TYPE);
@@ -182,8 +180,6 @@ export default {
     clearPegOut();
     clearSession();
     addPeg();
-    init();
-    initPegin();
 
     return {
       environmentContext,
