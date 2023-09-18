@@ -9,9 +9,9 @@
         <p v-bind:class="{'boldie' : focus}">
           Select transaction fee:
         </p>
-        <v-row class="mx-0 mt-4 d-flex justify-start">
+        <v-row class="ma-0 d-flex justify-start">
           <v-col cols="11 pl-0">
-            <v-row class="mx-0">
+            <v-row class="ma-0">
               <v-slider v-model="txFeeIndex" :ticks="transactionFees" max="2"
                         track-size="2"
                         thumb-size="12"
@@ -19,9 +19,9 @@
                         :color="txFeeColor" :track-color="txFeeColor" step="1"
                         @update:focused="focus = !focus"
                         @blur="focus = false"
-                        @change="updateStore"/>
+                        />
             </v-row>
-            <v-row class="mx-0">
+            <v-row class="ma-0">
               <v-col cols="4" class="d-flex justify-start pa-0">
                       <span class="text-left">{{ slowFee }}
                       {{environmentContext.getBtcTicker()}}</span>
@@ -35,7 +35,7 @@
                       {{environmentContext.getBtcTicker()}}</span>
               </v-col>
             </v-row>
-            <v-row class="mx-0">
+            <v-row class="ma-0">
               <v-col cols="4" class="d-flex justify-start pa-0">
                 <span class="boldie text-left">$ {{ slowFeeUSD }}</span>
               </v-col>
@@ -48,7 +48,7 @@
             </v-row>
           </v-col>
         </v-row>
-        <v-row v-if="showErrorMessage" class="mx-0 mt-0 d-flex justify-start">
+        <v-row v-if="showErrorMessage" class="ma-0 d-flex justify-start">
           <span class="message-error-fee">
             You don't have the balance for this fee + amount
           </span>
@@ -60,7 +60,7 @@
 
 <script lang="ts">
 import {
-  computed, onBeforeMount, ref, defineComponent,
+  computed, onBeforeMount, ref, defineComponent, watch,
 } from 'vue';
 import * as constants from '@/common/store/constants';
 import { MiningSpeedFee } from '@/common/types/pegInTx';
@@ -131,6 +131,8 @@ export default defineComponent({
       }
       setSelectedFee(userSelectedFee);
     }
+
+    watch(() => txFeeIndex.value, updateStore);
 
     onBeforeMount(() => {
       let selectedFeeIdx = 1;
