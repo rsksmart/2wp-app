@@ -56,10 +56,13 @@ export const actions: ActionTree<PegInTxState, RootState> = {
       },
     );
   },
-  [constants.PEGIN_TX_ADD_BITCOIN_PRICE]: ({ commit }) => axios.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin&order=market_cap_desc&per_page=100&page=1&sparkline=false')
+  [constants.PEGIN_TX_ADD_BITCOIN_PRICE]: ({ commit }) => axios.get(constants.COINGECKO_API_URL)
     .then((response: AxiosResponse) => {
       const [result] = response.data;
       commit(constants.PEGIN_TX_SET_BITCOIN_PRICE, result.current_price);
+    })
+    .catch(() => {
+      commit(constants.PEGIN_TX_SET_BITCOIN_PRICE, 0);
     }),
   [constants.PEGIN_TX_CLEAR_STATE]: ({ commit }): void => {
     commit(constants.PEGIN_TX_CLEAR);

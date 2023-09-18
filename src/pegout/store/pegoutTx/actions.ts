@@ -82,9 +82,12 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
   [constants.PEGOUT_TX_CLEAR]: ({ commit }) => {
     commit(constants.PEGOUT_TX_CLEAR_STATE);
   },
-  [constants.PEGOUT_TX_ADD_BITCOIN_PRICE]: ({ commit }) => axios.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin&order=market_cap_desc&per_page=100&page=1&sparkline=false')
+  [constants.PEGOUT_TX_ADD_BITCOIN_PRICE]: ({ commit }) => axios.get(constants.COINGECKO_API_URL)
     .then((response: AxiosResponse) => {
       const [result] = response.data;
       commit(constants.PEGOUT_TX_SET_BITCOIN_PRICE, result.current_price);
+    })
+    .catch(() => {
+      commit(constants.PEGOUT_TX_SET_BITCOIN_PRICE, 0);
     }),
 };
