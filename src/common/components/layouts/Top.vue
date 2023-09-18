@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar color="#fff" elevation="0" class="mx-8 top">
+  <v-app-bar color="#fff" elevation="0" class="mx-8 top" style="position: relative; height: 80px;">
     <v-row justify="center">
       <v-col cols="11" class="d-flex flex-column align-start px-0">
         <v-col cols="auto" class="top-logo">
@@ -16,30 +16,37 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Emit } from 'vue-property-decorator';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import * as constants from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { getMainLogo } from '@/common/utils';
+import { useRoute, useRouter } from 'vue-router';
+import { computed } from 'vue';
 
-@Component
-export default class Top extends Vue {
-  environmentVariables = EnvironmentAccessorService.getEnvironmentVariables();
+export default {
+  name: 'TopBar',
+  setup() {
+    const router = useRouter();
+    const route = useRoute();
+    const environmentVariables = EnvironmentAccessorService.getEnvironmentVariables();
+    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+    const logo = getMainLogo();
 
-  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+    const isTestNet = computed(
+      () => environmentVariables.vueAppCoin === constants.BTC_NETWORK_TESTNET,
+    );
 
-  @Emit()
-  toExchange() {
-    if (this.$router.currentRoute.name !== 'Home') this.$router.push({ name: 'Home' });
-  }
+    function toExchange() {
+      if (route.name !== 'Home') router.push({ name: 'Home' });
+    }
 
-  get isTestNet() {
-    return this.environmentVariables.vueAppCoin === constants.BTC_NETWORK_TESTNET;
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  get logo() {
-    return getMainLogo();
-  }
-}
+    return {
+      environmentVariables,
+      environmentContext,
+      isTestNet,
+      toExchange,
+      logo,
+    };
+  },
+};
 </script>

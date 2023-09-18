@@ -20,8 +20,10 @@ export default class ApiService {
     return EnvironmentAccessorService.getEnvironmentVariables().vueAppApiBaseUrl;
   }
 
-  public static getBalances(sessionId: string,
-    addressList?: RequestBalance[]): Promise<AccountBalance> {
+  public static getBalances(
+    sessionId: string,
+    addressList?: RequestBalance[],
+  ): Promise<AccountBalance> {
     return new Promise((resolve, reject) => {
       axios.post(`${ApiService.baseURL}/balance`, {
         sessionId,
@@ -48,8 +50,11 @@ export default class ApiService {
     });
   }
 
-  public static getTxFee(sessionId: string, amount: number,
-    accountType: string): Promise<FeeAmountDataResponse> {
+  public static getTxFee(
+    sessionId: string,
+    amount: number,
+    accountType: string,
+  ): Promise<FeeAmountDataResponse> {
     return new Promise<FeeAmountDataResponse>((resolve, reject) => {
       axios.post(`${ApiService.baseURL}/tx-fee`, {
         sessionId,
@@ -61,9 +66,16 @@ export default class ApiService {
     });
   }
 
-  public static createPeginTx(amountToTransferInSatoshi: number, refundAddress: string,
-    recipient: string, sessionId: string, feeLevel: string,
-    changeAddress: string, userAddressList: string[], feeAmountCalculated: SatoshiBig)
+  public static createPeginTx(
+    amountToTransferInSatoshi: number,
+    refundAddress: string,
+    recipient: string,
+    sessionId: string,
+    feeLevel: string,
+    changeAddress: string,
+    userAddressList: string[],
+    feeAmountCalculated: SatoshiBig,
+  )
     : Promise<NormalizedTx> {
     const bridgeService = new BridgeService();
     return new Promise<NormalizedTx>((resolve, reject) => {
@@ -96,9 +108,12 @@ export default class ApiService {
           }
           const expectedChangeAddress = changeAddress || normalizedTx.inputs[0].address;
           const { valid, reason } = areValidOutputs(
-            normalizedTx.outputs, powPegAddress,
+            normalizedTx.outputs,
+            powPegAddress,
             amountToTransferInSatoshi.toString(),
-            expectedChangeAddress, recipient, refundAddress,
+            expectedChangeAddress,
+            recipient,
+            refundAddress,
           );
           if (!valid) {
             reject(new Error(reason));

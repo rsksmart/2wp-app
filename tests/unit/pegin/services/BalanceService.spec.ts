@@ -1,9 +1,9 @@
+import axios from 'axios';
+import sinon from 'sinon';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import * as constants from '@/common/store/constants';
 import { SatoshiBig } from '@/common/types';
 import BalanceService from '@/pegin/services/BalanceService';
-import axios from 'axios';
-import sinon from 'sinon';
 
 const API_URL = 'https://api.url';
 
@@ -35,6 +35,7 @@ describe('Balance Service', () => {
         derivationPath: '',
         publicKey: '',
       }];
+
     const segwitAddresses = [
       {
         address: '2NC4DCae9HdL6vjWMDbQwTkYEAB22MF3TPs',
@@ -46,6 +47,7 @@ describe('Balance Service', () => {
         derivationPath: '',
         publicKey: '',
       }];
+
     const nativeSegwitAddresses = [
       {
         address: 'tb1qtanvhhl8ve32tcdxkrsamyy6vq5p62ctdv89l0',
@@ -57,8 +59,8 @@ describe('Balance Service', () => {
         derivationPath: '',
         publicKey: '',
       }];
-    const addresses = [...legacyAddresses, ...segwitAddresses, ...nativeSegwitAddresses];
 
+    const addresses = [...legacyAddresses, ...segwitAddresses, ...nativeSegwitAddresses];
     const legacyApiResponse = {
       data: [{
         txid: '',
@@ -73,6 +75,7 @@ describe('Balance Service', () => {
         confirmations: 0,
       }],
     };
+
     const segwitApiResponse = { data: [] };
     const nativeSegwitApiResponse = { data: [] };
 
@@ -97,6 +100,7 @@ describe('Balance Service', () => {
         utxos: nativeSegwitApiResponse.data,
       },
     };
+
     expect(BalanceService.getBalances(addresses))
       .resolves
       .toEqual(balances);

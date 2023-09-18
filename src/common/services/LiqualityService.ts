@@ -1,3 +1,4 @@
+import * as bitcoin from 'bitcoinjs-lib';
 import {
   BtcAccount,
   LiqualityError,
@@ -8,7 +9,6 @@ import {
   WindowBitcoinProvider,
   LiqualityGetNetworkResponse,
 } from '@/common/types';
-import * as bitcoin from 'bitcoinjs-lib';
 import { WalletService } from '@/common/services/index';
 import * as constants from '@/common/store/constants';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';

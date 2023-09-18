@@ -39,8 +39,14 @@ export default abstract class TxBuilder {
     const userAddressList = walletAddresses.map((walletAddress) => walletAddress.address);
     const feeAmountCalculated: SatoshiBig = store.getters[`pegInTx/${constants.PEGIN_TX_GET_SAFE_TX_FEE}`] as SatoshiBig;
     const normalizedTx = await ApiService.createPeginTx(
-      amountToTransferInSatoshi, refundAddress, recipient,
-      sessionId, feeLevel, changeAddress, userAddressList, feeAmountCalculated,
+      amountToTransferInSatoshi,
+      refundAddress,
+      recipient,
+      sessionId,
+      feeLevel,
+      changeAddress,
+      userAddressList,
+      feeAmountCalculated,
     );
     const hasChange: boolean = normalizedTx.outputs[2] !== undefined;
     const changeAddr = hasChange && normalizedTx.outputs[2].address
@@ -66,8 +72,10 @@ export default abstract class TxBuilder {
       const hexTx = await ApiService.getTxHex(input.prev_hash);
       const prevTx = bitcoin.Transaction.fromHex(hexTx);
       txBuilder.addInput(
-        input.prev_hash, input.prev_index,
-        0, prevTx.outs[input.prev_index].script,
+        input.prev_hash,
+        input.prev_index,
+        0,
+        prevTx.outs[input.prev_index].script,
       );
     }
     normalizedTx.outputs.forEach((normalizedOutput) => {

@@ -9,12 +9,12 @@
         <p v-bind:class="{'boldie': focus}">
           Enter the amount you want to send:
         </p>
-        <v-row class="pl-1 mx-0 mt-4 pb-0 d-flex align-center">
-          <v-col cols="4" v-bind:class="[amountStyle]"
-                class="input-box-outline" id="amount-field">
+        <v-row class="ma-0 mt-4 pb-0 d-flex align-center">
+          <v-col cols="4" v-bind:class="[amountStyle]" class="input-box-outline">
             <v-col cols="8" class="pa-0 pl-1">
               <v-text-field solo hide-details full-width single-line flat
-              :disabled="isTourActive"
+                            variant="solo"
+                            density="compact"
                             class="amount-input"
                             placeholder="Add amount"
                             v-model="bitcoinAmount" type="number"
@@ -25,9 +25,9 @@
                             @change="updateStore()"/>
             </v-col>
             <v-col cols="4" class="pa-0">
-              <v-row>
+              <v-row class="ma-0">
                 <v-col cols="5" class="pa-0">
-                  <v-img src="@/assets/exchange/btc.png" height="20" contain/>
+                  <v-img :src="require('@/assets/exchange/btc.png')" height="20" contain/>
                 </v-col>
                 <v-col cols="7" class="pa-0 d-flex align-center">
                   <span>{{environmentContext.getBtcTicker()}}</span>
@@ -36,20 +36,20 @@
             </v-col>
           </v-col>
           <v-col cols="1" class="d-flex justify-center">
-            <v-icon color="#000">mdi-arrow-right</v-icon>
+            <v-icon :icon="mdiArrowRight" color="#000"></v-icon>
           </v-col>
           <v-col cols="4" class="pa-0 input-box-flat">
             <v-col cols="8" class="pa-0 pl-1">
               <v-text-field
               class="amount-input"
-              placeholder="0"
               solo hide-details full-width single-line flat readonly
+              variant="plain"
                             v-model="rbtcAmount" type="number"/>
             </v-col>
             <v-col cols="4" class="pa-0">
-              <v-row>
+              <v-row class="ma-0">
                 <v-col cols="5" class="pa-0">
-                  <v-img src="@/assets/exchange/rbtc.png" height="20" contain/>
+                  <v-img :src="require('@/assets/exchange/rbtc.png')" height="20" contain/>
                 </v-col>
                 <v-col cols="7" class="pa-0 d-flex align-center">
                   <span>{{environmentContext.getRbtcTicker()}}</span>
@@ -57,9 +57,10 @@
               </v-row>
             </v-col>
           </v-col>
+          <v-col/>
         </v-row>
-        <v-col cols="4" class="pa-0 pt-2 pl-1">
-          <v-row class="derive-button mx-0 d-flex justify-center">
+        <v-col cols="4" class="pa-0">
+          <v-row class="derive-button ma-0 d-flex justify-center">
             <v-btn
               :disabled="!enableButton"
               outlined rounded
@@ -71,7 +72,7 @@
             </v-btn>
           </v-row>
         </v-col>
-        <v-row class="pl-1 mx-0" style="min-height: 17px;">
+        <v-row class="pt-1 ma-0" style="min-height: 17px;">
           <span v-if="stepState === 'error'" class="yellowish">
             {{amountErrorMessage}}
           </span>
@@ -83,208 +84,216 @@
 
 <script lang="ts">
 import {
-  Component, Emit, Prop, Vue, Watch,
-} from 'vue-property-decorator';
-import { Action, Getter, State } from 'vuex-class';
+  computed, ref, watch, defineComponent,
+} from 'vue';
+import { mdiArrowRight } from '@mdi/js';
 import SatoshiBig from '@/common/types/SatoshiBig';
-import { BtcAccount, PegInTxState } from '@/common/types/pegInTx';
+import {
+  BtcAccount,
+  MiningSpeedFee,
+  PeginConfiguration,
+} from '@/common/types/pegInTx';
 import * as constants from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { isBTCAmountValidRegex } from '@/common/utils';
+import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
+import { FeeAmountData } from '@/common/types';
+import { pegInTx } from '@/pegin/store';
 
-@Component({
-})
-export default class BtcInputAmount extends Vue {
-  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+export default defineComponent({
+  name: 'BtcInputAmount',
+  props: {
+    enableButton: Boolean,
+  },
+  setup(props, context) {
+    const enableButton = ref(props.enableButton);
+    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+    const focus = ref(false);
+    const amountStyle = ref('');
+    const bitcoinAmount = ref('');
+    const stepState = ref<'unused' | 'done' | 'error'>('unused');
 
-  focus = false;
+    const calculatedFees = useStateAttribute<FeeAmountData>('pegInTx', 'calculatedFees');
+    const selectedFee = useStateAttribute<MiningSpeedFee>('pegInTx', 'selectedFee');
+    const selectedAccount = useStateAttribute<BtcAccount>('pegInTx', 'selectedAccount');
+    const peginConfiguration = useStateAttribute<PeginConfiguration>('pegInTx', 'peginConfiguration');
+    const amountToTransfer = useStateAttribute<SatoshiBig>('pegInTx', 'amountToTransfer');
+    const isValidAmountToTransfer = useStateAttribute<boolean>('pegInTx', 'isValidAmountToTransfer');
 
-  amountStyle = '';
+    const setBtcAmount = useAction('pegInTx', constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER);
+    const calculateTxFee = useAction('pegInTx', constants.PEGIN_TX_CALCULATE_TX_FEE);
+    const setIsValidAmount = useAction('pegInTx', constants.PEGIN_TX_ADD_IS_VALID_AMOUNT);
+    const selectedAccountBalance = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SELECTED_BALANCE);
+    const enoughBalanceSelectedFee = useGetter<boolean>('pegInTx', constants.PEGIN_TX_GET_ENOUGH_FEE_VALUE);
 
-  bitcoinAmount = '';
+    const isBTCAmountValidNumberRegex = computed(() => isBTCAmountValidRegex(bitcoinAmount.value));
 
-  stepState: 'unused' | 'done' | 'error' = 'unused';
+    const rbtcAmount = computed(() => bitcoinAmount.value);
 
-  @Prop() enableButton !: boolean;
+    const safeAmount = computed((): SatoshiBig => new SatoshiBig(bitcoinAmount.value, 'btc'));
 
-  @Prop() isTourActive !: boolean;
+    const safeTxFee = computed((): SatoshiBig => {
+      let fee = new SatoshiBig('0', 'satoshi');
+      switch (selectedFee.value) {
+        case constants.BITCOIN_AVERAGE_FEE_LEVEL:
+          fee = calculatedFees.value.average.amount;
+          break;
+        case constants.BITCOIN_FAST_FEE_LEVEL:
+          fee = calculatedFees.value.fast.amount;
+          break;
+        case constants.BITCOIN_SLOW_FEE_LEVEL:
+          fee = calculatedFees.value.slow.amount;
+          break;
+        default:
+          break;
+      }
+      return fee;
+    });
 
-  @State('pegInTx') pegInTxState!: PegInTxState;
+    const amountErrorMessage = computed(() => { // mayor rework
+      const feePlusAmount: SatoshiBig = safeAmount.value.plus(safeTxFee.value);
+      const minValue: SatoshiBig = new SatoshiBig(peginConfiguration.value.minValue, 'satoshi');
+      const maxValue: SatoshiBig = new SatoshiBig(peginConfiguration.value.maxValue, 'satoshi');
+      if (selectedAccountBalance.value.eq('0') && !isValidAmountToTransfer.value) {
+        return 'Selected account has no balance';
+      }
+      if (!selectedAccountBalance) {
+        return 'Please, select account first';
+      }
+      if (!selectedAccount.value) {
+        return 'Please, select an account first';
+      }
+      if (bitcoinAmount.value.toString() === '') {
+        return 'Please, enter an amount';
+      }
+      if (bitcoinAmount.value.toString() === '0') {
+        return 'Please, enter an amount';
+      }
+      if (!isBTCAmountValidNumberRegex.value) {
+        return 'The amount must be a valid Bitcoin value';
+      }
+      if (safeAmount.value.lt(minValue)) {
+        return `The minimum accepted value is ${minValue.toBTCTrimmedString()} ${environmentContext.getBtcTicker()}`;
+      }
+      if (feePlusAmount.gte(selectedAccountBalance.value)) {
+        return 'You don\'t have the balance for this amount';
+      }
+      if (!enoughBalanceSelectedFee) {
+        return 'The selected fee does not satisfy the minimum required by the network';
+      }
+      if (safeAmount.value.gt(maxValue)) {
+        return `The maximum accepted value is ${maxValue.toBTCTrimmedString()} ${environmentContext.getBtcTicker()}`;
+      }
+      return 'Invalid format';
+    });
 
-  @Action(constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER, { namespace: 'pegInTx' }) setBtcAmount !: (amount: SatoshiBig) => void;
-
-  @Action(constants.PEGIN_TX_CALCULATE_TX_FEE, { namespace: 'pegInTx' }) calculateTxFee !: () => Promise<void>;
-
-  @Action(constants.PEGIN_TX_ADD_IS_VALID_AMOUNT, { namespace: 'pegInTx' }) setIsValidAmount !: (isValid: boolean) => void;
-
-  @Getter(constants.PEGIN_TX_GET_SELECTED_BALANCE, { namespace: 'pegInTx' }) selectedAccountBalance!: SatoshiBig;
-
-  @Getter(constants.PEGIN_TX_SELECT_ACCOUNT_TYPE, { namespace: 'pegInTx' }) selectAccount !: (accountType: BtcAccount) => void;
-
-  @Getter(constants.PEGIN_TX_GET_ENOUGH_FEE_VALUE, { namespace: 'pegInTx' }) enoughBalanceSelectedFee !: boolean;
-
-  get isBTCAmountValidNumberRegex() {
-    return isBTCAmountValidRegex(this.bitcoinAmount);
-  }
-
-  get rbtcAmount() {
-    return this.bitcoinAmount;
-  }
-
-  get safeAmount(): SatoshiBig {
-    return new SatoshiBig(this.bitcoinAmount, 'btc');
-  }
-
-  async setMax() {
-    this.fillMaxValueAvailable();
-    this.calculateTxFee()
-      .then(() => {
-        this.fillMaxValueAvailable();
-        this.updateStore();
-      })
-      .catch(console.error);
-  }
-
-  fillMaxValueAvailable() {
-    const tempValue = this.selectedAccountBalance.minus(this.safeTxFee);
-    this.bitcoinAmount = tempValue.toBTCTrimmedString();
-    this.pegInTxState.amountToTransfer = tempValue;
-    this.pegInTxState.isValidAmountToTransfer = this.selectedAccountBalance.gt('0');
-  }
-
-  get amountErrorMessage() { // mayor rework
-    const feePlusAmount: SatoshiBig = this.safeAmount.plus(this.safeTxFee);
-    const minValue: SatoshiBig = new SatoshiBig(this.pegInTxState.peginConfiguration.minValue, 'satoshi');
-    const maxValue: SatoshiBig = new SatoshiBig(this.pegInTxState.peginConfiguration.maxValue, 'satoshi');
-    if (this.selectedAccountBalance.eq('0') && !this.pegInTxState.isValidAmountToTransfer) {
-      return 'Selected account has no balance';
-    }
-    if (!this.selectedAccountBalance) {
-      return 'Please, select account first';
-    }
-    if (!this.pegInTxState.selectedAccount) {
-      return 'Please, select an account first';
-    }
-    if (this.bitcoinAmount.toString() === '') {
-      return 'Please, enter an amount';
-    }
-    if (this.bitcoinAmount.toString() === '0') {
-      return 'Please, enter an amount';
-    }
-    if (!this.isBTCAmountValidNumberRegex) {
-      return 'The amount must be a valid Bitcoin value';
-    }
-    if (this.safeAmount.lt(minValue)) {
-      return `The minimum accepted value is ${minValue.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
-    }
-    if (feePlusAmount.gte(this.selectedAccountBalance)) {
-      return 'You don\'t have the balance for this amount';
-    }
-    if (!this.enoughBalanceSelectedFee) {
-      return 'The selected fee does not satisfy the minimum required by the network';
-    }
-    if (this.safeAmount.gt(maxValue)) {
-      return `The maximum accepted value is ${maxValue.toBTCTrimmedString()} ${this.environmentContext.getBtcTicker()}`;
-    }
-    return 'Invalid format';
-  }
-
-  get safeTxFee(): SatoshiBig {
-    let fee = new SatoshiBig('0', 'satoshi');
-    switch (this.pegInTxState.selectedFee) {
-      case constants.BITCOIN_AVERAGE_FEE_LEVEL:
-        fee = this.pegInTxState.calculatedFees.average.amount;
-        break;
-      case constants.BITCOIN_FAST_FEE_LEVEL:
-        fee = this.pegInTxState.calculatedFees.fast.amount;
-        break;
-      case constants.BITCOIN_SLOW_FEE_LEVEL:
-        fee = this.pegInTxState.calculatedFees.slow.amount;
-        break;
-      default:
-        break;
-    }
-    return fee;
-  }
-
-  get insufficientAmount() {
-    const feePlusAmount: SatoshiBig = this.safeAmount.plus(this.safeTxFee);
-    const minValue: SatoshiBig = new SatoshiBig(this.pegInTxState.peginConfiguration.minValue, 'satoshi');
-    const maxValue: SatoshiBig = new SatoshiBig(this.pegInTxState.peginConfiguration.maxValue, 'satoshi');
-    if (this.safeAmount.lte('0')
-      || feePlusAmount.gt(this.selectedAccountBalance)
-      || this.safeAmount.lt(minValue)
-      || this.safeAmount.gt(maxValue)) {
-      return true;
-    }
-    if (this.safeAmount.gt('0') && feePlusAmount.lte(this.selectedAccountBalance)) {
+    const insufficientAmount = computed(() => {
+      const feePlusAmount: SatoshiBig = safeAmount.value.plus(safeTxFee.value);
+      const minValue: SatoshiBig = new SatoshiBig(peginConfiguration.value.minValue, 'satoshi');
+      const maxValue: SatoshiBig = new SatoshiBig(peginConfiguration.value.maxValue, 'satoshi');
+      if (safeAmount.value.lte('0')
+        || feePlusAmount.gt(selectedAccountBalance.value)
+        || safeAmount.value.lt(minValue)
+        || safeAmount.value.gt(maxValue)) {
+        return true;
+      }
+      if (safeAmount.value.gt('0') && feePlusAmount.lte(selectedAccountBalance.value)) {
+        return false;
+      }
       return false;
+    });
+
+    function blockLetterKeyDown(e: KeyboardEvent) {
+      if (bitcoinAmount.value.toString().length > 15
+        && !(e.key === 'Backspace'
+          || e.key === 'Delete'
+          || e.key === 'Home'
+          || e.key === 'End'
+          || e.key === 'ArrowRight'
+          || e.key === 'ArrowLeft')) e.preventDefault();
+      if (e.key === 'e') e.preventDefault();
+      if (e.key === '+') e.preventDefault();
+      if (e.key === '-') e.preventDefault();
     }
-    return false;
-  }
 
-  blockLetterKeyDown(e: KeyboardEvent) {
-    if (this.bitcoinAmount.toString().length > 15
-      && !(e.key === 'Backspace'
-        || e.key === 'Delete'
-        || e.key === 'Home'
-        || e.key === 'End'
-        || e.key === 'ArrowRight'
-        || e.key === 'ArrowLeft')) e.preventDefault();
-    if (e.key === 'e') e.preventDefault();
-    if (e.key === '+') e.preventDefault();
-    if (e.key === '-') e.preventDefault();
-  }
-
-  @Emit()
-  updateStore() {
-    this.setBtcAmount(this.safeAmount);
-    this.checkStep();
-    this.calculateTxFee()
-      .then(() => {
-        this.checkStep();
-      })
-      .catch(console.error);
-  }
-
-  @Watch('pegInTxState.selectedFee')
-  @Emit('stepState')
-  checkStep() {
-    this.stepState = this.isBTCAmountValidNumberRegex && !this.insufficientAmount
-      ? 'done' : 'error';
-    this.setIsValidAmount(this.stepState === 'done');
-    return this.stepState;
-  }
-
-  @Watch('bitcoinAmount')
-  watchBitcoinAmount() {
-    this.checkStep();
-    this.amountStyle = this.stepState === 'done' ? 'black-box' : 'yellow-box';
-  }
-
-  @Watch('selectedAccountBalance')
-  watchBTCAccountTypeSelected() {
-    if (this.stepState !== 'unused') {
-      this.checkStep();
-      this.amountStyle = this.stepState === 'done' ? 'black-box' : 'yellow-box';
+    function checkStep() {
+      stepState.value = isBTCAmountValidNumberRegex.value && !insufficientAmount.value
+        ? 'done' : 'error';
+      setIsValidAmount(stepState.value === 'done');
+      context.emit('stepState', stepState.value);
     }
-  }
 
-  @Watch('state')
-  accountChanged() {
-    if (this.stepState !== 'unused') {
-      this.enableButton = true;
-      this.checkStep();
-      this.calculateTxFee();
-      this.amountStyle = this.stepState === 'done' ? 'black-box' : 'yellow-box';
+    function updateStore() {
+      setBtcAmount(safeAmount.value);
+      checkStep();
+      calculateTxFee()
+        .then(() => {
+          checkStep();
+        })
+        .catch(console.error);
     }
-  }
 
-  created() {
-    const isInitialValue = this.pegInTxState.amountToTransfer.toBTCString() === '0.00000000';
+    function fillMaxValueAvailable() {
+      const tempValue = selectedAccountBalance.value.minus(safeTxFee.value);
+      bitcoinAmount.value = tempValue.toBTCTrimmedString();
+      setBtcAmount(tempValue);
+      setIsValidAmount(selectedAccountBalance.value.gt('0'));
+    }
+
+    async function setMax() {
+      fillMaxValueAvailable();
+      calculateTxFee()
+        .then(() => {
+          fillMaxValueAvailable();
+          updateStore();
+        })
+        .catch(console.error);
+    }
+
+    function watchBitcoinAmount() {
+      checkStep();
+      amountStyle.value = stepState.value === 'done' ? 'black-box' : 'yellow-box';
+    }
+
+    function watchBTCAccountTypeSelected() {
+      if (stepState.value !== 'unused') {
+        checkStep();
+        amountStyle.value = stepState.value === 'done' ? 'black-box' : 'yellow-box';
+      }
+    }
+
+    function accountChanged() {
+      if (stepState.value !== 'unused') {
+        enableButton.value = true;
+        checkStep();
+        calculateTxFee();
+        amountStyle.value = stepState.value === 'done' ? 'black-box' : 'yellow-box';
+      }
+    }
+
+    watch(selectedFee, checkStep);
+    watch(bitcoinAmount, watchBitcoinAmount);
+    watch(selectedAccountBalance, watchBTCAccountTypeSelected);
+    watch(pegInTx, accountChanged);
+
+    const isInitialValue = amountToTransfer.value.toBTCString() === '0.00000000';
     if (!isInitialValue) {
-      this.bitcoinAmount = this.pegInTxState.amountToTransfer.toBTCString();
+      bitcoinAmount.value = amountToTransfer.value.toBTCString();
     }
-  }
-}
+
+    return {
+      focus,
+      environmentContext,
+      amountStyle,
+      bitcoinAmount,
+      stepState,
+      blockLetterKeyDown,
+      updateStore,
+      rbtcAmount,
+      amountErrorMessage,
+      mdiArrowRight,
+      setMax,
+    };
+  },
+});
 </script>

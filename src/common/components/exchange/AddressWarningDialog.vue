@@ -1,12 +1,12 @@
 <template>
-  <v-dialog v-model="showDialog" width="470" persistent>
+  <v-dialog v-model="show" width="470" persistent>
     <v-card class="container dialog">
       <v-row class="mx-0 mt-3 mb-3 d-flex justify-center">
         <h2>WARNING</h2>
       </v-row>
       <v-col cols="12" align-self="center" class="pt-0">
         <v-row class="mx-0 mt-4 mb-5 d-flex justify-center">
-          <v-img :src="iconPath" height="50" contain />
+          <v-img :src="require('@/assets/warning.png')" height="50" contain />
         </v-row>
         <v-col offset="1" cols="10">
           <p class="justify-center">
@@ -18,7 +18,7 @@
         <v-row class="mx-0 mb-8 mt-3" justify="space-around">
           <v-col class="d-flex justify-center">
             <v-btn width="100" height="40" dense
-                   outlined rounded color="#000000" @click="closeDialog">
+                   outlined rounded color="#000000" @click="cancel">
               <span class="blackish">cancel</span>
             </v-btn>
           </v-col>
@@ -34,30 +34,33 @@
 </template>
 
 <script lang="ts">
-import {
-  Component, Prop, Emit, Vue,
-} from 'vue-property-decorator';
-import WarningImage from '@/assets/warning.png';
+import { ref, defineComponent } from 'vue';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 
-@Component
-export default class AddressWarningDialog extends Vue {
-  @Prop() showDialog!: boolean;
+export default defineComponent({
+  name: 'AddressWarningDialog',
+  props: {
+    showDialog: Boolean,
+    address: String,
+  },
+  setup(props, context) {
+    const show = ref(props.showDialog);
+    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
-  @Prop() address!: string;
+    function send() {
+      context.emit('continue', props.showDialog);
+    }
 
-  iconPath = WarningImage;
+    function cancel() {
+      context.emit('cancel', props.showDialog);
+    }
 
-  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-
-  @Emit('continue')
-  send() {
-    return this.showDialog;
-  }
-
-  @Emit('cancel')
-  closeDialog() {
-    return this.showDialog;
-  }
-}
+    return {
+      environmentContext,
+      send,
+      cancel,
+      show,
+    };
+  },
+});
 </script>

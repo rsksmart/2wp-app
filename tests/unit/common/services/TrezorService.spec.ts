@@ -1,12 +1,12 @@
-import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
-import * as constants from '@/common/store/constants';
 import TrezorConnect, {
   BundledResponse, Address, Success,
 } from 'trezor-connect';
-import TrezorService from '@/common/services/TrezorService';
 import sinon from 'sinon';
-import { WalletService } from '../../../src/common/services';
-import { TrezorServiceMockedData } from '../../utils/TrezorServiceMockedData';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import * as constants from '@/common/store/constants';
+import TrezorService from '@/common/services/TrezorService';
+import { WalletService } from '../../../../src/common/services';
+import { TrezorServiceMockedData } from '../../../utils/TrezorServiceMockedData';
 
 const initEnvironment = () => {
   const defaultEnvironmentVariables = {

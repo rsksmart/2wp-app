@@ -15,7 +15,7 @@
         Press <strong>Send</strong> when you finish.
       </p>
     </v-row>
-    <v-row id="instructions-trezor" justify="center" class="mx-0">
+    <v-row id="instructions-trezor" justify="center" class="ma-0">
       <v-col cols="4">
       </v-col>
       <v-col cols="4">
@@ -28,30 +28,25 @@
       <v-col cols="4">
       </v-col>
     </v-row>
-    <v-row justify="center" class="mx-0">
+    <v-row justify="center" class="ma-0">
       <v-col class="px-0" cols="5">
         <fieldset class="confirmation-box">
-          <legend align="center" class="px-4">See on liquality</legend>
-          <v-row justify="left" class="mt-5 mx-3 line-box-bottom">
+          <legend class="px-4">See on liquality</legend>
+          <v-row justify="start" class="mt-5 mx-3 line-box-bottom">
             <v-col cols="2" class="d-flex flex-column align-left px-0">
               <h3>
                 {{
-                  converAmount(this.pegInTxState.normalizedTx.outputs[0].amount)
+                  convertAmount(pegInTxState.normalizedTx.outputs[0].amount)
                 }}
               </h3>
             </v-col>
-            <v-col cols="10" class="d-flex px-0 flex-column align-left">
-              <v-tooltip right>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-icon
-                    small
-                    class="icon-left"
-                    color="teal darken-2"
-                    v-bind="attrs"
-                    v-on="on"
-                  >
-                    mdi-information
-                  </v-icon>
+            <v-col cols="10" class="d-flex px-0 flex-column align-left justify-center">
+              <v-tooltip>
+                <template v-slot:activator="{props}">
+                  <v-btn icon size="small" variant="plain" v-bind="props" density="compact">
+                    <v-icon class="tooltip-info-icon" size="small" :icon="mdiInformation">
+                    </v-icon>
+                  </v-btn>
                 </template>
                 <p class="tooltip-form mb-0">
                  This output only contains metadata required by
@@ -62,30 +57,30 @@
             </v-col>
           </v-row>
 
-           <v-row justify="left" class="mx-3 line-box-bottom">
+           <v-row justify="start" class="mx-3 line-box-bottom">
             <v-col class="pa-0 pb-2 d-flex flex-column align-left">
               <span class="breakable-address my-5">
-                {{ this.pegInTxState.normalizedTx.outputs[1].address }}
+                {{ pegInTxState.normalizedTx.outputs[1].address }}
               </span>
               <h3>
                 {{
-                  converAmount(this.pegInTxState.normalizedTx.outputs[1].amount)
+                  convertAmount(pegInTxState.normalizedTx.outputs[1].amount)
                 }}
               </h3>
             </v-col>
           </v-row>
 
-          <v-row v-if="this.pegInTxState.normalizedTx.outputs[2]"
-          justify="left" class="mx-3 line-box-bottom">
+          <v-row v-if="pegInTxState.normalizedTx.outputs[2]"
+          justify="start" class="mx-3 line-box-bottom">
             <v-col class="pa-0 pb-4 d-flex flex-column align-left">
               <span class="breakable-address my-5">
-                {{ this.pegInTxState.normalizedTx.outputs[2].address }}
+                {{ pegInTxState.normalizedTx.outputs[2].address }}
               </span>
               <div class="d-flex">
                 <div class="liquality-info">
                   <h3>
                     {{
-                      converAmount(this.pegInTxState.normalizedTx.outputs[2].amount)
+                      convertAmount(pegInTxState.normalizedTx.outputs[2].amount)
                     }}
                   </h3>
                 </div>
@@ -98,8 +93,8 @@
             </v-col>
           </v-row>
 
-          <v-row justify="left" class="mx-2 my-3">
-            <v-col class="pa-0 pb-2 d-flex flex-column align-left">
+          <v-row justify="start" class="mx-2 my-3">
+            <v-col class="pa-0 py-2 d-flex flex-column align-left">
               <v-row class="pa-0 ma-0">
                 <span class="grayish">
                 Fee: {{ fee + ' ' + environmentContext.getBtcTicker() }}
@@ -129,7 +124,7 @@
     </v-row>
     <v-row v-if="confirmTxState.matches(['idle', 'error', 'goingHome'])" class="ma-0">
       <v-col cols="2" class="d-flex justify-start ma-0 py-0">
-        <v-btn rounded outlined color="#000000" width="110" @click="toPegInForm"
+        <v-btn rounded variant="outlined" color="#000000" width="110" @click="toPegInForm"
                :disabled="confirmTxState.matches(['error', 'goingHome', 'loading'])">
           <span>Back</span>
         </v-btn>
@@ -156,10 +151,9 @@
 
 <script lang="ts">
 import {
-  Component, Emit, Prop,
-  Vue,
-} from 'vue-property-decorator';
-import { Getter, State, Action } from 'vuex-class';
+  computed, ref, PropType, defineComponent,
+} from 'vue';
+import { mdiInformation } from '@mdi/js';
 import {
   LiqualitySignedTx,
   LiqualityTx, NormalizedSummary,
@@ -176,144 +170,97 @@ import LiqualityTxBuilder from '@/pegin/middleware/TxBuilder/LiqualityTxBuilder'
 import { TxStatusType } from '@/common/types/store';
 import { TxSummaryOrientation } from '@/common/types/Status';
 import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
+import { useGetter, useState } from '@/common/store/helper';
 
-@Component({
+export default defineComponent({
+  name: 'ConfirmLiqualityTransaction',
   components: {
     TxSummaryFixed,
     AdvancedData,
   },
-})
+  props: {
+    confirmTxState: {
+      type: Object as PropType<Machine < 'idle' | 'loading' | 'error' | 'goingHome' >>,
+      required: true,
+    },
+    txBuilder: {
+      type: Object as PropType<LiqualityTxBuilder>,
+      required: true,
+    },
+  },
+  setup(props, context) {
+    const txId = ref('');
+    const rawTx = ref('');
+    const typeSummary = TxStatusType.PEGIN;
+    const orientationSummary = TxSummaryOrientation.HORIZONTAL;
+    const VALUE_INCOMPLETE_MESSAGE = 'Not Found';
+    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
-export default class ConfirmLiqualityTransaction extends Vue {
-  txId = '';
+    const pegInTxState = useState<PegInTxState>('pegInTx');
+    const walletService = useGetter<WalletService>('pegInTx', constants.PEGIN_TX_GET_WALLET_SERVICE);
+    const accountBalanceText = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_ACCOUNT_BALANCE_TEXT);
+    const safeFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
 
-  rawTx = '';
+    const feeBTC = computed(():SatoshiBig => safeFee.value);
 
-  typeSummary = TxStatusType.PEGIN;
+    const fee = computed((): string => {
+      if (!feeBTC.value) return VALUE_INCOMPLETE_MESSAGE;
+      return feeBTC.value.toBTCString();
+    });
 
-  orientationSummary = TxSummaryOrientation.HORIZONTAL;
+    const confirmLiqualityTxSummary = computed((): NormalizedSummary => ({
+      amountFromString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
+      amountReceivedString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
+      fee: Number(safeFee.value.toBTCTrimmedString()),
+      recipientAddress: pegInTxState.value.rskAddressSelected,
+      selectedAccount: accountBalanceText.value,
+      federationAddress: pegInTxState.value.peginConfiguration.federationAddress,
+    }));
 
-  @Prop() confirmTxState!: Machine<
-    'idle'
-    | 'loading'
-    | 'error'
-    | 'goingHome'
-    >;
-
-  VALUE_INCOMPLETE_MESSAGE = 'Not Found';
-
-  @Prop() txBuilder!: LiqualityTxBuilder;
-
-  @State('pegInTx') pegInTxState!: PegInTxState;
-
-  @Action(constants.PEGIN_TX_STOP_ASKING_FOR_BALANCE, { namespace: 'pegInTx' }) stopAskingForBalance !: () => Promise<void>;
-
-  @Getter(constants.PEGIN_TX_GET_SAFE_TX_FEE, { namespace: 'pegInTx' }) safeFee!: SatoshiBig;
-
-  @Getter(constants.PEGIN_TX_GET_WALLET_SERVICE, { namespace: 'pegInTx' }) walletService!: WalletService;
-
-  @Getter(constants.PEGIN_TX_GET_ACCOUNT_BALANCE_TEXT, { namespace: 'pegInTx' }) accountBalanceText!: string;
-
-  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-
-  @Emit('successConfirmation')
-  async toTrackId() {
-    let txError = '';
-    this.confirmTxState.send('loading');
-    await this.walletService.stopAskingForBalance()
-      .then(() => this.txBuilder.buildTx(this.pegInTxState.normalizedTx))
-      .then((tx: LiqualityTx) => this.walletService.sign(tx) as Promise<LiqualitySignedTx>)
-      .then((liqualitySignedTx: LiqualitySignedTx) => ApiService
-        .broadcast(liqualitySignedTx.signedTx))
-      .then((txId) => {
-        this.txId = txId;
-      })
-      .catch((err) => {
-        this.confirmTxState.send('error');
-        txError = err.message;
-      });
-    return [txError, this.txId];
-  }
-
-  get feeBTC():SatoshiBig {
-    return this.safeFee;
-  }
-
-  get fee(): string {
-    if (!this.feeBTC) return this.VALUE_INCOMPLETE_MESSAGE;
-    return this.feeBTC.toBTCString();
-  }
-
-  backHome() {
-    this.confirmTxState.send('goingHome');
-    this.$router.go(0);
-  }
-
-  @Emit('toPegInForm')
-  async toPegInForm() {
-    this.confirmTxState.send('loading');
-    return 'PegInForm';
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  cropAddress(address: string):string {
-    return `${address.substr(0, 6)}...${address.substr(address.length - 6, address.length)}`;
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  splitString(s: string): string[] {
-    return s.match(/.{1,16}/g) ?? [];
-  }
-
-  converAmount(amount: string) {
-    const satoshiAmount = amount === '0' ? 0 : new SatoshiBig(amount, 'satoshi').toBTCString();
-    return `${satoshiAmount} ${this.environmentContext.getBtcTicker()}`;
-  }
-
-  get opReturnData(): string {
-    const opReturnDataOutput = this.pegInTxState.normalizedTx.outputs[0] ?? { script_type: '' };
-    return opReturnDataOutput.op_return_data
-      ? `${opReturnDataOutput.op_return_data.substr(0, 45)}...`
-      : 'OP_RETURN data not found';
-  }
-
-  get rskFederationAddress():string {
-    return this.pegInTxState.normalizedTx.outputs[1]?.address?.trim() ?? `${this.environmentContext.getBtcText()} Powpeg address not found`;
-  }
-
-  get changeAddress(): string {
-    const [, , change] = this.pegInTxState.normalizedTx.outputs;
-    if (change && change.address) {
-      return change.address;
+    async function toTrackId() {
+      let txError = '';
+      props.confirmTxState.send('loading');
+      await walletService.value.stopAskingForBalance()
+        .then(() => props.txBuilder.buildTx(pegInTxState.value.normalizedTx))
+        .then((tx: LiqualityTx) => walletService.value.sign(tx) as Promise<LiqualitySignedTx>)
+        .then((liqualitySignedTx: LiqualitySignedTx) => ApiService
+          .broadcast(liqualitySignedTx.signedTx))
+        .then((txHash) => {
+          txId.value = txHash;
+        })
+        .catch((err) => {
+          props.confirmTxState.send('error');
+          txError = err.message;
+        });
+      context.emit('successConfirmation', [txError, txId.value]);
     }
-    return 'Change address not found';
-  }
 
-  get changeAmount(): string {
-    const changeAmount = new SatoshiBig(this.pegInTxState.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
-    return changeAmount.toBTCTrimmedString();
-  }
+    async function toPegInForm() {
+      props.confirmTxState.send('loading');
+      context.emit('toPegInForm', 'PegInForm');
+    }
 
-  get computedFullAmount(): string {
-    const changeAmount = new SatoshiBig(this.pegInTxState.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
-    return this.pegInTxState.amountToTransfer.plus(this.safeFee)
-      .plus(changeAmount)
-      .toBTCTrimmedString();
-  }
+    function convertAmount(amount: string) {
+      const satoshiAmount = amount === '0' ? 0 : new SatoshiBig(amount, 'satoshi').toBTCString();
+      return `${satoshiAmount} ${environmentContext.getBtcTicker()}`;
+    }
 
-  get confirmLiqualityTxSummary(): NormalizedSummary {
+    // eslint-disable-next-line
+    props.txBuilder.getUnsignedRawTx(pegInTxState.value.normalizedTx).then((tx) => rawTx.value = tx);
+
     return {
-      amountFromString: this.pegInTxState.amountToTransfer.toBTCTrimmedString(),
-      amountReceivedString: this.pegInTxState.amountToTransfer.toBTCTrimmedString(),
-      fee: Number(this.safeFee.toBTCTrimmedString()),
-      recipientAddress: this.pegInTxState.rskAddressSelected,
-      selectedAccount: this.accountBalanceText,
-      federationAddress: this.pegInTxState.peginConfiguration.federationAddress,
+      convertAmount,
+      pegInTxState,
+      fee,
+      environmentContext,
+      confirmLiqualityTxSummary,
+      typeSummary,
+      orientationSummary,
+      rawTx,
+      toPegInForm,
+      toTrackId,
+      mdiInformation,
     };
-  }
-
-  async created() {
-    this.rawTx = await this.txBuilder.getUnsignedRawTx(this.pegInTxState.normalizedTx);
-  }
-}
+  },
+});
 </script>

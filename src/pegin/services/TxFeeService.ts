@@ -52,8 +52,10 @@ export default class TxFeeService {
   }
 
   private static selectOptimalInputs(
-    utxoList: Utxo[], amountToSendInSatoshis: SatoshiBig,
-    baseFee: SatoshiBig, feePerInput: SatoshiBig,
+    utxoList: Utxo[],
+    amountToSendInSatoshis: SatoshiBig,
+    baseFee: SatoshiBig,
+    feePerInput: SatoshiBig,
   ): {selectedUtxoList: Utxo[]; enoughBalance: boolean} {
     const inputs: Utxo[] = [];
     let remainingSatoshisToBePaid = amountToSendInSatoshis.plus(baseFee);

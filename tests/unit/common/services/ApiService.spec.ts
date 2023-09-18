@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import axios, { AxiosHeaders, AxiosResponse } from 'axios';
+import sinon from 'sinon';
 import {
   NormalizedInput, NormalizedOutput, NormalizedTx, SatoshiBig,
 } from '@/common/types';
 import ApiService from '@/common/services/ApiService';
-import axios, { AxiosResponse } from 'axios';
-import sinon from 'sinon';
 import { BridgeService } from '@/common/services/BridgeService';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import * as constants from '@/common/store/constants';
-import { ApiInformation } from '../../../src/common/types/ApiInformation';
+import { ApiInformation } from '../../../../src/common/types/ApiInformation';
 
 const powPegAddress = 'powPegAddress';
 const outputs1: NormalizedOutput[] = [
@@ -171,7 +171,7 @@ function getNormalizedTx(inputsSet: NormalizedInput[], outputsSet: NormalizedOut
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: {},
+        config: { headers: new AxiosHeaders() },
       },
     );
   });

@@ -1,8 +1,8 @@
 import { Module } from 'vuex';
+import moment from 'moment';
 import {
   RootState, SatoshiBig, TxStatus, TxStatusType,
 } from '@/common/types';
-import moment from 'moment';
 import { mutations } from './mutations';
 import { actions } from './actions';
 import { getters } from './getters';

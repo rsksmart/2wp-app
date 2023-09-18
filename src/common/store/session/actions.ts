@@ -1,17 +1,17 @@
-import Vue from 'vue';
 import Web3 from 'web3';
 import { ActionTree } from 'vuex';
 import RLogin from '@rsksmart/rlogin';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import { trezorProviderOptions } from '@rsksmart/rlogin-trezor-provider';
 import { ledgerProviderOptions } from '@rsksmart/rlogin-ledger-provider';
+import axios, { AxiosResponse } from 'axios';
 import * as constants from '@/common/store/constants';
 import {
   TransactionType, SessionState, RootState, WeiBig,
 } from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { getBtcAddressFromSignedMessage } from '@/common/utils';
-import axios, { AxiosResponse } from 'axios';
+import { useGlobals } from '@/main';
 
 export const actions: ActionTree<SessionState, RootState> = {
   [constants.SESSION_CONNECT_WEB3]: ({ commit, state }): Promise<void> => {
@@ -63,12 +63,11 @@ export const actions: ActionTree<SessionState, RootState> = {
       rLogin.connect()
         .then((rLoginResponse) => {
           const web3 = new Web3(rLoginResponse.provider);
-          Vue.prototype.$web3 = web3;
           commit(constants.SESSION_IS_ENABLED, true);
           commit(constants.SESSION_SET_RLOGIN, rLoginResponse);
           commit(constants.SESSION_SET_RLOGIN_INSTANCE, rLogin);
           commit(constants.SESSION_SET_WEB3_INSTANCE, web3);
-          return Vue.prototype.$web3.eth.getAccounts();
+          return web3.eth.getAccounts();
         }).then((accounts) => {
           resolve(commit(constants.SESSION_SET_ACCOUNT, accounts[0]));
         })
@@ -80,11 +79,13 @@ export const actions: ActionTree<SessionState, RootState> = {
     });
   },
   [constants.WEB3_SESSION_GET_ACCOUNT]: async ({ commit }) => {
-    const accounts = await Vue.prototype.$web3.eth.getAccounts();
+    const { $web3 } = useGlobals();
+    const accounts = await $web3.eth.getAccounts();
     commit(constants.SESSION_SET_ACCOUNT, accounts[0]);
   },
   [constants.WEB3_SESSION_ADD_BALANCE]: async ({ commit, state }) => {
-    const balance = await Vue.prototype.$web3.eth.getBalance(state.account);
+    const { $web3 } = useGlobals();
+    const balance = await $web3.eth.getBalance(state.account as string);
     return commit(constants.WEB3_SESSION_SET_BALANCE, new WeiBig(balance, 'wei'));
   },
   [constants.WEB3_SESSION_CLEAR_ACCOUNT]: async ({ commit }) => {
@@ -109,6 +110,7 @@ export const actions: ActionTree<SessionState, RootState> = {
     .then((response: AxiosResponse) => {
       const [result] = response.data;
       commit(constants.SESSION_SET_BITCOIN_PRICE, result.current_price);
+      commit(constants.SESSION_SET_TX_TYPE, 'PEG_IN_TRANSACTION_TYPE');
     }),
   [constants.SESSION_CLEAR]: ({ commit }) => {
     commit(constants.SESSION_CLEAR_STATE);

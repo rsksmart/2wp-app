@@ -5,7 +5,7 @@ import * as constants from '@/common/store/constants';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { LedgerService, WalletService } from '@/common/services';
 import { BtcAccount, LedgerjsTransaction } from '@/common/types';
-import { mockedData } from '../../utils/mockedData';
+import { mockedData } from '../../../utils/mockedData';
 
 const initEnvironment = () => {
   const defaultEnvironmentVariables = {

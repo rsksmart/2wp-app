@@ -1,15 +1,14 @@
 import { ActionTree } from 'vuex';
+import Web3 from 'web3';
+import moment from 'moment';
 import {
   PegoutStatusDataModel,
   RootState, SatoshiBig, TxStatus, TxStatusType,
 } from '@/common/types';
-import Web3 from 'web3';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
-import moment from 'moment';
 import * as constants from '@/common/store/constants';
 import { ApiService } from '@/common/services';
 import { BridgeService } from '@/common/services/BridgeService';
-import { getEstimatedFee } from '@/common/utils';
 
 export const actions: ActionTree<TxStatus, RootState> = {
   [constants.STATUS_CLEAR]: ({ commit }) => {
@@ -31,10 +30,14 @@ export const actions: ActionTree<TxStatus, RootState> = {
       });
   },
   [constants.STATUS_GET_ESTIMATED_FEE]: ({ commit }) => {
-    getEstimatedFee()
-      .then((estimatedFee) => {
-        commit(constants.STATUS_SET_BTC_ESTIMATED_FEE, estimatedFee);
-      })
+    const bridgeService = new BridgeService();
+    Promise.all([
+      bridgeService.getEstimatedFeesForNextPegOutEvent(),
+      bridgeService.getQueuedPegoutsCount(),
+    ]).then(([nextPegoutCost, pegoutQueueCount]) => {
+      const estimatedFee = pegoutQueueCount > 0 ? nextPegoutCost / pegoutQueueCount : 0;
+      commit(constants.STATUS_SET_BTC_ESTIMATED_FEE, new SatoshiBig(estimatedFee, 'satoshi'));
+    })
       .catch(() => {
         commit(constants.STATUS_SET_BTC_ESTIMATED_FEE, new SatoshiBig(0, 'satoshi'));
       });

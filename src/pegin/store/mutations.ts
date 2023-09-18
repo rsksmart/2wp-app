@@ -66,9 +66,8 @@ export const mutations: MutationTree<PegInTxState> = {
   [constants.PEGIN_TX_SET_WALLET_SERVICE]: (state, walletService: WalletService) => {
     state.walletService = walletService;
   },
-  [constants.PEGIN_TX_WALLET_SERVICE_SUBSCRIBE]: (
-    state, subscriber: (balance: AccountBalance, addressList: WalletAddress[]) => void,
-  ) => {
+  [constants.PEGIN_TX_WALLET_SERVICE_SUBSCRIBE]:
+  (state, subscriber: (balance: AccountBalance, addressList: WalletAddress[]) => void) => {
     if (state.walletService) state.walletService.subscribe(subscriber);
   },
   [constants.PEGIN_TX_SET_LOADING_BALANCE]: (state, loadingBalance: boolean) => {

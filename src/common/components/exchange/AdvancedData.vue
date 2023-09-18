@@ -8,8 +8,8 @@
         <h3 class="text-center tx-text">Advanced data:</h3>
       </v-row>
       <v-row class="d-flex justify-center mb-n3">
-        <v-btn class="btn-focus-out" fab x-small outlined color="green" @click="switchExpand"
-               v-bind:class="[this.over ? 'expand-btn-active' : 'expand-btn-inactive']"
+        <v-btn class="btn-focus-out" size="x-small" variant="outlined" rounded @click="switchExpand"
+               v-bind:class="[over ? 'expand-btn-active' : 'expand-btn-inactive']"
                @mouseover="over = true" @mouseleave="over = false">
           <span class="content">
             {{ expanded ? '-' : '+'}}
@@ -35,28 +35,28 @@
 </template>
 
 <script lang="ts">
-import {
-  Component, Emit, Prop,
-  Vue,
-} from 'vue-property-decorator';
 
-@Component
-export default class AdvancedData extends Vue {
-  @Prop() initialExpand!: boolean;
+import { ref, defineComponent } from 'vue';
 
-  @Prop() rawTx!: string;
+export default defineComponent({
+  name: 'AdvancedData',
+  props: {
+    initialExpand: Boolean,
+    rawTx: String,
+  },
+  setup(props) {
+    const expanded = ref(props.initialExpand);
+    const over = ref(false);
 
-  expanded = false;
+    function switchExpand() {
+      expanded.value = !expanded.value;
+    }
 
-  over = false;
-
-  @Emit()
-  switchExpand() {
-    this.expanded = !this.expanded;
-  }
-
-  created() {
-    this.expanded = this.initialExpand;
-  }
-}
+    return {
+      expanded,
+      over,
+      switchExpand,
+    };
+  },
+});
 </script>

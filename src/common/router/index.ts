@@ -1,13 +1,10 @@
-import Vue from 'vue';
-import VueRouter, { RouteConfig } from 'vue-router';
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
+import { useStore } from 'vuex';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import Home from '@/common/views/Home.vue';
-import store from '@/common/store';
 import * as constants from '@/common/store/constants';
 
-Vue.use(VueRouter);
-
-const routes: Array<RouteConfig> = [
+const routes: Readonly<RouteRecordRaw[]> = [
   {
     path: '/',
     name: 'Home',
@@ -16,18 +13,19 @@ const routes: Array<RouteConfig> = [
   {
     path: '/status/txId/:txId',
     name: 'Status',
-    component: () => import(/* webpackChunkName: "transactions" */ '../../status/views/Status.vue'),
+    component: () => import(/* webpackChunkName: "status" */ '../../status/views/Status.vue'),
     props: (route) => ({ txIdProp: route.params.txId }),
   },
   {
     path: '/status',
     name: 'StatusSearch',
-    component: () => import(/* webpackChunkName: "status" */ '../../status/views/Status.vue'),
+    component:
+      () => import(/* webpackChunkName: "status-search" */ '../../status/views/Status.vue'),
   },
   {
     path: '/pegin',
     name: 'PegIn',
-    component: () => import(/* webpackChunkName: "transactions" */ '../../pegin/views/PegIn.vue'),
+    component: () => import(/* webpackChunkName: "pegin" */ '../../pegin/views/PegIn.vue'),
   },
   {
     path: '/pegout',
@@ -42,16 +40,20 @@ const routes: Array<RouteConfig> = [
   {
     path: '/pegin/success/:txId',
     name: 'Success',
-    component: () => import(/* webpackChunkName: "transactions" */ '../../pegin/views/Success.vue'),
+    component:
+      () => import(/* webpackChunkName: "pegin-success" */ '../../pegin/views/Success.vue'),
   },
 ];
 
-const router = new VueRouter({
-  mode: 'history',
-  base: EnvironmentAccessorService.getEnvironmentVariables().baseUrl,
+const history = createWebHistory(EnvironmentAccessorService.getEnvironmentVariables().baseUrl);
+
+const router = createRouter({
+  history,
   routes,
 });
+
 router.beforeResolve((to, from, next) => {
+  const store = useStore();
   store.dispatch(`view/${constants.VIEW_ADD_CURRENT_VIEW}`, to.name);
   const inTxFlow = store.getters[`web3Session/${constants.SESSION_IN_TX_FLOW}`];
   if (to.name === 'Create' && !inTxFlow) next({ name: 'Home' });

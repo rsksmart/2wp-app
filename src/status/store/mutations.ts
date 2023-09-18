@@ -1,9 +1,9 @@
 import { MutationTree } from 'vuex';
+import moment from 'moment/moment';
+import { Duration } from 'moment';
 import {
   SatoshiBig, TxStatus, TxStatusType,
 } from '@/common/types';
-import moment from 'moment/moment';
-import { Duration } from 'moment';
 import * as constants from '@/common/store/constants';
 
 export const mutations: MutationTree<TxStatus> = {

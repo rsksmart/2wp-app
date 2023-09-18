@@ -1,18 +1,15 @@
-import Vue from 'vue';
-import Vuex, { StoreOptions } from 'vuex';
+import { createStore, StoreOptions } from 'vuex';
 import { RootState } from '@/common/types';
-import { pegInTx } from '../../pegin/store/peginTx';
+import { status } from '@/status/store';
+import { pegInTx } from '@/pegin/store';
+import { pegOutTx } from '@/pegout/store/pegoutTx';
 import { web3Session } from './session';
 import { view } from './view';
-import { status } from '../../status/store/status';
-import { pegOutTx } from '../../pegout/store/pegoutTx';
-import { version } from '../../../package.json';
-
-Vue.use(Vuex);
+import pkg from '../../../package.json';
 
 const store: StoreOptions<RootState> = {
   state: {
-    version: version || '0',
+    version: pkg.version || '0',
   },
   getters: {
     appVersion: (state) => state.version,
@@ -26,4 +23,4 @@ const store: StoreOptions<RootState> = {
   },
 };
 
-export default new Vuex.Store<RootState>(store);
+export default createStore(store);

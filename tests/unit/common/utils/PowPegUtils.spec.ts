@@ -1,7 +1,7 @@
-import { NormalizedOutput } from '../../../src/common/types';
-import { areValidOutputs, isValidPowPegOutput } from '../../../src/common/utils';
-import * as constants from '../../../src/common/store/constants';
-import { EnvironmentAccessorService } from '../../../src/common/services/enviroment-accessor.service';
+import { NormalizedOutput } from '@/common/types';
+import { areValidOutputs, isValidPowPegOutput } from '@/common/utils';
+import * as constants from '@/common/store/constants';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
 const defaultEnvironmentVariables = {
   vueAppCoin: constants.BTC_NETWORK_TESTNET,
@@ -57,8 +57,12 @@ describe('Function: areValidOutputs', () => {
       address: powPegAddress,
     };
     const result = areValidOutputs(
-      [normalizedOutput1, normalizedOutput2], powPegAddress,
-      '2', userChangeAddress, recipientAddress, userRefundAddress,
+      [normalizedOutput1, normalizedOutput2],
+      powPegAddress,
+      '2',
+      userChangeAddress,
+      recipientAddress,
+      userRefundAddress,
     );
     expect(result.valid).toBe(true);
   });
@@ -77,7 +81,15 @@ describe('Function: areValidOutputs', () => {
     };
     const result = areValidOutputs(
       [normalizedOutput1, normalizedOutput2, normalizedOutput3],
-      powPegAddress, '2', userChangeAddress, recipientAddress, userRefundAddress,
+      powPegAddress,
+
+      '2',
+
+      userChangeAddress,
+
+      recipientAddress,
+
+      userRefundAddress,
     );
     expect(result.valid).toBe(true);
   });
@@ -96,7 +108,15 @@ describe('Function: areValidOutputs', () => {
     };
     const result = areValidOutputs(
       [normalizedOutput1, normalizedOutput2, normalizedOutput3],
-      powPegAddress, '2', userChangeAddress, recipientAddress, userRefundAddress,
+      powPegAddress,
+
+      '2',
+
+      userChangeAddress,
+
+      recipientAddress,
+
+      userRefundAddress,
     );
     expect(result.valid).toBe(false);
   });
@@ -116,7 +136,15 @@ describe('Function: areValidOutputs', () => {
     };
     const result = areValidOutputs(
       [normalizedOutput1, normalizedOutput2, normalizedOutput3],
-      powPegAddress, '2', userChangeAddress, recipientAddress, userRefundAddress,
+      powPegAddress,
+
+      '2',
+
+      userChangeAddress,
+
+      recipientAddress,
+
+      userRefundAddress,
     );
     expect(result.valid).toBe(false);
   });
@@ -136,7 +164,15 @@ describe('Function: areValidOutputs', () => {
     };
     const result = areValidOutputs(
       [normalizedOutput1, normalizedOutput2, normalizedOutput3],
-      powPegAddress, '2', userChangeAddress, recipientAddress, userRefundAddress,
+      powPegAddress,
+
+      '2',
+
+      userChangeAddress,
+
+      recipientAddress,
+
+      userRefundAddress,
     );
     expect(result.valid).toBe(false);
   });
@@ -155,7 +191,15 @@ describe('Function: areValidOutputs', () => {
     };
     const result = areValidOutputs(
       [normalizedOutput1, normalizedOutput2, normalizedOutput3],
-      powPegAddress, '2', userChangeAddress, recipientAddress, userRefundAddress,
+      powPegAddress,
+
+      '2',
+
+      userChangeAddress,
+
+      recipientAddress,
+
+      userRefundAddress,
     );
     expect(result.valid).toBe(false);
   });
@@ -178,7 +222,15 @@ describe('Function: areValidOutputs', () => {
     };
     const result = areValidOutputs(
       [normalizedOutput1, normalizedOutput2, normalizedOutput3, normalizedOutput4],
-      powPegAddress, '2', userChangeAddress, recipientAddress, userRefundAddress,
+      powPegAddress,
+
+      '2',
+
+      userChangeAddress,
+
+      recipientAddress,
+
+      userRefundAddress,
     );
     expect(result.valid).toBe(false);
   });
@@ -205,7 +257,15 @@ describe('Function: areValidOutputs', () => {
     };
     const result = areValidOutputs(
       [normalizedOutput1, normalizedOutput2, normalizedOutput3],
-      powPegAddress, '2', userChangeAddress, recipientAddress, userRefundAddress,
+      powPegAddress,
+
+      '2',
+
+      userChangeAddress,
+
+      recipientAddress,
+
+      userRefundAddress,
     );
     expect(result.valid).toBe(false);
   });
@@ -222,8 +282,18 @@ describe('Function: areValidOutputs', () => {
       amount: '0',
       op_return_data: '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa02379ad9b7ba73bdc1e29e286e014d4e2e1f6884e5',
     };
-    const result = areValidOutputs([normalizedOutput1, normalizedOutput2, normalizedOutput3],
-      powPegAddress, '2', userChangeAddress, recipientAddress, userRefundAddress);
+    const result = areValidOutputs(
+      [normalizedOutput1, normalizedOutput2, normalizedOutput3],
+      powPegAddress,
+
+      '2',
+
+      userChangeAddress,
+
+      recipientAddress,
+
+      userRefundAddress,
+    );
     expect(result.valid).toBe(false);
   });
   it('Should be falsy the validation when one is valid and the other invalid', () => {
@@ -239,8 +309,18 @@ describe('Function: areValidOutputs', () => {
       amount: '0',
       op_return_data: '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa02379ad9b7ba73bdc1e29e286e',
     };
-    const result = areValidOutputs([normalizedOutput1, normalizedOutput2, normalizedOutput3],
-      powPegAddress, '2', userChangeAddress, recipientAddress, userRefundAddress);
+    const result = areValidOutputs(
+      [normalizedOutput1, normalizedOutput2, normalizedOutput3],
+      powPegAddress,
+
+      '2',
+
+      userChangeAddress,
+
+      recipientAddress,
+
+      userRefundAddress,
+    );
     expect(result.valid).toBe(false);
   });
   it('Should be falsy the validation when three Op_Return are valid', () => {
@@ -256,8 +336,18 @@ describe('Function: areValidOutputs', () => {
       amount: '0',
       op_return_data: '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa02379ad9b7ba73bdc1e29e286e014d4e2e1f6884e5',
     };
-    const result = areValidOutputs([normalizedOutput1, normalizedOutput2, normalizedOutput3],
-      powPegAddress, '2', userChangeAddress, recipientAddress, userRefundAddress);
+    const result = areValidOutputs(
+      [normalizedOutput1, normalizedOutput2, normalizedOutput3],
+      powPegAddress,
+
+      '2',
+
+      userChangeAddress,
+
+      recipientAddress,
+
+      userRefundAddress,
+    );
     expect(result.valid).toBe(false);
   });
 });

@@ -8,8 +8,8 @@ import {
   LiqualityRequestArgs,
   LiqualityResponse,
 } from '@/common/types';
-import { mockedData } from '../../utils/mockedData';
-import MockedBtcProvider from '../../utils/MockedBtcProvider';
+import { mockedData } from '../../../utils/mockedData';
+import MockedBtcProvider from '../../../utils/MockedBtcProvider';
 
 const initEnvironment = () => {
   const defaultEnvironmentVariables = {

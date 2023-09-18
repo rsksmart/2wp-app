@@ -46,17 +46,16 @@ export const actions: ActionTree<PegInTxState, RootState> = {
         commit(constants.PEGIN_TX_SET_WALLET_SERVICE, undefined);
         break;
     }
-    commit(constants.PEGIN_TX_WALLET_SERVICE_SUBSCRIBE,
+    commit(
+      constants.PEGIN_TX_WALLET_SERVICE_SUBSCRIBE,
       (balance: AccountBalance, addressList: WalletAddress[]) => {
         const loadingBalance = state.walletService ? state.walletService.isLoadingBalances : false;
         commit(constants.PEGIN_TX_SET_BALANCE, balance);
         commit(constants.PEGIN_TX_SET_ADDRESS_LIST, addressList);
         commit(constants.PEGIN_TX_SET_LOADING_BALANCE, loadingBalance);
-      });
+      },
+    );
   },
-  [constants.PEGIN_TX_INIT]: ({ dispatch }):
-  Promise<void> => dispatch(constants.PEGIN_TX_ADD_PEGIN_CONFIGURATION)
-    .then(() => dispatch(constants.PEGIN_TX_ADD_BITCOIN_PRICE)),
   [constants.PEGIN_TX_ADD_BITCOIN_PRICE]: ({ commit }) => axios.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin&order=market_cap_desc&per_page=100&page=1&sparkline=false')
     .then((response: AxiosResponse) => {
       const [result] = response.data;
@@ -65,6 +64,10 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_CLEAR_STATE]: ({ commit }): void => {
     commit(constants.PEGIN_TX_CLEAR);
   },
+  [constants.PEGIN_TX_INIT]: ({ dispatch }):
+    Promise<void> => dispatch(constants.PEGIN_TX_ADD_BITCOIN_PRICE)
+    .then(() => dispatch(constants.PEGIN_TX_ADD_PEGIN_CONFIGURATION)),
+
   [constants.PEGIN_TX_SELECT_ACCOUNT_TYPE]: ({ commit }, accountType: BtcAccount): void => {
     commit(constants.PEGIN_TX_SET_ACCOUNT_TYPE, accountType);
   },

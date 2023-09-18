@@ -1,10 +1,9 @@
 <template>
-  <v-dialog v-model="showDialog" width="600" persistent>
-    <v-card class="container dialog">
-      <v-row class="mx-0 mt-4 d-flex justify-end">
-        <v-btn height="50" color="#FFFFFF" @click="closeDialog">
-          <v-icon large color="grey darken-2">
-            mdi-close-circle-outline
+  <v-dialog v-model="show" width="600" persistent>
+    <v-card class="container dialog px-4 align-center">
+      <v-row class="mx-0 mt-4 d-flex align-self-end">
+        <v-btn height="50" @click="closeDialog" variant="text">
+          <v-icon size="36" :icon="mdiCloseCircleOutline" color="#616161">
           </v-icon>
         </v-btn>
       </v-row>
@@ -21,11 +20,10 @@
             depending on conditions of the {{environmentContext.getBtcText()}} network).</p>
         </v-col>
       </v-row>
-      <v-row class="mx-0 mb-3 mt-1">
+      <v-row class="mx-0 mb-3 mt-3">
         <v-img
-        :src="require(`@/assets/exchange/trezor/${this.environmentContext
-        .getBtcTicker().toLowerCase()}_conversion.png`)"
-        height="135" contain
+        :src="imgSrc"
+        height="135" min-width="500"
         />
       </v-row>
       <v-row class="mx-0 mt-8 mb-4 d-flex justify-center">
@@ -39,26 +37,41 @@
 </template>
 
 <script lang="ts">
-import {
-  Component, Prop, Emit,
-  Vue,
-} from 'vue-property-decorator';
+import { ref, defineComponent, computed } from 'vue';
+import { mdiCloseCircleOutline } from '@mdi/js';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 
-@Component
-export default class BtcToRbtcDialog extends Vue {
-  @Prop() showDialog!: boolean;
+export default defineComponent({
+  name: 'BtcToRbtcDialog',
+  props: {
+    showDialog: Boolean,
+  },
+  setup(props, context) {
+    const show = ref(props.showDialog);
+    const checkbox = ref(false);
+    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
-  checkbox = false;
+    const imgSrc = computed(() => {
+      const ticker = environmentContext.getBtcTicker().toLowerCase();
+      // eslint-disable-next-line global-require, import/no-dynamic-require
+      return require(`@/assets/exchange/trezor/${ticker}_conversion.png`);
+    });
 
-  environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-
-  @Emit('closeDialog')
-  closeDialog() {
-    if (this.checkbox === true) {
-      localStorage.setItem('BTRD_COOKIE_DISABLED', 'true');
+    function closeDialog() {
+      if (checkbox.value === true) {
+        localStorage.setItem('BTRD_COOKIE_DISABLED', 'true');
+      }
+      return context.emit('closeDialog', props.showDialog);
     }
-    return this.showDialog;
-  }
-}
+
+    return {
+      checkbox,
+      environmentContext,
+      closeDialog,
+      show,
+      mdiCloseCircleOutline,
+      imgSrc,
+    };
+  },
+});
 </script>

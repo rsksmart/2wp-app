@@ -7,39 +7,38 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Emit } from 'vue-property-decorator';
-import { Action } from 'vuex-class';
+import { ref, defineComponent } from 'vue';
 import * as constants from '@/common/store/constants';
 import PegOutForm from '@/pegout/components/PegOutForm.vue';
-import Confirmation from '@/pegout/components/Confirmation.vue';
 import { Machine } from '@/common/utils';
+import { useAction } from '@/common/store/helper';
+import Confirmation from '../components/Confirmation.vue';
 
-@Component({
+export default defineComponent({
+  name: 'PegOut',
   components: {
     PegOutForm,
     Confirmation,
   },
-})
-export default class PegOut extends Vue {
-  @Action(constants.PEGOUT_TX_INIT, { namespace: 'pegOutTx' }) init !: () => Promise<void>;
-
-  currentComponent = 'PegOutForm';
-
-  confirmTxState: Machine<
-    'idle'
-    | 'loading'
-    | 'error'
-    | 'goingHome'
-    > = new Machine('idle');
-
-  created() {
-    this.init();
-  }
-
-  @Emit()
-  changePage(componentName: string) {
-    this.currentComponent = componentName;
-    window.scrollTo(0, 0);
-  }
-}
+  setup() {
+    const currentComponent = ref('PegOutForm');
+    const confirmTxState = ref<Machine<
+      'idle'
+      | 'loading'
+      | 'error'
+      | 'goingHome'
+      > >(new Machine('idle'));
+    const init = useAction('pegOutTx', constants.PEGOUT_TX_INIT);
+    function changePage(componentName: string) {
+      currentComponent.value = componentName;
+      window.scrollTo(0, 0);
+    }
+    init();
+    return {
+      currentComponent,
+      confirmTxState,
+      changePage,
+    };
+  },
+});
 </script>

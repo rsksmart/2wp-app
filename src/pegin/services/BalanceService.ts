@@ -5,7 +5,8 @@ import ApiService from '@/common/services/ApiService';
 import { BalanceWithUtxos, BlockbookUtxo } from '../types/services';
 
 function balanceFromUtxosInSatoshis(utxoList: BlockbookUtxo[]) {
-  return utxoList.map((utxo) => new SatoshiBig(utxo.value, 'satoshi')).reduce((acc, curr) => acc.plus(curr), new SatoshiBig(0, 'satoshi'));
+  return utxoList.map((utxo) => new SatoshiBig(utxo.value, 'satoshi'))
+    .reduce((acc, curr) => acc.plus(curr), new SatoshiBig(0, 'satoshi'));
 }
 
 export default class BalanceService {

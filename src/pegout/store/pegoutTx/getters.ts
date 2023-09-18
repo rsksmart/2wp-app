@@ -15,7 +15,8 @@ export const getters: GetterTree<PegOutTxState, RootState> = {
     return fee;
   },
   [constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE]:
-    (state:PegOutTxState): SatoshiBig => new SatoshiBig(state.amountToTransfer.toRBTCTrimmedString(), 'btc').minus(state.btcEstimatedFee),
+    (state: PegOutTxState) => new SatoshiBig(state.amountToTransfer.toRBTCTrimmedString(), 'btc')
+      .minus(state.btcEstimatedFee),
   [constants.PEGOUT_TX_IS_ENOUGH_BALANCE]:
     (state: PegOutTxState, moduleGetters, rootState:RootState): boolean => {
       if (rootState.web3Session) {
