@@ -223,6 +223,7 @@ export const SUPPORTED_NETWORKS = {
 };
 
 export const GETTING_FUNDS_DOCUMENTATION_URL = 'https://developers.rsk.co/guides/two-way-peg-app/getting-started/#getting-funds';
+export const COINGECKO_API_URL = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin&order=market_cap_desc&per_page=100&page=1&sparkline=false';
 // Peg-out status
 export const PEGOUT_SIGNING_BLOCKS_GAP = 30;
 export const PEGOUT_REQUIRED_CONFIRMATIONS = 4000;
