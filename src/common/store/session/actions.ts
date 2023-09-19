@@ -34,6 +34,14 @@ export const actions: ActionTree<SessionState, RootState> = {
         });
     }
     const supportedChains = Object.keys(rpcUrls).map(Number);
+    const customLedgerProviderOptions = ledgerProviderOptions;
+    customLedgerProviderOptions.connector = async (ProviderPackage, options) => {
+      const ledgerOptions = options;
+      ledgerOptions.messageHashed = true;
+      const provider = new ProviderPackage(ledgerOptions);
+      await provider.connect();
+      return provider;
+    };
     const rLogin = state.rLoginInstance === undefined ? new RLogin({
       cacheProvider: false,
       providerOptions: {
@@ -43,7 +51,7 @@ export const actions: ActionTree<SessionState, RootState> = {
             rpc: rpcUrls,
           },
         },
-        'custom-ledger': ledgerProviderOptions,
+        'custom-ledger': customLedgerProviderOptions,
         'custom-trezor': {
           ...trezorProviderOptions,
           options: {

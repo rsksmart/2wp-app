@@ -5,10 +5,10 @@ import { RootState } from '@/common/types/store';
 
 export const getters: GetterTree<SessionState, RootState> = {
   [constants.SESSION_IN_TX_FLOW]: (state): boolean => state.txType !== undefined,
-  [constants.SESSION_IS_LEDGER_CONNECTED]: (state): boolean => {
-    console.log(state.rLogin);
+  [constants.SESSION_IS_LEDGER_CONNECTED]: (state): boolean =>
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    return !!(state.rLogin?.provider.isLedger);
-  },
+    // eslint-disable-next-line implicit-arrow-linebreak
+    !!(state.rLogin?.provider.isLedger)
+  ,
 };
