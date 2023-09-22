@@ -606,25 +606,25 @@ export default defineComponent({
 
     const amountUSD = computed((): string => {
       const btcAmount = new SatoshiBig(props.summary?.amountFromString || 0, 'btc');
-      if (!btcAmount || !bitcoinPrice) return VALUE_INCOMPLETE_MESSAGE;
+      if (!btcAmount || !bitcoinPrice.value) return VALUE_INCOMPLETE_MESSAGE;
       return btcAmount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
     });
 
     const safeFeeUSD = computed((): string => {
       const feeAmount = new SatoshiBig(safeFee.value.toString() || 0, 'btc');
-      if (!feeAmount || !bitcoinPrice) return VALUE_INCOMPLETE_MESSAGE;
+      if (!feeAmount || !bitcoinPrice.value) return VALUE_INCOMPLETE_MESSAGE;
       return feeAmount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
     });
 
     const estimatedToReceiveUSD = computed((): string => {
       const receiveAmount = new SatoshiBig(props.summary?.amountReceivedString || 0, 'btc');
-      if (!receiveAmount || !bitcoinPrice) return VALUE_INCOMPLETE_MESSAGE;
+      if (!receiveAmount || !bitcoinPrice.value) return VALUE_INCOMPLETE_MESSAGE;
       return receiveAmount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
     });
 
     const gasUSD = computed((): string => {
       const gasAmount = new SatoshiBig(props.summary?.gas || 0, 'btc');
-      if (!gasAmount || !bitcoinPrice) return VALUE_INCOMPLETE_MESSAGE;
+      if (!gasAmount || !bitcoinPrice.value) return VALUE_INCOMPLETE_MESSAGE;
       return gasAmount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
     });
 
