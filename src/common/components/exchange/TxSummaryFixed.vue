@@ -370,7 +370,7 @@
                 {{ summary.fee }}
                 {{ currencyFromTicker }}
               </p>
-              <span>{{ feeUSD }}</span>
+              <span>USD {{ feeUSD }}</span>
             </v-container>
           </div>
         </v-container>
@@ -387,7 +387,7 @@
               <p class="light-grayish">
                 {{ total }} {{currencyFromTicker}}
               </p>
-              <span>{{ totalUSD }}</span>
+              <span>USD {{ totalUSD }}</span>
             </v-container>
           </div>
         </v-container>
@@ -613,14 +613,14 @@ export default defineComponent({
     const feeUSD = computed((): string => {
       const feeAmount = new SatoshiBig(props.summary?.fee || 0, 'btc');
       if (!feeAmount || !bitcoinPrice.value) return VALUE_INCOMPLETE_MESSAGE;
-      return `$${feeAmount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals)}`;
+      return `${feeAmount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals)}`;
     });
 
     const totalUSD = computed((): string => {
       const totalValue = total.value === VALUE_INCOMPLETE_MESSAGE ? 0 : total.value;
       const totalAmount = new SatoshiBig(totalValue, 'btc');
       if (!totalAmount || !bitcoinPrice.value) return VALUE_INCOMPLETE_MESSAGE;
-      return `$${totalAmount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals)}`;
+      return `${totalAmount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals)}`;
     });
 
     const federationAddress = computed((): string => (
