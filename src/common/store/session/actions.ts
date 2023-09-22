@@ -11,7 +11,6 @@ import {
 } from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { getBtcAddressFromSignedMessage } from '@/common/utils';
-import { useGlobals } from '@/main';
 
 export const actions: ActionTree<SessionState, RootState> = {
   [constants.SESSION_CONNECT_WEB3]: ({ commit, state }): Promise<void> => {
@@ -78,15 +77,19 @@ export const actions: ActionTree<SessionState, RootState> = {
         });
     });
   },
-  [constants.WEB3_SESSION_GET_ACCOUNT]: async ({ commit }) => {
-    const { $web3 } = useGlobals();
-    const accounts = await $web3.eth.getAccounts();
-    commit(constants.SESSION_SET_ACCOUNT, accounts[0]);
+  [constants.WEB3_SESSION_GET_ACCOUNT]: async ({ state, commit }) => {
+    const { web3 } = state;
+    if (web3) {
+      const accounts = await web3.eth.getAccounts();
+      commit(constants.SESSION_SET_ACCOUNT, accounts[0]);
+    }
   },
   [constants.WEB3_SESSION_ADD_BALANCE]: async ({ commit, state }) => {
-    const { $web3 } = useGlobals();
-    const balance = await $web3.eth.getBalance(state.account as string);
-    return commit(constants.WEB3_SESSION_SET_BALANCE, new WeiBig(balance, 'wei'));
+    const { web3, account } = state;
+    if (web3 && account) {
+      const balance = await web3.eth.getBalance(account);
+      commit(constants.WEB3_SESSION_SET_BALANCE, new WeiBig(balance, 'wei'));
+    }
   },
   [constants.WEB3_SESSION_CLEAR_ACCOUNT]: async ({ commit }) => {
     commit(constants.SESSION_SET_ACCOUNT, undefined);
