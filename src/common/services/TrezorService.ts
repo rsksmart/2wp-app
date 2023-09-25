@@ -1,9 +1,10 @@
-import TrezorConnect, { Address, GetAddress } from 'trezor-connect';
+import TrezorConnect, { Address } from '@trezor/connect-web';
 import * as bitcoin from 'bitcoinjs-lib';
 import { Network } from 'bitcoinjs-lib';
 import { WalletAddress } from '@/common/types/pegInTx';
 import * as constants from '@/common/store/constants';
 import {
+  GetAddress,
   TrezorSignedTx, TrezorTx, Tx,
 } from '@/common/types';
 import { WalletService } from '@/common/services/index';
