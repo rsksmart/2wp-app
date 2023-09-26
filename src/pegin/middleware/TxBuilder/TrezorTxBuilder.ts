@@ -1,4 +1,4 @@
-import { TxInputType, TxOutputType } from 'trezor-connect';
+import { PROTO } from '@trezor/connect-web';
 import { WalletAddress } from '@/common/types/pegInTx';
 import {
   InputScriptType,
@@ -26,7 +26,7 @@ export default class TrezorTxBuilder extends TxBuilder {
     });
   }
 
-  static getOutputs(outputs: NormalizedOutput[]): TxOutputType[] {
+  static getOutputs(outputs: NormalizedOutput[]): PROTO.TxOutputType[] {
     return outputs.map((output) => {
       if (output.op_return_data) {
         return {
@@ -43,7 +43,7 @@ export default class TrezorTxBuilder extends TxBuilder {
     });
   }
 
-  private getInputs(inputs: NormalizedInput[]): TxInputType[] {
+  private getInputs(inputs: NormalizedInput[]): PROTO.TxInputType[] {
     return inputs.map((input) => ({
       address_n: TrezorTxBuilder.getPathFromAddress(input.address),
       prev_hash: input.prev_hash,
