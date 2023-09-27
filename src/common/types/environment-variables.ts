@@ -1,6 +1,5 @@
-// import { AppNetwork } from '@/common/types/Common';
+import { AppNetwork } from '@/common/types';
 
-type AppNetwork = 'main' | 'test';
 export class EnvironmentVariables {
   public vueAppCoin: AppNetwork;
 
