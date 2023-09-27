@@ -446,7 +446,7 @@
                 {{ summary.fee }}
                 {{ currencyToTicker }}
               </p>
-              <p class="light-grayish text-end">USD {{ safeFeeUSD }}</p>
+              <p class="p_usd text-end">USD {{ safeFeeUSD }}</p>
             </v-container>
           </div>
         </v-container>
@@ -463,7 +463,7 @@
               <p class="light-grayish text-end">
                 {{ summary.amountReceivedString }} {{currencyToTicker}}
               </p>
-              <p class="light-grayish text-end">USD {{ estimatedToReceiveUSD }}</p>
+              <p class="p_usd text-end">USD {{ estimatedToReceiveUSD }}</p>
             </v-container>
           </div>
         </v-container>
