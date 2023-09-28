@@ -7,7 +7,7 @@
         </v-row>
         <v-row class="mx-0 mb-10 justify-center">
             <p class="pop-up-subtitle mb-4">
-              We will use the signature to derive your Bitcoin address.
+              We will use the signature to get your Bitcoin destination address.
             </p>
             <p class="mb-2 p-0">
               This does not expose your data nor spend your funds.
@@ -39,7 +39,7 @@ import { useAction } from '@/common/store/helper';
 export default defineComponent({
   name: 'AddressDialog',
   setup(_, context) {
-    const messageToBeSigned = 'Sign this message to derive your Bitcoin address';
+    const messageToBeSigned = 'Sign this message to get your Bitcoin destination address';
     const showAddressDialog = ref(true);
     const signMessage = useAction('web3Session', constants.SESSION_SIGN_MESSAGE);
     function closeDialog() {
