@@ -33,7 +33,7 @@
                 <v-col v-if="session.btcDerivedAddress" cols="7" class="p-0">
                   <div class="container">
                     <v-row class="mx-0">
-                      <span>Address derived</span>
+                      <span>Destination address</span>
                     </v-row>
                     <v-row class="mx-0 d-flex align-center">
                       <p class="mb-0 account">
