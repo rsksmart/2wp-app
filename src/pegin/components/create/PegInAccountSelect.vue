@@ -88,7 +88,7 @@ export default defineComponent({
       value: string;
       disabled: boolean;
     }[]>([]);
-    const btcAccountTypeSelected = ref<BtcAccount>(constants.BITCOIN_NATIVE_SEGWIT_ADDRESS);
+    const btcAccountTypeSelected = ref<BtcAccount | null>(null);
     const selectedAccount = useStateAttribute<BtcAccount>('pegInTx', 'selectedAccount');
     const bitcoinWallet = useStateAttribute<BtcWallet>('pegInTx', 'bitcoinWallet');
     const balances = useStateAttribute<AccountBalance>('pegInTx', 'balances');
