@@ -37,7 +37,7 @@
             :type="typeSummary"
             :orientation="orientationSummary"
           />
-          <v-btn color="#747272"
+          <v-btn v-if="false" color="#747272"
             class="mt-2 pa-1" small rounded text id="first-step" @click="startVueTour()">
           <v-icon>mdi-help-circle</v-icon>
           <span>You don't know how to proceed?</span>
@@ -318,7 +318,7 @@ export default class PegInForm extends Vue {
   }
 
   mounted() {
-    const newUser = localStorage.getItem('ONBOARDED_USER_PEGIN') !== 'true';
+    const newUser = false; // localStorage.getItem('ONBOARDED_USER_PEGIN') !== 'true';
     if (newUser) {
       this.$tours.pegInTour.start();
       this.isTourActive = true;

@@ -52,8 +52,7 @@
                 </v-col>
                 <v-col v-else cols="5" class="pa-0 px-0">
                   <v-row class="derive-button mx-0 d-flex justify-center">
-                    <v-btn :disabled="!isReadyToSign ||
-                      injectedProvider != appConstants.RLOGIN_METAMASK_WALLET"
+                    <v-btn :disabled="!isReadyToSign || !authorizedWalletToSignMessage"
                       outlined rounded id="derivation-addr-btn"
                       width="100%" height="38"
                       @click="openAddressDialog" >
@@ -63,11 +62,10 @@
                     </v-btn>
                   </v-row>
                 </v-col>
-                <v-container v-if="injectedProvider
-                                  && injectedProvider != appConstants.RLOGIN_METAMASK_WALLET"
+                <v-container v-if="!authorizedWalletToSignMessage"
                   class="pl-0">
                   <span class="blackish" style="font-size: 14px;">
-                    As you are not using MetaMask, you need to follow
+                    As you are not using MetaMask, Ledger or Trezor, you need to follow
                     <a :href=appConstants.RSK_PEGOUT_DOCUMENTATION_URL class="d-inline blackish a"
                         target='_blank'> this documentation</a> to get the destination address.
                   </span>
@@ -84,7 +82,7 @@
           :type="typeSummary"
           :orientation="orientationSummary"
         />
-        <v-btn color="#747272"
+        <v-btn v-if="false" color="#747272"
           class="help-btn mt-2 pa-1" small rounded text id="first-step" @click="startVueTour()">
           <v-icon>mdi-help-circle</v-icon>
           <span>You don't know how to proceed?</span>
@@ -368,6 +366,12 @@ export default class PegOutForm extends Vue {
     };
   }
 
+  get authorizedWalletToSignMessage(): boolean {
+    return this.injectedProvider === this.appConstants.RLOGIN_METAMASK_WALLET
+      || this.isLedgerConnected
+      || this.session.rLogin?.provider.isTrezor;
+  }
+
   @Emit()
   closeTxErrorDialog() {
     this.showTxErrorDialog = false;
@@ -385,7 +389,7 @@ export default class PegOutForm extends Vue {
   }
 
   mounted() {
-    const newUser = localStorage.getItem('ONBOARDED_USER_PEGOUT') !== 'true';
+    const newUser = false; // localStorage.getItem('ONBOARDED_USER_PEGOUT') !== 'true';
     if (newUser) {
       this.$tours.pegOutTour.start();
       this.isTourActive = true;
