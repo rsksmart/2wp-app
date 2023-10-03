@@ -55,6 +55,7 @@ import * as constants from '@/common/store/constants';
 import {
   useAction, useGetter, useState, useStateAttribute,
 } from '@/common/store/helper';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
 export default defineComponent({
   name: 'ConfirmationPegout',
@@ -95,7 +96,7 @@ export default defineComponent({
     }
 
     function appendClarityScript(): void {
-      const vueAppClarityId = 'ibn9mzxbfg';
+      const { vueAppClarityId } = EnvironmentAccessorService.getEnvironmentVariables();
       const scriptTag:HTMLScriptElement = document.createElement('script');
       scriptTag.type = 'text/javascript';
       scriptTag.text = '(function(c,l,a,r,i,t,y){'
