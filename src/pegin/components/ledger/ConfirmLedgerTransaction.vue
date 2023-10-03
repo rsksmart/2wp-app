@@ -197,6 +197,7 @@ import { TxSummaryOrientation } from '@/common/types/Status';
 import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
 import { useGetter, useState } from '@/common/store/helper';
 import AdvancedData from '@/common/components/exchange/AdvancedData.vue';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
 export default defineComponent({
   name: 'ConfirmLedgerTransaction',
@@ -308,7 +309,7 @@ export default defineComponent({
 
     function appendClarityScript():void {
       const amountFromString = pegInTxState.value.amountToTransfer.toBTCTrimmedString();
-      const vueAppClarityId = 'ibn9mzxbfg';
+      const { vueAppClarityId } = EnvironmentAccessorService.getEnvironmentVariables();
       const scriptTag:HTMLScriptElement = document.createElement('script');
       scriptTag.type = 'text/javascript';
       scriptTag.text = '(function(c,l,a,r,i,t,y){'
