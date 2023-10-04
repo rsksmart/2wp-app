@@ -1,6 +1,6 @@
 {
   "name": "2wp-app",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -17,7 +17,7 @@
     "@ledgerhq/hw-transport-webusb": "6.27.1",
     "@rsksmart/rlogin": "^1.5.3-beta.1",
     "@rsksmart/rlogin-ledger-provider": "^1.0.2",
-    "@rsksmart/rlogin-trezor-provider": "^1.0.2",
+    "@rsksmart/rlogin-trezor-provider": "^1.0.3",
     "@rsksmart/rsk-precompiled-abis": "^5.0.0-FINGERROOT",
     "@rsksmart/rsk-utils": "^1.1.0",
     "@swan-bitcoin/xpub-lib": "^0.1.5",
