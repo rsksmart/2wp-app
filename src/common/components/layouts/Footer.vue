@@ -24,8 +24,8 @@
               <a href="https://rootstock.io/terms-conditions/" target="_blank">
                 Terms & Conditions
               </a>
-              <a href="https://github.com/rsksmart/2wp-app/releases/tag/v1.4.1" target="_blank">Api Version: {{apiVersion}}</a>
-              <a href="https://github.com/rsksmart/2wp-app/releases/tag/v1.4.1" target="_blank">App Version: {{appVersion}}</a>
+              <a :href="`https://github.com/rsksmart/2wp-app/releases/tag/v${apiVersion}`" target="_blank">Api Version: {{apiVersion}}</a>
+              <a :href="`https://github.com/rsksmart/2wp-app/releases/tag/v${appVersion}`" target="_blank">App Version: {{appVersion}}</a>
             </v-row>
           </v-col>
           <v-col class="pt-1">
