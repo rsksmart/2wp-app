@@ -1,5 +1,4 @@
 import { createApp } from 'vue';
-import Web3 from 'web3';
 import { AppNetwork } from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import * as constants from '@/common/store/constants';
@@ -35,8 +34,6 @@ EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVari
 
 const app = createApp(App);
 
-app.config.globalProperties.$web3 = new Web3(Web3.givenProvider || 'wss://localhost:8545');
-export const useGlobals = () => app.config.globalProperties;
 app.use(router);
 app.use(vuetify);
 app.use(store);
