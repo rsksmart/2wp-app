@@ -352,7 +352,7 @@
               <p class="light-grayish">
                 {{ amount }} {{ currencyFromTicker }}
               </p>
-              <span v-if="type === txType.PEGIN">{{ amountUSD }}</span>
+              <span>USD {{ amountUSD }}</span>
             </v-container>
           </div>
         </v-container>
@@ -402,6 +402,7 @@
               <p class="light-grayish">
                 {{ summary.gas }} {{currencyFromTicker}}
               </p>
+              <span v-if="type === txType.PEGOUT">USD {{ gasUSD }}</span>
             </v-container>
           </div>
         </v-container>
@@ -447,6 +448,7 @@
                 {{ summary.fee }}
                 {{ currencyToTicker }}
               </p>
+              <p class="p_usd text-end">USD {{ safeFeeUSD }}</p>
             </v-container>
           </div>
         </v-container>
@@ -463,6 +465,7 @@
               <p class="light-grayish text-end">
                 {{ summary.amountReceivedString }} {{currencyToTicker}}
               </p>
+              <p class="p_usd text-end">USD {{ estimatedToReceiveUSD }}</p>
             </v-container>
           </div>
         </v-container>
@@ -479,7 +482,7 @@
               <p class="light-grayish">
                 {{ amount }}  {{currencyToTicker}}
               </p>
-              <span>{{ amountUSD }}</span>
+              <span>USD {{ amountUSD }}</span>
             </v-container>
           </div>
         </v-container>
@@ -607,13 +610,31 @@ export default defineComponent({
     const amountUSD = computed((): string => {
       const btcAmount = new SatoshiBig(props.summary?.amountFromString || 0, 'btc');
       if (!btcAmount || !bitcoinPrice.value) return VALUE_INCOMPLETE_MESSAGE;
-      return `$${btcAmount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals)}`;
+      return btcAmount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
     });
 
     const feeUSD = computed((): string => {
       const feeAmount = new SatoshiBig(props.summary?.fee || 0, 'btc');
       if (!feeAmount || !bitcoinPrice.value) return VALUE_INCOMPLETE_MESSAGE;
-      return `${feeAmount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals)}`;
+      return feeAmount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
+    });
+
+    const safeFeeUSD = computed((): string => {
+      const feeAmount = new SatoshiBig(safeFee.value.toString() || 0, 'btc');
+      if (!feeAmount || !bitcoinPrice.value) return VALUE_INCOMPLETE_MESSAGE;
+      return feeAmount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
+    });
+
+    const estimatedToReceiveUSD = computed((): string => {
+      const receiveAmount = new SatoshiBig(props.summary?.amountReceivedString || 0, 'btc');
+      if (!receiveAmount || !bitcoinPrice.value) return VALUE_INCOMPLETE_MESSAGE;
+      return receiveAmount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
+    });
+
+    const gasUSD = computed((): string => {
+      const gasAmount = new SatoshiBig(props.summary?.gas || 0, 'btc');
+      if (!gasAmount || !bitcoinPrice.value) return VALUE_INCOMPLETE_MESSAGE;
+      return gasAmount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
     });
 
     const totalUSD = computed((): string => {
@@ -713,6 +734,9 @@ export default defineComponent({
       amountToReceive,
       total,
       amountUSD,
+      gasUSD,
+      safeFeeUSD,
+      estimatedToReceiveUSD,
       feeUSD,
       totalUSD,
       federationAddress,
