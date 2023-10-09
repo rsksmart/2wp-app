@@ -80,7 +80,7 @@
 
 <script lang="ts">
 import {
-  computed, onBeforeMount, PropType, watch, defineComponent,
+  computed, onBeforeMount, PropType, defineComponent,
 } from 'vue';
 import { useRouter } from 'vue-router';
 import * as constants from '@/common/store/constants';
@@ -137,10 +137,6 @@ export default defineComponent({
     function tryConnect() {
       continueToForm();
     }
-
-    watch(() => props.showDialog, () => {
-      continueToForm();
-    });
 
     onBeforeMount(() => {
       if (!props.showDialog) {
