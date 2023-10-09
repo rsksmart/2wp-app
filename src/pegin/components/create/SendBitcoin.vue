@@ -2,7 +2,9 @@
   <v-container fluid class="mt-0">
     <template v-if="!walletDataReady">
       <connect-device @continueToForm="startAskingForBalance"
-                      :sendBitcoinState="sendBitcoinState"/>
+                      :sendBitcoinState="sendBitcoinState"
+                      :show-dialog="showConnectDeviceDialog"
+      />
     </template>
     <template v-if="walletDataReady">
       <component :is="currentComponent"
@@ -64,6 +66,7 @@ export default defineComponent({
   setup(_, context) {
     const showErrorDialog = ref(false);
     const showTxErrorDialog = ref(false);
+    const showConnectDeviceDialog = ref(false);
     const deviceError = ref('test');
     const errorType = ref('');
     const urlToMoreInformation = ref('');
@@ -213,6 +216,7 @@ export default defineComponent({
       txId.value = '';
       txError.value = '';
       setTxBuilder();
+      await clearAccount();
       await stopAskingForBalance();
     }
 
@@ -223,13 +227,13 @@ export default defineComponent({
 
     async function backToConnectDevice() {
       await clear();
-      await clearAccount();
       let wallet: BtcWallet;
-      if (bitcoinWallet.value) {
+      if (bitcoinWallet.value && bitcoinWallet.value !== constants.WALLET_LIQUALITY) {
         wallet = bitcoinWallet.value;
       } else {
         await back();
       }
+      showConnectDeviceDialog.value = true;
       await clearStore();
       init()
         .then(() => setBtcWallet(wallet));
@@ -260,6 +264,7 @@ export default defineComponent({
       txError,
       closeTxErrorDialog,
       walletDataReady,
+      showConnectDeviceDialog,
     };
   },
 });

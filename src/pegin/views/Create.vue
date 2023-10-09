@@ -18,15 +18,11 @@ export default defineComponent({
   },
   setup() {
     const clear = useAction('pegInTx', constants.PEGIN_TX_CLEAR_STATE);
-    const initPegin = useAction('pegInTx', constants.PEGIN_TX_INIT);
-    const init = useAction('pegOutTx', constants.PEGOUT_TX_INIT);
+    const router = useRouter();
 
     function back() {
-      const router = useRouter();
       clear();
-      init();
-      initPegin();
-      router.push({ name: 'Home' });
+      router.push({ name: 'PegIn' });
     }
 
     return {
