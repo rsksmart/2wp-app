@@ -19,7 +19,7 @@
               <a href="https://www.iovlabs.org/" target="_blank">
                 About IOV Labs
               </a>
-              <a href="https://dev.rootstock.io/guides/two-way-peg-app/" target="_blank">Help</a>
+              <a :href="helpUrl" target="_blank">Help</a>
               <a href="https://open-rsk-dev.slack.com/messages/support" target="_blank">Support</a>
               <a href="https://rootstock.io/terms-conditions/" target="_blank">
                 Terms & Conditions
@@ -56,6 +56,9 @@ import { useStore } from 'vuex';
 import { mdiTwitter, mdiSlack, mdiGithub } from '@mdi/js';
 import { ApiInformation } from '@/common/types/ApiInformation';
 import { ApiService } from '@/common/services';
+import { useRoute } from 'vue-router';
+import { useGetter } from '@/common/store/helper';
+import * as constants from '@/common/store/constants';
 
 export default {
   name: 'FooterRsk',
@@ -63,9 +66,36 @@ export default {
     const apiVersion = ref('0');
     const store = useStore();
     const appVersion = computed<string>(() => store.getters.appVersion);
+    const route = useRoute();
+    const isLedger = useGetter<boolean>('web3Session', constants.SESSION_IS_LEDGER_CONNECTED);
+    const isTrezor = useGetter<boolean>('web3Session', constants.SESSION_IS_TREZOR_CONNECTED);
+    const isMetamask = useGetter<boolean>('web3Session', constants.SESSION_IS_METAMASK_CONNECTED);
+    const isRloginDefined = useGetter<boolean>('web3Session', constants.SESSION_IS_RLOGIN_DEFINED);
 
     const urlApp = computed(() => `https://github.com/rsksmart/2wp-app/releases/tag/v${appVersion.value}`);
     const urlApi = computed(() => `https://github.com/rsksmart/2wp-api/releases/tag/v${apiVersion.value}`);
+
+    function getDevPortalSlug() {
+      const [, feature, wallet] = route.path.split('/');
+      if (feature === 'pegin' && wallet) {
+        return `${feature}/${wallet}`;
+      }
+      if (feature === 'pegout' && isRloginDefined.value) {
+        if (isLedger.value) {
+          return `${feature}/ledger`;
+        }
+        if (isTrezor.value) {
+          return `${feature}/trezor`;
+        }
+        if (isMetamask.value) {
+          return `${feature}/metamask`;
+        }
+        return `${feature}/liquality`;
+      }
+      return feature;
+    }
+
+    const helpUrl = computed(() => `https://dev.rootstock.io/guides/two-way-peg-app/${getDevPortalSlug()}`);
 
     ApiService.getApiInformation()
       .then((res: ApiInformation) => {
@@ -75,6 +105,7 @@ export default {
     return {
       urlApi,
       urlApp,
+      helpUrl,
       appVersion,
       apiVersion,
       mdiTwitter,
