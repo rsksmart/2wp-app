@@ -5,8 +5,8 @@ import TrezorConnect, {
 } from '@trezor/connect-web';
 import TrezorService from '@/common/services/TrezorService';
 import sinon from 'sinon';
-import { WalletService } from '../../../src/common/services';
-import { TrezorServiceMockedData } from '../../utils/TrezorServiceMockedData';
+import { WalletService } from '../../../../src/common/services';
+import { TrezorServiceMockedData } from '../../../utils/TrezorServiceMockedData';
 
 const initEnvironment = () => {
   const defaultEnvironmentVariables = {
