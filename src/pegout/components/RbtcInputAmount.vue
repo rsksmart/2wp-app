@@ -22,7 +22,7 @@
                 placeholder="Add amount" type="number" step="0.00000001"
                 @focus="focus = true"
                 @blur="focus = false"
-                @change="updateStore()"
+                @update:modelValue="updateStore()"
                 @keydown="blockLetterKeyDown"
                 variant="solo"
                 flat hide-details full-width single-line/>
