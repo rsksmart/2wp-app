@@ -226,6 +226,13 @@ export default defineComponent({
           .broadcast(liqualitySignedTx.signedTx))
         .then((txHash) => {
           txId.value = txHash;
+          ApiService.registerTx({
+            txHash: txId.value,
+            type: 'pegin',
+            value: Number(pegInTxState.value.amountToTransfer.toBTCTrimmedString()),
+            wallet: 'liquality',
+            fee: Number(safeFee.value.toBTCTrimmedString()),
+          });
         })
         .catch((err) => {
           props.confirmTxState.send('error');
