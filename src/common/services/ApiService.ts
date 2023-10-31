@@ -193,4 +193,18 @@ export default class ApiService {
         .catch(reject);
     });
   }
+
+  static registerTx({
+    txHash, type, value, wallet, fee,
+  }: {
+    txHash: string, type: string, value: number, wallet: string, fee: number,
+  }): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      axios.post(`${ApiService.baseURL}/register`, {
+        txHash, type, value, wallet, fee,
+      })
+        .then(() => resolve())
+        .catch(reject);
+    });
+  }
 }

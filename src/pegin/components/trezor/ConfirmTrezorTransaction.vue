@@ -254,6 +254,13 @@ export default defineComponent({
           .broadcast(trezorSignedTx.payload.serializedTx))
         .then((id) => {
           txId.value = id;
+          ApiService.registerTx({
+            txHash: txId.value,
+            type: 'pegin',
+            value: Number(pegInTxState.value.amountToTransfer.toBTCTrimmedString()),
+            wallet: 'trezor',
+            fee: Number(safeFee.value.toBTCTrimmedString()),
+          });
         })
         .catch((err) => {
           props.confirmTxState.send('error');
