@@ -273,6 +273,13 @@ export default defineComponent({
           .broadcast(tx.signedTx))
         .then((id) => {
           txId.value = id;
+          ApiService.registerTx({
+            txHash: txId.value,
+            type: 'pegin',
+            value: Number(pegInTxState.value.amountToTransfer.toBTCTrimmedString()),
+            wallet: 'ledger',
+            fee: Number(safeFee.value.toBTCTrimmedString()),
+          });
         })
         .catch((err) => {
           props.confirmTxState?.send('error');
