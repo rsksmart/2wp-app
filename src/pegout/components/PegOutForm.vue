@@ -128,6 +128,7 @@ import {
 } from '@/common/types';
 import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
 import { useAction, useGetter, useState } from '@/common/store/helper';
+import { ApiService } from '@/common/services';
 
 export default defineComponent({
   name: 'PegOutForm',
@@ -161,7 +162,23 @@ export default defineComponent({
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
     // eslint-disable-next-line max-len
     const isLedgerConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_LEDGER_CONNECTED);
-
+    const isTrezorConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_TREZOR_CONNECTED);
+    const isMetamaskConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_METAMASK_CONNECTED);
+    const currentWallet = computed(() => {
+      if (isLedgerConnected.value) {
+        return 'ledger';
+      }
+      if (isTrezorConnected.value) {
+        return 'trezor';
+      }
+      if (isMetamaskConnected.value) {
+        return 'metamask';
+      }
+      if (injectedProvider.value === appConstants.RLOGIN_LIQUALITY_WALLET) {
+        return 'liquality';
+      }
+      return '';
+    });
     const authorizedWalletToSignMessage = computed(
       (): boolean => injectedProvider.value === appConstants.RLOGIN_METAMASK_WALLET
         || isLedgerConnected.value
@@ -203,6 +220,13 @@ export default defineComponent({
       pegOutFormState.value.send('loading');
       sendTx()
         .then(() => {
+          ApiService.registerTx({
+            txHash: pegOutTxState.value.txHash as string,
+            type: 'pegout',
+            value: Number(pegOutTxState.value.amountToTransfer.toRBTCTrimmedString()),
+            wallet: currentWallet.value,
+            fee: Number(pegOutTxState.value.calculatedFee.toRBTCTrimmedString()),
+          });
           changePage();
         })
         .catch((error:Error) => {
