@@ -9,7 +9,7 @@
       </v-row>
       <v-col cols="12" align-self="center" class="pt-0" v-if="errorType">
         <v-col offset="2" cols="8">
-          <p class="justify-center"><span v-html="errorMessage"></span></p>
+          <p class="justify-center"><span>{{ errorMessage }}</span></p>
           <p class="justify-center" v-if="urlToMoreInformation">
             <a target='_blank' :href='urlToMoreInformation'>{{messageToUserOnLink}}</a>
           </p>
@@ -27,7 +27,7 @@
       </v-col>
       <v-col v-else cols="12" align-self="center" class="pt-0">
         <v-col offset="3" cols="6">
-          <p class="justify-center"><span v-html="errorMessage"></span></p>
+          <p class="justify-center"><span>{{ errorMessage }}</span></p>
         </v-col>
         <v-row class="mx-0 my-6" justify="space-around">
           <v-btn width="200" height="50" variant="outlined" rounded color="#000000"
