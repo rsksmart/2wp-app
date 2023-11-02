@@ -12,7 +12,7 @@ export interface FeeSelection {
 }
 
 export interface BlockbookUtxo {
-  // address: string;
+  address: string;
   txid: string;
   vout: number;
   satoshis: number;
@@ -25,14 +25,14 @@ export interface BlockbookUtxo {
 export interface BalanceWithUtxos {
   legacy: {
     balance: SatoshiBig;
-    utxos: Array<BlockbookUtxo>
+    utxos: Array<Utxo>
   }
   segwit: {
     balance: SatoshiBig;
-    utxos: Array<BlockbookUtxo>
+    utxos: Array<Utxo>
   }
   nativeSegwit: {
     balance: SatoshiBig;
-    utxos: Array<BlockbookUtxo>
+    utxos: Array<Utxo>
   }
 }
