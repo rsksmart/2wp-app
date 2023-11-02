@@ -22,7 +22,7 @@
                             @keydown="blockLetterKeyDown"
                             @focus="focus = true"
                             @blur="focus = false"
-                            @change="updateStore()"/>
+                            @update:modelValue="updateStore()"/>
             </v-col>
             <v-col cols="4" class="pa-0">
               <v-row class="ma-0">
