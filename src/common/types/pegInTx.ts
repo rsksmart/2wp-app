@@ -38,13 +38,17 @@ export interface Utxo {
   txid: string;
   amount: number; // SatoshiBN
   address?: string;
-  path: string;
-  derivationArray: number[];
   vout: number;
 }
 
+export interface UtxoListPerAccount {
+  legacy: Utxo[],
+  segwit: Utxo[],
+  nativeSegwit: Utxo[],
+}
+
 export interface PegInTxState {
-  utxoList?: Utxo[];
+  utxoList?: UtxoListPerAccount;
   addressList?: WalletAddress[];
   balances: AccountBalance;
   loadingBalance: boolean;
