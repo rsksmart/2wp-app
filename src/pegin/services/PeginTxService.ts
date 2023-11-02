@@ -53,7 +53,7 @@ export default class PeginTxService {
       address: utxo.address ?? '',
       prev_hash: utxo.txid,
       amount: utxo.amount.toString(),
-      address_n: utxo.derivationArray,
+      address_n: [], // TODO: add the correct derivation path for this address
       prev_index: utxo.vout,
     }));
     const federationOutput: NormalizedOutput = {
