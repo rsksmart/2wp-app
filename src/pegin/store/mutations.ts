@@ -2,9 +2,9 @@ import { MutationTree } from 'vuex';
 import * as constants from '@/common/store/constants';
 import {
   BtcAccount, BtcWallet, MiningSpeedFee,
-  PeginConfiguration, PegInTxState, Utxo, WalletAddress,
+  PeginConfiguration, PegInTxState, WalletAddress,
   AccountBalance, FeeAmountData, NormalizedTx,
-  SatoshiBig,
+  SatoshiBig, UtxoListPerAccount,
 } from '@/common/types';
 import { getClearPeginTxState } from '@/common/utils';
 import { WalletService } from '@/common/services';
@@ -13,7 +13,7 @@ export const mutations: MutationTree<PegInTxState> = {
   [constants.PEGIN_TX_SET_ADDRESS_LIST]: (state, addressList: WalletAddress[]) => {
     state.addressList = state.addressList ? [...state.addressList, ...addressList] : addressList;
   },
-  [constants.PEGIN_TX_SET_UTXO_LIST]: (state, utxoList: Utxo[]) => {
+  [constants.PEGIN_TX_SET_UTXO_LIST]: (state, utxoList: UtxoListPerAccount) => {
     state.utxoList = utxoList;
   },
   [constants.PEGIN_TX_SET_TREZOR_CONNECTED]: (state, trezorConnected: boolean) => {

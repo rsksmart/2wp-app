@@ -9,14 +9,11 @@ import SatoshiBig from '@/common/types/SatoshiBig';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import {
   AccountBalance, FeeAmountData, NormalizedTx, RootState,
-  PeginConfiguration, PegInTxState, Utxo, WalletAddress,
-  BtcAccount, BtcWallet, MiningSpeedFee,
+  PeginConfiguration, PegInTxState, WalletAddress,
+  BtcAccount, BtcWallet, MiningSpeedFee, UtxoListPerAccount,
 } from '@/common/types';
 
 export const actions: ActionTree<PegInTxState, RootState> = {
-  [constants.PEGIN_TX_ADD_UTXOS]: ({ commit }, utxoList: Utxo[]) => {
-    commit(constants.PEGIN_TX_SET_UTXO_LIST, { utxoList });
-  },
   [constants.IS_TREZOR_CONNECTED]: ({ commit }, trezorConnected: boolean) => {
     commit(constants.PEGIN_TX_SET_TREZOR_CONNECTED, trezorConnected);
   },
@@ -48,10 +45,11 @@ export const actions: ActionTree<PegInTxState, RootState> = {
     }
     commit(
       constants.PEGIN_TX_WALLET_SERVICE_SUBSCRIBE,
-      (balance: AccountBalance, addressList: WalletAddress[]) => {
+      (balance: AccountBalance, addressList: WalletAddress[], utxoList: UtxoListPerAccount) => {
         const loadingBalance = state.walletService ? state.walletService.isLoadingBalances : false;
         commit(constants.PEGIN_TX_SET_BALANCE, balance);
         commit(constants.PEGIN_TX_SET_ADDRESS_LIST, addressList);
+        commit(constants.PEGIN_TX_SET_UTXO_LIST, utxoList);
         commit(constants.PEGIN_TX_SET_LOADING_BALANCE, loadingBalance);
       },
     );
