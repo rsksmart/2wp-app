@@ -15,7 +15,7 @@ export interface BlockbookUtxo {
   // address: string;
   txid: string;
   vout: number;
-  value: string;
+  satoshis: number;
   height?: number;
   confirmations: number;
   coinbase?: boolean;

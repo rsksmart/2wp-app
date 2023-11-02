@@ -6,7 +6,8 @@ import {
   AccountBalance, AddressStatus, AppNetwork, BtcAccount, Tx, WalletAddress,
 } from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
-import { convertToRequestBalance, getAccountType, deriveBatchAddresses } from '@/common/utils';
+import { getAccountType, deriveBatchAddresses } from '@/common/utils';
+import { BalanceService } from '@/pegin/services';
 
 export default abstract class WalletService {
   protected network: AppNetwork;
@@ -187,7 +188,7 @@ export default abstract class WalletService {
       }
       while (this.hasSubscribers() && !this.areEnoughUnusedAddresses()) {
         // eslint-disable-next-line no-await-in-loop
-        await this.askForBalance(sessionId);
+        await this.askForBalance();
         const maxAmountPeginCompare = new SatoshiBig(maxAmountPegin, 'satoshi');
         if (this.balanceAccumulated.legacy.gte(maxAmountPeginCompare)
           && this.balanceAccumulated.segwit.gte(maxAmountPeginCompare)
@@ -219,26 +220,20 @@ export default abstract class WalletService {
     }
   }
 
-  private async askForBalance(sessionId: string): Promise<void> {
+  private async askForBalance(): Promise<void> {
     let addresses = await this.getAccountAddresses();
     if (addresses.length === 0) {
       throw new Error('Error getting list of addresses - List of addresses is empty');
     }
     addresses = await this.getUnusedValue(addresses);
-    const requestBalance = convertToRequestBalance(addresses);
-    const balancesFound = await ApiService.getBalances(sessionId, requestBalance);
-    const balances = {
-      legacy: new SatoshiBig(balancesFound.legacy || 0, 'satoshi'),
-      segwit: new SatoshiBig(balancesFound.segwit || 0, 'satoshi'),
-      nativeSegwit: new SatoshiBig(balancesFound.nativeSegwit || 0, 'satoshi'),
-    };
+    const balances = await BalanceService.getBalances(addresses);
     if (!balances) {
       throw new Error('Error getting balances');
     }
     this.balanceAccumulated = {
-      legacy: new SatoshiBig(this.balanceAccumulated.legacy.plus(balances.legacy), 'satoshi'),
-      segwit: new SatoshiBig(this.balanceAccumulated.segwit.plus(balances.segwit), 'satoshi'),
-      nativeSegwit: new SatoshiBig(this.balanceAccumulated.nativeSegwit.plus(balances.nativeSegwit), 'satoshi'),
+      legacy: new SatoshiBig(this.balanceAccumulated.legacy.plus(balances.legacy.balance), 'satoshi'),
+      segwit: new SatoshiBig(this.balanceAccumulated.segwit.plus(balances.segwit.balance), 'satoshi'),
+      nativeSegwit: new SatoshiBig(this.balanceAccumulated.nativeSegwit.plus(balances.nativeSegwit.balance), 'satoshi'),
     };
     this.informSubscribers(this.balanceAccumulated, addresses);
   }

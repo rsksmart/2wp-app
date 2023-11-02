@@ -65,13 +65,13 @@ describe('Balance Service', () => {
       data: [{
         txid: '',
         vout: 0,
-        value: '500000',
+        satoshis: 500000,
         confirmations: 0,
       },
       {
         txid: '',
         vout: 0,
-        value: '400000',
+        satoshis: 400000,
         confirmations: 0,
       }],
     };
@@ -80,11 +80,11 @@ describe('Balance Service', () => {
     const nativeSegwitApiResponse = { data: [] };
 
     axiosMock.post.withArgs(`${API_URL}/utxo`, { addressList: legacyAddresses.map(({ address }) => address) })
-      .resolves(legacyApiResponse);
+      .resolves({ data: { ...legacyApiResponse } });
     axiosMock.post.withArgs(`${API_URL}/utxo`, { addressList: segwitAddresses.map(({ address }) => address) })
-      .resolves(segwitApiResponse);
+      .resolves({ data: { ...segwitApiResponse } });
     axiosMock.post.withArgs(`${API_URL}/utxo`, { addressList: nativeSegwitAddresses.map(({ address }) => address) })
-      .resolves(nativeSegwitApiResponse);
+      .resolves({ data: { ...nativeSegwitApiResponse } });
 
     const balances = {
       legacy: {
