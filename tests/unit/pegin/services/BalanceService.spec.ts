@@ -66,12 +66,14 @@ describe('Balance Service', () => {
         txid: '',
         vout: 0,
         satoshis: 500000,
+        address: 'tb1qtanvhhl8ve32tcdxkrsamyy6vq5p62ctdv89l0',
         confirmations: 0,
       },
       {
         txid: '',
         vout: 0,
         satoshis: 400000,
+        address: 'tb1qtanvhhl8ve32tcdxkrsamyy6vq5p62ctdv89l0',
         confirmations: 0,
       }],
     };
@@ -89,7 +91,12 @@ describe('Balance Service', () => {
     const balances = {
       legacy: {
         balance: new SatoshiBig('900000', 'satoshi'),
-        utxos: legacyApiResponse.data,
+        utxos: legacyApiResponse.data.map((u) => ({
+          txid: u.txid,
+          vout: u.vout,
+          amount: u.satoshis,
+          address: u.address,
+        })),
       },
       segwit: {
         balance: new SatoshiBig('0', 'satoshi'),
