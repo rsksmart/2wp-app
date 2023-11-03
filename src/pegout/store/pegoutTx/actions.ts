@@ -7,6 +7,7 @@ import {
 } from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { BridgeService } from '@/common/services/BridgeService';
+import { getEstimatedFee } from '@/common/utils';
 
 export const actions: ActionTree<PegOutTxState, RootState> = {
   [constants.PEGOUT_TX_SELECT_FEE_LEVEL]: ({ commit }, feeLevel: MiningSpeedFee) => {
@@ -16,7 +17,6 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
     commit(constants.PEGOUT_TX_SET_AMOUNT, amountToTransfer);
   },
   [constants.PEGOUT_TX_CALCULATE_FEE]: async ({ commit, state, rootState }) => {
-    const bridgeService = new BridgeService();
     const web3 = rootState.web3Session?.web3 as Web3;
     const sender = rootState.web3Session?.account as string;
     // RSK Fee
@@ -30,11 +30,7 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
     const calculatedFee = new WeiBig(gasPrice * gas, 'wei');
     commit(constants.PEGOUT_TX_SET_RSK_ESTIMATED_FEE, calculatedFee);
     // BTC Fee
-    const [nextPegoutCost, pegoutQueueCount] = await Promise.all([
-      bridgeService.getEstimatedFeesForNextPegOutEvent(),
-      bridgeService.getQueuedPegoutsCount(),
-    ]);
-    const estimatedFee = pegoutQueueCount > 0 ? nextPegoutCost / pegoutQueueCount : 0;
+    const estimatedFee = await getEstimatedFee();
     commit(constants.PEGOUT_TX_SET_BTC_ESTIMATED_FEE, new SatoshiBig(estimatedFee, 'satoshi'));
   },
   [constants.PEGOUT_TX_ADD_PEGOUT_CONFIGURATION]: ({ commit }) => {
