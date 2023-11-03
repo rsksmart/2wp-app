@@ -6,7 +6,6 @@ import {
   MiningSpeedFee, PegOutTxState, RootState, SatoshiBig, SessionState, WeiBig,
 } from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
-import { BridgeService } from '@/common/services/BridgeService';
 import { getEstimatedFee } from '@/common/utils';
 
 export const actions: ActionTree<PegOutTxState, RootState> = {
