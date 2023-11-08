@@ -63,7 +63,7 @@ export function getEstimatedFee(): Promise<SatoshiBig> {
       bridgeService.getQueuedPegoutsCount(),
     ])
       .then(([nextPegoutCost, pegoutQueueCount]) => {
-        const estimatedFee = pegoutQueueCount > 0 ? nextPegoutCost / pegoutQueueCount : 0;
+        const estimatedFee = nextPegoutCost / (pegoutQueueCount + 1);
         resolve(new SatoshiBig(estimatedFee, 'satoshi'));
       })
       .catch(reject);
