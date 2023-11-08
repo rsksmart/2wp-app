@@ -24,8 +24,8 @@
               <a href="https://rootstock.io/terms-conditions/" target="_blank">
                 Terms & Conditions
               </a>
-              <a :href="`https://github.com/rsksmart/2wp-app/releases/tag/v${apiVersion}`" target="_blank">Api Version: {{apiVersion}}</a>
-              <a :href="`https://github.com/rsksmart/2wp-app/releases/tag/v${appVersion}`" target="_blank">App Version: {{appVersion}}</a>
+              <a :href="urlApi" target="_blank" rel="noopener">Api Version: {{apiVersion}}</a>
+              <a :href="urlApp" target="_blank" rel="noopener">App Version: {{appVersion}}</a>
             </v-row>
           </v-col>
           <v-col class="pt-1">
@@ -64,7 +64,7 @@ export default {
     const store = useStore();
     const appVersion = computed<string>(() => store.getters.appVersion);
 
-    const url = computed(() => `https://github.com/rsksmart/2wp-app/releases/tag/v${appVersion.value}`);
+    const urlApp = computed(() => `https://github.com/rsksmart/2wp-app/releases/tag/v${appVersion.value}`);
     const urlApi = computed(() => `https://github.com/rsksmart/2wp-api/releases/tag/v${apiVersion.value}`);
 
     ApiService.getApiInformation()
@@ -74,7 +74,7 @@ export default {
 
     return {
       urlApi,
-      url,
+      urlApp,
       appVersion,
       apiVersion,
       mdiTwitter,
