@@ -6,7 +6,7 @@ import {
   MiningSpeedFee, PegOutTxState, RootState, SatoshiBig, SessionState, WeiBig,
 } from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
-import { BridgeService } from '@/common/services/BridgeService';
+import { getEstimatedFee } from '@/common/utils';
 
 export const actions: ActionTree<PegOutTxState, RootState> = {
   [constants.PEGOUT_TX_SELECT_FEE_LEVEL]: ({ commit }, feeLevel: MiningSpeedFee) => {
@@ -16,26 +16,32 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
     commit(constants.PEGOUT_TX_SET_AMOUNT, amountToTransfer);
   },
   [constants.PEGOUT_TX_CALCULATE_FEE]: async ({ commit, state, rootState }) => {
-    const bridgeService = new BridgeService();
     const web3 = rootState.web3Session?.web3 as Web3;
     const sender = rootState.web3Session?.account as string;
-    // RSK Fee
-    const gas = await web3.eth.estimateGas({
-      from: sender,
-      to: state.pegoutConfiguration.bridgeContractAddress,
-      value: state.amountToTransfer.toWeiString(),
-    });
-    commit(constants.PEGOUT_TX_SET_GAS, gas);
-    const gasPrice = Number(await web3.eth.getGasPrice());
-    const calculatedFee = new WeiBig(gasPrice * gas, 'wei');
-    commit(constants.PEGOUT_TX_SET_RSK_ESTIMATED_FEE, calculatedFee);
-    // BTC Fee
-    const [nextPegoutCost, pegoutQueueCount] = await Promise.all([
-      bridgeService.getEstimatedFeesForNextPegOutEvent(),
-      bridgeService.getQueuedPegoutsCount(),
-    ]);
-    const estimatedFee = pegoutQueueCount > 0 ? nextPegoutCost / pegoutQueueCount : 0;
-    commit(constants.PEGOUT_TX_SET_BTC_ESTIMATED_FEE, new SatoshiBig(estimatedFee, 'satoshi'));
+
+    try {
+      // RSK Fee
+      const gas = await web3.eth.estimateGas({
+        from: sender,
+        to: state.pegoutConfiguration.bridgeContractAddress,
+        value: state.amountToTransfer.toWeiString(),
+      });
+      commit(constants.PEGOUT_TX_SET_GAS, gas);
+      const gasPrice = Number(await web3.eth.getGasPrice());
+      const calculatedFee = new WeiBig(gasPrice * gas, 'wei');
+      commit(constants.PEGOUT_TX_SET_RSK_ESTIMATED_FEE, calculatedFee);
+    } catch (e) {
+      commit(constants.PEGOUT_TX_SET_GAS, 0);
+      commit(constants.PEGOUT_TX_SET_RSK_ESTIMATED_FEE, 0);
+    }
+
+    try {
+      // BTC Fee
+      const estimatedFee = await getEstimatedFee();
+      commit(constants.PEGOUT_TX_SET_BTC_ESTIMATED_FEE, new SatoshiBig(estimatedFee, 'satoshi'));
+    } catch (e) {
+      commit(constants.PEGOUT_TX_SET_BTC_ESTIMATED_FEE, new SatoshiBig(0, 'satoshi'));
+    }
   },
   [constants.PEGOUT_TX_ADD_PEGOUT_CONFIGURATION]: ({ commit }) => {
     commit(constants.PEGOUT_TX_SET_PEGOUT_CONFIGURATION, {

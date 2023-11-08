@@ -9,6 +9,7 @@ import { EnvironmentAccessorService } from '@/common/services/enviroment-accesso
 import * as constants from '@/common/store/constants';
 import { ApiService } from '@/common/services';
 import { BridgeService } from '@/common/services/BridgeService';
+import { getEstimatedFee } from '@/common/utils';
 
 export const actions: ActionTree<TxStatus, RootState> = {
   [constants.STATUS_CLEAR]: ({ commit }) => {
@@ -29,18 +30,13 @@ export const actions: ActionTree<TxStatus, RootState> = {
         commit(constants.STATUS_SET_TX_TYPE, TxStatusType.UNEXPECTED_ERROR);
       });
   },
-  [constants.STATUS_GET_ESTIMATED_FEE]: ({ commit }) => {
-    const bridgeService = new BridgeService();
-    Promise.all([
-      bridgeService.getEstimatedFeesForNextPegOutEvent(),
-      bridgeService.getQueuedPegoutsCount(),
-    ]).then(([nextPegoutCost, pegoutQueueCount]) => {
-      const estimatedFee = pegoutQueueCount > 0 ? nextPegoutCost / pegoutQueueCount : 0;
+  [constants.STATUS_GET_ESTIMATED_FEE]: async ({ commit }) => {
+    try {
+      const estimatedFee = await getEstimatedFee();
       commit(constants.STATUS_SET_BTC_ESTIMATED_FEE, new SatoshiBig(estimatedFee, 'satoshi'));
-    })
-      .catch(() => {
-        commit(constants.STATUS_SET_BTC_ESTIMATED_FEE, new SatoshiBig(0, 'satoshi'));
-      });
+    } catch (e) {
+      commit(constants.STATUS_SET_BTC_ESTIMATED_FEE, new SatoshiBig(0, 'satoshi'));
+    }
   },
   [constants.STATUS_GET_ESTIMATED_RELEASE_TIME_IN_MINUTES]: ({ state, commit })
     : Promise<void> => new Promise<void>((resolve, reject) => {
