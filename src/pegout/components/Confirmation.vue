@@ -48,7 +48,7 @@ import { Machine } from '@/common/utils';
 import { TxStatusType } from '@/common/types/store';
 import { TxSummaryOrientation } from '@/common/types/Status';
 import {
-  NormalizedSummary, PegOutTxState, SatoshiBig,
+  NormalizedSummary, PegOutTxState, SatoshiBig, SessionState,
 } from '@/common/types';
 import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
 import * as constants from '@/common/store/constants';
@@ -74,6 +74,7 @@ export default defineComponent({
     const orientationSummary = TxSummaryOrientation.HORIZONTAL;
     const router = useRouter();
     const pegoutTxState = useState<PegOutTxState>('pegOutTx');
+    const session = useState<SessionState>('web3Session');
     const btcDerivedAddress = useStateAttribute<string>('web3Session', 'btcDerivedAddress');
     const account = useStateAttribute<string>('web3Session', 'account');
     const clearStatus = useAction('status', constants.STATUS_CLEAR);
@@ -104,7 +105,13 @@ export default defineComponent({
         + 't=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;'
         + 'y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);'
         + `})(window, document, 'clarity', 'script', '${vueAppClarityId}');`;
-      scriptTag.text = 'clarity("set", "pegout_tx", "true");';
+      scriptTag.text = 'clarity("set", "operation", "pegout");';
+      try {
+        scriptTag.text = `clarity("set", "wallet", "${session.value.rLogin?.provider}");`;
+      } catch (e) {
+        scriptTag.text = 'clarity("set", "wallet", "undefined");';
+      }
+      scriptTag.text = `clarity("set", "value", "${pegoutTxState.value.amountToTransfer.toRBTCTrimmedString()}");`;
       document.body.appendChild(scriptTag);
     }
 

@@ -14,6 +14,7 @@ const defaultEnvironmentVariables = {
   vueAppCoin: constants.BTC_NETWORK_TESTNET as AppNetwork,
   vueAppManifestEmail: '',
   vueAppManifestAppUrl: '',
+  vueAppHotjarId: '',
   vueAppClarityId: '',
   pegoutMinValue: 0.004,
   pegoutMaxValue: 1,
