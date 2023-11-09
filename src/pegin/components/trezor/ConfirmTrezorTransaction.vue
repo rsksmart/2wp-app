@@ -351,8 +351,9 @@ export default class ConfirmTrezorTransaction extends Vue {
       + 't=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;'
       + 'y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);'
        + `})(window, document, 'clarity', 'script', '${vueAppClarityId}');`;
-    this.scriptTag.text = 'clarity("set", "pegin_using_trezor", "1");';
-    this.scriptTag.text = `clarity("set", "pegin_using_trezor_value", "${amountFromString}");`;
+    this.scriptTag.text = 'clarity("set", "operation", "pegin");';
+    this.scriptTag.text = 'clarity("set", "wallet", "Trezor");';
+    this.scriptTag.text = `clarity("set", "value", "${amountFromString}");`;
     document.body.appendChild(this.scriptTag);
   }
 }

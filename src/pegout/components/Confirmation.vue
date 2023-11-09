@@ -128,7 +128,13 @@ export default class Confirmation extends Vue {
       + 't=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;'
       + 'y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);'
        + `})(window, document, 'clarity', 'script', '${vueAppClarityId}');`;
-    this.scriptTag.text = 'clarity("set", "pegout_tx", "true");';
+    this.scriptTag.text = 'clarity("set", "operation", "pegout");';
+    try {
+      this.scriptTag.text = `clarity("set", "wallet", "${this.session.rLogin?.provider}");`;
+    } catch (e) {
+      this.scriptTag.text = 'clarity("set", "wallet", "undefined");';
+    }
+    this.scriptTag.text = `clarity("set", "value", "${this.pegoutTxState.amountToTransfer.toRBTCTrimmedString()}");`;
     document.body.appendChild(this.scriptTag);
   }
 }
