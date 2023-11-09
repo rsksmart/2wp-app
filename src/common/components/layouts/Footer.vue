@@ -74,8 +74,12 @@ export default {
 
     function getDevPortalSlug() {
       const [, feature, wallet] = route.path.split('/');
+      console.log(feature);
       if (feature === 'pegin' && wallet) {
         return `${feature}/${wallet}`;
+      }
+      if (feature === 'status') {
+        return '';
       }
       if (feature === 'pegout' && isRloginDefined.value) {
         if (isLedger.value) {
