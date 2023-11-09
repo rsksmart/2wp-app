@@ -178,7 +178,7 @@ export default defineComponent({
           focus.value = false;
           checkStep();
         }).catch((e) => {
-          console.log(e);
+          console.error(e);
           if (web3Address.value) {
             disconnectWallet();
           }

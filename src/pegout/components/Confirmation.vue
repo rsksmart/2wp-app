@@ -41,10 +41,10 @@
 
 <script lang="ts">
 import {
-  computed, PropType, defineComponent, onBeforeMount,
+  computed, PropType, defineComponent, onBeforeMount, ref,
 } from 'vue';
 import { useRouter } from 'vue-router';
-import { Machine } from '@/common/utils';
+import { Machine, addTag } from '@/common/utils';
 import { TxStatusType } from '@/common/types/store';
 import { TxSummaryOrientation } from '@/common/types/Status';
 import {
@@ -55,7 +55,6 @@ import * as constants from '@/common/store/constants';
 import {
   useAction, useGetter, useState, useStateAttribute,
 } from '@/common/store/helper';
-import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
 export default defineComponent({
   name: 'ConfirmationPegout',
@@ -70,6 +69,7 @@ export default defineComponent({
   },
   setup() {
     const appConstants = constants;
+    const injectedProvider = ref('');
     const typeSummary = TxStatusType.PEGOUT;
     const orientationSummary = TxSummaryOrientation.HORIZONTAL;
     const router = useRouter();
@@ -78,6 +78,24 @@ export default defineComponent({
     const account = useStateAttribute<string>('web3Session', 'account');
     const clearStatus = useAction('status', constants.STATUS_CLEAR);
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
+    const isLedgerConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_LEDGER_CONNECTED);
+    const isTrezorConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_TREZOR_CONNECTED);
+    const isMetamaskConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_METAMASK_CONNECTED);
+    const currentWallet = computed(() => {
+      if (isLedgerConnected.value) {
+        return 'ledger';
+      }
+      if (isTrezorConnected.value) {
+        return 'trezor';
+      }
+      if (isMetamaskConnected.value) {
+        return 'metamask';
+      }
+      if (injectedProvider.value === appConstants.RLOGIN_LIQUALITY_WALLET) {
+        return 'liquality';
+      }
+      return '';
+    });
     const successPegOutSummary = computed((): NormalizedSummary => ({
       amountFromString: pegoutTxState.value.amountToTransfer.toRBTCTrimmedString(),
       amountReceivedString: estimatedBtcToReceive.value.toBTCTrimmedString(),
@@ -96,16 +114,9 @@ export default defineComponent({
     }
 
     function appendClarityScript(): void {
-      const { vueAppClarityId } = EnvironmentAccessorService.getEnvironmentVariables();
-      const scriptTag:HTMLScriptElement = document.createElement('script');
-      scriptTag.type = 'text/javascript';
-      scriptTag.text = '(function(c,l,a,r,i,t,y){'
-        + 'c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};'
-        + 't=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;'
-        + 'y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);'
-        + `})(window, document, 'clarity', 'script', '${vueAppClarityId}');`;
-      scriptTag.text = 'clarity("set", "pegout_tx", "true");';
-      document.body.appendChild(scriptTag);
+      addTag('operation', 'pegout');
+      addTag('wallet', `${currentWallet.value}`);
+      addTag('value', `${pegoutTxState.value.amountToTransfer.toRBTCTrimmedString()}`);
     }
 
     onBeforeMount(appendClarityScript);

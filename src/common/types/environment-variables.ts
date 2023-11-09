@@ -19,6 +19,8 @@ export class EnvironmentVariables {
 
   public vueAppRskExplorer: string;
 
+  public vueAppHotjarId: number;
+
   public vueAppClarityId: string;
 
   public pegoutMinValue: number;
@@ -58,6 +60,7 @@ export class EnvironmentVariables {
     this.vueAppWalletAddressPerCall = Number(process.env.VUE_APP_WALLET_ADDRESS_PER_CALL)
       || defaultValues.vueAppWalletAddressPerCall;
     this.vueAppRskExplorer = process.env.VUE_APP_RSK_EXPLORER || defaultValues.vueAppRskExplorer;
+    this.vueAppHotjarId = process.env.VUE_APP_HOTJAR_ID || defaultValues.vueAppHotjarId;
     this.vueAppClarityId = process.env.VUE_APP_CLARITY_ID || defaultValues.vueAppClarityId;
     this.pegoutMinValue = process.env.VUE_APP_PEGOUT_MIN_AMOUNT_ALLOWED_IN_RBTC
       || defaultValues.pegoutMinValue;

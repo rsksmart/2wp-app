@@ -31,6 +31,8 @@ jobs:
         run: >
           VUE_APP_COIN='main'
           VUE_APP_MANIFEST_EMAIL='user@rsk.co'
+          VUE_APP_HOTJAR_ID=${{ secrets.STAGING_MAINNET_VUE_APP_HOTJAR_ID }}
+          VUE_APP_CLARITY_ID=${{ secrets.STAGING_MAINNET_VUE_APP_CLARITY_ID }}
           VUE_APP_MANIFEST_APP_URL='https://app.2wp.staging.rootstock.io'
           VUE_APP_API_BASE_URL='https://api.2wp.staging.rootstock.io'
           VUE_APP_RSK_NODE_HOST='https://public-node.rsk.co'
