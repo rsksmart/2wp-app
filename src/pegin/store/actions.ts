@@ -12,6 +12,7 @@ import {
   PeginConfiguration, PegInTxState, WalletAddress,
   BtcAccount, BtcWallet, MiningSpeedFee, UtxoListPerAccount, Utxo,
 } from '@/common/types';
+import { getCookie, setCookie } from '@/common/utils';
 import TxFeeService from '../services/TxFeeService';
 
 export const actions: ActionTree<PegInTxState, RootState> = {
@@ -55,14 +56,22 @@ export const actions: ActionTree<PegInTxState, RootState> = {
       },
     );
   },
-  [constants.PEGIN_TX_ADD_BITCOIN_PRICE]: ({ commit }) => axios.get(constants.COINGECKO_API_URL)
-    .then((response: AxiosResponse) => {
-      const [result] = response.data;
-      commit(constants.PEGIN_TX_SET_BITCOIN_PRICE, result.current_price);
-    })
-    .catch(() => {
-      commit(constants.PEGIN_TX_SET_BITCOIN_PRICE, 0);
-    }),
+  [constants.PEGIN_TX_ADD_BITCOIN_PRICE]: ({ commit }) => {
+    const storedPrice = getCookie('BtcPrice');
+    if (storedPrice) {
+      commit(constants.PEGIN_TX_SET_BITCOIN_PRICE, Number(storedPrice));
+    } else {
+      axios.get(constants.COINGECKO_API_URL)
+        .then((response: AxiosResponse) => {
+          const [result] = response.data;
+          setCookie('BtcPrice', result.current_price, constants.COOKIE_EXPIRATION_HOURS);
+          commit(constants.PEGIN_TX_SET_BITCOIN_PRICE, result.current_price);
+        })
+        .catch(() => {
+          commit(constants.PEGIN_TX_SET_BITCOIN_PRICE, 0);
+        });
+    }
+  },
   [constants.PEGIN_TX_CLEAR_STATE]: ({ commit }): void => {
     commit(constants.PEGIN_TX_CLEAR);
   },

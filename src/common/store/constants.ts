@@ -274,3 +274,4 @@ export const WALLET_NAMES = {
   METAMASK: 'metamask',
 } as const;
 export const PEGIN_OUTPUTS = 3;
+export const COOKIE_EXPIRATION_HOURS = 12;

@@ -10,8 +10,12 @@ import {
   TransactionType, SessionState, RootState, WeiBig,
 } from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
-import { getBtcAddressFromSignedMessage } from '@/common/utils';
 import { ApiService } from '@/common/services';
+import {
+  getBtcAddressFromSignedMessage,
+  getCookie,
+  setCookie,
+} from '@/common/utils';
 
 export const actions: ActionTree<SessionState, RootState> = {
   [constants.SESSION_CONNECT_WEB3]: ({ commit, state }): Promise<void> => {
@@ -118,17 +122,26 @@ export const actions: ActionTree<SessionState, RootState> = {
         commit(constants.SESSION_SET_BTC_ACCOUNT, btcAddress);
       }
     },
-  [constants.SESSION_ADD_BITCOIN_PRICE]: ({ commit }) => axios.get(constants.COINGECKO_API_URL)
-    .then((response: AxiosResponse) => {
-      const [result] = response.data;
-      commit(constants.SESSION_SET_BITCOIN_PRICE, result.current_price);
-    })
-    .catch(() => {
-      commit(constants.SESSION_SET_BITCOIN_PRICE, 0);
-    })
-    .finally(() => {
+  [constants.SESSION_ADD_BITCOIN_PRICE]: ({ commit }) => {
+    const storedPrice = getCookie('BtcPrice');
+    if (storedPrice) {
+      commit(constants.SESSION_SET_BITCOIN_PRICE, Number(storedPrice));
       commit(constants.SESSION_SET_TX_TYPE, 'PEG_IN_TRANSACTION_TYPE');
-    }),
+    } else {
+      axios.get(constants.COINGECKO_API_URL)
+        .then((response: AxiosResponse) => {
+          const [result] = response.data;
+          setCookie('BtcPrice', result.current_price, constants.COOKIE_EXPIRATION_HOURS);
+          commit(constants.SESSION_SET_BITCOIN_PRICE, result.current_price);
+        })
+        .catch(() => {
+          commit(constants.SESSION_SET_BITCOIN_PRICE, 0);
+        })
+        .finally(() => {
+          commit(constants.SESSION_SET_TX_TYPE, 'PEG_IN_TRANSACTION_TYPE');
+        });
+    }
+  },
   [constants.SESSION_CLEAR]: ({ commit }) => {
     commit(constants.SESSION_CLEAR_STATE);
   },

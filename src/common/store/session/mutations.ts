@@ -33,7 +33,7 @@ export const mutations: MutationTree<SessionState> = {
   [constants.SESSION_SET_BTC_ACCOUNT]: (state, btcDerivedAddress: string) => {
     state.btcDerivedAddress = btcDerivedAddress;
   },
-  [constants.SESSION_SET_BITCOIN_PRICE]: (state, bitcoinPrice) => {
+  [constants.SESSION_SET_BITCOIN_PRICE]: (state, bitcoinPrice: number) => {
     state.bitcoinPrice = bitcoinPrice;
   },
   [constants.SESSION_CLEAR_STATE]: async (state) => {
