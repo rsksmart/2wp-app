@@ -6,7 +6,7 @@ import {
   MiningSpeedFee, PegOutTxState, RootState, SatoshiBig, SessionState, WeiBig,
 } from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
-import { getEstimatedFee } from '@/common/utils';
+import { getCookie, getEstimatedFee, setCookie } from '@/common/utils';
 
 export const actions: ActionTree<PegOutTxState, RootState> = {
   [constants.PEGOUT_TX_SELECT_FEE_LEVEL]: ({ commit }, feeLevel: MiningSpeedFee) => {
@@ -88,12 +88,20 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
   [constants.PEGOUT_TX_CLEAR]: ({ commit }) => {
     commit(constants.PEGOUT_TX_CLEAR_STATE);
   },
-  [constants.PEGOUT_TX_ADD_BITCOIN_PRICE]: ({ commit }) => axios.get(constants.COINGECKO_API_URL)
-    .then((response: AxiosResponse) => {
-      const [result] = response.data;
-      commit(constants.PEGOUT_TX_SET_BITCOIN_PRICE, result.current_price);
-    })
-    .catch(() => {
-      commit(constants.PEGOUT_TX_SET_BITCOIN_PRICE, 0);
-    }),
+  [constants.PEGOUT_TX_ADD_BITCOIN_PRICE]: ({ commit }) => {
+    const storedPrice = getCookie('BtcPrice');
+    if (storedPrice) {
+      commit(constants.PEGOUT_TX_SET_BITCOIN_PRICE, Number(storedPrice));
+    } else {
+      axios.get(constants.COINGECKO_API_URL)
+        .then((response: AxiosResponse) => {
+          const [result] = response.data;
+          setCookie('BtcPrice', result.current_price, constants.COOKIE_EXPIRATION_HOURS);
+          commit(constants.PEGOUT_TX_SET_BITCOIN_PRICE, result.current_price);
+        })
+        .catch(() => {
+          commit(constants.PEGOUT_TX_SET_BITCOIN_PRICE, 0);
+        });
+    }
+  },
 };

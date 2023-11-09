@@ -265,3 +265,27 @@ export function convertToRequestBalance(walletAddress: WalletAddress[]) : Reques
 }
 
 export const remove0x = (value: string) => (!value.startsWith('0x') ? value : value.substring(2));
+
+export function getCookie(cname: string) {
+  const name = `${cname}=`;
+  const decodedCookie = decodeURIComponent(document.cookie);
+  const ca = decodedCookie.split(';');
+  let cookieValue = '';
+  ca.forEach((value) => {
+    let c = value;
+    while (c.charAt(0) === ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) === 0) {
+      cookieValue = c.substring(name.length, c.length);
+    }
+  });
+  return cookieValue;
+}
+
+export function setCookie(cookieName: string, cookieValue: number, expirationHours: number) {
+  const d = new Date();
+  d.setTime(d.getTime() + (expirationHours * 60 * 60 * 1000));
+  const expires = `expires=${d.toUTCString()}`;
+  document.cookie = `${cookieName}=${cookieValue};${expires};path=/`;
+}
