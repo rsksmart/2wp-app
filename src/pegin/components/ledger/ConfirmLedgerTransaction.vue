@@ -317,8 +317,9 @@ export default defineComponent({
         + 't=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;'
         + 'y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);'
         + `})(window, document, 'clarity', 'script', '${vueAppClarityId}');`;
-      scriptTag.text = 'clarity("set", "pegin_using_ledger", "1");';
-      scriptTag.text = `clarity("set", "pegin_using_ledger_value", "${amountFromString}");`;
+      scriptTag.text = 'clarity("set", "operation", "pegin");';
+      scriptTag.text = 'clarity("set", "wallet", "Ledger");';
+      scriptTag.text = `clarity("set", "value", "${amountFromString}");`;
       document.body.appendChild(scriptTag);
     }
 
