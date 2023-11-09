@@ -16,7 +16,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          ref: main
+          ref: qa 
 
       - name: Setup NodeJS
         uses: actions/setup-node@v3
@@ -31,6 +31,8 @@ jobs:
         run: >
           VUE_APP_COIN='test'
           VUE_APP_MANIFEST_EMAIL='user@rsk.co'
+          VUE_APP_HOTJAR_ID=${{ secrets.STAGING_TESTNET_VUE_APP_HOTJAR_ID }}
+          VUE_APP_CLARITY_ID=${{ secrets.STAGING_TESTNET_VUE_APP_CLARITY_ID }}
           VUE_APP_MANIFEST_APP_URL='https://app.2wp.staging-testnet.rootstock.io'
           VUE_APP_API_BASE_URL='https://api.2wp.staging-testnet.rootstock.io'
           VUE_APP_RSK_NODE_HOST='https://public-node.testnet.rsk.co'

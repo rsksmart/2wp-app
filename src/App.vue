@@ -29,6 +29,7 @@ export default {
   },
   setup() {
     let scriptTag: HTMLScriptElement;
+    let hotjarScriptTag: HTMLScriptElement;
     const getBtcPrice = useAction('web3Session', constants.SESSION_ADD_BITCOIN_PRICE);
 
     const contentSecurityPolicy = computed((): string => {
@@ -37,9 +38,9 @@ export default {
       response = `
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
       script-src 'self' 'nonce-${vuetifyNonce}' 'unsafe-eval';
-      script-src-elem 'self' 'unsafe-inline' https://script.hotjar.com https://static.hotjar.com;
+      script-src-elem 'self' 'unsafe-inline' https://script.hotjar.com https://www.clarity.ms/s/* https://static.hotjar.com https://*.hotjar.com https://*.hotjar.io https://api.coingecko.com/ https://*.clarity.ms https://www.clarity.ms/*;
       img-src data: https:;
-      connect-src 'self' ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://api.coingecko.com ;
+      connect-src 'self' 'unsafe-inline' https://www.clarity.ms/s/0.7.16/clarity.js wss://192.168.15.4:8080/ws wss://* https://*.hotjar.com https://*.hotjar.io https://www.clarity.ms/s/* wss://*.hotjar.com ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://api.coingecko.com https://*.clarity.ms https://www.clarity.ms/* ;
       object-src 'none';
       frame-src https://connect.trezor.io;
       worker-src 'none';
@@ -55,17 +56,33 @@ export default {
     }
 
     function appendClarity(): void {
-      const { vueAppClarityId } = EnvironmentAccessorService.getEnvironmentVariables();
+      const envVariables = EnvironmentAccessorService.getEnvironmentVariables();
       scriptTag = document.createElement('script');
       scriptTag.type = 'text/javascript';
       scriptTag.text = '(function(c,l,a,r,i,t,y){'
         + 'c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};'
         + 't=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;'
         + 'y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);'
-        + `})(window, document, 'clarity', 'script', '${vueAppClarityId}');`;
+        + `})(window, document, 'clarity', 'script', '${envVariables.vueAppClarityId}');`;
       document.body.appendChild(scriptTag);
     }
 
+    function appendHotjar(): void {
+      const envVariables = EnvironmentAccessorService.getEnvironmentVariables();
+      hotjarScriptTag = document.createElement('script');
+      hotjarScriptTag.type = 'text/javascript';
+      hotjarScriptTag.text = '(function(h,o,t,j,a,r){'
+      + 'h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};'
+      + `h._hjSettings={hjid:'${envVariables.vueAppHotjarId}',hjsv:6};`
+      + 'a=o.getElementsByTagName("head")[0];'
+      + 'r=o.createElement("script");r.async=1;'
+      + 'r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;'
+      + 'a.appendChild(r);'
+      + '})(window,document,"https://static.hotjar.com/c/hotjar-",".js?sv=");';
+      document.body.appendChild(hotjarScriptTag);
+    }
+
+    appendHotjar();
     getBtcPrice();
     appendClarity();
     appendCSP();

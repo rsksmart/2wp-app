@@ -156,6 +156,8 @@ export default class TrezorService extends WalletService {
 
   public sign(tx: Tx): Promise<TrezorSignedTx> {
     const trezorTx: TrezorTx = tx as TrezorTx;
+    trezorTx.inputs = JSON.parse(JSON.stringify(trezorTx.inputs));
+    // trezorTx.inputs[0].address_n = [...trezorTx.inputs[0].address_n!];
     return new Promise<TrezorSignedTx>((resolve, reject) => {
       TrezorConnect.signTransaction({
         inputs: trezorTx.inputs,
