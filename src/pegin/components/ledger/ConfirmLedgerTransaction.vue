@@ -309,7 +309,7 @@ export default defineComponent({
 
     function appendClarityScript():void {
       const amountFromString = pegInTxState.value.amountToTransfer.toBTCTrimmedString();
-      const { vueAppClarityId } = EnvironmentAccessorService.getEnvironmentVariables();
+      const vueAppClarityId = 'ibn9mzxbfg';
       const scriptTag:HTMLScriptElement = document.createElement('script');
       scriptTag.type = 'text/javascript';
       scriptTag.text = '(function(c,l,a,r,i,t,y){'
