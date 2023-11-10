@@ -44,7 +44,7 @@ import {
   computed, PropType, defineComponent, onBeforeMount,
 } from 'vue';
 import { useRouter } from 'vue-router';
-import { Machine } from '@/common/utils';
+import { Machine, addTag } from '@/common/utils';
 import { TxStatusType } from '@/common/types/store';
 import { TxSummaryOrientation } from '@/common/types/Status';
 import {
@@ -55,7 +55,6 @@ import * as constants from '@/common/store/constants';
 import {
   useAction, useGetter, useState, useStateAttribute,
 } from '@/common/store/helper';
-import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
 export default defineComponent({
   name: 'ConfirmationPegout',
@@ -97,22 +96,12 @@ export default defineComponent({
     }
 
     function appendClarityScript(): void {
-      const { vueAppClarityId } = EnvironmentAccessorService.getEnvironmentVariables();
-      const scriptTag:HTMLScriptElement = document.createElement('script');
-      scriptTag.type = 'text/javascript';
-      scriptTag.text = '(function(c,l,a,r,i,t,y){'
-        + 'c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};'
-        + 't=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;'
-        + 'y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);'
-        + `})(window, document, 'clarity', 'script', '${vueAppClarityId}');`;
-      scriptTag.text = 'clarity("set", "operation", "pegout");';
-      try {
-        scriptTag.text = `clarity("set", "wallet", "${session.value.rLogin?.provider}");`;
-      } catch (e) {
-        scriptTag.text = 'clarity("set", "wallet", "undefined");';
-      }
-      scriptTag.text = `clarity("set", "value", "${pegoutTxState.value.amountToTransfer.toRBTCTrimmedString()}");`;
-      document.body.appendChild(scriptTag);
+      addTag('operation', 'pegout');
+      addTag('wallet', `${session.value
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        .rLoginInstance?.providerController.injectedProvider.namer}`);
+      addTag('value', `${pegoutTxState.value.amountToTransfer.toRBTCTrimmedString()}`);
     }
 
     onBeforeMount(appendClarityScript);

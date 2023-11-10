@@ -40,7 +40,7 @@ export default {
       script-src 'self' 'nonce-${vuetifyNonce}' 'unsafe-eval';
       script-src-elem 'self' 'unsafe-inline' https://script.hotjar.com https://static.hotjar.com https://*.hotjar.com https://*.hotjar.io https://api.coingecko.com/ https://*.clarity.ms https://www.clarity.ms;
       img-src data: https:;
-      connect-src 'self' 'unsafe-inline' https://*.hotjar.com https://*.hotjar.io wss://*.hotjar.com ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://api.coingecko.com https://*.clarity.ms https://www.clarity.ms;
+      connect-src 'self' 'unsafe-inline' wss://* https://*.hotjar.com https://*.hotjar.io wss://*.hotjar.com ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://api.coingecko.com https://*.clarity.ms https://www.clarity.ms;
       object-src 'none';
       frame-src https://connect.trezor.io;
       worker-src 'none';
@@ -56,7 +56,7 @@ export default {
     }
 
     function appendClarity(): void {
-      const { vueAppClarityId } = EnvironmentAccessorService.getEnvironmentVariables();
+      const vueAppClarityId = 'ibn9mzxbfg';
       scriptTag = document.createElement('script');
       scriptTag.type = 'text/javascript';
       scriptTag.text = '(function(c,l,a,r,i,t,y){'

@@ -188,7 +188,7 @@ import ApiService from '@/common/services/ApiService';
 import SatoshiBig from '@/common/types/SatoshiBig';
 import LedgerTxBuilder from '@/pegin/middleware/TxBuilder/LedgerTxBuilder';
 import { WalletService } from '@/common/services';
-import { Machine } from '@/common/utils';
+import { addTag, Machine } from '@/common/utils';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { PegInTxState } from '@/common/types/pegInTx';
 import * as constants from '@/common/store/constants';
@@ -197,7 +197,6 @@ import { TxSummaryOrientation } from '@/common/types/Status';
 import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
 import { useGetter, useState } from '@/common/store/helper';
 import AdvancedData from '@/common/components/exchange/AdvancedData.vue';
-import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
 export default defineComponent({
   name: 'ConfirmLedgerTransaction',
@@ -307,20 +306,11 @@ export default defineComponent({
       return s.match(/.{1,16}/g) ?? [];
     }
 
-    function appendClarityScript():void {
+    function appendClarityScript(): void {
+      addTag('operation', 'pegin');
+      addTag('wallet', 'Ledger');
       const amountFromString = pegInTxState.value.amountToTransfer.toBTCTrimmedString();
-      const vueAppClarityId = 'ibn9mzxbfg';
-      const scriptTag:HTMLScriptElement = document.createElement('script');
-      scriptTag.type = 'text/javascript';
-      scriptTag.text = '(function(c,l,a,r,i,t,y){'
-        + 'c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};'
-        + 't=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;'
-        + 'y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);'
-        + `})(window, document, 'clarity', 'script', '${vueAppClarityId}');`;
-      scriptTag.text = 'clarity("set", "operation", "pegin");';
-      scriptTag.text = 'clarity("set", "wallet", "Ledger");';
-      scriptTag.text = `clarity("set", "value", "${amountFromString}");`;
-      document.body.appendChild(scriptTag);
+      addTag('value', `${amountFromString}`);
     }
 
     onBeforeMount(appendClarityScript);

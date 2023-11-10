@@ -206,7 +206,7 @@ import ApiService from '@/common/services/ApiService';
 import SatoshiBig from '@/common/types/SatoshiBig';
 import AdvancedData from '@/common/components/exchange/AdvancedData.vue';
 import { WalletService } from '@/common/services';
-import { Machine } from '@/common/utils';
+import { addTag, Machine } from '@/common/utils';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { PegInTxState } from '@/common/types/pegInTx';
 import * as constants from '@/common/store/constants';
@@ -276,19 +276,10 @@ export default defineComponent({
     }
 
     function appendClarityScript(): void {
+      addTag('operation', 'pegin');
+      addTag('wallet', 'Trezor');
       const amountFromString = pegInTxState.value.amountToTransfer.toBTCTrimmedString();
-      const vueAppClarityId = 'ibn9mzxbfg';
-      const scriptTag:HTMLScriptElement = document.createElement('script');
-      scriptTag.type = 'text/javascript';
-      scriptTag.text = '(function(c,l,a,r,i,t,y){'
-        + 'c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};'
-        + 't=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;'
-        + 'y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);'
-        + `})(window, document, 'clarity', 'script', '${vueAppClarityId}');`;
-      scriptTag.text = 'clarity("set", "operation", "pegin");';
-      scriptTag.text = 'clarity("set", "wallet", "Trezor");';
-      scriptTag.text = `clarity("set", "value", "${amountFromString}");`;
-      document.body.appendChild(scriptTag);
+      addTag('value', `${amountFromString}`);
     }
 
     const opReturnData = computed((): string => {
