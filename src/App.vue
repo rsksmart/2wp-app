@@ -38,9 +38,9 @@ export default {
       response = `
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
       script-src 'self' 'nonce-${vuetifyNonce}' 'unsafe-eval';
-      script-src-elem 'self' 'unsafe-inline' https://script.hotjar.com https://static.hotjar.com https://*.hotjar.com https://*.hotjar.io https://api.coingecko.com/ https://*.clarity.ms https://www.clarity.ms;
+      script-src-elem 'self' 'unsafe-inline' https://script.hotjar.com https://www.clarity.ms/s/* https://static.hotjar.com https://*.hotjar.com https://*.hotjar.io https://api.coingecko.com/ https://*.clarity.ms https://www.clarity.ms/*;
       img-src data: https:;
-      connect-src 'self' 'unsafe-inline' wss://* https://*.hotjar.com https://*.hotjar.io wss://*.hotjar.com ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://api.coingecko.com https://*.clarity.ms https://www.clarity.ms;
+      connect-src 'self' 'unsafe-inline' wss://* https://*.hotjar.com https://*.hotjar.io https://www.clarity.ms/s/* wss://*.hotjar.com ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://api.coingecko.com https://*.clarity.ms https://www.clarity.ms/* ;
       object-src 'none';
       frame-src https://connect.trezor.io;
       worker-src 'none';
