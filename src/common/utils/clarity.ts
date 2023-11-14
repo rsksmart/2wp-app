@@ -1,5 +1,7 @@
+import { EnvironmentAccessorService } from '../services/enviroment-accessor.service';
+
 function setUpClarity(scriptTag:HTMLScriptElement): void {
-  const vueAppClarityId = 'ibn9mzxbfg';
+  const envVariables = EnvironmentAccessorService.getEnvironmentVariables();
   // eslint-disable-next-line no-param-reassign
   scriptTag.type = 'text/javascript';
   // eslint-disable-next-line no-param-reassign
@@ -7,7 +9,7 @@ function setUpClarity(scriptTag:HTMLScriptElement): void {
           + 'c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};'
           + 't=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;'
           + 'y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);'
-          + `})(window, document, 'clarity', 'script', '${vueAppClarityId}');`;
+          + `})(window, document, 'clarity', 'script', '${envVariables.vueAppClarityId}');`;
 }
 
 export function addTag(tagName: string, value: string): void {

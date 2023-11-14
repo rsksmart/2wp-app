@@ -56,24 +56,30 @@ export default {
     }
 
     function appendClarity(): void {
-      const vueAppClarityId = 'ibn9mzxbfg';
+      const envVariables = EnvironmentAccessorService.getEnvironmentVariables();
+      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@');
+      console.log(envVariables.vueAppClarityId);
+      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@');
       scriptTag = document.createElement('script');
       scriptTag.type = 'text/javascript';
       scriptTag.text = '(function(c,l,a,r,i,t,y){'
         + 'c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};'
         + 't=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;'
         + 'y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);'
-        + `})(window, document, 'clarity', 'script', '${vueAppClarityId}');`;
+        + `})(window, document, 'clarity', 'script', '${envVariables.vueAppClarityId}');`;
       document.body.appendChild(scriptTag);
     }
 
     function appendHotjar(): void {
-      const { vueAppHotjarId: hotjarID } = EnvironmentAccessorService.getEnvironmentVariables();
+      const envVariables = EnvironmentAccessorService.getEnvironmentVariables();
+      console.log('$$$$$$$$$$$$$$$$$$$$');
+      console.log(envVariables.vueAppHotjarId);
+      console.log('$$$$$$$$$$$$$$$$$$$$');
       hotjarScriptTag = document.createElement('script');
       hotjarScriptTag.type = 'text/javascript';
       hotjarScriptTag.text = '(function(h,o,t,j,a,r){'
       + 'h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};'
-      + `h._hjSettings={hjid:'${hotjarID}',hjsv:6};`
+      + `h._hjSettings={hjid:'${envVariables.vueAppHotjarId}',hjsv:6};`
       + 'a=o.getElementsByTagName("head")[0];'
       + 'r=o.createElement("script");r.async=1;'
       + 'r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;'
@@ -82,8 +88,8 @@ export default {
       document.body.appendChild(hotjarScriptTag);
     }
 
-    getBtcPrice();
     appendHotjar();
+    getBtcPrice();
     appendClarity();
     appendCSP();
     return {};
