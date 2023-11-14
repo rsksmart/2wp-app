@@ -36,9 +36,13 @@ export default class ApiService {
 
   public static getUtxos(addressList: string[]): Promise<BlockbookUtxo[]> {
     return new Promise<BlockbookUtxo[]>((resolve, reject) => {
-      axios.post(`${ApiService.baseURL}/utxo`, { addressList })
-        .then((response) => resolve(response.data.data))
-        .catch(reject);
+      if (addressList.length > 0) {
+        axios.post(`${ApiService.baseURL}/utxo`, { addressList })
+          .then((response) => resolve(response.data.data))
+          .catch(reject);
+      } else {
+        resolve([]);
+      }
     });
   }
 
