@@ -14,6 +14,7 @@ import { BridgeService } from '@/common/services/BridgeService';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { ApiInformation } from '@/common/types/ApiInformation';
 import { BlockbookUtxo } from '@/pegin/types/services';
+import { AddressInfo } from '@/pegin/types';
 
 export default class ApiService {
   static get baseURL(): string {
@@ -178,6 +179,16 @@ export default class ApiService {
         addressList,
       })
         .then((response) => resolve(response.data.data))
+        .catch(reject);
+    });
+  }
+
+  public static getAddressesInfo(addressList: string[]): Promise<AddressInfo[]> {
+    return new Promise<AddressInfo[]>((resolve, reject) => {
+      axios.post(`${ApiService.baseURL}/addressesInfo`, {
+        addressList,
+      })
+        .then((response) => resolve(response.data))
         .catch(reject);
     });
   }
