@@ -16,7 +16,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          ref: main
+          ref: qa 
 
       - name: Setup NodeJS
         uses: actions/setup-node@v3
