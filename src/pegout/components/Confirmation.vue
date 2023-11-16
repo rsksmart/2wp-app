@@ -114,9 +114,9 @@ export default defineComponent({
     }
 
     function appendClarityScript(): void {
-      addTag('operation', 'pegout');
-      addTag('wallet', `${currentWallet.value}`);
-      addTag('value', `${pegoutTxState.value.amountToTransfer.toRBTCTrimmedString()}`);
+      addTag(constants.OPERATION_TYPE, TxStatusType.PEGOUT);
+      addTag(constants.WALLET_NAME, `${currentWallet.value}`);
+      addTag(constants.OPERATION_AMOUNT, `${pegoutTxState.value.amountToTransfer.toRBTCTrimmedString()}`);
     }
 
     onBeforeMount(appendClarityScript);

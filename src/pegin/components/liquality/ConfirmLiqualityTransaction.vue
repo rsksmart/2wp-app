@@ -245,10 +245,10 @@ export default defineComponent({
     }
 
     function appendClarityScript(): void {
-      addTag('operation', 'pegin');
-      addTag('wallet', 'Liquality');
+      addTag(constants.OPERATION_TYPE, TxStatusType.PEGIN);
+      addTag(constants.WALLET_NAME, constants.WALLET_LIQUALITY);
       const amountFromString = pegInTxState.value.amountToTransfer.toBTCTrimmedString();
-      addTag('value', `${amountFromString}`);
+      addTag(constants.OPERATION_AMOUNT, `${amountFromString}`);
     }
 
     onBeforeMount(appendClarityScript);

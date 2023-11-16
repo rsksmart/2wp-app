@@ -276,10 +276,10 @@ export default defineComponent({
     }
 
     function appendClarityScript(): void {
-      addTag('operation', 'pegin');
-      addTag('wallet', 'Trezor');
+      addTag(constants.OPERATION_TYPE, TxStatusType.PEGIN);
+      addTag(constants.WALLET_NAME, constants.WALLET_TREZOR);
       const amountFromString = pegInTxState.value.amountToTransfer.toBTCTrimmedString();
-      addTag('value', `${amountFromString}`);
+      addTag(constants.OPERATION_AMOUNT, `${amountFromString}`);
     }
 
     const opReturnData = computed((): string => {

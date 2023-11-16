@@ -1,6 +1,8 @@
 export const WALLET_LEDGER = 'WALLET_LEDGER';
 export const WALLET_TREZOR = 'WALLET_TREZOR';
 export const WALLET_LIQUALITY = 'WALLET_LIQUALITY';
+export const OPERATION_TYPE = 'OPERATION_TYPE';
+export const OPERATION_AMOUNT = 'OPERATION_AMOUNT';
 
 export const RLOGIN_LIQUALITY_WALLET = 'Liquality';
 export const RSK_PEGOUT_DOCUMENTATION_URL = 'https://dev.rootstock.io/rsk/rbtc/conversion/networks/#rbtc-to-btc-conversion';
