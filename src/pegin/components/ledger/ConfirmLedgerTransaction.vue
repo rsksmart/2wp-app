@@ -195,7 +195,7 @@ import * as constants from '@/common/store/constants';
 import { TxStatusType } from '@/common/types/store';
 import { TxSummaryOrientation } from '@/common/types/Status';
 import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
-import { useGetter, useState } from '@/common/store/helper';
+import { useGetter, useState, useStateAttribute } from '@/common/store/helper';
 import AdvancedData from '@/common/components/exchange/AdvancedData.vue';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
@@ -224,6 +224,7 @@ export default defineComponent({
     const refundAddress = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_REFUND_ADDRESS);
     const accountBalanceText = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_ACCOUNT_BALANCE_TEXT);
     const safeFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
+    const sessionId = useStateAttribute<string>('pegInTx', 'sessionId');
 
     const rskFederationAddress = computed(():string => pegInTxState.value.normalizedTx.outputs[1]?.address?.trim() ?? `${environmentContext.getBtcText()} Powpeg address not found`);
 
@@ -274,6 +275,7 @@ export default defineComponent({
         .then((id) => {
           txId.value = id;
           ApiService.registerTx({
+            sessionId: sessionId.value,
             txHash: txId.value,
             type: 'pegin',
             value: Number(pegInTxState.value.amountToTransfer.toBTCTrimmedString()),
