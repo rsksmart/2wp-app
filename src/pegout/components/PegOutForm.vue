@@ -221,6 +221,7 @@ export default defineComponent({
       sendTx()
         .then(() => {
           ApiService.registerTx({
+            sessionId: '',
             txHash: pegOutTxState.value.txHash as string,
             type: 'pegout',
             value: Number(pegOutTxState.value.amountToTransfer.toRBTCTrimmedString()),

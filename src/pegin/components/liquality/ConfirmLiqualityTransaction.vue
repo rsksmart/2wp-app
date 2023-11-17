@@ -170,7 +170,7 @@ import LiqualityTxBuilder from '@/pegin/middleware/TxBuilder/LiqualityTxBuilder'
 import { TxStatusType } from '@/common/types/store';
 import { TxSummaryOrientation } from '@/common/types/Status';
 import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
-import { useGetter, useState } from '@/common/store/helper';
+import { useGetter, useState, useStateAttribute } from '@/common/store/helper';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
 export default defineComponent({
@@ -200,6 +200,7 @@ export default defineComponent({
     const walletService = useGetter<WalletService>('pegInTx', constants.PEGIN_TX_GET_WALLET_SERVICE);
     const accountBalanceText = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_ACCOUNT_BALANCE_TEXT);
     const safeFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
+    const sessionId = useStateAttribute<string>('pegInTx', 'sessionId');
 
     const feeBTC = computed(():SatoshiBig => safeFee.value);
 
@@ -228,6 +229,7 @@ export default defineComponent({
         .then((txHash) => {
           txId.value = txHash;
           ApiService.registerTx({
+            sessionId: sessionId.value,
             txHash: txId.value,
             type: 'pegin',
             value: Number(pegInTxState.value.amountToTransfer.toBTCTrimmedString()),
