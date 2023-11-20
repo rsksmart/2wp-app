@@ -71,8 +71,6 @@ export default {
     const isTrezor = useGetter<boolean>('web3Session', constants.SESSION_IS_TREZOR_CONNECTED);
     const isMetamask = useGetter<boolean>('web3Session', constants.SESSION_IS_METAMASK_CONNECTED);
     const isRloginDefined = useGetter<boolean>('web3Session', constants.SESSION_IS_RLOGIN_DEFINED);
-    const urlApp = computed(() => `https://github.com/rsksmart/2wp-app/releases/tag/v${appVersion.value}`);
-    const urlApi = computed(() => `https://github.com/rsksmart/2wp-api/releases/tag/v${apiVersion.value}`);
 
     function getDevPortalSlug() {
       const [, feature, wallet] = route.path.split('/');
@@ -97,8 +95,7 @@ export default {
       return feature;
     }
 
-    const urlApp = computed(() => `https://github.com/rsksmart/2wp-app/releases/tag/v${appVersion.value}`);
-    const urlApi = computed(() => `https://github.com/rsksmart/2wp-api/releases/tag/v${apiVersion.value}`);
+    const helpUrl = computed(() => `https://dev.rootstock.io/guides/two-way-peg-app/${getDevPortalSlug()}`);
 
     ApiService.getApiInformation()
       .then((res: ApiInformation) => {
@@ -106,8 +103,7 @@ export default {
       });
 
     return {
-      urlApi,
-      urlApp,
+      helpUrl,
       appVersion,
       apiVersion,
       mdiTwitter,
