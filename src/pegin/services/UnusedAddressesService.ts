@@ -6,7 +6,8 @@ import { AddressInfo } from '../types';
 export default class UnusedAddressesService {
   private static getAddressInfo(address: string): Promise<AddressInfo> {
     const baseUrl = EnvironmentAccessorService.getEnvironmentVariables().vueAppApiBaseUrl;
-
+    console.log(JSON.stringify(EnvironmentAccessorService.getEnvironmentVariables()));
+    console.log(`${baseUrl}/api/v2/address/${address}`);
     return axios.get(`${baseUrl}/api/v2/address/${address}`)
       .then((response) => response.data);
   }
