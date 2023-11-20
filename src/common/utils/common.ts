@@ -29,14 +29,17 @@ export const getClearPeginTxState = (): PegInTxState => ({
     slow: {
       amount: new SatoshiBig(0, 'satoshi'),
       enoughBalance: false,
+      selectedUtxoList: [],
     },
     average: {
       amount: new SatoshiBig(0, 'satoshi'),
       enoughBalance: false,
+      selectedUtxoList: [],
     },
     fast: {
       amount: new SatoshiBig(0, 'satoshi'),
       enoughBalance: false,
+      selectedUtxoList: [],
     },
   },
   loadingFee: false,
