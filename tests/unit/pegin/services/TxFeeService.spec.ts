@@ -224,7 +224,7 @@ describe('Tx Fee Service', () => {
     const satoshiBigApiResponse = { data: '0.0000001' };
     axiosMock
       .get
-      .withArgs(`${API_URL}/estimatefee/${blockNumber}`)
+      .withArgs(`${API_URL}/estimate-fee/${blockNumber}`)
       .resolves(satoshiBigApiResponse);
 
     const response = await TxFeeService.getTxFee(amountToTransfer, totalUtxoList1, feeLevel);
