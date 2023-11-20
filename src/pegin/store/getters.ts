@@ -1,6 +1,6 @@
 import { GetterTree } from 'vuex';
 import * as constants from '@/common/store/constants';
-import { PegInTxState, RootState } from '@/common/types';
+import { PegInTxState, RootState, Utxo } from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import SatoshiBig from '@/common/types/SatoshiBig';
 import { WalletService } from '@/common/services';
@@ -222,5 +222,22 @@ export const getters: GetterTree<PegInTxState, RootState> = {
         break;
     }
     return enoughBalance;
+  },
+  [constants.PEGIN_TX_GET_ACCOUNT_UTXO_LIST]: (state: PegInTxState): Utxo[] => {
+    let utxoList: Utxo[] = [];
+    switch (state.selectedAccount) {
+      case constants.BITCOIN_LEGACY_ADDRESS:
+        utxoList = state.utxoList ? state.utxoList.legacy : [];
+        break;
+      case constants.BITCOIN_SEGWIT_ADDRESS:
+        utxoList = state.utxoList ? state.utxoList.segwit : [];
+        break;
+      case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
+        utxoList = state.utxoList ? state.utxoList.nativeSegwit : [];
+        break;
+      default:
+        break;
+    }
+    return utxoList;
   },
 };
