@@ -245,6 +245,8 @@ export default defineComponent({
     const safeFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
     const sessionId = useStateAttribute<string>('pegInTx', 'sessionId');
 
+    const addressType = computed(() => accountBalanceText.value?.split('-')[0].trim() ?? '');
+
     async function toTrackId() {
       let txError = '';
       props.confirmTxState.send('loading');
@@ -261,6 +263,7 @@ export default defineComponent({
             type: 'pegin',
             value: Number(pegInTxState.value.amountToTransfer.toBTCTrimmedString()),
             wallet: 'trezor',
+            addressType: addressType.value,
             fee: Number(safeFee.value.toBTCTrimmedString()),
           });
         })
