@@ -263,3 +263,5 @@ export function convertToRequestBalance(walletAddress: WalletAddress[]) : Reques
 
   return retorno;
 }
+
+export const remove0x = (value: string) => (!value.startsWith('0x') ? value : value.substring(2));

@@ -39,7 +39,7 @@ import ConfirmTrezorTransaction from '@/pegin/components/trezor/ConfirmTrezorTra
 import ConfirmLedgerTransaction from '@/pegin/components/ledger/ConfirmLedgerTransaction.vue';
 import * as constants from '@/common/store/constants';
 import {
-  NormalizedTx, SendBitcoinState, SatoshiBig, BtcWallet, LiqualityError,
+  SendBitcoinState, SatoshiBig, BtcWallet, LiqualityError, Utxo,
 } from '@/common/types';
 import { Machine, getClearPeginTxState } from '@/common/utils';
 import ConfirmLiqualityTransaction from '@/pegin/components/liquality/ConfirmLiqualityTransaction.vue';
@@ -51,6 +51,8 @@ import TxBuilder from '@/pegin/middleware/TxBuilder/TxBuilder';
 import DeviceErrorDialog from '@/common/components/exchange/DeviceErrorDialog.vue';
 import ConnectDevice from '@/common/components/exchange/ConnectDevice.vue';
 import TxErrorDialog from '@/common/components/exchange/TxErrorDialog.vue';
+import { BridgeService } from '@/common/services/BridgeService';
+import PeginTxService from '../../services/PeginTxService';
 
 export default defineComponent({
   name: 'SendBitcoin',
@@ -87,7 +89,6 @@ export default defineComponent({
     const router = useRouter();
 
     const bitcoinWallet = useStateAttribute<BtcWallet>('pegInTx', 'bitcoinWallet');
-    const sessionId = useStateAttribute<string>('pegInTx', 'sessionId');
     const walletDataReady = useStateAttribute<boolean>('pegInTx', 'walletDataReady');
     const startAskingForBalanceStore = useAction('pegInTx', constants.PEGIN_TX_START_ASKING_FOR_BALANCE);
     const stopAskingForBalance = useAction('pegInTx', constants.PEGIN_TX_STOP_ASKING_FOR_BALANCE);
@@ -97,48 +98,45 @@ export default defineComponent({
     const init = useAction('pegInTx', constants.PEGIN_TX_INIT);
     const setBtcWallet = useAction('pegInTx', constants.PEGIN_TX_ADD_BITCOIN_WALLET);
     const getChangeAddress = useGetter<(accountType: string)=> string>('pegInTx', constants.PEGIN_TX_GET_CHANGE_ADDRESS);
+    const selectedUtxoList = useGetter<Utxo[]>('pegInTx', constants.PEGIN_TX_GET_ACCOUNT_UTXO_LIST);
+    const selectedFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
 
     async function toConfirmTx({
       amountToTransferInSatoshi,
       refundAddress,
       recipient,
-      feeLevel,
       accountType,
     }: {
       amountToTransferInSatoshi: SatoshiBig;
       refundAddress: string;
       recipient: string;
-      feeLevel: string;
       accountType: string;
     }) {
-      txBuilder.value?.getNormalizedTx({
-        amountToTransferInSatoshi: Number(amountToTransferInSatoshi.toString()),
-        refundAddress,
-        recipient,
-        feeLevel,
-        changeAddress: getChangeAddress.value(accountType),
-        sessionId: sessionId.value,
-        accountType,
-      })
-        .then((tx: NormalizedTx) => {
-          addNormalizedTx(tx);
-          switch (bitcoinWallet.value) {
-            case constants.WALLET_LEDGER:
-              currentComponent.value = 'ConfirmLedgerTransaction';
-              break;
-            case constants.WALLET_LIQUALITY:
-              currentComponent.value = 'ConfirmLiqualityTransaction';
-              break;
-            default:
-              currentComponent.value = 'ConfirmTrezorTransaction';
-              break;
-          }
-          return tx;
-        })
-        .catch((error) => {
-          txError.value = error.message;
-          showTxErrorDialog.value = true;
-        });
+      const bridgeService = new BridgeService();
+      const normalizedTx = PeginTxService.buildNormalizedTx(
+        {
+          amountToTransfer: amountToTransferInSatoshi,
+          federationAddress: await bridgeService.getFederationAddress(),
+          refundAddress,
+          rskRecipientAddress: recipient,
+          changeAddress: getChangeAddress.value(accountType),
+          totalFee: selectedFee.value,
+          selectedUtxoList: selectedUtxoList.value,
+        },
+      );
+      await addNormalizedTx(normalizedTx);
+      switch (bitcoinWallet.value) {
+        case constants.WALLET_LEDGER:
+          currentComponent.value = 'ConfirmLedgerTransaction';
+          break;
+        case constants.WALLET_LIQUALITY:
+          currentComponent.value = 'ConfirmLiqualityTransaction';
+          break;
+        default:
+          currentComponent.value = 'ConfirmTrezorTransaction';
+          break;
+      }
+      return normalizedTx;
     }
 
     function toPegInForm() {

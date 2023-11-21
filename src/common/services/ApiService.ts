@@ -185,10 +185,10 @@ export default class ApiService {
 
   public static getAddressesInfo(addressList: string[]): Promise<AddressInfo[]> {
     return new Promise<AddressInfo[]>((resolve, reject) => {
-      axios.post(`${ApiService.baseURL}/addressesInfo`, {
+      axios.post(`${ApiService.baseURL}/addresses-info`, {
         addressList,
       })
-        .then((response) => resolve(response.data))
+        .then((response) => resolve(response.data.addressesInfo))
         .catch(reject);
     });
   }
