@@ -3,14 +3,14 @@ import { EnvironmentAccessorService } from '@/common/services/enviroment-accesso
 import {
   NormalizedOutput, NormalizedTx, SatoshiBig, Utxo,
 } from '@/common/types';
-import { validateAddress } from '@/common/utils';
+import { remove0x, validateAddress } from '@/common/utils';
 import * as constants from '@/common/store/constants';
 
 export default class PeginTxService {
   private static getRskOutput(recipientAddress: string, refundAddress: string): NormalizedOutput {
     const output: NormalizedOutput = {
       amount: '0',
-      op_return_data: `52534b5401${recipientAddress}`,
+      op_return_data: `52534b5401${remove0x(recipientAddress)}`,
     };
     const { addressType: refundAddressType } = validateAddress(refundAddress);
     const hash = bitcoin.address.fromBase58Check(refundAddress).hash.toString('hex');
@@ -53,15 +53,14 @@ export default class PeginTxService {
       address: utxo.address ?? '',
       prev_hash: utxo.txid,
       amount: utxo.amount.toString(),
-      address_n: [], // TODO: add the correct derivation path for this address
       prev_index: utxo.vout,
     }));
     const federationOutput: NormalizedOutput = {
       address: federationAddress,
       amount: amountToTransfer.toSatoshiString(),
     };
-    normalizedTx.outputs.push(federationOutput);
     normalizedTx.outputs.push(this.getRskOutput(rskRecipientAddress, refundAddress));
+    normalizedTx.outputs.push(federationOutput);
     const totalBalance = selectedUtxoList.reduce((acc, { amount }) => acc + amount, 0);
     const totalBalanceInSatoshis = new SatoshiBig(totalBalance, 'satoshi');
     const changeOutput: NormalizedOutput = {

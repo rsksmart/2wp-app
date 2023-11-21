@@ -8,6 +8,7 @@ import * as constants from '@/common/store/constants';
 import ApiService from '@/common/services/ApiService';
 import store from '@/common/store';
 import { WalletAddress } from '@/common/types/pegInTx';
+import { UnusedAddressesService } from '@/pegin/services';
 
 export default abstract class TxBuilder {
   protected coin!: AppNetwork;
@@ -112,7 +113,7 @@ export default abstract class TxBuilder {
         throw new Error('Error: invalid account type. ');
     }
     if ((walletAddress.derivationPath.startsWith(`m/${accountTypePath}${coinPath}/0'/1/`))) {
-      return ApiService.areUnusedAddresses([walletAddress.address])
+      return UnusedAddressesService.areUnusedAddresses([walletAddress.address])
         .then(([addressStatus]) => addressStatus.unused);
     }
     return Promise.resolve(false);

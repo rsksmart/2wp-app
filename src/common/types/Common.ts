@@ -15,8 +15,6 @@ export interface NormalizedInput {
   prev_hash: string;
   amount: string;
   // eslint-disable-next-line camelcase
-  address_n: number[];
-  // eslint-disable-next-line camelcase
   prev_index: number;
   // eslint-disable-next-line camelcase
   script_type?: string;

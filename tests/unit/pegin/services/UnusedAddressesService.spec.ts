@@ -30,8 +30,8 @@ describe('UnusedAddresses Service', () => {
 
     const axiosStub = sinon.stub(axios);
     axiosStub.post
-      .withArgs(`${API_URL}/addressesInfo`)
-      .resolves({ data: addressesInfo });
+      .withArgs(`${API_URL}/addresses-info`)
+      .resolves({ data: { addressesInfo } });
 
     const addressesWithStatus = [
       { address: 'A', unused: true },
