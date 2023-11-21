@@ -261,3 +261,5 @@ export const TESTNET_ADDRESS_NSEGWIT = '^[tb1][0-9A-HJ-NP-Za-z]{41,62}';
 export const MAINNET_ADDRESS_LEGACY = '^[1][1-9A-HJ-NP-Za-km-z]{26,35}';
 export const MAINNET_ADDRESS_SEGWIT = '^[3][1-9A-HJ-NP-Za-km-z]{26,35}';
 export const MAINNET_ADDRESS_NSEGWIT = '^[bc1][0-9A-HJ-NP-Za-z]{41,62}';
+
+export const POWPEG_RSKT_HEADER = '52534b5401';
