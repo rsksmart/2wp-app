@@ -23,7 +23,6 @@ describe('PeginTx Service', () => {
       amount: 1000000,
       address: 'address',
       path: '',
-      derivationArray: [],
       vout: 0,
     },
     {
@@ -31,7 +30,6 @@ describe('PeginTx Service', () => {
       amount: 2000000,
       address: 'address',
       path: '',
-      derivationArray: [],
       vout: 1,
     },
   ];
@@ -52,26 +50,24 @@ describe('PeginTx Service', () => {
           address: 'address',
           prev_hash: 'txid-1',
           amount: '1000000',
-          address_n: [],
           prev_index: 0,
         },
         {
           address: 'address',
           prev_hash: 'txid-2',
           amount: '2000000',
-          address_n: [],
           prev_index: 1,
         },
       ],
       outputs: [
         {
-          address: denormalizedTx.federationAddress,
-          amount: denormalizedTx.amountToTransfer.toSatoshiString(),
-        },
-        {
           amount: '0',
           op_return_data:
             '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa01ccc198c15d8344c73da67a75509a85a8f4226636',
+        },
+        {
+          address: denormalizedTx.federationAddress,
+          amount: denormalizedTx.amountToTransfer.toSatoshiString(),
         },
         {
           address: denormalizedTx.changeAddress,
@@ -91,26 +87,24 @@ describe('PeginTx Service', () => {
           address: 'address',
           prev_hash: 'txid-1',
           amount: '1000000',
-          address_n: [],
           prev_index: 0,
         },
         {
           address: 'address',
           prev_hash: 'txid-2',
           amount: '2000000',
-          address_n: [],
           prev_index: 1,
         },
       ],
       outputs: [
         {
-          address: denormalizedTx.federationAddress,
-          amount: denormalizedTx.amountToTransfer.toSatoshiString(),
-        },
-        {
           amount: '0',
           op_return_data:
             '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa02379ad9b7ba73bdc1e29e286e014d4e2e1f6884e3',
+        },
+        {
+          address: denormalizedTx.federationAddress,
+          amount: denormalizedTx.amountToTransfer.toSatoshiString(),
         },
         {
           address: denormalizedTx.changeAddress,
@@ -128,7 +122,6 @@ describe('PeginTx Service', () => {
           amount: 30000,
           address: '',
           path: '',
-          derivationArray: [],
           vout: 0,
         },
         {
@@ -136,7 +129,6 @@ describe('PeginTx Service', () => {
           amount: 5000,
           address: '',
           path: '',
-          derivationArray: [],
           vout: 0,
         },
       ],

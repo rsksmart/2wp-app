@@ -1,13 +1,12 @@
 import * as constants from '@/common/store/constants';
 import SatoshiBig from '@/common/types/SatoshiBig';
-import { ApiService } from '@/common/services';
 import { Purpose, SignedTx, WalletCount } from '@/common/types/Wallets';
 import {
   AccountBalance, AddressStatus, AppNetwork, BtcAccount, Tx, UtxoListPerAccount, WalletAddress,
 } from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { getAccountType, deriveBatchAddresses } from '@/common/utils';
-import { BalanceService } from '@/pegin/services';
+import { BalanceService, UnusedAddressesService } from '@/pegin/services';
 
 export default abstract class WalletService {
   protected network: AppNetwork;
@@ -258,7 +257,7 @@ export default abstract class WalletService {
 
   private getUnusedValue(addressList: Array<WalletAddress>): Promise<Array<WalletAddress>> {
     const addressListResponse: Array<WalletAddress> = [];
-    return ApiService
+    return UnusedAddressesService
       .areUnusedAddresses(addressList.map((walletAddress) => walletAddress.address))
       .then((addressStatusList: AddressStatus[]) => {
         addressList.forEach((walletAddressItem: WalletAddress) => {
