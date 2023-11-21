@@ -215,6 +215,7 @@ export default class ApiService {
     sessionId: string, txHash: string, type: string, value: number, wallet: string, fee: number,
   }): Promise<void> {
     return new Promise<void>((resolve, reject) => {
+      if (sessionId == null || txHash == null || type == null) resolve();
       axios.post(`${ApiService.baseURL}/register`, {
         sessionId, txHash, type, value, wallet, fee,
       })
