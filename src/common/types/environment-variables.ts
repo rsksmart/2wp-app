@@ -79,7 +79,7 @@ export class EnvironmentVariables {
       slow: process.env.VUE_APP_SLOW_MINING_BLOCK
         || (defaultValues.miningSpeedBlock ? defaultValues.miningSpeedBlock.slow : 0),
     };
-    this.burnDustValue = Number(process.env.BURN_DUST_VALUE) || defaultValues.burnDustValue;
+    this.burnDustValue = Number(process.env.VUE_APP_BURN_DUST_VALUE) || defaultValues.burnDustValue;
     this.maxAmountAllowedInSatoshis = process.env.VUE_APP_MAX_AMOUNT_ALLOWED_IN_SATOSHI
       || defaultValues.maxAmountAllowedInSatoshis;
   }
