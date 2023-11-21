@@ -119,7 +119,6 @@ const outputs5: NormalizedOutput[] = [
 const inputs1: NormalizedInput[] = [
   {
     address: 'tb1qfrlm7kp5vzh09x7ye4aytvj5me5kzmv45jzs0w',
-    address_n: [0],
     prev_hash: 'e473f87ef1aa39bd44dbb60ad8b8814ba6db12f3ece1c738a12197e6a9ac1e7b',
     prev_index: 2,
     amount: '1973584',
@@ -129,7 +128,6 @@ const inputs1: NormalizedInput[] = [
 const inputs2: NormalizedInput[] = [
   {
     address: 'attackerAddress',
-    address_n: [0],
     prev_hash: 'e473f87ef1aa39bd44dbb60ad8b8814ba6db12f3ece1c738a12197e6a9ac1e7b',
     prev_index: 2,
     amount: '1973584',
@@ -139,7 +137,6 @@ const inputs2: NormalizedInput[] = [
 const inputs3: NormalizedInput[] = [
   {
     address: 'tb1qfrlm7kp5vzh09x7ye4aytvj5me5kzmv45jzs0w',
-    address_n: [0],
     prev_hash: '1559f5dcd950f4e48601b778fe01d26d1a21ea6eddbcd990e1067021d587ab15',
     prev_index: 2,
     amount: '1973584',
@@ -149,7 +146,6 @@ const inputs3: NormalizedInput[] = [
 const inputs4: NormalizedInput[] = [
   {
     address: 'tb1que67sfexzx03t2nydm000tzpctkyfejp4d9sjz',
-    address_n: [0],
     prev_hash: '4420e6fde51bef2b5b5d3063b56a854e71209f6549004d25f49754e9f9e7bd8c',
     prev_index: 0,
     amount: '6595502955',
@@ -331,17 +327,6 @@ describe('Api Service', () => {
       sinon.stub(axios, 'get').resolves({ data: { txDetails: { status: 'RECEIVED' }, type: 'PEGOUT' } });
       const txStatus = await ApiService.getTxStatus(txId);
       expect(txStatus).toEqual({ txDetails: { status: 'RECEIVED' }, type: 'PEGOUT' });
-    });
-  });
-
-  describe('Function: areUnusedAddresses', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-    it('should return a list of unused addresses', async () => {
-      sinon.stub(axios, 'post').resolves({ data: [{ }] });
-      const addressList = await ApiService.areUnusedAddresses(['address1', 'address2']);
-      return expect(addressList).not.toBeNull();
     });
   });
 
