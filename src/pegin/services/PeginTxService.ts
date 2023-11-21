@@ -10,19 +10,21 @@ export default class PeginTxService {
   private static getRskOutput(recipientAddress: string, refundAddress: string): NormalizedOutput {
     const output: NormalizedOutput = {
       amount: '0',
-      op_return_data: `52534b5401${remove0x(recipientAddress)}`,
+      op_return_data: `${constants.POWPEG_RSKT_HEADER + remove0x(recipientAddress)}`,
     };
-    const { addressType: refundAddressType } = validateAddress(refundAddress);
-    const hash = bitcoin.address.fromBase58Check(refundAddress).hash.toString('hex');
-    switch (refundAddressType) {
-      case constants.BITCOIN_LEGACY_ADDRESS:
-        output.op_return_data += `01${hash}`;
-        break;
-      case constants.BITCOIN_SEGWIT_ADDRESS:
-        output.op_return_data += `02${hash}`;
-        break;
-      default:
-        throw new Error(`Invalid refund address ${refundAddress}}`);
+    if (refundAddress) {
+      const { addressType: refundAddressType } = validateAddress(refundAddress);
+      const hash = bitcoin.address.fromBase58Check(refundAddress).hash.toString('hex');
+      switch (refundAddressType) {
+        case constants.BITCOIN_LEGACY_ADDRESS:
+          output.op_return_data += `01${hash}`;
+          break;
+        case constants.BITCOIN_SEGWIT_ADDRESS:
+          output.op_return_data += `02${hash}`;
+          break;
+        default:
+          throw new Error(`Invalid refund address ${refundAddress}}`);
+      }
     }
     return output;
   }
