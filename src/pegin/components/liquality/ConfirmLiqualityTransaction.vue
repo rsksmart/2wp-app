@@ -208,6 +208,8 @@ export default defineComponent({
       return feeBTC.value.toBTCString();
     });
 
+    const addressType = computed(() => accountBalanceText.value?.split('-')[0].trim() ?? '');
+
     const confirmLiqualityTxSummary = computed((): NormalizedSummary => ({
       amountFromString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
       amountReceivedString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
@@ -233,6 +235,7 @@ export default defineComponent({
             type: 'pegin',
             value: Number(pegInTxState.value.amountToTransfer.toBTCTrimmedString()),
             wallet: 'liquality',
+            addressType: addressType.value,
             fee: Number(safeFee.value.toBTCTrimmedString()),
           });
         })

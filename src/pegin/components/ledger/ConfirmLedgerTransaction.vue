@@ -240,6 +240,8 @@ export default defineComponent({
       return changeAmountInSB.toBTCTrimmedString();
     });
 
+    const addressType = computed(() => accountBalanceText.value?.split('-')[0].trim() ?? '');
+
     const confirmLedgerTxSummary = computed((): NormalizedSummary => ({
       amountFromString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
       amountReceivedString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
@@ -279,6 +281,7 @@ export default defineComponent({
             type: 'pegin',
             value: Number(pegInTxState.value.amountToTransfer.toBTCTrimmedString()),
             wallet: 'ledger',
+            addressType: addressType.value,
             fee: Number(safeFee.value.toBTCTrimmedString()),
           });
         })
