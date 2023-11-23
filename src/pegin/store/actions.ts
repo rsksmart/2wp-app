@@ -81,7 +81,8 @@ export const actions: ActionTree<PegInTxState, RootState> = {
       if (!state.selectedAccount) {
         return;
       }
-      if (!state.isValidAmountToTransfer) {
+      const selectedBalance = getters[constants.PEGIN_TX_GET_SELECTED_BALANCE] as SatoshiBig;
+      if (!selectedBalance.gt(0)) {
         return;
       }
       const amount = Number(state.amountToTransfer.toSatoshiString());
@@ -132,8 +133,6 @@ export const actions: ActionTree<PegInTxState, RootState> = {
             resolve();
           })
           .catch(reject);
-      } else {
-        reject(new Error('There is not Utxo list stored'));
       }
     }),
   [constants.PEGIN_TX_ADD_RSK_ADDRESS]: ({ commit }, address: string): void => {
