@@ -15,12 +15,33 @@
             <h2>Bridging {{environmentContext.getBtcTicker()}} and
             {{environmentContext.getRbtcTicker()}}</h2>
           </v-row>
+          <v-row class="mx-0 mt-10 d-flex justify-center">
+            <v-col class="d-flex justify-center terms-label">
+              <v-row class="d-flex justify-center">
+                <v-col cols="1" class="ma-0 pa-0 d-flex justify-center">
+                  <label for="termscheck" class="pa-0 d-flex align-center">
+                  <input id="termscheck" type="checkbox" v-model="acceptedTerms">
+                  </label>
+                </v-col>
+                <v-col cols="6" class="ma-0 pa-0 d-flex align-center justify-center">
+                  <v-row class="ma-0 pa-0">
+                    I acknowledge and accept the
+                    <a href="#" rel="noopener" @key-press="toggleCheck"
+                    class="px-1" @click="showDialog"> terms and conditions</a>
+                  </v-row>
+                  <v-row class="ma-0 px-1">
+
+                  </v-row>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
             <v-row class="mx-0 mt-10 d-flex justify-center">
               <p>Select your token conversion</p>
             </v-row>
             <v-row justify="center" class="mt-6">
               <v-col cols="4" class="d-flex justify-end pb-0">
-                <v-btn @click="selectPegIn" :disabled="!isAllowedBrowser" outlined
+                <v-btn @click="selectPegIn" :disabled="!isAllowedBrowser || !acceptedTerms" outlined
                        v-bind:class="btnWalletClass">
                   <div>
                     <v-row class="mx-0 d-flex justify-center">
@@ -46,7 +67,8 @@
               </v-col>
               <v-col cols="4" class="d-flex justify-start pb-0">
                 <v-col class="ma-0 pa-0" cols="auto">
-                  <v-btn @click="selectPegOut" class="wallet-button mb-0" outlined>
+                  <v-btn @click="selectPegOut" :disabled="!acceptedTerms"
+                          class="wallet-button mb-0" outlined>
                     <div>
                       <v-row class="mx-0 d-flex justify-center">
                         <v-col/>
@@ -108,6 +130,7 @@
             </v-row>
         </v-col>
       </v-row>
+    <terms-dialog :show-dialog="showTermsAndConditions" @closeDialog="closeTermsDialog" />
     </v-container>
   </v-container>
 </template>
@@ -123,14 +146,20 @@ import {
   TransactionType,
 } from '@/common/types';
 import { useAction, useStateAttribute } from '@/common/store/helper';
+import TermsDialog from '@/common/components/common/TermsDialog.vue';
 
 export default {
   name: 'HomeView',
+  components: {
+    TermsDialog,
+  },
   setup() {
     const router = useRouter();
     const STATUS = ref(false);
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const isAllowedBrowser = isAllowedCurrentBrowser();
+    const showTermsAndConditions = ref(false);
+    const acceptedTerms = ref(false);
 
     const txType = useStateAttribute<TransactionType>('web3Session', 'txType');
 
@@ -170,6 +199,20 @@ export default {
       router.push({ name: 'PegOut' });
     }
 
+    function closeTermsDialog() {
+      showTermsAndConditions.value = false;
+    }
+
+    function showDialog() {
+      showTermsAndConditions.value = true;
+    }
+
+    function toggleCheck(e: KeyboardEvent) {
+      if (e.key === 'Backspace' || e.key === 'enter') {
+        showTermsAndConditions.value = !showTermsAndConditions.value;
+      }
+    }
+
     const route = useRoute();
     function toPegInStatus(): void {
       STATUS.value = true;
@@ -194,6 +237,11 @@ export default {
       STATUS,
       statusIcon,
       mdiArrowRight,
+      showTermsAndConditions,
+      closeTermsDialog,
+      acceptedTerms,
+      showDialog,
+      toggleCheck,
     };
   },
 };
