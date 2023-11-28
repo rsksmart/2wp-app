@@ -20,7 +20,8 @@
               <v-row class="d-flex justify-center">
                 <v-col cols="1" class="ma-0 pa-0 d-flex justify-center">
                   <label for="termscheck" class="pa-0 d-flex align-center">
-                  <input id="termscheck" type="checkbox" v-model="acceptedTerms">
+                  <input id="termscheck" type="checkbox" v-model="acceptedTerms"
+                          @click="updateCookie" >
                   </label>
                 </v-col>
                 <v-col cols="6" class="ma-0 pa-0 d-flex align-center justify-center">
@@ -162,11 +163,13 @@ export default {
     const acceptedTerms = ref(false);
 
     const txType = useStateAttribute<TransactionType>('web3Session', 'txType');
+    const areTermsAccepted = useStateAttribute<boolean>('web3Session', 'acceptedTerms');
 
     const clear = useAction('pegInTx', constants.PEGIN_TX_CLEAR_STATE);
     const clearPegOut = useAction('pegOutTx', constants.PEGOUT_TX_CLEAR);
     const clearSession = useAction('web3Session', constants.SESSION_CLEAR);
     const addPeg = useAction('web3Session', constants.SESSION_ADD_TX_TYPE);
+    const setTerms = useAction('web3Session', constants.SESSION_ADD_TERMS_VALUE);
 
     const btcToRbtc = computed((): boolean => txType.value === constants.PEG_IN_TRANSACTION_TYPE);
 
@@ -213,11 +216,17 @@ export default {
       }
     }
 
+    function updateCookie() {
+      setTerms(!acceptedTerms.value);
+    }
+
     const route = useRoute();
     function toPegInStatus(): void {
       STATUS.value = true;
       if (route.path !== '/status') router.push('/status');
     }
+
+    acceptedTerms.value = areTermsAccepted.value;
 
     clear();
     clearPegOut();
@@ -242,6 +251,7 @@ export default {
       acceptedTerms,
       showDialog,
       toggleCheck,
+      updateCookie,
     };
   },
 };

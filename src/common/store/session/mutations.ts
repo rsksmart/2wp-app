@@ -43,4 +43,8 @@ export const mutations: MutationTree<SessionState> = {
     clearState.rLoginInstance = state.rLoginInstance;
     Object.assign(state, clearState);
   },
+  [constants.SESSION_SET_TERMS_ACCEPTED]: (state, value) => {
+    localStorage.setItem('TERMS_AND_CONDITIONS_ACCEPTED', String(value));
+    state.acceptedTerms = value;
+  },
 };

@@ -131,4 +131,7 @@ export const actions: ActionTree<SessionState, RootState> = {
   [constants.SESSION_CLEAR]: ({ commit }) => {
     commit(constants.SESSION_CLEAR_STATE);
   },
+  [constants.SESSION_ADD_TERMS_VALUE]: ({ commit }, value: boolean) => {
+    commit(constants.SESSION_SET_TERMS_ACCEPTED, value);
+  },
 };
