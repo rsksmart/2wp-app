@@ -18,4 +18,5 @@ export interface SessionState {
   balance: WeiBig;
   btcDerivedAddress: string;
   bitcoinPrice: number;
+  acceptedTerms: boolean;
 }

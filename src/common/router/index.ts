@@ -1,8 +1,24 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
+import {
+  createRouter, createWebHistory, NavigationGuardNext,
+  RouteLocationNormalized, RouteRecordRaw,
+} from 'vue-router';
 import { useStore } from 'vuex';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import Home from '@/common/views/Home.vue';
 import * as constants from '@/common/store/constants';
+
+function checkAcceptedTerms(
+  from: RouteLocationNormalized,
+  to: RouteLocationNormalized,
+  next: NavigationGuardNext,
+) {
+  const store = useStore();
+  if (store.state.web3Session.acceptedTerms) {
+    next();
+  } else {
+    next({ name: 'Home' });
+  }
+}
 
 const routes: Readonly<RouteRecordRaw[]> = [
   {
@@ -26,16 +42,19 @@ const routes: Readonly<RouteRecordRaw[]> = [
     path: '/pegin',
     name: 'PegIn',
     component: () => import(/* webpackChunkName: "pegin" */ '../../pegin/views/PegIn.vue'),
+    beforeEnter: checkAcceptedTerms,
   },
   {
     path: '/pegout',
     name: 'PegOut',
     component: () => import(/* webpackChunkName: "pegout" */ '../../pegout/views/PegOut.vue'),
+    beforeEnter: checkAcceptedTerms,
   },
   {
     path: '/pegin/:wallet/create',
     name: 'Create',
     component: () => import(/* webpackChunkName: "pegin-create" */ '../../pegin/views/Create.vue'),
+    beforeEnter: checkAcceptedTerms,
   },
   {
     path: '/pegin/success/:txId',
