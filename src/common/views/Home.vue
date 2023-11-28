@@ -17,24 +17,19 @@
           </v-row>
           <v-row class="mx-0 mt-10 d-flex justify-center">
             <v-col class="d-flex justify-center terms-label">
+              <v-col class="d-flex justify-center terms-label">
               <v-row class="d-flex justify-center">
-                <v-col cols="1" class="ma-0 pa-0 d-flex justify-center">
-                  <label for="termscheck" class="pa-0 d-flex align-center">
-                  <input id="termscheck" type="checkbox" v-model="acceptedTerms"
-                          @click="updateCookie" >
-                  </label>
-                </v-col>
-                <v-col cols="6" class="ma-0 pa-0 d-flex align-center justify-center">
-                  <v-row class="ma-0 pa-0">
+                  <v-row class="ma-0 pa-0 d-flex justify-center">
+                    <label for="termscheck" class="pa-0 d-flex align-center mx-3">
+                    <input id="termscheck" type="checkbox" v-model="acceptedTerms"
+                            @click="updateCookie" >
+                    </label>
                     I acknowledge and accept the
                     <a href="#" rel="noopener" @key-press="toggleCheck"
                     class="px-1" @click="showDialog"> terms and conditions</a>
                   </v-row>
-                  <v-row class="ma-0 px-1">
-
-                  </v-row>
-                </v-col>
               </v-row>
+            </v-col>
             </v-col>
           </v-row>
             <v-row class="mx-0 mt-10 d-flex justify-center">
