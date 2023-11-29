@@ -58,8 +58,10 @@ export default defineComponent({
       event: { target: { scrollTop: number; clientHeight: number; scrollHeight: number; }},
     ) {
       const { target: { scrollTop, clientHeight, scrollHeight } } = event;
-      if (scrollTop + clientHeight >= scrollHeight) {
+      if (Math.abs(scrollHeight - clientHeight - scrollTop) < 1) {
         scrolledText.value = true;
+      } else {
+        scrolledText.value = false;
       }
     }
 
