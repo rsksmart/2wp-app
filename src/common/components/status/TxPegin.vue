@@ -100,7 +100,7 @@
               <v-row class="ma-0">
                 <v-progress-linear
                 class="progress-bar-status_new"
-                :value="rskConfirmationsPercentage"
+                :model-value="rskConfirmationsPercentage"
                 :color="currentRskBarColor"
                 height="19"/>
                 <div v-bind:class="`rsk-circle ${rskCircleColor}`"></div>
@@ -119,9 +119,7 @@
                         :src="require('@/assets/status/rbtc.png')" height="78" contain/>
                     </v-row>
                     <v-row class="justify-center pt-10">
-                      <h1
-                      :style="rskConfirmationsPercentage === 100 ?
-                      `color:#00B520;` : ``">
+                      <h1>
                       {{environmentContext.getRbtcTicker()}} delivered
                       </h1>
                     </v-row>
