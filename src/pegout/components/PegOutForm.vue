@@ -158,24 +158,22 @@ export default defineComponent({
     const sendTx = useAction('pegOutTx', constants.PEGOUT_TX_SEND);
     const isEnoughBalance = useGetter<boolean>('pegOutTx', constants.PEGOUT_TX_IS_ENOUGH_BALANCE);
     const safeFee = useGetter<WeiBig>('pegOutTx', constants.PEGOUT_TX_GET_SAFE_TX_FEE);
-    // eslint-disable-next-line max-len
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
-    // eslint-disable-next-line max-len
     const isLedgerConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_LEDGER_CONNECTED);
     const isTrezorConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_TREZOR_CONNECTED);
     const isMetamaskConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_METAMASK_CONNECTED);
     const currentWallet = computed(() => {
       if (isLedgerConnected.value) {
-        return 'ledger';
+        return constants.WALLET_NAMES.LEDGER;
       }
       if (isTrezorConnected.value) {
-        return 'trezor';
+        return constants.WALLET_NAMES.TREZOR;
       }
       if (isMetamaskConnected.value) {
-        return 'metamask';
+        return constants.WALLET_NAMES.METAMASK;
       }
       if (injectedProvider.value === appConstants.RLOGIN_LIQUALITY_WALLET) {
-        return 'liquality';
+        return constants.WALLET_NAMES.LIQUALITY;
       }
       return '';
     });
@@ -214,6 +212,12 @@ export default defineComponent({
       isReadyToSign.value = !isReadyToSign.value;
     }
     function changePage() {
+      router.push({
+        name: 'PegOutSuccess',
+        params: {
+          wallet: currentWallet.value,
+        },
+      });
       context.emit('changePage', nextPage);
     }
     function send() {
