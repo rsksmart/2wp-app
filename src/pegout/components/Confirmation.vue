@@ -3,7 +3,7 @@
     <v-row class="mx-0 d-flex justify-center">
       <v-col cols="10" lg="8" xl="6" class="d-flex justify-center">
         <h1 class="text-center">
-          Your BTC is on its way!
+          Your {{environmentContext.getBtcTicker()}} is on its way!
         </h1>
       </v-col>
     </v-row>
@@ -55,6 +55,7 @@ import * as constants from '@/common/store/constants';
 import {
   useAction, useGetter, useState, useStateAttribute,
 } from '@/common/store/helper';
+import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 
 export default defineComponent({
   name: 'ConfirmationPegout',
@@ -81,21 +82,24 @@ export default defineComponent({
     const isLedgerConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_LEDGER_CONNECTED);
     const isTrezorConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_TREZOR_CONNECTED);
     const isMetamaskConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_METAMASK_CONNECTED);
+    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+
     const currentWallet = computed(() => {
       if (isLedgerConnected.value) {
-        return 'ledger';
+        return constants.WALLET_NAMES.LEDGER;
       }
       if (isTrezorConnected.value) {
-        return 'trezor';
+        return constants.WALLET_NAMES.TREZOR;
       }
       if (isMetamaskConnected.value) {
-        return 'metamask';
+        return constants.WALLET_NAMES.METAMASK;
       }
       if (injectedProvider.value === appConstants.RLOGIN_LIQUALITY_WALLET) {
-        return 'liquality';
+        return constants.WALLET_NAMES.LIQUALITY;
       }
       return '';
     });
+
     const successPegOutSummary = computed((): NormalizedSummary => ({
       amountFromString: pegoutTxState.value.amountToTransfer.toRBTCTrimmedString(),
       amountReceivedString: estimatedBtcToReceive.value.toBTCTrimmedString(),
@@ -105,6 +109,7 @@ export default defineComponent({
       txId: pegoutTxState.value.txHash,
       gas: Number(pegoutTxState.value.efectivePaidFee?.toRBTCTrimmedString()),
     }));
+
     function goToStatus() {
       clearStatus();
       router.push({
@@ -122,6 +127,7 @@ export default defineComponent({
     onBeforeMount(appendClarityScript);
 
     return {
+      environmentContext,
       appConstants,
       successPegOutSummary,
       typeSummary,

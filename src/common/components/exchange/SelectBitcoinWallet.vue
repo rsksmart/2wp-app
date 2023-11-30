@@ -78,20 +78,15 @@ export default {
 
     function toSendBitcoin(): void {
       let wallet: string;
-      const TYPES_WALLETS = {
-        WALLET_TREZOR: 'WALLET_TREZOR',
-        WALLET_LEDGER: 'WALLET_LEDGER',
-        WALLET_LIQUALITY: 'WALLET_LIQUALITY',
-      };
       switch (bitcoinWallet.value) {
-        case TYPES_WALLETS.WALLET_TREZOR:
-          wallet = 'trezor';
+        case constants.WALLET_TREZOR:
+          wallet = constants.WALLET_NAMES.TREZOR;
           break;
-        case TYPES_WALLETS.WALLET_LEDGER:
-          wallet = 'ledger';
+        case constants.WALLET_LEDGER:
+          wallet = constants.WALLET_NAMES.LEDGER;
           break;
-        case TYPES_WALLETS.WALLET_LIQUALITY:
-          wallet = 'liquality';
+        case constants.WALLET_LIQUALITY:
+          wallet = constants.WALLET_NAMES.LIQUALITY;
           break;
         default:
           wallet = '';

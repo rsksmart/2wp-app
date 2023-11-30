@@ -227,7 +227,7 @@ export default defineComponent({
           ApiService.registerTx({
             sessionId: '',
             txHash: pegOutTxState.value.txHash as string,
-            type: 'pegout',
+            type: TxStatusType.PEGOUT.toLowerCase(),
             value: Number(pegOutTxState.value.amountToTransfer.toRBTCTrimmedString()),
             wallet: currentWallet.value,
             fee: Number(pegOutTxState.value.calculatedFee.toRBTCTrimmedString()),
