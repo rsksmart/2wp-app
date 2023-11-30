@@ -260,9 +260,9 @@ export default defineComponent({
           ApiService.registerTx({
             sessionId: sessionId.value,
             txHash: txId.value,
-            type: 'pegin',
+            type: TxStatusType.PEGIN.toLowerCase(),
             value: Number(pegInTxState.value.amountToTransfer.toBTCTrimmedString()),
-            wallet: 'trezor',
+            wallet: constants.WALLET_NAMES.TREZOR,
             addressType: addressType.value,
             fee: Number(safeFee.value.toBTCTrimmedString()),
           });

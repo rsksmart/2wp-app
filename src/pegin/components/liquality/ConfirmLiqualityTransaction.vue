@@ -232,9 +232,9 @@ export default defineComponent({
           ApiService.registerTx({
             sessionId: sessionId.value,
             txHash: txId.value,
-            type: 'pegin',
+            type: TxStatusType.PEGIN.toLowerCase(),
             value: Number(pegInTxState.value.amountToTransfer.toBTCTrimmedString()),
-            wallet: 'liquality',
+            wallet: constants.WALLET_NAMES.LIQUALITY,
             addressType: addressType.value,
             fee: Number(safeFee.value.toBTCTrimmedString()),
           });
