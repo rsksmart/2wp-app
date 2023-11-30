@@ -87,7 +87,7 @@ export default defineComponent({
       >>(new Machine('idle'));
     const txBuilder = ref<TxBuilder>();
     const router = useRouter();
-
+    const currentWallet = ref('');
     const bitcoinWallet = useStateAttribute<BtcWallet>('pegInTx', 'bitcoinWallet');
     const walletDataReady = useStateAttribute<boolean>('pegInTx', 'walletDataReady');
     const startAskingForBalanceStore = useAction('pegInTx', constants.PEGIN_TX_START_ASKING_FOR_BALANCE);
@@ -151,7 +151,7 @@ export default defineComponent({
         showTxErrorDialog.value = true;
         txId.value = txHash;
       } else if (txHash) {
-        router.push({ name: 'Success', params: { txId: txHash } });
+        router.push({ name: 'Success', params: { txId: txHash, wallet: currentWallet.value } });
       }
     }
 
@@ -191,12 +191,15 @@ export default defineComponent({
       switch (bitcoinWallet.value) {
         case constants.WALLET_TREZOR:
           txBuilder.value = new TrezorTxBuilder();
+          currentWallet.value = constants.WALLET_NAMES.TREZOR;
           break;
         case constants.WALLET_LEDGER:
           txBuilder.value = new LedgerTxBuilder();
+          currentWallet.value = constants.WALLET_NAMES.LEDGER;
           break;
         case constants.WALLET_LIQUALITY:
           txBuilder.value = new LiqualityTxBuilder();
+          currentWallet.value = constants.WALLET_NAMES.LIQUALITY;
           break;
         default:
           txBuilder.value = new TrezorTxBuilder();

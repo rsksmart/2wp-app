@@ -57,7 +57,7 @@ const routes: Readonly<RouteRecordRaw[]> = [
     beforeEnter: checkAcceptedTerms,
   },
   {
-    path: '/pegin/success/:txId',
+    path: '/pegin/:wallet/success/:txId',
     name: 'Success',
     component:
       () => import(/* webpackChunkName: "pegin-success" */ '../../pegin/views/Success.vue'),
