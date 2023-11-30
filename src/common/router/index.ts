@@ -20,6 +20,14 @@ function checkAcceptedTerms(
   }
 }
 
+// eslint-disable-next-line consistent-return
+function checkFromRoute(to: RouteLocationNormalized, from: RouteLocationNormalized) {
+  const peg = to.path.split('/')[1];
+  if (from.path === '/') {
+    return { path: `/${peg}` };
+  }
+}
+
 const routes: Readonly<RouteRecordRaw[]> = [
   {
     path: '/',
@@ -54,6 +62,7 @@ const routes: Readonly<RouteRecordRaw[]> = [
     path: '/pegout/:wallet/success',
     name: 'PegOutSuccess',
     component: () => import(/* webpackChunkName: "pegout-success" */ '../../pegout/views/PegOut.vue'),
+    beforeEnter: [checkFromRoute],
   },
   {
     path: '/pegin/:wallet/create',
@@ -66,6 +75,7 @@ const routes: Readonly<RouteRecordRaw[]> = [
     name: 'Success',
     component:
       () => import(/* webpackChunkName: "pegin-success" */ '../../pegin/views/Success.vue'),
+    beforeEnter: [checkFromRoute],
   },
 ];
 
