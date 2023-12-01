@@ -12,3 +12,4 @@ export * from './Liquality';
 export * from './exception/LiqualityError';
 export * from './Status';
 export { default as WeiBig } from './WeiBig';
+export * from './Feature';
