@@ -7,7 +7,9 @@ import {
   NormalizedInput,
   NormalizedTx,
   SatoshiBig,
-  TxStatus, TxStatusType,
+  TxStatus,
+  TxStatusType,
+  Feature,
 } from '@/common/types';
 import { areValidOutputs, isValidInput } from '@/common/utils';
 import { BridgeService } from '@/common/services/BridgeService';
@@ -227,6 +229,14 @@ export default class ApiService {
       })
         .then(() => resolve())
         .catch(reject);
+    });
+  }
+
+  static getFeatures(): Promise<Feature[]> {
+    return new Promise<Feature[]>((resolve, reject) => {
+      axios.get(`${ApiService.baseURL}/features`)
+        .then((response) => resolve(response.data))
+        .catch(() => reject(new Error('Unable to get feature flags')));
     });
   }
 }
