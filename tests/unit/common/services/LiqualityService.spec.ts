@@ -74,9 +74,7 @@ describe('Liquality Service:', () => {
     return liqualityService.getAccountAddresses()
       .then((addresess) => {
         expect(addresess.length).toEqual(10);
-        // eslint-disable-next-line no-unused-expressions
         expect(mockedBitcoinProvider.enable.notCalled).toBeTruthy();
-        // eslint-disable-next-line no-unused-expressions
         expect(request.calledTwice).toBeTruthy();
       });
   });

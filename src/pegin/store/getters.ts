@@ -63,7 +63,6 @@ export const getters: GetterTree<PegInTxState, RootState> = {
     } else {
       const coin = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
       const coinPath = coin === 'main' ? "/0'" : "/1'";
-      // eslint-disable-next-line no-unused-expressions
       state.addressList?.forEach((walletAddress) => {
         if (walletAddress.derivationPath === `m/44'${coinPath}/0'/0/0`) address = walletAddress.address;
       });
@@ -73,7 +72,6 @@ export const getters: GetterTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_GET_BIP44_DERIVATION_PATH_FROM_ADDRESS]:
     (state: PegInTxState) => (address: string): string => {
       let path = '';
-      // eslint-disable-next-line no-unused-expressions
       state.addressList?.forEach((walletAddress) => {
         if (walletAddress.address === address) {
           path = walletAddress.derivationPath.slice(2);
@@ -96,7 +94,6 @@ export const getters: GetterTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_GET_ADDRESS_PUBLIC_KEY]:
     (state: PegInTxState) => (address: string): string => {
       let publicKey = '';
-      // eslint-disable-next-line no-unused-expressions
       state.addressList?.forEach((walletAddress) => {
         if (walletAddress.publicKey && walletAddress.address === address) {
           publicKey = walletAddress.publicKey;
@@ -177,7 +174,6 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       .plus(moduleGetters[constants.PEGIN_TX_GET_SAFE_TX_FEE]);
     const selectedAccountBalance = moduleGetters[constants.PEGIN_TX_GET_SELECTED_BALANCE];
     const minValue: SatoshiBig = new SatoshiBig(state.peginConfiguration.minValue, 'satoshi');
-    // eslint-disable-next-line max-len
     const maxValue: SatoshiBig = new SatoshiBig(state.peginConfiguration.maxValue, 'satoshi');
     if (state.amountToTransfer.lte('0')
       || feePlusAmount.gt(selectedAccountBalance)

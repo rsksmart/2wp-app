@@ -17,7 +17,7 @@ module.exports = {
     'import/prefer-default-export': 'off',
     '@typescript-eslint/no-explicit-any': 'error',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
-    'no-shadow': 'warn',
+    'no-shadow': 'off',
     '@typescript-eslint/no-shadow': ['warn'],
     camelcase: 'error',
     'no-use-before-define': 'error',

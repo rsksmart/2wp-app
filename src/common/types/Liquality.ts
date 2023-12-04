@@ -5,7 +5,6 @@ declare interface walletSendTransactionParams {
   value: number;
 }
 
-// eslint-disable-next-line no-shadow
 export enum LiqualityMethods {
   GET_ADDRESS = 'wallet_getAddresses',
   SIGN_PSBT = 'wallet_signPSBT',
@@ -21,8 +20,10 @@ export interface LiqualityInput {
 
 export interface LiqualityRequestArgs {
   method: LiqualityMethods;
-  // eslint-disable-next-line max-len
-  params: Array<number | boolean> | Array<walletSendTransactionParams> | Array<string | Array<LiqualityInput>>;
+  params:
+    Array<number | boolean>
+    | Array<walletSendTransactionParams>
+    | Array<string | Array<LiqualityInput>>;
 }
 
 export interface LiqualityAddress {

@@ -4,7 +4,6 @@ import { LiqualitySignedTx } from '@/common/types/Liquality';
 
 export type SignedTx = TrezorSignedTx | LedgerSignedTx | LiqualitySignedTx;
 
-// eslint-disable-next-line no-shadow
 export enum Purpose {
   P2PKH = '44',
   P2SH = '49',
