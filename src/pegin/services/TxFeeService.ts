@@ -19,7 +19,7 @@ export default class TxFeeService {
         .then((feePerByte: SatoshiBig) => {
           const checkedFeePerByte = TxFeeService.getCheckedFeePerKb(feePerByte, feeLevel);
           const baseFee = checkedFeePerByte.mul(constants.BITCOIN_TX_HEADER_SIZE_IN_BYTES
-            + constants.BITCOIN_TX_OUTPUT_SIZE_IN_BYTES);
+            + (constants.BITCOIN_TX_OUTPUT_SIZE_IN_BYTES * constants.PEGIN_OUTPUTS));
           const feePerInput = checkedFeePerByte
             .mul(constants.BITCOIN_TX_INPUT_SIZE_IN_BYTES);
           const { selectedUtxoList, enoughBalance } = TxFeeService
