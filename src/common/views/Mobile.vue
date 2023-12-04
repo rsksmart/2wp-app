@@ -20,7 +20,6 @@
 </template>
 
 <script lang="ts">
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { useDisplay } from 'vuetify';
 
 export default {

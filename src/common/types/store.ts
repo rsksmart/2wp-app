@@ -33,7 +33,6 @@ export interface PeginStatus {
   status: PegStatus;
 }
 
-// eslint-disable-next-line no-shadow
 export enum PegoutStatus {
   PENDING = 'PENDING',
   RECEIVED = 'RECEIVED',
@@ -59,7 +58,6 @@ export interface PegoutStatusDataModel {
   estimatedFee: SatoshiBig;
 }
 
-// eslint-disable-next-line no-shadow
 export enum TxStatusType {
   PEGIN = 'PEGIN',
   PEGOUT = 'PEGOUT',

@@ -9,7 +9,6 @@ export interface StatusState extends TxStatus{
     txStatus?: TxStatus,
 }
 
-// eslint-disable-next-line no-shadow
 export enum TxSummaryOrientation {
     VERTICAL = 'VERTICAL',
     HORIZONTAL = 'HORIZONTAL'

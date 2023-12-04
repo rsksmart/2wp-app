@@ -12,7 +12,6 @@ import { EnvironmentAccessorService } from '@/common/services/enviroment-accesso
 
 const bip32 = BIP32Factory(ecc);
 
-// eslint-disable-next-line no-shadow
 export enum NETWORKS {
   MAINNET = 'mainnet',
   TESTNET = 'testnet',

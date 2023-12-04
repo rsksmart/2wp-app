@@ -22,7 +22,6 @@ export const mutations: MutationTree<SessionState> = {
     state.rLoginInstance = rLoginInstance;
   },
   [constants.SESSION_CLOSE_RLOGIN]: async (state) => {
-    // eslint-disable-next-line no-unused-expressions
     await state.rLogin?.disconnect();
   },
   [constants.SESSION_SET_TX_TYPE]: (state, txType: TransactionType) => {
