@@ -8,6 +8,6 @@ export const getters: GetterTree<SessionState, RootState> = {
   [constants.SESSION_IS_LEDGER_CONNECTED]: (state): boolean => !!(state.rLogin?.provider.isLedger),
   [constants.SESSION_IS_TREZOR_CONNECTED]: (state): boolean => !!(state.rLogin?.provider.isTrezor),
   [constants.SESSION_IS_METAMASK_CONNECTED]:
-    (state): boolean => !!(state.rLogin?.provider.isMetamask),
+    (state): boolean => !!(state.rLogin?.provider.isMetaMask),
   [constants.SESSION_IS_RLOGIN_DEFINED]: (state): boolean => state.rLogin !== undefined,
 };
