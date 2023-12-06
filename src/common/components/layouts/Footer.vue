@@ -20,7 +20,7 @@
                 About IOV Labs
               </a>
               <a :href="helpUrl" target="_blank">Help</a>
-              <a href="https://open-rsk-dev.slack.com/messages/support" target="_blank">Support</a>
+              <a :href="discordUrl" target="_blank">Support</a>
               <a href="https://rootstock.io/terms-conditions/" target="_blank">
                 Terms & Conditions
               </a>
@@ -40,8 +40,8 @@
               </v-btn>
               <v-btn variant="plain"
                 density="compact"
-                href="https://open-rsk-dev.slack.com/messages/support" target="_blank"
-                :icon="mdiSlack">
+                :href="discordUrl" target="_blank"
+                :icon="mdiDiscord">
               </v-btn>
             </v-row>
           </v-col>
@@ -53,7 +53,7 @@
 <script lang="ts">
 import { computed, ref } from 'vue';
 import { useStore } from 'vuex';
-import { mdiTwitter, mdiSlack, mdiGithub } from '@mdi/js';
+import { mdiTwitter, mdiGithub, mdiDiscord } from '@mdi/js';
 import { ApiInformation } from '@/common/types/ApiInformation';
 import { ApiService } from '@/common/services';
 import { useRoute } from 'vue-router';
@@ -74,6 +74,7 @@ export default {
 
     const urlApp = computed(() => `https://github.com/rsksmart/2wp-app/releases/tag/v${appVersion.value}`);
     const urlApi = computed(() => `https://github.com/rsksmart/2wp-api/releases/tag/v${apiVersion.value}`);
+    const discordUrl = 'https://discord.com/channels/842021106956238848/1123675841369489438';
 
     function getDevPortalSlug() {
       const [, feature, wallet] = route.path.split('/');
@@ -109,10 +110,11 @@ export default {
       urlApi,
       urlApp,
       helpUrl,
+      discordUrl,
       appVersion,
       apiVersion,
       mdiTwitter,
-      mdiSlack,
+      mdiDiscord,
       mdiGithub,
     };
   },
