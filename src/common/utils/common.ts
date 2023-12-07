@@ -88,6 +88,5 @@ export const getClearSessionState = ():SessionState => (
     balance: new WeiBig('0', 'wei'),
     btcDerivedAddress: '',
     bitcoinPrice: 0,
-    acceptedTerms: localStorage.getItem('TERMS_AND_CONDITIONS_ACCEPTED') === 'true',
   }
 );
