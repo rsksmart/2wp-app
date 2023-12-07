@@ -148,37 +148,16 @@
       .wallet-button-content {
         color: #fff !important;
       }
-      .wallet-icon {
-        background-image: url('../../assets/wallet-icons/trezor-white.png');
-      }
-      .wallet-icon-ledger{
-        background-image: url('../../assets/wallet-icons/ledger-white.png');
-      }
-      .wallet-icon-liquality {
-        background-image: url('../../assets/wallet-icons/liquality-white.png');
-      }
     }
     &:focus {
       .wallet-button-content {
         color: #fff !important;
       }
-      .wallet-icon {
-        background-image: url('../../assets/wallet-icons/trezor-white.png');
-      }
-      .wallet-icon-ledger{
-        background-image: url('../../assets/wallet-icons/ledger-white.png');
-      }
-      .wallet-icon-liquality {
-        background-image: url('../../assets/wallet-icons/liquality-white.png');
-      }
     }
     .wallet-icon {
       background-repeat: no-repeat;
-      width: 25px;
-      height: 34px;
+      width: 20px;
       position: relative;
-      padding: 5px 0 0 10px;
-      background-image: url('../../assets/wallet-icons/trezor.png');
     }
     .wallet-icon-ledger{
       background-repeat: no-repeat;
@@ -217,15 +196,6 @@
     .wallet-button-content {
       color: #fff !important;
     }
-    .wallet-icon {
-      background-image: url('../../assets/wallet-icons/trezor-white.png');
-    }
-    .wallet-icon-ledger{
-      background-image: url('../../assets/wallet-icons/ledger-white.png');
-    }
-    .wallet-icon-liquality {
-      background-image: url('../../assets/wallet-icons/liquality-white.png');
-    }
   }
 
   #connect-device-steps {
@@ -250,6 +220,9 @@
       font-size: 16px;
       cursor: pointer;
     }
+  }
+  .btn-liquality {
+    width: 100px !important;
   }
 }
 
