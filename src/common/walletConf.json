@@ -1,0 +1,34 @@
+{
+    "wallets": [
+        {
+            "name": "Trezor",
+            "icon": "wallet-icons/trezor.svg",
+            "iconWhite": "wallet-icons/trezor-white.svg",
+            "constant": "WALLET_TREZOR",
+            "pegin": true,
+            "pegout": true,
+            "hover": false,
+            "btnClass": "btn-trezor"
+        },
+        {
+            "name": "Ledger",
+            "icon": "wallet-icons/ledger.png",
+            "iconWhite": "wallet-icons/ledger-white.png",
+            "constant": "WALLET_LEDGER",
+            "pegin": true,
+            "pegout": true,
+            "hover": false,
+            "btnClass": "btn-ledger"
+        },
+        {
+            "name": "Liquality",
+            "icon": "wallet-icons/liquality.png",
+            "iconWhite": "wallet-icons/liquality-white.png",
+            "constant": "WALLET_LIQUALITY",
+            "pegin": true,
+            "pegout": true,
+            "hover": false,
+            "btnClass": "btn-liquality"
+        }
+    ]
+}

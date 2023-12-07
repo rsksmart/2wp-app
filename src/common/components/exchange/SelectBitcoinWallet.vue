@@ -10,28 +10,22 @@
             <p class="text-center">Select your {{environmentContext.getBtcText()}} wallet</p>
           </v-row>
           <v-row justify="center" class="ma-0 mt-6">
-            <v-col cols="4" class="d-flex justify-center">
-              <v-btn variant="outlined" class="wallet-button-thin"
-                     @click="setBitcoinWallet(storeConstants.WALLET_LEDGER)"
-                     v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_LEDGER }">
-                <div class="mr-2 wallet-icon-ledger"></div>
-                <span class="wallet-button-content">Ledger</span>
-              </v-btn>
-            </v-col>
-            <v-col cols="4" class="d-flex justify-center">
-              <v-btn variant="outlined" class="wallet-button-thin"
-                     @click="setBitcoinWallet(storeConstants.WALLET_TREZOR)"
-                     v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_TREZOR }">
-                <div class="mr-2 wallet-icon"></div>
-                <span class="wallet-button-content">Trezor</span>
-              </v-btn>
-            </v-col>
-            <v-col cols="4" class="d-flex justify-center">
-              <v-btn variant="outlined" class="wallet-button-thin"
-                @click="setBitcoinWallet(storeConstants.WALLET_LIQUALITY)"
-                v-bind:class="{ selected: selectedWallet === storeConstants.WALLET_LIQUALITY }">
-                <div class="wallet-icon-liquality"></div>
-                <span class="wallet-button-content">Liquality</span>
+            <v-col v-for="wallet in wallets" :key="wallet.name"
+                    class="d-flex justify-center" >
+                    <v-btn variant="outlined" class="wallet-button-thin"
+                    @click="setBitcoinWallet(wallet.constant as BtcWallet)"
+                    @mouseover="wallet.hover = true" @mouseleave="wallet.hover = false">
+                <v-row>
+                  <v-col cols="4" class="ma-0 pa-0 wallet-icon d-flex align-center"
+                      :class="[wallet.btnClass]">
+                    <v-img :src="wallet.hover ?
+                    require('@/assets/' + wallet.iconWhite) :
+                    require('@/assets/' + wallet.icon) " cover ></v-img>
+                  </v-col>
+                  <v-col cols="8" class="ma-0 pl-3 d-flex justify-center align-center">
+                    <span class="wallet-button-content">{{ wallet.name }}</span>
+                  </v-col>
+                </v-row>
               </v-btn>
             </v-col>
           </v-row>
@@ -54,6 +48,7 @@ import * as constants from '@/common/store/constants';
 import { BtcWallet } from '@/common/types/pegInTx';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { useAction, useStateAttribute } from '@/common/store/helper';
+import walletConf from '@/common/walletConf.json';
 
 export default {
   name: 'SelectBitcoinWallet',
@@ -63,6 +58,8 @@ export default {
     const router = useRouter();
     const storeConstants = constants;
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+
+    const wallets = ref(walletConf.wallets);
 
     const bitcoinWallet = useStateAttribute<BtcWallet>('pegInTx', 'bitcoinWallet');
     const addBitcoinWallet = useAction('pegInTx', constants.PEGIN_TX_ADD_BITCOIN_WALLET);
@@ -111,6 +108,7 @@ export default {
       showBack,
       back,
       setBitcoinWallet,
+      wallets,
     };
   },
 };
