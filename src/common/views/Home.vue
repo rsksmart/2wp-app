@@ -15,13 +15,13 @@
             <h2>Bridging {{environmentContext.getBtcTicker()}} and
             {{environmentContext.getRbtcTicker()}}</h2>
           </v-row>
-          <v-row class="mx-0 mt-10 d-flex justify-center">
+          <v-row class="mx-0 mt-10 d-flex justify-center" v-if="termsFlag">
             <v-col class="d-flex justify-center terms-label">
               <v-col class="d-flex justify-center terms-label">
               <v-row class="d-flex justify-center">
                   <v-row class="ma-0 pa-0 d-flex justify-center">
                     <label for="termscheck" class="pa-0 d-flex align-center mx-3">
-                    <input id="termscheck" type="checkbox" v-model="acceptedTerms"
+                    <input id="termscheck" type="checkbox" v-model="areTermsAccepted"
                             @click="updateCookie" >
                     </label>
                     I acknowledge and accept the
@@ -37,7 +37,8 @@
             </v-row>
             <v-row justify="center" class="mt-6">
               <v-col cols="4" class="d-flex justify-end pb-0">
-                <v-btn @click="selectPegIn" :disabled="!isAllowedBrowser || !acceptedTerms" outlined
+                <v-btn @click="selectPegIn" :disabled="!isAllowedBrowser
+                || (!areTermsAccepted && !!termsFlag)" outlined
                        v-bind:class="btnWalletClass">
                   <div>
                     <v-row class="mx-0 d-flex justify-center">
@@ -63,7 +64,7 @@
               </v-col>
               <v-col cols="4" class="d-flex justify-start pb-0">
                 <v-col class="ma-0 pa-0" cols="auto">
-                  <v-btn @click="selectPegOut" :disabled="!acceptedTerms"
+                  <v-btn @click="selectPegOut" :disabled="!areTermsAccepted && !!termsFlag"
                           class="wallet-button mb-0" outlined>
                     <div>
                       <v-row class="mx-0 d-flex justify-center">
@@ -126,7 +127,8 @@
             </v-row>
         </v-col>
       </v-row>
-    <terms-dialog :show-dialog="showTermsAndConditions" @closeDialog="closeTermsDialog" />
+    <terms-dialog :show-dialog="showTermsAndConditions"
+    @closeDialog="closeTermsDialog" :text="dialogText"/>
     </v-container>
   </v-container>
 </template>
@@ -139,6 +141,7 @@ import * as constants from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { isAllowedCurrentBrowser } from '@/common/utils';
 import {
+  Feature,
   TransactionType,
 } from '@/common/types';
 import { useAction, useStateAttribute } from '@/common/store/helper';
@@ -155,16 +158,18 @@ export default {
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const isAllowedBrowser = isAllowedCurrentBrowser();
     const showTermsAndConditions = ref(false);
-    const acceptedTerms = ref(false);
 
     const txType = useStateAttribute<TransactionType>('web3Session', 'txType');
     const areTermsAccepted = useStateAttribute<boolean>('web3Session', 'acceptedTerms');
+    const termsFlag = useStateAttribute<Feature>('web3Session', 'termsFlag');
 
     const clear = useAction('pegInTx', constants.PEGIN_TX_CLEAR_STATE);
     const clearPegOut = useAction('pegOutTx', constants.PEGOUT_TX_CLEAR);
     const clearSession = useAction('web3Session', constants.SESSION_CLEAR);
     const addPeg = useAction('web3Session', constants.SESSION_ADD_TX_TYPE);
     const setTerms = useAction('web3Session', constants.SESSION_ADD_TERMS_VALUE);
+
+    const dialogText = computed(() => termsFlag.value?.value ?? '');
 
     const btcToRbtc = computed((): boolean => txType.value === constants.PEG_IN_TRANSACTION_TYPE);
 
@@ -212,7 +217,7 @@ export default {
     }
 
     function updateCookie() {
-      setTerms(!acceptedTerms.value);
+      setTerms(!areTermsAccepted.value);
     }
 
     const route = useRoute();
@@ -220,8 +225,6 @@ export default {
       STATUS.value = true;
       if (route.path !== '/status') router.push('/status');
     }
-
-    acceptedTerms.value = areTermsAccepted.value;
 
     clear();
     clearPegOut();
@@ -243,7 +246,9 @@ export default {
       mdiArrowRight,
       showTermsAndConditions,
       closeTermsDialog,
-      acceptedTerms,
+      areTermsAccepted,
+      termsFlag,
+      dialogText,
       showDialog,
       toggleCheck,
       updateCookie,

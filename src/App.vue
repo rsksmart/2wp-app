@@ -31,6 +31,7 @@ export default {
     let scriptTag: HTMLScriptElement;
     let hotjarScriptTag: HTMLScriptElement;
     const getBtcPrice = useAction('web3Session', constants.SESSION_ADD_BITCOIN_PRICE);
+    const addTermsFlag = useAction('web3Session', constants.SESSION_ADD_TERMS_FLAG);
 
     const contentSecurityPolicy = computed((): string => {
       const envVariables = EnvironmentAccessorService.getEnvironmentVariables();
@@ -82,6 +83,7 @@ export default {
       document.body.appendChild(hotjarScriptTag);
     }
 
+    addTermsFlag();
     appendHotjar();
     getBtcPrice();
     appendClarity();

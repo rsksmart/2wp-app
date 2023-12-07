@@ -2,6 +2,7 @@ import RLogin from '@rsksmart/rlogin';
 import Web3 from 'web3';
 import WeiBig from '@/common/types/WeiBig';
 import WalletConnectProvider from '@walletconnect/web3-provider';
+import { Feature } from './Feature';
 
 export type TransactionType = 'PEG_IN_TRANSACTION_TYPE' | 'PEG_OUT_TRANSACTION_TYPE' | undefined;
 
@@ -18,5 +19,6 @@ export interface SessionState {
   balance: WeiBig;
   btcDerivedAddress: string;
   bitcoinPrice: number;
-  acceptedTerms: boolean;
+  acceptedTerms?: boolean;
+  termsFlag?: Feature;
 }

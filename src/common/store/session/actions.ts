@@ -11,6 +11,7 @@ import {
 } from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { getBtcAddressFromSignedMessage } from '@/common/utils';
+import { ApiService } from '@/common/services';
 
 export const actions: ActionTree<SessionState, RootState> = {
   [constants.SESSION_CONNECT_WEB3]: ({ commit, state }): Promise<void> => {
@@ -131,7 +132,20 @@ export const actions: ActionTree<SessionState, RootState> = {
   [constants.SESSION_CLEAR]: ({ commit }) => {
     commit(constants.SESSION_CLEAR_STATE);
   },
-  [constants.SESSION_ADD_TERMS_VALUE]: ({ commit }, value: boolean) => {
+  [constants.SESSION_ADD_TERMS_VALUE]: ({ commit, state }, value) => {
+    if (value) {
+      localStorage.setItem('TERMS_AND_CONDITIONS_ACCEPTED', String(state.termsFlag?.version));
+    } else {
+      localStorage.removeItem('TERMS_AND_CONDITIONS_ACCEPTED');
+    }
     commit(constants.SESSION_SET_TERMS_ACCEPTED, value);
+  },
+  [constants.SESSION_ADD_TERMS_FLAG]: async ({ commit, dispatch }) => {
+    const features = await ApiService.getFeatures();
+    const flag = features.find(({ name }) => name === 'terms_and_conditions');
+    if (!flag?.version) return;
+    const versionAccepted = Number(localStorage.getItem('TERMS_AND_CONDITIONS_ACCEPTED'));
+    commit(constants.SESSION_SET_TERMS_FLAG, flag);
+    dispatch(constants.SESSION_ADD_TERMS_VALUE, flag?.version === versionAccepted);
   },
 };
