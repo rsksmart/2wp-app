@@ -143,7 +143,7 @@
 
 <script lang="ts">
 import {
-  computed, reactive, ref, watch, defineComponent,
+  computed, reactive, ref, defineComponent,
 } from 'vue';
 import { mdiInformation } from '@mdi/js';
 import {
@@ -269,11 +269,15 @@ export default defineComponent({
     }
 
     function setMessage() {
-      let msg: TxStatusMessage | string = '';
-      if (txDetails) {
-        msg = setStatusMessage(TxStatusType.PEGIN, txDetails.value.status);
+      try {
+        let msg: TxStatusMessage | string = '';
+        if (txDetails) {
+          msg = setStatusMessage(TxStatusType.PEGIN, txDetails.value.status);
+        }
+        context.emit('setMessage', msg);
+      } catch (e) {
+        console.log(e);
       }
-      context.emit('setMessage', msg);
     }
 
     function setProgressColor() {
@@ -326,8 +330,6 @@ export default defineComponent({
         rskCircleColor.value = circleColor.green;
       }
     }
-
-    watch(() => txDetails.value.status, setMessage);
 
     setSummaryData();
     refreshPercentage();
