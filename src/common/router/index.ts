@@ -7,13 +7,17 @@ import { EnvironmentAccessorService } from '@/common/services/enviroment-accesso
 import Home from '@/common/views/Home.vue';
 import * as constants from '@/common/store/constants';
 
-function checkAcceptedTerms(
+async function checkAcceptedTerms(
   from: RouteLocationNormalized,
   to: RouteLocationNormalized,
   next: NavigationGuardNext,
 ) {
   const store = useStore();
-  if (store.state.web3Session.acceptedTerms) {
+  if (store.state.web3Session.acceptedTerms === undefined) {
+    await store.dispatch(`web3Session/${constants.SESSION_ADD_TERMS_FLAG}`);
+  }
+  if (!store.state.web3Session.termsFlag
+    || (store.state.web3Session.termsFlag && store.state.web3Session.acceptedTerms)) {
     next();
   } else {
     next({ name: 'Home' });
