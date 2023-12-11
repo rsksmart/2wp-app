@@ -21,7 +21,7 @@
               <v-row class="d-flex justify-center">
                   <v-row class="ma-0 pa-0 d-flex justify-center">
                     <label for="termscheck" class="pa-0 d-flex align-center mx-3">
-                    <input id="termscheck" type="checkbox" v-model="areTermsAccepted"
+                    <input id="termscheck" type="checkbox" :checked="areTermsAccepted"
                             @click="updateCookie" >
                     </label>
                     I acknowledge and accept the
