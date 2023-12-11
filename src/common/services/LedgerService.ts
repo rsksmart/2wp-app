@@ -4,7 +4,7 @@ import * as bitcoin from 'bitcoinjs-lib';
 import * as constants from '@/common/store/constants';
 import { BtcAccount, WalletAddress } from '@/common/types/pegInTx';
 import {
-  LedgerjsTransaction, LedgerSignedTx, LedgerTx, Tx,
+  LedgerjsTransaction, LedgerSignedTx, LedgerTx, Step, Tx,
 } from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { WalletService } from '@/common/services/index';
@@ -17,6 +17,20 @@ export default class LedgerService extends WalletService {
     super();
     this.bitcoinJsNetwork = this.network === constants.BTC_NETWORK_MAINNET
       ? bitcoin.networks.bitcoin : bitcoin.networks.testnet;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  public availableAccounts(): BtcAccount[] {
+    return [
+      constants.BITCOIN_LEGACY_ADDRESS,
+      constants.BITCOIN_SEGWIT_ADDRESS,
+      constants.BITCOIN_NATIVE_SEGWIT_ADDRESS,
+    ];
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  confirmationSteps(): Step[] {
+    return [];
   }
 
   // eslint-disable-next-line class-methods-use-this

@@ -1,6 +1,8 @@
 import * as constants from '@/common/store/constants';
 import SatoshiBig from '@/common/types/SatoshiBig';
-import { Purpose, SignedTx, WalletCount } from '@/common/types/Wallets';
+import {
+  Purpose, SignedTx, WalletCount, Step,
+} from '@/common/types/Wallets';
 import {
   AccountBalance, AddressStatus, AppNetwork, BtcAccount, Tx, UtxoListPerAccount, WalletAddress,
 } from '@/common/types';
@@ -84,6 +86,10 @@ export default abstract class WalletService {
   abstract getXpub(accountType: BtcAccount, accountNumber: number): Promise<string>;
 
   abstract areEnoughUnusedAddresses(): boolean;
+
+  abstract availableAccounts(): Array<BtcAccount>;
+
+  abstract confirmationSteps(): Array<Step>;
 
   get isLoadingBalances(): boolean {
     return this.loadingBalances;
