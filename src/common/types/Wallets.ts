@@ -15,3 +15,25 @@ export interface WalletCount {
   segwit: { lastIndex: number; count: number; };
   nativeSegwit: { lastIndex: number; count: number; };
 }
+
+export interface Step {
+  title: string;
+  subtitle: string;
+  outputsToshow: {
+    opReturn: {
+      value: boolean,
+      amount: boolean,
+    },
+    change: {
+      address: boolean,
+      amount: boolean,
+    },
+    federation: {
+      address: boolean,
+      amount: boolean,
+    },
+  },
+  fee: boolean;
+  tooltip?: string;
+  comment?: string;
+}

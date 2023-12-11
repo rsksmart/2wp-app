@@ -37,6 +37,7 @@ import { useRouter } from 'vue-router';
 import PegInForm from '@/pegin/components/create/PegInForm.vue';
 import ConfirmTrezorTransaction from '@/pegin/components/trezor/ConfirmTrezorTransaction.vue';
 import ConfirmLedgerTransaction from '@/pegin/components/ledger/ConfirmLedgerTransaction.vue';
+import ConfirmTx from '@/pegin/components/create/ConfirmTx.vue';
 import * as constants from '@/common/store/constants';
 import {
   SendBitcoinState, SatoshiBig, BtcWallet, LiqualityError, Utxo,
@@ -62,6 +63,7 @@ export default defineComponent({
     ConfirmTrezorTransaction,
     ConfirmLedgerTransaction,
     ConfirmLiqualityTransaction,
+    ConfirmTx,
     ConnectDevice,
     DeviceErrorDialog,
     TxErrorDialog,
@@ -133,7 +135,7 @@ export default defineComponent({
           currentComponent.value = 'ConfirmLiqualityTransaction';
           break;
         default:
-          currentComponent.value = 'ConfirmTrezorTransaction';
+          currentComponent.value = 'ConfirmTx';
           break;
       }
       return normalizedTx;
