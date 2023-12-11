@@ -8,6 +8,7 @@ import {
   WalletAddress,
   WindowBitcoinProvider,
   LiqualityGetNetworkResponse,
+  Step,
 } from '@/common/types';
 import { WalletService } from '@/common/services/index';
 import * as constants from '@/common/store/constants';
@@ -21,6 +22,18 @@ export default class LiqualityService extends WalletService {
     if (testBitcoinProvider) {
       this.bitcoinProvider = testBitcoinProvider;
     }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  public availableAccounts(): BtcAccount[] {
+    return [
+      constants.BITCOIN_NATIVE_SEGWIT_ADDRESS,
+    ];
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  confirmationSteps(): Step[] {
+    return [];
   }
 
   private enable(): Promise<void> {
