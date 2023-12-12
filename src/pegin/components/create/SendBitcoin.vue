@@ -97,7 +97,7 @@ export default defineComponent({
     const clearStore = useAction('pegInTx', constants.PEGIN_TX_CLEAR_STATE);
     const init = useAction('pegInTx', constants.PEGIN_TX_INIT);
     const setBtcWallet = useAction('pegInTx', constants.PEGIN_TX_ADD_BITCOIN_WALLET);
-    const getChangeAddress = useGetter<(accountType: string)=> string>('pegInTx', constants.PEGIN_TX_GET_CHANGE_ADDRESS);
+    const getChangeAddress = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_CHANGE_ADDRESS);
     const selectedUtxoList = useGetter<Utxo[]>('pegInTx', constants.PEGIN_TX_GET_ACCOUNT_UTXO_LIST);
     const selectedFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
 
@@ -105,7 +105,6 @@ export default defineComponent({
       amountToTransferInSatoshi,
       refundAddress,
       recipient,
-      accountType,
     }: {
       amountToTransferInSatoshi: SatoshiBig;
       refundAddress: string;
@@ -119,7 +118,7 @@ export default defineComponent({
           federationAddress: await bridgeService.getFederationAddress(),
           refundAddress,
           rskRecipientAddress: recipient,
-          changeAddress: getChangeAddress.value(accountType),
+          changeAddress: getChangeAddress.value,
           totalFee: selectedFee.value,
           selectedUtxoList: selectedUtxoList.value,
         },
