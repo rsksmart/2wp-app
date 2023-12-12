@@ -24,12 +24,12 @@ export const getters: GetterTree<PegInTxState, RootState> = {
     }
   },
   [constants.PEGIN_TX_GET_CHANGE_ADDRESS]:
-    (state: PegInTxState) => (accountType: string): string => {
+    (state: PegInTxState): string => {
       let address = '';
       let accountTypePath = '';
       const coin = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
       const coinPath = coin === 'main' ? "/0'" : "/1'";
-      switch (accountType) {
+      switch (state.selectedAccount) {
         case constants.BITCOIN_LEGACY_ADDRESS:
           accountTypePath = "44'";
           break;
@@ -46,7 +46,8 @@ export const getters: GetterTree<PegInTxState, RootState> = {
         // eslint-disable-next-line no-restricted-syntax
         for (const walletAddress of state.addressList) {
           if ((walletAddress.derivationPath.startsWith(`m/${accountTypePath}${coinPath}/0'/1`)
-              && walletAddress.unused)) {
+            || walletAddress.derivationPath.startsWith(`${accountTypePath}${coinPath}/0'/1`))
+              && walletAddress.unused) {
             address = walletAddress.address;
             break;
           }
