@@ -45,8 +45,10 @@
               <div class="d-flex justify-start">
                 <div class="bitcoin-icon-green">
                   <v-row>
-                    <v-img v-bind:class="bordersStyle.btc"
-                      class="icon-status-image icon-btc-image d-flex justify-center"
+                    <v-img
+                      class="d-flex justify-center icon-status-image"
+                      :class="[isMainnet ? 'icon-btc-image-main' : 'icon-btc-image',
+                      bordersStyle.btc]"
                       :src="require('@/assets/status/btc.png')" height="78" contain/>
                   </v-row>
                   <v-row class="pt-6">
@@ -156,6 +158,7 @@ import * as constants from '@/common/store/constants';
 import { getTime, setStatusMessage } from '@/common/utils';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
 export default defineComponent({
   name: 'TxPegin',
@@ -220,6 +223,9 @@ export default defineComponent({
     const rskConfirmationsAreDone = computed(
       () => txDetails.value.status === constants.PegStatus.CONFIRMED,
     );
+
+    const isMainnet = computed(() => EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin
+      === constants.BTC_NETWORK_MAINNET);
 
     const txPeginSummary = computed((): NormalizedSummary => {
       const status = txDetails.value;
@@ -358,6 +364,7 @@ export default defineComponent({
       rskConfirmationsAreDone,
       isRejected,
       mdiInformation,
+      isMainnet,
     };
   },
 });
