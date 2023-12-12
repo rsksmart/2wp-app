@@ -19,13 +19,13 @@
               <a href="https://www.iovlabs.org/" target="_blank">
                 About IOV Labs
               </a>
-              <a :href="sanitizer.sanitizeUrl(helpUrl)"
+              <a :href="helpUrl"
                             target="_blank" rel="noopener">Help</a>
-              <a :href="sanitizer.sanitizeUrl(discordUrl)"
+              <a :href="discordUrl"
                             target="_blank" rel="noopener">Support</a>
-              <a :href="`https://github.com/rsksmart/2wp-api/releases/tag/v${apiVersion.value}`"
+              <a :href="`https://github.com/rsksmart/2wp-api/releases/tag/v${apiVersion}`"
                             target="_blank" rel="noopener">Api Version: {{apiVersion}}</a>
-              <a :href="`https://github.com/rsksmart/2wp-app/releases/tag/v${appVersion.value}`"
+              <a :href="`https://github.com/rsksmart/2wp-app/releases/tag/v${appVersion}`"
                             target="_blank" rel="noopener">App Version: {{appVersion}}</a>
             </v-row>
           </v-col>
@@ -61,7 +61,6 @@ import { ApiService } from '@/common/services';
 import { useRoute } from 'vue-router';
 import { useGetter } from '@/common/store/helper';
 import * as constants from '@/common/store/constants';
-import sanitizer from '@braintree/sanitize-url';
 
 export default {
   name: 'FooterRsk',
@@ -102,7 +101,7 @@ export default {
       return feature;
     }
 
-    const helpUrl = computed(() => sanitizer.sanitizeUrl(`https://dev.rootstock.io/guides/two-way-peg-app/${getDevPortalSlug()}`));
+    const helpUrl = computed(() => `https://dev.rootstock.io/guides/two-way-peg-app/${getDevPortalSlug()}`);
 
     ApiService.getApiInformation()
       .then((res: ApiInformation) => {
