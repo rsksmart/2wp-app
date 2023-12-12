@@ -19,12 +19,9 @@
               <a href="https://www.iovlabs.org/" target="_blank">
                 About IOV Labs
               </a>
-              <a :href="helpUrl" target="_blank">Help</a>
-              <a :href="discordUrl" target="_blank">Support</a>
-              <a href="https://rootstock.io/terms-conditions/" target="_blank">
-                Terms & Conditions
-              </a>
-              <a :href="urlApi" target="_blank" rel="noopener">Api Version: {{apiVersion}}</a>
+              <a :href="helpUrl" target="_blank" rel="noopener">Help</a>
+              <a :href="discordUrl" target="_blank" rel="noopener">Support</a>
+ß             <a :href="urlApi" target="_blank" rel="noopener">Api Version: {{apiVersion}}</a>
               <a :href="urlApp" target="_blank" rel="noopener">App Version: {{appVersion}}</a>
             </v-row>
           </v-col>
