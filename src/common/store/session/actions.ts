@@ -134,19 +134,19 @@ export const actions: ActionTree<SessionState, RootState> = {
   },
   [constants.SESSION_ADD_TERMS_VALUE]: ({ commit, state }, value) => {
     if (value) {
-      localStorage.setItem('TERMS_AND_CONDITIONS_ACCEPTED', String(state.termsFlag?.version));
+      localStorage.setItem('TERMS_AND_CONDITIONS_ACCEPTED', String(state.termsAndConditionsEnabled?.version));
     } else {
       localStorage.removeItem('TERMS_AND_CONDITIONS_ACCEPTED');
     }
     commit(constants.SESSION_SET_TERMS_ACCEPTED, value);
   },
-  [constants.SESSION_ADD_TERMS_FLAG]: async ({ commit, dispatch }) => {
+  [constants.SESSION_ADD_TERMS_AND_CONDITIONS_ENABLED]: async ({ commit, dispatch }) => {
     try {
       const features = await ApiService.getFeatures();
       const flag = features.find(({ name }) => name === 'terms_and_conditions');
       if (!flag?.version) return;
       const versionAccepted = Number(localStorage.getItem('TERMS_AND_CONDITIONS_ACCEPTED'));
-      commit(constants.SESSION_SET_TERMS_FLAG, flag);
+      commit(constants.SESSION_SET_TERMS_AND_CONDITIONS_ENABLED, flag);
       dispatch(constants.SESSION_ADD_TERMS_VALUE, flag?.version === versionAccepted);
     } catch (e) {
       dispatch(constants.SESSION_ADD_TERMS_VALUE, false);

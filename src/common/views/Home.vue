@@ -15,7 +15,7 @@
             <h2>Bridging {{environmentContext.getBtcTicker()}} and
             {{environmentContext.getRbtcTicker()}}</h2>
           </v-row>
-          <v-row class="mx-0 mt-10 d-flex justify-center" v-if="termsFlag">
+          <v-row class="mx-0 mt-10 d-flex justify-center" v-if="termsAndConditionsEnabled">
             <v-col class="d-flex justify-center terms-label">
               <v-col class="d-flex justify-center terms-label">
               <v-row class="d-flex justify-center">
@@ -38,7 +38,7 @@
             <v-row justify="center" class="mt-6">
               <v-col cols="4" class="d-flex justify-end pb-0">
                 <v-btn @click="selectPegIn" :disabled="!isAllowedBrowser
-                || (!areTermsAccepted && !!termsFlag)" outlined
+                || (!areTermsAccepted && !!termsAndConditionsEnabled)" outlined
                        v-bind:class="btnWalletClass">
                   <div>
                     <v-row class="mx-0 d-flex justify-center">
@@ -64,7 +64,8 @@
               </v-col>
               <v-col cols="4" class="d-flex justify-start pb-0">
                 <v-col class="ma-0 pa-0" cols="auto">
-                  <v-btn @click="selectPegOut" :disabled="!areTermsAccepted && !!termsFlag"
+                  <v-btn @click="selectPegOut"
+                          :disabled="!areTermsAccepted && !!termsAndConditionsEnabled"
                           class="wallet-button mb-0" outlined>
                     <div>
                       <v-row class="mx-0 d-flex justify-center">
@@ -161,7 +162,7 @@ export default {
 
     const txType = useStateAttribute<TransactionType>('web3Session', 'txType');
     const areTermsAccepted = useStateAttribute<boolean>('web3Session', 'acceptedTerms');
-    const termsFlag = useStateAttribute<Feature>('web3Session', 'termsFlag');
+    const termsAndConditionsEnabled = useStateAttribute<Feature>('web3Session', 'termsAndConditionsEnabled');
 
     const clear = useAction('pegInTx', constants.PEGIN_TX_CLEAR_STATE);
     const clearPegOut = useAction('pegOutTx', constants.PEGOUT_TX_CLEAR);
@@ -169,7 +170,7 @@ export default {
     const addPeg = useAction('web3Session', constants.SESSION_ADD_TX_TYPE);
     const setTerms = useAction('web3Session', constants.SESSION_ADD_TERMS_VALUE);
 
-    const dialogText = computed(() => termsFlag.value?.value ?? '');
+    const dialogText = computed(() => termsAndConditionsEnabled.value?.value ?? '');
 
     const btcToRbtc = computed((): boolean => txType.value === constants.PEG_IN_TRANSACTION_TYPE);
 
@@ -247,7 +248,7 @@ export default {
       showTermsAndConditions,
       closeTermsDialog,
       areTermsAccepted,
-      termsFlag,
+      termsAndConditionsEnabled,
       dialogText,
       showDialog,
       toggleCheck,
