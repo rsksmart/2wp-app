@@ -31,7 +31,7 @@ export default {
     let scriptTag: HTMLScriptElement;
     let hotjarScriptTag: HTMLScriptElement;
     const getBtcPrice = useAction('web3Session', constants.SESSION_ADD_BITCOIN_PRICE);
-    const addTermsFlag = useAction('web3Session', constants.SESSION_ADD_TERMS_FLAG);
+    const enableTermsAndConditions = useAction('web3Session', constants.SESSION_ADD_TERMS_AND_CONDITIONS_ENABLED);
 
     const contentSecurityPolicy = computed((): string => {
       const envVariables = EnvironmentAccessorService.getEnvironmentVariables();
@@ -83,7 +83,7 @@ export default {
       document.body.appendChild(hotjarScriptTag);
     }
 
-    addTermsFlag();
+    enableTermsAndConditions();
     appendHotjar();
     getBtcPrice();
     appendClarity();

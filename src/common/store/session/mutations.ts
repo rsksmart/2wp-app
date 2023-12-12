@@ -45,7 +45,7 @@ export const mutations: MutationTree<SessionState> = {
   [constants.SESSION_SET_TERMS_ACCEPTED]: (state, value) => {
     state.acceptedTerms = value;
   },
-  [constants.SESSION_SET_TERMS_FLAG]: (state, value) => {
-    state.termsFlag = value;
+  [constants.SESSION_SET_TERMS_AND_CONDITIONS_ENABLED]: (state, value) => {
+    state.termsAndConditionsEnabled = value;
   },
 };

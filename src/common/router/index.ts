@@ -14,10 +14,12 @@ async function checkAcceptedTerms(
 ) {
   const store = useStore();
   if (store.state.web3Session.acceptedTerms === undefined) {
-    await store.dispatch(`web3Session/${constants.SESSION_ADD_TERMS_FLAG}`);
+    await store.dispatch(`web3Session/${constants.SESSION_ADD_TERMS_AND_CONDITIONS_ENABLED}`);
   }
-  if (!store.state.web3Session.termsFlag
-    || (store.state.web3Session.termsFlag && store.state.web3Session.acceptedTerms)) {
+  if (
+    !store.state.web3Session.termsAndConditionsEnabled
+    || (store.state.web3Session.termsAndConditionsEnabled && store.state.web3Session.acceptedTerms)
+  ) {
     next();
   } else {
     next({ name: 'Home' });
