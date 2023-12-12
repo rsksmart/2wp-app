@@ -19,13 +19,13 @@
               <a href="https://www.iovlabs.org/" target="_blank">
                 About IOV Labs
               </a>
-              <a :href="hsanitizer.sanitizeUrl(elpUrl)"
+              <a :href="sanitizer.sanitizeUrl(helpUrl)"
                             target="_blank" rel="noopener">Help</a>
               <a :href="sanitizer.sanitizeUrl(discordUrl)"
                             target="_blank" rel="noopener">Support</a>
-              <a :href="sanitizer.sanitizeUrl(urlApi)"
+              <a :href="`https://github.com/rsksmart/2wp-api/releases/tag/v${apiVersion.value}`"
                             target="_blank" rel="noopener">Api Version: {{apiVersion}}</a>
-              <a :href="sanitizer.sanitizeUrl(urlApp)"
+              <a :href="`https://github.com/rsksmart/2wp-app/releases/tag/v${appVersion.value}`"
                             target="_blank" rel="noopener">App Version: {{appVersion}}</a>
             </v-row>
           </v-col>
@@ -42,7 +42,8 @@
               <v-btn variant="plain"
                 density="compact"
                 :href="discordUrl" target="_blank"
-                :icon="mdiDiscord">
+                :icon="mdiDiscord"
+                rel="noopener">
               </v-btn>
             </v-row>
           </v-col>
