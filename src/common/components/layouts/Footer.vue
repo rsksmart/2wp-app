@@ -19,9 +19,9 @@
               <a href="https://www.iovlabs.org/" target="_blank">
                 About IOV Labs
               </a>
-              <a :href="helpUrl"
+              <a :href="`https://dev.rootstock.io/guides/two-way-peg-app/${getDevPortalSlug()}`"
                             target="_blank" rel="noopener">Help</a>
-              <a :href="discordUrl"
+              <a href="https://discord.com/channels/842021106956238848/1123675841369489438"
                             target="_blank" rel="noopener">Support</a>
               <a :href="`https://github.com/rsksmart/2wp-api/releases/tag/v${apiVersion}`"
                             target="_blank" rel="noopener">Api Version: {{apiVersion}}</a>
@@ -74,10 +74,6 @@ export default {
     const isMetamask = useGetter<boolean>('web3Session', constants.SESSION_IS_METAMASK_CONNECTED);
     const isRloginDefined = useGetter<boolean>('web3Session', constants.SESSION_IS_RLOGIN_DEFINED);
 
-    const urlApp = computed(() => `https://github.com/rsksmart/2wp-app/releases/tag/v${appVersion.value}`);
-    const urlApi = computed(() => `https://github.com/rsksmart/2wp-api/releases/tag/v${apiVersion.value}`);
-    const discordUrl = 'https://discord.com/channels/842021106956238848/1123675841369489438';
-
     function getDevPortalSlug() {
       const [, feature, wallet] = route.path.split('/');
       if (feature === 'pegin' && wallet) {
@@ -101,7 +97,7 @@ export default {
       return feature;
     }
 
-    const helpUrl = computed(() => `https://dev.rootstock.io/guides/two-way-peg-app/${getDevPortalSlug()}`);
+    const helpUrl = computed(() => '');
 
     ApiService.getApiInformation()
       .then((res: ApiInformation) => {
@@ -109,15 +105,13 @@ export default {
       });
 
     return {
-      urlApi,
-      urlApp,
       helpUrl,
-      discordUrl,
       appVersion,
       apiVersion,
       mdiTwitter,
       mdiDiscord,
       mdiGithub,
+      getDevPortalSlug,
     };
   },
 };
