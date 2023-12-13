@@ -13,15 +13,6 @@ export interface TrezorTx extends Tx {
   version: number;
 }
 
-export interface TrezorSignedTx {
-  success: boolean;
-  id?: number;
-  payload: {
-    signatures: string[];
-    serializedTx: string;
-  };
-}
-
 export interface GetAddress {
   path: string | number[];
   address?: string;

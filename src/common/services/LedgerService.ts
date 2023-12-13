@@ -29,8 +29,90 @@ export default class LedgerService extends WalletService {
   }
 
   // eslint-disable-next-line class-methods-use-this
+  name(): string {
+    return constants.WALLET_NAMES.LEDGER;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
   confirmationSteps(): Step[] {
-    return [];
+    return [
+      {
+        title: 'Confirm your transaction',
+        subtitle: 'Please check your Trezor device',
+        outputsToshow: {
+          opReturn: {
+            value: true,
+            amount: true,
+          },
+          change: {
+            address: false,
+            amount: false,
+          },
+          federation: {
+            address: false,
+            amount: false,
+          },
+        },
+        fee: false,
+      },
+      {
+        title: 'Confirm funds transfer',
+        subtitle: 'Confirm sending',
+        outputsToshow: {
+          opReturn: {
+            value: false,
+            amount: false,
+          },
+          change: {
+            address: false,
+            amount: false,
+          },
+          federation: {
+            address: true,
+            amount: true,
+          },
+        },
+        fee: false,
+      },
+      {
+        title: 'Confirm change address',
+        subtitle: 'Confirm sending',
+        outputsToshow: {
+          opReturn: {
+            value: false,
+            amount: false,
+          },
+          change: {
+            address: true,
+            amount: true,
+          },
+          federation: {
+            address: false,
+            amount: false,
+          },
+        },
+        fee: false,
+      },
+      {
+        title: 'Confirm transaction fee',
+        subtitle: 'Really send',
+        outputsToshow: {
+          opReturn: {
+            value: false,
+            amount: false,
+          },
+          change: {
+            address: false,
+            amount: false,
+          },
+          federation: {
+            address: false,
+            amount: true,
+          },
+        },
+        fee: true,
+      },
+    ];
   }
 
   // eslint-disable-next-line class-methods-use-this

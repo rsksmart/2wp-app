@@ -35,7 +35,6 @@
 import { ref, defineComponent } from 'vue';
 import { useRouter } from 'vue-router';
 import PegInForm from '@/pegin/components/create/PegInForm.vue';
-import ConfirmTrezorTransaction from '@/pegin/components/trezor/ConfirmTrezorTransaction.vue';
 import ConfirmLedgerTransaction from '@/pegin/components/ledger/ConfirmLedgerTransaction.vue';
 import ConfirmTx from '@/pegin/components/create/ConfirmTx.vue';
 import * as constants from '@/common/store/constants';
@@ -59,7 +58,6 @@ export default defineComponent({
   name: 'SendBitcoin',
   components: {
     PegInForm,
-    ConfirmTrezorTransaction,
     ConfirmLedgerTransaction,
     ConfirmLiqualityTransaction,
     ConfirmTx,
@@ -126,17 +124,7 @@ export default defineComponent({
         },
       );
       await addNormalizedTx(normalizedTx);
-      switch (bitcoinWallet.value) {
-        case constants.WALLET_LEDGER:
-          currentComponent.value = 'ConfirmLedgerTransaction';
-          break;
-        case constants.WALLET_LIQUALITY:
-          currentComponent.value = 'ConfirmLiqualityTransaction';
-          break;
-        default:
-          currentComponent.value = 'ConfirmTx';
-          break;
-      }
+      currentComponent.value = 'ConfirmTx';
       return normalizedTx;
     }
 
