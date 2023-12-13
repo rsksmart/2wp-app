@@ -5,8 +5,9 @@ import { BtcAccount, WalletAddress } from '@/common/types/pegInTx';
 import * as constants from '@/common/store/constants';
 import {
   GetAddress,
+  SignedTx,
   Step,
-  TrezorSignedTx, TrezorTx, Tx,
+  TrezorTx, Tx,
 } from '@/common/types';
 import { WalletService } from '@/common/services/index';
 import { TrezorError } from '@/common/types/exception/TrezorError';
@@ -47,6 +48,11 @@ export default class TrezorService extends WalletService {
     const error = new TrezorError();
     error.message = 'It appears there was an error while signing the transaction, please try again.';
     return error;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  name(): string {
+    return constants.WALLET_NAMES.TREZOR;
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -235,10 +241,10 @@ export default class TrezorService extends WalletService {
     });
   }
 
-  public sign(tx: Tx): Promise<TrezorSignedTx> {
+  public sign(tx: Tx): Promise<SignedTx> {
     const trezorTx: TrezorTx = tx as TrezorTx;
     trezorTx.inputs = JSON.parse(JSON.stringify(trezorTx.inputs));
-    return new Promise<TrezorSignedTx>((resolve, reject) => {
+    return new Promise<SignedTx>((resolve, reject) => {
       TrezorConnect.signTransaction({
         inputs: trezorTx.inputs,
         outputs: trezorTx.outputs,
@@ -249,11 +255,7 @@ export default class TrezorService extends WalletService {
         .then((res) => {
           if (res.success) {
             resolve({
-              success: res.success,
-              payload: {
-                signatures: res.payload.signatures,
-                serializedTx: res.payload.serializedTx,
-              },
+              signedTx: res.payload.serializedTx,
             });
           } else {
             reject(TrezorService.unableToSignTx());

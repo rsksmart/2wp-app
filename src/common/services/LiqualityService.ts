@@ -25,6 +25,11 @@ export default class LiqualityService extends WalletService {
   }
 
   // eslint-disable-next-line class-methods-use-this
+  name(): string {
+    return constants.WALLET_NAMES.LIQUALITY;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
   public availableAccounts(): BtcAccount[] {
     return [
       constants.BITCOIN_NATIVE_SEGWIT_ADDRESS,
@@ -33,7 +38,27 @@ export default class LiqualityService extends WalletService {
 
   // eslint-disable-next-line class-methods-use-this
   confirmationSteps(): Step[] {
-    return [];
+    return [
+      {
+        title: 'Transaction information',
+        subtitle: '',
+        outputsToshow: {
+          opReturn: {
+            value: false,
+            amount: true,
+          },
+          change: {
+            address: false,
+            amount: true,
+          },
+          federation: {
+            address: true,
+            amount: true,
+          },
+        },
+        fee: true,
+      },
+    ];
   }
 
   private enable(): Promise<void> {
