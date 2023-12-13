@@ -87,6 +87,8 @@ export default abstract class WalletService {
 
   abstract areEnoughUnusedAddresses(): boolean;
 
+  abstract name(): string;
+
   abstract availableAccounts(): Array<BtcAccount>;
 
   abstract confirmationSteps(): Array<Step>;

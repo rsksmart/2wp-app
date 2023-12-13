@@ -1,8 +1,6 @@
-import { TrezorSignedTx } from '@/common/types/Trezor';
-import { LedgerSignedTx } from '@/common/types/Ledger';
-import { LiqualitySignedTx } from '@/common/types/Liquality';
-
-export type SignedTx = TrezorSignedTx | LedgerSignedTx | LiqualitySignedTx;
+export interface SignedTx {
+  signedTx: string;
+}
 
 export enum Purpose {
   P2PKH = '44',
@@ -34,6 +32,5 @@ export interface Step {
     },
   },
   fee: boolean;
-  tooltip?: string;
   comment?: string;
 }
