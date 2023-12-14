@@ -463,8 +463,16 @@
   left: -25px;
 }
 
+.v-img.icon-status-image.icon-rbtc-image-main::after {
+  left: -22px;
+}
+
 .v-img.icon-status-image.pegout.icon-rbtc-image::after {
   left: 0;
+}
+
+.v-img.icon-status-image.icon-rootstock-image > .v-img__img {
+  height: 75px;
 }
 
 .icon-status-image::after {
