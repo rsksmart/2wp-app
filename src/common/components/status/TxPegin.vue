@@ -116,8 +116,10 @@
                 <div class="d-flex justify-end pa-0 ma-0">
                   <div class="rbtc-icon-green">
                     <v-row>
-                      <v-img v-bind:class="bordersStyle.rbtc"
-                        class="icon-status-image icon-rbtc-image d-flex justify-center"
+                      <v-img
+                        class="icon-status-image d-flex justify-center"
+                        :class="[isMainnet ? 'icon-rbtc-image-main' : 'icon-rbtc-image',
+                         bordersStyle.rbtc]"
                         :src="require('@/assets/status/rbtc.png')" height="78" contain/>
                     </v-row>
                     <v-row class="justify-center pt-10">
