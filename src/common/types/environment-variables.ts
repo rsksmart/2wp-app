@@ -27,7 +27,7 @@ export class EnvironmentVariables {
 
   public pegoutMaxValue: number;
 
-  public minFeePerKb: {
+  public minFeeSatPerByte: {
     fast: number;
     average: number;
     slow: number;
@@ -66,7 +66,7 @@ export class EnvironmentVariables {
       || defaultValues.pegoutMinValue;
     this.pegoutMaxValue = process.env.VUE_APP_PEGOUT_MAX_AMOUNT_ALLOWED_IN_RBTC
       || defaultValues.pegoutMaxValue;
-    this.minFeePerKb = {
+    this.minFeeSatPerByte = {
       fast: process.env.VUE_APP_FEE_PER_KB_FAST_MIN
         || (defaultValues.minFeePerKb ? defaultValues.minFeePerKb.fast : 0),
       average: process.env.VUE_APP_FEE_PER_KB_AVERAGE_MIN

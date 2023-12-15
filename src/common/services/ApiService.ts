@@ -206,7 +206,7 @@ export default class ApiService {
   static estimateFee(blockNumber: number):Promise<SatoshiBig> {
     return new Promise<SatoshiBig>((resolve, reject) => {
       axios.get(`${ApiService.baseURL}/estimate-fee/${blockNumber}`)
-        .then((response) => resolve(new SatoshiBig(response.data, 'btc')))
+        .then((response) => resolve(new SatoshiBig(response.data.amount, 'btc').div(1000)))
         .catch(reject);
     });
   }

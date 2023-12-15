@@ -13,7 +13,7 @@ function setEnvironment() {
     vueAppRskNodeHost: '',
     vueAppApiBaseUrl: API_URL,
     miningSpeedBlock: { fast: 1, average: 6, slow: 12 },
-    minFeePerKb: { fast: 8, average: 5, slow: 2 },
+    minFeePerKb: { fast: 100, average: 80, slow: 20 },
   };
   EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
 }
@@ -138,50 +138,50 @@ describe('Tx Fee Service', () => {
     const feeLevelAvg = constants.BITCOIN_AVERAGE_FEE_LEVEL;
     const feeLevelFast = constants.BITCOIN_FAST_FEE_LEVEL;
 
-    const feeFromService1 = new SatoshiBig('1', 'satoshi');
+    const feeFromService1 = new SatoshiBig('10', 'satoshi');
     const checkedFeePerKb1 = (TxFeeService
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-      .getCheckedFeePerKb(feeFromService1, feeLevelSlow)).toSatoshiString();
+      .getCheckedFeePerByte(feeFromService1, feeLevelSlow)).toSatoshiString();
 
-    const feeFromService2 = new SatoshiBig('3', 'satoshi');
+    const feeFromService2 = new SatoshiBig('18', 'satoshi');
     const checkedFeePerKb2 = (TxFeeService
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-      .getCheckedFeePerKb(feeFromService2, feeLevelSlow)).toSatoshiString();
+      .getCheckedFeePerByte(feeFromService2, feeLevelSlow)).toSatoshiString();
 
-    const feeFromService3 = new SatoshiBig('1', 'satoshi');
+    const feeFromService3 = new SatoshiBig('50', 'satoshi');
     const checkedFeePerKb3 = (TxFeeService
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-      .getCheckedFeePerKb(feeFromService3, feeLevelAvg)).toSatoshiString();
+      .getCheckedFeePerByte(feeFromService3, feeLevelAvg)).toSatoshiString();
 
-    const feeFromService4 = new SatoshiBig('6', 'satoshi');
+    const feeFromService4 = new SatoshiBig('85', 'satoshi');
     const checkedFeePerKb4 = (TxFeeService
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-      .getCheckedFeePerKb(feeFromService4, feeLevelAvg)).toSatoshiString();
+      .getCheckedFeePerByte(feeFromService4, feeLevelAvg)).toSatoshiString();
 
-    const feeFromService5 = new SatoshiBig('1', 'satoshi');
+    const feeFromService5 = new SatoshiBig('98', 'satoshi');
     const checkedFeePerKb5 = (TxFeeService
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-      .getCheckedFeePerKb(feeFromService5, feeLevelFast)).toSatoshiString();
+      .getCheckedFeePerByte(feeFromService5, feeLevelFast)).toSatoshiString();
 
-    const feeFromService6 = new SatoshiBig('9', 'satoshi');
+    const feeFromService6 = new SatoshiBig('110', 'satoshi');
     const checkedFeePerKb6 = (TxFeeService
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-      .getCheckedFeePerKb(feeFromService6, feeLevelFast)).toSatoshiString();
+      .getCheckedFeePerByte(feeFromService6, feeLevelFast)).toSatoshiString();
 
-    expect(checkedFeePerKb1).toBe('2');
-    expect(checkedFeePerKb2).toBe('3');
+    expect(checkedFeePerKb1).toBe('20');
+    expect(checkedFeePerKb2).toBe('20');
 
-    expect(checkedFeePerKb3).toBe('5');
-    expect(checkedFeePerKb4).toBe('6');
+    expect(checkedFeePerKb3).toBe('80');
+    expect(checkedFeePerKb4).toBe('85');
 
-    expect(checkedFeePerKb5).toBe('8');
-    expect(checkedFeePerKb6).toBe('9');
+    expect(checkedFeePerKb5).toBe('100');
+    expect(checkedFeePerKb6).toBe('110');
   });
 
   it('should reject the call if there are no utxos stored for that', async () => {
@@ -202,7 +202,7 @@ describe('Tx Fee Service', () => {
     const feePerByte = new SatoshiBig('0.0000001', 'btc');
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const checkedFeePerByte = TxFeeService.getCheckedFeePerKb(feePerByte, feeLevel);
+    const checkedFeePerByte = TxFeeService.getCheckedFeePerByte(feePerByte, feeLevel);
 
     const baseFee = checkedFeePerByte
       .mul(constants.BITCOIN_TX_HEADER_SIZE_IN_BYTES
