@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="show" width="650" persistent>
+    <v-dialog v-model="show" width="650" :persistent="!areTermsAccepted">
       <v-card class="container dialog">
         <v-row class="mx-0 mt-6 d-flex justify-center">
           <v-img :src="require('@/assets/common/terms-conditions.png')" height="60" contain />
@@ -17,7 +17,7 @@
         <v-row class="d-flex justify-end mx-11 my-5">
           <v-btn rounded variant="outlined" color="#000000" width="110"
                  @click="$emit('update:showDialog', false)"
-                 :disabled="requiresScroll && !scrolledText ">
+                 :disabled="requiresScroll && !scrolledText && !areTermsAccepted">
             <span>Back</span>
           </v-btn>
         </v-row>
