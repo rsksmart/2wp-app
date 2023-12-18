@@ -4,17 +4,19 @@
     <div class="custom-background">
       <top/>
       <v-row class="d-flex justify-center ma-0">
-        <router-view/>
+        <router-view @update:showDialog="showTermsDialog" />
       </v-row>
-      <footer-rsk/>
+      <terms-dialog v-model:showDialog="showTermsAndConditions" />
+      <footer-rsk @update:showDialog="showTermsDialog" />
     </div>
   </v-app>
 </template>
 <script lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import Top from '@/common/components/layouts/Top.vue';
 import FooterRsk from '@/common/components/layouts/Footer.vue';
 import Mobile from '@/common/views/Mobile.vue';
+import TermsDialog from '@/common/components/common/TermsDialog.vue';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import * as constants from '@/common/store/constants';
 import { useAction } from '@/common/store/helper';
@@ -26,13 +28,14 @@ export default {
     Top,
     FooterRsk,
     Mobile,
+    TermsDialog,
   },
   setup() {
     let scriptTag: HTMLScriptElement;
     let hotjarScriptTag: HTMLScriptElement;
     const getBtcPrice = useAction('web3Session', constants.SESSION_ADD_BITCOIN_PRICE);
     const enableTermsAndConditions = useAction('web3Session', constants.SESSION_ADD_TERMS_AND_CONDITIONS_ENABLED);
-
+    const showTermsAndConditions = ref(false);
     const contentSecurityPolicy = computed((): string => {
       const envVariables = EnvironmentAccessorService.getEnvironmentVariables();
       let response = '';
@@ -83,12 +86,19 @@ export default {
       document.body.appendChild(hotjarScriptTag);
     }
 
+    function showTermsDialog(show: boolean) {
+      showTermsAndConditions.value = show;
+    }
+
     enableTermsAndConditions();
     appendHotjar();
     getBtcPrice();
     appendClarity();
     appendCSP();
-    return {};
+    return {
+      showTermsDialog,
+      showTermsAndConditions,
+    };
   },
 };
 </script>

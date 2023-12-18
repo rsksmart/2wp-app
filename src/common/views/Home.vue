@@ -25,8 +25,9 @@
                             @click="updateCookie" >
                     </label>
                     I acknowledge and accept the
-                    <a href="#" rel="noopener" @key-press="toggleCheck"
-                    class="px-1" @click="showDialog"> terms and conditions</a>
+                    <a href="#" rel="noopener" @key-press="toggleCheck" class="px-1"
+                       @click.prevent="$emit('update:showDialog', true)">
+                    terms and conditions</a>
                   </v-row>
               </v-row>
             </v-col>
@@ -128,8 +129,6 @@
             </v-row>
         </v-col>
       </v-row>
-    <terms-dialog :show-dialog="showTermsAndConditions"
-    @closeDialog="closeTermsDialog" :text="dialogText"/>
     </v-container>
   </v-container>
 </template>
@@ -146,13 +145,9 @@ import {
   TransactionType,
 } from '@/common/types';
 import { useAction, useStateAttribute } from '@/common/store/helper';
-import TermsDialog from '@/common/components/common/TermsDialog.vue';
 
 export default {
   name: 'HomeView',
-  components: {
-    TermsDialog,
-  },
   setup() {
     const router = useRouter();
     const STATUS = ref(false);
@@ -169,8 +164,6 @@ export default {
     const clearSession = useAction('web3Session', constants.SESSION_CLEAR);
     const addPeg = useAction('web3Session', constants.SESSION_ADD_TX_TYPE);
     const setTerms = useAction('web3Session', constants.SESSION_ADD_TERMS_VALUE);
-
-    const dialogText = computed(() => termsAndConditionsEnabled.value?.value ?? '');
 
     const btcToRbtc = computed((): boolean => txType.value === constants.PEG_IN_TRANSACTION_TYPE);
 
@@ -249,7 +242,6 @@ export default {
       closeTermsDialog,
       areTermsAccepted,
       termsAndConditionsEnabled,
-      dialogText,
       showDialog,
       toggleCheck,
       updateCookie,
