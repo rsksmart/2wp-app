@@ -21,7 +21,8 @@
               </a>
               <a :href="helpUrl" target="_blank">Help</a>
               <a :href="discordUrl" target="_blank">Support</a>
-              <a href="https://rootstock.io/terms-conditions/" target="_blank">
+              <a v-if="termsAndConditionsEnabled" href="#"
+                 @click.prevent="$emit('update:showDialog', true)">
                 Terms & Conditions
               </a>
               <a :href="urlApi" target="_blank" rel="noopener">Api Version: {{apiVersion}}</a>
@@ -57,8 +58,9 @@ import { mdiTwitter, mdiGithub, mdiDiscord } from '@mdi/js';
 import { ApiInformation } from '@/common/types/ApiInformation';
 import { ApiService } from '@/common/services';
 import { useRoute } from 'vue-router';
-import { useGetter } from '@/common/store/helper';
+import { useGetter, useStateAttribute } from '@/common/store/helper';
 import * as constants from '@/common/store/constants';
+import { Feature } from '@/common/types';
 
 export default {
   name: 'FooterRsk',
@@ -71,6 +73,7 @@ export default {
     const isTrezor = useGetter<boolean>('web3Session', constants.SESSION_IS_TREZOR_CONNECTED);
     const isMetamask = useGetter<boolean>('web3Session', constants.SESSION_IS_METAMASK_CONNECTED);
     const isRloginDefined = useGetter<boolean>('web3Session', constants.SESSION_IS_RLOGIN_DEFINED);
+    const termsAndConditionsEnabled = useStateAttribute<Feature>('web3Session', 'termsAndConditionsEnabled');
 
     const urlApp = computed(() => `https://github.com/rsksmart/2wp-app/releases/tag/v${appVersion.value}`);
     const urlApi = computed(() => `https://github.com/rsksmart/2wp-api/releases/tag/v${apiVersion.value}`);
@@ -116,6 +119,7 @@ export default {
       mdiTwitter,
       mdiDiscord,
       mdiGithub,
+      termsAndConditionsEnabled,
     };
   },
 };
