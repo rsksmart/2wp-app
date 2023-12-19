@@ -13,7 +13,7 @@ function setEnvironment() {
     vueAppRskNodeHost: '',
     vueAppApiBaseUrl: API_URL,
     miningSpeedBlock: { fast: 1, average: 6, slow: 12 },
-    minFeePerKb: { fast: 100, average: 80, slow: 20 },
+    minFeeSatPerByte: { fast: 100, average: 80, slow: 20 },
   };
   EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
 }

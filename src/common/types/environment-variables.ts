@@ -67,12 +67,12 @@ export class EnvironmentVariables {
     this.pegoutMaxValue = process.env.VUE_APP_PEGOUT_MAX_AMOUNT_ALLOWED_IN_RBTC
       || defaultValues.pegoutMaxValue;
     this.minFeeSatPerByte = {
-      fast: process.env.VUE_APP_FEE_PER_KB_FAST_MIN
-        || (defaultValues.minFeePerKb ? defaultValues.minFeePerKb.fast : 0),
-      average: process.env.VUE_APP_FEE_PER_KB_AVERAGE_MIN
-        || (defaultValues.minFeePerKb ? defaultValues.minFeePerKb.average : 0),
-      slow: process.env.VUE_APP_FEE_PER_KB_SLOW_MIN
-        || (defaultValues.minFeePerKb ? defaultValues.minFeePerKb.slow : 0),
+      fast: process.env.VUE_APP_MIN_FEE_SAT_PER_BYTE_FAST
+        || (defaultValues.minFeeSatPerByte ? defaultValues.minFeeSatPerByte.fast : 0),
+      average: process.env.VUE_APP_MIN_FEE_SAT_PER_BYTE_AVG
+        || (defaultValues.minFeeSatPerByte ? defaultValues.minFeeSatPerByte.average : 0),
+      slow: process.env.VUE_APP_MIN_FEE_SAT_PER_BYTE_SLOW
+        || (defaultValues.minFeeSatPerByte ? defaultValues.minFeeSatPerByte.slow : 0),
     };
     this.miningSpeedBlock = {
       fast: process.env.VUE_APP_FAST_MINING_BLOCK
