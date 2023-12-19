@@ -18,10 +18,10 @@ const defaultEnvironmentVariables = {
   vueAppClarityId: '',
   pegoutMinValue: 0.004,
   pegoutMaxValue: 1,
-  minFeePerKb: {
+  minFeeSatPerByte: {
     fast: 8,
-    average: 5,
-    slow: 2,
+    average: 4,
+    slow: 1,
   },
   miningSpeedBlock: {
     fast: 1,
