@@ -237,4 +237,21 @@ export const getters: GetterTree<PegInTxState, RootState> = {
     }
     return utxoList;
   },
+  [constants.PEGIN_TX_GET_SELECTED_UTXO_LIST]: (state: PegInTxState): Utxo[] => {
+    let utxoList: Utxo[] = [];
+    switch (state.selectedFee) {
+      case constants.BITCOIN_SLOW_FEE_LEVEL:
+        utxoList = state.calculatedFees.slow.selectedUtxoList;
+        break;
+      case constants.BITCOIN_AVERAGE_FEE_LEVEL:
+        utxoList = state.calculatedFees.average.selectedUtxoList;
+        break;
+      case constants.BITCOIN_FAST_FEE_LEVEL:
+        utxoList = state.calculatedFees.fast.selectedUtxoList;
+        break;
+      default:
+        break;
+    }
+    return utxoList;
+  },
 };
