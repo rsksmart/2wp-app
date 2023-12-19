@@ -98,7 +98,7 @@ export default defineComponent({
     const init = useAction('pegInTx', constants.PEGIN_TX_INIT);
     const setBtcWallet = useAction('pegInTx', constants.PEGIN_TX_ADD_BITCOIN_WALLET);
     const getChangeAddress = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_CHANGE_ADDRESS);
-    const selectedUtxoList = useGetter<Utxo[]>('pegInTx', constants.PEGIN_TX_GET_ACCOUNT_UTXO_LIST);
+    const selectedUtxoList = useGetter<Utxo[]>('pegInTx', constants.PEGIN_TX_GET_SELECTED_UTXO_LIST);
     const selectedFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
 
     async function toConfirmTx({
