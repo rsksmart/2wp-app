@@ -6,7 +6,7 @@ import {
 } from '@/common/types';
 import { getAccountType } from '@/common/utils';
 import * as constants from '@/common/store/constants';
-import store from '../../../common/store';
+import store from '@/common/store';
 import TxBuilder from './TxBuilder';
 
 export default class TrezorTxBuilder extends TxBuilder {
