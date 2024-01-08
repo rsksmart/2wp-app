@@ -300,6 +300,15 @@
             </v-col>
 
           </v-row>
+          <v-row v-if="releasedPegout" class="mx-1 mt-6">
+            <span class="next-steps">
+              Next steps: Click
+              <a :href="appConstants.RSK_PEGOUT_DOCUMENTATION_URL"
+                class="d-inline text-decoration-underline font-weight-bold"
+                target="_blank">here</a>
+              to learn how to get your Bitcoins
+            </span>
+          </v-row>
         </div>
       </v-col>
     </v-row>
@@ -506,6 +515,8 @@ import { EnvironmentAccessorService } from '@/common/services/enviroment-accesso
 import * as constants from '@/common/store/constants';
 import {
   NormalizedSummary,
+  PegoutStatus,
+  PegoutStatusDataModel,
   SatoshiBig,
   TxStatusType,
   TxSummaryOrientation,
@@ -538,8 +549,10 @@ export default defineComponent({
     const appConstants = constants;
 
     const bitcoinPrice = useStateAttribute<number>('web3Session', 'bitcoinPrice');
-
+    const txDetails = useStateAttribute<PegoutStatusDataModel>('status', 'txDetails');
     const walletName = useGetter<string>('pegInTx', constants.WALLET_NAME);
+
+    const releasedPegout = computed(() => txDetails.value?.status === PegoutStatus.RELEASE_BTC);
 
     const fromTitle = computed(() => (props.type === TxStatusType.PEGIN ? 'Bitcoin' : 'Rootstock'));
 
@@ -754,6 +767,7 @@ export default defineComponent({
       mdiInformation,
       mdiOpenInNew,
       accountLabel,
+      releasedPegout,
     };
   },
 });
