@@ -29,6 +29,16 @@
             "pegout": true,
             "hover": false,
             "btnClass": "btn-liquality"
+        },
+        {
+            "name": "Enkrypt",
+            "icon": "wallet-icons/enkrypt.png",
+            "iconWhite": "wallet-icons/enkrypt-white.png",
+            "constant": "WALLET_ENKRYPT",
+            "pegin": true,
+            "pegout": true,
+            "hover": false,
+            "btnClass": "btn-enkrypt"
         }
     ]
 }

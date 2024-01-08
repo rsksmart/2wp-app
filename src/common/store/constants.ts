@@ -1,6 +1,20 @@
+// Supported wallets for pegin LONG_NAMES
+
 export const WALLET_LEDGER = 'WALLET_LEDGER';
 export const WALLET_TREZOR = 'WALLET_TREZOR';
 export const WALLET_LIQUALITY = 'WALLET_LIQUALITY';
+export const WALLET_ENKRYPT = 'WALLET_ENKRYPT';
+
+// Supported wallets for pegin SHORT_NAMES
+export const WALLET_NAMES = {
+  LEDGER: 'ledger',
+  TREZOR: 'trezor',
+  LIQUALITY: 'liquality',
+  METAMASK: 'metamask',
+  ENKRYPT: 'enkrypt',
+} as const;
+
+// Operation info
 export const OPERATION_TYPE = 'OPERATION_TYPE';
 export const OPERATION_AMOUNT = 'OPERATION_AMOUNT';
 
@@ -267,10 +281,5 @@ export const MAINNET_ADDRESS_SEGWIT = '^[3][1-9A-HJ-NP-Za-km-z]{26,35}';
 export const MAINNET_ADDRESS_NSEGWIT = '^[bc1][0-9A-HJ-NP-Za-z]{41,62}';
 
 export const POWPEG_RSKT_HEADER = '52534b5401';
-export const WALLET_NAMES = {
-  LEDGER: 'ledger',
-  TREZOR: 'trezor',
-  LIQUALITY: 'liquality',
-  METAMASK: 'metamask',
-} as const;
+
 export const PEGIN_OUTPUTS = 3;

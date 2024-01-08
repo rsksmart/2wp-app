@@ -85,6 +85,9 @@ export default {
         case constants.WALLET_LIQUALITY:
           wallet = constants.WALLET_NAMES.LIQUALITY;
           break;
+        case constants.WALLET_ENKRYPT:
+          wallet = constants.WALLET_NAMES.ENKRYPT;
+          break;
         default:
           wallet = '';
           break;

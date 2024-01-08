@@ -10,6 +10,7 @@ export * from './view';
 export { default as SatoshiBig } from './SatoshiBig';
 export * from './Liquality';
 export * from './exception/LiqualityError';
+export * from './exception/EnkryptError';
 export * from './Status';
 export { default as WeiBig } from './WeiBig';
 export * from './Feature';
