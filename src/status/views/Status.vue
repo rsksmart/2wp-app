@@ -72,7 +72,7 @@
 
 <script lang="ts">
 import {
-  computed, ref, watch, defineComponent,
+  computed, ref, watch, defineComponent, onUnmounted,
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { mdiMagnify } from '@mdi/js';
@@ -191,6 +191,8 @@ export default defineComponent({
 
     clearStatus();
     getBtcPrice();
+
+    onUnmounted(clean);
 
     return {
       txId,
