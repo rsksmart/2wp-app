@@ -66,6 +66,21 @@
             </v-col>
           </v-row>
         </div>
+        <div class="form-step py-4 px-4" v-if="!validAmountToReceive && formFilled">
+          <v-row class="alert-msg py-6">
+            <v-col cols="1">
+            <v-icon class="ml-2" color="#DF1B42" :icon="mdiAlertOctagon" size="40"></v-icon>
+            </v-col>
+            <v-col class="px-7">
+              <v-row class="title">
+                The transaction can't be performed
+              </v-row>
+              <v-row class="mt-5">
+                Currently the total fee to pay is higher than the amount you want to send.
+              </v-row>
+            </v-col>
+          </v-row>
+        </div>
       </v-col>
       <v-col cols="4" lg="4">
         <tx-summary-fixed
@@ -113,7 +128,7 @@
 <script lang="ts">
 import { computed, ref, defineComponent } from 'vue';
 import { useRouter } from 'vue-router';
-import { mdiSendOutline } from '@mdi/js';
+import { mdiSendOutline, mdiAlertOctagon } from '@mdi/js';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import RbtcInputAmount from '@/pegout/components/RbtcInputAmount.vue';
 import RskWalletConnection from '@/pegout/components/RskWalletConnection.vue';
@@ -182,13 +197,21 @@ export default defineComponent({
         || isLedgerConnected.value
         || session.value.rLogin?.provider.isTrezor,
     );
+    const validAmountToReceive = computed((): boolean => estimatedBtcToReceive.value.gt(0));
+
+    const formFilled = computed((): boolean => !!session.value.account
+      && pegOutTxState.value.amountToTransfer.gt(0)
+      && !!pegOutTxState.value.btcEstimatedFee);
 
     const isReadyToCreate = computed((): boolean => isEnoughBalance.value
-        && !!session.value.account);
+        && !!session.value.account
+        && validAmountToReceive.value);
 
     const pegOutFormSummary = computed((): NormalizedSummary => ({
       amountFromString: pegOutTxState.value.amountToTransfer.toRBTCTrimmedString(),
-      amountReceivedString: estimatedBtcToReceive.value.toBTCTrimmedString(),
+      amountReceivedString: validAmountToReceive.value
+        ? estimatedBtcToReceive.value.toBTCTrimmedString()
+        : '0',
       fee: Number(pegOutTxState.value.btcEstimatedFee.toBTCTrimmedString()),
       recipientAddress: session.value.btcDerivedAddress,
       senderAddress: session.value.account,
@@ -269,6 +292,9 @@ export default defineComponent({
       focus,
       authorizedWalletToSignMessage,
       mdiSendOutline,
+      mdiAlertOctagon,
+      validAmountToReceive,
+      formFilled,
     };
   },
 });
