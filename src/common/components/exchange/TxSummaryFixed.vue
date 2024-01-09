@@ -303,7 +303,7 @@
           <v-row v-if="releasedPegout" class="mx-1 mt-6">
             <span class="next-steps">
               Next steps: Click
-              <a :href="appConstants.RSK_PEGOUT_DOCUMENTATION_URL"
+              <a :href="appConstants.DERIVE_BTC_ADDRESS_DOCUMENTATION_URL"
                 class="d-inline text-decoration-underline font-weight-bold"
                 target="_blank">here</a>
               to learn how to get your Bitcoins
@@ -728,7 +728,7 @@ export default defineComponent({
     }
 
     function openDerivationAddressDocumentation() {
-      window.open(`${appConstants.RSK_PEGOUT_DOCUMENTATION_URL}`);
+      window.open(`${appConstants.DERIVE_BTC_ADDRESS_DOCUMENTATION_URL}`);
     }
 
     return {
