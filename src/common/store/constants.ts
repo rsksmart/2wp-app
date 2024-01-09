@@ -5,7 +5,7 @@ export const OPERATION_TYPE = 'OPERATION_TYPE';
 export const OPERATION_AMOUNT = 'OPERATION_AMOUNT';
 
 export const RLOGIN_LIQUALITY_WALLET = 'Liquality';
-export const RSK_PEGOUT_DOCUMENTATION_URL = 'https://dev.rootstock.io/rsk/rbtc/conversion/networks/#rbtc-to-btc-conversion';
+export const DERIVE_BTC_ADDRESS_DOCUMENTATION_URL = 'https://dev.rootstock.io/guides/two-way-peg-app/pegout/deriving-electrum/';
 export const RLOGIN_METAMASK_WALLET = 'MetaMask';
 
 export const TOTAL_RBTC_STOCK = 21000000;
@@ -232,7 +232,6 @@ export const SUPPORTED_NETWORKS = {
   },
 };
 
-export const GETTING_FUNDS_DOCUMENTATION_URL = 'https://developers.rsk.co/guides/two-way-peg-app/getting-started/#getting-funds';
 export const COINGECKO_API_URL = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin&order=market_cap_desc&per_page=100&page=1&sparkline=false';
 // Peg-out status
 export const PEGOUT_SIGNING_BLOCKS_GAP = 30;

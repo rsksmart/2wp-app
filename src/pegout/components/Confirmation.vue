@@ -15,7 +15,7 @@
         Click
         <a
           class="d-inline blackish"
-          :href=appConstants.GETTING_FUNDS_DOCUMENTATION_URL
+          :href=appConstants.DERIVE_BTC_ADDRESS_DOCUMENTATION_URL
           target="_blank" >here</a>
         to know how to get your funds at the end of the peg-out process.
       </p>

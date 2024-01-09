@@ -58,7 +58,8 @@
                   class="pl-0">
                   <span class="blackish" style="font-size: 14px;">
                     As you are not using MetaMask, Ledger or Trezor, you need to follow
-                    <a :href=appConstants.RSK_PEGOUT_DOCUMENTATION_URL class="d-inline blackish a"
+                    <a :href=appConstants.DERIVE_BTC_ADDRESS_DOCUMENTATION_URL
+                        class="d-inline blackish a"
                         target='_blank'> this documentation</a> to get the destination address.
                   </span>
                 </v-container>
