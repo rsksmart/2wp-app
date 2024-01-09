@@ -250,6 +250,17 @@
   .btn-max:hover {
     cursor: pointer;
   }
+
+  .alert-msg {
+    border-radius: 8px;
+    border: solid #DF1B42;
+    .title {
+      font-weight: bold;
+      font-size: 18px;
+      line-height: 17px;
+      color: #DF1B42;
+    }
+  }
 }
 
 .tooltip-form {
