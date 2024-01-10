@@ -52,6 +52,7 @@ import DeviceErrorDialog from '@/common/components/exchange/DeviceErrorDialog.vu
 import ConnectDevice from '@/common/components/exchange/ConnectDevice.vue';
 import TxErrorDialog from '@/common/components/exchange/TxErrorDialog.vue';
 import { BridgeService } from '@/common/services/BridgeService';
+import { TrezorError } from '@/common/types/exception/TrezorError';
 import PeginTxService from '../../services/PeginTxService';
 
 export default defineComponent({
@@ -180,6 +181,9 @@ export default defineComponent({
             messageToUserOnLink.value = e.messageToUserOnLink;
             messageInstallationToUser.value = e.messageInstallationToUser;
             installationLink.value = e.installationLink;
+          }
+          if (e instanceof TrezorError) {
+            errorType.value = e.errorType;
           }
           sendBitcoinState.value = 'error';
           showErrorDialog.value = true;

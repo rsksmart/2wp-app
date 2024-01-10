@@ -1,10 +1,10 @@
 <template>
   <v-dialog v-model="show" width="470" persistent>
     <v-card class="container dialog">
-      <v-row class="mx-0 mt-4 d-flex justify-center">
+      <v-row class="mx-0 mt-6 d-flex justify-center">
         <v-img :src="require('@/assets/warning.png')" height="47" contain />
       </v-row>
-      <v-row class="mx-0 my-4 d-flex justify-center">
+      <v-row class="mx-0 mt-6 mb-3 d-flex justify-center">
         <h2>ERROR ON TRANSACTION</h2>
       </v-row>
       <v-col cols="12" align-self="center" class="pt-0">
