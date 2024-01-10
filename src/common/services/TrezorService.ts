@@ -8,6 +8,7 @@ import {
   TrezorSignedTx, TrezorTx, Tx,
 } from '@/common/types';
 import { WalletService } from '@/common/services/index';
+import { TrezorError } from '@/common/types/exception/TrezorError';
 import { EnvironmentAccessorService } from './enviroment-accessor.service';
 
 type TrezorCoin = 'TESTNET' | 'BTC';
@@ -33,6 +34,18 @@ export default class TrezorService extends WalletService {
       email: EnvironmentAccessorService.getEnvironmentVariables().vueAppManifestEmail,
       appUrl: EnvironmentAccessorService.getEnvironmentVariables().vueAppManifestAppUrl,
     });
+  }
+
+  private static unableToConnect(): TrezorError {
+    const error = new TrezorError();
+    error.message = 'It appears there was an error connecting to the Trezor, please reconnect and try again.';
+    return error;
+  }
+
+  private static unableToSignTx(): TrezorError {
+    const error = new TrezorError();
+    error.message = 'It appears there was an error while signing the transaction, please try again.';
+    return error;
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -111,7 +124,9 @@ export default class TrezorService extends WalletService {
         bundle,
       })
         .then((result) => {
-          if (!result.success) reject(new Error(result.payload.error));
+          if (!result.success) {
+            reject(TrezorService.unableToConnect());
+          }
           const addresses: WalletAddress[] = [];
           Object.entries(result.payload).forEach((obj) => {
             const address = obj[1] as Address;
@@ -124,33 +139,7 @@ export default class TrezorService extends WalletService {
           });
           resolve(addresses);
         })
-        .catch(reject);
-    });
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  public getAccountUnusedAddresses(accountType: string): Promise<string[]> {
-    return new Promise((resolve, reject) => {
-      TrezorConnect.getAccountInfo({
-        path: this.getAccountPath(accountType, 0),
-        coin: this.trezorCoin,
-        details: 'txs',
-      })
-        .then((result) => {
-          if (!result.success) reject(new Error(result.payload.error));
-          const unusedAddresses: string[] = [];
-          if ('addresses' in result.payload) {
-            const { addresses } = result.payload;
-            if (addresses && 'unused' in addresses) {
-              Object.entries(addresses.unused)
-                .forEach((obj) => {
-                  unusedAddresses.push(obj[1].address);
-                });
-            }
-          }
-          resolve(unusedAddresses);
-        })
-        .catch(reject);
+        .catch(() => reject(TrezorService.unableToConnect()));
     });
   }
 
@@ -175,10 +164,10 @@ export default class TrezorService extends WalletService {
               },
             });
           } else {
-            reject(new Error(res.payload.error));
+            reject(TrezorService.unableToSignTx());
           }
         })
-        .catch(reject);
+        .catch(() => reject(TrezorService.unableToSignTx()));
     });
   }
 
