@@ -170,10 +170,14 @@ export default defineComponent({
       sendBitcoinState.value = 'loading';
       startAskingForBalanceStore()
         .catch((e) => {
+          const stringError = JSON.stringify(e);
           if (e.statusCode === 27010) {
             deviceError.value = 'Please unlock your Ledger device.';
+          } else if (stringError.includes('No device selected')) {
+            deviceError.value = 'There are no device selected, please check your wallet connection, unlock your device and try again.';
           } else {
-            deviceError.value = e.message;
+            console.error(e);
+            deviceError.value = 'Something went wrong with the wallet, please check your wallet connection, unlock your device and try again.';
           }
           if (e instanceof LiqualityError) {
             errorType.value = e.errorType;
