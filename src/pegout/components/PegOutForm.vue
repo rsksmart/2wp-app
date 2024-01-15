@@ -254,7 +254,8 @@ export default defineComponent({
             type: TxStatusType.PEGOUT.toLowerCase(),
             value: Number(pegOutTxState.value.amountToTransfer.toRBTCTrimmedString()),
             wallet: currentWallet.value,
-            fee: Number(pegOutTxState.value.calculatedFee.toRBTCTrimmedString()),
+            btcEstimatedFee: Number(pegOutTxState.value.btcEstimatedFee.toBTCTrimmedString()),
+            rskGas: Number(pegOutTxState.value.calculatedFee.toRBTCTrimmedString()),
           });
           changePage();
         })
