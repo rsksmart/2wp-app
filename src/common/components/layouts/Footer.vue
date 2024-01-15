@@ -73,6 +73,7 @@ export default {
     const isTrezor = useGetter<boolean>('web3Session', constants.SESSION_IS_TREZOR_CONNECTED);
     const isMetamask = useGetter<boolean>('web3Session', constants.SESSION_IS_METAMASK_CONNECTED);
     const isRloginDefined = useGetter<boolean>('web3Session', constants.SESSION_IS_RLOGIN_DEFINED);
+    const isLiquality = useGetter<boolean>('web3Session', constants.SESSION_IS_LIQUALITY_CONNECTED);
     const termsAndConditionsEnabled = useStateAttribute<Feature>('web3Session', 'termsAndConditionsEnabled');
 
     const urlApp = computed(() => `https://github.com/rsksmart/2wp-app/releases/tag/v${appVersion.value}`);
@@ -97,7 +98,9 @@ export default {
         if (isMetamask.value) {
           return `${feature}/metamask`;
         }
-        return `${feature}/liquality`;
+        if (isLiquality.value) {
+          return `${feature}/liquality`;
+        }
       }
       return feature;
     }
