@@ -8,6 +8,12 @@ export const getters: GetterTree<SessionState, RootState> = {
   [constants.SESSION_IS_LEDGER_CONNECTED]: (state): boolean => !!(state.rLogin?.provider.isLedger),
   [constants.SESSION_IS_TREZOR_CONNECTED]: (state): boolean => !!(state.rLogin?.provider.isTrezor),
   [constants.SESSION_IS_METAMASK_CONNECTED]:
-    (state): boolean => !!(state.rLogin?.provider.isMetaMask),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (state): boolean => (state.rLoginInstance as any).providerController?.injectedProvider.name
+    === constants.RLOGIN_METAMASK_WALLET,
+  [constants.SESSION_IS_LIQUALITY_CONNECTED]:
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (state): boolean => (state.rLoginInstance as any).providerController?.injectedProvider.name
+      === constants.RLOGIN_LIQUALITY_WALLET,
   [constants.SESSION_IS_RLOGIN_DEFINED]: (state): boolean => state.rLogin !== undefined,
 };
