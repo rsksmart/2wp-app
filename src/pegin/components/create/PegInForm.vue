@@ -59,6 +59,11 @@
                                 @continue="createTx"
                                 @cancel="showWarningMessage = false"
         />
+        <warning-dialog :title="'IMPORTANT FOR LIQUALITY USERS'"
+                                :show-dialog="showLiqualityWarning"
+                                :message="liqualityWarningMessage"
+                                @continue="showLiqualityWarning = false"
+        />
       </v-row>
     </v-col>
   </v-container>
@@ -82,6 +87,7 @@ import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
 import { NormalizedSummary } from '@/common/types';
 import { useGetter, useState } from '@/common/store/helper';
 import AddressWarningDialog from '@/common/components/exchange/AddressWarningDialog.vue';
+import WarningDialog from '@/common/components/common/WarningDialog.vue';
 
 export default defineComponent({
   name: 'PegInForm',
@@ -92,6 +98,7 @@ export default defineComponent({
     BtcFeeSelect,
     TxSummaryFixed,
     AddressWarningDialog,
+    WarningDialog,
   },
   setup(_, context) {
     const pegInFormState = ref<Machine<'loading' | 'goingHome' | 'fill'>>(new Machine('fill'));
@@ -100,6 +107,8 @@ export default defineComponent({
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const typeSummary = TxStatusType.PEGIN;
     const orientationSummary = TxSummaryOrientation.VERTICAL;
+    const liqualityWarningMessage = 'Some users have encountered diffilcuties while attempting to create new Bitcoin accounts in Liquality. It\'s important to note that this issue is unrelated to the 2WP app. if you experience this problem, we recommend selecting another wallet.';
+    const showLiqualityWarning = ref(false);
 
     const pegInTxState = useState<PegInTxState>('pegInTx');
 
@@ -144,6 +153,7 @@ export default defineComponent({
         accountType: pegInTxState.value.selectedAccount,
       });
     }
+    showLiqualityWarning.value = pegInTxState.value.bitcoinWallet === constants.WALLET_LIQUALITY;
 
     function sendTx() {
       if (rskAddressState.value === 'warning') showWarningMessage.value = true;
@@ -165,6 +175,8 @@ export default defineComponent({
       pegInTxState,
       createTx,
       mdiSendOutline,
+      liqualityWarningMessage,
+      showLiqualityWarning,
     };
   },
 });
