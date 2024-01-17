@@ -33,7 +33,6 @@ export default {
   setup() {
     let scriptTag: HTMLScriptElement;
     let hotjarScriptTag: HTMLScriptElement;
-    const getBtcPrice = useAction('web3Session', constants.SESSION_ADD_BITCOIN_PRICE);
     const enableTermsAndConditions = useAction('web3Session', constants.SESSION_ADD_TERMS_AND_CONDITIONS_ENABLED);
     const showTermsAndConditions = ref(false);
     const contentSecurityPolicy = computed((): string => {
@@ -92,7 +91,6 @@ export default {
 
     enableTermsAndConditions();
     appendHotjar();
-    getBtcPrice();
     appendClarity();
     appendCSP();
     return {
