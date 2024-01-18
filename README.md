@@ -58,3 +58,7 @@ npm run build
 ## Report Security Vulnerabilities
 
 To report a vulnerability, please use the [vulnerability reporting guideline](./SECURITY.md) for details on how to do it.
+
+## Adding your own wallet for pegin
+
+To know how to add your own wallet in the pegin page, visit [how to add new wallet, step by step](./WALLET.md) for details on how to do it.
