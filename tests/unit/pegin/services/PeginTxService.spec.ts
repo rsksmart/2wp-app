@@ -40,7 +40,7 @@ describe('PeginTx Service', () => {
     federationAddress: '',
     refundAddress: 'mzBc4XEFSdzCDcTxAgf6EZXgsZWpztRhef',
     rskRecipientAddress: '224d0b72bab9342f898c633ef187abff8a96c0fa',
-    changeAddress: '',
+    changeAddress: 'mzBc4XEFSdzCDcTxAgf6EZXgsZWpztRhef',
   };
   it('should build a normalized tx with legacy refund address', () => {
     const normalizedTx = {
