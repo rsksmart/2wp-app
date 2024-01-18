@@ -8,7 +8,7 @@
       <v-col class="pl-0">
         <p v-bind:class="{'boldie': focus}">
           {{
-            isLiquality ?
+            onlyNativeSegwit ?
             environmentContext.getBtcText() + ' account balance:' :
             'Select ' + environmentContext.getBtcText() + ' account to send from:'
           }}
@@ -16,7 +16,7 @@
         <v-row class="ma-0 mt-4">
           <v-col cols="7" class="pa-0">
             <v-select
-              v-if="!isLiquality"
+              v-if="!onlyNativeSegwit"
               v-model="btcAccountTypeSelected" :items="accountBalances" item-title="text"
               class="account-select"
               variant="solo"
@@ -26,13 +26,13 @@
               placeholder="Select the account"
               @focus="focus = true"
               @blur="focus = false"
-              :disabled="isLiquality"
+              :disabled="onlyNativeSegwit"
               @update:model-value="accountChanged"/>
-            <p class="label-liquality" v-if="isLiquality">
+            <p class="label-liquality" v-if="onlyNativeSegwit">
               {{ accountBalances[2].text }}
             </p>
           </v-col>
-          <v-col v-if="!isLiquality" cols="1" class="d-flex align-center pl-2 py-0">
+          <v-col v-if="!onlyNativeSegwit" cols="1" class="d-flex align-center pl-2 py-0">
             <v-tooltip>
               <template v-slot:activator="{props}">
                 <v-icon
@@ -81,7 +81,7 @@ export default defineComponent({
   name: 'PegInAccountSelect',
   setup(_, context) {
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-    const isLiquality = ref(false);
+    const onlyNativeSegwit = ref(false);
     const focus = ref(false);
     const accountBalances = ref<{
       text: string;
@@ -162,13 +162,14 @@ export default defineComponent({
       },
     ];
 
-    if (bitcoinWallet.value === constants.WALLET_LIQUALITY) {
+    if (bitcoinWallet.value === constants.WALLET_LIQUALITY
+    || bitcoinWallet.value === constants.WALLET_LEATHER) {
       accountChanged(constants.BITCOIN_NATIVE_SEGWIT_ADDRESS);
-      isLiquality.value = true;
+      onlyNativeSegwit.value = true;
     }
 
     return {
-      isLiquality,
+      onlyNativeSegwit,
       environmentContext,
       focus,
       accountBalances,
