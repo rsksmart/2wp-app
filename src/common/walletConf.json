@@ -29,6 +29,16 @@
             "pegout": true,
             "hover": false,
             "btnClass": "btn-liquality"
+        },
+        {
+            "name": "Leather",
+            "icon": "wallet-icons/leather.svg",
+            "iconWhite": "wallet-icons/leather-white.svg",
+            "constant": "WALLET_LEATHER",
+            "pegin": true,
+            "pegout": false,
+            "hover": false,
+            "btnClass": "btn-leather"
         }
     ]
 }
