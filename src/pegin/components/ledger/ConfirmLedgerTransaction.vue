@@ -287,6 +287,7 @@ export default defineComponent({
         })
         .catch((err) => {
           props.confirmTxState?.send('error');
+          const stringError = JSON.stringify(err);
           switch (err.statusCode) {
             case constants.LEDGER_STATUS_CODES.DEVICE_LOCKED:
               txError = 'Please unlock your Ledger device.';
@@ -298,7 +299,11 @@ export default defineComponent({
               txError = 'Please access the correct app and try again.';
               break;
             default:
-              txError = err.message;
+              if (stringError.includes('No device selected')) {
+                txError = 'There are no device selected, please check your wallet connection, unlock your device and try again.';
+              } else {
+                txError = err.message;
+              }
               break;
           }
         });
