@@ -1,12 +1,12 @@
 <template>
     <v-dialog v-model="showWarningMessage" width="470" persistent>
       <v-card class="container dialog">
-        <v-row class="mx-0 mt-3 mb-3 d-flex justify-center">
+        <v-row class="mx-0 mt-7 mb-2 d-flex justify-center">
           <h2>{{ warningTitle }}</h2>
         </v-row>
         <v-col cols="12" align-self="center" class="pt-0">
-          <v-row class="mx-0 mt-4 mb-5 d-flex justify-center">
-            <v-img :src="require('@/assets/warning.png')" height="50" contain />
+          <v-row class="ma-0 d-flex justify-center">
+            <v-icon class="ml-2" color="#000000" :icon="mdiAlertOutline" size="80"></v-icon>
           </v-row>
           <v-col offset="1" cols="10">
             <p class="justify-center">
@@ -27,6 +27,7 @@
 
 <script lang="ts">
 import { ref, defineComponent } from 'vue';
+import { mdiAlertOutline } from '@mdi/js';
 
 export default defineComponent({
   name: 'WarningDialog',
@@ -59,6 +60,7 @@ export default defineComponent({
       showWarningMessage,
       warnignMessage,
       warningTitle,
+      mdiAlertOutline,
     };
   },
 });

@@ -107,7 +107,7 @@ export default defineComponent({
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const typeSummary = TxStatusType.PEGIN;
     const orientationSummary = TxSummaryOrientation.VERTICAL;
-    const liqualityWarningMessage = 'Some users have encountered difficulties while attempting to create new Bitcoin accounts in Liquality. It\'s important to note that this issue is unrelated to the 2WP app. if you experience this problem, we recommend selecting another wallet.';
+    const liqualityWarningMessage = 'Some users have encountered difficulties while attempting to create new Bitcoin accounts in Liquality. It\'s important to note that this issue is unrelated to the 2WP app. If you experience this problem, we recommend selecting another wallet.';
     const showLiqualityWarning = ref(false);
 
     const pegInTxState = useState<PegInTxState>('pegInTx');
