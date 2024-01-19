@@ -29,6 +29,16 @@
             "pegout": true,
             "hover": false,
             "btnClass": "btn-liquality"
+        },
+        {
+            "name": "Xverse",
+            "icon": "wallet-icons/ledger.png",
+            "iconWhite": "wallet-icons/ledger-white.png",
+            "constant": "WALLET_XVERSE",
+            "pegin": true,
+            "pegout": false,
+            "hover": false,
+            "btnClass": "btn-xverse"
         }
     ]
 }

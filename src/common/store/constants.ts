@@ -1,6 +1,7 @@
 export const WALLET_LEDGER = 'WALLET_LEDGER';
 export const WALLET_TREZOR = 'WALLET_TREZOR';
 export const WALLET_LIQUALITY = 'WALLET_LIQUALITY';
+export const WALLET_XVERSE = 'WALLET_XVERSE';
 export const OPERATION_TYPE = 'OPERATION_TYPE';
 export const OPERATION_AMOUNT = 'OPERATION_AMOUNT';
 
@@ -272,5 +273,6 @@ export const WALLET_NAMES = {
   TREZOR: 'trezor',
   LIQUALITY: 'liquality',
   METAMASK: 'metamask',
+  XVERSE: 'xverse',
 } as const;
 export const PEGIN_OUTPUTS = 3;

@@ -18,6 +18,9 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       case constants.WALLET_LIQUALITY: {
         return 'Liquality';
       }
+      case constants.WALLET_XVERSE: {
+        return 'Xverse';
+      }
       default: {
         return 'wallet';
       }
@@ -162,6 +165,9 @@ export const getters: GetterTree<PegInTxState, RootState> = {
         isHdWallet = true;
         break;
       case constants.WALLET_LIQUALITY:
+        isHdWallet = false;
+        break;
+      case constants.WALLET_XVERSE:
         isHdWallet = false;
         break;
       default:

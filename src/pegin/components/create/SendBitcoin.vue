@@ -52,6 +52,7 @@ import DeviceErrorDialog from '@/common/components/exchange/DeviceErrorDialog.vu
 import ConnectDevice from '@/common/components/exchange/ConnectDevice.vue';
 import TxErrorDialog from '@/common/components/exchange/TxErrorDialog.vue';
 import { BridgeService } from '@/common/services/BridgeService';
+import XverseTxBuilder from '@/pegin/middleware/TxBuilder/XverseTxBuilder';
 import PeginTxService from '../../services/PeginTxService';
 
 export default defineComponent({
@@ -189,6 +190,10 @@ export default defineComponent({
         case constants.WALLET_LIQUALITY:
           txBuilder.value = new LiqualityTxBuilder();
           currentWallet.value = constants.WALLET_NAMES.LIQUALITY;
+          break;
+        case constants.WALLET_XVERSE:
+          txBuilder.value = new XverseTxBuilder();
+          currentWallet.value = constants.WALLET_NAMES.XVERSE;
           break;
         default:
           txBuilder.value = new TrezorTxBuilder();
