@@ -21,6 +21,9 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       case constants.WALLET_LEATHER: {
         return 'Leather';
       }
+      case constants.WALLET_XVERSE: {
+        return 'Xverse';
+      }
       default: {
         return 'wallet';
       }
@@ -168,6 +171,9 @@ export const getters: GetterTree<PegInTxState, RootState> = {
         isHdWallet = false;
         break;
       case constants.WALLET_LEATHER:
+        isHdWallet = false;
+        break;
+      case constants.WALLET_XVERSE:
         isHdWallet = false;
         break;
       default:
