@@ -88,6 +88,9 @@ export default {
         case constants.WALLET_LEATHER:
           wallet = constants.WALLET_NAMES.LEATHER;
           break;
+        case constants.WALLET_XVERSE:
+          wallet = constants.WALLET_NAMES.XVERSE;
+          break;
         default:
           wallet = '';
           break;
