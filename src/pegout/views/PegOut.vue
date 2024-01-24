@@ -10,6 +10,7 @@
 import { ref, defineComponent } from 'vue';
 import * as constants from '@/common/store/constants';
 import PegOutForm from '@/pegout/components/PegOutForm.vue';
+import FlyoverPegout from '@/pegout/components/FlyoverPegout.vue';
 import { Machine } from '@/common/utils';
 import { useAction } from '@/common/store/helper';
 import Confirmation from '../components/Confirmation.vue';
@@ -19,9 +20,10 @@ export default defineComponent({
   components: {
     PegOutForm,
     Confirmation,
+    FlyoverPegout,
   },
   setup() {
-    const currentComponent = ref('PegOutForm');
+    const currentComponent = ref('FlyoverPegout');
     const confirmTxState = ref<Machine<
       'idle'
       | 'loading'
