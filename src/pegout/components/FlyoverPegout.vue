@@ -14,7 +14,7 @@
         </v-row>
         <v-row class="exchange-form ma-0 mt-2 justify-space-between">
           <!-- Form -->
-          <v-col cols="8" lg="7" class="pa-0">
+          <v-col cols="12" class="pa-0">
             <!-- Step 1 -->
             <rsk-wallet-connection @switchDeriveButton="switchDeriveButton" class="p"/>
             <v-divider />
@@ -22,11 +22,34 @@
             <rbtc-input-amount :enableButton="!isReadyToSign"/>
             <v-divider />
             <!-- Step 3 -->
-            <derivate-btc-address
-              :isReadyToSign="isReadyToSign"
-              :authorizedWalletToSignMessage="authorizedWalletToSignMessage"
-              @openAddressDialog="showAddressDialog = true"
-            />
+            <v-row class="ma-0 align-start">
+              <v-col cols="auto" class="pl-0">
+                <div :class="[focus ? 'number-filled' : 'number']">3</div>
+              </v-col>
+              <v-col class="pl-0 ma-0 pb-0">
+                <p :class="{'boldie': focus}">
+                  Choose the best option to proceed with:
+                </p>
+                <v-container class="px-0">
+                  <v-row dense>
+                    <v-col cols="6" v-for="(option, index) in options" :key="index" >
+                      <pegout-option
+                      :title="option.title"
+                      :isFlyover="option.isFlyover"
+                      :formSummary="pegOutFormSummary"
+                      :formState="pegOutFormState"
+                      :isReadyToSign="isReadyToSign"
+                      :isReadyToCreate="isReadyToCreate"
+                      :authorizedWalletToSignMessage="authorizedWalletToSignMessage"
+                      @openAddressDialog="showAddressDialog = true"
+                      @flyoverInputFocusChanged="handleFlyoverInputFocusChanged"
+                      @send="send"
+                      />
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-col>
+            </v-row>
             <!-- Fee higher than amount error message -->
             <div class="form-step py-4 px-4" v-if="!validAmountToReceive && formFilled">
               <v-row class="alert-msg py-6">
@@ -45,14 +68,14 @@
             </div>
           </v-col>
           <!-- Summary -->
-          <v-col cols="4" lg="4">
+          <!-- <v-col cols="4" lg="4">
             <tx-summary-fixed
               :summary="pegOutFormSummary"
               :initialExpand="true"
               :type="typeSummary"
               :orientation="orientationSummary"
             />
-          </v-col>
+          </v-col> -->
         </v-row>
         <!-- Address Dialog -->
         <v-row v-if="showAddressDialog">
@@ -69,12 +92,12 @@
             </v-btn>
           </v-col>
           <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0" >
-            <v-btn v-if="!pegOutFormState.matches(['loading'])" rounded color="#000000"
+            <!-- <v-btn v-if="!pegOutFormState.matches(['loading'])" rounded color="#000000"
                     @click="send" id="send-btn"
                     :disabled="!isReadyToCreate || pegOutFormState.matches(['goingHome'])">
               <span class="whiteish">Send</span>
               <v-icon class="ml-2" color="#fff" :icon="mdiSendOutline"></v-icon>
-            </v-btn>
+            </v-btn> -->
             <v-progress-circular v-if="pegOutFormState.matches(['loading'])"
                                   indeterminate color="#000000" class="mr-10"/>
           </v-col>
@@ -84,15 +107,15 @@
           class="mx-0 justify-center">
           See your ledger device to confirm your transaction.
         </v-row>
-        <!-- Send tx error message -->
-        <template v-if="showTxErrorDialog">
-          <tx-error-dialog
+          <!-- Send tx error message -->
+          <template v-if="showTxErrorDialog">
+            <tx-error-dialog
             :showTxErrorDialog="showTxErrorDialog"
             :errorMessage="txError"
             @closeErrorDialog="showTxErrorDialog = false"
-          />
-        </template>
-    </v-container>
+            />
+          </template>
+      </v-container>
   </template>
 
 <script lang="ts">
@@ -101,7 +124,6 @@ import * as constants from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import RskWalletConnection from '@/pegout/components/RskWalletConnection.vue';
 import RbtcInputAmount from '@/pegout/components/RbtcInputAmount.vue';
-import DerivateBtcAddress from '@/pegout/components/DerivateBtcAddress.vue';
 import AddressDialog from '@/pegout/components/AddressDialog.vue';
 import { useAction, useGetter, useState } from '@/common/store/helper';
 import { SessionState } from '@/common/types/session';
@@ -112,16 +134,19 @@ import {
 import { Machine } from '@/common/utils';
 import router from '@/common/router';
 import ApiService from '@/common/services/ApiService';
-import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
+// import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
+import TxErrorDialog from '@/common/components/exchange/TxErrorDialog.vue';
+import PegoutOption from './PegoutOption.vue';
 
 export default defineComponent({
   name: 'FlyoverPegout',
   components: {
     RskWalletConnection,
     RbtcInputAmount,
-    DerivateBtcAddress,
     AddressDialog,
-    TxSummaryFixed,
+    // TxSummaryFixed,
+    PegoutOption,
+    TxErrorDialog,
   },
   setup(props, context) {
     const nextPage = 'Confirmation';
@@ -134,6 +159,7 @@ export default defineComponent({
     const injectedProvider = ref('');
     const isReadyToSign = ref(false);
     const showAddressDialog = ref(false);
+    const flyoverInputFocused = ref(false);
     const pegOutTxState = useState<PegOutTxState>('pegOutTx');
     const session = useState<SessionState>('web3Session');
     const sendTx = useAction('pegOutTx', constants.PEGOUT_TX_SEND);
@@ -143,6 +169,8 @@ export default defineComponent({
     const isLedgerConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_LEDGER_CONNECTED);
     const isTrezorConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_TREZOR_CONNECTED);
     const isMetamaskConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_METAMASK_CONNECTED);
+    const options = [{ title: 'Faster Option', isFlyover: true }, { title: 'Cheaper Option', isFlyover: false }];
+    const focus = computed(() => showAddressDialog.value || flyoverInputFocused.value);
 
     const currentWallet = computed(() => {
       if (isLedgerConnected.value) {
@@ -233,6 +261,10 @@ export default defineComponent({
       gas: Number(safeFee.value.toRBTCTrimmedString()),
     }));
 
+    function handleFlyoverInputFocusChanged(focused: boolean): void {
+      flyoverInputFocused.value = focused;
+    }
+
     return {
       environmentContext,
       switchDeriveButton,
@@ -253,6 +285,9 @@ export default defineComponent({
       pegOutFormSummary,
       typeSummary,
       orientationSummary,
+      options,
+      focus,
+      handleFlyoverInputFocusChanged,
     };
   },
 });
