@@ -410,3 +410,15 @@
 .v-field__input {
   padding: 0 !important;
 }
+
+.flyover-input {
+  .v-field__input {
+    padding-inline-start: 6px !important;
+    padding-inline-end: 6px !important;
+  }
+}
+.pegout-form-heading {
+  font-size: 36px;
+  line-height: 45px;
+  color: #000000;
+}
