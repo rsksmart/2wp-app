@@ -9,6 +9,7 @@ import {
   getCookie, getEstimatedFee, sendTransaction, setCookie,
 } from '@/common/utils';
 import { providers } from 'ethers';
+import { FlyoverService } from '@/common/services';
 
 export const actions: ActionTree<PegOutTxState, RootState> = {
   [constants.PEGOUT_TX_SELECT_FEE_LEVEL]: ({ commit }, feeLevel: MiningSpeedFee) => {
@@ -21,6 +22,10 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
     const ethersProvider = rootState.web3Session?.ethersProvider as providers.Web3Provider;
     const sender = rootState.web3Session?.account as string;
 
+    const flyoverService = new FlyoverService();
+    await flyoverService.initialize();
+    flyoverService.getProviders()
+      .then(console.log);
     try {
       // RSK Fee
       const gas = await ethersProvider.estimateGas({
