@@ -7,6 +7,7 @@ import {
 } from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { getEstimatedFee } from '@/common/utils';
+import { FlyoverService } from '@/common/services';
 
 export const actions: ActionTree<PegOutTxState, RootState> = {
   [constants.PEGOUT_TX_SELECT_FEE_LEVEL]: ({ commit }, feeLevel: MiningSpeedFee) => {
@@ -19,6 +20,10 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
     const web3 = rootState.web3Session?.web3 as Web3;
     const sender = rootState.web3Session?.account as string;
 
+    const flyoverService = new FlyoverService();
+    await flyoverService.initialize();
+    flyoverService.getProviders()
+      .then(console.log);
     try {
       // RSK Fee
       const gas = await web3.eth.estimateGas({
