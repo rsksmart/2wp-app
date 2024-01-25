@@ -5,7 +5,7 @@ const numberRegex = /^[0-9]*(\.[0-9]*)?$/;
 type RbtcMultiple = 'wei' | 'kwei' | 'mwei' | 'gwei' | 'rbtc';
 
 export default class WeiBig extends Big {
-  constructor(src: number | string | Big, currency: RbtcMultiple) {
+  constructor(src: number | string | Big | bigint, currency: RbtcMultiple) {
     const safeSrc = src ? src.toString() : '0';
     const safeBig: Big = src instanceof Big
       ? src : Big(numberRegex.test(safeSrc) ? safeSrc : '0');
@@ -74,5 +74,9 @@ export default class WeiBig extends Big {
   toGweiTrimmedString(): string {
     return super.div(100_000_000_0)
       .toString();
+  }
+
+  toWeiBigInt(): bigint {
+    return BigInt(this.toFixed(0));
   }
 }
