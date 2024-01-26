@@ -5,83 +5,141 @@ import { QuotePegOut2WP, WeiBig } from '@/common/types';
 import { EnvironmentAccessorService } from './enviroment-accessor.service';
 
 export default class FlyoverService {
-    flyover?: Flyover;
+  flyover?: Flyover;
 
-    flyovernetwork: Network;
+  flyovernetwork: Network;
 
-    constructor() {
-      const appNetwork = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
-      switch (appNetwork) {
-        case constants.BTC_NETWORK_MAINNET:
-          this.flyovernetwork = 'Mainnet';
-          break;
-        case constants.BTC_NETWORK_TESTNET:
-          this.flyovernetwork = 'Testnet';
-          break;
-        default:
-          this.flyovernetwork = 'Regtest';
-          break;
-      }
+  private lbcAddress = EnvironmentAccessorService.getEnvironmentVariables().lbcAddress;
+
+  constructor() {
+    const appNetwork = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
+    switch (appNetwork) {
+      case constants.BTC_NETWORK_MAINNET:
+        this.flyovernetwork = 'Mainnet';
+        break;
+      case constants.BTC_NETWORK_TESTNET:
+        this.flyovernetwork = 'Testnet';
+        break;
+      default:
+        this.flyovernetwork = 'Regtest';
+        break;
     }
+  }
 
-    initialize(): Promise<void> {
-      return new Promise<void>((resolve, reject) => {
-        BlockchainConnection.createUsingStandard(window.ethereum)
-          .then((connection: BlockchainConnection) => {
-            this.flyover = new Flyover({
-              network: this.flyovernetwork,
-              rskConnection: connection,
-              captchaTokenResolver: this.tokenResolver,
-            });
-            resolve();
-          })
-          .catch(reject);
-      });
-    }
-
-    // eslint-disable-next-line class-methods-use-this
-    private tokenResolver(): Promise<string> {
-      // TODO: Implement captcha token resolver
-      return Promise.resolve('testToken');
-    }
-
-    public getProviders(): Promise<LiquidityProvider[]> {
-      return new Promise<LiquidityProvider[]>((resolve, reject) => {
-        this.flyover?.getLiquidityProviders()
-          .then((providers: LiquidityProvider[]) => {
-            resolve(providers);
-          }).catch(reject);
-      });
-    }
-
-    public getPegoutQuotes(
-      rskRefundAddress: string,
-      btcRefundAddress: string,
-      btcRecipientAddress: string,
-      valueToTransfer: WeiBig,
-    ): Promise<QuotePegOut2WP[]> {
-      return new Promise<QuotePegOut2WP[]>((resolve, reject) => {
-        this.flyover?.getPegoutQuotes({
-          bitcoinRefundAddress: btcRefundAddress,
-          rskRefundAddress,
-          to: btcRecipientAddress,
-          valueToTransfer: valueToTransfer.toWeiBigInt(),
+  initialize(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      BlockchainConnection.createUsingStandard(window.ethereum)
+        .then((connection: BlockchainConnection) => {
+          this.flyover = new Flyover({
+            network: this.flyovernetwork,
+            rskConnection: connection,
+            captchaTokenResolver: this.tokenResolver,
+          });
+          resolve();
         })
-          .then((quotes: PegoutQuote[]) => {
-            const pegoutQuotes = quotes.map((pegoutQuote: PegoutQuote) => ({
-              quote: {
-                ...pegoutQuote.quote,
-                callFee: new WeiBig(pegoutQuote.quote.callFee, 'wei'),
-                gasFee: new WeiBig(pegoutQuote.quote.gasFee, 'wei'),
-                penaltyFee: new WeiBig(pegoutQuote.quote.penaltyFee, 'wei'),
-                productFeeAmount: new WeiBig(pegoutQuote.quote.productFeeAmount, 'wei'),
-                value: new WeiBig(pegoutQuote.quote.value, 'wei'),
-              },
-              quoteHash: pegoutQuote.quoteHash,
-            }));
-            resolve(pegoutQuotes);
-          })
-          .catch(reject);
-      });
+        .catch(reject);
+    });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private tokenResolver(): Promise<string> {
+    // TODO: Implement captcha token resolver
+    return Promise.resolve('testToken');
+  }
+
+  public getProviders(): Promise<LiquidityProvider[]> {
+    return new Promise<LiquidityProvider[]>((resolve, reject) => {
+      this.flyover?.getLiquidityProviders()
+        .then((providers: LiquidityProvider[]) => {
+          resolve(providers);
+        }).catch(reject);
+    });
+  }
+
+  public getPegoutQuotes(
+    rskRefundAddress: string,
+    btcRefundAddress: string,
+    btcRecipientAddress: string,
+    valueToTransfer: WeiBig,
+  ): Promise<QuotePegOut2WP[]> {
+    return new Promise<QuotePegOut2WP[]>((resolve, reject) => {
+      this.flyover?.getPegoutQuotes({
+        bitcoinRefundAddress: btcRefundAddress,
+        rskRefundAddress,
+        to: btcRecipientAddress,
+        valueToTransfer: valueToTransfer.toWeiBigInt(),
+      })
+        .then((quotes: PegoutQuote[]) => {
+          const pegoutQuotes = quotes.map((pegoutQuote: PegoutQuote) => ({
+            quote: {
+              ...pegoutQuote.quote,
+              callFee: new WeiBig(pegoutQuote.quote.callFee ?? 0, 'wei'),
+              gasFee: new WeiBig(pegoutQuote.quote.gasFee ?? 0, 'wei'),
+              penaltyFee: new WeiBig(pegoutQuote.quote.penaltyFee ?? 0, 'wei'),
+              productFeeAmount: new WeiBig(pegoutQuote.quote.productFeeAmount ?? 0, 'wei'),
+              value: new WeiBig(pegoutQuote.quote.value ?? 0, 'wei'),
+            },
+            quoteHash: pegoutQuote.quoteHash,
+          }));
+          const valids = pegoutQuotes.filter((quote: QuotePegOut2WP) => this.isValidQuote({
+            rskRefundAddress,
+            btcRefundAddress,
+            btcRecipientAddress,
+            valueToTransfer,
+          }, quote));
+          resolve(valids);
+        })
+        .catch(reject);
+    });
+  }
+
+  private isValidQuote(
+    quoteRequest: {
+      rskRefundAddress: string;
+      btcRefundAddress: string;
+      btcRecipientAddress: string;
+      valueToTransfer: WeiBig;
+    },
+    quoteResponse: QuotePegOut2WP,
+  ): boolean {
+    const { quote } = quoteResponse;
+    if (
+      new Date(quote.agreementTimestamp).getTime() <= 0
+      || new Date(quote.depositDateLimit).getTime() <= 0
+      || new Date(quote.expireDate).getTime() <= 0
+      || new Date(quote.transferTime).getTime() <= 0
+    ) {
+      return false;
     }
+    if (
+      quoteRequest.btcRefundAddress !== quote.btcRefundAddress
+      || quoteRequest.btcRecipientAddress !== quote.depositAddr // TODO: Check if this is correct
+      || quoteRequest.rskRefundAddress !== quote.rskRefundAddress
+    ) {
+      return false;
+    }
+    if (
+      quote.callFee.lte(0)
+      || quote.gasFee.lte(0)
+      || quote.penaltyFee.lte(0)
+      || quote.productFeeAmount.lte(0)
+      || quote.value.lte(0)
+    ) {
+      return false;
+    }
+    if (quote.lbcAddress !== this.lbcAddress) {
+      return false;
+    }
+    if (
+      quote.depositConfirmations <= 0
+      || quote.expireBlocks <= 0
+      || quote.transferConfirmations <= 0
+    ) {
+      return false;
+    }
+
+    // TODO: Validate liquidityProviderRskAddress and lpBtcAddr
+    // TODO: Check if nonce needs to be validated
+    return true;
+  }
 }
