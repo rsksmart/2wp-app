@@ -43,6 +43,8 @@ export class EnvironmentVariables {
 
   public maxAmountAllowedInSatoshis: number;
 
+  public lbcAddress: string;
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(defaultValues: any = {}) {
     this.vueAppCoin = process.env.VUE_APP_COIN || defaultValues.vueAppCoin;
@@ -85,5 +87,6 @@ export class EnvironmentVariables {
     this.burnDustValue = Number(process.env.VUE_APP_BURN_DUST_VALUE) || defaultValues.burnDustValue;
     this.maxAmountAllowedInSatoshis = process.env.VUE_APP_MAX_AMOUNT_ALLOWED_IN_SATOSHI
       || defaultValues.maxAmountAllowedInSatoshis;
+    this.lbcAddress = process.env.VUE_APP_LBC_CONTRACT_ADDRESS || defaultValues.lbcAddress;
   }
 }
