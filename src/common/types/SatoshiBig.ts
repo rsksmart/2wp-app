@@ -7,7 +7,7 @@ type BTCCurrency = 'satoshi' | 'mbtc' | 'btc';
 const rightZeroPaddedRegex = /^0\.0+$/;
 
 export default class SatoshiBig extends Big {
-  constructor(src: number | string | Big, currency: BTCCurrency) {
+  constructor(src: number | string | Big | bigint, currency: BTCCurrency) {
     const safeSrc = src ? src.toString() : '0';
     const safeBig: Big = src instanceof Big
       ? src : Big(numberRegex.test(safeSrc) ? safeSrc : '0');

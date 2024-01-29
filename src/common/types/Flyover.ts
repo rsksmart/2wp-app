@@ -1,4 +1,26 @@
+import { LiquidityProviderBase } from '@rsksmart/flyover-sdk';
 import WeiBig from './WeiBig';
+import SatoshiBig from './SatoshiBig';
+
+interface PeginProviderDetail {
+    fee: SatoshiBig;
+    maxTransactionValue: SatoshiBig;
+    minTransactionValue: SatoshiBig;
+    requiredConfirmations: number;
+}
+interface PegoutProviderDetail {
+    fee: WeiBig;
+    maxTransactionValue: WeiBig;
+    minTransactionValue: WeiBig;
+    requiredConfirmations: number;
+}
+interface ProviderDetailResponse2WP {
+    pegin: PeginProviderDetail;
+    pegout: PegoutProviderDetail;
+    siteKey: string;
+}
+
+export type LiquidityProvider2WP = LiquidityProviderBase & ProviderDetailResponse2WP;
 
 export interface PegoutQuoteDTO2WP {
     agreementTimestamp: number;

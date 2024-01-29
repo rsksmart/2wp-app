@@ -87,6 +87,6 @@ export class EnvironmentVariables {
     this.burnDustValue = Number(process.env.VUE_APP_BURN_DUST_VALUE) || defaultValues.burnDustValue;
     this.maxAmountAllowedInSatoshis = process.env.VUE_APP_MAX_AMOUNT_ALLOWED_IN_SATOSHI
       || defaultValues.maxAmountAllowedInSatoshis;
-    this.lbcAddress = process.env.VUE_APP_LBC_CONTRACT_ADDRESS || defaultValues.lbcAddress;
+    this.lbcAddress = process.env.VUE_APP_LBC_ADDRESS || defaultValues.lbcAddress;
   }
 }
