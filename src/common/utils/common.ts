@@ -1,7 +1,11 @@
 import { PegInTxState } from '@/common/types/pegInTx';
 import SatoshiBig from '@/common/types/SatoshiBig';
 import { BITCOIN_AVERAGE_FEE_LEVEL } from '@/common/store/constants';
-import { PegOutTxState, SessionState, WeiBig } from '@/common/types';
+import {
+  FlyoverPegoutState, PegOutTxState,
+  SessionState, WeiBig,
+} from '@/common/types';
+import { FlyoverService } from '@/common/services';
 
 export const getChunkedValue = (value: string, maxLength: number) => (value.length < maxLength ? value : `${value.substr(0, maxLength / 2)}...${value.substr(value.length - maxLength / 2, value.length)}`);
 
@@ -90,3 +94,15 @@ export const getClearSessionState = ():SessionState => (
     bitcoinPrice: 0,
   }
 );
+
+export const getClearFlyoverPegoutState = (): FlyoverPegoutState => ({
+  amountToTransfer: new WeiBig(0, 'wei'),
+  validAmount: false,
+  senderAddress: '',
+  rskRefundAddress: '',
+  btcRecipientAddress: '',
+  btcToReceive: new SatoshiBig(0, 'satoshi'),
+  liquidityProviders: [],
+  quotes: [],
+  flyoverService: new FlyoverService(),
+});
