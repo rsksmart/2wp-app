@@ -19,11 +19,6 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
   [constants.PEGOUT_TX_CALCULATE_FEE]: async ({ commit, state, rootState }) => {
     const web3 = rootState.web3Session?.web3 as Web3;
     const sender = rootState.web3Session?.account as string;
-
-    const flyoverService = new FlyoverService();
-    await flyoverService.initialize();
-    flyoverService.getProviders()
-      .then(console.log);
     try {
       // RSK Fee
       const gas = await web3.eth.estimateGas({
