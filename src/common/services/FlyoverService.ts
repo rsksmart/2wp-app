@@ -1,7 +1,13 @@
 import { BlockchainConnection, Network } from '@rsksmart/bridges-core-sdk';
-import { Flyover, LiquidityProvider, PegoutQuote } from '@rsksmart/flyover-sdk';
+import {
+  AcceptedPegoutQuote, Flyover,
+  LiquidityProvider, PegoutQuote,
+} from '@rsksmart/flyover-sdk';
 import * as constants from '@/common/store/constants';
-import { QuotePegOut2WP, WeiBig } from '@/common/types';
+import {
+  LiquidityProvider2WP, QuotePegOut2WP,
+  SatoshiBig, WeiBig,
+} from '@/common/types';
 import { EnvironmentAccessorService } from './enviroment-accessor.service';
 
 export default class FlyoverService {
@@ -10,6 +16,10 @@ export default class FlyoverService {
   flyovernetwork: Network;
 
   private lbcAddress = EnvironmentAccessorService.getEnvironmentVariables().lbcAddress;
+
+  private liquidityProviders: LiquidityProvider[] = [];
+
+  private pegoutQuotes: PegoutQuote[] = [];
 
   constructor() {
     const appNetwork = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
@@ -47,13 +57,37 @@ export default class FlyoverService {
     return Promise.resolve('testToken');
   }
 
-  public getProviders(): Promise<LiquidityProvider[]> {
-    return new Promise<LiquidityProvider[]>((resolve, reject) => {
+  public getProviders(): Promise<LiquidityProvider2WP[]> {
+    return new Promise<LiquidityProvider2WP[]>((resolve, reject) => {
       this.flyover?.getLiquidityProviders()
         .then((providers: LiquidityProvider[]) => {
-          resolve(providers);
+          this.liquidityProviders = providers;
+          const providers2wp: LiquidityProvider2WP[] = providers
+            .map((provider: LiquidityProvider) => ({
+              ...provider,
+              pegin: {
+                requiredConfirmations: provider.pegin.requiredConfirmations,
+                fee: new SatoshiBig(provider.pegin.fee, 'satoshi'),
+                maxTransactionValue: new SatoshiBig(provider.pegin.maxTransactionValue, 'satoshi'),
+                minTransactionValue: new SatoshiBig(provider.pegin.minTransactionValue, 'satoshi'),
+              },
+              pegout: {
+                requiredConfirmations: provider.pegout.requiredConfirmations,
+                fee: new WeiBig(provider.pegout.fee, 'wei'),
+                maxTransactionValue: new WeiBig(provider.pegout.maxTransactionValue, 'wei'),
+                minTransactionValue: new WeiBig(provider.pegout.minTransactionValue, 'wei'),
+              },
+            }));
+          resolve(providers2wp);
         }).catch(reject);
     });
+  }
+
+  public useLiquidityProvider(providerId: number): void {
+    const provider = this.liquidityProviders.find((p: LiquidityProvider) => p.id === providerId);
+    if (provider) {
+      this.flyover?.useLiquidityProvider(provider);
+    }
   }
 
   public getPegoutQuotes(
@@ -70,6 +104,7 @@ export default class FlyoverService {
         valueToTransfer: valueToTransfer.toWeiBigInt(),
       })
         .then((quotes: PegoutQuote[]) => {
+          this.pegoutQuotes = quotes;
           const pegoutQuotes = quotes.map((pegoutQuote: PegoutQuote) => ({
             quote: {
               ...pegoutQuote.quote,
@@ -90,6 +125,20 @@ export default class FlyoverService {
           resolve(valids);
         })
         .catch(reject);
+    });
+  }
+
+  public acceptQuote(quoteHash: string): Promise<AcceptedPegoutQuote> {
+    return new Promise<AcceptedPegoutQuote>((resolve, reject) => {
+      const selectedQuote = this.pegoutQuotes
+        .find((quote: PegoutQuote) => quote.quoteHash === quoteHash);
+      if (selectedQuote) {
+        this.flyover?.acceptPegoutQuote(selectedQuote)
+          .then(resolve)
+          .catch(reject);
+      } else {
+        reject(new Error('Quote not found'));
+      }
     });
   }
 

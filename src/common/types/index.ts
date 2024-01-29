@@ -14,3 +14,4 @@ export * from './Status';
 export { default as WeiBig } from './WeiBig';
 export * from './Feature';
 export * from './Flyover';
+export * from './FlyoverPegout';
