@@ -128,7 +128,7 @@ export default class FlyoverService {
     });
   }
 
-  public acceptQuote(quoteHash: string): Promise<AcceptedPegoutQuote> {
+  public acceptPegoutQuote(quoteHash: string): Promise<AcceptedPegoutQuote> {
     return new Promise<AcceptedPegoutQuote>((resolve, reject) => {
       const selectedQuote = this.pegoutQuotes
         .find((quote: PegoutQuote) => quote.quoteHash === quoteHash);
