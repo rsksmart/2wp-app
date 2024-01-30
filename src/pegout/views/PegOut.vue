@@ -31,11 +31,16 @@ export default defineComponent({
       | 'goingHome'
       > >(new Machine('idle'));
     const init = useAction('pegOutTx', constants.PEGOUT_TX_INIT);
+    const initFlyover = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_INIT);
+
     function changePage(componentName: string) {
       currentComponent.value = componentName;
       window.scrollTo(0, 0);
     }
+
     init();
+    initFlyover();
+
     return {
       currentComponent,
       confirmTxState,
