@@ -6,6 +6,7 @@ import {
   SessionState, WeiBig,
 } from '@/common/types';
 import { FlyoverService } from '@/common/services';
+import { markRaw } from 'vue';
 
 export const getChunkedValue = (value: string, maxLength: number) => (value.length < maxLength ? value : `${value.substr(0, maxLength / 2)}...${value.substr(value.length - maxLength / 2, value.length)}`);
 
@@ -104,5 +105,5 @@ export const getClearFlyoverPegoutState = (): FlyoverPegoutState => ({
   btcToReceive: new SatoshiBig(0, 'satoshi'),
   liquidityProviders: [],
   quotes: [],
-  flyoverService: new FlyoverService(),
+  flyoverService: markRaw(new FlyoverService()),
 });
