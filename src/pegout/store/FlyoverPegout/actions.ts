@@ -28,18 +28,23 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
         state.amountToTransfer,
       ));
     });
-    Promise.all(quotePromises).then((quotes) => quotes.forEach(
-      (providerQuotes, index) => commit(
-        constants.FLYOVER_PEGOUT_SET_QUOTES,
-        { [state.liquidityProviders[index].id]: providerQuotes },
-      ),
-    ));
+    let quotesByProvider: Record<number, QuotePegOut2WP[]> = {};
+    Promise.all(quotePromises)
+      .then((quotes) => quotes.forEach((providerQuotes, index) => {
+        quotesByProvider = {
+          ...quotesByProvider,
+          [state.liquidityProviders[index].id]: providerQuotes,
+        };
+      }))
+      .then(() => commit(constants.FLYOVER_PEGOUT_SET_QUOTES, quotesByProvider));
   },
   [constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER]: ({ state }, providerId: number) => {
-    state.flyoverService?.useLiquidityProvider(providerId);
+    state.flyoverService.useLiquidityProvider(providerId);
   },
-  [constants.FLYOVER_PEGOUT_ACCEPT_QUOTE]: async ({ state }, quoteHash: string) => {
-    state.flyoverService?.acceptPegoutQuote(quoteHash);
+  [constants.FLYOVER_PEGOUT_ACCEPT_QUOTE]: async ({ state, commit }, { providerId, quoteHash }:
+    { providerId: number; quoteHash: string}) => {
+    commit(constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER, providerId);
+    state.flyoverService.acceptPegoutQuote(quoteHash);
   },
   [constants.FLYOVER_PEGOUT_CLEAR_STATE]: ({ commit }) => {
     commit(constants.FLYOVER_PEGOUT_SET_CLEAR_STATE);
