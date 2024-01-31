@@ -11,7 +11,7 @@ export interface FlyoverPegoutState {
     btcRecipientAddress: string;
     btcToReceive: SatoshiBig;
     liquidityProviders: LiquidityProvider2WP[];
-    quotes: Array<Record<number, QuotePegOut2WP[]>>;
+    quotes: Record<number, QuotePegOut2WP[]>;
     flyoverService: FlyoverService;
     txHash?: string;
 }
