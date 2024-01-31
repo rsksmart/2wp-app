@@ -104,6 +104,6 @@ export const getClearFlyoverPegoutState = (): FlyoverPegoutState => ({
   btcRecipientAddress: '',
   btcToReceive: new SatoshiBig(0, 'satoshi'),
   liquidityProviders: [],
-  quotes: [],
+  quotes: {},
   flyoverService: markRaw(new FlyoverService()),
 });
