@@ -142,6 +142,44 @@ export default class FlyoverService {
     });
   }
 
+  public acceptAndSendPegoutQuote(quoteHash: string): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      this.acceptPegoutQuote(quoteHash)
+        .then((acceptedQuote: AcceptedPegoutQuote) => Promise
+          .all([this.isValidAcceptedQuote(quoteHash, acceptedQuote.signature), acceptedQuote]))
+        .then(([isValidQuote, acceptedQuote]) => {
+          if (!isValidQuote) {
+            reject(new Error('Invalid accepted quote'));
+          }
+          const selectedQuote = this.pegoutQuotes
+            .find((quote: PegoutQuote) => quote.quoteHash === quoteHash);
+          if (selectedQuote) {
+            const amountToTransfer = this.calculateFinalAmountToTransfer(quoteHash);
+            this.flyover?.depositPegout(selectedQuote, acceptedQuote.signature, amountToTransfer)
+              .then((txHash: string) => resolve(txHash));
+          }
+        })
+        .catch(reject);
+    });
+  }
+
+  private calculateFinalAmountToTransfer(quoteHash: string): bigint {
+    let amount = 0n;
+    const selectedQuote = this.pegoutQuotes
+      .find((quote: PegoutQuote) => quote.quoteHash === quoteHash);
+    if (selectedQuote) {
+      const { quote } = selectedQuote;
+      amount = quote.value + quote.productFeeAmount + quote.gasFee + quote.callFee;
+    }
+    return amount;
+  }
+
+  // eslint-disable-next-line
+  private isValidAcceptedQuote(quoteHash: string, signature: string): Promise<boolean> {
+    // TODO: Validate with getRegisteredPegOutQuote method from LBC
+    return Promise.resolve(true);
+  }
+
   private isValidQuote(
     quoteRequest: {
       rskRefundAddress: string;
