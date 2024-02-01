@@ -41,9 +41,9 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
   [constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER]: ({ state }, providerId: number) => {
     state.flyoverService.useLiquidityProvider(providerId);
   },
-  [constants.FLYOVER_PEGOUT_ACCEPT_QUOTE]: async ({ state, commit }, { providerId, quoteHash }:
+  [constants.FLYOVER_PEGOUT_ACCEPT_QUOTE]: async ({ state, dispatch }, { providerId, quoteHash }:
     { providerId: number; quoteHash: string}) => {
-    commit(constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER, providerId);
+    dispatch(constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER, providerId);
     state.flyoverService.acceptPegoutQuote(quoteHash);
   },
   [constants.FLYOVER_PEGOUT_CLEAR_STATE]: ({ commit }) => {
