@@ -113,7 +113,7 @@ export default class XverseService extends WalletService {
     }
 
     name(): string {
-      return constants.WALLET_NAMES.XVERSE;
+      return constants.WALLET_NAMES.XVERSE.short_name;
     }
 
     availableAccounts(): BtcAccount[] {

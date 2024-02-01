@@ -26,7 +26,7 @@ export default class LiqualityService extends WalletService {
 
   // eslint-disable-next-line class-methods-use-this
   name(): string {
-    return constants.WALLET_NAMES.LIQUALITY;
+    return constants.WALLET_NAMES.LIQUALITY.short_name;
   }
 
   // eslint-disable-next-line class-methods-use-this

@@ -105,15 +105,15 @@ export default defineComponent({
     const clearStore = useAction('pegInTx', constants.PEGIN_TX_CLEAR_STATE);
 
     const deviceImagePath = computed(() => {
-      if (bitcoinWallet.value === constants.WALLET_LEDGER) {
+      if (bitcoinWallet.value === constants.WALLET_NAMES.LEDGER.long_name) {
         // eslint-disable-next-line global-require, import/no-dynamic-require
         return require('@/assets/exchange/ledger/connect_ledger.png');
       }
-      if (bitcoinWallet.value === constants.WALLET_TREZOR) {
+      if (bitcoinWallet.value === constants.WALLET_NAMES.TREZOR.long_name) {
         // eslint-disable-next-line global-require, import/no-dynamic-require
         return require('@/assets/exchange/trezor/connect_trezor.png');
       }
-      if (bitcoinWallet.value === constants.WALLET_LIQUALITY) {
+      if (bitcoinWallet.value === constants.WALLET_NAMES.LIQUALITY.long_name) {
         // eslint-disable-next-line global-require, import/no-dynamic-require
         return require('@/assets/exchange/liquality/connect_liquality.png');
       }
@@ -121,9 +121,11 @@ export default defineComponent({
       return require('@/assets/exchange/wallet.png');
     });
 
-    const isLedgerWallet = computed(() => bitcoinWallet.value === constants.WALLET_LEDGER);
+    const isLedgerWallet = computed(() => bitcoinWallet.value
+      === constants.WALLET_NAMES.LEDGER.long_name);
 
-    const isLiqualityWallet = computed(() => bitcoinWallet.value === constants.WALLET_LIQUALITY);
+    const isLiqualityWallet = computed(() => bitcoinWallet.value
+      === constants.WALLET_NAMES.LIQUALITY.long_name);
 
     function continueToForm() {
       context.emit('continueToForm', bitcoinWallet);

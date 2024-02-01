@@ -33,19 +33,19 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_ADD_BITCOIN_WALLET]: ({ commit, state }, bitcoinWallet: BtcWallet) => {
     commit(constants.PEGIN_TX_SET_BITCOIN_WALLET, bitcoinWallet);
     switch (bitcoinWallet) {
-      case constants.WALLET_TREZOR:
+      case constants.WALLET_NAMES.TREZOR.long_name:
         commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new TrezorService());
         break;
-      case constants.WALLET_LEDGER:
+      case constants.WALLET_NAMES.LEDGER.long_name:
         commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new LedgerService());
         break;
-      case constants.WALLET_LIQUALITY:
+      case constants.WALLET_NAMES.LIQUALITY.long_name:
         commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new LiqualityService());
         break;
-      case constants.WALLET_LEATHER:
+      case constants.WALLET_NAMES.LEATHER.long_name:
         commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new LeatherService());
         break;
-      case constants.WALLET_XVERSE:
+      case constants.WALLET_NAMES.XVERSE.long_name:
         commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new XverseService());
         break;
       default:

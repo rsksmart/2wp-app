@@ -131,7 +131,7 @@ export default defineComponent({
       switch (accountType) {
         case constants.BITCOIN_SEGWIT_ADDRESS:
         case constants.BITCOIN_LEGACY_ADDRESS:
-          enabled = bitcoinWallet.value !== constants.WALLET_LIQUALITY;
+          enabled = bitcoinWallet.value !== constants.WALLET_NAMES.LIQUALITY.long_name;
           break;
         default:
           enabled = true;
@@ -162,8 +162,8 @@ export default defineComponent({
       },
     ];
 
-    if (bitcoinWallet.value === constants.WALLET_LIQUALITY
-    || bitcoinWallet.value === constants.WALLET_LEATHER) {
+    if (bitcoinWallet.value === constants.WALLET_NAMES.LIQUALITY.long_name
+    || bitcoinWallet.value === constants.WALLET_NAMES.LEATHER.long_name) {
       accountChanged(constants.BITCOIN_NATIVE_SEGWIT_ADDRESS);
       onlyNativeSegwit.value = true;
     }

@@ -9,20 +9,20 @@ import EnvironmentContextProviderService from '@/common/providers/EnvironmentCon
 export const getters: GetterTree<PegInTxState, RootState> = {
   [constants.WALLET_NAME]: (state) => {
     switch (state.bitcoinWallet) {
-      case constants.WALLET_LEDGER: {
-        return 'Ledger';
+      case constants.WALLET_NAMES.LEDGER.long_name: {
+        return constants.WALLET_NAMES.LEDGER.formal_name;
       }
-      case constants.WALLET_TREZOR: {
-        return 'Trezor';
+      case constants.WALLET_NAMES.TREZOR.long_name: {
+        return constants.WALLET_NAMES.TREZOR.formal_name;
       }
-      case constants.WALLET_LIQUALITY: {
-        return 'Liquality';
+      case constants.WALLET_NAMES.LIQUALITY.long_name: {
+        return constants.WALLET_NAMES.LIQUALITY.formal_name;
       }
-      case constants.WALLET_LEATHER: {
-        return 'Leather';
+      case constants.WALLET_NAMES.LEATHER.long_name: {
+        return constants.WALLET_NAMES.LEATHER.formal_name;
       }
-      case constants.WALLET_XVERSE: {
-        return 'Xverse';
+      case constants.WALLET_NAMES.XVERSE.long_name: {
+        return constants.WALLET_NAMES.XVERSE.formal_name;
       }
       default: {
         return 'wallet';
@@ -161,19 +161,19 @@ export const getters: GetterTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_IS_HD_WALLET]: (state: PegInTxState): boolean => {
     let isHdWallet = false;
     switch (state.bitcoinWallet) {
-      case constants.WALLET_TREZOR:
+      case constants.WALLET_NAMES.TREZOR.long_name:
         isHdWallet = true;
         break;
-      case constants.WALLET_LEDGER:
+      case constants.WALLET_NAMES.LEDGER.long_name:
         isHdWallet = true;
         break;
-      case constants.WALLET_LIQUALITY:
+      case constants.WALLET_NAMES.LIQUALITY.long_name:
         isHdWallet = false;
         break;
-      case constants.WALLET_LEATHER:
+      case constants.WALLET_NAMES.LEATHER.long_name:
         isHdWallet = false;
         break;
-      case constants.WALLET_XVERSE:
+      case constants.WALLET_NAMES.XVERSE.long_name:
         isHdWallet = false;
         break;
       default:
