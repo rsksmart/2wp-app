@@ -188,25 +188,25 @@ export default defineComponent({
 
     function setTxBuilder():void {
       switch (bitcoinWallet.value) {
-        case constants.WALLET_TREZOR:
+        case constants.WALLET_NAMES.TREZOR.long_name:
           txBuilder.value = new TrezorTxBuilder();
-          currentWallet.value = constants.WALLET_NAMES.TREZOR;
+          currentWallet.value = constants.WALLET_NAMES.TREZOR.short_name;
           break;
-        case constants.WALLET_LEDGER:
+        case constants.WALLET_NAMES.LEDGER.long_name:
           txBuilder.value = new LedgerTxBuilder();
-          currentWallet.value = constants.WALLET_NAMES.LEDGER;
+          currentWallet.value = constants.WALLET_NAMES.LEDGER.short_name;
           break;
-        case constants.WALLET_LIQUALITY:
+        case constants.WALLET_NAMES.LIQUALITY.long_name:
           txBuilder.value = new LiqualityTxBuilder();
-          currentWallet.value = constants.WALLET_NAMES.LIQUALITY;
+          currentWallet.value = constants.WALLET_NAMES.LIQUALITY.short_name;
           break;
-        case constants.WALLET_LEATHER:
+        case constants.WALLET_NAMES.LEATHER.long_name:
           txBuilder.value = new LeatherTxBuilder();
-          currentWallet.value = constants.WALLET_NAMES.LEATHER;
+          currentWallet.value = constants.WALLET_NAMES.LEATHER.short_name;
           break;
-        case constants.WALLET_XVERSE:
+        case constants.WALLET_NAMES.XVERSE.long_name:
           txBuilder.value = new XverseTxBuilder();
-          currentWallet.value = constants.WALLET_NAMES.XVERSE;
+          currentWallet.value = constants.WALLET_NAMES.XVERSE.short_name;
           break;
         default:
           txBuilder.value = new TrezorTxBuilder();
@@ -236,7 +236,8 @@ export default defineComponent({
     async function backToConnectDevice() {
       await clear();
       let wallet: BtcWallet;
-      if (bitcoinWallet.value && bitcoinWallet.value !== constants.WALLET_LIQUALITY) {
+      if (bitcoinWallet.value && bitcoinWallet.value
+        !== constants.WALLET_NAMES.LIQUALITY.long_name) {
         wallet = bitcoinWallet.value;
       } else {
         await back();

@@ -76,20 +76,20 @@ export default {
     function toSendBitcoin(): void {
       let wallet: string;
       switch (bitcoinWallet.value) {
-        case constants.WALLET_TREZOR:
-          wallet = constants.WALLET_NAMES.TREZOR;
+        case constants.WALLET_NAMES.TREZOR.long_name:
+          wallet = constants.WALLET_NAMES.TREZOR.short_name;
           break;
-        case constants.WALLET_LEDGER:
-          wallet = constants.WALLET_NAMES.LEDGER;
+        case constants.WALLET_NAMES.LEDGER.long_name:
+          wallet = constants.WALLET_NAMES.LEDGER.short_name;
           break;
-        case constants.WALLET_LIQUALITY:
-          wallet = constants.WALLET_NAMES.LIQUALITY;
+        case constants.WALLET_NAMES.LIQUALITY.long_name:
+          wallet = constants.WALLET_NAMES.LIQUALITY.short_name;
           break;
-        case constants.WALLET_LEATHER:
-          wallet = constants.WALLET_NAMES.LEATHER;
+        case constants.WALLET_NAMES.LEATHER.long_name:
+          wallet = constants.WALLET_NAMES.LEATHER.short_name;
           break;
-        case constants.WALLET_XVERSE:
-          wallet = constants.WALLET_NAMES.XVERSE;
+        case constants.WALLET_NAMES.XVERSE.long_name:
+          wallet = constants.WALLET_NAMES.XVERSE.short_name;
           break;
         default:
           wallet = '';

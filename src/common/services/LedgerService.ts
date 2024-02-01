@@ -30,7 +30,7 @@ export default class LedgerService extends WalletService {
 
   // eslint-disable-next-line class-methods-use-this
   name(): string {
-    return constants.WALLET_NAMES.LEDGER;
+    return constants.WALLET_NAMES.LEDGER.short_name;
   }
 
   // eslint-disable-next-line class-methods-use-this

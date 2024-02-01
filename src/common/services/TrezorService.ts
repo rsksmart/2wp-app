@@ -52,7 +52,7 @@ export default class TrezorService extends WalletService {
 
   // eslint-disable-next-line class-methods-use-this
   name(): string {
-    return constants.WALLET_NAMES.TREZOR;
+    return constants.WALLET_NAMES.TREZOR.short_name;
   }
 
   // eslint-disable-next-line class-methods-use-this

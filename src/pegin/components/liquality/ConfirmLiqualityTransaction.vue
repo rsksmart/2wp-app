@@ -234,7 +234,7 @@ export default defineComponent({
             txHash: txId.value,
             type: TxStatusType.PEGIN.toLowerCase(),
             value: Number(pegInTxState.value.amountToTransfer.toBTCTrimmedString()),
-            wallet: constants.WALLET_NAMES.LIQUALITY,
+            wallet: constants.WALLET_NAMES.LIQUALITY.short_name,
             addressType: addressType.value,
             fee: Number(safeFee.value.toBTCTrimmedString()),
           });
@@ -258,7 +258,7 @@ export default defineComponent({
 
     function appendClarityScript(): void {
       addTag(constants.OPERATION_TYPE, TxStatusType.PEGIN);
-      addTag(constants.WALLET_NAME, constants.WALLET_LIQUALITY);
+      addTag(constants.WALLET_NAME, constants.WALLET_NAMES.LIQUALITY.long_name);
       const amountFromString = pegInTxState.value.amountToTransfer.toBTCTrimmedString();
       addTag(constants.OPERATION_AMOUNT, `${amountFromString}`);
     }

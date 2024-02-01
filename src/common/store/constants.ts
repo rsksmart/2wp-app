@@ -1,8 +1,18 @@
-export const WALLET_LEDGER = 'WALLET_LEDGER';
-export const WALLET_TREZOR = 'WALLET_TREZOR';
-export const WALLET_LIQUALITY = 'WALLET_LIQUALITY';
-export const WALLET_LEATHER = 'WALLET_LEATHER';
-export const WALLET_XVERSE = 'WALLET_XVERSE';
+// export const WALLET_LEDGER = 'WALLET_LEDGER';
+// export const WALLET_TREZOR = 'WALLET_TREZOR';
+// export const WALLET_LIQUALITY = 'WALLET_LIQUALITY';
+// export const WALLET_LEATHER = 'WALLET_LEATHER';
+// export const WALLET_XVERSE = 'WALLET_XVERSE';
+
+export const WALLET_NAMES = {
+  LEDGER: { formal_name: 'Ledger', short_name: 'ledger', long_name: 'WALLET_LEDGER' },
+  TREZOR: { formal_name: 'Trezor', short_name: 'trezor', long_name: 'WALLET_TREZOR' },
+  LIQUALITY: { formal_name: 'Liquality', short_name: 'liquality', long_name: 'WALLET_LIQUALITY' },
+  METAMASK: { formal_name: 'Metamask', short_name: 'metamask', long_name: 'WALLET_METAMASK' },
+  LEATHER: { formal_name: 'Leather', short_name: 'leather', long_name: 'WALLET_LEATHER' },
+  XVERSE: { formal_name: 'XVerse', short_name: 'xverse', long_name: 'WALLET_XVERSE' },
+} as const;
+
 export const OPERATION_TYPE = 'OPERATION_TYPE';
 export const OPERATION_AMOUNT = 'OPERATION_AMOUNT';
 
@@ -269,13 +279,5 @@ export const MAINNET_ADDRESS_SEGWIT = '^[3][1-9A-HJ-NP-Za-km-z]{26,35}';
 export const MAINNET_ADDRESS_NSEGWIT = '^[bc1][0-9A-HJ-NP-Za-z]{41,62}';
 
 export const POWPEG_RSKT_HEADER = '52534b5401';
-export const WALLET_NAMES = {
-  LEDGER: 'ledger',
-  TREZOR: 'trezor',
-  LIQUALITY: 'liquality',
-  METAMASK: 'metamask',
-  LEATHER: 'leather',
-  XVERSE: 'xverse',
-} as const;
 export const PEGIN_OUTPUTS = 3;
 export const COOKIE_EXPIRATION_HOURS = 12;

@@ -180,16 +180,16 @@ export default defineComponent({
     const isMetamaskConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_METAMASK_CONNECTED);
     const currentWallet = computed(() => {
       if (isLedgerConnected.value) {
-        return constants.WALLET_NAMES.LEDGER;
+        return constants.WALLET_NAMES.LEDGER.short_name;
       }
       if (isTrezorConnected.value) {
-        return constants.WALLET_NAMES.TREZOR;
+        return constants.WALLET_NAMES.TREZOR.short_name;
       }
       if (isMetamaskConnected.value) {
-        return constants.WALLET_NAMES.METAMASK;
+        return constants.WALLET_NAMES.METAMASK.short_name;
       }
       if (injectedProvider.value === appConstants.RLOGIN_LIQUALITY_WALLET) {
-        return constants.WALLET_NAMES.LIQUALITY;
+        return constants.WALLET_NAMES.LIQUALITY.short_name;
       }
       return '';
     });

@@ -63,22 +63,17 @@ Run locally the project and check if the button shows correctly
 
 Open file src/common/store/constants.ts adding WALLET_ + the name of the wallet. 
 
-This is the long name.
+Add the new wallet in this **enum** object.
 
    ```
-   export const WALLET_MYWALLET = 'WALLET_MYWALLET';
-   ```
-
-This is the short name.
-
-   ```
-   // Supported wallets for pegin SHORT_NAMES
+   // Supported wallets for pegin
    export const WALLET_NAMES = {
-      LEDGER: 'ledger',
-      TREZOR: 'trezor',
-      LIQUALITY: 'liquality',
-      METAMASK: 'metamask',
-      MYWALLET: 'mywallet',
+      LEDGER: { short_name: 'ledger', long_name: 'WALLET_LEDGER' },
+      TREZOR: { short_name: 'trezor', long_name: 'WALLET_TREZOR' },
+      LIQUALITY: { short_name: 'liquality', long_name: 'WALLET_LIQUALITY' },
+      METAMASK: { short_name: 'metamask', long_name: 'WALLET_METAMASK' },
+      LEATHER: { short_name: 'leather', long_name: 'WALLET_LEATHER' },
+      XVERSE: { short_name: 'xverse', long_name: 'WALLET_XVERSE' },
    } as const;
    ```
 
