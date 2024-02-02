@@ -8,6 +8,7 @@ import {
   LiquidityProvider2WP, QuotePegOut2WP,
   SatoshiBig, WeiBig,
 } from '@/common/types';
+import { providers } from 'ethers'
 import { EnvironmentAccessorService } from './enviroment-accessor.service';
 
 export default class FlyoverService {
@@ -21,7 +22,10 @@ export default class FlyoverService {
 
   private pegoutQuotes: PegoutQuote[] = [];
 
-  constructor() {
+  private providerUrl?: string;
+
+  constructor(providerUrl?: string) {
+    this.providerUrl = providerUrl;
     const appNetwork = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
     switch (appNetwork) {
       case constants.BTC_NETWORK_MAINNET:
@@ -38,7 +42,9 @@ export default class FlyoverService {
 
   initialize(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      BlockchainConnection.createUsingStandard(window.ethereum)
+      const provider = this.providerUrl
+        ? new providers.JsonRpcProvider(this.providerUrl) : window.ethereum;
+      BlockchainConnection.createUsingStandard(provider)
         .then((connection: BlockchainConnection) => {
           this.flyover = new Flyover({
             network: this.flyovernetwork,
