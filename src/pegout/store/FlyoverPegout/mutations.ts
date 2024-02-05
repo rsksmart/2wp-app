@@ -20,4 +20,7 @@ export const mutations: MutationTree<FlyoverPegoutState> = {
     const clearState = getClearFlyoverPegoutState();
     Object.assign(state, clearState);
   },
+  [constants.FLYOVER_PEGOUT_SET_BTC_ADDRESS]: (state, address) => {
+    state.btcRecipientAddress = address;
+  },
 };

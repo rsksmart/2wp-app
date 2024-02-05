@@ -99,8 +99,6 @@ export const getClearSessionState = ():SessionState => (
 export const getClearFlyoverPegoutState = (): FlyoverPegoutState => ({
   amountToTransfer: new WeiBig(0, 'wei'),
   validAmount: false,
-  senderAddress: '',
-  rskRefundAddress: '',
   btcRecipientAddress: '',
   btcToReceive: new SatoshiBig(0, 'satoshi'),
   liquidityProviders: [],
