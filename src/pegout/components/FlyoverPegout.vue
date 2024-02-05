@@ -19,12 +19,25 @@
             <rsk-wallet-connection @switchDeriveButton="switchDeriveButton" class="p"/>
             <v-divider />
             <!-- Step 2 -->
-            <rbtc-input-amount :enableButton="!isReadyToSign"/>
+            <flyover-rbtc-input-amount :enableButton="!isReadyToSign"
+            @walletDisconnected="clearState"/>
             <v-divider />
             <!-- Step 3 -->
+            <btc-recipient-input/>
+            <v-divider/>
+            <v-row class="ma-0 align-start">
+              <v-col cols="10" class="d-flex justify-center ma-0 py-5 pl-0" >
+                <v-btn rounded color="#000000"
+                        @click="getQuotes" id="get-quotes-btn">
+                  <span class="whiteish">Get Quotes</span>
+                  <v-icon class="ml-2" color="#fff" :icon="mdiSendOutline"></v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
+            <v-divider/>
             <v-row class="ma-0 align-start">
               <v-col cols="auto" class="pl-0">
-                <div :class="[focus ? 'number-filled' : 'number']">3</div>
+                <div :class="[focus ? 'number-filled' : 'number']">4</div>
               </v-col>
               <v-col class="pl-0 ma-0 pb-0">
                 <p :class="{'boldie': focus}">
@@ -119,13 +132,17 @@
   </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue';
+import {
+  computed, defineComponent, ref,
+} from 'vue';
 import * as constants from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import RskWalletConnection from '@/pegout/components/RskWalletConnection.vue';
-import RbtcInputAmount from '@/pegout/components/RbtcInputAmount.vue';
+import FlyoverRbtcInputAmount from '@/pegout/components/FlyoverRbtcInputAmount.vue';
 import AddressDialog from '@/pegout/components/AddressDialog.vue';
-import { useAction, useGetter, useState } from '@/common/store/helper';
+import {
+  useAction, useGetter, useState,
+} from '@/common/store/helper';
 import { SessionState } from '@/common/types/session';
 import { mdiSendOutline, mdiAlertOctagon } from '@mdi/js';
 import {
@@ -137,16 +154,18 @@ import ApiService from '@/common/services/ApiService';
 // import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
 import TxErrorDialog from '@/common/components/exchange/TxErrorDialog.vue';
 import PegoutOption from './PegoutOption.vue';
+import BtcRecipientInput from './BtcRecipientInput.vue';
 
 export default defineComponent({
   name: 'FlyoverPegout',
   components: {
     RskWalletConnection,
-    RbtcInputAmount,
+    FlyoverRbtcInputAmount,
     AddressDialog,
     // TxSummaryFixed,
     PegoutOption,
     TxErrorDialog,
+    BtcRecipientInput,
   },
   setup(props, context) {
     const nextPage = 'Confirmation';
@@ -163,6 +182,9 @@ export default defineComponent({
     const pegOutTxState = useState<PegOutTxState>('pegOutTx');
     const session = useState<SessionState>('web3Session');
     const sendTx = useAction('pegOutTx', constants.PEGOUT_TX_SEND);
+    const initFlyoverTx = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_INIT);
+    const clearFlyoverState = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_CLEAR_STATE);
+    const getPegoutQuotes = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_GET_QUOTES);
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
     const isEnoughBalance = useGetter<boolean>('pegOutTx', constants.PEGOUT_TX_IS_ENOUGH_BALANCE);
     const safeFee = useGetter<WeiBig>('pegOutTx', constants.PEGOUT_TX_GET_SAFE_TX_FEE);
@@ -250,6 +272,15 @@ export default defineComponent({
       router.push({ name: 'Home' });
     }
 
+    function clearState() {
+      clearFlyoverState();
+      initFlyoverTx();
+    }
+
+    function getQuotes() {
+      getPegoutQuotes(session.value.account);
+    }
+
     const pegOutFormSummary = computed((): NormalizedSummary => ({
       amountFromString: pegOutTxState.value.amountToTransfer.toRBTCTrimmedString(),
       amountReceivedString: validAmountToReceive.value
@@ -288,6 +319,8 @@ export default defineComponent({
       options,
       focus,
       handleFlyoverInputFocusChanged,
+      clearState,
+      getQuotes,
     };
   },
 });
