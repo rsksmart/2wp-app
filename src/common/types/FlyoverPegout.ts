@@ -6,8 +6,6 @@ import WeiBig from './WeiBig';
 export interface FlyoverPegoutState {
     amountToTransfer: WeiBig;
     validAmount: boolean;
-    senderAddress: string;
-    rskRefundAddress: string;
     btcRecipientAddress: string;
     btcToReceive: SatoshiBig;
     liquidityProviders: LiquidityProvider2WP[];
