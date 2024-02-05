@@ -102,6 +102,8 @@ export default defineComponent({
     const web3SessionState = useState<SessionState>('web3Session');
     const pegOutTxState = useState<PegOutTxState>('pegOutTx');
     const setRbtcAmount = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ADD_AMOUNT);
+    const addAmount = useAction('pegOutTx', constants.PEGOUT_TX_ADD_AMOUNT);
+    const calculateFee = useAction('pegOutTx', constants.PEGOUT_TX_CALCULATE_FEE);
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
     const account = computed<string>(() => web3SessionState.value.account as string);
 
@@ -162,6 +164,9 @@ export default defineComponent({
 
     function updateStore() {
       setRbtcAmount(new WeiBig(rbtcAmount.value, 'rbtc'));
+      addAmount(new WeiBig(rbtcAmount.value, 'rbtc')).then(() => {
+        calculateFee();
+      });
     }
 
     function checkAmount() {
