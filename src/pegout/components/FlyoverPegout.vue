@@ -35,7 +35,8 @@
               </v-col>
             </v-row>
             <v-divider/>
-            <v-row class="ma-0 align-start">
+            <!-- Step 4 -->
+            <v-row v-if="quotesToShow" class="ma-0 align-start">
               <v-col cols="auto" class="pl-0">
                 <div :class="[focus ? 'number-filled' : 'number']">4</div>
               </v-col>
@@ -45,11 +46,9 @@
                 </p>
                 <v-container class="px-0">
                   <v-row dense>
-                    <v-col cols="6" v-for="(option, index) in options" :key="index" >
+                    <v-col cols="6" v-for="(quote, index) in pegoutQuotes" :key="index" >
                       <pegout-option
-                      :title="option.title"
-                      :isFlyover="option.isFlyover"
-                      :formSummary="pegOutFormSummary"
+                      :quote="quote"
                       :formState="pegOutFormState"
                       :isReadyToSign="isReadyToSign"
                       :isReadyToCreate="isReadyToCreate"
@@ -80,15 +79,6 @@
               </v-row>
             </div>
           </v-col>
-          <!-- Summary -->
-          <!-- <v-col cols="4" lg="4">
-            <tx-summary-fixed
-              :summary="pegOutFormSummary"
-              :initialExpand="true"
-              :type="typeSummary"
-              :orientation="orientationSummary"
-            />
-          </v-col> -->
         </v-row>
         <!-- Address Dialog -->
         <v-row v-if="showAddressDialog">
@@ -105,12 +95,6 @@
             </v-btn>
           </v-col>
           <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0" >
-            <!-- <v-btn v-if="!pegOutFormState.matches(['loading'])" rounded color="#000000"
-                    @click="send" id="send-btn"
-                    :disabled="!isReadyToCreate || pegOutFormState.matches(['goingHome'])">
-              <span class="whiteish">Send</span>
-              <v-icon class="ml-2" color="#fff" :icon="mdiSendOutline"></v-icon>
-            </v-btn> -->
             <v-progress-circular v-if="pegOutFormState.matches(['loading'])"
                                   indeterminate color="#000000" class="mr-10"/>
           </v-col>
@@ -141,17 +125,17 @@ import RskWalletConnection from '@/pegout/components/RskWalletConnection.vue';
 import FlyoverRbtcInputAmount from '@/pegout/components/FlyoverRbtcInputAmount.vue';
 import AddressDialog from '@/pegout/components/AddressDialog.vue';
 import {
-  useAction, useGetter, useState,
+  useAction, useGetter, useState, useStateAttribute,
 } from '@/common/store/helper';
 import { SessionState } from '@/common/types/session';
 import { mdiSendOutline, mdiAlertOctagon } from '@mdi/js';
 import {
-  NormalizedSummary, PegOutTxState, SatoshiBig, TxStatusType, TxSummaryOrientation, WeiBig,
+  NormalizedSummary, PegOutTxState, QuotePegOut2WP,
+  SatoshiBig, TxStatusType, TxSummaryOrientation, WeiBig,
 } from '@/common/types';
 import { Machine } from '@/common/utils';
 import router from '@/common/router';
 import ApiService from '@/common/services/ApiService';
-// import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
 import TxErrorDialog from '@/common/components/exchange/TxErrorDialog.vue';
 import PegoutOption from './PegoutOption.vue';
 import BtcRecipientInput from './BtcRecipientInput.vue';
@@ -162,7 +146,6 @@ export default defineComponent({
     RskWalletConnection,
     FlyoverRbtcInputAmount,
     AddressDialog,
-    // TxSummaryFixed,
     PegoutOption,
     TxErrorDialog,
     BtcRecipientInput,
@@ -185,14 +168,55 @@ export default defineComponent({
     const initFlyoverTx = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_INIT);
     const clearFlyoverState = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_CLEAR_STATE);
     const getPegoutQuotes = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_GET_QUOTES);
+    const quotes = useStateAttribute<Record<number, QuotePegOut2WP[]>>('flyoverPegout', 'quotes');
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
     const isEnoughBalance = useGetter<boolean>('pegOutTx', constants.PEGOUT_TX_IS_ENOUGH_BALANCE);
     const safeFee = useGetter<WeiBig>('pegOutTx', constants.PEGOUT_TX_GET_SAFE_TX_FEE);
     const isLedgerConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_LEDGER_CONNECTED);
     const isTrezorConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_TREZOR_CONNECTED);
     const isMetamaskConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_METAMASK_CONNECTED);
-    const options = [{ title: 'Faster Option', isFlyover: true }, { title: 'Cheaper Option', isFlyover: false }];
     const focus = computed(() => showAddressDialog.value || flyoverInputFocused.value);
+
+    const quotesToShow = computed(
+      () => Object.values(quotes.value).some((providerQuotes) => providerQuotes.length > 0),
+    );
+
+    const pegoutQuotes = computed(() => {
+      const quoteList: QuotePegOut2WP[] = [];
+
+      Object.values(quotes.value).forEach((providerQuotes) => {
+        providerQuotes.forEach((quote) => {
+          quoteList.push(quote);
+        });
+      });
+
+      quoteList.push({
+        quote: {
+          agreementTimestamp: 0,
+          btcRefundAddress: '',
+          callFee: new WeiBig(0, 'wei'),
+          depositAddr: '', // Must be derived
+          depositConfirmations: 0,
+          depositDateLimit: 0,
+          expireBlocks: 0,
+          expireDate: 0,
+          gasFee: pegOutTxState.value.calculatedFee,
+          lbcAddress: '',
+          liquidityProviderRskAddress: '',
+          lpBtcAddr: '',
+          nonce: 0n,
+          penaltyFee: new WeiBig(0, 'wei'),
+          productFeeAmount: new WeiBig(pegOutTxState.value.btcEstimatedFee.toBTCString(), 'rbtc'),
+          rskRefundAddress: session.value.account || '',
+          transferConfirmations: 0,
+          transferTime: 50400, // 14 hours in seconds
+          value: pegOutTxState.value.amountToTransfer,
+        },
+        quoteHash: '',
+      });
+
+      return quoteList;
+    });
 
     const currentWallet = computed(() => {
       if (isLedgerConnected.value) {
@@ -316,11 +340,12 @@ export default defineComponent({
       pegOutFormSummary,
       typeSummary,
       orientationSummary,
-      options,
+      pegoutQuotes,
       focus,
       handleFlyoverInputFocusChanged,
       clearState,
       getQuotes,
+      quotesToShow,
     };
   },
 });

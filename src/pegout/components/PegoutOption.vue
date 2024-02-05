@@ -1,12 +1,14 @@
 <template>
-  <v-card variant="outlined" :disabled="isFlyover">
-    <v-card-title class="font-weight-bold">{{ title }}</v-card-title>
+  <v-card variant="outlined">
+    <v-card-title class="font-weight-bold">
+      {{ quote.quoteHash ? 'Faster option' : 'Cheaper option' }}
+    </v-card-title>
     <v-card-item>
       <div class="d-flex flex-column">
         <span class="font-weight-bold text-black">
           Estimated time to receive
         </span>
-        <span class="mt-1">-</span>
+        <span class="mt-1">{{ quote.quote.transferTime }}</span>
       </div>
     </v-card-item>
     <v-card-item>
@@ -14,26 +16,24 @@
         <span class="font-weight-bold text-black">
           RSK network fee
         </span>
-        <span class="mt-1">{{ formSummary.gas }} {{ environmentContext.getRbtcTicker() }}</span>
-        <span class="mt-1 grayish">USD {{ toUSD(formSummary.gas) }}</span>
+        <span class="mt-1">{{ quote.quote.gasFee.toRBTCTrimmedString() }}
+          {{ environmentContext.getRbtcTicker() }}
+        </span>
+        <span class="mt-1 grayish">USD {{ toUSD(quote.quote.gasFee.toRBTCString()) }}</span>
       </div>
     </v-card-item>
     <v-card-item>
       <div class="d-flex flex-column">
         <span class="font-weight-bold text-black">
-          BTC network fee
+          Provider fee
         </span>
-        <span class="mt-1">{{ formSummary.fee }} {{ environmentContext.getBtcTicker() }}</span>
-        <span class="mt-1 grayish">USD {{ toUSD(formSummary.fee) }}</span>
-      </div>
-    </v-card-item>
-    <v-card-item>
-      <div class="d-flex flex-column">
-        <span class="font-weight-bold text-black">
-          Other fees
+        <span class="mt-1">
+          {{ quote.quote.callFee.plus(quote.quote.productFeeAmount).toRBTCTrimmedString() }}
+          {{ environmentContext.getBtcTicker() }}
         </span>
-        <span class="mt-1">0 {{ environmentContext.getRbtcTicker() }}</span>
-        <span class="mt-1 grayish">USD 0</span>
+        <span class="mt-1 grayish">USD
+          {{ toUSD(quote.quote.callFee.plus(quote.quote.productFeeAmount).toRBTCString()) }}
+        </span>
       </div>
     </v-card-item>
     <v-card-item>
@@ -42,26 +42,17 @@
           Estimated value to receive
         </span>
         <span class="mt-1">
-          {{ formSummary.amountReceivedString }} {{ environmentContext.getBtcTicker() }}
+          {{ quote.quote.value.toRBTCTrimmedString() }} {{ environmentContext.getBtcTicker() }}
         </span>
-        <span class="mt-1 grayish">USD {{ toUSD(formSummary.amountReceivedString) }}</span>
+        <span class="mt-1 grayish">USD {{ toUSD(quote.quote.value.toRBTCString()) }}</span>
       </div>
     </v-card-item>
     <v-card-item>
       <span class="font-weight-bold text-black">
           Recipient address
         </span>
-      <div v-if="isFlyover" class="pt-2">
-        <v-text-field
-          flat
-          variant="outlined"
-          density="compact"
-          hide-details
-          class="flyover-input"
-          @focus="$emit('flyoverInputFocusChanged', true)"
-          @focusout="$emit('flyoverInputFocusChanged', false)"
-          :placeholder="`Enter a ${environmentContext.getBtcTicker()} address`"
-        />
+      <div v-if="quote.quoteHash" class="pt-2">
+        <span>{{ quote.quote.depositAddr }}</span>
       </div>
       <div v-else class="d-flex flex-column pt-2 derive-button">
           <span v-if="session.btcDerivedAddress">
@@ -110,23 +101,15 @@ import { defineComponent, PropType } from 'vue';
 import { mdiSendOutline } from '@mdi/js';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { useState, useStateAttribute } from '@/common/store/helper';
-import { SessionState, NormalizedSummary, SatoshiBig } from '@/common/types';
+import { SessionState, SatoshiBig, QuotePegOut2WP } from '@/common/types';
 import * as constants from '@/common/store/constants';
 import { Machine } from '@/common/utils';
 
 export default defineComponent({
   name: 'PegoutOption',
   props: {
-    title: {
-      type: String,
-      required: true,
-    },
-    isFlyover: {
-      type: Boolean,
-      required: true,
-    },
-    formSummary: {
-      type: Object as PropType<NormalizedSummary>,
+    quote: {
+      type: Object as PropType<QuotePegOut2WP>,
       required: true,
     },
     formState: {
