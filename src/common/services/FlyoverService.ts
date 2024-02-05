@@ -8,7 +8,7 @@ import {
   LiquidityProvider2WP, QuotePegOut2WP,
   SatoshiBig, WeiBig,
 } from '@/common/types';
-import { providers } from 'ethers'
+import { providers } from 'ethers';
 import { EnvironmentAccessorService } from './enviroment-accessor.service';
 
 export default class FlyoverService {
@@ -66,9 +66,9 @@ export default class FlyoverService {
   public getProviders(): Promise<LiquidityProvider2WP[]> {
     return new Promise<LiquidityProvider2WP[]>((resolve, reject) => {
       this.flyover?.getLiquidityProviders()
-        .then((providers: LiquidityProvider[]) => {
-          this.liquidityProviders = providers;
-          const providers2wp: LiquidityProvider2WP[] = providers
+        .then((liquidityProviders: LiquidityProvider[]) => {
+          this.liquidityProviders = liquidityProviders;
+          const providers2wp: LiquidityProvider2WP[] = liquidityProviders
             .map((provider: LiquidityProvider) => ({
               ...provider,
               pegin: {
