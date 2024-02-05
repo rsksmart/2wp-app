@@ -17,12 +17,18 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
   [constants.FLYOVER_PEGOUT_ADD_AMOUNT]: ({ commit }, amount: WeiBig) => {
     commit(constants.FLYOVER_PEGOUT_SET_AMOUNT, amount);
   },
-  [constants.FLYOVER_PEGOUT_GET_QUOTES]: async ({ state, commit, dispatch }) => {
+  [constants.FLYOVER_PEGOUT_ADD_BTC_ADDRESS]: ({ commit }, address: string) => {
+    commit(constants.FLYOVER_PEGOUT_SET_BTC_ADDRESS, address);
+  },
+  [constants.FLYOVER_PEGOUT_GET_QUOTES]: async (
+    { state, commit, dispatch },
+    rskRefundAddress: string,
+  ) => {
     const quotePromises: Promise<QuotePegOut2WP[]>[] = [];
     state.liquidityProviders.forEach((provider) => {
       dispatch(constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER, provider.id);
       quotePromises.push(state.flyoverService.getPegoutQuotes(
-        state.rskRefundAddress,
+        rskRefundAddress,
         state.btcRecipientAddress,
         state.btcRecipientAddress,
         state.amountToTransfer,
