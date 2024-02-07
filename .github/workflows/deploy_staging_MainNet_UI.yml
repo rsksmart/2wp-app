@@ -22,9 +22,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
+          registry-url: 'https://npm.pkg.github.com'
           cache: 'npm'
 
       - name: Install dependencies
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm ci
 
       - name: Build site
