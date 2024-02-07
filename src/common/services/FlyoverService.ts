@@ -175,7 +175,10 @@ export default class FlyoverService {
       .find((quote: PegoutQuote) => quote.quoteHash === quoteHash);
     if (selectedQuote) {
       const { quote } = selectedQuote;
-      amount = quote.value + quote.productFeeAmount + quote.gasFee + quote.callFee;
+      amount = BigInt(quote.value)
+            + BigInt(quote.productFeeAmount)
+            + BigInt(quote.gasFee)
+            + BigInt(quote.callFee);
     }
     return amount;
   }
