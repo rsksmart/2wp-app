@@ -16,6 +16,9 @@ export const mutations: MutationTree<FlyoverPegoutState> = {
   [constants.FLYOVER_PEGOUT_SET_QUOTES]: (state, quotes) => {
     state.quotes = quotes;
   },
+  [constants.FLYOVER_PEGOUT_SET_TX_HASH]: (state, txHash: string) => {
+    state.txHash = txHash;
+  },
   [constants.FLYOVER_PEGOUT_SET_CLEAR_STATE]: (state) => {
     const clearState = getClearFlyoverPegoutState();
     Object.assign(state, clearState);
