@@ -55,7 +55,7 @@
                       :authorizedWalletToSignMessage="authorizedWalletToSignMessage"
                       @openAddressDialog="showAddressDialog = true"
                       @flyoverInputFocusChanged="handleFlyoverInputFocusChanged"
-                      @send="send"
+                      @send="send(quote.quoteHash)"
                       />
                     </v-col>
                   </v-row>
@@ -165,6 +165,7 @@ export default defineComponent({
     const pegOutTxState = useState<PegOutTxState>('pegOutTx');
     const session = useState<SessionState>('web3Session');
     const sendTx = useAction('pegOutTx', constants.PEGOUT_TX_SEND);
+    const sendFlyoverTx = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ACCEPT_AND_SEND_QUOTE);
     const initFlyoverTx = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_INIT);
     const clearFlyoverState = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_CLEAR_STATE);
     const getPegoutQuotes = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_GET_QUOTES);
@@ -207,7 +208,7 @@ export default defineComponent({
           nonce: 0n,
           penaltyFee: new WeiBig(0, 'wei'),
           productFeeAmount: new WeiBig(pegOutTxState.value.btcEstimatedFee.toBTCString(), 'rbtc'),
-          rskRefundAddress: session.value.account || '',
+          rskRefundAddress: session.value.account ?? '',
           transferConfirmations: 0,
           transferTime: 50400, // 14 hours in seconds
           value: pegOutTxState.value.amountToTransfer,
@@ -258,38 +259,42 @@ export default defineComponent({
       isReadyToSign.value = !isReadyToSign.value;
     }
 
-    function changePage() {
+    function changePage(type: string) {
       router.push({
         name: 'PegOutSuccess',
         params: {
           wallet: currentWallet.value,
+          type,
         },
       });
       context.emit('changePage', nextPage);
     }
 
-    function send() {
+    function send(quoteHash: string) {
+      const type = quoteHash ? 'flyover' : 'normal';
       pegOutFormState.value.send('loading');
-      sendTx()
-        .then(() => {
-          ApiService.registerTx({
-            sessionId: '',
-            txHash: pegOutTxState.value.txHash as string,
-            type: TxStatusType.PEGOUT.toLowerCase(),
-            value: Number(pegOutTxState.value.amountToTransfer.toRBTCTrimmedString()),
-            wallet: currentWallet.value,
-            btcEstimatedFee: Number(pegOutTxState.value.btcEstimatedFee.toBTCTrimmedString()),
-            rskGas: Number(pegOutTxState.value.calculatedFee.toRBTCTrimmedString()),
+      if (quoteHash) {
+        sendFlyoverTx(quoteHash).then(() => changePage(type));
+      } else {
+        sendTx()
+          .then(() => {
+            ApiService.registerTx({
+              sessionId: '',
+              txHash: pegOutTxState.value.txHash as string,
+              type: TxStatusType.PEGOUT.toLowerCase(),
+              value: Number(pegOutTxState.value.amountToTransfer.toRBTCTrimmedString()),
+              wallet: currentWallet.value,
+              btcEstimatedFee: Number(pegOutTxState.value.btcEstimatedFee.toBTCTrimmedString()),
+              rskGas: Number(pegOutTxState.value.calculatedFee.toRBTCTrimmedString()),
+            });
+            changePage(type);
+          })
+          .catch((error:Error) => {
+            txError.value = error.message;
+            showTxErrorDialog.value = true;
           });
-          changePage();
-        })
-        .catch((error:Error) => {
-          txError.value = error.message;
-          showTxErrorDialog.value = true;
-        })
-        .finally(() => {
-          pegOutFormState.value.send('fill');
-        });
+      }
+      pegOutFormState.value.send('fill');
     }
 
     function back():void {

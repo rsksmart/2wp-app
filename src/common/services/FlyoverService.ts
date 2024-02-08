@@ -218,7 +218,7 @@ export default class FlyoverService {
       quote.callFee.lte(0)
       || quote.gasFee.lte(0)
       || quote.penaltyFee.lte(0)
-      || quote.productFeeAmount.lte(0)
+      || quote.productFeeAmount.lt(0) // TODO: Check if can be 0
       || quote.value.lte(0)
     ) {
       return false;
