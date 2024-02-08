@@ -67,7 +67,7 @@ describe('FlyoverService', () => {
       lbcAddress: '0xc2A630c053D12D63d32b025082f6Ba268db18300',
     };
     EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
-    flyoverService = new FlyoverService('http://public-node.testnet.rsk.co');
+    flyoverService = new FlyoverService('https://public-node.testnet.rsk.co');
   });
   afterEach(() => {
     sinon.restore();
@@ -181,6 +181,57 @@ describe('FlyoverService', () => {
       const acceptedQuote = await flyoverService.acceptPegoutQuote(quoteHash);
       expect(acceptedQuote).toHaveProperty('lbcAddress', EnvironmentAccessorService.getEnvironmentVariables().lbcAddress);
       expect(acceptedQuote).toHaveProperty('signature');
+    });
+  });
+
+  describe('acceptAndSendQuote', () => {
+    /* eslint-disable @typescript-eslint/no-explicit-any, dot-notation */
+    beforeEach(() => {
+      const stubedInstance = sinon.createStubInstance(Flyover);
+      flyoverService.flyover = stubedInstance;
+      stubedInstance.getLiquidityProviders.resolves(testLiquidProviders);
+      stubedInstance.getPegoutQuotes.resolves(testQuotes);
+      stubedInstance.acceptPegoutQuote.resolves({
+        lbcAddress: EnvironmentAccessorService.getEnvironmentVariables().lbcAddress,
+        signature: 'signature',
+      });
+      stubedInstance.depositPegout.resolves('txHash');
+    });
+
+    it('should throw an error if the accepted quote is not found', () => {
+      const quoteHash = 'invalidHash';
+
+      const spyAcceptPegoutQuote = jest.spyOn(FlyoverService.prototype as any, 'acceptPegoutQuote');
+      const spyDepositPegout = jest.spyOn(flyoverService.flyover as Flyover, 'depositPegout');
+
+      expect(flyoverService.acceptAndSendPegoutQuote(quoteHash)).rejects.toThrow('Quote not found');
+      expect(spyAcceptPegoutQuote).toHaveBeenCalled();
+      expect(spyDepositPegout).not.toHaveBeenCalled();
+    });
+
+    it('should accept and send a pegout quote', async () => {
+      const rskRefundAddress = '0xe9a84d226bb3008f09a46096b00dd6782be4d5f2';
+      const btcRefundAddress = 'n2y5V6LYszsrsxkMdMypL98YQxtBoLCXdc';
+      const btcRecipientAddress = 'n2y5V6LYszsrsxkMdMypL98YQxtBoLCXdc';
+      const valueToTransfer = new WeiBig('0.005', 'rbtc');
+
+      const quotes = await flyoverService.getPegoutQuotes(
+        rskRefundAddress,
+        btcRefundAddress,
+        btcRecipientAddress,
+        valueToTransfer,
+      );
+
+      const spyAcceptPegoutQuote = jest.spyOn(FlyoverService.prototype as any, 'acceptPegoutQuote');
+      const spyIsValidAcceptedQuote = jest.spyOn(FlyoverService.prototype as any, 'isValidAcceptedQuote');
+      const spyDepositPegout = jest.spyOn(flyoverService.flyover as Flyover, 'depositPegout');
+
+      const { quoteHash } = quotes[0];
+      const acceptedQuote = await flyoverService.acceptAndSendPegoutQuote(quoteHash);
+      expect(acceptedQuote).toBe('txHash');
+      expect(spyAcceptPegoutQuote).toHaveBeenCalled();
+      expect(spyIsValidAcceptedQuote).toHaveBeenCalled();
+      expect(spyDepositPegout).toHaveBeenCalledWith(flyoverService['pegoutQuotes'][0], 'signature', 5255689215476000n);
     });
   });
 });
