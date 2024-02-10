@@ -104,4 +104,5 @@ export const getClearFlyoverPegoutState = (): FlyoverPegoutState => ({
   liquidityProviders: [],
   quotes: {},
   flyoverService: markRaw(new FlyoverService()),
+  selectedQuoteHash: '',
 });

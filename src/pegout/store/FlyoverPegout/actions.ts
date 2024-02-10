@@ -56,6 +56,7 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
         reject(new Error('No provider found for quote'));
       }
       dispatch(constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER, providerId);
+      commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, quoteHash);
       state.flyoverService.acceptAndSendPegoutQuote(quoteHash)
         .then((txHash) => commit(constants.FLYOVER_PEGOUT_SET_TX_HASH, txHash))
         .then(resolve);
