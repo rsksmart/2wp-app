@@ -271,7 +271,7 @@ export default defineComponent({
     }
 
     function send(quoteHash: string) {
-      const type = quoteHash ? 'flyover' : 'normal';
+      const type = quoteHash ? 'flyover' : 'powpeg';
       pegOutFormState.value.send('loading');
       if (quoteHash) {
         sendFlyoverTx(quoteHash).then(() => changePage(type));

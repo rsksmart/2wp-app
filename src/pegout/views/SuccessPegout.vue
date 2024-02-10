@@ -64,12 +64,8 @@ export default defineComponent({
     TxSummaryFixed,
   },
   props: {
-    txId: {
+    type: {
       type: String,
-      required: true,
-    },
-    flyover: {
-      type: Boolean,
       required: true,
     },
   },
@@ -91,6 +87,10 @@ export default defineComponent({
     const isMetamaskConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_METAMASK_CONNECTED);
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
+    function isFlyover(): boolean {
+      return props.type === 'flyover';
+    }
+
     const currentWallet = computed(() => {
       if (isLedgerConnected.value) {
         return constants.WALLET_NAMES.LEDGER;
@@ -109,7 +109,7 @@ export default defineComponent({
 
     const successPegOutSummary = computed((): NormalizedSummary => {
       let summary: NormalizedSummary;
-      if (props.flyover) {
+      if (isFlyover()) {
         const amountToTransfer = selectedQuote.value.quote.value
           .plus(selectedQuote.value.quote.callFee)
           .plus(selectedQuote.value.quote.gasFee)
@@ -117,11 +117,11 @@ export default defineComponent({
         summary = {
           amountFromString: amountToTransfer.toRBTCTrimmedString(),
           amountReceivedString: selectedQuote.value.quote.value.toRBTCTrimmedString(),
-          fee: selectedQuote.value.quote.callFee
-            .plus(selectedQuote.value.quote.productFeeAmount).toNumber(),
+          fee: Number(selectedQuote.value.quote.callFee
+            .plus(selectedQuote.value.quote.productFeeAmount).toRBTCString()),
           recipientAddress: flyoverPegoutState.value.btcRecipientAddress,
           senderAddress: account.value,
-          txId: props.txId,
+          txId: flyoverPegoutState.value.txHash,
           gas: selectedQuote.value.quote.gasFee.toNumber(),
         };
       } else {
@@ -131,7 +131,7 @@ export default defineComponent({
           estimatedFee: Number(pegoutTxState.value.btcEstimatedFee.toBTCTrimmedString()),
           recipientAddress: btcDerivedAddress.value,
           senderAddress: account.value,
-          txId: props.txId,
+          txId: pegoutTxState.value.txHash,
           gas: Number(pegoutTxState.value.efectivePaidFee?.toRBTCTrimmedString()),
         };
       }
