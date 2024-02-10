@@ -26,4 +26,7 @@ export const mutations: MutationTree<FlyoverPegoutState> = {
   [constants.FLYOVER_PEGOUT_SET_BTC_ADDRESS]: (state, address) => {
     state.btcRecipientAddress = address;
   },
+  [constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE]: (state, quoteHash) => {
+    state.selectedQuoteHash = quoteHash;
+  },
 };
