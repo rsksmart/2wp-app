@@ -1,119 +1,130 @@
 <template>
   <v-container>
         <!-- Header -->
-        <v-row class="ma-0">
-          <v-col class="flex-grow-0 align-self-center pl-0 pb-0">
-            <v-img :src="require('@/assets/exchange/arrow.png')" width="40" />
-          </v-col>
-          <v-col class="pb-0">
-            <h1 class="pegout-form-heading">
-              Send {{environmentContext.getRbtcTicker()}}.
-              Get {{environmentContext.getBtcTicker()}}.
-            </h1>
-          </v-col>
-        </v-row>
-        <v-row class="exchange-form ma-0 mt-2 justify-space-between">
-          <!-- Form -->
-          <v-col cols="12" class="pa-0">
-            <!-- Step 1 -->
-            <rsk-wallet-connection @switchDeriveButton="switchDeriveButton" class="p"/>
-            <v-divider />
-            <!-- Step 2 -->
-            <flyover-rbtc-input-amount :enableButton="!isReadyToSign"
-            @walletDisconnected="clearState"/>
-            <v-divider />
-            <!-- Step 3 -->
-            <btc-recipient-input/>
-            <v-divider/>
-            <v-row class="ma-0 align-start">
-              <v-col cols="10" class="d-flex justify-center ma-0 py-5 pl-0" >
-                <v-btn rounded color="#000000"
-                        @click="getQuotes" id="get-quotes-btn">
-                  <span class="whiteish">Get Quotes</span>
-                  <v-icon class="ml-2" color="#fff" :icon="mdiSendOutline"></v-icon>
-                </v-btn>
-              </v-col>
-            </v-row>
-            <v-divider/>
-            <!-- Step 4 -->
-            <v-row v-if="quotesToShow" class="ma-0 align-start">
-              <v-col cols="auto" class="pl-0">
-                <div :class="[focus ? 'number-filled' : 'number']">4</div>
-              </v-col>
-              <v-col class="pl-0 ma-0 pb-0">
-                <p :class="{'boldie': focus}">
-                  Choose the best option to proceed with:
-                </p>
-                <v-container class="px-0">
-                  <v-row dense>
-                    <v-col cols="6" v-for="(quote, index) in pegoutQuotes" :key="index" >
-                      <pegout-option
-                      :quote="quote"
-                      :formState="pegOutFormState"
-                      :isReadyToSign="isReadyToSign"
-                      :isReadyToCreate="isReadyToCreate"
-                      :authorizedWalletToSignMessage="authorizedWalletToSignMessage"
-                      @openAddressDialog="showAddressDialog = true"
-                      @flyoverInputFocusChanged="handleFlyoverInputFocusChanged"
-                      @send="send(quote.quoteHash)"
-                      />
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-col>
-            </v-row>
-            <!-- Fee higher than amount error message -->
-            <div class="form-step py-4 px-4" v-if="!validAmountToReceive && formFilled">
-              <v-row class="alert-msg py-6">
-                <v-col cols="1">
-                <v-icon class="ml-2" color="#DF1B42" :icon="mdiAlertOctagon" size="40"></v-icon>
-                </v-col>
-                <v-col class="px-7">
-                  <v-row class="title">
-                    The transaction can't be performed
-                  </v-row>
-                  <v-row class="mt-5">
-                    Currently the total fee to pay is higher than the amount you want to send.
-                  </v-row>
-                </v-col>
-              </v-row>
-            </div>
-          </v-col>
-        </v-row>
-        <!-- Address Dialog -->
-        <v-row v-if="showAddressDialog">
-          <address-dialog @switchDeriveButton="switchDeriveButton"
-                          @closeDialog="showAddressDialog = false"/>
-        </v-row>
-        <!-- Footer -->
-        <v-row class="ma-0 mt-8">
-          <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
-            <v-btn @click="back"
-            rounded variant="outlined" color="#000000" width="110"
-                    :disabled="pegOutFormState.matches(['loading', 'goingHome'])">
-              <span>Back</span>
+    <v-row class="ma-0">
+      <v-col class="flex-grow-0 align-self-center pl-0 pb-0">
+        <v-img :src="require('@/assets/exchange/arrow.png')" width="40" />
+      </v-col>
+      <v-col class="pb-0">
+        <h1 class="pegout-form-heading">
+          Send {{environmentContext.getRbtcTicker()}}.
+          Get {{environmentContext.getBtcTicker()}}.
+        </h1>
+      </v-col>
+    </v-row>
+    <v-row class="exchange-form ma-0 mt-2 justify-space-between">
+      <!-- Form -->
+      <v-col cols="12" class="pa-0">
+        <!-- Step 1 -->
+        <rsk-wallet-connection @switchDeriveButton="switchDeriveButton" class="p"/>
+        <v-divider />
+        <!-- Step 2 -->
+        <flyover-rbtc-input-amount :enableButton="!isReadyToSign"
+        @walletDisconnected="clearState"/>
+        <v-divider />
+        <!-- Step 3 -->
+        <btc-recipient-input/>
+        <v-row v-if="!loadingQuotes" class="ma-0 d-flex justify-center">
+          <v-col cols="10" class="d-flex justify-center ma-0 py-5 pl-0" >
+            <v-btn rounded color="#000000"
+                    @click="getQuotes" id="get-quotes-btn">
+              <span class="whiteish">Get Quotes</span>
+              <v-icon class="ml-2" color="#fff" :icon="mdiSendOutline"></v-icon>
             </v-btn>
           </v-col>
-          <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0" >
-            <v-progress-circular v-if="pegOutFormState.matches(['loading'])"
-                                  indeterminate color="#000000" class="mr-10"/>
+        </v-row>
+        <!-- Step 4 -->
+        <v-divider v-if="quotesToShow && !loadingQuotes"/>
+        <v-row v-if="loadingQuotes" class="d-flex justify-center align-center">
+          <v-progress-circular
+            indeterminate color="#000000"/>
+        </v-row>
+        <v-row v-if="quotesToShow && !loadingQuotes" class="ma-0 align-start">
+          <v-col cols="auto" class="pl-0">
+            <div :class="[focus ? 'number-filled' : 'number']">4</div>
+          </v-col>
+          <v-col class="pl-0 ma-0 pb-0">
+            <p :class="{'boldie': focus}">
+              Choose the best option to proceed with:
+            </p>
+            <v-container class="px-0">
+              <v-row dense>
+                <v-col cols="6" v-for="(quote, index) in pegoutQuotes" :key="index" >
+                  <pegout-option
+                  :quote="quote"
+                  :formState="pegOutFormState"
+                  :isReadyToSign="isReadyToSign"
+                  :isReadyToCreate="isReadyToCreate"
+                  :authorizedWalletToSignMessage="authorizedWalletToSignMessage"
+                  @openAddressDialog="showAddressDialog = true"
+                  @flyoverInputFocusChanged="handleFlyoverInputFocusChanged"
+                  @send="send(quote.quoteHash)"
+                  />
+                </v-col>
+              </v-row>
+            </v-container>
           </v-col>
         </v-row>
-        <!-- Ledger loading message -->
-        <v-row v-if="pegOutFormState.matches(['loading']) && isLedgerConnected"
-          class="mx-0 justify-center">
-          See your ledger device to confirm your transaction.
-        </v-row>
+        <!-- Fee higher than amount error message -->
+        <div class="form-step py-4 px-4" v-if="!validAmountToReceive && formFilled">
+          <v-row class="alert-msg py-6">
+            <v-col cols="1">
+            <v-icon class="ml-2" color="#DF1B42" :icon="mdiAlertOctagon" size="40"></v-icon>
+            </v-col>
+            <v-col class="px-7">
+              <v-row class="title">
+                The transaction can't be performed
+              </v-row>
+              <v-row class="mt-5">
+                Currently the total fee to pay is higher than the amount you want to send.
+              </v-row>
+            </v-col>
+          </v-row>
+        </div>
+      </v-col>
+    </v-row>
+    <!-- Address Dialog -->
+    <v-row v-if="showAddressDialog">
+      <address-dialog @switchDeriveButton="switchDeriveButton"
+                      @closeDialog="showAddressDialog = false"/>
+    </v-row>
+    <!-- Footer -->
+    <v-row class="ma-0 mt-8">
+      <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
+        <v-btn @click="back"
+        rounded variant="outlined" color="#000000" width="110"
+                :disabled="pegOutFormState.matches(['loading', 'goingHome'])">
+          <span>Back</span>
+        </v-btn>
+      </v-col>
+      <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0" >
+        <v-progress-circular v-if="pegOutFormState.matches(['loading'])"
+                              indeterminate color="#000000" class="mr-10"/>
+      </v-col>
+    </v-row>
+    <!-- Ledger loading message -->
+    <v-row v-if="pegOutFormState.matches(['loading']) && isLedgerConnected"
+      class="mx-0 justify-center">
+      See your ledger device to confirm your transaction.
+    </v-row>
+
+    <v-overlay
+        v-model="sendingPegout"
+        class="align-center justify-center"
+      >
+      <v-progress-circular size="150" width="12"
+       indeterminate color="#000000" class="mr-10"/>
+    </v-overlay>
           <!-- Send tx error message -->
-          <template v-if="showTxErrorDialog">
+    <template v-if="showTxErrorDialog">
             <tx-error-dialog
             :showTxErrorDialog="showTxErrorDialog"
             :errorMessage="txError"
             @closeErrorDialog="showTxErrorDialog = false"
             />
-          </template>
-      </v-container>
-  </template>
+    </template>
+  </v-container>
+</template>
 
 <script lang="ts">
 import {
@@ -162,6 +173,7 @@ export default defineComponent({
     const isReadyToSign = ref(false);
     const showAddressDialog = ref(false);
     const flyoverInputFocused = ref(false);
+    const loadingQuotes = ref(false);
     const pegOutTxState = useState<PegOutTxState>('pegOutTx');
     const session = useState<SessionState>('web3Session');
     const sendTx = useAction('pegOutTx', constants.PEGOUT_TX_SEND);
@@ -251,6 +263,8 @@ export default defineComponent({
         && !!session.value.account
         && validAmountToReceive.value);
 
+    const sendingPegout = computed(():boolean => pegOutFormState.value.matches(['loading']));
+
     function switchDeriveButton(): void {
       injectedProvider.value = session.value
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -274,7 +288,16 @@ export default defineComponent({
       const type = quoteHash ? 'flyover' : 'powpeg';
       pegOutFormState.value.send('loading');
       if (quoteHash) {
-        sendFlyoverTx(quoteHash).then(() => changePage(type));
+        sendFlyoverTx(quoteHash).then(() => {
+          changePage(type);
+        })
+          .catch((error: Error) => {
+            txError.value = error.message;
+            showTxErrorDialog.value = true;
+          })
+          .finally(() => {
+            pegOutFormState.value.send('fill');
+          });
       } else {
         sendTx()
           .then(() => {
@@ -292,9 +315,11 @@ export default defineComponent({
           .catch((error:Error) => {
             txError.value = error.message;
             showTxErrorDialog.value = true;
+          })
+          .finally(() => {
+            pegOutFormState.value.send('fill');
           });
       }
-      pegOutFormState.value.send('fill');
     }
 
     function back():void {
@@ -307,7 +332,15 @@ export default defineComponent({
     }
 
     function getQuotes() {
-      getPegoutQuotes(session.value.account);
+      loadingQuotes.value = true;
+      getPegoutQuotes(session.value.account)
+        .then(() => {
+          loadingQuotes.value = false;
+        })
+        .catch((error: Error) => {
+          txError.value = error.message;
+          showTxErrorDialog.value = true;
+        });
     }
 
     const pegOutFormSummary = computed((): NormalizedSummary => ({
@@ -351,6 +384,8 @@ export default defineComponent({
       clearState,
       getQuotes,
       quotesToShow,
+      loadingQuotes,
+      sendingPegout,
     };
   },
 });
