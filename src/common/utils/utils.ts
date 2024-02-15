@@ -12,6 +12,7 @@ import {
   SatoshiBig,
 } from '@/common/types';
 import { BridgeService } from '@/common/services/BridgeService';
+import moment from 'moment';
 
 export function getAccountType(address: string, network: AppNetwork): string {
   const [legacyTestReg, segwitTestReg, nativeTestReg] = network === constants.BTC_NETWORK_MAINNET
@@ -288,4 +289,9 @@ export function setCookie(cookieName: string, cookieValue: number, expirationHou
   d.setTime(d.getTime() + (expirationHours * 60 * 60 * 1000));
   const expires = `expires=${d.toUTCString()}`;
   document.cookie = `${cookieName}=${cookieValue};${expires};path=/`;
+}
+
+export function blockConfirmationsToTimeString(confirmations: number): string {
+  const BLOCK_CONFIRMATION_TIME_IN_MINUTES = 10;
+  return moment.duration(confirmations * BLOCK_CONFIRMATION_TIME_IN_MINUTES, 'minutes').humanize(false, { h: 34 });
 }

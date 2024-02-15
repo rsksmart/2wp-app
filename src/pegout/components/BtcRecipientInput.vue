@@ -5,10 +5,9 @@
         <div v-bind:class="[focus ?
             'number-filled' : 'number']">3</div>
     </v-col>
-    <v-col class="px-0">
+    <v-col class="px-0 pb-1">
         <p v-bind:class="{'boldie': focus}">
-        Enter the legacy (p2pkh) address whre you want to receive
-        the {{environmentContext.getBtcText()}}:
+        Inform the {{environmentContext.getBtcText()}} legacy (p2pkh) address:
         </p>
         <v-row class="d-flex align-center ma-0 mt-4 pl-1">
         <v-col cols="6" :class="[stepState !== 'error' ?
@@ -24,7 +23,7 @@
                 variant="solo"
                 @focus="focus = true"
                 @blur="focus = false"
-                :placeholder="`Select or paste the ${environmentContext.getBtcText()} address`"
+                :placeholder="`Paste your ${environmentContext.getBtcTicker()} address`"
                 @update:model-value="updateStore"/>
         </v-col>
         </v-row>
