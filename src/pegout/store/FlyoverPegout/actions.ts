@@ -63,7 +63,8 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
       commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, quoteHash);
       state.flyoverService.acceptAndSendPegoutQuote(quoteHash)
         .then((txHash) => commit(constants.FLYOVER_PEGOUT_SET_TX_HASH, txHash))
-        .then(resolve);
+        .then(resolve)
+        .catch(reject);
     }),
   [constants.FLYOVER_PEGOUT_CLEAR_STATE]: ({ commit }) => {
     commit(constants.FLYOVER_PEGOUT_SET_CLEAR_STATE);
