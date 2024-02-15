@@ -23,6 +23,7 @@
         @walletDisconnected="clearState"/>
         <v-divider />
         <!-- Step 3 -->
+        <btc-recipient-input @valid-btc-address="(valid) => isValidBtcRecipientAddress = valid"/>
         <v-row v-if="!loadingQuotes" class="ma-0">
           <v-col cols="auto" class="pa-4">
           </v-col>
@@ -97,10 +98,6 @@
           <span>Back</span>
         </v-btn>
       </v-col>
-      <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0" >
-        <v-progress-circular v-if="pegOutFormState.matches(['loading'])"
-                              indeterminate color="#000000" class="mr-10"/>
-      </v-col>
     </v-row>
     <!-- Ledger loading message -->
     <v-row v-if="pegOutFormState.matches(['loading']) && isLedgerConnected"
@@ -174,6 +171,7 @@ export default defineComponent({
     const showAddressDialog = ref(false);
     const flyoverInputFocused = ref(false);
     const loadingQuotes = ref(false);
+    const isValidBtcRecipientAddress = ref(false);
     const pegOutTxState = useState<PegOutTxState>('pegOutTx');
     const session = useState<SessionState>('web3Session');
     const sendTx = useAction('pegOutTx', constants.PEGOUT_TX_SEND);
@@ -259,7 +257,8 @@ export default defineComponent({
 
     const formFilled = computed((): boolean => !!session.value.account
       && pegOutTxState.value.amountToTransfer.gt(0)
-      && !!pegOutTxState.value.btcEstimatedFee);
+      && !!pegOutTxState.value.btcEstimatedFee
+      && isValidBtcRecipientAddress.value);
 
     const isReadyToCreate = computed((): boolean => isEnoughBalance.value
         && !!session.value.account
@@ -324,13 +323,14 @@ export default defineComponent({
       }
     }
 
-    function back():void {
-      router.push({ name: 'Home' });
-    }
-
     function clearState() {
       clearFlyoverState();
       initFlyoverTx();
+    }
+
+    function back():void {
+      clearState();
+      router.push({ name: 'Home' });
     }
 
     function getQuotes() {
@@ -388,6 +388,7 @@ export default defineComponent({
       quotesToShow,
       loadingQuotes,
       sendingPegout,
+      isValidBtcRecipientAddress,
     };
   },
 });
