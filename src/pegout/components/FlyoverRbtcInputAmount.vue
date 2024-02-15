@@ -122,11 +122,11 @@ export default defineComponent({
       if (rbtcAmount.value.toString() === '0') {
         return 'Please, enter an amount';
       }
-      if (safeAmount.value.lt(minValue)) { // remove it
-        return `The minimum accepted value is ${minValue.toRBTCTrimmedString()} ${environmentContext.getRbtcTicker()}`;
-      }
       if (!isRBTCAmountValidRegex(rbtcAmount.value)) {
         return `The amount must be a valid ${environmentContext.getRbtcTicker()} value`;
+      }
+      if (safeAmount.value.gt(balance)) {
+        return 'You don\'t have the balance for this amount';
       }
       if (safeAmount.value.lt(minValue)) {
         return `The minimum accepted value is ${minValue.toRBTCTrimmedString()} ${environmentContext.getRbtcTicker()}`;
