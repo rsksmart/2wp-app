@@ -1,5 +1,5 @@
 <template>
-    <div class="form-step ma-0 py-4">
+    <div class="form-step ma-0 pt-4">
     <v-row class="align-start mx-0">
     <v-col cols="auto" class="pl-0">
         <div v-bind:class="[focus ?
@@ -45,7 +45,7 @@ import { useAction } from '@/common/store/helper';
 
 export default defineComponent({
   name: 'BtcRecipientInput',
-  setup() {
+  setup(_, context) {
     const btcAddress = ref('');
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const focus = ref(false);
@@ -64,8 +64,10 @@ export default defineComponent({
       setBtcAddress(btcAddress.value);
       if (isValidBtcAddress.value) {
         stepState.value = 'valid';
+        context.emit('valid-btc-address', true);
       } else {
         stepState.value = 'error';
+        context.emit('valid-btc-address', false);
       }
     };
 
