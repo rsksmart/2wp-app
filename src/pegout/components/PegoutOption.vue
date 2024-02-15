@@ -8,13 +8,15 @@
         <span class="font-weight-bold text-black">
           Estimated time to receive
         </span>
-        <span class="mt-1">{{ quote.quote.transferTime }}</span>
+        <span class="mt-1">
+          {{ blockConfirmationsToTimeString(quote.quote.depositConfirmations) }}
+        </span>
       </div>
     </v-card-item>
     <v-card-item>
       <div class="d-flex flex-column">
         <span class="font-weight-bold text-black">
-          RSK network fee
+          Gas
         </span>
         <span class="mt-1">{{ quote.quote.gasFee.toRBTCTrimmedString() }}
           {{ environmentContext.getRbtcTicker() }}
@@ -25,7 +27,7 @@
     <v-card-item>
       <div class="d-flex flex-column">
         <span class="font-weight-bold text-black">
-          Provider fee
+          {{ quote.quoteHash ? 'Provider fee' : 'Estimated network fee' }}
         </span>
         <span class="mt-1">
           {{ quote.quote.callFee.plus(quote.quote.productFeeAmount).toRBTCTrimmedString() }}
@@ -36,15 +38,26 @@
         </span>
       </div>
     </v-card-item>
-    <v-card-item>
+    <v-card-item v-if="quote.quoteHash">
+      <div class="d-flex flex-column">
+        <span class="font-weight-bold text-black">
+          Amount to send
+        </span>
+        <span class="mt-1">
+          {{ amountToSend }} {{ environmentContext.getBtcTicker() }}
+        </span>
+        <span class="mt-1 grayish">USD {{ toUSD(amountToSend) }}</span>
+      </div>
+    </v-card-item>
+    <v-card-item v-else>
       <div class="d-flex flex-column">
         <span class="font-weight-bold text-black">
           Estimated value to receive
         </span>
         <span class="mt-1">
-          {{ quote.quote.value.toRBTCTrimmedString() }} {{ environmentContext.getBtcTicker() }}
+          {{ estimatedValueToReceive }} {{ environmentContext.getBtcTicker() }}
         </span>
-        <span class="mt-1 grayish">USD {{ toUSD(quote.quote.value.toRBTCString()) }}</span>
+        <span class="mt-1 grayish">USD {{ toUSD(estimatedValueToReceive) }}</span>
       </div>
     </v-card-item>
     <v-card-item>
@@ -97,13 +110,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue';
+import { computed, defineComponent, PropType } from 'vue';
 import { mdiSendOutline } from '@mdi/js';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { useState, useStateAttribute } from '@/common/store/helper';
 import { SessionState, SatoshiBig, QuotePegOut2WP } from '@/common/types';
 import * as constants from '@/common/store/constants';
-import { Machine } from '@/common/utils';
+import { Machine, blockConfirmationsToTimeString } from '@/common/utils';
 
 export default defineComponent({
   name: 'PegoutOption',
@@ -129,11 +142,24 @@ export default defineComponent({
       required: true,
     },
   },
-  setup() {
+  setup(props) {
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const session = useState<SessionState>('web3Session');
     const bitcoinPrice = useStateAttribute<number>('web3Session', 'bitcoinPrice');
     const fixedUSDDecimals = 2;
+
+    const amountToSend = computed(() => new SatoshiBig(props.quote.quote.value
+      .plus(props.quote.quote.productFeeAmount)
+      .plus(props.quote.quote.gasFee)
+      .plus(props.quote.quote.callFee)
+      .toRBTCTrimmedString(), 'btc')
+      .toBTCTrimmedString());
+
+    const estimatedValueToReceive = computed(() => new SatoshiBig(props.quote.quote.value
+      .minus(props.quote.quote.productFeeAmount)
+      .minus(props.quote.quote.gasFee)
+      .toRBTCTrimmedString(), 'btc')
+      .toBTCTrimmedString());
 
     function toUSD(amount: number | string | undefined) {
       const btcAmount = new SatoshiBig(amount ?? '0', 'btc');
@@ -146,6 +172,9 @@ export default defineComponent({
       session,
       constants,
       toUSD,
+      blockConfirmationsToTimeString,
+      amountToSend,
+      estimatedValueToReceive,
     };
   },
 });
