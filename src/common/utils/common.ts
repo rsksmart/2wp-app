@@ -79,7 +79,6 @@ export const getClearPegoutTxState = (): PegOutTxState => ({
   bitcoinPrice: 0,
   btcEstimatedFee: new SatoshiBig(0, 'satoshi'),
   selectedFee: BITCOIN_AVERAGE_FEE_LEVEL,
-  estimatedBTCToRecieve: new SatoshiBig(0, 'btc'),
 });
 
 export const getClearSessionState = ():SessionState => (

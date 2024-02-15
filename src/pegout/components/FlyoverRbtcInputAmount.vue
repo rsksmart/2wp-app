@@ -82,9 +82,9 @@ import EnvironmentContextProviderService from '@/common/providers/EnvironmentCon
 import * as constants from '@/common/store/constants';
 import { isRBTCAmountValidRegex } from '@/common/utils';
 import {
-  PegOutTxState, SatoshiBig, SessionState, WeiBig,
+  PegOutTxState, SessionState, WeiBig,
 } from '@/common/types';
-import { useAction, useGetter, useState } from '@/common/store/helper';
+import { useAction, useState } from '@/common/store/helper';
 
 export default defineComponent({
   name: 'FlyoverRbtcInputAmount',
@@ -104,7 +104,6 @@ export default defineComponent({
     const setRbtcAmount = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ADD_AMOUNT);
     const addAmount = useAction('pegOutTx', constants.PEGOUT_TX_ADD_AMOUNT);
     const calculateFee = useAction('pegOutTx', constants.PEGOUT_TX_CALCULATE_FEE);
-    const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
     const account = computed<string>(() => web3SessionState.value.account as string);
 
     const safeAmount = computed((): WeiBig => new WeiBig(rbtcAmount.value ?? '0', 'rbtc'));
@@ -194,7 +193,6 @@ export default defineComponent({
       focus,
       updateStore,
       blockLetterKeyDown,
-      estimatedBtcToReceive,
       stepState,
       amountErrorMessage,
       mdiArrowRight,
