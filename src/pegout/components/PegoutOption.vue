@@ -1,5 +1,5 @@
 <template>
-  <v-card variant="outlined">
+  <v-card variant="outlined" height="100%" class="d-flex flex-column">
     <v-card-title class="font-weight-bold">
       {{ quote.quoteHash ? 'Faster option' : 'Cheaper option' }}
     </v-card-title>
@@ -92,7 +92,7 @@
           </span>
         </div>
     </v-card-item>
-    <v-card-item>
+    <v-card-item class="flex-grow-1 d-flex flex-column align-self-start justify-end">
         <v-btn
           v-if="!formState.matches(['loading'])"
           :disabled="!isReadyToCreate || formState.matches(['goingHome'])"
