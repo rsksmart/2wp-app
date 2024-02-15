@@ -12,6 +12,7 @@ import {
   SatoshiBig,
 } from '@/common/types';
 import { BridgeService } from '@/common/services/BridgeService';
+import moment from 'moment';
 
 export function getAccountType(address: string, network: AppNetwork): string {
   const [legacyTestReg, segwitTestReg, nativeTestReg] = network === constants.BTC_NETWORK_MAINNET
@@ -265,3 +266,8 @@ export function convertToRequestBalance(walletAddress: WalletAddress[]) : Reques
 }
 
 export const remove0x = (value: string) => (!value.startsWith('0x') ? value : value.substring(2));
+
+export function blockConfirmationsToTimeString(confirmations: number): string {
+  const BLOCK_CONFIRMATION_TIME_IN_MINUTES = 10;
+  return moment.duration(confirmations * BLOCK_CONFIRMATION_TIME_IN_MINUTES, 'minutes').humanize(false, { h: 34 });
+}
