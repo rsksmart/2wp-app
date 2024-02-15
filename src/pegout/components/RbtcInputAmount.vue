@@ -97,7 +97,7 @@ import * as constants from '@/common/store/constants';
 import { isRBTCAmountValidRegex } from '@/common/utils';
 import {
   MiningSpeedFee,
-  PegOutTxState, SatoshiBig, SessionState, WeiBig,
+  PegOutTxState, SessionState, WeiBig,
 } from '@/common/types';
 import { useAction, useGetter, useState } from '@/common/store/helper';
 import { providers } from 'ethers';
@@ -123,7 +123,6 @@ export default defineComponent({
     const calculateTxFee = useAction('pegOutTx', constants.PEGOUT_TX_CALCULATE_FEE);
     const setValidAmount = useAction('pegOutTx', constants.PEGOUT_TX_ADD_VALID_AMOUNT);
     const safeTxFee = useGetter<WeiBig>('pegOutTx', constants.PEGOUT_TX_GET_SAFE_TX_FEE);
-    const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
     const account = computed<string>(() => web3SessionState.value.account as string);
     const selectedFee = computed<MiningSpeedFee>(
       () => pegOutTxState.value.selectedFee as MiningSpeedFee,
@@ -280,7 +279,6 @@ export default defineComponent({
       focus,
       updateStore,
       blockLetterKeyDown,
-      estimatedBtcToReceive,
       setMax,
       stepState,
       amountErrorMessage,
