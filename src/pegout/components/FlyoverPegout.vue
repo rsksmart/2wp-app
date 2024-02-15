@@ -23,13 +23,13 @@
         @walletDisconnected="clearState"/>
         <v-divider />
         <!-- Step 3 -->
-        <btc-recipient-input/>
-        <v-row v-if="!loadingQuotes" class="ma-0 d-flex justify-center">
-          <v-col cols="10" class="d-flex justify-center ma-0 py-5 pl-0" >
-            <v-btn rounded color="#000000"
-                    @click="getQuotes" id="get-quotes-btn">
-              <span class="whiteish">Get Quotes</span>
-              <v-icon class="ml-2" color="#fff" :icon="mdiSendOutline"></v-icon>
+        <v-row v-if="!loadingQuotes" class="ma-0">
+          <v-col cols="auto" class="pa-4">
+          </v-col>
+          <v-col>
+            <v-btn :disabled="!formFilled"
+              variant="outlined" rounded @click="getQuotes" id="get-quotes-btn">
+              Show options
             </v-btn>
           </v-col>
         </v-row>
@@ -209,7 +209,7 @@ export default defineComponent({
           btcRefundAddress: '',
           callFee: new WeiBig(0, 'wei'),
           depositAddr: '', // Must be derived
-          depositConfirmations: 0,
+          depositConfirmations: 198, // to match 33 hours with 10 minutes per block
           depositDateLimit: 0,
           expireBlocks: 0,
           expireDate: 0,
@@ -222,11 +222,13 @@ export default defineComponent({
           productFeeAmount: new WeiBig(pegOutTxState.value.btcEstimatedFee.toBTCString(), 'rbtc'),
           rskRefundAddress: session.value.account ?? '',
           transferConfirmations: 0,
-          transferTime: 50400, // 14 hours in seconds
+          transferTime: 0,
           value: pegOutTxState.value.amountToTransfer,
         },
         quoteHash: '',
       });
+
+      quoteList.sort((q1, q2) => q2.quote.depositConfirmations - q1.quote.depositConfirmations);
 
       return quoteList;
     });
