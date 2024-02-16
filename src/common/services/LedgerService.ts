@@ -132,9 +132,9 @@ export default class LedgerService extends WalletService {
     return LedgerTransportService.getInstance()
       .enqueueRequest(
         // eslint-disable-next-line no-async-promise-executor
-        (transport: TransportWebUSB) => new Promise<boolean>(async (resolve) => {
+        (transport: TransportWebUSB) => new Promise<boolean>((resolve) => {
           try {
-            await this.checkApp(transport);
+            this.checkApp(transport);
             resolve(true);
           } catch (e) {
             resolve(false);

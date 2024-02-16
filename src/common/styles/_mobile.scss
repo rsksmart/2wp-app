@@ -1,3 +1,9 @@
+@font-face {
+  font-family: "Rootstock";
+  src: local("Rootstock"),
+       url(./fonts/Rootstock-Sans-Tags.woff2) format("woff2");
+}
+
 .mobile {
   position: absolute;
   z-index: 250;
@@ -15,8 +21,14 @@
     }
   }
 
+  @font-face {
+    font-family: "Rootstock";
+    src: local("Rootstock"),
+         url(./fonts/Rootstock-Sans-Tags.woff2) format("woff2");
+  }
+
   .title-warning-sm h1 {
-    font-family: Quicksand;
+    font-family: "Rootstock", sans-serif;
     font-style: normal;
     font-weight: bold;
     font-size: 30px;
@@ -26,7 +38,7 @@
   }
 
   .title-warning-xs h1 {
-    font-family: Quicksand;
+    font-family: "Rootstock", sans-serif;
     font-style: normal;
     font-weight: bold;
     font-size: 24px;
@@ -36,7 +48,7 @@
   }
 
   .text-warning-sm p {
-    font-family: Quicksand;
+    font-family: "Rootstock", sans-serif;
     font-style: normal;
     font-weight: normal;
     font-size: 20px;
@@ -46,7 +58,7 @@
   }
 
   .text-warning-xs p {
-    font-family: Quicksand;
+    font-family: "Rootstock", sans-serif;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;

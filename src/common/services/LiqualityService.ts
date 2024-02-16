@@ -63,17 +63,15 @@ export default class LiqualityService extends WalletService {
 
   private enable(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      try {
-        this.bitcoinProvider = window.bitcoin;
-        this.bitcoinProvider.enable()
-          .then(() => {
-            resolve();
-          }, () => {
-            reject(LiqualityService.deniedOrPopUpClosed());
-          });
-      } catch (e) {
-        reject(new LiqualityError());
-      }
+      this.bitcoinProvider = window.bitcoin;
+      this.bitcoinProvider.enable()
+        .then(() => {
+          resolve();
+        }, () => {
+          reject(LiqualityService.deniedOrPopUpClosed());
+        }).catch(() => {
+          reject(new LiqualityError());
+        });
     });
   }
 
