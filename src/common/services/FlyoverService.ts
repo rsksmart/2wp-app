@@ -162,7 +162,8 @@ export default class FlyoverService {
           if (selectedQuote) {
             const amountToTransfer = this.calculateFinalAmountToTransfer(quoteHash);
             this.flyover?.depositPegout(selectedQuote, acceptedQuote.signature, amountToTransfer)
-              .then((txHash: string) => resolve(txHash));
+              .then((txHash: string) => resolve(txHash))
+              .catch(() => reject(new Error('Deposit peg-out fail')));
           }
         })
         .catch(reject);

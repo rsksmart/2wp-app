@@ -36,10 +36,6 @@
         </v-row>
         <!-- Step 4 -->
         <v-divider v-if="quotesToShow && !loadingQuotes"/>
-        <v-row v-if="loadingQuotes" class="d-flex justify-center align-center">
-          <v-progress-circular
-            indeterminate color="#000000"/>
-        </v-row>
         <v-row v-if="quotesToShow && !loadingQuotes" class="ma-0 align-start">
           <v-col cols="auto" class="pl-0">
             <div :class="[focus ? 'number-filled' : 'number']">4</div>
@@ -104,21 +100,25 @@
       class="mx-0 justify-center">
       See your ledger device to confirm your transaction.
     </v-row>
-
-    <v-overlay
-        v-model="sendingPegout"
-        class="align-center justify-center"
-      >
-      <v-progress-circular size="150" width="12"
-       indeterminate color="#000000" class="mr-10"/>
-    </v-overlay>
-          <!-- Send tx error message -->
+    <!-- Loading Dialogs -->
+    <loading-dialog v-model="loadingQuotes"
+      title="Searching"
+      text="We are currently searching for peg-out options,
+          you will receive the fastest and cheapest option so you can choose
+          the one that suits you best."
+    />
+    <loading-dialog v-model="sendingPegout"
+      title="Signing and Broadcasting"
+      text="We are sending your peg-out transaction to be signed,
+          and then broadcasting it to the network."
+    />
+    <!-- Send tx error message -->
     <template v-if="showTxErrorDialog">
-            <tx-error-dialog
-            :showTxErrorDialog="showTxErrorDialog"
-            :errorMessage="txError"
-            @closeErrorDialog="showTxErrorDialog = false"
-            />
+      <tx-error-dialog
+      :showTxErrorDialog="showTxErrorDialog"
+      :errorMessage="txError"
+      @closeErrorDialog="showTxErrorDialog = false"
+      />
     </template>
   </v-container>
 </template>
@@ -145,6 +145,7 @@ import { Machine } from '@/common/utils';
 import router from '@/common/router';
 import ApiService from '@/common/services/ApiService';
 import TxErrorDialog from '@/common/components/exchange/TxErrorDialog.vue';
+import LoadingDialog from '@/pegout/components/LoadingDialog.vue';
 import PegoutOption from './PegoutOption.vue';
 import BtcRecipientInput from './BtcRecipientInput.vue';
 
@@ -157,6 +158,7 @@ export default defineComponent({
     PegoutOption,
     TxErrorDialog,
     BtcRecipientInput,
+    LoadingDialog,
   },
   setup(props, context) {
     const nextPage = 'Confirmation';
@@ -336,12 +338,12 @@ export default defineComponent({
     function getQuotes() {
       loadingQuotes.value = true;
       getPegoutQuotes(session.value.account)
-        .then(() => {
-          loadingQuotes.value = false;
-        })
         .catch((error: Error) => {
           txError.value = error.message;
           showTxErrorDialog.value = true;
+        })
+        .finally(() => {
+          loadingQuotes.value = false;
         });
     }
 

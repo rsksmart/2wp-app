@@ -7,7 +7,23 @@
           </h1>
         </v-col>
       </v-row>
-       <v-row class="mx-0 my-8 flex-column text-center">
+      <v-row v-if="isFlyover()" class="mx-0 my-8 flex-column text-center">
+        <p>
+          Between 5 and 10 minutes you will receive your {{environmentContext.getBtcTicker()}}
+          in your address
+        </p>
+        <p class="mt-4">
+          <a
+            class="d-inline blackish"
+            :href="getBtcAddressExplorerUrl(successPegOutSummary.recipientAddress)"
+            target="_blank"
+            rel="noopener"
+            >
+            {{ successPegOutSummary.recipientAddress }}
+          </a>
+        </p>
+      </v-row>
+      <v-row v-else class="mx-0 my-8 flex-column text-center">
         <p>
           You can follow the conversion from the status page.
         </p>
@@ -30,8 +46,11 @@
       <v-row class="ma-0">
         <v-col cols="2" class="d-flex justify-start ma-0 py-0" offset="10">
         </v-col>
-        <v-col cols="10" class="d-flex justify-end ma-0 py-0">
-          <v-btn rounded class="big_button" color="#000000" @click="goToStatus">
+        <v-col cols="12" class="d-flex justify-center ma-0 py-0">
+          <v-btn v-if="isFlyover()" rounded variant="outlined" color="#000000" @click="goHome">
+            <span>Go home</span>
+          </v-btn>
+          <v-btn v-else rounded class="big_button" color="#000000" @click="goToStatus">
             <span class="whiteish">Go to status page</span>
           </v-btn>
         </v-col>
@@ -44,7 +63,7 @@ import {
   computed, defineComponent, onBeforeMount, ref,
 } from 'vue';
 import { useRouter } from 'vue-router';
-import { addTag } from '@/common/utils';
+import { addTag, getBtcAddressExplorerUrl } from '@/common/utils';
 import { TxStatusType } from '@/common/types/store';
 import { TxSummaryOrientation } from '@/common/types/Status';
 import {
@@ -146,6 +165,11 @@ export default defineComponent({
       });
     }
 
+    function goHome() {
+      clearStatus();
+      router.push({ name: 'Home' });
+    }
+
     function appendClarityScript(): void {
       addTag(constants.OPERATION_TYPE, TxStatusType.PEGOUT);
       addTag(constants.WALLET_NAME, `${currentWallet.value}`);
@@ -161,6 +185,9 @@ export default defineComponent({
       typeSummary,
       orientationSummary,
       goToStatus,
+      isFlyover,
+      goHome,
+      getBtcAddressExplorerUrl,
     };
   },
 });
