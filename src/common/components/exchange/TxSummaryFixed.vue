@@ -267,7 +267,10 @@
                 <v-col>
                   <v-row class="justify-end">
                     <span class="status-subtitle" id="summary-horizontal-title-fee">
-                      {{ summary.fee ? 'Fee' : 'Estimated fee' }}
+                      {{ summary.fee
+                        ? ($route.params.type === 'flyover' ? 'Network fee' : 'Fee')
+                        : 'Estimated fee'
+                      }}
                     </span>
                   </v-row>
                   <v-row>
