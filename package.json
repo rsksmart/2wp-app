@@ -46,7 +46,6 @@
     "moment": "^2.29.4",
     "os-browserify": "^0.3.0",
     "process": "^0.11.10",
-    "sats-connect": "^1.1.2",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
     "text-encoding": "^0.7.0",

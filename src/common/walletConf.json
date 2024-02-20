@@ -39,16 +39,6 @@
             "pegout": false,
             "hover": false,
             "btnClass": "btn-leather"
-        },
-        {
-            "name": "Xverse",
-            "icon": "wallet-icons/xverse.png",
-            "iconWhite": "wallet-icons/xverse-white.png",
-            "constant": "WALLET_XVERSE",
-            "pegin": true,
-            "pegout": false,
-            "hover": false,
-            "btnClass": "btn-xverse"
         }
     ]
 }
