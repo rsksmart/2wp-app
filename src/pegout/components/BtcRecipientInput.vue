@@ -7,7 +7,7 @@
     </v-col>
     <v-col class="px-0 pb-1">
         <p v-bind:class="{'boldie': focus}">
-        Inform the {{environmentContext.getBtcText()}} legacy (p2pkh) address:
+          Inform your destination address:
         </p>
         <v-row class="d-flex align-center ma-0 mt-4 pl-1">
         <v-col cols="6" :class="[stepState !== 'error' ?

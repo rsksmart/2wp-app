@@ -1,7 +1,8 @@
 <template>
   <v-card variant="outlined" height="100%" class="d-flex flex-column">
-    <v-card-title class="font-weight-bold">
-      {{ quote.quoteHash ? 'Faster option' : 'Cheaper option' }}
+    <v-card-title class="font-weight-bold d-flex align-center justify-space-between">
+      {{ title.text }}
+      <v-icon :icon="title.icon" size="36"></v-icon>
     </v-card-title>
     <v-card-item>
       <div class="d-flex flex-column">
@@ -16,7 +17,7 @@
     <v-card-item>
       <div class="d-flex flex-column">
         <span class="font-weight-bold text-black">
-          Gas
+          RSK network fee
         </span>
         <span class="mt-1">{{ quote.quote.gasFee.toRBTCTrimmedString() }}
           {{ environmentContext.getRbtcTicker() }}
@@ -27,7 +28,7 @@
     <v-card-item>
       <div class="d-flex flex-column">
         <span class="font-weight-bold text-black">
-          {{ quote.quoteHash ? 'Provider fee' : 'Estimated network fee' }}
+          {{ isFlyover ? 'Provider fee' : 'Estimated BTC network fee' }}
         </span>
         <span class="mt-1">
           {{ quote.quote.callFee.plus(quote.quote.productFeeAmount).toRBTCTrimmedString() }}
@@ -38,7 +39,7 @@
         </span>
       </div>
     </v-card-item>
-    <v-card-item v-if="quote.quoteHash">
+    <v-card-item>
       <div class="d-flex flex-column">
         <span class="font-weight-bold text-black">
           Amount to send
@@ -46,13 +47,14 @@
         <span class="mt-1">
           {{ amountToSend }} {{ environmentContext.getBtcTicker() }}
         </span>
-        <span class="mt-1 grayish">USD {{ toUSD(amountToSend) }}</span>
+        <span class="mt-1 grayish">USD {{ toUSD(amountToSend) }}
+        </span>
       </div>
     </v-card-item>
-    <v-card-item v-else>
+    <v-card-item>
       <div class="d-flex flex-column">
         <span class="font-weight-bold text-black">
-          Estimated value to receive
+          {{ isFlyover ? 'Value to receive' : 'Estimated value to receive' }}
         </span>
         <span class="mt-1">
           {{ estimatedValueToReceive }} {{ environmentContext.getBtcTicker() }}
@@ -64,7 +66,7 @@
       <span class="font-weight-bold text-black">
           Recipient address
         </span>
-      <div v-if="quote.quoteHash" class="pt-2">
+      <div v-if="isFlyover" class="pt-2">
         <span>{{ quote.quote.depositAddr }}</span>
       </div>
       <div v-else class="d-flex flex-column pt-2 derive-button">
@@ -111,7 +113,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue';
-import { mdiSendOutline } from '@mdi/js';
+import { mdiClockFast, mdiSendOutline, mdiTagCheck } from '@mdi/js';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { useState, useStateAttribute } from '@/common/store/helper';
 import { SessionState, SatoshiBig, QuotePegOut2WP } from '@/common/types';
@@ -148,18 +150,49 @@ export default defineComponent({
     const bitcoinPrice = useStateAttribute<number>('web3Session', 'bitcoinPrice');
     const fixedUSDDecimals = 2;
 
-    const amountToSend = computed(() => new SatoshiBig(props.quote.quote.value
-      .plus(props.quote.quote.productFeeAmount)
-      .plus(props.quote.quote.gasFee)
-      .plus(props.quote.quote.callFee)
-      .toRBTCTrimmedString(), 'btc')
-      .toBTCTrimmedString());
+    const isFlyover = computed(() => props.quote.quoteHash.length > 0);
 
-    const estimatedValueToReceive = computed(() => new SatoshiBig(props.quote.quote.value
-      .minus(props.quote.quote.productFeeAmount)
-      .minus(props.quote.quote.gasFee)
-      .toRBTCTrimmedString(), 'btc')
-      .toBTCTrimmedString());
+    const amountToSend = computed(() => {
+      if (isFlyover.value) {
+        return new SatoshiBig(props.quote.quote.value
+          .plus(props.quote.quote.productFeeAmount)
+          .plus(props.quote.quote.gasFee)
+          .plus(props.quote.quote.callFee)
+          .toRBTCTrimmedString(), 'btc')
+          .toBTCTrimmedString();
+      }
+
+      return new SatoshiBig(props.quote.quote.value
+        .toRBTCTrimmedString(), 'btc')
+        .toBTCTrimmedString();
+    });
+
+    const estimatedValueToReceive = computed(() => {
+      if (isFlyover.value) {
+        return new SatoshiBig(props.quote.quote.value
+          .toRBTCTrimmedString(), 'btc')
+          .toBTCTrimmedString();
+      }
+
+      return new SatoshiBig(props.quote.quote.value
+        .minus(props.quote.quote.productFeeAmount)
+        .minus(props.quote.quote.gasFee)
+        .toRBTCTrimmedString(), 'btc')
+        .toBTCTrimmedString();
+    });
+
+    const title = computed(() => {
+      if (isFlyover.value) {
+        return {
+          text: 'Faster option',
+          icon: mdiClockFast,
+        };
+      }
+      return {
+        text: 'Cheaper option',
+        icon: mdiTagCheck,
+      };
+    });
 
     function toUSD(amount: number | string | undefined) {
       const btcAmount = new SatoshiBig(amount ?? '0', 'btc');
@@ -175,6 +208,8 @@ export default defineComponent({
       blockConfirmationsToTimeString,
       amountToSend,
       estimatedValueToReceive,
+      isFlyover,
+      title,
     };
   },
 });
