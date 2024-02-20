@@ -153,7 +153,8 @@ export default defineComponent({
         accountType: pegInTxState.value.selectedAccount,
       });
     }
-    showLiqualityWarning.value = pegInTxState.value.bitcoinWallet === constants.WALLET_LIQUALITY;
+    showLiqualityWarning.value = pegInTxState.value.bitcoinWallet
+    === constants.WALLET_NAMES.LIQUALITY.long_name;
 
     function sendTx() {
       if (rskAddressState.value === 'warning') showWarningMessage.value = true;
