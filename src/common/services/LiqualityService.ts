@@ -69,8 +69,6 @@ export default class LiqualityService extends WalletService {
           resolve();
         }, () => {
           reject(LiqualityService.deniedOrPopUpClosed());
-        }).catch(() => {
-          reject(new LiqualityError());
         });
     });
   }
