@@ -1,4 +1,5 @@
 <template>
+  <v-container fluid class="exchange container max-width mx-6">
     <div class="transactions">
       <v-row class="mx-0 d-flex justify-center">
         <v-col cols="10" lg="8" xl="6" class="d-flex justify-center">
@@ -56,6 +57,7 @@
         </v-col>
       </v-row>
     </div>
+  </v-container>
   </template>
 
 <script lang="ts">
