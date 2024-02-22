@@ -204,7 +204,8 @@ describe('FlyoverService', () => {
       const spyAcceptPegoutQuote = jest.spyOn(FlyoverService.prototype as any, 'acceptPegoutQuote');
       const spyDepositPegout = jest.spyOn(flyoverService.flyover as Flyover, 'depositPegout');
 
-      expect(flyoverService.acceptAndSendPegoutQuote(quoteHash)).rejects.toThrow('Quote not found');
+      expect(flyoverService.acceptAndSendPegoutQuote(quoteHash))
+        .rejects.toThrow('There was an error accepting the option from the Flyover server');
       expect(spyAcceptPegoutQuote).toHaveBeenCalled();
       expect(spyDepositPegout).not.toHaveBeenCalled();
     });
