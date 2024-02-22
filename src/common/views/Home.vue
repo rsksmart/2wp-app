@@ -164,6 +164,7 @@ export default {
     const clearSession = useAction('web3Session', constants.SESSION_CLEAR);
     const addPeg = useAction('web3Session', constants.SESSION_ADD_TX_TYPE);
     const setTerms = useAction('web3Session', constants.SESSION_ADD_TERMS_VALUE);
+    const clearFlyoverPegout = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_CLEAR_STATE);
 
     const btcToRbtc = computed((): boolean => txType.value === constants.PEG_IN_TRANSACTION_TYPE);
 
@@ -222,6 +223,7 @@ export default {
 
     clear();
     clearPegOut();
+    clearFlyoverPegout();
     clearSession();
     addPeg();
 
