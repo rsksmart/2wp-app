@@ -6,10 +6,9 @@ import {
 } from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import {
-  getCookie, getEstimatedFee, sendTransaction, setCookie,
+  getCookie, getEstimatedFee, sendTransaction, setCookie, ServiceError,
 } from '@/common/utils';
 import { providers } from 'ethers';
-import { FlyoverService } from '@/common/services';
 
 export const actions: ActionTree<PegOutTxState, RootState> = {
   [constants.PEGOUT_TX_SELECT_FEE_LEVEL]: ({ commit }, feeLevel: MiningSpeedFee) => {
@@ -85,8 +84,12 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
             );
           })
           .catch((e) => {
-            console.warn(e);
-            reject(new Error('User Cancelled transaction'));
+            reject(new ServiceError(
+              'RSKBlockchain',
+              constants.PEGOUT_TX_SEND,
+              'User Cancelled transaction',
+              e.message,
+            ));
           });
       }
     }),

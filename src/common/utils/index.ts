@@ -6,3 +6,4 @@ export * from './btcAddressUtils';
 export * from './utils';
 export * from './clarity';
 export * from './ethers';
+export { default as ServiceError } from './ServiceError';
