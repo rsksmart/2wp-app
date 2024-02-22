@@ -20,6 +20,7 @@ The value of these variables are used in **environment-variables.ts** file.
 |VUE_APP_MIN_FEE_SAT_PER_BYTE_AVG   | `4`          | Min fee rate (sats/byte) required to broadcast the transaction                                                         |
 |VUE_APP_MIN_FEE_SAT_PER_BYTE_SLOW   | `1`          | Min fee rate (sats/byte) required to broadcast the transaction                                                          |
 |VUE_APP_LBC_ADDRESS   | `0xc2A630c053D12D63d32b025082f6Ba268db18300`          | Liquidity bridge contract address on the flyover protocol         |
+|VUE_APP_DEBUG_MODE   | `false`          | enable developer messages for debuging         |
 
 ## Example for .env.local.test file
 
@@ -41,4 +42,5 @@ VUE_APP_MIN_FEE_SAT_PER_BYTE_FAST=8
 VUE_APP_MIN_FEE_SAT_PER_BYTE_AVG=4
 VUE_APP_MIN_FEE_SAT_PER_BYTE_SLOW=1
 VUE_APP_LBC_ADDRESS='0xc2A630c053D12D63d32b025082f6Ba268db18300'
+VUE_APP_DEBUG_MODE='false'
 ```

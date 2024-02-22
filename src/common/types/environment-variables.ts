@@ -27,6 +27,8 @@ export class EnvironmentVariables {
 
   public pegoutMaxValue: number;
 
+  public debugMode: boolean;
+
   public minFeeSatPerByte: {
     fast: number;
     average: number;
@@ -88,5 +90,6 @@ export class EnvironmentVariables {
     this.maxAmountAllowedInSatoshis = process.env.VUE_APP_MAX_AMOUNT_ALLOWED_IN_SATOSHI
       || defaultValues.maxAmountAllowedInSatoshis;
     this.lbcAddress = process.env.VUE_APP_LBC_ADDRESS || defaultValues.lbcAddress;
+    this.debugMode = process.env.VUE_APP_DEBUG_MODE === 'true' || defaultValues.debugMode;
   }
 }

@@ -114,7 +114,7 @@
     />
     <!-- Send tx error message -->
     <template v-if="showTxErrorDialog">
-      <tx-error-dialog
+      <full-tx-error-dialog
       :showTxErrorDialog="showTxErrorDialog"
       :error="txError"
       @closeErrorDialog="showTxErrorDialog = false"
@@ -144,7 +144,7 @@ import {
 import { Machine, ServiceError } from '@/common/utils';
 import router from '@/common/router';
 import ApiService from '@/common/services/ApiService';
-import TxErrorDialog from '@/common/components/exchange/TxErrorDialog.vue';
+import FullTxErrorDialog from '@/common/components/exchange/FullTxErrorDialog.vue';
 import LoadingDialog from '@/pegout/components/LoadingDialog.vue';
 import PegoutOption from './PegoutOption.vue';
 import BtcRecipientInput from './BtcRecipientInput.vue';
@@ -156,7 +156,7 @@ export default defineComponent({
     FlyoverRbtcInputAmount,
     AddressDialog,
     PegoutOption,
-    TxErrorDialog,
+    FullTxErrorDialog,
     BtcRecipientInput,
     LoadingDialog,
   },
