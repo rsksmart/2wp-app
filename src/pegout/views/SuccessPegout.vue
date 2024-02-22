@@ -62,7 +62,7 @@
 
 <script lang="ts">
 import {
-  computed, defineComponent, onBeforeMount, ref,
+  computed, defineComponent, onBeforeMount, onUnmounted, ref,
 } from 'vue';
 import { useRouter } from 'vue-router';
 import { addTag, getBtcAddressExplorerUrl } from '@/common/utils';
@@ -101,6 +101,7 @@ export default defineComponent({
     const btcDerivedAddress = useStateAttribute<string>('web3Session', 'btcDerivedAddress');
     const account = useStateAttribute<string>('web3Session', 'account');
     const clearStatus = useAction('status', constants.STATUS_CLEAR);
+    const clearFlyoverState = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_CLEAR_STATE);
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
     const selectedQuote = useGetter<QuotePegOut2WP>('flyoverPegout', constants.FLYOVER_PEGOUT_GET_SELECTED_QUOTE);
     const isLedgerConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_LEDGER_CONNECTED);
@@ -179,6 +180,11 @@ export default defineComponent({
     }
 
     onBeforeMount(appendClarityScript);
+    onUnmounted(() => {
+      if (isFlyover()) {
+        clearFlyoverState();
+      }
+    });
 
     return {
       environmentContext,
