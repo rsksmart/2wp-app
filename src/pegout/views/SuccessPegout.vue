@@ -8,7 +8,7 @@
           </h1>
         </v-col>
       </v-row>
-      <v-row v-if="isFlyover()" class="mx-0 my-8 flex-column text-center">
+      <v-row v-if="isFlyover" class="mx-0 my-8 flex-column text-center">
         <p>
           Between 5 and 10 minutes you will receive your {{environmentContext.getBtcTicker()}}
           in your address
@@ -48,7 +48,7 @@
         <v-col cols="2" class="d-flex justify-start ma-0 py-0" offset="10">
         </v-col>
         <v-col cols="12" class="d-flex justify-center ma-0 py-0">
-          <v-btn v-if="isFlyover()" rounded variant="outlined" color="#000000" @click="goHome">
+          <v-btn v-if="isFlyover" rounded variant="outlined" color="#000000" @click="goHome">
             <span>Go home</span>
           </v-btn>
           <v-btn v-else rounded class="big_button" color="#000000" @click="goToStatus">
@@ -109,9 +109,7 @@ export default defineComponent({
     const isMetamaskConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_METAMASK_CONNECTED);
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
-    function isFlyover(): boolean {
-      return props.type === 'flyover';
-    }
+    const isFlyover = computed(() => props.type === 'flyover');
 
     const currentWallet = computed(() => {
       if (isLedgerConnected.value) {
@@ -131,7 +129,7 @@ export default defineComponent({
 
     const successPegOutSummary = computed((): NormalizedSummary => {
       let summary: NormalizedSummary;
-      if (isFlyover()) {
+      if (isFlyover.value) {
         const amountToTransfer = selectedQuote.value.quote.value
           .plus(selectedQuote.value.quote.callFee)
           .plus(selectedQuote.value.quote.gasFee)
@@ -181,7 +179,7 @@ export default defineComponent({
 
     onBeforeMount(appendClarityScript);
     onUnmounted(() => {
-      if (isFlyover()) {
+      if (isFlyover.value) {
         clearFlyoverState();
       }
     });
