@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, onUnmounted } from 'vue';
+import { ref, defineComponent } from 'vue';
 import * as constants from '@/common/store/constants';
 import PegOutForm from '@/pegout/components/PegOutForm.vue';
 import FlyoverPegout from '@/pegout/components/FlyoverPegout.vue';
@@ -32,7 +32,6 @@ export default defineComponent({
       > >(new Machine('idle'));
     const init = useAction('pegOutTx', constants.PEGOUT_TX_INIT);
     const initFlyover = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_INIT);
-    const clearFlyoverState = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_CLEAR_STATE);
 
     function changePage(componentName: string) {
       currentComponent.value = componentName;
@@ -41,8 +40,6 @@ export default defineComponent({
 
     init();
     initFlyover();
-
-    onUnmounted(() => clearFlyoverState());
 
     return {
       currentComponent,
