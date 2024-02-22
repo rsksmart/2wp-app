@@ -40,8 +40,10 @@
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { validateAddress } from '@/common/utils';
 import * as constants from '@/common/store/constants';
-import { computed, defineComponent, ref } from 'vue';
-import { useAction } from '@/common/store/helper';
+import {
+  computed, defineComponent, ref, watch,
+} from 'vue';
+import { useAction, useStateAttribute } from '@/common/store/helper';
 
 export default defineComponent({
   name: 'BtcRecipientInput',
@@ -52,6 +54,9 @@ export default defineComponent({
     const stepState = ref<'unset' | 'valid' |'error'>('unset');
 
     const setBtcAddress = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ADD_BTC_ADDRESS);
+    const connectedAccount = useStateAttribute('web3Session', 'account');
+
+    const isAccountConnected = computed(() => connectedAccount.value !== undefined);
 
     const isValidBtcAddress = computed(() => {
       const { valid, addressType } = validateAddress(btcAddress.value);
@@ -70,6 +75,13 @@ export default defineComponent({
         context.emit('valid-btc-address', false);
       }
     };
+
+    watch(isAccountConnected, (connected) => {
+      if (!connected) {
+        btcAddress.value = '';
+        stepState.value = 'unset';
+      }
+    });
 
     return {
       btcAddress,
