@@ -9,7 +9,7 @@
       </v-row>
       <v-col cols="12" align-self="center" class="pt-0">
         <v-col offset="2" cols="8">
-          <p class="justify-center">{{ error.userMessage }}</p>
+          <p class="justify-center">{{ errorMessage }}</p>
         </v-col>
         <v-row class="ma-0 my-4" justify="space-around">
           <v-btn width="200" height="50" variant="outlined" rounded color="#000000"
@@ -26,17 +26,13 @@
 </template>
 
 <script lang="ts">
-import ServiceError from '@/common/utils/ServiceError';
-import { ref, defineComponent, PropType } from 'vue';
+import { ref, defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'TxErrorDialog',
   props: {
     showTxErrorDialog: Boolean,
-    error: {
-      type: Object as PropType<ServiceError>,
-      required: true,
-    },
+    errorMessage: String,
   },
   setup(props, context) {
     const show = ref(props.showTxErrorDialog);
