@@ -116,7 +116,7 @@
     <template v-if="showTxErrorDialog">
       <tx-error-dialog
       :showTxErrorDialog="showTxErrorDialog"
-      :errorMessage="txError"
+      :error="txError"
       @closeErrorDialog="showTxErrorDialog = false"
       />
     </template>
@@ -141,7 +141,7 @@ import {
   NormalizedSummary, PegOutTxState, QuotePegOut2WP,
   SatoshiBig, TxStatusType, TxSummaryOrientation, WeiBig,
 } from '@/common/types';
-import { Machine } from '@/common/utils';
+import { Machine, ServiceError } from '@/common/utils';
 import router from '@/common/router';
 import ApiService from '@/common/services/ApiService';
 import TxErrorDialog from '@/common/components/exchange/TxErrorDialog.vue';
@@ -165,7 +165,7 @@ export default defineComponent({
     const typeSummary = TxStatusType.PEGOUT;
     const orientationSummary = TxSummaryOrientation.VERTICAL;
     const showTxErrorDialog = ref(false);
-    const txError = ref('');
+    const txError = ref<ServiceError>(new ServiceError('', '', '', ''));
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const pegOutFormState = ref<Machine<'loading' | 'goingHome' | 'fill'>>(new Machine('fill'));
     const injectedProvider = ref('');
@@ -268,6 +268,11 @@ export default defineComponent({
 
     const sendingPegout = computed(():boolean => pegOutFormState.value.matches(['loading']));
 
+    function handlePegoutError(error: ServiceError) {
+      txError.value = error;
+      showTxErrorDialog.value = true;
+    }
+
     function switchDeriveButton(): void {
       injectedProvider.value = session.value
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -294,10 +299,7 @@ export default defineComponent({
         sendFlyoverTx(quoteHash).then(() => {
           changePage(type);
         })
-          .catch((error: Error) => {
-            txError.value = error.message;
-            showTxErrorDialog.value = true;
-          })
+          .catch(handlePegoutError)
           .finally(() => {
             pegOutFormState.value.send('fill');
           });
@@ -315,10 +317,7 @@ export default defineComponent({
             });
             changePage(type);
           })
-          .catch((error:Error) => {
-            txError.value = error.message;
-            showTxErrorDialog.value = true;
-          })
+          .catch(handlePegoutError)
           .finally(() => {
             pegOutFormState.value.send('fill');
           });
@@ -338,10 +337,7 @@ export default defineComponent({
     function getQuotes() {
       loadingQuotes.value = true;
       getPegoutQuotes(session.value.account)
-        .catch((error: Error) => {
-          txError.value = error.message;
-          showTxErrorDialog.value = true;
-        })
+        .catch(handlePegoutError)
         .finally(() => {
           loadingQuotes.value = false;
         });

@@ -10,6 +10,7 @@ import {
 } from '@/common/types';
 import { providers } from 'ethers';
 import { EnvironmentAccessorService } from './enviroment-accessor.service';
+import { ServiceError } from '../utils';
 
 export default class FlyoverService {
   flyover?: Flyover;
@@ -53,7 +54,14 @@ export default class FlyoverService {
           });
           resolve();
         })
-        .catch(reject);
+        .catch((error: Error) => {
+          reject(new ServiceError(
+            'FlyoverService',
+            'initialize',
+            'There was an error connecting to the Flyover server',
+            error.message,
+          ));
+        });
     });
   }
 
@@ -85,7 +93,15 @@ export default class FlyoverService {
               },
             }));
           resolve(providers2wp);
-        }).catch(reject);
+        })
+        .catch((error: Error) => {
+          reject(new ServiceError(
+            'FlyoverService',
+            'getProviders',
+            'There was an error getting the liquidity providers from the Flyover server',
+            error.message,
+          ));
+        });
     });
   }
 
@@ -130,7 +146,14 @@ export default class FlyoverService {
           }, quote));
           resolve(valids);
         })
-        .catch(reject);
+        .catch((error: Error) => {
+          reject(new ServiceError(
+            'FlyoverService',
+            'getPegoutQuotes',
+            'There was an error getting the options from the Flyover server',
+            error.message,
+          ));
+        });
     });
   }
 
@@ -141,9 +164,21 @@ export default class FlyoverService {
       if (selectedQuote) {
         this.flyover?.acceptPegoutQuote(selectedQuote)
           .then(resolve)
-          .catch(reject);
+          .catch((error: Error) => {
+            reject(new ServiceError(
+              'FlyoverService',
+              'acceptPegoutQuote',
+              'There was an error accepting the option from the Flyover server',
+              error.message,
+            ));
+          });
       } else {
-        reject(new Error('Quote not found'));
+        reject(new ServiceError(
+          'FlyoverService',
+          'acceptPegoutQuote',
+          'The selected option does not exist',
+          'Quote not found',
+        ));
       }
     });
   }
@@ -155,7 +190,12 @@ export default class FlyoverService {
           .all([this.isValidAcceptedQuote(quoteHash, acceptedQuote.signature), acceptedQuote]))
         .then(([isValidQuote, acceptedQuote]) => {
           if (!isValidQuote) {
-            reject(new Error('Invalid accepted quote'));
+            reject(new ServiceError(
+              'FlyoverService',
+              'acceptAndSendPegoutQuote',
+              'The option to be accepted is not valid',
+              'Invalid accepted quote',
+            ));
           }
           const selectedQuote = this.pegoutQuotes
             .find((quote: PegoutQuote) => quote.quoteHash === quoteHash);
@@ -163,10 +203,24 @@ export default class FlyoverService {
             const amountToTransfer = this.calculateFinalAmountToTransfer(quoteHash);
             this.flyover?.depositPegout(selectedQuote, acceptedQuote.signature, amountToTransfer)
               .then((txHash: string) => resolve(txHash))
-              .catch(() => reject(new Error('Deposit peg-out fail')));
+              .catch((error: Error) => {
+                reject(new ServiceError(
+                  'FlyoverService',
+                  'acceptAndSendPegoutQuote',
+                  'Deposit failed',
+                  error.message,
+                ));
+              });
           }
         })
-        .catch(reject);
+        .catch((error: Error) => {
+          reject(new ServiceError(
+            'FlyoverService',
+            'acceptAndSendPegoutQuote',
+            'There was an error accepting the option from the Flyover server',
+            error.message,
+          ));
+        });
     });
   }
 
