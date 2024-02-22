@@ -6,7 +6,10 @@ import {
   MiningSpeedFee, PegOutTxState, RootState, SatoshiBig, SessionState, WeiBig,
 } from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
-import { getCookie, getEstimatedFee, setCookie } from '@/common/utils';
+import {
+  getCookie, getEstimatedFee,
+  setCookie, ServiceError,
+} from '@/common/utils';
 import { FlyoverService } from '@/common/services';
 
 export const actions: ActionTree<PegOutTxState, RootState> = {
@@ -80,8 +83,12 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
             );
           })
           .catch((e) => {
-            console.warn(e);
-            reject(new Error('User Cancelled transaction'));
+            reject(new ServiceError(
+              'RSKBlockchain',
+              constants.PEGOUT_TX_SEND,
+              'User Cancelled transaction',
+              e.message,
+            ));
           });
       }
     }),
