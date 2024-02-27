@@ -5,41 +5,40 @@
         <div v-bind:class="[focus ?
               'number-filled' : 'number']">1</div>
       </v-col>
-      <v-col class="pl-0">
+      <v-col class="pl-0 pb-0">
         <p v-bind:class="{'boldie': focus}">
           Connect your Rootstock wallet:
         </p>
         <v-row class="ma-0 mt-4">
           <template v-if="useWeb3Wallet && web3Address">
-             <div class="pl-1">
-              <v-row class="mx-0">
-                <v-col class="pl-0">
-                   <p class="mb-0 account">
-                     {{ address }} -
-                     {{ balance.toRBTCTrimmedString() }}
-                     {{ environmentContext.getRbtcTicker() }}
-                  </p>
-                </v-col>
+            <v-col cols="5" class="pl-1">
+              <v-row class="ma-0">
+                <p class="account">
+                  {{ address }}
+                  {{ balance.toRBTCTrimmedString() }}
+                  {{ environmentContext.getRbtcTicker() }}
+                </p>
               </v-row>
-              <v-row class="mx-0">
-                <v-col cols="4" class="pa-0 pt-1">
-                  <v-row class="derive-button ma-0 d-flex justify-center">
-                    <v-btn
-                      @click="disconnectWallet"
-                      variant="outlined" rounded
-                      width="100%" height="38">
-                      <span>
-                        Disconnect wallet
-                      </span>
-                    </v-btn>
-                  </v-row>
-                </v-col>
+            </v-col>
+            <v-col cols="2" class="d-flex justify-center">
+              <div class="divider" style="height: 38px;"></div>
+            </v-col>
+            <v-col cols="3" class="pa-0 align-self-center">
+              <v-row class="derive-button ma-0 pl-4">
+                <v-btn
+                  @click="disconnectWallet"
+                  variant="outlined" rounded
+                  height="38">
+                  <span>
+                    Disconnect wallet
+                  </span>
+                </v-btn>
               </v-row>
-            </div>
+            </v-col>
           </template>
           <template v-else>
-            <v-col cols="7" class="wallet-label-container">
-              <v-row class="input-box-outline-readonly ma-0 pa-0 pl-0" >
+            <v-col cols="5" class="wallet-label-container">
+              <v-row class="ma-0 pa-0 pl-1" >
                 <v-text-field
                   class="wallet-address-input"
                   density="compact"
@@ -54,12 +53,12 @@
                   @blur="focus = false"/>
               </v-row>
             </v-col>
-            <v-col cols="1" class="d-flex justify-center pa-0">
-              <div class="divider"/>
+            <v-col cols="2" class="d-flex justify-center">
+              <div class="divider"></div>
             </v-col>
-            <v-col cols="4" class="pa-0 align-self-center">
-              <v-row class="ma-0 d-flex justify-center">
-                <v-btn variant="outlined" rounded color="#000000" width="100%" height="38"
+            <v-col cols="3" class="pa-0 align-self-center">
+              <v-row class="ma-0 pl-4">
+                <v-btn variant="outlined" rounded color="#000000" height="38"
                   class="select-wallet-button"
                   @click="connectWallet" id="wallet-connection">
                   <span class="blackish">Connect wallet</span>
