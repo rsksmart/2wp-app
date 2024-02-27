@@ -27,7 +27,7 @@
         <v-row v-if="!loadingQuotes" class="ma-0">
           <v-col cols="auto" class="pa-4">
           </v-col>
-          <v-col>
+          <v-col class="pb-6">
             <v-btn :disabled="!formFilled"
               variant="outlined" rounded @click="getQuotes" id="get-quotes-btn">
               Show options
@@ -86,7 +86,7 @@
                       @closeDialog="showAddressDialog = false"/>
     </v-row>
     <!-- Footer -->
-    <v-row class="ma-0 mt-8">
+    <v-row class="ma-0 mt-16">
       <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
         <v-btn @click="back"
         rounded variant="outlined" color="#000000" width="110"
