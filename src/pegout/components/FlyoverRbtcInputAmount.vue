@@ -5,7 +5,7 @@
           <div v-bind:class="[focus ?
                 'number-filled' : 'number']">2</div>
         </v-col>
-        <v-col class="px-0">
+        <v-col class="pl-0">
           <p v-bind:class="{'boldie': focus}">
             Enter the amount you want to send:
           </p>
@@ -38,10 +38,11 @@
                 </v-row>
               </v-col>
             </v-col>
-            <v-col cols="1" class="d-flex justify-center">
+            <v-col cols="1"/>
+            <v-col cols="2" class="d-flex justify-center">
               <v-icon color="#000" :icon="mdiArrowRight"></v-icon>
             </v-col>
-            <v-col cols="4" class="pa-0 input-box-flat">
+            <v-col cols="3" class="pa-0 input-box-flat">
               <v-col cols="8" class="pa-0 pl-1">
                 <v-text-field
                   variant="solo"
@@ -63,7 +64,7 @@
               </v-col>
             </v-col>
           </v-row>
-          <v-row class="ma-0 pt-1 error-max-balance" style="min-height: 17px;">
+          <v-row class="ma-0 error-max-balance" style="min-height: 17px;">
             <span v-if="stepState === 'error'" class="yellowish" id="rbtc-error-msg">
               {{amountErrorMessage}}
             </span>

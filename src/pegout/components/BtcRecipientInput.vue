@@ -10,7 +10,7 @@
           Inform your destination address:
         </p>
         <v-row class="d-flex align-center ma-0 mt-4 pl-1">
-        <v-col cols="6" :class="[stepState !== 'error' ?
+        <v-col cols="4" :class="[stepState !== 'error' ?
                     'black-box' : 'yellow-box']"
                     class="ma-0 pa-0 input-box-outline" >
             <v-text-field
@@ -27,7 +27,7 @@
                 @update:model-value="updateStore"/>
         </v-col>
         </v-row>
-        <v-row class="ma-0 pt-1 error-max-balance" style="min-height: 17px;">
+        <v-row class="ma-0 pt-1 error-max-balance" style="min-height: 21px;">
         <span v-if="stepState === 'error'" class="yellowish" id="rbtc-error-msg">
             {{errorMessage}}
         </span>
