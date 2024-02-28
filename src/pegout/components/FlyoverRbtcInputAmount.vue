@@ -43,7 +43,7 @@
               <v-icon color="#000" :icon="mdiArrowRight"></v-icon>
             </v-col>
             <v-col cols="3" class="pa-0 input-box-flat">
-              <v-col cols="8" class="pa-0 pl-1">
+              <v-col cols="5" class="pa-0 pl-4">
                 <v-text-field
                   variant="solo"
                   hide-details full-width single-line flat readonly
@@ -52,7 +52,7 @@
                   v-model="btcAmount"
                   type="number"/>
               </v-col>
-              <v-col cols="4" class="ma-0">
+              <v-col cols="3" class="ma-0 d-flex align-center">
                 <v-row>
                   <v-col cols="5" class="pa-0">
                     <v-img :src="require('@/assets/exchange/btc.png')" height="20" contain/>
