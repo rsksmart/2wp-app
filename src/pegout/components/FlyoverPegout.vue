@@ -86,7 +86,7 @@
                       @closeDialog="showAddressDialog = false"/>
     </v-row>
     <!-- Footer -->
-    <v-row class="ma-0 mt-16">
+    <v-row class="ma-0 form-footer">
       <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
         <v-btn @click="back"
         rounded variant="outlined" color="#000000" width="110"
