@@ -62,20 +62,27 @@
                   </v-row>
                   <v-row>
                     <v-col class="form-field-summary">
-                      <v-row>
-                        <v-col cols="12"
-                               class="col-address-button d-flex flex-column justify-end">
-                          <tx-summary-field v-if="type === txType.PEGOUT"
+                      <v-row v-if="type === txType.PEGOUT" class="justify-end align-center">
+                        <v-col cols="11" class="col-address-button d-flex flex-column">
+                          <tx-summary-field
                             textStyles="breakable-address status-text-ellipsis"
                             :textValue="senderValue"
                             id="senderAddress"
                             @copyToClipboard="copyToClipboard"
                           />
-                          <span v-else class="breakable-address status-text-ellipsis">
-                            {{ senderValue }}
-                          </span>
+                        </v-col>
+                        <v-col cols="1" class="col-address-button pa-0">
+                          <v-btn @click="openAddressInExplorer" icon
+                              density="compact"
+                              size="small"
+                              variant="plain">
+                            <v-icon :icon="mdiOpenInNew"></v-icon>
+                          </v-btn>
                         </v-col>
                       </v-row>
+                      <span v-else class="breakable-address status-text-ellipsis">
+                        {{ senderValue }}
+                      </span>
                     </v-col>
                   </v-row>
                 </v-col>
@@ -701,30 +708,35 @@ export default defineComponent({
       return VALUE_INCOMPLETE_MESSAGE;
     });
 
+    const explorerRSK = computed(() => {
+      const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_MAINNET ? '' : '.testnet';
+      return `https://explorer${network}.rootstock.io`;
+    });
+
     function copyToClipboard(id: string) {
       if (id === 'txId' || id === 'federationAddress' || id === 'senderAddress' || id === 'recipientAddress') {
         navigator.clipboard.writeText(props.summary?.[id] || '');
       }
     }
 
+    function openAddressInExplorer() {
+      window.open(`${explorerRSK.value}/address/${props.summary?.senderAddress}`, '_blank');
+    }
+
     function openExplorerTx() {
-      const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_MAINNET ? '' : '.testnet';
-      const explorerRSK = `https://explorer${network}.rsk.co`;
       const sanitizedTxId = props.summary?.txId?.startsWith('0x')
         ? props.summary?.txId?.substring(2, (props.summary?.txId?.length))
         : props.summary?.txId;
       if (props.type === TxStatusType.PEGIN) {
         window.open(getBtcTxExplorerUrl(sanitizedTxId || ''), '_blank');
       } else {
-        window.open(`${explorerRSK}/tx/${props.summary?.txId}`, '_blank');
+        window.open(`${explorerRSK.value}/tx/${props.summary?.txId}`, '_blank');
       }
     }
 
     function openExplorerToAddress() {
-      const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_MAINNET ? '' : '.testnet';
-      const explorerRSK = `https://explorer${network}.rsk.co`;
       if (props.type === TxStatusType.PEGIN) {
-        window.open(`${explorerRSK}/address/${props.summary?.recipientAddress}`, '_blank');
+        window.open(`${explorerRSK.value}/address/${props.summary?.recipientAddress}`, '_blank');
       } else {
         window.open(getBtcAddressExplorerUrl(props.summary?.recipientAddress || ''), '_blank');
       }
@@ -771,6 +783,7 @@ export default defineComponent({
       mdiOpenInNew,
       accountLabel,
       releasedPegout,
+      openAddressInExplorer,
     };
   },
 });
