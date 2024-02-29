@@ -36,7 +36,7 @@ jobs:
           VUE_APP_MANIFEST_APP_URL='https://app.2wp.testnet.rootstock.io'
           VUE_APP_API_BASE_URL='https://api.2wp.testnet.rootstock.io'
           VUE_APP_RSK_NODE_HOST='https://public-node.testnet.rsk.co'
-          VUE_APP_RSK_EXPLORER='https://explorer.testnet.rsk.co/'
+          VUE_APP_RSK_EXPLORER='https://explorer.testnet.rootstock.io/'
           VUE_APP_WALLET_ADDRESSES_HARD_STOP=100
           VUE_APP_WALLET_ADDRESS_PER_CALL=20
           VUE_APP_PEGOUT_MIN_AMOUNT_ALLOWED_IN_RBTC=0.004

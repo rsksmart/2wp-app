@@ -249,12 +249,12 @@ export const SUPPORTED_NETWORKS = {
   RSK_MAINNET: {
     chainId: 30,
     rpcUrl: 'https://public-node.rsk.co',
-    explorerUrl: 'https://explorer.rsk.co',
+    explorerUrl: 'https://explorer.rootstock.io/',
   },
   RSK_TESTNET: {
     chainId: 31,
     rpcUrl: 'https://public-node.testnet.rsk.co',
-    explorerUrl: 'https://explorer.testnet.rsk.co',
+    explorerUrl: 'https://explorer.testnet.rootstock.io/',
   },
 };
 
