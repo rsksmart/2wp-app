@@ -34,7 +34,7 @@
             <v-col v-if="isHdWallet" cols="11">
               <p class="ma-0">Insert {{ walletName }} device PIN code</p>
             </v-col>
-            <v-col v-if="walletName ==='Liquality'" cols="11">
+            <v-col v-if="needsUnlock" cols="11">
               <p class="ma-0">Unlock your wallet.</p>
             </v-col>
           </v-row>
@@ -102,6 +102,7 @@ export default defineComponent({
     const bitcoinWallet = useStateAttribute('pegInTx', 'bitcoinWallet');
     const walletName = useGetter<string>('pegInTx', constants.WALLET_NAME);
     const isHdWallet = useGetter<boolean>('pegInTx', constants.PEGIN_TX_IS_HD_WALLET);
+    const needsUnlock = useGetter<boolean>('pegInTx', constants.PEGIN_TX_IS_SF_WALLET);
     const clearStore = useAction('pegInTx', constants.PEGIN_TX_CLEAR_STATE);
 
     const deviceImagePath = computed(() => {
@@ -116,6 +117,10 @@ export default defineComponent({
       if (bitcoinWallet.value === constants.WALLET_NAMES.LIQUALITY.long_name) {
         // eslint-disable-next-line global-require, import/no-dynamic-require
         return require('@/assets/exchange/liquality/connect_liquality.png');
+      }
+      if (bitcoinWallet.value === constants.WALLET_NAMES.LEATHER.long_name) {
+        // eslint-disable-next-line global-require, import/no-dynamic-require
+        return require('@/assets/exchange/leather/connect_leather.png');
       }
       // eslint-disable-next-line global-require, import/no-dynamic-require
       return require('@/assets/exchange/wallet.png');
@@ -150,6 +155,7 @@ export default defineComponent({
       environmentContext,
       walletName,
       isHdWallet,
+      needsUnlock,
       clearStore,
       deviceImagePath,
       isLedgerWallet,

@@ -176,6 +176,27 @@ export const getters: GetterTree<PegInTxState, RootState> = {
     }
     return isHdWallet;
   },
+  [constants.PEGIN_TX_IS_SF_WALLET]: (state: PegInTxState): boolean => {
+    let isSfWallet = false;
+    switch (state.bitcoinWallet) {
+      case constants.WALLET_NAMES.TREZOR.long_name:
+        isSfWallet = false;
+        break;
+      case constants.WALLET_NAMES.LEDGER.long_name:
+        isSfWallet = false;
+        break;
+      case constants.WALLET_NAMES.LIQUALITY.long_name:
+        isSfWallet = true;
+        break;
+      case constants.WALLET_NAMES.LEATHER.long_name:
+        isSfWallet = true;
+        break;
+      default:
+        isSfWallet = false;
+        break;
+    }
+    return isSfWallet;
+  },
   [constants.PEGIN_TX_IS_ENOUGH_BALANCE]: (state: PegInTxState, moduleGetters): boolean => {
     const feePlusAmount: SatoshiBig = state.amountToTransfer
       .plus(moduleGetters[constants.PEGIN_TX_GET_SAFE_TX_FEE]);
