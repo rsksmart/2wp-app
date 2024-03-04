@@ -212,7 +212,7 @@ export default class ApiService {
   }
 
   static registerTx({
-    sessionId, txHash, type, value, wallet, addressType, fee, rskGas, btcEstimatedFee,
+    sessionId, txHash, type, value, wallet, addressType, fee, rskGas, btcEstimatedFee, provider,
   }: {
     sessionId: string,
     txHash: string,
@@ -222,12 +222,13 @@ export default class ApiService {
     addressType?: string,
     fee?: number,
     rskGas?: number,
-    btcEstimatedFee?: number
+    btcEstimatedFee?: number,
+    provider?: string
   }): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       if (sessionId == null || txHash == null || type == null) resolve();
       axios.post(`${ApiService.baseURL}/register`, {
-        sessionId, txHash, type, value, wallet, addressType, fee, rskGas, btcEstimatedFee,
+        sessionId, txHash, type, value, wallet, addressType, fee, rskGas, btcEstimatedFee, provider,
       })
         .then(() => resolve())
         .catch(reject);
