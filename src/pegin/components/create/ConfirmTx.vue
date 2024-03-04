@@ -34,7 +34,7 @@
         </v-row>
         <fieldset class="confirmation-box">
           <legend lass="px-4">See on {{ walletService.name() }}</legend>
-          <v-row class="ma-0 text-center">
+          <v-row v-if="walletService.name() != 'leather'" class="ma-0 text-center">
             <v-col>
               <v-row justify="center" class="mt-3 mb-2">
                 <span>
@@ -129,7 +129,26 @@
 
             </v-col>
           </v-row>
-          <v-row justify="center" class="mt-5 mb-3 mx-0">Confirm</v-row>
+          <!-- handling leather -->
+          <v-row v-if="walletService.name() === 'leather'" class="ma-0 text-center">
+            <v-col>
+              <v-row justify="center" class="mt-3 mb-2">
+                <span>
+                  You'll transfer
+                </span>
+              </v-row>
+              <v-row v-if="step.outputsToshow.federation.amount" justify="center">
+                Bitcoin {{computedPlusFeeFullAmount}}
+              </v-row>
+              <v-divider class="my-6"/>
+              <v-row v-if="step.outputsToshow.federation.amount" justify="center">
+                Transaction fee {{confirmTxSummary.fee}}
+              </v-row>
+             </v-col>
+          </v-row>
+          <v-row justify="center" class="mt-5 mb-3 mx-0">
+            Confirm on your {{walletService.name()}} Wallet
+          </v-row>
         </fieldset>
       </v-col>
     </v-row>
@@ -229,6 +248,10 @@ export default defineComponent({
         .toBTCTrimmedString();
     });
 
+    const computedPlusFeeFullAmount = computed((): string => pegInTxState.value.amountToTransfer
+      .plus(safeFee.value)
+      .toBTCTrimmedString());
+
     const opReturnData = computed((): string => {
       const opReturnDataOutput = pegInTxState.value.normalizedTx.outputs[0] ?? { script_type: '' };
       return opReturnDataOutput.op_return_data
@@ -308,6 +331,7 @@ export default defineComponent({
       environmentContext,
       changeAmountComputed,
       computedFullAmount,
+      computedPlusFeeFullAmount,
       toPegInForm,
       cropAddress,
       splitString,
