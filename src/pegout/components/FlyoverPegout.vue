@@ -138,6 +138,7 @@ import {
 import { SessionState } from '@/common/types/session';
 import { mdiSendOutline, mdiAlertOctagon } from '@mdi/js';
 import {
+  FlyoverPegoutState,
   NormalizedSummary, PegOutTxState, QuotePegOut2WP,
   SatoshiBig, TxStatusType, TxSummaryOrientation, WeiBig,
 } from '@/common/types';
@@ -175,6 +176,7 @@ export default defineComponent({
     const loadingQuotes = ref(false);
     const isValidBtcRecipientAddress = ref(false);
     const pegOutTxState = useState<PegOutTxState>('pegOutTx');
+    const flyoverPegoutState = useState<FlyoverPegoutState>('flyoverPegout');
     const session = useState<SessionState>('web3Session');
     const sendTx = useAction('pegOutTx', constants.PEGOUT_TX_SEND);
     const sendFlyoverTx = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ACCEPT_AND_SEND_QUOTE);
@@ -182,6 +184,7 @@ export default defineComponent({
     const clearFlyoverState = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_CLEAR_STATE);
     const getPegoutQuotes = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_GET_QUOTES);
     const quotes = useStateAttribute<Record<number, QuotePegOut2WP[]>>('flyoverPegout', 'quotes');
+    const selectedQuote = useGetter<QuotePegOut2WP>('flyoverPegout', constants.FLYOVER_PEGOUT_GET_SELECTED_QUOTE);
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
     const isEnoughBalance = useGetter<boolean>('pegOutTx', constants.PEGOUT_TX_IS_ENOUGH_BALANCE);
     const safeFee = useGetter<WeiBig>('pegOutTx', constants.PEGOUT_TX_GET_SAFE_TX_FEE);
@@ -292,35 +295,55 @@ export default defineComponent({
       context.emit('changePage', nextPage);
     }
 
-    function send(quoteHash: string) {
+    function getLPName(): string {
+      return flyoverPegoutState.value.liquidityProviders
+        .find((lp) => lp.provider === selectedQuote.value.quote.liquidityProviderRskAddress)?.name ?? '';
+    }
+
+    function getProviderFee(): string {
+      return selectedQuote.value.quote.productFeeAmount
+        .plus(selectedQuote.value.quote.callFee)
+        .toRBTCTrimmedString();
+    }
+
+    const registerFlyover = computed(() => ({
+      sessionId: '',
+      txHash: flyoverPegoutState.value.txHash as string,
+      type: TxStatusType.PEGOUT.toLowerCase(),
+      value: Number(flyoverPegoutState.value.amountToTransfer.toRBTCTrimmedString()),
+      wallet: currentWallet.value,
+      rskGas: Number(selectedQuote.value.quote.gasFee.toRBTCTrimmedString()),
+      fee: Number(getProviderFee()),
+      provider: getLPName(),
+    }));
+
+    const registerPegout = computed(() => ({
+      sessionId: '',
+      txHash: pegOutTxState.value.txHash as string,
+      type: TxStatusType.PEGOUT.toLowerCase(),
+      value: Number(pegOutTxState.value.amountToTransfer.toRBTCTrimmedString()),
+      wallet: currentWallet.value,
+      btcEstimatedFee: Number(pegOutTxState.value.btcEstimatedFee.toBTCTrimmedString()),
+      rskGas: Number(pegOutTxState.value.calculatedFee.toRBTCTrimmedString()),
+    }));
+
+    async function send(quoteHash: string) {
       const type = quoteHash ? 'flyover' : 'powpeg';
       pegOutFormState.value.send('loading');
-      if (quoteHash) {
-        sendFlyoverTx(quoteHash).then(() => {
-          changePage(type);
-        })
-          .catch(handlePegoutError)
-          .finally(() => {
-            pegOutFormState.value.send('fill');
-          });
-      } else {
-        sendTx()
-          .then(() => {
-            ApiService.registerTx({
-              sessionId: '',
-              txHash: pegOutTxState.value.txHash as string,
-              type: TxStatusType.PEGOUT.toLowerCase(),
-              value: Number(pegOutTxState.value.amountToTransfer.toRBTCTrimmedString()),
-              wallet: currentWallet.value,
-              btcEstimatedFee: Number(pegOutTxState.value.btcEstimatedFee.toBTCTrimmedString()),
-              rskGas: Number(pegOutTxState.value.calculatedFee.toRBTCTrimmedString()),
-            });
-            changePage(type);
-          })
-          .catch(handlePegoutError)
-          .finally(() => {
-            pegOutFormState.value.send('fill');
-          });
+      try {
+        if (quoteHash) {
+          await sendFlyoverTx(quoteHash);
+        } else {
+          await sendTx();
+        }
+        ApiService.registerTx(quoteHash ? registerFlyover.value : registerPegout.value);
+        changePage(type);
+      } catch (e) {
+        if (e instanceof ServiceError) {
+          handlePegoutError(e);
+        }
+      } finally {
+        pegOutFormState.value.send('fill');
       }
     }
 
