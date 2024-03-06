@@ -82,10 +82,8 @@ import { mdiArrowRight } from '@mdi/js';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import * as constants from '@/common/store/constants';
 import { isRBTCAmountValidRegex } from '@/common/utils';
-import {
-  PegOutTxState, SessionState, WeiBig,
-} from '@/common/types';
-import { useAction, useState } from '@/common/store/helper';
+import { SessionState, WeiBig } from '@/common/types';
+import { useAction, useGetter, useState } from '@/common/store/helper';
 
 export default defineComponent({
   name: 'FlyoverRbtcInputAmount',
@@ -101,7 +99,7 @@ export default defineComponent({
     const stepState = ref<'unset' | 'valid' |'error'>('unset');
 
     const web3SessionState = useState<SessionState>('web3Session');
-    const pegOutTxState = useState<PegOutTxState>('pegOutTx');
+    const minMaxValues = useGetter<{minValue: WeiBig; maxValue: WeiBig}>('flyoverPegout', constants.FLYOVER_PEGOUT_GET_MIN_MAX_VALUES);
     const setRbtcAmount = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ADD_AMOUNT);
     const addAmount = useAction('pegOutTx', constants.PEGOUT_TX_ADD_AMOUNT);
     const calculateFee = useAction('pegOutTx', constants.PEGOUT_TX_CALCULATE_FEE);
@@ -112,7 +110,7 @@ export default defineComponent({
     const btcAmount = computed(() => rbtcAmount.value);
 
     const amountErrorMessage = computed(() => {
-      const { minValue, maxValue } = pegOutTxState.value.pegoutConfiguration;
+      const { minValue, maxValue } = minMaxValues.value;
       const { balance } = web3SessionState.value;
       if (rbtcAmount.value.toString() === '') {
         return 'Please, enter an amount';
@@ -139,12 +137,12 @@ export default defineComponent({
     });
 
     const insufficientAmount = computed(() => {
-      const { pegoutConfiguration } = pegOutTxState.value;
+      const { minValue, maxValue } = minMaxValues.value;
       const { balance } = web3SessionState.value;
       return safeAmount.value.lte('0')
           || safeAmount.value.gt(balance)
-          || safeAmount.value.lt(pegoutConfiguration.minValue)
-          || safeAmount.value.gt(pegoutConfiguration.maxValue);
+          || safeAmount.value.lt(minValue)
+          || safeAmount.value.gt(maxValue);
     });
 
     const isWalletConnected = computed((): boolean => web3SessionState.value.account !== undefined);
@@ -179,6 +177,8 @@ export default defineComponent({
     function clearStateWhenWalletIsDisconnected() {
       if (!isWalletConnected.value) {
         rbtcAmount.value = '';
+        amountStyle.value = '';
+        stepState.value = 'unset';
         isMaxValueZero.value = false;
         context.emit('walletDisconnected');
       }
