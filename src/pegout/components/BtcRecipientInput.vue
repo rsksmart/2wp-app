@@ -15,6 +15,7 @@
                     class="ma-0 pa-0 input-box-outline" >
             <v-text-field
                 v-model="btcAddress"
+                :readonly="$props.blockAddress"
                 flat
                 hide-details
                 single-line
@@ -47,6 +48,12 @@ import { useAction, useStateAttribute } from '@/common/store/helper';
 
 export default defineComponent({
   name: 'BtcRecipientInput',
+  props: {
+    blockAddress: {
+      type: Boolean,
+      default: false,
+    },
+  },
   setup(_, context) {
     const btcAddress = ref('');
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();

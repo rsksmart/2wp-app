@@ -23,7 +23,10 @@
         @walletDisconnected="clearState"/>
         <v-divider />
         <!-- Step 3 -->
-        <btc-recipient-input @valid-btc-address="(valid) => isValidBtcRecipientAddress = valid"/>
+        <btc-recipient-input
+          @valid-btc-address="(valid) => isValidBtcRecipientAddress = valid"
+          :blockAddress="alreadyGotQuotes"
+          />
         <v-row v-if="!loadingQuotes" class="ma-0">
           <v-col cols="auto" class="pa-4">
           </v-col>
@@ -35,8 +38,8 @@
           </v-col>
         </v-row>
         <!-- Step 4 -->
-        <v-divider v-if="quotesToShow && !loadingQuotes"/>
-        <v-row v-if="quotesToShow && !loadingQuotes" class="ma-0 align-start">
+        <v-divider v-if="alreadyGotQuotes"/>
+        <v-row v-if="alreadyGotQuotes" class="ma-0 align-start">
           <v-col cols="auto" class="pl-0">
             <div :class="[focus ? 'number-filled' : 'number']">4</div>
           </v-col>
@@ -196,6 +199,8 @@ export default defineComponent({
     const quotesToShow = computed(
       () => Object.values(quotes.value).some((providerQuotes) => providerQuotes.length > 0),
     );
+
+    const alreadyGotQuotes = computed(() => quotesToShow.value && !loadingQuotes.value);
 
     const pegoutQuotes = computed(() => {
       const quoteList: QuotePegOut2WP[] = [];
@@ -410,6 +415,7 @@ export default defineComponent({
       loadingQuotes,
       sendingPegout,
       isValidBtcRecipientAddress,
+      alreadyGotQuotes,
     };
   },
 });
