@@ -4,20 +4,20 @@
         <v-row justify="center" align="start" class="mx-0 py-md-0 py-xl-6">
           <v-col>
               <v-row class="footer-logo mx-0" align="end">
-                <span>Built by</span>
+                <span>Built by &nbsp;</span>
                 <v-col class="pa-0">
                   <v-img position="center left"
-                         :src="require('@/assets/logo-iov.svg')"
-                         alt="IOV Labs"
+                         :src="require('@/assets/logo-rootstocklabs.png')"
+                         alt="RootstockLabs"
                          width="100" contain class="rsk-main-logo"/>
                 </v-col>
               </v-row>
-            <p>Copyright © 2023 IOV Labs All rights reserved</p>
+            <p>Copyright © 2024 RootstockLabs All rights reserved</p>
           </v-col>
           <v-col cols="7" class="pt-4">
             <v-row justify="center" class="mx-0 footer-links">
-              <a href="https://www.iovlabs.org/" target="_blank">
-                About IOV Labs
+              <a href="https://rootstocklabs.com/" target="_blank">
+                About RootstockLabs
               </a>
               <a :href="helpUrl" target="_blank">Help</a>
               <a :href="discordUrl" target="_blank">Support</a>
