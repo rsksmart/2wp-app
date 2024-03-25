@@ -94,7 +94,7 @@
           </span>
         </div>
     </v-card-item>
-    <v-card-item class="flex-grow-1 d-flex flex-column align-self-start justify-end">
+    <v-card-item class="flex-grow-1 d-flex flex-column align-left justify-end">
         <v-btn
           v-if="!formState.matches(['loading'])"
           :disabled="!isReadyToCreate || formState.matches(['goingHome'])"
@@ -102,7 +102,7 @@
           rounded
           color="#000"
         >
-          Choose this option
+          Accept
           <template v-slot:append>
             <v-icon :icon="mdiSendOutline" color="#fff"></v-icon>
           </template>
@@ -184,12 +184,12 @@ export default defineComponent({
     const title = computed(() => {
       if (isFlyover.value) {
         return {
-          text: 'Faster option',
+          text: 'Faster',
           icon: mdiClockFast,
         };
       }
       return {
-        text: 'Cheaper option',
+        text: 'Default',
         icon: mdiTagCheck,
       };
     });
