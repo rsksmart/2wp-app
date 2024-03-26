@@ -1,7 +1,7 @@
 <template>
   <div class="transactions">
     <v-col offset="2" cols="8">
-      <v-row v-if="isLiqualityWallet" justify="center" class="mx-0 mb-1">
+      <v-row v-if="isSftwWallet" justify="center" class="mx-0 mb-1">
         <h1>Enable {{ walletName }} wallet</h1>
       </v-row>
       <v-row v-else justify="center" class="mx-0 mb-1">
@@ -17,11 +17,11 @@
               <div class="number">1</div>
             </v-col>
             <v-col cols="11">
-              <p v-if="isLiqualityWallet"
+              <p v-if="isSftwWallet"
               class="ma-0">
-                Make sure Liquality is installed and enabled in your browser.
+                Make sure {{ walletName }} is installed and enabled in your browser.
               </p>
-              <p v-if="!isLiqualityWallet"
+              <p v-if="isHdWallet"
               class="ma-0">
                 Plug your {{ walletName }} device into your computer
               </p>
@@ -34,7 +34,7 @@
             <v-col v-if="isHdWallet" cols="11">
               <p class="ma-0">Insert {{ walletName }} device PIN code</p>
             </v-col>
-            <v-col v-if="needsUnlock" cols="11">
+            <v-col v-if="isSftwWallet" cols="11">
               <p class="ma-0">Unlock your wallet.</p>
             </v-col>
           </v-row>
@@ -102,7 +102,7 @@ export default defineComponent({
     const bitcoinWallet = useStateAttribute('pegInTx', 'bitcoinWallet');
     const walletName = useGetter<string>('pegInTx', constants.WALLET_NAME);
     const isHdWallet = useGetter<boolean>('pegInTx', constants.PEGIN_TX_IS_HD_WALLET);
-    const needsUnlock = useGetter<boolean>('pegInTx', constants.PEGIN_TX_IS_SF_WALLET);
+    const isSftwWallet = useGetter<boolean>('pegInTx', constants.PEGIN_TX_IS_SF_WALLET);
     const clearStore = useAction('pegInTx', constants.PEGIN_TX_CLEAR_STATE);
 
     const deviceImagePath = computed(() => {
@@ -155,7 +155,7 @@ export default defineComponent({
       environmentContext,
       walletName,
       isHdWallet,
-      needsUnlock,
+      isSftwWallet,
       clearStore,
       deviceImagePath,
       isLedgerWallet,
