@@ -145,13 +145,12 @@ export default defineComponent({
     }
 
     function checkStep() {
-      let state;
+      let state = 'valid';
       if (!isValidPegInAddress.value) {
         setRskAddress('');
         state = 'invalid';
       } else {
         setRskAddress(computedRskAddress.value);
-        state = isValidRskAddress.value ? 'valid' : 'warning';
       }
       context.emit('state', state);
     }
