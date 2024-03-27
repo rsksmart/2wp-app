@@ -122,9 +122,11 @@ export const actions: ActionTree<SessionState, RootState> = {
     .then((response: AxiosResponse) => {
       const [result] = response.data;
       commit(constants.SESSION_SET_BITCOIN_PRICE, result.current_price);
+      sessionStorage.setItem('BTC_LAST_PRICE_OBTAINED', result.current_price);
     })
     .catch(() => {
-      commit(constants.SESSION_SET_BITCOIN_PRICE, 0);
+      const lastPrice = Number(sessionStorage.getItem('BTC_LAST_PRICE_OBTAINED'));
+      commit(constants.SESSION_SET_BITCOIN_PRICE, lastPrice > 0 ? lastPrice : 0);
     })
     .finally(() => {
       commit(constants.SESSION_SET_TX_TYPE, 'PEG_IN_TRANSACTION_TYPE');
