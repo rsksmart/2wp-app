@@ -195,12 +195,6 @@ export default defineComponent({
     });
 
     function toUSD(amount: number | string | undefined) {
-      console.log('getting the value for BTC ');
-      console.log('getting the value for BTC ');
-      console.log('getting the value for BTC ');
-      console.log('getting the value for BTC ');
-      console.log('getting the value for BTC ');
-      console.log(bitcoinPrice.value);
       const btcAmount = new SatoshiBig(amount ?? '0', 'btc');
       return btcAmount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
     }
