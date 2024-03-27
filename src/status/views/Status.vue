@@ -15,6 +15,7 @@
             <v-row>
               <v-text-field hide-details density="compact" variant="outlined"
                 v-model="txId"
+                @keydown.enter="getPegStatus"
                 label="Transaction id" />
               <v-btn :disabled="!isValidTxId" :icon="mdiMagnify" class="mx-2"
                 style="opacity: 1;" variant="text"
