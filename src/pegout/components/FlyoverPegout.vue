@@ -52,7 +52,7 @@
                   :formState="pegOutFormState"
                   :isReadyToSign="isReadyToSign"
                   :isReadyToCreate="isReadyToCreate"
-                  :authorizedWalletToSignMessage="authorizedWalletToSignMessage"
+                  :pegoutOptionAuthorizedWalletToSign="authorizedWalletToSignMessage"
                   @openAddressDialog="showAddressDialog = true"
                   @flyoverInputFocusChanged="handleFlyoverInputFocusChanged"
                   @send="send(quote.quoteHash)"
@@ -171,6 +171,7 @@ export default defineComponent({
     const pegOutFormState = ref<Machine<'loading' | 'goingHome' | 'fill'>>(new Machine('fill'));
     const injectedProvider = ref('');
     const isReadyToSign = ref(false);
+    let authorizedWalletToSignMessage = ref(false);
     const showAddressDialog = ref(false);
     const flyoverInputFocused = ref(false);
     const loadingQuotes = ref(false);
@@ -252,11 +253,11 @@ export default defineComponent({
       return '';
     });
 
-    const authorizedWalletToSignMessage = computed(
-      (): boolean => injectedProvider.value === constants.RLOGIN_METAMASK_WALLET
+    function walletAuthorizedToSign() {
+      authorizedWalletToSignMessage = injectedProvider.value === constants.RLOGIN_METAMASK_WALLET
         || isLedgerConnected.value
-        || session.value.rLogin?.provider.isTrezor,
-    );
+        || session.value.rLogin?.provider.isTrezor;
+    }
 
     const validAmountToReceive = computed((): boolean => estimatedBtcToReceive.value.gt(0));
 
@@ -358,6 +359,7 @@ export default defineComponent({
     }
 
     function getQuotes() {
+      walletAuthorizedToSign();
       loadingQuotes.value = true;
       getPegoutQuotes(session.value.account)
         .catch(handlePegoutError)

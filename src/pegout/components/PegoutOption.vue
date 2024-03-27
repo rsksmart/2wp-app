@@ -74,7 +74,7 @@
             {{session.btcDerivedAddress}}
           </span>
           <v-btn v-else
-            :disabled="!isReadyToSign || !authorizedWalletToSignMessage"
+            :disabled="!isReadyToSign || !pegoutOptionAuthorizedWalletToSign"
             variant="outlined"
             rounded
             @click="$emit('openAddressDialog')" >
@@ -82,7 +82,7 @@
               Get Bitcoin destination address
             </span>
           </v-btn>
-          <span v-if="!authorizedWalletToSignMessage" class="text-black pt-1" >
+          <span v-if="!pegoutOptionAuthorizedWalletToSign" class="text-black pt-1" >
             As you are not using MetaMask, Ledger or Trezor, you need to follow
               <a :href=constants.DERIVE_BTC_ADDRESS_DOCUMENTATION_URL
               class="d-inline-block text-black a"
@@ -139,7 +139,7 @@ export default defineComponent({
       type: Boolean,
       required: true,
     },
-    authorizedWalletToSignMessage: {
+    pegoutOptionAuthorizedWalletToSign: {
       type: Boolean,
       required: true,
     },
@@ -195,6 +195,12 @@ export default defineComponent({
     });
 
     function toUSD(amount: number | string | undefined) {
+      console.log('getting the value for BTC ');
+      console.log('getting the value for BTC ');
+      console.log('getting the value for BTC ');
+      console.log('getting the value for BTC ');
+      console.log('getting the value for BTC ');
+      console.log(bitcoinPrice.value);
       const btcAmount = new SatoshiBig(amount ?? '0', 'btc');
       return btcAmount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
     }
