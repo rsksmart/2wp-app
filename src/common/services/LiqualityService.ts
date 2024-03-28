@@ -49,7 +49,7 @@ export default class LiqualityService extends WalletService {
           },
           change: {
             address: false,
-            amount: true,
+            amount: false,
           },
           federation: {
             address: true,

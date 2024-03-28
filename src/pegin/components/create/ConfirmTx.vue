@@ -241,12 +241,8 @@ export default defineComponent({
       return changeAmount.toBTCTrimmedString();
     });
 
-    const computedFullAmount = computed((): string => {
-      const changeAmount = new SatoshiBig(pegInTxState.value.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
-      return pegInTxState.value.amountToTransfer.plus(safeFee.value)
-        .plus(changeAmount)
-        .toBTCTrimmedString();
-    });
+    const computedFullAmount = computed((): string => pegInTxState.value.amountToTransfer
+      .toBTCTrimmedString());
 
     const computedPlusFeeFullAmount = computed((): string => pegInTxState.value.amountToTransfer
       .plus(safeFee.value)
