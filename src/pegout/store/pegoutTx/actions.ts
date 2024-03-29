@@ -10,7 +10,6 @@ import {
   getCookie, getEstimatedFee,
   setCookie, ServiceError,
 } from '@/common/utils';
-import { FlyoverService } from '@/common/services';
 
 export const actions: ActionTree<PegOutTxState, RootState> = {
   [constants.PEGOUT_TX_SELECT_FEE_LEVEL]: ({ commit }, feeLevel: MiningSpeedFee) => {
