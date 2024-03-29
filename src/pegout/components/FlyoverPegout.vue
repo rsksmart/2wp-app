@@ -289,7 +289,7 @@ export default defineComponent({
       router.push({
         name: 'PegOutSuccess',
         params: {
-          wallet: currentWallet.value,
+          wallet: currentWallet.value ? currentWallet.value.short_name : '',
           type,
         },
       });
@@ -312,7 +312,7 @@ export default defineComponent({
       txHash: flyoverPegoutState.value.txHash as string,
       type: TxStatusType.PEGOUT.toLowerCase(),
       value: Number(flyoverPegoutState.value.amountToTransfer.toRBTCTrimmedString()),
-      wallet: currentWallet.value,
+      wallet: currentWallet.value ? currentWallet.value.formal_name : '',
       rskGas: Number(selectedQuote.value.quote.gasFee.toRBTCTrimmedString()),
       fee: Number(getProviderFee()),
       provider: getLPName(),
@@ -323,7 +323,7 @@ export default defineComponent({
       txHash: pegOutTxState.value.txHash as string,
       type: TxStatusType.PEGOUT.toLowerCase(),
       value: Number(pegOutTxState.value.amountToTransfer.toRBTCTrimmedString()),
-      wallet: currentWallet.value,
+      wallet: currentWallet.value ? currentWallet.value.formal_name : '',
       btcEstimatedFee: Number(pegOutTxState.value.btcEstimatedFee.toBTCTrimmedString()),
       rskGas: Number(pegOutTxState.value.calculatedFee.toRBTCTrimmedString()),
     }));
