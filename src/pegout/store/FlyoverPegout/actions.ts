@@ -3,6 +3,7 @@ import {
 } from '@/common/types';
 import { ActionTree } from 'vuex';
 import * as constants from '@/common/store/constants';
+import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 
 export const actions: ActionTree<FlyoverPegoutState, RootState> = {
   [constants.FLYOVER_PEGOUT_INIT]: async ({ state, dispatch }) => {
@@ -27,10 +28,13 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
     const quotePromises: Promise<QuotePegOut2WP[]>[] = [];
     state.liquidityProviders.forEach((provider) => {
       dispatch(constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER, provider.id);
+      const tempBtcAddress = EnvironmentContextProviderService
+        .getEnvironmentContext()
+        .getBitcoinAddress();
       quotePromises.push(state.flyoverService.getPegoutQuotes(
         rskRefundAddress,
-        state.btcRecipientAddress,
-        state.btcRecipientAddress,
+        state.btcRecipientAddress ? state.btcRecipientAddress : tempBtcAddress,
+        state.btcRecipientAddress ? state.btcRecipientAddress : tempBtcAddress,
         state.amountToTransfer,
       ));
     });
