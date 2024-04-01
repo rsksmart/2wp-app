@@ -21,21 +21,14 @@
         <!-- Step 2 -->
         <flyover-rbtc-input-amount :enableButton="!isReadyToSign"
         @walletDisconnected="clearState"/>
-        <v-divider />
-        <!-- Step 3 -->
-        <btc-recipient-input @valid-btc-address="(valid) => isValidBtcRecipientAddress = valid"/>
-        <v-row v-if="!loadingQuotes" class="ma-0">
-          <v-col cols="auto" class="pa-4">
-          </v-col>
-          <v-col class="pb-6">
+        <v-row v-if="!loadingQuotes" class="ma-0 pl-11">
             <v-btn :disabled="!formFilled"
               variant="outlined" rounded @click="getQuotes" id="get-quotes-btn">
               Show options
             </v-btn>
-          </v-col>
         </v-row>
         <!-- Step 4 -->
-        <v-divider v-if="quotesToShow && !loadingQuotes"/>
+        <v-divider class="mt-4" v-if="quotesToShow && !loadingQuotes"/>
         <v-row v-if="quotesToShow && !loadingQuotes" class="ma-0 align-start">
           <v-col cols="auto" class="pl-0">
             <div :class="[focus ? 'number-filled' : 'number']">4</div>
@@ -148,7 +141,6 @@ import ApiService from '@/common/services/ApiService';
 import FullTxErrorDialog from '@/common/components/exchange/FullTxErrorDialog.vue';
 import LoadingDialog from '@/pegout/components/LoadingDialog.vue';
 import PegoutOption from './PegoutOption.vue';
-import BtcRecipientInput from './BtcRecipientInput.vue';
 
 export default defineComponent({
   name: 'FlyoverPegout',
@@ -158,7 +150,6 @@ export default defineComponent({
     AddressDialog,
     PegoutOption,
     FullTxErrorDialog,
-    BtcRecipientInput,
     LoadingDialog,
   },
   setup(props, context) {
@@ -263,8 +254,7 @@ export default defineComponent({
 
     const formFilled = computed((): boolean => !!session.value.account
       && pegOutTxState.value.amountToTransfer.gt(0)
-      && !!pegOutTxState.value.btcEstimatedFee
-      && isValidBtcRecipientAddress.value);
+      && !!pegOutTxState.value.btcEstimatedFee);
 
     const isReadyToCreate = computed((): boolean => isEnoughBalance.value
         && !!session.value.account

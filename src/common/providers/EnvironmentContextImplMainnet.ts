@@ -39,6 +39,11 @@ export default class EnvironmentContextImpl implements EnvironmentContext {
   }
 
   // eslint-disable-next-line class-methods-use-this
+  getBitcoinAddress() {
+    return '18PVckZYp5gF7ysFi3G6jA8SLKAeHieRxJ';
+  }
+
+  // eslint-disable-next-line class-methods-use-this
   getAddressRegexPattern(): AddressRegexPattern {
     return {
       legacy: new RegExp(constants.MAINNET_ADDRESS_LEGACY),
