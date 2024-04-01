@@ -11,4 +11,5 @@ export interface EnvironmentContext {
   getRskText: () => string;
   getBtcLedgerAppName: () => string;
   getAddressRegexPattern: () => AddressRegexPattern;
+  getBitcoinAddress: () => string;
 }

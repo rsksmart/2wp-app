@@ -67,7 +67,15 @@
           Recipient address
         </span>
       <div v-if="isFlyover" class="pt-2">
-        <span>{{ quote.quote.depositAddr }}</span>
+        <v-text-field
+                v-model="btcAddress"
+                flat
+                hide-details
+                single-line
+                density="compact"
+                variant="outlined"
+                :placeholder="`Paste your ${environmentContext.getBtcTicker()} address`"
+                @update:model-value="updateStore"/>
       </div>
       <div v-else class="d-flex flex-column pt-2 derive-button">
           <span v-if="session.btcDerivedAddress">
@@ -97,7 +105,7 @@
     <v-card-item class="flex-grow-1 d-flex flex-column align-left justify-end">
         <v-btn
           v-if="!formState.matches(['loading'])"
-          :disabled="!isReadyToCreate || formState.matches(['goingHome'])"
+          :disabled="!isReadyToCreate || formState.matches(['goingHome']) || !isValidBtcAddress"
           @click="$emit('send')"
           rounded
           color="#000"
@@ -112,13 +120,15 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType } from 'vue';
+import {
+  computed, defineComponent, PropType, ref,
+} from 'vue';
 import { mdiClockFast, mdiSendOutline, mdiTagCheck } from '@mdi/js';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { useState, useStateAttribute } from '@/common/store/helper';
+import { useAction, useState, useStateAttribute } from '@/common/store/helper';
 import { SessionState, SatoshiBig, QuotePegOut2WP } from '@/common/types';
 import * as constants from '@/common/store/constants';
-import { Machine, blockConfirmationsToTimeString } from '@/common/utils';
+import { Machine, blockConfirmationsToTimeString, validateAddress } from '@/common/utils';
 
 export default defineComponent({
   name: 'PegoutOption',
@@ -148,7 +158,9 @@ export default defineComponent({
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const session = useState<SessionState>('web3Session');
     const bitcoinPrice = useStateAttribute<number>('web3Session', 'bitcoinPrice');
+    const setBtcAddress = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ADD_BTC_ADDRESS);
     const fixedUSDDecimals = 2;
+    const btcAddress = ref('');
 
     const isFlyover = computed(() => props.quote.quoteHash.length > 0);
 
@@ -194,6 +206,15 @@ export default defineComponent({
       };
     });
 
+    const isValidBtcAddress = computed(() => {
+      const { valid, addressType } = validateAddress(btcAddress.value);
+      return valid && addressType === constants.BITCOIN_LEGACY_ADDRESS;
+    });
+
+    const updateStore = () => {
+      setBtcAddress(btcAddress.value);
+    };
+
     function toUSD(amount: number | string | undefined) {
       const btcAmount = new SatoshiBig(amount ?? '0', 'btc');
       return btcAmount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
@@ -210,6 +231,9 @@ export default defineComponent({
       estimatedValueToReceive,
       isFlyover,
       title,
+      btcAddress,
+      updateStore,
+      isValidBtcAddress,
     };
   },
 });
