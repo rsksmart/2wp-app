@@ -198,15 +198,7 @@ export default defineComponent({
       () => Object.values(quotes.value).some((providerQuotes) => providerQuotes.length > 0),
     );
 
-    const pegoutQuotes = computed(() => {
-      const quoteList: QuotePegOut2WP[] = [];
-
-      Object.values(quotes.value).forEach((providerQuotes) => {
-        providerQuotes.forEach((quote) => {
-          quoteList.push(quote);
-        });
-      });
-
+    function addDefaultQuote(quoteList: QuotePegOut2WP[]) {
       quoteList.push({
         quote: {
           agreementTimestamp: 0,
@@ -231,8 +223,29 @@ export default defineComponent({
         },
         quoteHash: '',
       });
+    }
 
+    function sortQuotes(quoteList: QuotePegOut2WP[]) {
       quoteList.sort((q1, q2) => q2.quote.depositConfirmations - q1.quote.depositConfirmations);
+    }
+
+    const pegoutQuotes = computed(() => {
+      console.log('getQuotes called...');
+      console.log('getQuotes called...');
+      console.log('getQuotes called...');
+      console.log('getQuotes called...');
+      console.log('getQuotes called...');
+      console.log('getQuotes called...');
+      const quoteList: QuotePegOut2WP[] = [];
+
+      Object.values(quotes.value).forEach((providerQuotes) => {
+        providerQuotes.forEach((quote) => {
+          quoteList.push(quote);
+        });
+      });
+
+      addDefaultQuote(quoteList);
+      sortQuotes(quoteList);
 
       return quoteList;
     });
@@ -272,9 +285,17 @@ export default defineComponent({
 
     const sendingPegout = computed(():boolean => pegOutFormState.value.matches(['loading']));
 
+    function forceShowDefaultValue() {
+      const quoteList: QuotePegOut2WP[] = [];
+      addDefaultQuote(quoteList);
+      sortQuotes(quoteList);
+    }
+
     function handlePegoutError(error: ServiceError) {
       txError.value = error;
-      showTxErrorDialog.value = true;
+      showTxErrorDialog.value = false;
+      loadingQuotes.value = true;
+      forceShowDefaultValue();
     }
 
     function switchDeriveButton(): void {
@@ -359,6 +380,11 @@ export default defineComponent({
     }
 
     function getQuotes() {
+      console.log('Getting quotes');
+      console.log('Getting quotes');
+      console.log('Getting quotes');
+      console.log('Getting quotes');
+      console.log('Getting quotes');
       walletAuthorizedToSign();
       loadingQuotes.value = true;
       getPegoutQuotes(session.value.account)

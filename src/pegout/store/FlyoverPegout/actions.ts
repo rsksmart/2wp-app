@@ -24,6 +24,11 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
     { state, commit, dispatch },
     rskRefundAddress: string,
   ) => new Promise<void>((resolve, reject) => {
+    console.log('action called');
+    console.log('action called');
+    console.log('action called');
+    console.log('action called');
+    console.log('action called');
     const quotePromises: Promise<QuotePegOut2WP[]>[] = [];
     state.liquidityProviders.forEach((provider) => {
       dispatch(constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER, provider.id);
@@ -46,7 +51,11 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
         commit(constants.FLYOVER_PEGOUT_SET_QUOTES, quotesByProvider);
         resolve();
       })
-      .catch(reject);
+      .catch((error) => {
+        const emptyList: Record<number, QuotePegOut2WP[]> = {};
+        commit(constants.FLYOVER_PEGOUT_SET_QUOTES, emptyList);
+        reject(error);
+      });
   }),
   [constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER]: ({ state }, providerId: number) => {
     state.flyoverService.useLiquidityProvider(providerId);
