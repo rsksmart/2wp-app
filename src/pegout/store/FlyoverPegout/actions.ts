@@ -63,9 +63,9 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
       if (providerId === -1) {
         reject(new Error('No provider found for quote'));
       }
-      dispatch(constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER, providerId);
-      commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, quoteHash);
-      state.flyoverService.acceptAndSendPegoutQuote(quoteHash)
+      dispatch(constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER, providerId)
+        .then(() => dispatch(constants.FLYOVER_PEGOUT_GET_FINAL_QUOTE, { providerId, quoteHash }))
+        .then(() => state.flyoverService.acceptAndSendPegoutQuote(state.selectedQuoteHash))
         .then((txHash) => commit(constants.FLYOVER_PEGOUT_SET_TX_HASH, txHash))
         .then(resolve)
         .catch(reject);
@@ -73,4 +73,32 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
   [constants.FLYOVER_PEGOUT_CLEAR_STATE]: ({ commit }) => {
     commit(constants.FLYOVER_PEGOUT_SET_CLEAR_STATE);
   },
+  [constants.FLYOVER_PEGOUT_GET_FINAL_QUOTE]:
+  (
+    { state, commit, dispatch },
+    { providerId, quoteHash },
+  ) => new Promise<void>((resolve, reject) => {
+    const currentQuote = state.quotes[providerId]
+      .find((quote) => quote.quoteHash === quoteHash);
+    if (!currentQuote) {
+      reject(new Error('Quote not found'));
+    }
+    dispatch(constants.FLYOVER_PEGOUT_GET_QUOTES, currentQuote?.quote.rskRefundAddress ?? '')
+      .then(() => {
+        state.quotes[providerId].forEach((quote2wp) => {
+          if (
+            quote2wp.quote.callFee.eq(currentQuote?.quote.callFee ?? 0)
+            && quote2wp.quote.gasFee.eq(currentQuote?.quote.gasFee ?? 0)
+            && quote2wp.quote.penaltyFee.eq(currentQuote?.quote.penaltyFee ?? 0)
+            && quote2wp.quote.productFeeAmount.eq(currentQuote?.quote.productFeeAmount ?? 0)
+            && quote2wp.quote.value.eq(currentQuote?.quote.value ?? 0)
+          ) {
+            commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, quote2wp.quoteHash);
+            resolve();
+          }
+        });
+        reject(new Error('Previous quote values not found'));
+      })
+      .catch(reject);
+  }),
 };
