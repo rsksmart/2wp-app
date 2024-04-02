@@ -101,4 +101,7 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
       })
       .catch(reject);
   }),
+  [constants.FLYOVER_PEGOUT_CLEAR_QUOTES]: ({ commit }) => {
+    commit(constants.FLYOVER_PEGOUT_SET_QUOTES, {});
+  },
 };
