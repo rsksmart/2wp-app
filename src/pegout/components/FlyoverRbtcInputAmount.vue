@@ -105,6 +105,7 @@ export default defineComponent({
     const setRbtcAmount = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ADD_AMOUNT);
     const addAmount = useAction('pegOutTx', constants.PEGOUT_TX_ADD_AMOUNT);
     const calculateFee = useAction('pegOutTx', constants.PEGOUT_TX_CALCULATE_FEE);
+    const clearQuotes = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_CLEAR_QUOTES);
     const account = computed<string>(() => web3SessionState.value.account as string);
 
     const safeAmount = computed((): WeiBig => new WeiBig(rbtcAmount.value ?? '0', 'rbtc'));
@@ -163,6 +164,7 @@ export default defineComponent({
     }
 
     function updateStore() {
+      clearQuotes();
       setRbtcAmount(new WeiBig(rbtcAmount.value, 'rbtc'));
       addAmount(new WeiBig(rbtcAmount.value, 'rbtc')).then(() => {
         calculateFee();
