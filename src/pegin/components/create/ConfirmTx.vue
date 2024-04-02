@@ -21,7 +21,7 @@
         <v-row class="step-title">
           <v-col>
             <v-row class="mx-0 d-flex justify-center">
-              <v-img :src="require('@/assets/exchange/rootstock_black.png')" height="40" contain/>
+              <v-img :src="require(`@/assets/exchange/steps/${idx}.png`)" height="40" contain/>
             </v-row>
             <v-row class="mx-0 my-3 d-flex justify-center">
               <h4 class="text-center">
@@ -94,8 +94,8 @@
               </v-row>
               <v-row v-if="step.outputsToshow.federation.address"
                 justify="center" class="mt-5 mx-0 d-lg-none">
-                <span>
-                  {{cropAddress(rskFederationAddress)}}
+                <span class="breakable-address">
+                  {{rskFederationAddress}}
                 </span>
               </v-row>
               <v-divider
@@ -122,8 +122,8 @@
               </v-row>
               <v-row v-if="step.outputsToshow.change.address"
                 justify="center" class="mt-5 mx-0 d-lg-none">
-                <span>
-                  {{cropAddress(changeAddress)}}
+                <span class="breakable-address">
+                  {{changeAddress}}
                 </span>
               </v-row>
               <v-divider
@@ -132,6 +132,12 @@
               <v-row v-if="step.fee"
                 justify="center" class="mt-5 mx-0 text-center">
                 Fee: {{safeFee.toBTCTrimmedString()}} {{ environmentContext.getBtcTicker() }}
+              </v-row>
+              <v-row v-if="step.fee">
+                <span class="grayish">
+                  Please make sure to check that the fee this transaction
+                  is paying is along your expectations.
+                </span>
               </v-row>
               <v-divider
                   v-if="step.fee"
