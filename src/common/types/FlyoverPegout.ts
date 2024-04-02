@@ -12,5 +12,5 @@ export interface FlyoverPegoutState {
     quotes: Record<number, QuotePegOut2WP[]>;
     flyoverService: FlyoverService;
     txHash?: string;
-    selectedQuoteHash?: string;
+    selectedQuoteHash: string;
 }
