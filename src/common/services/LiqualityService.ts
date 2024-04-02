@@ -48,8 +48,8 @@ export default class LiqualityService extends WalletService {
             amount: true,
           },
           change: {
-            address: false,
-            amount: false,
+            address: true,
+            amount: true,
           },
           federation: {
             address: true,
