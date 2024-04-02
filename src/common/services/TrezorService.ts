@@ -85,6 +85,7 @@ export default class TrezorService extends WalletService {
           },
         },
         fee: false,
+        fullAmount: false,
       },
       {
         title: 'Confirm funds transfer',
@@ -104,6 +105,7 @@ export default class TrezorService extends WalletService {
           },
         },
         fee: false,
+        fullAmount: false,
       },
       {
         title: 'Confirm change address',
@@ -123,6 +125,7 @@ export default class TrezorService extends WalletService {
           },
         },
         fee: false,
+        fullAmount: false,
       },
       {
         title: 'Confirm transaction fee',
@@ -138,10 +141,11 @@ export default class TrezorService extends WalletService {
           },
           federation: {
             address: false,
-            amount: true,
+            amount: false,
           },
         },
         fee: true,
+        fullAmount: true,
       },
     ];
   }

@@ -57,6 +57,7 @@ export default class LiqualityService extends WalletService {
           },
         },
         fee: true,
+        fullAmount: false,
       },
     ];
   }

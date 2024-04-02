@@ -55,6 +55,7 @@ export default class LeatherService extends WalletService {
           },
         },
         fee: true,
+        fullAmount: false,
       },
     ];
   }

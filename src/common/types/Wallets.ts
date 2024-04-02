@@ -31,6 +31,7 @@ export interface Step {
       amount: boolean,
     },
   },
+  fullAmount: boolean;
   fee: boolean;
   comment?: string;
 }
