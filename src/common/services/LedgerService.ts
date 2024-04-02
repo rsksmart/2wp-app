@@ -38,7 +38,7 @@ export default class LedgerService extends WalletService {
     return [
       {
         title: 'Confirm your transaction',
-        subtitle: 'Please check your Trezor device',
+        subtitle: 'Please check your Ledger device',
         outputsToshow: {
           opReturn: {
             value: true,
@@ -54,6 +54,7 @@ export default class LedgerService extends WalletService {
           },
         },
         fee: false,
+        fullAmount: false,
       },
       {
         title: 'Confirm funds transfer',
@@ -73,6 +74,7 @@ export default class LedgerService extends WalletService {
           },
         },
         fee: false,
+        fullAmount: false,
       },
       {
         title: 'Confirm change address',
@@ -92,10 +94,11 @@ export default class LedgerService extends WalletService {
           },
         },
         fee: false,
+        fullAmount: false,
       },
       {
         title: 'Confirm transaction fee',
-        subtitle: 'Really send',
+        subtitle: 'Confirm transaction',
         outputsToshow: {
           opReturn: {
             value: false,
@@ -107,10 +110,11 @@ export default class LedgerService extends WalletService {
           },
           federation: {
             address: false,
-            amount: true,
+            amount: false,
           },
         },
         fee: true,
+        fullAmount: false,
       },
     ];
   }

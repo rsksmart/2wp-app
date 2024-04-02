@@ -61,7 +61,7 @@
     "web3-eth-contract": "^1.10.0"
   },
   "devDependencies": {
-    "@ledgerhq/hw-transport-mocker": "^6.28.1",
+    "@ledgerhq/hw-transport-mocker": "^6.28.5",
     "@mdi/font": "^7.2.96",
     "@types/big.js": "^6.2.0",
     "@types/chai": "^4.2.11",
