@@ -126,7 +126,11 @@ export default class LeatherService extends WalletService {
           resolve({ signedTx: signedPsbt });
         })
         .catch((e) => {
-          reject(e);
+          if (e.error.code) {
+            reject(new Error(e.error.message));
+          } else {
+            reject(e);
+          }
         });
     });
   }
