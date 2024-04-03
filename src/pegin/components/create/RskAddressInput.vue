@@ -157,10 +157,10 @@ export default defineComponent({
 
     const validAddressMessage = computed(() => {
       let message = '';
-      if (!validateAddress()) {
-        message = 'The RSK recipient address must be a valid RSK address';
-      } else if (!isValidPegInAddress.value) message = 'This is an invalid address';
-      else if (!isValidRskAddress.value || !isValidCheckSum.value) message = `This may not be a valid address on the ${environmentContext.getRskText()} network. Please check.`;
+      const errorMessage = 'Please double check your RSK address before you continue';
+      if (!validateAddress()
+      || (!isValidPegInAddress.value)
+      || (!isValidRskAddress.value || !isValidCheckSum.value)) message = errorMessage;
       checkStep();
       return message;
     });
