@@ -14,7 +14,7 @@ For all security related issues, 2WP-APP has to main points of contact. Reach us
 
 RootstockLabs will make a best effort to meet the following response times for reported vulnerabilities:
 
-* TTime to first response (from report submit) - 5 business days
+* Time to first response (from report submit) - 5 business days
 * Time to triage (from report submit) - 7 business days
 * Time to bounty (from triage) - 15 business days
 
