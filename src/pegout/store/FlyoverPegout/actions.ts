@@ -39,12 +39,14 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
         ));
       });
       let quotesByProvider: Record<number, QuotePegOut2WP[]> = {};
-      Promise.all(quotePromises)
-        .then((quotes) => quotes.forEach((providerQuotes, index) => {
-          quotesByProvider = {
-            ...quotesByProvider,
-            [state.liquidityProviders[index].id]: providerQuotes,
-          };
+      Promise.allSettled(quotePromises)
+        .then((responses) => responses.forEach((response, index) => {
+          if (response.status === 'fulfilled') {
+            quotesByProvider = {
+              ...quotesByProvider,
+              [state.liquidityProviders[index].id]: response.value,
+            };
+          }
         }))
         .then(() => {
           commit(constants.FLYOVER_PEGOUT_SET_QUOTES, quotesByProvider);
