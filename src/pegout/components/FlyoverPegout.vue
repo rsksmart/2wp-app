@@ -28,8 +28,8 @@
             </v-btn>
         </v-row>
         <!-- Step 4 -->
-        <v-divider class="mt-4" v-if="quotesToShow && !loadingQuotes"/>
-        <v-row v-if="quotesToShow && !loadingQuotes" class="ma-0 align-start">
+        <v-divider class="mt-4" v-if="showStep && !loadingQuotes"/>
+        <v-row v-if="showStep && !loadingQuotes" class="ma-0 align-start">
           <v-col cols="auto" class="pl-0">
             <div :class="[focus ? 'number-filled' : 'number']">4</div>
           </v-col>
@@ -166,6 +166,7 @@ export default defineComponent({
     const showAddressDialog = ref(false);
     const flyoverInputFocused = ref(false);
     const loadingQuotes = ref(false);
+    const showStep = ref(false);
     const isValidBtcRecipientAddress = ref(false);
     const pegOutTxState = useState<PegOutTxState>('pegOutTx');
     const flyoverPegoutState = useState<FlyoverPegoutState>('flyoverPegout');
@@ -184,10 +185,6 @@ export default defineComponent({
     const isTrezorConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_TREZOR_CONNECTED);
     const isMetamaskConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_METAMASK_CONNECTED);
     const focus = computed(() => showAddressDialog.value || flyoverInputFocused.value);
-
-    const quotesToShow = computed(
-      () => Object.values(quotes.value).some((providerQuotes) => providerQuotes.length > 0),
-    );
 
     const pegoutQuotes = computed(() => {
       const quoteList: QuotePegOut2WP[] = [];
@@ -341,6 +338,7 @@ export default defineComponent({
     function clearState() {
       clearFlyoverState();
       initFlyoverTx();
+      showStep.value = false;
     }
 
     function back():void {
@@ -355,6 +353,7 @@ export default defineComponent({
         .catch(handlePegoutError)
         .finally(() => {
           loadingQuotes.value = false;
+          showStep.value = true;
         });
     }
 
@@ -398,10 +397,10 @@ export default defineComponent({
       handleFlyoverInputFocusChanged,
       clearState,
       getQuotes,
-      quotesToShow,
       loadingQuotes,
       sendingPegout,
       isValidBtcRecipientAddress,
+      showStep,
     };
   },
 });
