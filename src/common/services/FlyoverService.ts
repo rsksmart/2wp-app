@@ -207,7 +207,7 @@ export default class FlyoverService {
                 reject(new ServiceError(
                   'FlyoverService',
                   'acceptAndSendPegoutQuote',
-                  'Deposit failed',
+                  "We didn't receive confirmation for your transaction. If you intended to complete it, please try again.",
                   error.message,
                 ));
               });
