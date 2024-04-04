@@ -87,7 +87,7 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
             reject(new ServiceError(
               'RSKBlockchain',
               constants.PEGOUT_TX_SEND,
-              'User Cancelled transaction',
+              "We didn't receive confirmation for your transaction. If you intended to complete it, please try again.",
               e.message,
             ));
           });
