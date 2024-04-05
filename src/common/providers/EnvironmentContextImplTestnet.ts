@@ -40,11 +40,6 @@ export default class EnvironmentContextImplTestnet implements EnvironmentContext
   }
 
   // eslint-disable-next-line class-methods-use-this
-  getBitcoinAddress() {
-    return 'n1jS4SGpduZB2UVYGZvzrJVWu1PCZheM9C';
-  }
-
-  // eslint-disable-next-line class-methods-use-this
   getAddressRegexPattern(): AddressRegexPattern {
     return {
       legacy: new RegExp(constants.TESTNET_ADDRESS_LEGACY),

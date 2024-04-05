@@ -3,7 +3,7 @@ import {
 } from '@/common/types';
 import { ActionTree } from 'vuex';
 import * as constants from '@/common/store/constants';
-import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
+import { BridgeService } from '@/common/services/BridgeService';
 
 export const actions: ActionTree<FlyoverPegoutState, RootState> = {
   [constants.FLYOVER_PEGOUT_INIT]: async ({ state, dispatch }) => {
@@ -24,34 +24,35 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
   [constants.FLYOVER_PEGOUT_GET_QUOTES]: async (
     { state, commit, dispatch },
     rskRefundAddress: string,
-  ) => new Promise<void>((resolve, reject) => {
-    const quotePromises: Promise<QuotePegOut2WP[]>[] = [];
-    state.liquidityProviders.forEach((provider) => {
-      dispatch(constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER, provider.id);
-      const tempBtcAddress = EnvironmentContextProviderService
-        .getEnvironmentContext()
-        .getBitcoinAddress();
-      quotePromises.push(state.flyoverService.getPegoutQuotes(
-        rskRefundAddress,
-        state.btcRecipientAddress ? state.btcRecipientAddress : tempBtcAddress,
-        state.btcRecipientAddress ? state.btcRecipientAddress : tempBtcAddress,
-        state.amountToTransfer,
-      ));
+  ) => {
+    const bridgeService = new BridgeService();
+    const tempBtcAddress = await bridgeService.getFederationAddress();
+    return new Promise<void>((resolve, reject) => {
+      const quotePromises: Promise<QuotePegOut2WP[]>[] = [];
+      state.liquidityProviders.forEach((provider) => {
+        dispatch(constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER, provider.id);
+        quotePromises.push(state.flyoverService.getPegoutQuotes(
+          rskRefundAddress,
+          state.btcRecipientAddress ? state.btcRecipientAddress : tempBtcAddress,
+          state.btcRecipientAddress ? state.btcRecipientAddress : tempBtcAddress,
+          state.amountToTransfer,
+        ));
+      });
+      let quotesByProvider: Record<number, QuotePegOut2WP[]> = {};
+      Promise.all(quotePromises)
+        .then((quotes) => quotes.forEach((providerQuotes, index) => {
+          quotesByProvider = {
+            ...quotesByProvider,
+            [state.liquidityProviders[index].id]: providerQuotes,
+          };
+        }))
+        .then(() => {
+          commit(constants.FLYOVER_PEGOUT_SET_QUOTES, quotesByProvider);
+          resolve();
+        })
+        .catch(reject);
     });
-    let quotesByProvider: Record<number, QuotePegOut2WP[]> = {};
-    Promise.all(quotePromises)
-      .then((quotes) => quotes.forEach((providerQuotes, index) => {
-        quotesByProvider = {
-          ...quotesByProvider,
-          [state.liquidityProviders[index].id]: providerQuotes,
-        };
-      }))
-      .then(() => {
-        commit(constants.FLYOVER_PEGOUT_SET_QUOTES, quotesByProvider);
-        resolve();
-      })
-      .catch(reject);
-  }),
+  },
   [constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER]: ({ state }, providerId: number) => {
     state.flyoverService.useLiquidityProvider(providerId);
   },
