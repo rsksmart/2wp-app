@@ -4,6 +4,7 @@ import {
 import { ActionTree } from 'vuex';
 import * as constants from '@/common/store/constants';
 import { BridgeService } from '@/common/services/BridgeService';
+import { promiseWithTimeout } from '@/common/utils';
 
 export const actions: ActionTree<FlyoverPegoutState, RootState> = {
   [constants.FLYOVER_PEGOUT_INIT]: async ({ state, dispatch }) => {
@@ -39,7 +40,11 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
         ));
       });
       let quotesByProvider: Record<number, QuotePegOut2WP[]> = {};
-      Promise.allSettled(quotePromises)
+      const MAX_RESPONSE_TIME_IN_MS = 30000;
+      const quotePromisesWithTimeout = quotePromises.map(
+        (promise) => promiseWithTimeout(promise, MAX_RESPONSE_TIME_IN_MS),
+      );
+      Promise.allSettled(quotePromisesWithTimeout)
         .then((responses) => responses.forEach((response, index) => {
           if (response.status === 'fulfilled') {
             quotesByProvider = {
