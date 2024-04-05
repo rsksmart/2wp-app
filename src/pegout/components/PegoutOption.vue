@@ -105,7 +105,7 @@
     <v-card-item class="flex-grow-1 d-flex flex-column align-left justify-end">
         <v-btn
           v-if="!formState.matches(['loading'])"
-          :disabled="!isReadyToCreate || formState.matches(['goingHome']) || !isValidBtcAddress"
+          :disabled="!isReadyToCreate || formState.matches(['goingHome']) || (isFlyover && !isValidBtcAddress)"
           @click="$emit('send')"
           rounded
           color="#000"
