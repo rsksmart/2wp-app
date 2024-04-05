@@ -4,3 +4,4 @@ export { default as TrezorService } from './TrezorService';
 export { default as LedgerService } from './LedgerService';
 export { default as LiqualityService } from './LiqualityService';
 export { default as LeatherService } from './LeatherService';
+export { default as ExodusService } from './ExodusService';

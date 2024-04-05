@@ -39,6 +39,16 @@
             "pegout": false,
             "hover": false,
             "btnClass": "btn-leather"
+        },
+        {
+            "name": "Exodus",
+            "icon": "wallet-icons/leather.svg",
+            "iconWhite": "wallet-icons/leather-white.svg",
+            "constant": "WALLET_EXODUS",
+            "pegin": true,
+            "pegout": false,
+            "hover": false,
+            "btnClass": "btn-exodus"
         }
     ]
 }

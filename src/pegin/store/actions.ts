@@ -15,6 +15,7 @@ import {
 } from '@/common/types';
 import { getCookie, setCookie } from '@/common/utils';
 import TxFeeService from '../services/TxFeeService';
+import ExodusService from '@/common/services/ExodusService';
 
 export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.IS_TREZOR_CONNECTED]: ({ commit }, trezorConnected: boolean) => {
@@ -44,6 +45,9 @@ export const actions: ActionTree<PegInTxState, RootState> = {
         break;
       case constants.WALLET_NAMES.LEATHER.long_name:
         commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new LeatherService());
+        break;
+      case constants.WALLET_NAMES.EXODUS.long_name:
+        commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new ExodusService());
         break;
       default:
         commit(constants.PEGIN_TX_SET_WALLET_SERVICE, undefined);

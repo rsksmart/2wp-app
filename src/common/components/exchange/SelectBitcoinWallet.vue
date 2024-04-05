@@ -88,6 +88,9 @@ export default {
         case constants.WALLET_NAMES.LEATHER.long_name:
           wallet = constants.WALLET_NAMES.LEATHER.short_name;
           break;
+        case constants.WALLET_NAMES.EXODUS.long_name:
+          wallet = constants.WALLET_NAMES.EXODUS.short_name;
+          break;
         default:
           wallet = '';
           break;

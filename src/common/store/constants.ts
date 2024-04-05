@@ -4,6 +4,7 @@ export const WALLET_NAMES = {
   LIQUALITY: { formal_name: 'Liquality', short_name: 'liquality', long_name: 'WALLET_LIQUALITY' },
   METAMASK: { formal_name: 'Metamask', short_name: 'metamask', long_name: 'WALLET_METAMASK' },
   LEATHER: { formal_name: 'Leather', short_name: 'leather', long_name: 'WALLET_LEATHER' },
+  EXODUS: { formal_name: 'Exodus', short_name: 'exodus', long_name: 'WALLET_EXODUS' },
 } as const;
 
 export const OPERATION_TYPE = 'OPERATION_TYPE';
