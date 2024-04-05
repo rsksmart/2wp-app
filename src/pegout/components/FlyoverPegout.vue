@@ -27,11 +27,11 @@
               Show options
             </v-btn>
         </v-row>
-        <!-- Step 4 -->
+        <!-- Step 3 -->
         <v-divider class="mt-4" v-if="showStep && !loadingQuotes"/>
         <v-row v-if="showStep && !loadingQuotes" class="ma-0 align-start">
           <v-col cols="auto" class="pl-0">
-            <div :class="[focus ? 'number-filled' : 'number']">4</div>
+            <div :class="[focus ? 'number-filled' : 'number']">3</div>
           </v-col>
           <v-col class="pl-0 ma-0 pb-0">
             <p :class="{'boldie': focus}">

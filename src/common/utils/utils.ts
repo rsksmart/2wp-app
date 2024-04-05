@@ -295,3 +295,16 @@ export function blockConfirmationsToTimeString(confirmations: number): string {
   const BLOCK_CONFIRMATION_TIME_IN_MINUTES = 10;
   return moment.duration(confirmations * BLOCK_CONFIRMATION_TIME_IN_MINUTES, 'minutes').humanize(false, { h: 34 });
 }
+
+export function awaitTimeout(ms: number) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      reject(new Error('Request timed out'));
+    }, ms);
+  });
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function promiseWithTimeout(promise: Promise<any>, timeoutMs: number) {
+  return Promise.race([promise, awaitTimeout(timeoutMs)]);
+}
