@@ -15,28 +15,25 @@
         Press <strong>Send</strong> when you finish.
       </p>
     </v-row>
-    <v-row justify="center" class="mb-5">
-      <v-col v-for="step, idx in walletService.confirmationSteps()" :key="`step-${idx}`"
-          class="step" >
-        <v-row class="step-title">
+    <v-row class="ma-0 justify-center">
+      <v-col class="d-flex flex-column"
+        cols="3" v-for="step, idx in walletService.confirmationSteps()" :key="`step-${idx}`">
+        <v-row class="step-title ma-0">
           <v-col>
-            <v-row class="mx-0 d-flex justify-center">
-              <v-img :src="require(`@/assets/exchange/steps/${idx}.png`)" height="40" contain/>
-            </v-row>
-            <v-row class="mx-0 my-3 d-flex justify-center">
-              <h4 class="text-center">
-                <div v-if="walletService.confirmationSteps().length > 1"
-                  class="number">{{ idx + 1 }}</div>
-                {{ step.title }}
-              </h4>
-            </v-row>
+            <v-img :src="require(`@/assets/exchange/steps/${idx}.png`)" height="40" contain/>
+              <div class="d-flex justify-center">
+                <div v-if="walletService.confirmationSteps().length > 1" class="number">
+                  {{ idx + 1 }}
+                </div>
+                <h4>{{ step.title }}</h4>
+              </div>
           </v-col>
         </v-row>
-        <fieldset class="confirmation-box">
-          <legend lass="px-4">See on {{ walletService.name() }}</legend>
+        <div class="confirmation-box flex-grow-1">
+          <span class="legend grayish">See on {{ walletService.name().formal_name }}</span>
           <v-row v-if="walletService.name().short_name != 'leather'" class="ma-0 text-center">
-            <v-col class="pb-0">
-              <v-row justify="center" class="mt-3 mb-2">
+            <v-col class="py-0">
+              <v-row justify="center" class="mt-6 mb-2">
                 <span>
                   {{ step.subtitle }}
                 </span>
@@ -48,9 +45,10 @@
                 </span>
                 <v-tooltip right>
                   <template v-slot:activator="{props}">
-                      <v-icon v-bind="props" v-on="props.on" color="grey-lighten-1">
-                        mdi-information
-                      </v-icon>
+                      <v-icon
+                        size="x-small" :icon="mdiInformation" color="grey-darken-2"
+                        v-bind="props" v-on="props.on"
+                        />
                   </template>
                   <p class="tooltip-form mb-0">
                     The OP_RETURN is an output with information
@@ -63,15 +61,7 @@
                 Amount: 0 {{ environmentContext.getBtcTicker() }}
               </v-row>
               <v-row v-if="step.outputsToshow.opReturn.value"
-                justify="center" class="mt-5 pa-0 d-none d-xl-block">
-                <v-col class="pa-0 d-flex flex">
-                  <span v-for="value in splitString(opReturnData)" :key="value">
-                    {{ value }}
-                  </span>
-                </v-col>
-              </v-row>
-              <v-row v-if="step.outputsToshow.opReturn.value"
-                  justify="center" class="ma-0 d-xl-none">
+                  justify="center" class="ma-0">
                 <v-col class="mt-5 pa-0 d-flex">
                   <span class="breakable-address d-flex justify-center">
                     {{ opReturnData }}
@@ -81,7 +71,7 @@
               <v-divider
                   v-if="step.outputsToshow.opReturn.value || step.outputsToshow.opReturn.amount"
                   class="mt-6 mb-3"/>
-              <v-row v-if="step.outputsToshow.federation.amount" justify="center">
+              <v-row v-if="step.outputsToshow.federation.amount" justify="center" class="mt-2">
                 Amount: {{computedAmountToTransfer}} {{ environmentContext.getBtcTicker() }}
               </v-row>
               <v-row v-if="step.outputsToshow.federation.address"
@@ -102,26 +92,18 @@
                 v-if="step.outputsToshow.federation.address || step.outputsToshow.federation.amount"
                 class="mt-6 mb-3"/>
               <v-row v-if="step.fullAmount"
-                justify="center" class="mt-5 mx-0 text-center">
+                justify="center" class="mt-2 mx-0 text-center">
                  Amount: {{computedFullAmount}} {{ environmentContext.getBtcTicker() }}
               </v-row>
               <v-divider
                   v-if="step.fullAmount"
                   class="mt-6 mb-3"/>
               <v-row v-if="step.outputsToshow.change.amount && parseFloat(changeAmountComputed) > 0"
-                justify="center" class="mt-5 mx-0 text-center">
+                justify="center" class="mt-2 mx-0 text-center">
                 Amount: {{changeAmountComputed}} {{ environmentContext.getBtcTicker() }}
               </v-row>
               <v-row v-if="step.outputsToshow.change.address"
-                justify="center" class="mt-5 mx-0 d-none d-lg-block">
-                <v-col class="pa-0 d-flex flex-column align-center">
-                  <span v-for="value in splitString(changeAddress)" :key="value">
-                    {{ value }}
-                  </span>
-                </v-col>
-              </v-row>
-              <v-row v-if="step.outputsToshow.change.address"
-                justify="center" class="mt-5 mx-0 d-lg-none">
+                justify="center" class="mt-5 mx-0">
                 <span class="breakable-address">
                   {{changeAddress}}
                 </span>
@@ -133,7 +115,7 @@
                 justify="center" class="mt-5 mx-0 text-center">
                 Fee: {{safeFee.toBTCTrimmedString()}} {{ environmentContext.getBtcTicker() }}
               </v-row>
-              <v-row v-if="step.fee">
+              <v-row class="pa-2" v-if="step.fee">
                 <span class="grayish">
                   Please make sure to check that the fee this transaction
                   is paying is along your expectations.
@@ -165,10 +147,10 @@
           <v-row justify="center" class="mt-2 mb-3 mx-0 text-center">
             Confirm on your {{walletService.name().formal_name}} wallet
           </v-row>
-        </fieldset>
+        </div>
       </v-col>
     </v-row>
-    <v-divider/>
+    <v-divider class="mt-4"/>
     <v-row class="mx-0 my-8">
       <tx-summary-fixed
         :summary="confirmTxSummary"
@@ -222,6 +204,7 @@ import {
   PegInTxState, SatoshiBig, TxStatusType, TxSummaryOrientation,
 } from '@/common/types';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
+import { mdiInformation } from '@mdi/js';
 
 export default defineComponent({
   name: 'ConfirmTx',
@@ -364,6 +347,7 @@ export default defineComponent({
       walletService,
       toTrackId,
       confirmTxSummary,
+      mdiInformation,
     };
   },
 });
