@@ -51,8 +51,8 @@ export default class TrezorService extends WalletService {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  name(): string {
-    return constants.WALLET_NAMES.TREZOR.short_name;
+  name() {
+    return constants.WALLET_NAMES.TREZOR;
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -68,7 +68,7 @@ export default class TrezorService extends WalletService {
   confirmationSteps(): Step[] {
     return [
       {
-        title: 'Confirm your transaction',
+        title: 'Confirm transaction',
         subtitle: 'Please check your Trezor device',
         outputsToshow: {
           opReturn: {

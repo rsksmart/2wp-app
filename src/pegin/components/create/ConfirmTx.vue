@@ -8,7 +8,7 @@
     <v-row class="mx-0 my-8 d-flex justify-center">
       <p class="text-center">
         Make sure the amount, address and transaction fee displayed
-        on the {{ walletService.name() }} wallet are correct.
+        on the {{ walletService.name().formal_name }} wallet are correct.
         <br>
         To prevent malware attacks, double-check the address with the recipient.
         <br>
@@ -34,7 +34,7 @@
         </v-row>
         <fieldset class="confirmation-box">
           <legend lass="px-4">See on {{ walletService.name() }}</legend>
-          <v-row v-if="walletService.name() != 'leather'" class="ma-0 text-center">
+          <v-row v-if="walletService.name().short_name != 'leather'" class="ma-0 text-center">
             <v-col class="pb-0">
               <v-row justify="center" class="mt-3 mb-2">
                 <span>
@@ -146,7 +146,7 @@
             </v-col>
           </v-row>
           <!-- handling leather -->
-          <v-row v-if="walletService.name() === 'leather'" class="ma-0 text-center">
+          <v-row v-if="walletService.name().short_name === 'leather'" class="ma-0 text-center">
             <v-col>
               <v-row justify="center" class="mt-3 mb-2">
                 <span>
@@ -162,8 +162,8 @@
               </v-row>
              </v-col>
           </v-row>
-          <v-row justify="center" class="mt-2 mb-3 mx-0">
-            Confirm on your {{walletService.name()}} Wallet
+          <v-row justify="center" class="mt-2 mb-3 mx-0 text-center">
+            Confirm on your {{walletService.name().formal_name}} wallet
           </v-row>
         </fieldset>
       </v-col>
@@ -196,7 +196,7 @@
     <v-row v-if="confirmTxState.matches(['loading'])" class="mx-0 d-flex justify-center">
       <v-col>
         <v-row class="mx-0 mb-5 d-flex justify-center">
-          See your {{ walletService.name() }} wallet to confirm your transaction!
+          See your {{ walletService.name().formal_name }} wallet to confirm your transaction!
         </v-row>
         <v-row class="mx-0 mb-5 mt-10 d-flex justify-center">
           <v-progress-circular indeterminate :size="60" :width="8" color="#000000" />
@@ -315,7 +315,7 @@ export default defineComponent({
             txHash: id,
             type: TxStatusType.PEGIN.toLowerCase(),
             value: Number(pegInTxState.value.amountToTransfer.toBTCTrimmedString()),
-            wallet: walletService.value.name(),
+            wallet: walletService.value.name().short_name,
             addressType: addressType.value,
             fee: Number(safeFee.value.toBTCTrimmedString()),
           });
