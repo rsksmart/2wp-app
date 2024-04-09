@@ -23,8 +23,8 @@ export default class LeatherService extends WalletService {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  name(): string {
-    return constants.WALLET_NAMES.LEATHER.short_name;
+  name() {
+    return constants.WALLET_NAMES.LEATHER;
   }
 
   // eslint-disable-next-line class-methods-use-this

@@ -29,15 +29,15 @@ export default class LedgerService extends WalletService {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  name(): string {
-    return constants.WALLET_NAMES.LEDGER.short_name;
+  name() {
+    return constants.WALLET_NAMES.LEDGER;
   }
 
   // eslint-disable-next-line class-methods-use-this
   confirmationSteps(): Step[] {
     return [
       {
-        title: 'Confirm your transaction',
+        title: 'Confirm transaction',
         subtitle: 'Please check your Ledger device',
         outputsToshow: {
           opReturn: {

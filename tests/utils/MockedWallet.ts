@@ -24,8 +24,8 @@ export default class MockedWallet extends WalletService {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  name(): string {
-    return 'MockedWallet';
+  name() {
+    return { formal_name: 'Mocked', short_name: 'mocked', long_name: 'MOCKED_WALLET' };
   }
 
   // eslint-disable-next-line class-methods-use-this
