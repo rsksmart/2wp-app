@@ -29,4 +29,7 @@ export const mutations: MutationTree<FlyoverPegoutState> = {
   [constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE]: (state, quoteHash) => {
     state.selectedQuoteHash = quoteHash;
   },
+  [constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCES]: (state, differences) => {
+    state.differences = differences;
+  },
 };
