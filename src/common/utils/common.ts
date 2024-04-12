@@ -2,7 +2,7 @@ import { PegInTxState } from '@/common/types/pegInTx';
 import SatoshiBig from '@/common/types/SatoshiBig';
 import { BITCOIN_AVERAGE_FEE_LEVEL } from '@/common/store/constants';
 import {
-  FlyoverPegoutState, PegOutTxState,
+  FlyoverPegoutState, ObjectDifference, PegOutTxState,
   SessionState, WeiBig,
 } from '@/common/types';
 import { FlyoverService } from '@/common/services';
@@ -104,4 +104,33 @@ export const getClearFlyoverPegoutState = (): FlyoverPegoutState => ({
   quotes: {},
   flyoverService: markRaw(new FlyoverService()),
   selectedQuoteHash: '',
+  differences: [],
 });
+
+export const compareObjects = (
+  obj1: { [key: string]: unknown },
+  obj2: { [key: string]: unknown },
+): Array<ObjectDifference> => {
+  if (Object.getPrototypeOf(obj1) !== Object.getPrototypeOf(obj2)) {
+    throw new Error('Objects has different prototype');
+  }
+  const differences: Array<ObjectDifference> = [];
+  Object.keys(obj1).forEach((key) => {
+    if (obj1[key] instanceof WeiBig && obj2[key] instanceof WeiBig) {
+      if (!(obj1[key] as WeiBig).eq(obj2[key] as WeiBig)) {
+        differences.push({
+          key,
+          oldValue: (obj1[key] as WeiBig).toRBTCString(),
+          newValue: (obj2[key] as WeiBig).toRBTCString(),
+        });
+      }
+    } else if (obj1[key] !== obj2[key]) {
+      differences.push({
+        key,
+        oldValue: obj1[key],
+        newValue: obj2[key],
+      });
+    }
+  });
+  return differences;
+};

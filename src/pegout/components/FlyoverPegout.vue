@@ -113,6 +113,8 @@
       @closeErrorDialog="showTxErrorDialog = false"
       />
     </template>
+    <quote-diff-dialog :show-dialog="showQuoteDiff"
+      :differences="quoteDifferences" @continue="showQuoteDiff = false"/>
   </v-container>
 </template>
 
@@ -125,6 +127,7 @@ import EnvironmentContextProviderService from '@/common/providers/EnvironmentCon
 import RskWalletConnection from '@/pegout/components/RskWalletConnection.vue';
 import FlyoverRbtcInputAmount from '@/pegout/components/FlyoverRbtcInputAmount.vue';
 import AddressDialog from '@/pegout/components/AddressDialog.vue';
+import QuoteDiffDialog from '@/pegout/components/QuoteDiffDialog.vue';
 import {
   useAction, useGetter, useState, useStateAttribute,
 } from '@/common/store/helper';
@@ -132,7 +135,7 @@ import { SessionState } from '@/common/types/session';
 import { mdiSendOutline, mdiAlertOctagon } from '@mdi/js';
 import {
   FlyoverPegoutState,
-  NormalizedSummary, PegOutTxState, QuotePegOut2WP,
+  NormalizedSummary, ObjectDifference, PegOutTxState, QuotePegOut2WP,
   SatoshiBig, TxStatusType, TxSummaryOrientation, WeiBig,
 } from '@/common/types';
 import { Machine, ServiceError } from '@/common/utils';
@@ -151,6 +154,7 @@ export default defineComponent({
     PegoutOption,
     FullTxErrorDialog,
     LoadingDialog,
+    QuoteDiffDialog,
   },
   setup(props, context) {
     const nextPage = 'Confirmation';
@@ -168,6 +172,7 @@ export default defineComponent({
     const loadingQuotes = ref(false);
     const showStep = ref(false);
     const isValidBtcRecipientAddress = ref(false);
+    const showQuoteDiff = ref(false);
     const pegOutTxState = useState<PegOutTxState>('pegOutTx');
     const flyoverPegoutState = useState<FlyoverPegoutState>('flyoverPegout');
     const session = useState<SessionState>('web3Session');
@@ -239,6 +244,19 @@ export default defineComponent({
         return constants.WALLET_NAMES.LIQUALITY;
       }
       return '';
+    });
+
+    const quoteDifferences = computed(() => {
+      let differences: Array<ObjectDifference> = [];
+      if (flyoverPegoutState.value.differences.length > 0) {
+        differences = flyoverPegoutState.value.differences;
+        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+        showQuoteDiff.value = true;
+      } else {
+        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+        showQuoteDiff.value = false;
+      }
+      return differences;
     });
 
     function walletAuthorizedToSign() {
@@ -401,6 +419,9 @@ export default defineComponent({
       sendingPegout,
       isValidBtcRecipientAddress,
       showStep,
+      flyoverPegoutState,
+      quoteDifferences,
+      showQuoteDiff,
     };
   },
 });
