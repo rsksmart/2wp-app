@@ -4,7 +4,7 @@ import {
 import { ActionTree } from 'vuex';
 import * as constants from '@/common/store/constants';
 import { BridgeService } from '@/common/services/BridgeService';
-import { promiseWithTimeout } from '@/common/utils';
+import { compareObjects, promiseWithTimeout } from '@/common/utils';
 
 export const actions: ActionTree<FlyoverPegoutState, RootState> = {
   [constants.FLYOVER_PEGOUT_INIT]: async ({ state, dispatch }) => {
@@ -93,16 +93,30 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
     }
     dispatch(constants.FLYOVER_PEGOUT_GET_QUOTES, currentQuote?.quote.rskRefundAddress ?? '')
       .then(() => {
+        const reducedCurrentQuote = {
+          callFee: currentQuote?.quote.callFee,
+          gasFee: currentQuote?.quote.gasFee,
+          penaltyFee: currentQuote?.quote.penaltyFee,
+          productFeeAmount: currentQuote?.quote.productFeeAmount,
+          value: currentQuote?.quote.value,
+        };
         state.quotes[providerId].forEach((quote2wp) => {
-          if (
-            quote2wp.quote.callFee.eq(currentQuote?.quote.callFee ?? 0)
-            && quote2wp.quote.gasFee.eq(currentQuote?.quote.gasFee ?? 0)
-            && quote2wp.quote.penaltyFee.eq(currentQuote?.quote.penaltyFee ?? 0)
-            && quote2wp.quote.productFeeAmount.eq(currentQuote?.quote.productFeeAmount ?? 0)
-            && quote2wp.quote.value.eq(currentQuote?.quote.value ?? 0)
-          ) {
+          const reducedNewQuote = {
+            callFee: quote2wp.quote.callFee,
+            gasFee: quote2wp.quote.gasFee,
+            penaltyFee: quote2wp.quote.penaltyFee,
+            productFeeAmount: quote2wp.quote.productFeeAmount,
+            value: quote2wp.quote.value,
+          };
+          const differences = compareObjects(
+            reducedCurrentQuote as unknown as { [key: string]: unknown },
+            reducedNewQuote as unknown as { [key: string]: unknown },
+          );
+          if (differences.length === 0) {
             commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, quote2wp.quoteHash);
             resolve();
+          } else {
+            commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCES, differences);
           }
         });
         reject(new Error('Previous quote values not found'));
