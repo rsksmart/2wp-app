@@ -42,8 +42,8 @@
         },
         {
             "name": "Exodus",
-            "icon": "wallet-icons/leather.svg",
-            "iconWhite": "wallet-icons/leather-white.svg",
+            "icon": "wallet-icons/exodus-black.svg",
+            "iconWhite": "wallet-icons/exodus-white.svg",
             "constant": "WALLET_EXODUS",
             "pegin": true,
             "pegout": false,

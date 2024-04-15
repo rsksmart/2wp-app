@@ -4,7 +4,7 @@ import * as rskUtils from '@rsksmart/rsk-utils';
 import * as constants from '@/common/store/constants';
 import {
   ApiService, LedgerService, LiqualityService,
-  TrezorService, LeatherService,
+  TrezorService, LeatherService, ExodusService,
 } from '@/common/services';
 import SatoshiBig from '@/common/types/SatoshiBig';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
@@ -15,7 +15,6 @@ import {
 } from '@/common/types';
 import { getCookie, setCookie } from '@/common/utils';
 import TxFeeService from '../services/TxFeeService';
-import ExodusService from '@/common/services/ExodusService';
 
 export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.IS_TREZOR_CONNECTED]: ({ commit }, trezorConnected: boolean) => {

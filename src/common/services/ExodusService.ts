@@ -8,7 +8,7 @@ import { WalletService } from '@/common/services/index';
 import * as constants from '@/common/store/constants';
 import { LeatherTx } from '@/pegin/middleware/TxBuilder/LeatherTxBuilder';
 // import { GetAddressPayload, AddressPurposes, Address, GetAddressResponse } from '@/common/types/Exodus';
-import { AppConfig, UserSession, showConnect } from '@stacks/connect';
+import { AppConfig, UserSession } from '@stacks/connect';
 
 export default class ExodusService extends WalletService {
   private btcProvider;
@@ -74,6 +74,7 @@ export default class ExodusService extends WalletService {
     return Promise.resolve();
   }
 
+  // eslint-disable-next-line class-methods-use-this
   getAccountAddresses(): Promise<WalletAddress[]> {
     // IMPLEMENT
     return Promise.reject();
@@ -81,6 +82,7 @@ export default class ExodusService extends WalletService {
 
   // eslint-disable-next-line class-methods-use-this
   sign(tx: LeatherTx): Promise<SignedTx> {
+    console.log(tx);
     // IMPLEMENT
     return Promise.reject();
   }
