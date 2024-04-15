@@ -29,7 +29,8 @@
               </div>
           </v-col>
         </v-row>
-        <div class="confirmation-box flex-grow-1">
+        <div :class="
+        [isHdWallet ? 'confirmation-box-hd flex-grow-1': 'confirmation-box flex-grow-1']">
           <span class="legend grayish">See on {{ walletService.name().formal_name }}</span>
           <v-row v-if="walletService.name().short_name != 'leather'" class="ma-0 text-center">
             <v-col class="py-0">
@@ -70,7 +71,7 @@
               </v-row>
               <v-divider
                   v-if="step.outputsToshow.opReturn.value || step.outputsToshow.opReturn.amount"
-                  class="mt-6 mb-3"/>
+                  :class="[isHdWallet ? 'mt-6 mb-3 divideronfooter': 'mt-6 mb-3']"/>
               <v-row v-if="step.outputsToshow.federation.amount" justify="center" class="mt-2">
                 Amount: {{computedAmountToTransfer}} {{ environmentContext.getBtcTicker() }}
               </v-row>
@@ -90,14 +91,14 @@
               </v-row>
               <v-divider
                 v-if="step.outputsToshow.federation.address || step.outputsToshow.federation.amount"
-                class="mt-6 mb-3"/>
+                :class="[isHdWallet ? 'mt-6 mb-3 divideronfooter': 'mt-6 mb-3']"/>
               <v-row v-if="step.fullAmount"
                 justify="center" class="mt-2 mx-0 text-center">
                  Amount: {{computedFullAmount}} {{ environmentContext.getBtcTicker() }}
               </v-row>
               <v-divider
                   v-if="step.fullAmount"
-                  class="mt-6 mb-3"/>
+                  :class="[isHdWallet ? 'mt-6 mb-3 divideronfooter': 'mt-6 mb-3']"/>
               <v-row v-if="step.outputsToshow.change.amount && parseFloat(changeAmountComputed) > 0"
                 justify="center" class="mt-2 mx-0 text-center">
                 Amount: {{changeAmountComputed}} {{ environmentContext.getBtcTicker() }}
@@ -110,7 +111,7 @@
               </v-row>
               <v-divider
                   v-if="step.outputsToshow.change.address || step.outputsToshow.change.amount"
-                  class="mt-6 mb-3"/>
+                  :class="[isHdWallet ? 'mt-6 mb-3 divideronfooter': 'mt-6 mb-3']"/>
               <v-row v-if="step.fee"
                 justify="center" class="mt-5 mx-0 text-center">
                 Fee: {{safeFee.toBTCTrimmedString()}} {{ environmentContext.getBtcTicker() }}
@@ -123,7 +124,7 @@
               </v-row>
               <v-divider
                   v-if="step.fee"
-                  class="mt-6 mb-3"/>
+                  :class="[isHdWallet ? 'mt-6 mb-3 divideronfooter': 'mt-6 mb-3']"/>
 
             </v-col>
           </v-row>
@@ -144,7 +145,9 @@
               </v-row>
              </v-col>
           </v-row>
-          <v-row justify="center" class="mt-2 mb-3 mx-0 text-center">
+          <v-row justify="center"
+           :class="[isHdWallet ?
+           'mt-2 mb-3 mx-0 text-center divonfooter' : 'mt-2 mb-3 mx-0 text-center']">
             Confirm on your {{walletService.name().formal_name}} wallet
           </v-row>
         </div>
@@ -234,6 +237,7 @@ export default defineComponent({
     const accountBalanceText = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_ACCOUNT_BALANCE_TEXT);
     const safeFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
     const sessionId = useStateAttribute<string>('pegInTx', 'sessionId');
+    const isHdWallet = useGetter<boolean>('pegInTx', constants.PEGIN_TX_IS_HD_WALLET);
 
     const changeAmountComputed = computed((): string => {
       const changeAmount = new SatoshiBig(pegInTxState.value.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
@@ -348,6 +352,7 @@ export default defineComponent({
       toTrackId,
       confirmTxSummary,
       mdiInformation,
+      isHdWallet,
     };
   },
 });

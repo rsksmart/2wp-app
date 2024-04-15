@@ -90,6 +90,29 @@
       margin: 0 auto;
     }
   }
+  .confirmation-box-hd {
+    position: relative;
+    height: 215px;
+    border-radius: 30px;
+    border: 0.5px solid #BFBFBF;
+    box-sizing: border-box;
+    legend {
+      color: #C4C4C4;
+      margin: 0 auto;
+    }
+  }
+  .divonfooter {
+    position:absolute;
+    bottom:0;
+    left:0;
+    width:100%;
+  }
+  .divideronfooter {
+    position:absolute;
+    bottom:35px;
+    left:0;
+    width:100%;
+  }
   .expand-btn-active {
     background-color: #000000 !important;
     border-color: transparent !important;
