@@ -58,9 +58,23 @@ export interface PegoutStatusDataModel {
   estimatedFee: SatoshiBig;
 }
 
+export interface FlyoverStatusModel {
+  txHash: string;
+  type: string;
+  date: Date;
+  amount: number;
+  fee: number;
+  blockToBeFinished: number;
+  status: string;
+  senderAddress: string;
+  recipientAddress: string;
+}
+
 export enum TxStatusType {
   PEGIN = 'PEGIN',
   PEGOUT = 'PEGOUT',
+  FLYOVER_PEGIN = 'FLYOVER_PEGIN',
+  FLYOVER_PEGOUT = 'FLYOVER_PEGOUT',
   INVALID_DATA = 'INVALID_DATA',
   UNEXPECTED_ERROR = 'UNEXPECTED_ERROR',
   UNSET_STATUS = 'UNSET_STATUS',

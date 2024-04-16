@@ -249,6 +249,11 @@ export enum PegStatus {
   ERROR_UNEXPECTED = 'ERROR_UNEXPECTED',
 }
 
+export enum FlyoverPegoutStatus {
+  PENDING = 'PENDING',
+  COMPLETED = 'COMPLETED',
+}
+
 export const LEDGER_STATUS_CODES = {
   TRANSACTION_CANCELLED_BY_USER: 27013,
   DEVICE_LOCKED: 27010,

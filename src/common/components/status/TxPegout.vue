@@ -1,14 +1,14 @@
 <template>
   <v-col>
       <v-row justify="center" class="mt-1">
-        <pegout-progress-bar/>
-         <tx-summary-fixed
-           :summary="txPegoutSummary"
-           :initialExpand="true"
-           :type="typeSummary"
-           :txId="txId"
-           :isRejected="isRejectedPegout"
-           :orientation="orientationSummary"/>
+        <pegout-progress-bar v-if="!isFlyover"/>
+        <tx-summary-fixed
+          :summary="summary"
+          :initialExpand="true"
+          :type="typeSummary"
+          :txId="txId"
+          :isRejected="isRejectedPegout"
+          :orientation="orientationSummary"/>
       </v-row>
   </v-col>
 </template>
@@ -20,7 +20,7 @@ import {
   TxStatusType,
   TxSummaryOrientation,
   PegoutStatus,
-  PegoutStatusDataModel, NormalizedSummary,
+  PegoutStatusDataModel, NormalizedSummary, FlyoverStatusModel,
 } from '@/common/types';
 import PegoutProgressBar from '@/common/components/status/PegoutProgressBar.vue';
 import { useStateAttribute } from '@/common/store/helper';
@@ -34,18 +34,19 @@ export default defineComponent({
   },
   props: {
     txId: String,
+    isFlyover: Boolean,
   },
   setup(props) {
     const typeSummary = TxStatusType.PEGOUT;
     const orientationSummary = TxSummaryOrientation.HORIZONTAL;
 
-    const txDetails = useStateAttribute<PegoutStatusDataModel>('status', 'txDetails');
+    const txDetails = useStateAttribute<PegoutStatusDataModel | FlyoverStatusModel>('status', 'txDetails');
     const pegOutEstimatedFee = useStateAttribute<SatoshiBig>('status', 'pegOutEstimatedFee');
 
     const isRejectedPegout = computed(() => txDetails.value.status === PegoutStatus.REJECTED);
 
     const amountToBeReceived = computed((): string => {
-      const status = txDetails.value;
+      const status = txDetails.value as PegoutStatusDataModel;
       if (isRejectedPegout.value) {
         return '';
       }
@@ -57,7 +58,7 @@ export default defineComponent({
     });
 
     const txPegoutSummary = computed((): NormalizedSummary => {
-      const status = txDetails.value;
+      const status = txDetails.value as PegoutStatusDataModel;
       return {
         amountFromString: new SatoshiBig(status.valueRequestedInSatoshis, 'satoshi').toBTCTrimmedString(),
         amountReceivedString: amountToBeReceived.value,
@@ -69,10 +70,29 @@ export default defineComponent({
       };
     });
 
+    const flyoverPegoutSummary = computed((): NormalizedSummary => {
+      const status = txDetails.value as FlyoverStatusModel;
+      const amount = new SatoshiBig(status.amount, 'btc');
+      const fee = new SatoshiBig(status.fee, 'btc');
+      const totalAmount = amount.plus(fee).toBTCTrimmedString();
+      return {
+        amountFromString: totalAmount,
+        amountReceivedString: amount.toBTCTrimmedString(),
+        fee: Number(fee.toBTCTrimmedString()),
+        recipientAddress: status.recipientAddress,
+        senderAddress: status.senderAddress,
+        txId: props.txId,
+      };
+    });
+
+    const summary = computed(() => (props.isFlyover
+      ? flyoverPegoutSummary.value
+      : txPegoutSummary.value));
+
     return {
       typeSummary,
       orientationSummary,
-      txPegoutSummary,
+      summary,
       isRejectedPegout,
     };
   },

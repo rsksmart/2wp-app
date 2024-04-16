@@ -10,6 +10,7 @@ import {
   TxStatus,
   TxStatusType,
   Feature,
+  TxInfo,
 } from '@/common/types';
 import { areValidOutputs, isValidInput } from '@/common/utils';
 import { BridgeService } from '@/common/services/BridgeService';
@@ -211,25 +212,11 @@ export default class ApiService {
     });
   }
 
-  static registerTx({
-    sessionId, txHash, type, value, wallet, addressType, fee, rskGas, btcEstimatedFee, provider,
-  }: {
-    sessionId: string,
-    txHash: string,
-    type: string,
-    value: number,
-    wallet: string,
-    addressType?: string,
-    fee?: number,
-    rskGas?: number,
-    btcEstimatedFee?: number,
-    provider?: string
-  }): Promise<void> {
+  static registerTx(txInfo: TxInfo): Promise<void> {
     return new Promise<void>((resolve, reject) => {
+      const { sessionId, txHash, type } = txInfo;
       if (sessionId == null || txHash == null || type == null) resolve();
-      axios.post(`${ApiService.baseURL}/register`, {
-        sessionId, txHash, type, value, wallet, addressType, fee, rskGas, btcEstimatedFee, provider,
-      })
+      axios.post(`${ApiService.baseURL}/register`, txInfo)
         .then(() => resolve())
         .catch(reject);
     });

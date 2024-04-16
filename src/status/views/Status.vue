@@ -48,10 +48,8 @@
         <tx-pegin v-if="!activeMessage.isRejected
           && isPegIn
           && !activeMessage.error" :txId="txId" />
-        <tx-pegout v-if="((!activeMessage.isRejected
-          && !activeMessage.error)
-          || isRejected)
-          && isPegOut" :txId="txId" />
+        <tx-pegout v-if="((!activeMessage.isRejected && !activeMessage.error) || isRejected)
+                          && isPegOut" :txId="txId" :isFlyover="isFlyover"/>
         <v-row justify="center" class="mx-0 mt-5">
           <v-col cols="2" class="d-flex justify-start pa-0 ma-0">
             <v-btn rounded variant="outlined" color="#000000" width="110" @click="back">
@@ -120,7 +118,10 @@ export default defineComponent({
 
     const isPegIn = computed((): boolean => status.value.type === TxStatusType.PEGIN);
 
-    const isPegOut = computed((): boolean => status.value.type === TxStatusType.PEGOUT);
+    const isPegOut = computed((): boolean => status.value.type === TxStatusType.PEGOUT
+      || status.value.type === TxStatusType.FLYOVER_PEGOUT);
+
+    const isFlyover = computed((): boolean => status.value.type === TxStatusType.FLYOVER_PEGOUT);
 
     const showTimeLeft = computed((): boolean => {
       const txDetails = status.value.txDetails as PegoutStatusDataModel;
@@ -208,6 +209,7 @@ export default defineComponent({
       isPegIn,
       isRejected,
       isPegOut,
+      isFlyover,
       back,
       mdiMagnify,
     };
