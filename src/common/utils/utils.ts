@@ -170,6 +170,21 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
         default:
       }
       break;
+    case TxStatusType.FLYOVER_PEGOUT:
+      switch (status) {
+        case constants.FlyoverPegoutStatus.PENDING:
+          statusMessage = 'Your peg-out is being processed';
+          activeMessageStyle = 'statusProgress';
+          isRejected = false;
+          break;
+        case constants.FlyoverPegoutStatus.COMPLETED:
+          statusMessage = 'Your transaction was successfully processed!';
+          activeMessageStyle = 'statusSuccess';
+          isRejected = false;
+          break;
+        default:
+      }
+      break;
     case TxStatusType.PEGOUT:
       switch (status) {
         case PegoutStatus.PENDING:
