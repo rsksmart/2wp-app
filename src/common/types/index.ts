@@ -15,3 +15,4 @@ export { default as WeiBig } from './WeiBig';
 export * from './Feature';
 export * from './Flyover';
 export * from './FlyoverPegout';
+export * from './TxInfo';
