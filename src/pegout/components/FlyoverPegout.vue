@@ -303,6 +303,11 @@ export default defineComponent({
       rskGas: Number(selectedQuote.value.quote.gasFee.toRBTCTrimmedString()),
       fee: Number(getProviderFee()),
       provider: getLPName(),
+      details: {
+        senderAddress: session.value.account,
+        recipientAddress: flyoverPegoutState.value.btcRecipientAddress,
+        blocksToCompleteTransaction: selectedQuote.value.quote.depositConfirmations,
+      },
     }));
 
     const registerPegout = computed(() => ({
