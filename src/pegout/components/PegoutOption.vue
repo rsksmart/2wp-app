@@ -165,7 +165,7 @@ export default defineComponent({
   setup(props) {
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const session = useState<SessionState>('web3Session');
-    const bitcoinPrice = useStateAttribute<number>('web3Session', 'bitcoinPrice');
+    const bitcoinPrice = useStateAttribute<number>('pegOutTx', 'bitcoinPrice');
     const setBtcAddress = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ADD_BTC_ADDRESS);
     const fixedUSDDecimals = 2;
     const btcAddress = ref('');
