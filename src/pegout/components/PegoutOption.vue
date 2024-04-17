@@ -101,6 +101,12 @@
             to get the destination address.
           </span>
         </div>
+        <v-row class="ma-0 pt-1" style="min-height: 17px;">
+          <span v-if="showAddressWarning" class="yellowish" id="rbtc-error-msg">
+            The input address is not valid, remember we only accept legacy (P2PKH)
+            and segwit(P2SH) addresses.
+          </span>
+        </v-row>
     </v-card-item>
     <v-card-item class="flex-grow-1 d-flex flex-column align-left justify-end">
         <v-btn
@@ -210,8 +216,13 @@ export default defineComponent({
 
     const isValidBtcAddress = computed(() => {
       const { valid, addressType } = validateAddress(btcAddress.value);
-      return valid && addressType === constants.BITCOIN_LEGACY_ADDRESS;
+      return valid && (addressType === constants.BITCOIN_LEGACY_ADDRESS
+      || addressType === constants.BITCOIN_SEGWIT_ADDRESS);
     });
+
+    const showAddressWarning = computed(
+      () => !isValidBtcAddress.value && btcAddress.value.length > 0,
+    );
 
     const updateStore = () => {
       setBtcAddress(btcAddress.value);
@@ -236,6 +247,7 @@ export default defineComponent({
       btcAddress,
       updateStore,
       isValidBtcAddress,
+      showAddressWarning,
     };
   },
 });
