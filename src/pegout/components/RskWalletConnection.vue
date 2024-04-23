@@ -5,66 +5,41 @@
         <div v-bind:class="[focus ?
               'number-filled' : 'number']">1</div>
       </v-col>
-      <v-col class="pl-0 pb-0">
+      <v-col class="px-0 pb-0">
         <p v-bind:class="{'boldie': focus}">
           Connect your Rootstock wallet:
         </p>
-        <v-row class="ma-0 mt-4">
+        <v-row class="ma-0 mt-4 pl-1 py-3 d-flex justify-space-between align-center">
           <template v-if="useWeb3Wallet && web3Address">
-            <v-col cols="5" class="pl-1">
-              <v-row class="ma-0">
-                <p class="account">
-                  {{ address }}
-                  {{ balance.toRBTCTrimmedString() }}
-                  {{ environmentContext.getRbtcTicker() }}
-                </p>
-              </v-row>
-            </v-col>
-            <v-col cols="2" class="d-flex justify-center">
-              <div class="divider" style="height: 38px;"></div>
-            </v-col>
-            <v-col cols="3" class="pa-0 align-self-center">
-              <v-row class="derive-button ma-0 pl-4">
-                <v-btn
-                  @click="disconnectWallet"
-                  variant="outlined" rounded
-                  height="38">
-                  <span>
-                    Disconnect wallet
-                  </span>
-                </v-btn>
-              </v-row>
-            </v-col>
+            <div class="d-flex flex-column">
+              <p class="account">{{ address }}</p>
+              <p class="account">
+                {{ balance.toRBTCTrimmedString() }}
+                {{ environmentContext.getRbtcTicker() }}
+              </p>
+            </div>
+            <div class="flex-grow-1 d-flex justify-center">
+              <v-btn
+              @click="disconnectWallet"
+              variant="outlined" rounded
+              height="38">
+              <span>
+                Disconnect wallet
+              </span>
+            </v-btn>
+          </div>
           </template>
           <template v-else>
-            <v-col cols="5" class="wallet-label-container">
-              <v-row class="ma-0 pa-0 pl-1" >
-                <v-text-field
-                  class="wallet-address-input"
-                  density="compact"
-                  variant="solo"
-                  disabled
-                  flat
-                  hide-details
-                  :placeholder="
-                  `Connect your wallet to select the ${environmentContext.getRbtcTicker()} address`
-                  "
-                  @focus="focus = true"
-                  @blur="focus = false"/>
-              </v-row>
-            </v-col>
-            <v-col cols="2" class="d-flex justify-center">
-              <div class="divider"></div>
-            </v-col>
-            <v-col cols="3" class="pa-0 align-self-center">
-              <v-row class="ma-0 pl-4">
-                <v-btn variant="outlined" rounded color="#000000" height="38"
-                  class="select-wallet-button"
-                  @click="connectWallet" id="wallet-connection">
-                  <span class="blackish">Connect wallet</span>
-                </v-btn>
-              </v-row>
-            </v-col>
+            <p class="label">
+              Connect your wallet to select the {{environmentContext.getRbtcTicker()}} address
+            </p>
+            <div class="flex-grow-1 d-flex justify-center">
+              <v-btn variant="outlined" rounded color="#000000" height="38"
+                class="select-wallet-button"
+                @click="connectWallet" id="wallet-connection">
+                <span class="blackish">Connect wallet</span>
+              </v-btn>
+            </div>
           </template>
         </v-row>
       </v-col>
