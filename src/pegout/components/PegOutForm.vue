@@ -240,6 +240,7 @@ export default defineComponent({
         name: 'PegOutSuccess',
         params: {
           wallet: currentWallet.value,
+          type: 'powpeg',
         },
       });
       context.emit('changePage', nextPage);
