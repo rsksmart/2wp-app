@@ -1,0 +1,10 @@
+@forward 'vuetify/settings' with (
+  $body-font-family: "Rootstock",
+);
+
+@font-face {
+  font-family: "Rootstock";
+  src: 
+    local("Rootstock"),
+    url("@/common/styles/fonts/Rootstock-Sans-Tags.woff2") format("woff2");
+}
