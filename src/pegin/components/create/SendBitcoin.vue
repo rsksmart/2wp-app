@@ -54,6 +54,7 @@ import TxErrorDialog from '@/common/components/exchange/TxErrorDialog.vue';
 import { BridgeService } from '@/common/services/BridgeService';
 import { TrezorError } from '@/common/types/exception/TrezorError';
 import LeatherTxBuilder from '@/pegin/middleware/TxBuilder/LeatherTxBuilder';
+import XverseTxBuilder from '@/pegin/middleware/TxBuilder/XverseTxBuilder';
 import PeginTxService from '../../services/PeginTxService';
 
 export default defineComponent({
@@ -202,6 +203,10 @@ export default defineComponent({
         case constants.WALLET_NAMES.LEATHER.long_name:
           txBuilder.value = new LeatherTxBuilder();
           currentWallet.value = constants.WALLET_NAMES.LEATHER.short_name;
+          break;
+        case constants.WALLET_NAMES.XVERSE.long_name:
+          txBuilder.value = new XverseTxBuilder();
+          currentWallet.value = constants.WALLET_NAMES.XVERSE.short_name;
           break;
         default:
           txBuilder.value = new TrezorTxBuilder();
