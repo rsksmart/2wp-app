@@ -106,6 +106,7 @@ export interface PsbtExtendedInput {
     value: number;
     script: Buffer;
   };
+  redeemScript?: Buffer;
 }
 
 export interface NormalizedSummary {
