@@ -339,7 +339,7 @@ export default defineComponent({
     }));
 
     async function send(quoteHash: string) {
-      const type = quoteHash ? 'flyover' : 'powpeg';
+      const type = quoteHash ? constants.FLYOVER : constants.POWPEG;
       pegOutFormState.value.send('loading');
       try {
         if (quoteHash) {
