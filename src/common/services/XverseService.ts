@@ -80,7 +80,7 @@ export default class XverseService extends WalletService {
                 }
               }
             })
-            .catch(() => reject(new Error('Unable to sign transaction')));
+            .catch(() => reject(new Error('Invalid psbt provided')));
         });
       }
 
