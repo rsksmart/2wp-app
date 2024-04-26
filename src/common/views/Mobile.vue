@@ -34,6 +34,3 @@ export default {
   },
 };
 </script>
-<style>
-@import "@/common/styles/_mobile.scss";
-</style>
