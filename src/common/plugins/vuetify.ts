@@ -7,11 +7,53 @@ import crypto from 'crypto';
 
 export const vuetifyNonce = crypto.randomBytes(8).toString('hex');
 
+const ROOTSTOCK_COLORS = {
+  pink: '#FF70E0',
+  purple: '#9E75FF',
+  orange: '#FF9100',
+  teal: '#08FFD1',
+  yellow: '#DEFF19',
+  green: '#74BD01',
+  'bw-800': '#252525',
+  'bw-700': '#3A3A3A',
+  'bw-600': '#454545',
+  'bw-500': '#898989',
+  'bw-400': '#B8B8B8',
+};
+
 export const vuetify = createVuetify({
   components,
   directives,
+  aliases: {
+    VBtnRsk: components.VBtn,
+  },
+  defaults: {
+    VBtnRsk: {
+      rounded: true,
+      variant: 'outlined',
+      class: 'v-btn--rsk',
+    },
+    VBtn: {
+      rounded: true,
+      variant: 'outlined',
+    },
+  },
   theme: {
     defaultTheme: 'dark',
+    themes: {
+      dark: {
+        colors: {
+          ...ROOTSTOCK_COLORS,
+          background: '#000',
+          surface: '#252525',
+        },
+      },
+      light: {
+        colors: {
+          ...ROOTSTOCK_COLORS,
+        },
+      },
+    },
     cspNonce: vuetifyNonce,
   },
   icons: {

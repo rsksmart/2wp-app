@@ -1,5 +1,18 @@
 @forward 'vuetify/settings' with (
   $body-font-family: "Rootstock",
+  $typography: (
+    "h1": (
+      "size": 4.5rem,
+      "line-height": 0.8,
+      "weight": 700,
+    ),
+    "body-1": (
+      "line-height": 1.4,
+    ),
+    "button": (
+      "text-transform": none,
+    )
+  )
 );
 
 @font-face {

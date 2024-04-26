@@ -1,0 +1,29 @@
+.v-btn.v-btn--rounded.v-btn--variant-outlined.v-btn--rsk {
+  &:hover {
+    transition: all 0.5s ease;
+    background-color: rgb(var(--v-theme-on-background));
+    border-color: rgb(var(--v-theme-on-background));
+    color: rgb(var(--v-theme-background));
+  }
+
+  &::after {
+    opacity: 1;
+    top: 4px;
+    left: 4px;
+    border-width: 1px;
+    border-color: rgb(var(--v-theme-on-background));
+    border-top-color: transparent;
+    border-left-color: transparent;
+  }
+}
+
+.v-btn.v-btn--rounded.v-btn--variant-flat.v-btn--rsk {
+  color: rgb(var(--v-theme-background));
+  border: 1px solid currentColor;
+  background-color: rgb(var(--v-theme-on-background));
+  box-shadow: 2px 2px rgba(var(--v-theme-on-background));
+
+  &.v-btn--disabled {
+    box-shadow: 2px 2px rgba(var(--v-theme-on-background), var(--v-disabled-opacity));
+  }
+}
