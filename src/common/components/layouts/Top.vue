@@ -1,51 +1,40 @@
 <template>
-  <v-app-bar color="#fff" elevation="0" class="mx-8 top" style="position: relative; height: 80px;">
-    <v-row justify="center">
-      <v-col cols="11" class="d-flex flex-column align-start px-0">
-        <v-col cols="auto" class="top-logo">
-          <v-col cols="auto" class="px-0 pb-1">
-            <v-img @click="toExchange" position="center left"
-                   :src="logo"
-                   :alt="`${environmentContext.getRskText()} Two Way Peg`"
-                   height="65" width="180" contain class="rsk-main-logo"/>
-          </v-col>
-        </v-col>
-      </v-col>
-    </v-row>
-  </v-app-bar>
+  <header class="d-flex justify-space-between align-center py-4 px-8">
+    <div class="d-flex align-center ga-2">
+      <v-img inline width="160" alt="Rootstock logo" class="cursor-pointer"
+        :src="getLogoSrc()" @click="goHome">
+      </v-img>
+      <h1 class="text-purple text-h5">2 Way Peg</h1>
+    </div>
+    <v-switch inset hide-details base-color="purple" @click="toggleTheme" />
+  </header>
 </template>
 
 <script lang="ts">
-import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
-import * as constants from '@/common/store/constants';
-import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { getMainLogo } from '@/common/utils';
 import { useRoute, useRouter } from 'vue-router';
-import { computed } from 'vue';
+import { useTheme } from 'vuetify';
 
 export default {
   name: 'TopBar',
   setup() {
     const router = useRouter();
     const route = useRoute();
-    const environmentVariables = EnvironmentAccessorService.getEnvironmentVariables();
-    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-    const logo = getMainLogo();
-
-    const isTestNet = computed(
-      () => environmentVariables.vueAppCoin === constants.BTC_NETWORK_TESTNET,
-    );
-
-    function toExchange() {
+    function goHome() {
       if (route.name !== 'Home') router.push({ name: 'Home' });
     }
 
+    const { global: { current, name } } = useTheme();
+    function toggleTheme() {
+      name.value = current.value.dark ? 'light' : 'dark';
+    }
+    function getLogoSrc() {
+      return current.value.dark ? require('@/assets/logo-rootstock-white.svg') : require('@/assets/logo-rootstock-black.svg');
+    }
+
     return {
-      environmentVariables,
-      environmentContext,
-      isTestNet,
-      toExchange,
-      logo,
+      goHome,
+      toggleTheme,
+      getLogoSrc,
     };
   },
 };
