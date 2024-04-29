@@ -19,6 +19,7 @@ const ROOTSTOCK_COLORS = {
   'bw-600': '#454545',
   'bw-500': '#898989',
   'bw-400': '#B8B8B8',
+  'off-white': '#FAF9F5',
 };
 
 export const vuetify = createVuetify({
@@ -47,10 +48,18 @@ export const vuetify = createVuetify({
           background: '#000',
           surface: '#252525',
         },
+        variables: {
+          'theme-on-purple': '#000',
+          'theme-on-green': '#000',
+        },
       },
       light: {
         colors: {
           ...ROOTSTOCK_COLORS,
+        },
+        variables: {
+          'theme-on-purple': '#000',
+          'theme-on-green': '#000',
         },
       },
     },
