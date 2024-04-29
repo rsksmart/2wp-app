@@ -1,54 +1,36 @@
 <template>
-    <v-footer padless color="white" class="footer-rsk d-flex justify-center align-end">
-      <v-col cols="11" class="pb-0">
-        <v-row justify="center" align="start" class="mx-0 py-md-0 py-xl-6">
-          <v-col>
-              <v-row class="footer-logo mx-0" align="end">
-                <span>Built by &nbsp;</span>
-                <v-col class="pa-0">
-                  <v-img position="center left"
-                         :src="require('@/assets/logo-rootstocklabs.png')"
-                         alt="RootstockLabs"
-                         width="100" contain class="rsk-main-logo"/>
-                </v-col>
-              </v-row>
-            <p>Copyright © 2024 RootstockLabs All rights reserved</p>
-          </v-col>
-          <v-col cols="7" class="pt-4">
-            <v-row justify="center" class="mx-0 footer-links">
-              <a href="https://rootstocklabs.com/" target="_blank">
-                About RootstockLabs
-              </a>
-              <a :href="helpUrl" target="_blank">Help</a>
-              <a :href="discordUrl" target="_blank">Support</a>
-              <a v-if="termsAndConditionsEnabled" href="#"
-                 @click.prevent="$emit('update:showDialog', true)">
-                Terms & Conditions
-              </a>
-              <a :href="urlApi" target="_blank" rel="noopener">Api Version: {{apiVersion}}</a>
-              <a :href="urlApp" target="_blank" rel="noopener">App Version: {{appVersion}}</a>
-            </v-row>
-          </v-col>
-          <v-col class="pt-1">
-            <v-row justify="end" class="mx-0 footer-icons">
-              <v-btn variant="plain" href="https://twitter.com/rootstock_io" target="_blank"
-                density="compact"
-                :icon="mdiTwitter">
-              </v-btn>
-              <v-btn variant="plain" href="https://github.com/rsksmart/2wp-app"  target="_blank"
-                density="compact"
-                :icon="mdiGithub">
-              </v-btn>
-              <v-btn variant="plain"
-                density="compact"
-                :href="discordUrl" target="_blank"
-                :icon="mdiDiscord">
-              </v-btn>
-            </v-row>
-          </v-col>
-        </v-row>
-      </v-col>
-    </v-footer>
+  <v-footer class="bg-background text-caption d-flex justify-space-between px-8 py-4">
+    <div>
+      <div class="d-flex align-baseline ga-1">
+        <span>Built by</span>
+        <v-img inline :src="getLogoSrc()" alt="RootstockLabs logo" width="100" />
+      </div>
+      <p class="text-bw-500">Copyright © 2024 RootstockLabs All rights reserved</p>
+    </div>
+    <div class="d-flex ga-4">
+      <a href="https://rootstocklabs.com/" target="_blank">
+        About RootstockLabs
+      </a>
+      <a :href="helpUrl" target="_blank">Help</a>
+      <a :href="discordUrl" target="_blank">Support</a>
+      <a v-if="termsAndConditionsEnabled" href="#"
+        @click.prevent="$emit('update:showDialog', true)">
+        Terms & Conditions
+      </a>
+      <a :href="urlApi" target="_blank" rel="noopener">Api Version: {{ apiVersion }}</a>
+      <a :href="urlApp" target="_blank" rel="noopener">App Version: {{ appVersion }}</a>
+    </div>
+    <div class="d-flex ga-2">
+      <v-btn variant="plain" href="https://twitter.com/rootstock_io" target="_blank" density="compact" :icon="mdiTwitter">
+      </v-btn>
+      <v-btn variant="plain" href="https://github.com/rsksmart/2wp-app" target="_blank" density="compact"
+        :icon="mdiGithub">
+      </v-btn>
+      <v-btn variant="plain" density="compact" :href="discordUrl" target="_blank"
+        :icon="mdiDiscord">
+      </v-btn>
+    </div>
+  </v-footer>
 </template>
 
 <script lang="ts">
@@ -61,6 +43,7 @@ import { useRoute } from 'vue-router';
 import { useGetter, useStateAttribute } from '@/common/store/helper';
 import * as constants from '@/common/store/constants';
 import { Feature } from '@/common/types';
+import { useTheme } from 'vuetify';
 
 export default {
   name: 'FooterRsk',
@@ -101,6 +84,11 @@ export default {
       return feature;
     }
 
+    const { global: { current } } = useTheme();
+    function getLogoSrc() {
+      return current.value.dark ? require('@/assets/logo-rootstocklabs-white.svg') : require('@/assets/logo-rootstocklabs-black.svg');
+    }
+
     const helpUrl = computed(() => `https://dev.rootstock.io/guides/two-way-peg-app/${getDevPortalSlug()}`);
 
     ApiService.getApiInformation()
@@ -119,7 +107,15 @@ export default {
       mdiDiscord,
       mdiGithub,
       termsAndConditionsEnabled,
+      getLogoSrc,
     };
   },
 };
 </script>
+
+<style scoped>
+p {
+  font-size: 10px;
+  line-height: 1;
+}
+</style>
