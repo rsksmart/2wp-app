@@ -7,6 +7,7 @@ import axios, { AxiosResponse } from 'axios';
 import * as constants from '@/common/store/constants';
 import {
   TransactionType, SessionState, RootState, WeiBig,
+  AppLocale,
 } from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { ApiService } from '@/common/services';
@@ -166,5 +167,8 @@ export const actions: ActionTree<SessionState, RootState> = {
     } catch (e) {
       dispatch(constants.SESSION_ADD_TERMS_VALUE, false);
     }
+  },
+  [constants.SESSION_SWITCH_LOCALE]: ({ commit }, locale: AppLocale) => {
+    commit(constants.SESSION_SET_LOCALE, locale);
   },
 };
