@@ -2,6 +2,7 @@ import { createApp } from 'vue';
 import { AppNetwork } from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import * as constants from '@/common/store/constants';
+import i18n from '@/i18n';
 import App from './App.vue';
 import router from './common/router';
 import store from './common/store';
@@ -35,6 +36,7 @@ EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVari
 
 const app = createApp(App);
 
+app.use(i18n);
 app.use(router);
 app.use(vuetify);
 app.use(store);
