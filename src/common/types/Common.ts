@@ -130,3 +130,8 @@ export interface ObjectDifference {
   oldValue: unknown;
   newValue: unknown;
 }
+
+export enum AppLocale {
+  LOCALE_EN = 'en',
+  LOCALE_ES = 'es',
+}

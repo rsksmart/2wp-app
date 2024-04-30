@@ -1,9 +1,10 @@
 import { MutationTree } from 'vuex';
 import Web3 from 'web3';
 import * as constants from '@/common/store/constants';
-import { WeiBig } from '@/common/types';
+import { AppLocale, WeiBig } from '@/common/types';
 import { TransactionType, SessionState } from '@/common/types/session';
 import { getClearSessionState } from '@/common/utils';
+import i18n from '@/i18n';
 
 export const mutations: MutationTree<SessionState> = {
   [constants.SESSION_SET_ACCOUNT]: (state, account: string) => {
@@ -47,5 +48,10 @@ export const mutations: MutationTree<SessionState> = {
   },
   [constants.SESSION_SET_TERMS_AND_CONDITIONS_ENABLED]: (state, value) => {
     state.termsAndConditionsEnabled = value;
+  },
+  [constants.SESSION_SET_LOCALE]: (state, newLocale: AppLocale) => {
+    if (newLocale && i18n.global.availableLocales.includes(newLocale)) {
+      i18n.global.locale.value = newLocale;
+    }
   },
 };
