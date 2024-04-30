@@ -87,11 +87,6 @@ export class Machine<States extends string> {
   }
 }
 
-export function getMainLogo() {
-  // eslint-disable-next-line global-require
-  return require('@/assets/logo-rootstock-black.png');
-}
-
 export function getTime(totalMinutes: number): string {
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
