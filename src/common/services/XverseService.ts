@@ -27,7 +27,7 @@ export default class XverseService extends WalletService {
         return new Promise<WalletAddress[]>((resolve, reject) => {
           const walletAddresses: WalletAddress[] = [];
           const payload = {
-            purposes: ['ordinals', 'payment'] as AddressPurpose[],
+            purposes: ['payment'] as AddressPurpose[],
             message: 'Welcome to the 2wp-app, please select your Bitcoin account to start.',
             network: {
               type: this.satsBtcNetwork,
