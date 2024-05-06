@@ -15,7 +15,6 @@ export interface XverseTx extends Tx {
 
 export default class XverseTxBuilder extends TxBuilder {
   buildTx(normalizedTx: NormalizedTx): Promise<XverseTx> {
-    console.log('XverseTxBuilder.buildTx()');
     return new Promise<XverseTx>((resolve, reject) => {
       const psbt = new bitcoin.Psbt({ network: this.network });
       this.getExtendedInputs(normalizedTx.inputs)

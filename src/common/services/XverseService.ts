@@ -57,8 +57,12 @@ export default class XverseService extends WalletService {
         const xverseTx = tx as XverseTx;
         return new Promise<SignedTx>((resolve, reject) => {
           const signInputs: Record<string, number[]> = {};
-          xverseTx.inputs.forEach((input: { address: string | number; idx: number; }) => {
-            signInputs[input.address] = [input.idx];
+          xverseTx.inputs.forEach((input: { address: string; idx: number; }, inputIdx) => {
+            if (signInputs[input.address]) {
+              signInputs[input.address].push(inputIdx);
+            } else {
+              signInputs[input.address] = [inputIdx];
+            }
           });
           const signPsbtOptions = {
             psbt: xverseTx.base64UnsignedPsbt,
