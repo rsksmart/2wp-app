@@ -1,4 +1,4 @@
-import Web3 from 'web3';
+// import Web3 from 'web3';
 import { ActionTree } from 'vuex';
 import RLogin from '@rsksmart/rlogin';
 import WalletConnectProvider from '@walletconnect/web3-provider';
@@ -16,6 +16,9 @@ import {
   getCookie,
   setCookie,
 } from '@/common/utils';
+import { ethers, providers } from 'ethers';
+import { markRaw } from 'vue';
+import { toUtf8Bytes } from 'ethers/lib/utils';
 
 export const actions: ActionTree<SessionState, RootState> = {
   [constants.SESSION_CONNECT_WEB3]: ({ commit, state }): Promise<void> => {
@@ -74,21 +77,16 @@ export const actions: ActionTree<SessionState, RootState> = {
     return new Promise<void>((resolve, reject) => {
       rLogin.connect()
         .then((rLoginResponse) => {
-          console.log('rLoginResponse', rLoginResponse.provider);
-          const providers = new Web3.providers.HttpProvider(rLoginResponse.provider);
-          const web3 = new Web3(providers);
-          console.log(web3.givenProvider);
-          console.log('web3', web3);
+          const provider = new providers.Web3Provider(rLoginResponse.provider);
           commit(constants.SESSION_IS_ENABLED, true);
           commit(constants.SESSION_SET_RLOGIN, rLoginResponse);
           commit(constants.SESSION_SET_RLOGIN_INSTANCE, rLogin);
-          commit(constants.SESSION_SET_WEB3_INSTANCE, web3);
-          return web3.eth.getAccounts();
+          commit(constants.SESSION_SET_WEB3_INSTANCE, markRaw(provider));
+          return provider.listAccounts();
         }).then((accounts) => {
           resolve(commit(constants.SESSION_SET_ACCOUNT, accounts[0]));
         })
         .catch((e) => {
-          console.error('Error connecting to web3', e);
           commit(constants.SESSION_IS_ENABLED, false);
           commit(constants.SESSION_SET_RLOGIN_INSTANCE, rLogin);
           reject(e);
@@ -96,16 +94,16 @@ export const actions: ActionTree<SessionState, RootState> = {
     });
   },
   [constants.WEB3_SESSION_GET_ACCOUNT]: async ({ state, commit }) => {
-    const { web3 } = state;
-    if (web3) {
-      const accounts = await web3.eth.getAccounts();
+    const { ethersProvider } = state;
+    if (ethersProvider) {
+      const accounts = await ethersProvider.listAccounts();
       commit(constants.SESSION_SET_ACCOUNT, accounts[0]);
     }
   },
   [constants.WEB3_SESSION_ADD_BALANCE]: async ({ commit, state }) => {
-    const { web3, account } = state;
-    if (web3 && account) {
-      const balance = await web3.eth.getBalance(account);
+    const { ethersProvider, account } = state;
+    if (ethersProvider && account) {
+      const balance = await ethersProvider.getBalance(account);
       commit(constants.WEB3_SESSION_SET_BALANCE, new WeiBig(Number(balance), 'wei'));
     }
   },
@@ -120,9 +118,9 @@ export const actions: ActionTree<SessionState, RootState> = {
   },
   [constants.SESSION_SIGN_MESSAGE]:
     async ({ commit, state }, messageToBeSigned: string): Promise<void> => {
-      if (state.web3) {
-        const messageHash = state.web3.utils.keccak256(messageToBeSigned);
-        const signature = await state.web3.eth.personal.sign(messageHash, state.account || '0', '');
+      if (state.ethersProvider) {
+        const messageHash = ethers.utils.keccak256(toUtf8Bytes(messageToBeSigned));
+        const signature = await state.ethersProvider.send('personal_sign', [messageHash, state.account || '0', '']);
         const btcAddress = getBtcAddressFromSignedMessage(signature, messageHash || '');
         commit(constants.SESSION_SET_BTC_ACCOUNT, btcAddress);
       }

@@ -176,7 +176,7 @@ function getNormalizedTx(inputsSet: NormalizedInput[], outputsSet: NormalizedOut
 function setEnvironment() {
   const defaultEnvironmentVariables = {
     vueAppCoin: constants.BTC_NETWORK_TESTNET,
-    vueAppRskNodeHost: '',
+    vueAppRskNodeHost: 'https://public-node.testnet.rsk.co',
     vueAppApiBaseUrl: 'https://2wp-api.testnet.rsk.co',
   };
   EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);

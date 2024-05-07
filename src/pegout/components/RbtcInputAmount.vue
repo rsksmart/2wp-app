@@ -88,7 +88,6 @@
 </template>
 
 <script lang="ts">
-import Web3 from 'web3';
 import {
   computed, ref, watch, defineComponent,
 } from 'vue';
@@ -101,6 +100,7 @@ import {
   PegOutTxState, SatoshiBig, SessionState, WeiBig,
 } from '@/common/types';
 import { useAction, useGetter, useState } from '@/common/store/helper';
+import { providers } from 'ethers';
 
 export default defineComponent({
   name: 'RbtcInputAmount',
@@ -201,16 +201,16 @@ export default defineComponent({
     }
 
     async function calculateFeeByAmount(amount: WeiBig): Promise<WeiBig> {
-      const web3 = web3SessionState.value.web3 as Web3;
+      const provider = web3SessionState.value.ethersProvider as providers.Web3Provider;
       const sender = web3SessionState.value.account;
       let finalFee: WeiBig;
-      const gas = Number(await web3.eth.estimateGas({
+      const gas = Number(await provider.estimateGas({
         from: sender,
         to: pegOutTxState.value.pegoutConfiguration.bridgeContractAddress,
         value: amount.toWeiString(),
       }));
 
-      const gasPrice = Number(await web3.eth.getGasPrice());
+      const gasPrice = Number(await provider.getGasPrice());
       const averageGasPrice = Math.round(gasPrice * (3 / 2));
       const calculatedFees = {
         slow: new WeiBig(gasPrice * gas, 'wei'),
