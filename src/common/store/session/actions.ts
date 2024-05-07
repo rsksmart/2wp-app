@@ -74,7 +74,11 @@ export const actions: ActionTree<SessionState, RootState> = {
     return new Promise<void>((resolve, reject) => {
       rLogin.connect()
         .then((rLoginResponse) => {
-          const web3 = new Web3(rLoginResponse.provider);
+          console.log('rLoginResponse', rLoginResponse.provider);
+          const providers = new Web3.providers.HttpProvider(rLoginResponse.provider);
+          const web3 = new Web3(providers);
+          console.log(web3.givenProvider);
+          console.log('web3', web3);
           commit(constants.SESSION_IS_ENABLED, true);
           commit(constants.SESSION_SET_RLOGIN, rLoginResponse);
           commit(constants.SESSION_SET_RLOGIN_INSTANCE, rLogin);
@@ -84,6 +88,7 @@ export const actions: ActionTree<SessionState, RootState> = {
           resolve(commit(constants.SESSION_SET_ACCOUNT, accounts[0]));
         })
         .catch((e) => {
+          console.error('Error connecting to web3', e);
           commit(constants.SESSION_IS_ENABLED, false);
           commit(constants.SESSION_SET_RLOGIN_INSTANCE, rLogin);
           reject(e);
@@ -101,7 +106,7 @@ export const actions: ActionTree<SessionState, RootState> = {
     const { web3, account } = state;
     if (web3 && account) {
       const balance = await web3.eth.getBalance(account);
-      commit(constants.WEB3_SESSION_SET_BALANCE, new WeiBig(balance, 'wei'));
+      commit(constants.WEB3_SESSION_SET_BALANCE, new WeiBig(Number(balance), 'wei'));
     }
   },
   [constants.WEB3_SESSION_CLEAR_ACCOUNT]: async ({ commit }) => {

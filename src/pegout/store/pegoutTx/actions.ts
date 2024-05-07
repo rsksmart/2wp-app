@@ -28,7 +28,7 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
       });
       commit(constants.PEGOUT_TX_SET_GAS, gas);
       const gasPrice = Number(await web3.eth.getGasPrice());
-      const calculatedFee = new WeiBig(gasPrice * gas, 'wei');
+      const calculatedFee = new WeiBig(gasPrice * Number(gas), 'wei');
       commit(constants.PEGOUT_TX_SET_RSK_ESTIMATED_FEE, calculatedFee);
     } catch (e) {
       commit(constants.PEGOUT_TX_SET_GAS, 0);
@@ -76,7 +76,7 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
           .then(([tx, gasPrice]) => {
             commit(
               constants.PEGOUT_TX_SET_EFECTIVE_FEE,
-              new WeiBig(Number(gasPrice) * tx.gasUsed, 'wei'),
+              new WeiBig(Number(gasPrice) * Number(tx.gasUsed), 'wei'),
             );
           })
           .catch((e) => {

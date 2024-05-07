@@ -50,10 +50,11 @@ export class BridgeService {
     return new Promise<number>((resolve, reject) => {
       this.web3.eth
         .getBalance(bridge.address)
-        .then((balance: string) => {
+        .then((balance: bigint) => {
           const amount = Number(
             this.web3.utils.toWei(
-              this.web3.utils.toBN(this.totalRbtcStock),
+              this.web3.utils.toBigInt(this.totalRbtcStock),
+              'wei',
             ),
           ) - Number(balance);
           resolve(amount);
