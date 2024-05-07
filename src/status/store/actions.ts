@@ -49,13 +49,13 @@ export const actions: ActionTree<TxStatus, RootState> = {
             if (!blockNumber) reject(new Error('The tx are not mined yet'));
             return Promise.all([
               web3.eth.getBlockNumber(),
-              bridgeService.getNextPegoutCreationBlockAt(blockNumber ?? 0),
+              bridgeService.getNextPegoutCreationBlockAt(Number(blockNumber) ?? 0),
             ]);
           })
           .then(([currentBlock, nextPegoutCreationBlock]) => {
             const estimatedBlocksLeft = nextPegoutCreationBlock
             + constants.PEGOUT_REQUIRED_CONFIRMATIONS
-            + constants.PEGOUT_SIGNING_BLOCKS_GAP - currentBlock;
+            + constants.PEGOUT_SIGNING_BLOCKS_GAP - Number(currentBlock);
             const estimatedMinutes = estimatedBlocksLeft
             * ((365.25 * 1440) / constants.BLOCKS_PER_YEAR);
             commit(constants.STATUS_SET_ESTIMATED_RELEASE_TIME_IN_MINUTES, moment.duration(estimatedMinutes, 'minutes'));
