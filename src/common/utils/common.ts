@@ -80,7 +80,7 @@ export const getClearPegoutTxState = (): PegOutTxState => ({
 export const getClearSessionState = ():SessionState => (
   {
     account: undefined,
-    web3: undefined,
+    ethersProvider: undefined,
     enabled: false,
     rLogin: undefined,
     rLoginInstance: undefined,

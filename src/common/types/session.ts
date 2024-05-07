@@ -1,7 +1,7 @@
 import RLogin from '@rsksmart/rlogin';
-import Web3 from 'web3';
 import WeiBig from '@/common/types/WeiBig';
 import WalletConnectProvider from '@walletconnect/web3-provider';
+import { providers } from 'ethers';
 import { Feature } from './Feature';
 
 export type TransactionType = 'PEG_IN_TRANSACTION_TYPE' | 'PEG_OUT_TRANSACTION_TYPE' | undefined;
@@ -9,7 +9,7 @@ export type TransactionType = 'PEG_IN_TRANSACTION_TYPE' | 'PEG_OUT_TRANSACTION_T
 export interface SessionState {
   enabled: boolean;
   account?: string;
-  web3?: Web3;
+  ethersProvider?: providers.Web3Provider;
   rLogin?: {
     provider: WalletConnectProvider;
     disconnect: () => Promise<void>;

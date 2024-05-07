@@ -1,12 +1,14 @@
 import { ActionTree } from 'vuex';
-import Web3 from 'web3';
 import axios, { AxiosResponse } from 'axios';
 import * as constants from '@/common/store/constants';
 import {
   MiningSpeedFee, PegOutTxState, RootState, SatoshiBig, SessionState, WeiBig,
 } from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
-import { getCookie, getEstimatedFee, setCookie } from '@/common/utils';
+import {
+  getCookie, getEstimatedFee, sendTransaction, setCookie,
+} from '@/common/utils';
+import { providers } from 'ethers';
 
 export const actions: ActionTree<PegOutTxState, RootState> = {
   [constants.PEGOUT_TX_SELECT_FEE_LEVEL]: ({ commit }, feeLevel: MiningSpeedFee) => {
@@ -16,18 +18,18 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
     commit(constants.PEGOUT_TX_SET_AMOUNT, amountToTransfer);
   },
   [constants.PEGOUT_TX_CALCULATE_FEE]: async ({ commit, state, rootState }) => {
-    const web3 = rootState.web3Session?.web3 as Web3;
+    const ethersProvider = rootState.web3Session?.ethersProvider as providers.Web3Provider;
     const sender = rootState.web3Session?.account as string;
 
     try {
       // RSK Fee
-      const gas = await web3.eth.estimateGas({
+      const gas = await ethersProvider.estimateGas({
         from: sender,
         to: state.pegoutConfiguration.bridgeContractAddress,
         value: state.amountToTransfer.toWeiString(),
       });
       commit(constants.PEGOUT_TX_SET_GAS, gas);
-      const gasPrice = Number(await web3.eth.getGasPrice());
+      const gasPrice = Number(await ethersProvider.getGasPrice());
       const calculatedFee = new WeiBig(gasPrice * Number(gas), 'wei');
       commit(constants.PEGOUT_TX_SET_RSK_ESTIMATED_FEE, calculatedFee);
     } catch (e) {
@@ -60,18 +62,21 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
     .then(() => dispatch(constants.PEGOUT_TX_ADD_PEGOUT_CONFIGURATION)),
   [constants.PEGOUT_TX_SEND]: ({ state, rootState, commit })
     : Promise<void> => new Promise<void>((resolve, reject) => {
-      const { web3 } = rootState.web3Session as SessionState;
-      if (web3) {
+      const { ethersProvider } = rootState.web3Session as SessionState;
+      if (ethersProvider) {
+        const txToSign = {
+          from: rootState.web3Session?.account,
+          to: state.pegoutConfiguration.bridgeContractAddress,
+          value: state.amountToTransfer.toWeiString(),
+        };
         Promise.all([
-          web3.eth.sendTransaction({
-            from: rootState.web3Session?.account,
-            to: state.pegoutConfiguration.bridgeContractAddress,
-            value: state.amountToTransfer.toWeiString(),
-          }).on(constants.PEGOUT_TX_EVENT_TRANSACTION_HASH, (hash) => {
-            commit(constants.PEGOUT_TX_SET_TX_HASH, hash);
-            resolve();
-          }),
-          web3.eth.getGasPrice(),
+          sendTransaction(txToSign, ethersProvider as providers.Web3Provider)
+            .then((txResponse) => {
+              commit(constants.PEGOUT_TX_SET_TX_HASH, txResponse.hash);
+              resolve();
+              return txResponse.wait(1);
+            }),
+          ethersProvider.getGasPrice(),
         ])
           .then(([tx, gasPrice]) => {
             commit(
