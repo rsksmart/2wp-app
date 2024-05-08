@@ -1,4 +1,3 @@
-// import Web3 from 'web3';
 import { ActionTree } from 'vuex';
 import RLogin from '@rsksmart/rlogin';
 import WalletConnectProvider from '@walletconnect/web3-provider';
