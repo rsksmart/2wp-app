@@ -52,3 +52,17 @@ export function validateAddress(address: string): {valid: boolean; addressType: 
   }
   return { valid, addressType };
 }
+
+function compressPublicKey(pubKey: string) {
+  const { publicKey } = bitcoin.ECPair.fromPublicKey(Buffer.from(pubKey, 'hex'));
+  return publicKey.toString('hex');
+}
+
+export function getP2SHRedeemScript(publicKey: string, network: bitcoin.Network) {
+  const pubkey = compressPublicKey(publicKey);
+  const pair = bitcoin.ECPair.fromPublicKey(Buffer.from(pubkey, 'hex'));
+  const p2wpkh = bitcoin.payments.p2wpkh({ pubkey: pair.publicKey, network });
+  const p2sh = bitcoin.payments.p2sh({ redeem: p2wpkh, network });
+  const redeem = p2sh.redeem?.output;
+  return redeem;
+}
