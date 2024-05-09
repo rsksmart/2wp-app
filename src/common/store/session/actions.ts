@@ -52,6 +52,7 @@ export const actions: ActionTree<SessionState, RootState> = {
     };
     const rLogin = state.rLoginInstance === undefined ? new RLogin({
       cacheProvider: false,
+      defaultTheme: 'dark',
       providerOptions: {
         walletconnect: {
           package: WalletConnectProvider,
@@ -129,7 +130,6 @@ export const actions: ActionTree<SessionState, RootState> = {
     const storedPrice = getCookie('BtcPrice');
     if (storedPrice) {
       commit(constants.SESSION_SET_BITCOIN_PRICE, Number(storedPrice));
-      commit(constants.SESSION_SET_TX_TYPE, 'PEG_IN_TRANSACTION_TYPE');
     } else {
       axios.get(constants.COINGECKO_API_URL)
         .then((response: AxiosResponse) => {
@@ -139,9 +139,6 @@ export const actions: ActionTree<SessionState, RootState> = {
         })
         .catch(() => {
           commit(constants.SESSION_SET_BITCOIN_PRICE, 0);
-        })
-        .finally(() => {
-          commit(constants.SESSION_SET_TX_TYPE, 'PEG_IN_TRANSACTION_TYPE');
         });
     }
   },
