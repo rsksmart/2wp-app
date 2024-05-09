@@ -142,7 +142,7 @@ export default defineComponent({
           recipientAddress: flyoverPegoutState.value.btcRecipientAddress,
           senderAddress: account.value,
           txId: flyoverPegoutState.value.txHash,
-          gas: selectedQuote.value.quote.gasFee.toNumber(),
+          gas: selectedQuote.value.quote.gasFee,
         };
       } else {
         summary = {
@@ -152,7 +152,7 @@ export default defineComponent({
           recipientAddress: btcDerivedAddress.value,
           senderAddress: account.value,
           txId: pegoutTxState.value.txHash,
-          gas: Number(pegoutTxState.value.efectivePaidFee?.toRBTCTrimmedString()),
+          gas: pegoutTxState.value.efectivePaidFee,
         };
       }
       return summary;
