@@ -99,6 +99,11 @@ const routes: Readonly<RouteRecordRaw[]> = [
       () => import(/* webpackChunkName: "pegin-success" */ '../../pegin/views/Success.vue'),
     beforeEnter: [checkFromRoute],
   },
+  {
+    path: '/tx/success',
+    name: 'SuccessTx',
+    component: () => import(/* webpackChunkName: "tx-success" */ '../views/SuccessTx.vue'),
+  },
 ];
 
 const history = createWebHistory(EnvironmentAccessorService.getEnvironmentVariables().baseUrl);
