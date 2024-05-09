@@ -39,7 +39,7 @@ import ConfirmLedgerTransaction from '@/pegin/components/ledger/ConfirmLedgerTra
 import ConfirmTx from '@/pegin/components/create/ConfirmTx.vue';
 import * as constants from '@/common/store/constants';
 import {
-  SendBitcoinState, SatoshiBig, BtcWallet, LiqualityError, Utxo,
+  SendBitcoinState, SatoshiBig, BtcWallet, LiqualityError, Utxo, TxStatusType,
 } from '@/common/types';
 import { Machine, getClearPeginTxState } from '@/common/utils';
 import ConfirmLiqualityTransaction from '@/pegin/components/liquality/ConfirmLiqualityTransaction.vue';
@@ -142,7 +142,10 @@ export default defineComponent({
         showTxErrorDialog.value = true;
         txId.value = txHash;
       } else if (txHash) {
-        router.push({ name: 'Success', params: { txId: txHash, wallet: currentWallet.value } });
+        router.push({
+          name: 'SuccessTx',
+          params: { txId: txHash, type: (TxStatusType.PEGIN).toLowerCase() },
+        });
       }
     }
 
