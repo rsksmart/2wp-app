@@ -13,7 +13,7 @@
         </div>
       </v-col>
       <v-col lg="4" xl="3" xxl="2" class="d-flex flex-column ga-6">
-        <v-btn @click="selectPegIn"
+        <v-btn @click="selectConversion(constants.PEG_IN_TRANSACTION_TYPE)"
           :disabled="!isAllowedBrowser || (!areTermsAccepted && !!termsAndConditionsEnabled)"
           class="d-block pa-6 rounded-lg h-auto border-sm">
           <v-row no-gutters align="center" justify="space-between">
@@ -29,7 +29,8 @@
             </v-col>
           </v-row>
         </v-btn>
-        <v-btn @click="selectPegOut" :disabled="!areTermsAccepted && !!termsAndConditionsEnabled"
+        <v-btn @click="selectConversion(constants.PEG_OUT_TRANSACTION_TYPE)"
+          :disabled="!areTermsAccepted && !!termsAndConditionsEnabled"
           class="d-block pa-6 rounded-lg h-auto border-sm">
           <v-row no-gutters align="center" justify="space-between">
             <v-col cols="4">
@@ -56,6 +57,7 @@
   </v-container>
   <v-row v-if="termsAndConditionsEnabled" class="d-flex justify-center">
     <label for="termscheck" class="pa-0 d-flex align-center mx-3">
+      {{ '' }}
       <input id="termscheck" type="checkbox" :checked="areTermsAccepted" @click="updateCookie">
     </label>
     <span>
@@ -66,6 +68,20 @@
       </a>
     </span>
   </v-row>
+  <v-dialog v-model="show" width="500">
+    <v-card class="d-flex pa-6" rounded="lg">
+      <div class="d-flex justify-space-between">
+        <h2>Connect wallet</h2>
+        <v-btn variant="plain" density="compact" width="24" height="24"
+          @click="show = false" :icon="mdiCloseCircleOutline" />
+      </div>
+      <p class="text-bw-500 py-2">Please start by connecting the wallet of your choice.</p>
+      <div class="d-flex justify-space-between pt-8">
+        <v-btn-rsk @click="show = false">Cancel</v-btn-rsk>
+        <v-btn-rsk @click="reconnect">Connect your wallet</v-btn-rsk>
+      </div>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script lang="ts">
@@ -74,8 +90,9 @@ import { useRoute, useRouter } from 'vue-router';
 import * as constants from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { isAllowedCurrentBrowser } from '@/common/utils';
-import { Feature } from '@/common/types';
+import { Feature, TransactionType } from '@/common/types';
 import { useAction, useStateAttribute } from '@/common/store/helper';
+import { mdiCloseCircleOutline } from '@mdi/js';
 
 export default {
   name: 'HomeView',
@@ -86,21 +103,43 @@ export default {
     const showTermsAndConditions = ref(false);
     const areTermsAccepted = useStateAttribute<boolean>('web3Session', 'acceptedTerms');
     const termsAndConditionsEnabled = useStateAttribute<Feature>('web3Session', 'termsAndConditionsEnabled');
-    const clear = useAction('pegInTx', constants.PEGIN_TX_CLEAR_STATE);
+    const clearPegin = useAction('pegInTx', constants.PEGIN_TX_CLEAR_STATE);
     const clearPegOut = useAction('pegOutTx', constants.PEGOUT_TX_CLEAR);
-    const clearSession = useAction('web3Session', constants.SESSION_CLEAR);
     const addPeg = useAction('web3Session', constants.SESSION_ADD_TX_TYPE);
+    const stateTxType = useStateAttribute<string>('web3Session', 'txType');
     const setTerms = useAction('web3Session', constants.SESSION_ADD_TERMS_VALUE);
     const getBtcPrice = useAction('web3Session', constants.SESSION_ADD_BITCOIN_PRICE);
     const clearFlyoverPegout = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_CLEAR_STATE);
+    const rskAccount = useStateAttribute('web3Session', 'account');
+    const connectWeb3 = useAction('web3Session', constants.SESSION_CONNECT_WEB3);
+    const show = ref(false);
+    const COMPONENTS = {
+      [constants.PEG_IN_TRANSACTION_TYPE]: 'PegIn',
+      [constants.PEG_OUT_TRANSACTION_TYPE]: 'PegOut',
+    };
 
-    function selectPegIn(): void {
-      addPeg(constants.PEG_IN_TRANSACTION_TYPE);
-      router.push({ name: 'PegIn' });
+    async function selectConversion(txType: NonNullable<TransactionType>) {
+      addPeg(txType);
+      if (!rskAccount.value) {
+        try {
+          await connectWeb3();
+        } catch (e) {
+          show.value = true;
+          return;
+        }
+      }
+      router.push({ name: COMPONENTS[txType] });
     }
 
-    function selectPegOut(): void {
-      router.push({ name: 'PegOut' });
+    async function reconnect() {
+      show.value = false;
+      try {
+        await connectWeb3();
+      } catch (e) {
+        show.value = true;
+        return;
+      }
+      router.push({ name: COMPONENTS[stateTxType.value as NonNullable<TransactionType>] });
     }
 
     function closeTermsDialog() {
@@ -126,19 +165,15 @@ export default {
       if (route.path !== '/status') router.push('/status');
     }
 
-    clearSession()
-      .then(() => getBtcPrice());
-    clear();
+    getBtcPrice();
+    clearPegin();
     clearPegOut();
     clearFlyoverPegout();
-    clearSession();
     addPeg();
 
     return {
       environmentContext,
-      selectPegIn,
       isAllowedBrowser,
-      selectPegOut,
       toStatusSearch,
       showTermsAndConditions,
       closeTermsDialog,
@@ -147,6 +182,11 @@ export default {
       showDialog,
       toggleCheck,
       updateCookie,
+      show,
+      mdiCloseCircleOutline,
+      constants,
+      selectConversion,
+      reconnect,
     };
   },
 };

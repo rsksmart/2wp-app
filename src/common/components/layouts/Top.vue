@@ -6,13 +6,27 @@
       </v-img>
       <h1 class="text-purple text-h5">2 Way Peg</h1>
     </div>
-    <v-switch inset hide-details base-color="purple" @click="toggleTheme" />
+    <div class="d-flex align-center ga-5">
+      <div class="d-flex align-center ga-2" v-if="truncatedAccount">
+        <v-btn variant="text" size="small" density="compact" rounded="full" :icon="mdiContentCopy"
+          @click="copyFullAccountAddress"
+        />
+        <span>{{ truncatedAccount }}</span>
+        <v-btn variant="flat" size="x-small" color="purple" rounded="full" :icon="mdiLinkOff"
+          @click="disconnectWallet" />
+      </div>
+      <v-switch inset hide-details base-color="purple" @click="toggleTheme" />
+    </div>
   </header>
 </template>
 
 <script lang="ts">
+import { useAction, useStateAttribute } from '@/common/store/helper';
 import { useRoute, useRouter } from 'vue-router';
 import { useTheme } from 'vuetify';
+import { mdiContentCopy, mdiLinkOff } from '@mdi/js';
+import * as constants from '@/common/store/constants';
+import { computed } from 'vue';
 
 export default {
   name: 'TopBar',
@@ -31,11 +45,34 @@ export default {
       return current.value.dark ? require('@/assets/logo-rootstock-white.svg') : require('@/assets/logo-rootstock-black.svg');
     }
 
+    const account = useStateAttribute<string>('web3Session', 'account');
+    const truncatedAccount = computed(() => (account.value ? `${account.value.slice(0, 6)}...${account.value.slice(-4)}` : ''));
+
+    const clearSession = useAction('web3Session', constants.WEB3_SESSION_CLEAR_ACCOUNT);
+    function disconnectWallet() {
+      clearSession();
+      router.push({ name: 'Home' });
+    }
+
+    function copyFullAccountAddress() {
+      navigator.clipboard.writeText(account.value);
+    }
+
     return {
       goHome,
       toggleTheme,
       getLogoSrc,
+      truncatedAccount,
+      disconnectWallet,
+      mdiLinkOff,
+      mdiContentCopy,
+      copyFullAccountAddress,
     };
   },
 };
 </script>
+<style scoped>
+.v-btn--icon.bg-purple {
+  color: #fff !important;
+}
+</style>
