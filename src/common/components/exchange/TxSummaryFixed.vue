@@ -419,7 +419,7 @@
           <div class="form-field pt-2 pl-0">
             <v-container class="pa-0">
               <p class="light-grayish">
-                {{ summary.gas }} {{currencyFromTicker}}
+                {{ summary.gas?.toRBTCTrimmedString() }} {{currencyFromTicker}}
               </p>
               <span v-if="type === txType.PEGOUT">USD {{ gasUSD }}</span>
             </v-container>
@@ -655,7 +655,7 @@ export default defineComponent({
     });
 
     const gasUSD = computed((): string => {
-      const gasAmount = new SatoshiBig(props.summary?.gas || 0, 'btc');
+      const gasAmount = new SatoshiBig(props.summary?.gas?.toRBTCTrimmedString() || 0, 'btc');
       if (!gasAmount || !bitcoinPrice.value) return VALUE_INCOMPLETE_MESSAGE;
       return gasAmount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
     });

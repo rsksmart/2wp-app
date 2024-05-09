@@ -107,7 +107,7 @@ export default defineComponent({
       recipientAddress: btcDerivedAddress.value,
       senderAddress: account.value,
       txId: pegoutTxState.value.txHash,
-      gas: Number(pegoutTxState.value.efectivePaidFee?.toRBTCTrimmedString()),
+      gas: pegoutTxState.value.efectivePaidFee,
     }));
 
     function goToStatus() {

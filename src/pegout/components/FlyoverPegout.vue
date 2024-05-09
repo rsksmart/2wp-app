@@ -388,7 +388,7 @@ export default defineComponent({
       fee: Number(pegOutTxState.value.btcEstimatedFee.toBTCTrimmedString()),
       recipientAddress: session.value.btcDerivedAddress,
       senderAddress: session.value.account,
-      gas: Number(safeFee.value.toRBTCTrimmedString()),
+      gas: safeFee.value,
     }));
 
     function handleFlyoverInputFocusChanged(focused: boolean): void {

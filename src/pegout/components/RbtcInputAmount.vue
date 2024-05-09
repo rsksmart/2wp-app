@@ -203,18 +203,18 @@ export default defineComponent({
       const provider = web3SessionState.value.ethersProvider as providers.Web3Provider;
       const sender = web3SessionState.value.account;
       let finalFee: WeiBig;
-      const gas = Number(await provider.estimateGas({
+      const gas = await provider.estimateGas({
         from: sender,
         to: pegOutTxState.value.pegoutConfiguration.bridgeContractAddress,
         value: amount.toWeiString(),
-      }));
+      });
 
-      const gasPrice = Number(await provider.getGasPrice());
-      const averageGasPrice = Math.round(gasPrice * (3 / 2));
+      const gasPrice = await provider.getGasPrice();
+      const averageGasPrice = BigInt(Math.round(Number(gasPrice.toBigInt() * (3n / 2n))));
       const calculatedFees = {
-        slow: new WeiBig(gasPrice * gas, 'wei'),
-        average: new WeiBig(averageGasPrice * gas, 'wei'),
-        fast: new WeiBig(gasPrice * gas * 2, 'wei'),
+        slow: new WeiBig(gasPrice.toBigInt() * gas.toBigInt(), 'wei'),
+        average: new WeiBig(averageGasPrice * gas.toBigInt(), 'wei'),
+        fast: new WeiBig(gasPrice.toBigInt() * gas.toBigInt() * 2n, 'wei'),
       };
 
       switch (pegOutTxState.value.selectedFee) {
