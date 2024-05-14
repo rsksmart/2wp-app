@@ -1,12 +1,12 @@
 <template>
-  <v-container fluid class="mt-0">
+  <v-container>
     <template v-if="!walletDataReady">
       <connect-device @continueToForm="startAskingForBalance"
                       :sendBitcoinState="sendBitcoinState"
                       :show-dialog="showConnectDeviceDialog"
       />
     </template>
-    <template v-if="walletDataReady">
+    <template v-else>
       <component :is="currentComponent"
                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
                  :txBuilder="txBuilder"
