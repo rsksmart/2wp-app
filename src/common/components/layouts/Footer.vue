@@ -1,5 +1,5 @@
 <template>
-  <v-footer class="bg-background text-caption d-flex justify-space-between px-8 py-4">
+  <v-footer class="bg-background text-caption d-flex justify-space-between px-8 pb-4 pt-16">
     <div>
       <div class="d-flex align-baseline ga-1">
         <span>Built by</span>
