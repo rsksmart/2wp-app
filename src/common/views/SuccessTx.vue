@@ -48,10 +48,10 @@
 <script lang="ts">
 import { mdiContentCopy } from '@mdi/js';
 import { defineComponent, computed, PropType } from 'vue';
-import { useAction, useState } from '@/common/store/helper';
+import { useAction, useGetter, useState } from '@/common/store/helper';
 import * as constants from '@/common/store/constants';
 import { useRouter } from 'vue-router';
-import { PegInTxState, TxStatusType } from '@/common/types';
+import { PegInTxState, SatoshiBig, TxStatusType } from '@/common/types';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 
 export default defineComponent({
@@ -69,12 +69,13 @@ export default defineComponent({
   setup(props) {
     const clearStatus = useAction('status', constants.STATUS_CLEAR);
     const router = useRouter();
-    // TODO: Get tx type from state and REMOVE from route params
-    // const txType = useGetter<TransactionType>('session', constants.SESSION_GET_TX_TYPE);
     const pegInTxState = useState<PegInTxState>('pegInTx');
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+    const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
 
-    const amount = computed(() => pegInTxState.value.amountToTransfer.toBTCTrimmedString());
+    const amount = computed(() => (props.type === (TxStatusType.PEGIN).toLowerCase()
+      ? pegInTxState.value.amountToTransfer.toBTCTrimmedString()
+      : estimatedBtcToReceive.value.toBTCTrimmedString()));
     const symbol = computed(() => (props.type === (TxStatusType.PEGIN).toLowerCase()
       ? environmentContext.getRbtcTicker()
       : environmentContext.getBtcTicker()));
