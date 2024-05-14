@@ -1,4 +1,5 @@
 @import 'buttons.scss';
+@import 'inputs.scss';
 
 a {
   color: inherit;
@@ -11,4 +12,9 @@ a:hover {
 
 .v-overlay__scrim {
   background-color: #000;
+}
+.v-chip {
+  &.btc-icon .v-chip__prepend {
+    color: rgb(var(--v-theme-orange));
+  }
 }
