@@ -1,92 +1,72 @@
 <template>
-  <div id="option-2" class="py-4">
-    <v-row class="align-start mx-0">
-      <v-col cols="auto" class="pl-0">
-        <div v-bind:class="[focus ?
-              'number-filled' : 'number']">2</div>
+  <v-row no-gutters>
+    <v-col>
+      <span class="d-inline-block font-weight-bold my-3">
+        I will send
+      </span>
+    </v-col>
+    <v-col>
+      <span class="d-inline-block font-weight-bold my-3 ml-6">
+        I will receive
+      </span>
+    </v-col>
+  </v-row>
+  <v-row no-gutters align="center">
+    <v-col>
+      <v-text-field
+        hide-details
+        hide-spin-buttons
+        flat
+        variant="solo"
+        density="comfortable"
+        rounded="lg"
+        class="text-h4"
+        v-model="bitcoinAmount"
+        type="number"
+        step="0.00000001"
+        @keydown="blockLetterKeyDown"
+        @focus="focus = true"
+        @blur="focus = false"
+        @update:modelValue="updateStore()">
+          <template #prepend-inner>
+            <v-chip :prepend-icon="mdiBitcoin" class="btc-icon">
+              {{ environmentContext.getBtcTicker() }}
+            </v-chip>
+          </template>
+          <template #append-inner>
+            <div class="d-flex px-2 ga-1">
+              <v-chip variant="outlined" density="compact" @click="setMin">
+                MIN
+              </v-chip>
+              <v-chip variant="outlined" density="compact" @click="setMax">
+                MAX
+              </v-chip>
+            </div>
+          </template>
+        </v-text-field>
       </v-col>
-      <v-col class="pl-0">
-        <p v-bind:class="{'boldie': focus}">
-          Enter the amount you want to send:
-        </p>
-        <v-row class="ma-0 mt-4 pb-0 d-flex align-center">
-          <v-col cols="4" v-bind:class="[amountStyle]" class="input-box-outline">
-            <v-col cols="8" class="pa-0 pl-1">
-              <v-text-field solo hide-details full-width single-line flat
-                            variant="solo"
-                            density="compact"
-                            class="amount-input"
-                            placeholder="Add amount"
-                            v-model="bitcoinAmount" type="number"
-                            step="0.00000001"
-                            @keydown="blockLetterKeyDown"
-                            @focus="focus = true"
-                            @blur="focus = false"
-                            @update:modelValue="updateStore()"/>
-            </v-col>
-            <v-col cols="4" class="pa-0">
-              <v-row class="ma-0">
-                <v-col cols="5" class="pa-0">
-                  <v-img :src="require('@/assets/exchange/btc.png')" height="20" contain/>
-                </v-col>
-                <v-col cols="7" class="pa-0 d-flex align-center">
-                  <span>{{environmentContext.getBtcTicker()}}</span>
-                </v-col>
-              </v-row>
-            </v-col>
-          </v-col>
-          <v-col cols="1" class="d-flex justify-center">
-            <v-icon :icon="mdiArrowRight" color="#000"></v-icon>
-          </v-col>
-          <v-col cols="4" class="pa-0 input-box-flat">
-            <v-col cols="8" class="pa-0 pl-1">
-              <v-text-field
-              class="amount-input"
-              solo hide-details full-width single-line flat readonly
-              variant="plain"
-                            v-model="rbtcAmount" type="number"/>
-            </v-col>
-            <v-col cols="4" class="pa-0">
-              <v-row class="ma-0">
-                <v-col cols="5" class="pa-0">
-                  <v-img :src="require('@/assets/exchange/rbtc.png')" height="20" contain/>
-                </v-col>
-                <v-col cols="7" class="pa-0 d-flex align-center">
-                  <span>{{environmentContext.getRbtcTicker()}}</span>
-                </v-col>
-              </v-row>
-            </v-col>
-          </v-col>
-          <v-col/>
-        </v-row>
-        <v-col cols="4" class="pa-0">
-          <v-row class="derive-button ma-0 d-flex justify-center">
-            <v-btn
-              :disabled="!enableButton"
-              outlined rounded
-              width="100%" height="38"
-              @click="setMax" id="max-btn">
-              <span>
-                Use max available balance
-              </span>
-            </v-btn>
-          </v-row>
-        </v-col>
-        <v-row class="pt-1 ma-0" style="min-height: 17px;">
-          <span v-if="stepState === 'error'" class="yellowish">
-            {{amountErrorMessage}}
-          </span>
-        </v-row>
-      </v-col>
-    </v-row>
-  </div>
+      <v-icon class="mx-2" :icon="mdiArrowRight" color="bw-600" />
+    <v-col>
+      <div class="d-flex justify-space-between align-center flex-grow-1
+        bg-surface pa-3 rounded-lg border">
+      <div class="d-flex ga-2 align-center">
+        <v-chip :prepend-icon="mdiBitcoin" class="btc-icon">
+          {{ environmentContext.getRbtcTicker() }}
+        </v-chip>
+        <span class="text-h4">
+          {{ bitcoinAmount }}
+        </span>
+      </div>
+    </div>
+    </v-col>
+  </v-row>
 </template>
 
 <script lang="ts">
 import {
   computed, ref, watch, defineComponent,
 } from 'vue';
-import { mdiArrowRight } from '@mdi/js';
+import { mdiArrowRight, mdiBitcoin } from '@mdi/js';
 import SatoshiBig from '@/common/types/SatoshiBig';
 import {
   BtcAccount,
@@ -102,11 +82,7 @@ import { pegInTx } from '@/pegin/store';
 
 export default defineComponent({
   name: 'BtcInputAmount',
-  props: {
-    enableButton: Boolean,
-  },
   setup(props, context) {
-    const enableButton = ref(props.enableButton);
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const focus = ref(false);
     const amountStyle = ref('');
@@ -240,6 +216,10 @@ export default defineComponent({
       setIsValidAmount(selectedAccountBalance.value.gt('0'));
     }
 
+    function setMin() {
+      // TODO: implement
+    }
+
     async function setMax() {
       fillMaxValueAvailable();
       calculateTxFee()
@@ -264,7 +244,6 @@ export default defineComponent({
 
     function accountChanged() {
       if (stepState.value !== 'unused') {
-        enableButton.value = true;
         checkStep();
         calculateTxFee();
         amountStyle.value = stepState.value === 'done' ? 'black-box' : 'yellow-box';
@@ -293,6 +272,8 @@ export default defineComponent({
       amountErrorMessage,
       mdiArrowRight,
       setMax,
+      setMin,
+      mdiBitcoin,
     };
   },
 });
