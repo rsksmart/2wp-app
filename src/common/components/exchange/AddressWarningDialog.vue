@@ -6,7 +6,7 @@
       </v-row>
       <v-col cols="12" align-self="center" class="pt-0">
         <v-row class="mx-0 mt-4 mb-5 d-flex justify-center">
-          <v-img :src="require('@/assets/warning.png')" height="50" contain />
+          <v-icon class="ml-2" :icon="mdiAlertOutline" size="80"></v-icon>
         </v-row>
         <v-col offset="1" cols="10">
           <p class="justify-center">
@@ -18,13 +18,13 @@
         <v-row class="mx-0 mb-8 mt-3" justify="space-around">
           <v-col class="d-flex justify-center">
             <v-btn width="100" height="40" dense
-                   outlined rounded color="#000000" @click="cancel">
-              <span class="blackish">cancel</span>
+                   outlined rounded @click="cancel">
+              <span class="blackish">Cancel</span>
             </v-btn>
           </v-col>
           <v-col class="d-flex justify-center">
-            <v-btn width="100" height="40" dense outlined rounded color="#000000" @click="send">
-              <span class="blackish">continue</span>
+            <v-btn width="100" height="40" dense outlined rounded @click="send">
+              <span class="blackish">Continue</span>
             </v-btn>
           </v-col>
         </v-row>
@@ -36,6 +36,7 @@
 <script lang="ts">
 import { ref, defineComponent } from 'vue';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
+import { mdiAlertOutline } from '@mdi/js';
 
 export default defineComponent({
   name: 'AddressWarningDialog',
@@ -60,6 +61,7 @@ export default defineComponent({
       send,
       cancel,
       show,
+      mdiAlertOutline,
     };
   },
 });
