@@ -237,11 +237,8 @@ export default defineComponent({
     }
     function changePage() {
       router.push({
-        name: 'PegOutSuccess',
-        params: {
-          wallet: currentWallet.value,
-          type: constants.POWPEG,
-        },
+        name: 'SuccessTx',
+        params: { txId: pegOutTxState.value.txHash, type: (TxStatusType.PEGOUT).toLowerCase() },
       });
       context.emit('changePage', nextPage);
     }
