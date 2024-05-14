@@ -87,7 +87,7 @@ const routes: Readonly<RouteRecordRaw[]> = [
     beforeEnter: [checkFromRoute],
   },
   {
-    path: '/:type/tx/:txId/success',
+    path: '/:type/success/tx/:txId',
     name: 'SuccessTx',
     component: () => import(/* webpackChunkName: "tx-success" */ '../views/SuccessTx.vue'),
     props: (route) => ({
