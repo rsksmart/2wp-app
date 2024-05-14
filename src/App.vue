@@ -3,7 +3,7 @@
     <mobile v-if="smAndDown" />
     <div class="d-flex flex-column h-100" v-else>
       <top />
-      <div class="flex-grow-1">
+      <div class="bg-background flex-grow-1">
         <router-view @update:showDialog="showTermsDialog" />
       </div>
       <terms-dialog v-model:showDialog="showTermsAndConditions" />
