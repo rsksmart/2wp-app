@@ -36,7 +36,7 @@ export default {
     let scriptTag: HTMLScriptElement;
     let hotjarScriptTag: HTMLScriptElement;
     const { smAndDown } = useDisplay();
-    const enableTermsAndConditions = useAction('web3Session', constants.SESSION_ADD_TERMS_AND_CONDITIONS_ENABLED);
+    const getFeatures = useAction('web3Session', constants.SESSION_ADD_FEATURES);
     const showTermsAndConditions = ref(false);
     const contentSecurityPolicy = computed((): string => {
       const envVariables = EnvironmentAccessorService.getEnvironmentVariables();
@@ -92,7 +92,7 @@ export default {
       showTermsAndConditions.value = show;
     }
 
-    enableTermsAndConditions();
+    getFeatures();
     appendHotjar();
     appendClarity();
     appendCSP();
