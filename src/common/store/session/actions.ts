@@ -158,10 +158,10 @@ export const actions: ActionTree<SessionState, RootState> = {
   [constants.SESSION_ADD_FEATURES]: async ({ commit, dispatch }) => {
     try {
       const features = await ApiService.getFeatures();
+      commit(constants.SESSION_SET_FEATURES, features);
       const flag = features.find(({ name }) => name === 'terms_and_conditions');
       if (!flag?.version) return;
       const versionAccepted = Number(localStorage.getItem('TERMS_AND_CONDITIONS_ACCEPTED'));
-      commit(constants.SESSION_SET_FEATURES, features);
       dispatch(constants.SESSION_ADD_TERMS_VALUE, flag?.version === versionAccepted);
     } catch (e) {
       dispatch(constants.SESSION_ADD_TERMS_VALUE, false);
