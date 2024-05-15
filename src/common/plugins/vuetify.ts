@@ -64,7 +64,7 @@ export const vuetify = createVuetify({
       light: {
         colors: {
           ...ROOTSTOCK_COLORS,
-          surface: '#FAF9F5',
+          background: '#FAF9F5',
         },
         variables: {
           'theme-on-purple': '#000',
