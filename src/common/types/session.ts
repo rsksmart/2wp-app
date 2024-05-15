@@ -20,5 +20,5 @@ export interface SessionState {
   btcDerivedAddress: string;
   bitcoinPrice: number;
   acceptedTerms?: boolean;
-  termsAndConditionsEnabled?: Feature;
+  features: Array<Feature>;
 }

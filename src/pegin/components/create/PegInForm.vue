@@ -22,7 +22,7 @@
           :selected="selected === 'native'"
         />
       </v-col>
-      <v-col>
+      <v-col v-if="flyoverEnabled">
         <pegin-option-card
           option-type="flyover"
           @selected-option="changeSelectedOption"
@@ -61,7 +61,9 @@
 </template>
 
 <script lang="ts">
-import { computed, ref, defineComponent } from 'vue';
+import {
+  computed, ref, defineComponent, onBeforeMount,
+} from 'vue';
 import { mdiArrowLeft, mdiArrowRight, mdiSendOutline } from '@mdi/js';
 import PegInAccountSelect from '@/pegin/components/create/PegInAccountSelect.vue';
 import BtcInputAmount from '@/pegin/components/create/BtcInputAmount.vue';
@@ -73,7 +75,7 @@ import SatoshiBig from '@/common/types/SatoshiBig';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { TxStatusType } from '@/common/types/store';
 import { TxSummaryOrientation } from '@/common/types/Status';
-import { NormalizedSummary } from '@/common/types';
+import { Feature, FeatureNames, NormalizedSummary } from '@/common/types';
 import { useGetter, useState } from '@/common/store/helper';
 import AddressWarningDialog from '@/common/components/exchange/AddressWarningDialog.vue';
 import WarningDialog from '@/common/components/common/WarningDialog.vue';
@@ -96,6 +98,8 @@ export default defineComponent({
     const orientationSummary = TxSummaryOrientation.VERTICAL;
     const liqualityWarningMessage = 'Some users have encountered difficulties while attempting to create new Bitcoin accounts in Liquality. It\'s important to note that this issue is unrelated to the 2WP app. If you experience this problem, we recommend selecting another wallet.';
     const showLiqualityWarning = ref(false);
+    const flyoverFeature = useGetter<(name: FeatureNames) => Feature>('web3Session', constants.SESSION_GET_FEATURE);
+    const flyoverEnabled = ref(true);
 
     const pegInTxState = useState<PegInTxState>('pegInTx');
 
@@ -153,6 +157,11 @@ export default defineComponent({
       selected.value = selectedType;
     }
 
+    onBeforeMount(() => {
+      const feature = flyoverFeature.value(FeatureNames.FLYOVER_PEG_IN);
+      flyoverEnabled.value = feature?.value === 'enabled';
+    });
+
     return {
       pegInFormState,
       showWarningMessage,
@@ -174,6 +183,7 @@ export default defineComponent({
       mdiArrowRight,
       changeSelectedOption,
       selected,
+      flyoverEnabled,
     };
   },
 });
