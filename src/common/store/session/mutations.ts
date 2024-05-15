@@ -1,6 +1,6 @@
 import { MutationTree } from 'vuex';
 import * as constants from '@/common/store/constants';
-import { AppLocale, WeiBig } from '@/common/types';
+import { AppLocale, Feature, WeiBig } from '@/common/types';
 import { TransactionType, SessionState } from '@/common/types/session';
 import { getClearSessionState } from '@/common/utils';
 import { providers } from 'ethers';
@@ -46,12 +46,12 @@ export const mutations: MutationTree<SessionState> = {
   [constants.SESSION_SET_TERMS_ACCEPTED]: (state, value) => {
     state.acceptedTerms = value;
   },
-  [constants.SESSION_SET_TERMS_AND_CONDITIONS_ENABLED]: (state, value) => {
-    state.termsAndConditionsEnabled = value;
-  },
   [constants.SESSION_SET_LOCALE]: (state, newLocale: AppLocale) => {
     if (newLocale && i18n.global.availableLocales.includes(newLocale)) {
       i18n.global.locale.value = newLocale;
     }
+  },
+  [constants.SESSION_SET_FEATURES]: (state, features: Array<Feature>) => {
+    state.features = features;
   },
 };
