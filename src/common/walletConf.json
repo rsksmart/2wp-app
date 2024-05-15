@@ -1,6 +1,18 @@
 {
     "wallets": [
         {
+            "name": "Liquality",
+            "icon": "wallet-icons/liquality.svg",
+            "iconWhite": "wallet-icons/liquality.svg",
+            "constant": "WALLET_LIQUALITY",
+            "pegin": true,
+            "pegout": true,
+            "hover": false,
+            "btnClass": "btn-liquality",
+            "kind": "Software Wallet",
+            "installation": "https://www.liquality.io/wallet-extension"
+        },
+        {
             "name": "Trezor",
             "icon": "wallet-icons/trezor.svg",
             "iconWhite": "wallet-icons/trezor-white.svg",
@@ -8,27 +20,21 @@
             "pegin": true,
             "pegout": true,
             "hover": false,
-            "btnClass": "btn-trezor"
+            "btnClass": "btn-trezor",
+            "kind": "Hardware Wallet",
+            "installation": "https://trezor.io/trezor-suite"
         },
         {
             "name": "Ledger",
-            "icon": "wallet-icons/ledger.png",
-            "iconWhite": "wallet-icons/ledger-white.png",
+            "icon": "wallet-icons/ledger.svg",
+            "iconWhite": "wallet-icons/ledger-white.svg",
             "constant": "WALLET_LEDGER",
             "pegin": true,
             "pegout": true,
             "hover": false,
-            "btnClass": "btn-ledger"
-        },
-        {
-            "name": "Liquality",
-            "icon": "wallet-icons/liquality.png",
-            "iconWhite": "wallet-icons/liquality-white.png",
-            "constant": "WALLET_LIQUALITY",
-            "pegin": true,
-            "pegout": true,
-            "hover": false,
-            "btnClass": "btn-liquality"
+            "btnClass": "btn-ledger",
+            "kind": "Hardware Wallet",
+            "installation": "https://www.ledger.com/ledger-live"
         },
         {
             "name": "Leather",
@@ -38,7 +44,9 @@
             "pegin": true,
             "pegout": false,
             "hover": false,
-            "btnClass": "btn-leather"
+            "btnClass": "btn-leather",
+            "kind": "Software Wallet",
+            "installation": "https://leather.io/install-extension"
         }
     ]
 }

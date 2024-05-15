@@ -27,8 +27,15 @@ export const vuetify = createVuetify({
   directives,
   aliases: {
     VBtnRsk: components.VBtn,
+    VBtnSquare: components.VBtn,
   },
   defaults: {
+    VBtnSquare: {
+      rounded: true,
+      block: true,
+      variant: 'outlined',
+      class: 'v-btn--square',
+    },
     VBtnRsk: {
       rounded: true,
       variant: 'outlined',

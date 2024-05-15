@@ -1,41 +1,41 @@
 <template>
   <v-container fluid class="exchange">
-    <v-row justify="center" class="mx-0">
-      <v-col>
-        <v-row class="mx-0 mb-5 d-flex justify-center">
-          <h2>Bridging {{environmentContext.getBtcTicker()}}
-          and {{environmentContext.getRbtcTicker()}}</h2>
-        </v-row>
-          <v-row class="mx-0 mt-10 d-flex justify-center">
-            <p class="text-center">Select your {{environmentContext.getBtcText()}} wallet</p>
-          </v-row>
-          <v-row justify="center" class="ma-0 mt-6">
-            <v-col v-for="wallet in wallets" :key="wallet.name"
-                    class="d-flex justify-center" >
-                    <v-btn variant="outlined" class="wallet-button-thin"
-                    @click="setBitcoinWallet(wallet.constant as BtcWallet)"
-                    @mouseover="wallet.hover = true" @mouseleave="wallet.hover = false">
-                <v-row>
-                  <v-col cols="4" class="ma-0 pa-0 wallet-icon d-flex align-center"
-                      :class="[wallet.btnClass]">
-                    <v-img :src="wallet.hover ?
-                    require('@/assets/' + wallet.iconWhite) :
-                    require('@/assets/' + wallet.icon) " cover ></v-img>
-                  </v-col>
-                  <v-col cols="8" class="ma-0 pl-3 d-flex justify-center align-center">
-                    <span class="wallet-button-content">{{ wallet.name }}</span>
-                  </v-col>
-                </v-row>
-              </v-btn>
-            </v-col>
-          </v-row>
-      </v-col>
+    <v-row no-gutters>
+      <v-btn variant="text"
+       :prepend-icon="mdiArrowLeft"
+       @click="back">
+        Go Back
+      </v-btn>
     </v-row>
     <v-row class="mx-0">
-      <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
-        <v-btn v-if="showBack" rounded variant="outlined" color="#000000" width="110" @click="back">
-          <span>Back</span>
-        </v-btn>
+      <v-col v-for="wallet in wallets" :key="wallet.name" class="d-flex justify-center" >
+        <v-btn-square @click="setBitcoinWallet(wallet.constant as BtcWallet)"
+          @mouseover="wallet.hover = true" @mouseleave="wallet.hover = false">
+          <v-container>
+            <v-row justify="start">
+              <v-img class="flex-grow-0" justify="start" :height="64" :width="64"
+                     :src="name === 'dark' ?
+                      require('@/assets/' + wallet.iconWhite) :
+                      require('@/assets/' + wallet.icon) " />
+            </v-row>
+            <v-row justify="start" class="pt-16">
+              <v-col>
+                <v-row justify="start">
+                  <span class="text-body-1 font-weight-bold">{{ wallet.name }}</span>
+                </v-row>
+                <v-row justify="start">
+                  <span class="text-body-2">{{ wallet.kind }}</span>
+                </v-row>
+                <v-row justify="start">
+                  <a @click.stop class="text-body-2 text-orange"
+                     target='_blank' :href='wallet.installation'>
+                    Install here
+                  </a>
+                </v-row>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-btn-square>
       </v-col>
     </v-row>
   </v-container>
@@ -49,6 +49,8 @@ import { BtcWallet } from '@/common/types/pegInTx';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { useAction, useStateAttribute } from '@/common/store/helper';
 import walletConf from '@/common/walletConf.json';
+import { mdiArrowLeft } from '@mdi/js';
+import { useTheme } from 'vuetify';
 
 export default {
   name: 'SelectBitcoinWallet',
@@ -63,6 +65,8 @@ export default {
 
     const bitcoinWallet = useStateAttribute<BtcWallet>('pegInTx', 'bitcoinWallet');
     const addBitcoinWallet = useAction('pegInTx', constants.PEGIN_TX_ADD_BITCOIN_WALLET);
+
+    const { global: { name } } = useTheme();
 
     function reset(): void {
       selectedWallet.value = '';
@@ -112,6 +116,8 @@ export default {
       back,
       setBitcoinWallet,
       wallets,
+      name,
+      mdiArrowLeft,
     };
   },
 };
