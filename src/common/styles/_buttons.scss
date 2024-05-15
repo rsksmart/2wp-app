@@ -33,3 +33,11 @@
     opacity: 0;
   }
 }
+
+.v-btn.v-btn--rounded.v-btn--variant-outlined.v-btn--square {
+  border: 1px solid rgb(var(--v-theme-bw-500));
+  border-radius: 10px;
+  height: 250px;
+  min-width: 250px;
+  justify-content: flex-start;
+}
