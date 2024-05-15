@@ -8,6 +8,7 @@ import * as constants from '@/common/store/constants';
 import {
   TransactionType, SessionState, RootState, WeiBig,
   AppLocale,
+  FeatureNames,
 } from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { ApiService } from '@/common/services';
@@ -145,21 +146,22 @@ export const actions: ActionTree<SessionState, RootState> = {
   [constants.SESSION_CLEAR]: ({ commit }) => {
     commit(constants.SESSION_CLEAR_STATE);
   },
-  [constants.SESSION_ADD_TERMS_VALUE]: ({ commit, state }, value) => {
+  [constants.SESSION_ADD_TERMS_VALUE]: ({ commit, getters }, value) => {
+    const termsFeature = getters[constants.SESSION_GET_FEATURE](FeatureNames.TERMS_AND_CONDITIONS);
     if (value) {
-      localStorage.setItem('TERMS_AND_CONDITIONS_ACCEPTED', String(state.termsAndConditionsEnabled?.version));
+      localStorage.setItem('TERMS_AND_CONDITIONS_ACCEPTED', String(termsFeature.version));
     } else {
       localStorage.removeItem('TERMS_AND_CONDITIONS_ACCEPTED');
     }
     commit(constants.SESSION_SET_TERMS_ACCEPTED, value);
   },
-  [constants.SESSION_ADD_TERMS_AND_CONDITIONS_ENABLED]: async ({ commit, dispatch }) => {
+  [constants.SESSION_ADD_FEATURES]: async ({ commit, dispatch }) => {
     try {
       const features = await ApiService.getFeatures();
       const flag = features.find(({ name }) => name === 'terms_and_conditions');
       if (!flag?.version) return;
       const versionAccepted = Number(localStorage.getItem('TERMS_AND_CONDITIONS_ACCEPTED'));
-      commit(constants.SESSION_SET_TERMS_AND_CONDITIONS_ENABLED, flag);
+      commit(constants.SESSION_SET_FEATURES, features);
       dispatch(constants.SESSION_ADD_TERMS_VALUE, flag?.version === versionAccepted);
     } catch (e) {
       dispatch(constants.SESSION_ADD_TERMS_VALUE, false);
