@@ -14,6 +14,9 @@
     "body-1": (
       "line-height": 1.4,
     ),
+    'body-2': (
+      'size': 0.75rem,
+    ),
     "button": (
       "text-transform": none,
     )
@@ -22,7 +25,7 @@
 
 @font-face {
   font-family: "Rootstock";
-  src: 
+  src:
     local("Rootstock"),
     url("@/common/styles/fonts/Rootstock-Sans-Tags.woff2") format("woff2");
 }
