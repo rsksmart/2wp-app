@@ -15,7 +15,10 @@
         <v-btn variant="flat" size="x-small" color="purple" rounded="full" :icon="mdiLinkOff"
           @click="disconnectWallet" />
       </div>
-      <v-switch inset hide-details base-color="purple" @click="toggleTheme" />
+      <label for="theme" class="theme-switch">
+        <input id="theme" type="checkbox" v-model="themeLight">
+        <span class="slider"></span>
+      </label>
     </div>
   </header>
 </template>
@@ -26,7 +29,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useTheme } from 'vuetify';
 import { mdiContentCopy, mdiLinkOff } from '@mdi/js';
 import * as constants from '@/common/store/constants';
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { truncateString } from '@/common/utils';
 
 export default {
@@ -34,16 +37,14 @@ export default {
   setup() {
     const router = useRouter();
     const route = useRoute();
+    const themeLight = ref(false);
+    const vuetifyTheme = useTheme();
     function goHome() {
       if (route.name !== 'Home') router.push({ name: 'Home' });
     }
 
-    const { global: { current, name } } = useTheme();
-    function toggleTheme() {
-      name.value = current.value.dark ? 'light' : 'dark';
-    }
     function getLogoSrc() {
-      return current.value.dark ? require('@/assets/logo-rootstock-white.svg') : require('@/assets/logo-rootstock-black.svg');
+      return vuetifyTheme.global.current.value.dark ? require('@/assets/logo-rootstock-white.svg') : require('@/assets/logo-rootstock-black.svg');
     }
 
     const account = useStateAttribute<string>('web3Session', 'account');
@@ -59,15 +60,19 @@ export default {
       navigator.clipboard.writeText(account.value);
     }
 
+    watch(themeLight, (enabledLight) => {
+      vuetifyTheme.global.name.value = enabledLight ? 'light' : 'dark';
+    });
+
     return {
       goHome,
-      toggleTheme,
       getLogoSrc,
       truncatedAccount,
       disconnectWallet,
       mdiLinkOff,
       mdiContentCopy,
       copyFullAccountAddress,
+      themeLight,
     };
   },
 };
