@@ -318,3 +318,8 @@ export function awaitTimeout(ms: number) {
 export function promiseWithTimeout(promise: Promise<any>, timeoutMs: number) {
   return Promise.race([promise, awaitTimeout(timeoutMs)]);
 }
+
+export function truncateString(str: string) {
+  if (!str) return '';
+  return `${str.slice(0, 6)}...${str.slice(-4)}`;
+}

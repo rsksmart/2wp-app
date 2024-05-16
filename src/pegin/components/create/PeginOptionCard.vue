@@ -18,7 +18,7 @@
       <!-- TODO: Replace with input with validations or connected account -->
       <div v-if="rskAddress" class="bg-surface py-2 px-4 rounded-lg border">
         <p class="text-bw-400">
-          Connected Wallet {{ rskAddress.slice(0, 6) }}...{{ rskAddress.slice(-4) }}
+          Connected Wallet {{ rskAddress }}
         </p>
       </div>
       <v-text-field v-else variant="solo" flat rounded="lg" hide-details
@@ -42,6 +42,7 @@ import { computed, defineComponent } from 'vue';
 import * as constants from '@/common/store/constants';
 import { mdiInformationOutline } from '@mdi/js';
 import { useStateAttribute } from '@/common/store/helper';
+import { truncateString } from '@/common/utils';
 
 export default defineComponent({
   name: 'PeginOptionCard',
@@ -59,7 +60,7 @@ export default defineComponent({
   },
   setup(props, context) {
     const account = useStateAttribute<string>('web3Session', 'account');
-    const rskAddress = computed(() => account.value || '');
+    const rskAddress = computed(() => truncateString(account.value));
 
     const headerOptions = {
       native: {
