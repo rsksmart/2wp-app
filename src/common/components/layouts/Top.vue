@@ -27,6 +27,7 @@ import { useTheme } from 'vuetify';
 import { mdiContentCopy, mdiLinkOff } from '@mdi/js';
 import * as constants from '@/common/store/constants';
 import { computed } from 'vue';
+import { truncateString } from '@/common/utils';
 
 export default {
   name: 'TopBar',
@@ -46,7 +47,7 @@ export default {
     }
 
     const account = useStateAttribute<string>('web3Session', 'account');
-    const truncatedAccount = computed(() => (account.value ? `${account.value.slice(0, 6)}...${account.value.slice(-4)}` : ''));
+    const truncatedAccount = computed(() => truncateString(account.value));
 
     const clearSession = useAction('web3Session', constants.WEB3_SESSION_CLEAR_ACCOUNT);
     function disconnectWallet() {
