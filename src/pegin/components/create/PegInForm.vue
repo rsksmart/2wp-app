@@ -35,6 +35,7 @@
       <v-row justify="end">
         <v-col cols="auto">
             <v-btn-rsk v-if="!pegInFormState.matches(['loading'])"
+            @click="createTx"
             :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])"
             >
             <template #append>
@@ -66,12 +67,11 @@ import PeginOptionCard from '@/pegin/components/create/PeginOptionCard.vue';
 import { PegInTxState } from '@/common/types/pegInTx';
 import * as constants from '@/common/store/constants';
 import { Machine } from '@/common/utils';
-import SatoshiBig from '@/common/types/SatoshiBig';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { TxStatusType } from '@/common/types/store';
 import { TxSummaryOrientation } from '@/common/types/Status';
-import { Feature, FeatureNames, NormalizedSummary } from '@/common/types';
-import { useGetter, useState } from '@/common/store/helper';
+import { Feature, FeatureNames } from '@/common/types';
+import { useGetter, useState, useStateAttribute } from '@/common/store/helper';
 import AddressWarningDialog from '@/common/components/exchange/AddressWarningDialog.vue';
 
 export default defineComponent({
@@ -85,7 +85,7 @@ export default defineComponent({
   setup(_, context) {
     const pegInFormState = ref<Machine<'loading' | 'goingHome' | 'fill'>>(new Machine('fill'));
     const showWarningMessage = ref(false);
-    const rskAddressState = ref('invalid');
+    const account = useStateAttribute<string>('web3Session', 'account');
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const typeSummary = TxStatusType.PEGIN;
     const orientationSummary = TxSummaryOrientation.VERTICAL;
@@ -95,29 +95,11 @@ export default defineComponent({
     const pegInTxState = useState<PegInTxState>('pegInTx');
 
     const refundAddress = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_REFUND_ADDRESS);
-    const safeFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
-    const accountBalanceText = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_ACCOUNT_BALANCE_TEXT);
     const enoughBalanceSelectedFee = useGetter<boolean>('pegInTx', constants.PEGIN_TX_GET_ENOUGH_FEE_VALUE);
 
     const isReadyToCreate = computed((): boolean => pegInTxState.value.isValidAmountToTransfer
         && !pegInTxState.value.loadingFee
-        && rskAddressState.value !== 'invalid'
-        && enoughBalanceSelectedFee.value
-        && pegInTxState.value.rskAddressSelected !== '');
-
-    const pegInFormSummary = computed((): NormalizedSummary => ({
-      amountFromString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
-      amountReceivedString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
-      fee: Number(safeFee.value.toBTCString()),
-      recipientAddress: pegInTxState.value.rskAddressSelected,
-      refundAddress: refundAddress.value,
-      selectedAccount: accountBalanceText.value,
-      federationAddress: pegInTxState.value.peginConfiguration.federationAddress,
-    }));
-
-    function setRskAddressState(state: string) {
-      rskAddressState.value = state;
-    }
+        && enoughBalanceSelectedFee.value);
 
     function back() {
       pegInFormState.value.send('loading');
@@ -130,15 +112,10 @@ export default defineComponent({
       context.emit('createTx', {
         amountToTransferInSatoshi: pegInTxState.value.amountToTransfer,
         refundAddress: refundAddress.value,
-        recipient: pegInTxState.value.rskAddressSelected,
+        recipient: pegInTxState.value.rskAddressSelected || account.value,
         feeLevel: pegInTxState.value.selectedFee,
         accountType: pegInTxState.value.selectedAccount,
       });
-    }
-
-    function sendTx() {
-      if (rskAddressState.value === 'warning') showWarningMessage.value = true;
-      else createTx();
     }
 
     const selected = ref();
@@ -154,14 +131,10 @@ export default defineComponent({
     return {
       pegInFormState,
       showWarningMessage,
-      rskAddressState,
       environmentContext,
       typeSummary,
       orientationSummary,
-      setRskAddressState,
-      pegInFormSummary,
       back,
-      sendTx,
       isReadyToCreate,
       pegInTxState,
       createTx,

@@ -14,7 +14,7 @@
           {{ balances.nativeSegwit.toBTCTrimmedString() }}
         </span>
       </div>
-      <v-chip variant="flat" color="pink" density="compact">Native Segwit</v-chip>
+      <v-chip variant="flat" color="teal" density="compact">Native Segwit</v-chip>
     </div>
 
     <div v-else class="d-flex align-center ga-4">
@@ -100,6 +100,8 @@ export default defineComponent({
     }
 
     watch(selectedAccountType, accountChanged);
+
+    accountChanged(constants.BITCOIN_NATIVE_SEGWIT_ADDRESS);
 
     const balancesPerAccountType = [
       {
