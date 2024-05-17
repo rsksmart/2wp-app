@@ -12,7 +12,7 @@
           @click="copyFullAccountAddress"
         />
         <span>{{ truncatedAccount }}</span>
-        <v-btn variant="flat" size="x-small" color="purple" rounded="full" :icon="mdiLinkOff"
+        <v-btn variant="flat" size="x-small" color="theme-primary" rounded="full" :icon="mdiLinkOff"
           @click="disconnectWallet" />
       </div>
       <label for="theme" class="theme-switch">
