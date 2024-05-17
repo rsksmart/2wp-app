@@ -27,3 +27,11 @@ input[type=number].v-field__input, .v-select__selection {
   font-weight: 700;
   line-height: 1;
 }
+
+.v-field--focused {
+  border: 1px solid rgba(var(--v-border-color));
+}
+
+.v-select--active-menu {
+  border: 1px solid rgba(var(--v-border-color));
+}
