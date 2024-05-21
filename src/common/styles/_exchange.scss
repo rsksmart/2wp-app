@@ -167,14 +167,6 @@
       padding: 5px 0 0 10px;
       background-image: url('../../assets/wallet-icons/ledger.png');
     }
-    .wallet-icon-liquality {
-      background-repeat: no-repeat;
-      position: relative;
-      max-width: 80px;
-      max-height: 25px;
-      padding: 25px 0 0 80px;
-      background-image: url('../../assets/wallet-icons/liquality.png');
-    }
   }
 
   .return-to-form-button {
@@ -221,9 +213,6 @@
       cursor: pointer;
     }
   }
-  .btn-liquality {
-    width: 100px !important;
-  }
 }
 
 
@@ -265,20 +254,4 @@
 
 .line-box-bottom {
   border-bottom: 1px solid #c4c4c4;
-}
-
-.liquality-info {
-  width:100%;
-  h3 {
-    position:relative;
-    top:25%;
-  }
-  .wallet-tag {
-    float:right;
-    border-radius:5px;
-    padding:8px;
-    background-color:#000000;
-    color:white;
-    font-weight:bold;
-  }
 }

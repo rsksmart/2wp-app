@@ -70,7 +70,6 @@ Add the new wallet in this **enum** object.
    export const WALLET_NAMES = {
       LEDGER: { short_name: 'ledger', long_name: 'WALLET_LEDGER' },
       TREZOR: { short_name: 'trezor', long_name: 'WALLET_TREZOR' },
-      LIQUALITY: { short_name: 'liquality', long_name: 'WALLET_LIQUALITY' },
       METAMASK: { short_name: 'metamask', long_name: 'WALLET_METAMASK' },
       LEATHER: { short_name: 'leather', long_name: 'WALLET_LEATHER' },
       XVERSE: { short_name: 'xverse', long_name: 'WALLET_XVERSE' },
@@ -82,7 +81,7 @@ Add your WALLET long name:
 
 ```
 export type BtcWallet = 'WALLET_LEDGER |
-  'WALLET_TREZOR' | 'WALLET_LIQUALITY' | 'WALLET_MYWALLET';
+  'WALLET_TREZOR' | 'WALLET_MYWALLET';
 ```
 
 Open file src/common/components/exchange/SelectBitcoinWallet.vue
@@ -106,7 +105,7 @@ change the action `[constants.PEGIN_TX_ADD_SESSION_ID]` adding your wallet into 
 Import your MyWalletService:
 ```
 import {
-  ApiService, LedgerService, LiqualityService, TrezorService, MyWalletService,
+  ApiService, LedgerService, TrezorService, MyWalletService,
 } from '@/common/services';
 ```
 

@@ -62,7 +62,7 @@
 
 <script lang="ts">
 import {
-  computed, defineComponent, onBeforeMount, onUnmounted, ref,
+  computed, defineComponent, onBeforeMount, onUnmounted,
 } from 'vue';
 import { useRouter } from 'vue-router';
 import { addTag, getBtcAddressExplorerUrl } from '@/common/utils';
@@ -92,7 +92,6 @@ export default defineComponent({
   },
   setup(props) {
     const appConstants = constants;
-    const injectedProvider = ref('');
     const typeSummary = TxStatusType.PEGOUT;
     const orientationSummary = TxSummaryOrientation.HORIZONTAL;
     const router = useRouter();
@@ -120,9 +119,6 @@ export default defineComponent({
       }
       if (isMetamaskConnected.value) {
         return constants.WALLET_NAMES.METAMASK;
-      }
-      if (injectedProvider.value === appConstants.RLOGIN_LIQUALITY_WALLET) {
-        return constants.WALLET_NAMES.LIQUALITY;
       }
       return '';
     });

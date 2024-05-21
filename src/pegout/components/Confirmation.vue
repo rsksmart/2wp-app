@@ -41,7 +41,7 @@
 
 <script lang="ts">
 import {
-  computed, PropType, defineComponent, onBeforeMount, ref,
+  computed, PropType, defineComponent, onBeforeMount,
 } from 'vue';
 import { useRouter } from 'vue-router';
 import { Machine, addTag } from '@/common/utils';
@@ -70,7 +70,6 @@ export default defineComponent({
   },
   setup() {
     const appConstants = constants;
-    const injectedProvider = ref('');
     const typeSummary = TxStatusType.PEGOUT;
     const orientationSummary = TxSummaryOrientation.HORIZONTAL;
     const router = useRouter();
@@ -93,9 +92,6 @@ export default defineComponent({
       }
       if (isMetamaskConnected.value) {
         return constants.WALLET_NAMES.METAMASK;
-      }
-      if (injectedProvider.value === appConstants.RLOGIN_LIQUALITY_WALLET) {
-        return constants.WALLET_NAMES.LIQUALITY;
       }
       return '';
     });

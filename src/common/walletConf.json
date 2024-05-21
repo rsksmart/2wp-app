@@ -21,16 +21,6 @@
             "btnClass": "btn-ledger"
         },
         {
-            "name": "Liquality",
-            "icon": "wallet-icons/liquality.png",
-            "iconWhite": "wallet-icons/liquality-white.png",
-            "constant": "WALLET_LIQUALITY",
-            "pegin": true,
-            "pegout": true,
-            "hover": false,
-            "btnClass": "btn-liquality"
-        },
-        {
             "name": "Leather",
             "icon": "wallet-icons/leather.svg",
             "iconWhite": "wallet-icons/leather-white.svg",

@@ -188,9 +188,6 @@ export default defineComponent({
       if (isMetamaskConnected.value) {
         return constants.WALLET_NAMES.METAMASK.short_name;
       }
-      if (injectedProvider.value === appConstants.RLOGIN_LIQUALITY_WALLET) {
-        return constants.WALLET_NAMES.LIQUALITY.short_name;
-      }
       return '';
     });
     const authorizedWalletToSignMessage = computed(

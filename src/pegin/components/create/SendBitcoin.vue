@@ -39,14 +39,12 @@ import ConfirmLedgerTransaction from '@/pegin/components/ledger/ConfirmLedgerTra
 import ConfirmTx from '@/pegin/components/create/ConfirmTx.vue';
 import * as constants from '@/common/store/constants';
 import {
-  SendBitcoinState, SatoshiBig, BtcWallet, LiqualityError, Utxo,
+  SendBitcoinState, SatoshiBig, BtcWallet, Utxo,
 } from '@/common/types';
 import { Machine, getClearPeginTxState } from '@/common/utils';
-import ConfirmLiqualityTransaction from '@/pegin/components/liquality/ConfirmLiqualityTransaction.vue';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import TrezorTxBuilder from '@/pegin/middleware/TxBuilder/TrezorTxBuilder';
 import LedgerTxBuilder from '@/pegin/middleware/TxBuilder/LedgerTxBuilder';
-import LiqualityTxBuilder from '@/pegin/middleware/TxBuilder/LiqualityTxBuilder';
 import TxBuilder from '@/pegin/middleware/TxBuilder/TxBuilder';
 import DeviceErrorDialog from '@/common/components/exchange/DeviceErrorDialog.vue';
 import ConnectDevice from '@/common/components/exchange/ConnectDevice.vue';
@@ -61,7 +59,6 @@ export default defineComponent({
   components: {
     PegInForm,
     ConfirmLedgerTransaction,
-    ConfirmLiqualityTransaction,
     ConfirmTx,
     ConnectDevice,
     DeviceErrorDialog,
@@ -170,13 +167,6 @@ export default defineComponent({
             console.error(e);
             deviceError.value = 'Something went wrong with the wallet, please check your wallet connection, unlock your device and try again.';
           }
-          if (e instanceof LiqualityError) {
-            errorType.value = e.errorType;
-            urlToMoreInformation.value = e.urlToMoreInformation;
-            messageToUserOnLink.value = e.messageToUserOnLink;
-            messageInstallationToUser.value = e.messageInstallationToUser;
-            installationLink.value = e.installationLink;
-          }
           if (e instanceof TrezorError) {
             errorType.value = e.errorType;
           }
@@ -194,10 +184,6 @@ export default defineComponent({
         case constants.WALLET_NAMES.LEDGER.long_name:
           txBuilder.value = new LedgerTxBuilder();
           currentWallet.value = constants.WALLET_NAMES.LEDGER.short_name;
-          break;
-        case constants.WALLET_NAMES.LIQUALITY.long_name:
-          txBuilder.value = new LiqualityTxBuilder();
-          currentWallet.value = constants.WALLET_NAMES.LIQUALITY.short_name;
           break;
         case constants.WALLET_NAMES.LEATHER.long_name:
           txBuilder.value = new LeatherTxBuilder();
@@ -231,8 +217,7 @@ export default defineComponent({
     async function backToConnectDevice() {
       await clear();
       let wallet: BtcWallet;
-      if (bitcoinWallet.value && bitcoinWallet.value
-        !== constants.WALLET_NAMES.LIQUALITY.long_name) {
+      if (bitcoinWallet.value) {
         wallet = bitcoinWallet.value;
       } else {
         await back();
