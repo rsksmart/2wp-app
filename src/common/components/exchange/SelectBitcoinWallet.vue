@@ -82,9 +82,6 @@ export default {
         case constants.WALLET_NAMES.LEDGER.long_name:
           wallet = constants.WALLET_NAMES.LEDGER.short_name;
           break;
-        case constants.WALLET_NAMES.LIQUALITY.long_name:
-          wallet = constants.WALLET_NAMES.LIQUALITY.short_name;
-          break;
         case constants.WALLET_NAMES.LEATHER.long_name:
           wallet = constants.WALLET_NAMES.LEATHER.short_name;
           break;

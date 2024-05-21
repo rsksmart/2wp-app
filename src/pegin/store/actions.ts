@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from 'axios';
 import * as rskUtils from '@rsksmart/rsk-utils';
 import * as constants from '@/common/store/constants';
 import {
-  ApiService, LedgerService, LiqualityService,
+  ApiService, LedgerService,
   TrezorService, LeatherService,
 } from '@/common/services';
 import SatoshiBig from '@/common/types/SatoshiBig';
@@ -38,9 +38,6 @@ export const actions: ActionTree<PegInTxState, RootState> = {
         break;
       case constants.WALLET_NAMES.LEDGER.long_name:
         commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new LedgerService());
-        break;
-      case constants.WALLET_NAMES.LIQUALITY.long_name:
-        commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new LiqualityService());
         break;
       case constants.WALLET_NAMES.LEATHER.long_name:
         commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new LeatherService());

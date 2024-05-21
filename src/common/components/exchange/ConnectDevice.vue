@@ -114,10 +114,6 @@ export default defineComponent({
         // eslint-disable-next-line global-require, import/no-dynamic-require
         return require('@/assets/exchange/trezor/connect_trezor.png');
       }
-      if (bitcoinWallet.value === constants.WALLET_NAMES.LIQUALITY.long_name) {
-        // eslint-disable-next-line global-require, import/no-dynamic-require
-        return require('@/assets/exchange/liquality/connect_liquality.png');
-      }
       if (bitcoinWallet.value === constants.WALLET_NAMES.LEATHER.long_name) {
         // eslint-disable-next-line global-require, import/no-dynamic-require
         return require('@/assets/exchange/leather/connect_leather.png');
@@ -128,9 +124,6 @@ export default defineComponent({
 
     const isLedgerWallet = computed(() => bitcoinWallet.value
       === constants.WALLET_NAMES.LEDGER.long_name);
-
-    const isLiqualityWallet = computed(() => bitcoinWallet.value
-      === constants.WALLET_NAMES.LIQUALITY.long_name);
 
     function continueToForm() {
       context.emit('continueToForm', bitcoinWallet);
@@ -159,7 +152,6 @@ export default defineComponent({
       clearStore,
       deviceImagePath,
       isLedgerWallet,
-      isLiqualityWallet,
       continueToForm,
       back,
     };

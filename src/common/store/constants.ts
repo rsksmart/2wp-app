@@ -1,7 +1,6 @@
 export const WALLET_NAMES = {
   LEDGER: { formal_name: 'Ledger', short_name: 'ledger', long_name: 'WALLET_LEDGER' },
   TREZOR: { formal_name: 'Trezor', short_name: 'trezor', long_name: 'WALLET_TREZOR' },
-  LIQUALITY: { formal_name: 'Liquality', short_name: 'liquality', long_name: 'WALLET_LIQUALITY' },
   METAMASK: { formal_name: 'Metamask', short_name: 'metamask', long_name: 'WALLET_METAMASK' },
   LEATHER: { formal_name: 'Leather', short_name: 'leather', long_name: 'WALLET_LEATHER' },
 } as const;
@@ -9,7 +8,6 @@ export const WALLET_NAMES = {
 export const OPERATION_TYPE = 'OPERATION_TYPE';
 export const OPERATION_AMOUNT = 'OPERATION_AMOUNT';
 
-export const RLOGIN_LIQUALITY_WALLET = 'Liquality';
 export const DERIVE_BTC_ADDRESS_DOCUMENTATION_URL = 'https://dev.rootstock.io/guides/two-way-peg-app/pegout/deriving-electrum/';
 export const RLOGIN_METAMASK_WALLET = 'MetaMask';
 
@@ -195,7 +193,6 @@ export const SESSION_IN_TX_FLOW = 'SESSION_IN_TX_FLOW';
 export const SESSION_IS_LEDGER_CONNECTED = 'SESSION_IS_LEDGER_CONNECTED';
 export const SESSION_IS_TREZOR_CONNECTED = 'SESSION_IS_TREZOR_CONNECTED';
 export const SESSION_IS_METAMASK_CONNECTED = 'SESSION_IS_METAMASK_CONNECTED';
-export const SESSION_IS_LIQUALITY_CONNECTED = 'SESSION_IS_LIQUALITY_CONNECTED';
 export const SESSION_IS_RLOGIN_DEFINED = 'SESSION_IS_RLOGIN_DEFINED';
 
 // Flyover PegOut getters

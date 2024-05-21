@@ -240,9 +240,6 @@ export default defineComponent({
       if (isMetamaskConnected.value) {
         return constants.WALLET_NAMES.METAMASK;
       }
-      if (injectedProvider.value === constants.RLOGIN_LIQUALITY_WALLET) {
-        return constants.WALLET_NAMES.LIQUALITY;
-      }
       return '';
     });
 

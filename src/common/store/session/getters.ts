@@ -11,9 +11,4 @@ export const getters: GetterTree<SessionState, RootState> = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (state): boolean => (state.rLoginInstance as any).providerController?.injectedProvider.name
     === constants.RLOGIN_METAMASK_WALLET,
-  [constants.SESSION_IS_LIQUALITY_CONNECTED]:
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (state): boolean => (state.rLoginInstance as any).providerController?.injectedProvider.name
-      === constants.RLOGIN_LIQUALITY_WALLET,
-  [constants.SESSION_IS_RLOGIN_DEFINED]: (state): boolean => state.rLogin !== undefined,
 };
