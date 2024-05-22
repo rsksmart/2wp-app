@@ -1,6 +1,7 @@
 <template>
   <v-container fluid class="exchange container max-width mx-6">
     <component :is="currentComponent"
+    :flyoverEnabled="flyoverEnabled"
     :confirmTxState="confirmTxState"
     @changePage="changePage"/>
   </v-container>
@@ -24,7 +25,7 @@ export default defineComponent({
     FlyoverPegout,
   },
   setup() {
-    const currentComponent = ref('');
+    const currentComponent = ref('FlyoverPegout');
     const confirmTxState = ref<Machine<
       'idle'
       | 'loading'
@@ -33,7 +34,9 @@ export default defineComponent({
       > >(new Machine('idle'));
     const init = useAction('pegOutTx', constants.PEGOUT_TX_INIT);
     const initFlyover = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_INIT);
+    const getBalance = useAction('web3Session', constants.WEB3_SESSION_ADD_BALANCE);
     const flyoverFeature = useGetter<(name: FeatureNames) => Feature>('web3Session', constants.SESSION_GET_FEATURE);
+    const flyoverEnabled = ref(false);
 
     function changePage(componentName: string) {
       currentComponent.value = componentName;
@@ -44,18 +47,18 @@ export default defineComponent({
       const feature = flyoverFeature.value(FeatureNames.FLYOVER_PEG_OUT);
       if (feature?.value === 'enabled') {
         initFlyover();
-        currentComponent.value = 'FlyoverPegout';
-      } else {
-        currentComponent.value = 'PegOutForm';
+        flyoverEnabled.value = true;
       }
     });
 
     init();
+    getBalance();
 
     return {
       currentComponent,
       confirmTxState,
       changePage,
+      flyoverEnabled,
     };
   },
 });

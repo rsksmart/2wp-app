@@ -1,84 +1,86 @@
 <template>
-    <div class="form-step ma-0 py-4">
-      <v-row class="align-start mx-0">
-        <v-col cols="auto" class="pl-0">
-          <div v-bind:class="[focus ?
-                'number-filled' : 'number']">2</div>
-        </v-col>
-        <v-col class="pl-0">
-          <p v-bind:class="{'boldie': focus}">
-            Enter the amount you want to send:
-          </p>
-          <v-row class="d-flex align-center ma-0 mt-4 pl-1">
-            <v-col cols="4" v-bind:class="[amountStyle]"
-                   class="input-box-outline" id="amount-field">
-            <v-col cols="8" class="pa-0 pl-1">
-                <v-text-field
-                  :disabled="!isWalletConnected"
-                  v-model="rbtcAmount"
-                  bg-color="transparent"
-                  density="compact"
-                  class="amount-input"
-                  placeholder="Add amount" type="number" step="0.00000001"
-                  @focus="focus = true"
-                  @blur="focus = false"
-                  @update:modelValue="updateStore()"
-                  @keydown="blockLetterKeyDown"
-                  variant="solo"
-                  flat hide-details full-width single-line/>
-              </v-col>
-              <v-col cols="4" class="pa-0">
-                <v-row class="ma-0">
-                  <v-col cols="4" class="pa-0">
-                    <v-img :src="require('@/assets/exchange/rbtc.png')" height="20" contain/>
-                  </v-col>
-                  <v-col cols="7" class="pa-0 d-flex align-center">
-                    <span>{{environmentContext.getRbtcTicker()}}</span>
-                  </v-col>
-                </v-row>
-              </v-col>
-            </v-col>
-            <v-col cols="1"/>
-            <v-col cols="2" class="d-flex justify-center">
-              <v-icon color="#000" :icon="mdiArrowRight"></v-icon>
-            </v-col>
-            <v-col cols="3" class="pa-0 input-box-flat">
-              <v-col cols="5" class="pa-0 pl-4">
-                <v-text-field
-                  variant="solo"
-                  hide-details full-width single-line flat readonly
-                  class="amount-input"
-                  placeholder="0"
-                  v-model="btcAmount"
-                  type="number"/>
-              </v-col>
-              <v-col cols="3" class="ma-0 d-flex align-center">
-                <v-row>
-                  <v-col cols="5" class="pa-0">
-                    <v-img :src="require('@/assets/exchange/btc.png')" height="20" contain/>
-                  </v-col>
-                  <v-col cols="7" class="pa-0 d-flex align-center">
-                    <span>{{environmentContext.getBtcTicker()}}</span>
-                  </v-col>
-                </v-row>
-              </v-col>
-            </v-col>
-          </v-row>
-          <v-row class="ma-0 error-max-balance" style="min-height: 17px;">
-            <span v-if="stepState === 'error'" class="yellowish" id="rbtc-error-msg">
-              {{amountErrorMessage}}
-            </span>
-          </v-row>
-        </v-col>
-      </v-row>
+    <v-row no-gutters>
+    <v-col>
+      <span class="d-inline-block font-weight-bold my-3">
+        I will send
+      </span>
+    </v-col>
+    <v-col>
+      <span class="d-inline-block font-weight-bold my-3 ml-6">
+        I will receive
+      </span>
+    </v-col>
+  </v-row>
+  <v-row no-gutters align="center">
+    <v-col>
+      <v-text-field
+        hide-details
+        hide-spin-buttons
+        flat
+        variant="solo"
+        density="comfortable"
+        rounded="lg"
+        :class="stepState === 'error' && 'input-error'"
+        class="text-h4"
+        v-model="rbtcAmount"
+        type="number"
+        step="0.00000001"
+        @keydown="blockLetterKeyDown"
+        @focus="focus = true"
+        @blur="focus = false"
+        @update:modelValue="updateStore()">
+          <template #prepend-inner>
+            <v-chip :prepend-icon="mdiBitcoin" class="btc-icon">
+              {{ environmentContext.getRbtcTicker() }}
+            </v-chip>
+          </template>
+          <template #append-inner>
+            <div class="d-flex px-2 ga-1">
+              <v-chip variant="outlined" density="compact" @click="setMin">
+                MIN
+              </v-chip>
+              <v-chip variant="outlined" density="compact" @click="setMax">
+                MAX
+              </v-chip>
+            </div>
+          </template>
+      </v-text-field>
+    </v-col>
+    <v-icon class="mx-2" :icon="mdiArrowRight" color="bw-600" />
+    <v-col>
+      <div class="d-flex justify-space-between align-center flex-grow-1
+        bg-surface pa-3 rounded-lg border">
+      <div class="d-flex ga-2 align-center">
+        <v-chip :prepend-icon="mdiBitcoin" class="btc-icon">
+          {{ environmentContext.getBtcTicker() }}
+        </v-chip>
+        <span class="text-h4">
+          {{ rbtcAmount }}
+        </span>
+      </div>
     </div>
+    </v-col>
+  </v-row>
+  <v-row no-gutters>
+    <v-col>
+      <v-alert v-show="stepState === 'error'"
+        variant="text" type="warning" density="compact" prominent
+        class="text-body-1 pa-0 pt-2 input-error">
+      <template #prepend>
+        <v-icon :icon="mdiInformationOutline" size="small"/>
+      </template>
+      {{ amountErrorMessage }}
+    </v-alert>
+  </v-col>
+  <v-spacer />
+  </v-row>
   </template>
 
 <script lang="ts">
 import {
   computed, ref, watch, defineComponent,
 } from 'vue';
-import { mdiArrowRight } from '@mdi/js';
+import { mdiArrowRight, mdiBitcoin, mdiInformationOutline } from '@mdi/js';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import * as constants from '@/common/store/constants';
 import { isRBTCAmountValidRegex } from '@/common/utils';
@@ -87,9 +89,6 @@ import { useAction, useGetter, useState } from '@/common/store/helper';
 
 export default defineComponent({
   name: 'FlyoverRbtcInputAmount',
-  props: {
-    enableButton: Boolean,
-  },
   setup(_, context) {
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const focus = ref(false);
@@ -107,8 +106,6 @@ export default defineComponent({
     const account = computed<string>(() => web3SessionState.value.account as string);
 
     const safeAmount = computed((): WeiBig => new WeiBig(rbtcAmount.value ?? '0', 'rbtc'));
-
-    const btcAmount = computed(() => rbtcAmount.value);
 
     const amountErrorMessage = computed(() => {
       const { minValue, maxValue } = minMaxValues.value;
@@ -189,6 +186,15 @@ export default defineComponent({
     watch(account, clearStateWhenWalletIsDisconnected);
     watch(rbtcAmount, checkAmount);
 
+    function setMin() {
+      // TODO: implement
+      return 0;
+    }
+    function setMax() {
+      // TODO: implement
+      return 0;
+    }
+
     return {
       amountStyle,
       isWalletConnected,
@@ -200,7 +206,10 @@ export default defineComponent({
       amountErrorMessage,
       mdiArrowRight,
       environmentContext,
-      btcAmount,
+      mdiInformationOutline,
+      mdiBitcoin,
+      setMin,
+      setMax,
     };
   },
 });
