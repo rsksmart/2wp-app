@@ -90,11 +90,3 @@ export default defineComponent({
   },
 });
 </script>
-<style scoped lang="scss">
-.v-card--variant-outlined {
-  border: 2px solid rgba(var(--v-border-color), var(--v-border-opacity));
-  &.selected {
-    border-color: rgba(var(--v-border-color), 1);
-  }
-}
-</style>
