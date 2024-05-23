@@ -1,16 +1,18 @@
 <template>
-  <v-col>
-      <v-row justify="center" class="mt-1">
-        <pegout-progress-bar v-if="!isFlyover"/>
-        <tx-summary-fixed
-          :summary="summary"
-          :initialExpand="true"
-          :type="typeSummary"
-          :txId="txId"
-          :isRejected="isRejectedPegout"
-          :orientation="orientationSummary"/>
-      </v-row>
-  </v-col>
+  <v-container>
+    <v-row>
+      <status-progress-bar :isPegOut="true" :isFlyover="isFlyover"/>
+    </v-row>
+    <v-row   class="pt-4 mt-12">
+      <tx-summary-fixed
+        :summary="summary"
+        :initialExpand="true"
+        :type="typeSummary"
+        :txId="txId"
+        :isRejected="isRejectedPegout"
+        :orientation="orientationSummary"/>
+    </v-row>
+  </v-container>
 </template>
 
 <script lang="ts">
@@ -22,14 +24,14 @@ import {
   PegoutStatus,
   PegoutStatusDataModel, NormalizedSummary, FlyoverStatusModel,
 } from '@/common/types';
-import PegoutProgressBar from '@/common/components/status/PegoutProgressBar.vue';
+import StatusProgressBar from '@/common/components/status/StatusProgressBar.vue';
 import { useStateAttribute } from '@/common/store/helper';
 import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
 
 export default defineComponent({
   name: 'TxPegout',
   components: {
-    PegoutProgressBar,
+    StatusProgressBar,
     TxSummaryFixed,
   },
   props: {
