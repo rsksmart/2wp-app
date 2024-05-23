@@ -1,140 +1,8 @@
 <template>
-  <v-col>
-    <v-container fluid class="pa-0 mb-1 mt-7 max-width">
-      <v-row justify="center" class="mt-6">
-        <v-col class="ma-0 pa-0" cols="7">
-           <!-- isReject -->
-          <v-row v-if="isRejected" class="mx-0 d-flex justify-center progress-bar">
-            <v-col cols="8" class="pa-0 d-flex justify-center">
-              <v-row>
-                <div class="rsk-icon-green">
-                  <v-row>
-                    <v-img class="icon-status-image
-                      icon-rootstock-image-reject
-                      icon-status-border-yellow d-flex justify-center"
-                      :src="require('@/assets/status/rootstock.png')" height="78" contain/>
-                  </v-row>
-                  <v-row class="mt-4">
-                    <h1>{{environmentContext.getRskText()}} Network</h1>
-                  </v-row>
-                </div>
-                <v-progress-linear
-                  :model-value="btcConfirmationsPercentage"
-                  color="#F6C61B"
-                  height="19"/>
-                <div class="d-flex justify-end">
-                  <div class="bitcoin-icon-yellow">
-                    <v-row>
-                      <v-img class="icon-status-image
-                        icon-btc-image-reject
-                        icon-status-border-yellow d-flex justify-center"
-                        :src="require('@/assets/status/btc.png')" height="78" contain/>
-                    </v-row>
-                    <v-row class="mt-4">
-                      <h1>Refund {{environmentContext.getBtcText()}} address</h1>
-                    </v-row>
-                  </div>
-                </div>
-              </v-row>
-            </v-col>
-          </v-row>
-
-          <!-- success -->
-          <v-row v-else class="mx-0 progress-bar">
-            <v-col  cols="8" class="pa-0">
-              <div class="d-flex justify-start">
-                <div class="bitcoin-icon-green">
-                  <v-row>
-                    <v-img
-                      class="d-flex justify-center icon-status-image"
-                      :class="[isMainnet ? 'icon-btc-image-main' : 'icon-btc-image',
-                      bordersStyle.btc]"
-                      :src="require('@/assets/status/btc.png')" height="78" contain/>
-                  </v-row>
-                  <v-row class="pt-6">
-                    <v-col>
-                      <h1>{{environmentContext.getBtcText()}} Network</h1>
-                    </v-col>
-                  </v-row>
-                </div>
-              </div>
-
-              <v-progress-linear
-                class="progress-bar-status_new"
-                :model-value="btcConfirmationsPercentage"
-                :color="currentBtcBarColor"
-                height="19" />
-
-                <div v-bind:class="`btc-circle ${btcCircleColor}`"></div>
-              <v-row v-if="!btcConfirmationsAreDone" justify="center" class="mt-3 pa-0">
-                <h5>
-                  {{btcConfirmations}}/{{btcConfirmationsRequired}} confirmations
-                </h5>
-                <v-tooltip>
-                  <template v-slot:activator="{props}">
-                    <v-icon size="x-small" v-bind="props" :icon="mdiInformation">
-                    </v-icon>
-                  </template>
-                  <p class="tooltip-form mb-0">
-                    The estimated time is calculated based on a 10-minute block time.
-                  </p>
-                </v-tooltip>
-              </v-row>
-              <v-row v-if="!btcConfirmationsAreDone" justify="center" class="mt-4 pa-0">
-                <h5>
-                  Estimated time left: {{leftBtcTime}} hours
-                </h5>
-              </v-row>
-            </v-col>
-            <v-col cols="auto" class="pa-0 d-flex justify-center">
-              <div class="img-progress-bar">
-                <v-row>
-                  <v-img v-bind:class="bordersStyle.rootstock"
-                    class="icon-status-image icon-rootstock-image d-flex justify-center"
-                    :src="require('@/assets/status/rootstock.png')" height="78" contain/>
-                </v-row>
-                <v-row class="pt-6">
-                  <h1>{{environmentContext.getRskText()}} Network</h1>
-                </v-row>
-              </div>
-            </v-col>
-            <v-col class="confirm-percentage pa-0">
-              <v-row class="ma-0">
-                <v-progress-linear
-                class="progress-bar-status_new"
-                :model-value="rskConfirmationsPercentage"
-                :color="currentRskBarColor"
-                height="19"/>
-                <div v-bind:class="`rsk-circle ${rskCircleColor}`"></div>
-
-                <v-row justify="center" class="mt-3 mx-0 pa-0 mb-0 confirmations-message" >
-                  <h6 v-if="!rskConfirmationsAreDone">
-                    Usually takes around 20 minutes
-                  </h6>
-                </v-row>
-
-                <div class="d-flex justify-end pa-0 ma-0">
-                  <div class="rbtc-icon-green">
-                    <v-row>
-                      <v-img
-                        class="icon-status-image d-flex justify-center"
-                        :class="[isMainnet ? 'icon-rbtc-image-main' : 'icon-rbtc-image',
-                         bordersStyle.rbtc]"
-                        :src="require('@/assets/status/rbtc.png')" height="78" contain/>
-                    </v-row>
-                    <v-row class="justify-center pt-10">
-                      <h1>
-                      {{environmentContext.getRbtcTicker()}} delivered
-                      </h1>
-                    </v-row>
-                  </div>
-                </div>
-              </v-row>
-            </v-col>
-          </v-row>
-        </v-col>
-      </v-row>
-    </v-container>
+  <v-container>
+    <v-row>
+      <status-progress-bar :isPegOut="false" :isFlyover="isFlyover"/>
+    </v-row>
     <v-row class="pt-4 mt-12">
       <tx-summary-fixed
         :summary="txPeginSummary"
@@ -142,7 +10,7 @@
         :type="typeSummary"
         :orientation="orientationSummary"/>
     </v-row>
-  </v-col>
+  </v-container>
 </template>
 
 <script lang="ts">
@@ -160,15 +28,18 @@ import * as constants from '@/common/store/constants';
 import { getTime, setStatusMessage } from '@/common/utils';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
+import StatusProgressBar from '@/common/components/status/StatusProgressBar.vue';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
 export default defineComponent({
   name: 'TxPegin',
   components: {
     TxSummaryFixed,
+    StatusProgressBar,
   },
   props: {
     txId: String,
+    isFlyover: Boolean,
   },
   setup(props, context) {
     const currentFee = ref(new SatoshiBig('0', 'btc'));
