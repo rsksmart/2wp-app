@@ -9,7 +9,7 @@
                 <v-row>
                   <v-img v-bind:class="bordersStyle.rbtc"
                     class="icon-status-image pegout icon-rbtc-image d-flex justify-center"
-                    :src="require('@/assets/status/rbtc.png')" height="78" contain/>
+                    :src="require('@/assets/status/rbtc.svg')" height="78" contain/>
                 </v-row>
               </div>
               <div>
@@ -40,7 +40,7 @@
                   <v-row>
                     <v-img v-bind:class="bordersStyle.btc"
                       class="icon-status-image icon-btc-image-pegout d-flex justify-center"
-                      :src="require('@/assets/status/btc.png')" height="78" contain/>
+                      :src="require('@/assets/status/btc.svg')" height="78" contain/>
                   </v-row>
                 </div>
               </div>

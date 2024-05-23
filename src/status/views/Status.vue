@@ -1,71 +1,29 @@
 <template>
-  <v-container fluid class="px-0 mx-0 max-width">
-    <v-col>
-      <v-container class="transactions ma-0 pa-0">
-        <v-row class="mx-0 mb-5 d-flex justify-center">
-          <h1 class="text-center">Transaction status</h1>
-        </v-row>
-        <v-row class="mx-0 mt-10 mb-4" justify="center">
-          <p class="subtitle">Enter the
-            transaction id in the textbox below
-            to check the status of the operation</p>
-        </v-row>
-        <v-row justify="center" class="mx-0">
-          <v-col cols="7" md="8" xl="7" lg="7" class="pa-0">
-            <v-row>
-              <v-text-field hide-details density="compact" variant="outlined"
-                v-model="txId"
-                @keydown.enter="getPegStatus"
-                label="Transaction id" />
-              <v-btn :disabled="!isValidTxId" :icon="mdiMagnify" class="mx-2"
-                style="opacity: 1;" variant="text"
-                @click="getPegStatus" @keyup.enter="getPegStatus">
-              </v-btn>
-            </v-row>
-            <v-row v-if="!isValidTxId && txId">
-              <span class="yellowish">
-                {{ notValidTxIdMessage }}
-              </span>
-            </v-row>
-            <v-row class="mx-0 pl-1 pt-1" v-if="activeMessage.error && isValidTxId
-              && txId === txIdProp">
-              <span class="redish">
-                {{ activeMessage.errorMessage }}
-              </span>
-            </v-row>
-          </v-col>
-        </v-row>
-        <v-row justify="center" v-if="showStatus" class="mx-0 mt-12 mb-6">
-          <div class="mt-4 mb-0 status text-center" :class="activeMessage.activeMessageStyle">
-            {{ activeMessage.statusMessage }}
-            <v-row v-if="showTimeLeft" class="mt-1 mb-0 text-center d-flex justify-center">
-              <p class="subtitle blueish">Estimated time: {{ releaseTimeText }}</p>
-            </v-row>
-          </div>
-        </v-row>
-      </v-container>
-      <v-container fluid class="transactions pa-0">
-        <tx-pegin v-if="!activeMessage.isRejected
-          && isPegIn
-          && !activeMessage.error" :txId="txId" />
-        <tx-pegout v-if="((!activeMessage.isRejected && !activeMessage.error) || isRejected)
-                          && isPegOut" :txId="txId" :isFlyover="isFlyover"/>
-        <v-row justify="center" class="mx-0 mt-5">
-          <v-col cols="2" class="d-flex justify-start pa-0 ma-0">
-            <v-btn rounded variant="outlined" color="#000000" width="110" @click="back">
-              <span>Go home</span>
-            </v-btn>
-          </v-col>
-          <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0">
-            <v-btn v-if="!activeMessage.isRejected && showStatus" class="px-5"
-              width="117" color="#000000" rounded
-              @click="getPegStatus">
-              <span class="whiteish">Refresh</span>
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-col>
+  <v-container>
+    <v-row no-gutters class="d-flex justify-start">
+      <span class="text-h1 pa-2 bg-purple">Transaction </span>
+      <span class="text-h1 pa-2 ml-2 bg-orange">Status</span>
+    </v-row>
+    <v-row no-gutters class="mt-16">
+      <span class="d-flex flex-0-0">Transaction id</span>
+    </v-row>
+    <v-row no-gutters class="mb-16">
+      <v-text-field comfortable variant="outlined"
+                    v-model="txId" @keydown.enter="getPegStatus"
+                    :append-inner-icon="mdiMagnify"
+                    @click:append-inner="getPegStatus"
+                    :rules="[rules.required, rules.valid]"
+                    @keyup.enter="getPegStatus" />
+    </v-row>
+    <v-row no-gutters v-if="showStatus && showTimeLeft" justify="center">
+      <p>Estimated time: {{ releaseTimeText }}</p>
+    </v-row>
+    <v-row no-gutters>
+      <tx-pegin v-if="!activeMessage.isRejected && isPegIn
+                && !activeMessage.error" :txId="txId" :isFlyover="isFlyover" />
+      <tx-pegout v-if="((!activeMessage.isRejected && !activeMessage.error) || isRejected)
+                && isPegOut" :txId="txId" :isFlyover="isFlyover"/>
+    </v-row>
   </v-container>
 </template>
 
@@ -130,6 +88,12 @@ export default defineComponent({
           || txDetails.status === PegoutStatus.RECEIVED
           || txDetails.status === PegoutStatus.WAITING_FOR_SIGNATURE);
     });
+
+    const rules = {
+      required: (value: string) => !!value || 'Required.',
+      valid: (value: string) => (/^(0x[a-fA-F0-9]{64}|[a-fA-F0-9]{64})$/.test(value))
+        || 'Invalid Transaction Id.',
+    };
 
     function regexValidationTxId(): boolean {
       const regex = /^(0x[a-fA-F0-9]{64}|[a-fA-F0-9]{64})$/;
@@ -212,6 +176,7 @@ export default defineComponent({
       isFlyover,
       back,
       mdiMagnify,
+      rules,
     };
   },
 });
