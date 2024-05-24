@@ -28,7 +28,7 @@
               @blur="focus = false"
               :disabled="onlyNativeSegwit"
               @update:model-value="accountChanged"/>
-            <p class="label-liquality" v-if="onlyNativeSegwit">
+            <p class="label-segwit" v-if="onlyNativeSegwit">
               {{ accountBalances[2].text }}
             </p>
           </v-col>
