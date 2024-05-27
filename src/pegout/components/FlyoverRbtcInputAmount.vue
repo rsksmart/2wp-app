@@ -55,7 +55,7 @@
           {{ environmentContext.getBtcTicker() }}
         </v-chip>
         <span class="text-h4">
-          {{ rbtcAmount }}
+          {{ willReceive }}
         </span>
       </div>
     </div>
@@ -84,11 +84,17 @@ import { mdiArrowRight, mdiBitcoin, mdiInformationOutline } from '@mdi/js';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import * as constants from '@/common/store/constants';
 import { isRBTCAmountValidRegex } from '@/common/utils';
-import { SessionState, WeiBig } from '@/common/types';
+import { SatoshiBig, SessionState, WeiBig } from '@/common/types';
 import { useAction, useGetter, useState } from '@/common/store/helper';
 
 export default defineComponent({
   name: 'FlyoverRbtcInputAmount',
+  props: {
+    willReceive: {
+      type: String,
+      required: true,
+    },
+  },
   setup(_, context) {
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const focus = ref(false);
@@ -102,8 +108,8 @@ export default defineComponent({
     const setRbtcAmount = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ADD_AMOUNT);
     const addAmount = useAction('pegOutTx', constants.PEGOUT_TX_ADD_AMOUNT);
     const calculateFee = useAction('pegOutTx', constants.PEGOUT_TX_CALCULATE_FEE);
-    const clearQuotes = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_CLEAR_QUOTES);
     const account = computed<string>(() => web3SessionState.value.account as string);
+    const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
 
     const safeAmount = computed((): WeiBig => new WeiBig(rbtcAmount.value ?? '0', 'rbtc'));
 
@@ -159,7 +165,6 @@ export default defineComponent({
     }
 
     function updateStore() {
-      clearQuotes();
       setRbtcAmount(new WeiBig(rbtcAmount.value, 'rbtc'));
       addAmount(new WeiBig(rbtcAmount.value, 'rbtc')).then(() => {
         calculateFee();
@@ -187,12 +192,20 @@ export default defineComponent({
     watch(rbtcAmount, checkAmount);
 
     function setMin() {
-      // TODO: implement
-      return 0;
+      const { minValue } = minMaxValues.value;
+      rbtcAmount.value = minValue.toRBTCTrimmedString();
+      updateStore();
     }
+
     function setMax() {
-      // TODO: implement
-      return 0;
+      const { minValue, maxValue } = minMaxValues.value;
+      const { balance } = web3SessionState.value;
+      if (balance.gt(minValue) && balance.lt(maxValue)) {
+        rbtcAmount.value = balance.toRBTCTrimmedString();
+      } else {
+        rbtcAmount.value = maxValue.toRBTCTrimmedString();
+      }
+      updateStore();
     }
 
     return {
@@ -210,6 +223,7 @@ export default defineComponent({
       mdiBitcoin,
       setMin,
       setMax,
+      estimatedBtcToReceive,
     };
   },
 });
