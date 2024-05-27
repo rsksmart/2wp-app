@@ -10,7 +10,7 @@
     </v-row>
     <v-row>
       <v-col>
-        <flyover-rbtc-input-amount @walletDisconnected="clearState"/>
+        <flyover-rbtc-input-amount @walletDisconnected="clearState" :willReceive="amountToReceive"/>
       </v-col>
     </v-row>
     <span class="d-inline-block font-weight-bold my-3">
@@ -144,6 +144,9 @@ export default defineComponent({
     const isLedgerConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_LEDGER_CONNECTED);
     const isTrezorConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_TREZOR_CONNECTED);
     const isMetamaskConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_METAMASK_CONNECTED);
+    const setSelectedQuoteHash = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE_HASH);
+    const getSelectedQuote = useGetter<QuotePegOut2WP>('flyoverPegout', constants.FLYOVER_PEGOUT_GET_SELECTED_QUOTE);
+    const selectedOption = ref('');
 
     const pegoutQuotes = computed(() => {
       const quoteList: QuotePegOut2WP[] = [];
@@ -221,7 +224,8 @@ export default defineComponent({
 
     const isReadyToCreate = computed((): boolean => isEnoughBalance.value
         && !!session.value.account
-        && validAmountToReceive.value);
+        && validAmountToReceive.value
+        && selectedOption.value !== undefined);
 
     const sendingPegout = computed(():boolean => pegOutFormState.value.matches(['loading']));
 
@@ -230,12 +234,12 @@ export default defineComponent({
       showTxErrorDialog.value = true;
     }
 
-    function changePage(type: string) {
+    function changePage() {
       router.push({
-        name: 'PegOutSuccess',
+        name: 'SuccessTx',
         params: {
-          wallet: currentWallet.value ? currentWallet.value.short_name : '',
-          type,
+          type: TxStatusType.PEGOUT.toLowerCase(),
+          txId: pegOutTxState.value.txHash,
         },
       });
       context.emit('changePage', nextPage);
@@ -279,7 +283,6 @@ export default defineComponent({
     }));
 
     async function send(quoteHash: string) {
-      const type = quoteHash ? constants.FLYOVER : constants.POWPEG;
       pegOutFormState.value.send('loading');
       try {
         if (quoteHash) {
@@ -288,7 +291,7 @@ export default defineComponent({
           await sendTx();
         }
         ApiService.registerTx(quoteHash ? registerFlyover.value : registerPegout.value);
-        changePage(type);
+        changePage();
       } catch (e) {
         if (e instanceof ServiceError) {
           handlePegoutError(e);
@@ -319,14 +322,21 @@ export default defineComponent({
         });
     }
 
-    const selectedOption = ref();
     function changeSelectedOption(quoteHash: string) {
+      setSelectedQuoteHash(quoteHash);
       selectedOption.value = quoteHash;
     }
 
     if (!props.flyoverEnabled) {
       showStep.value = true;
     }
+
+    const amountToReceive = computed(() => {
+      if (selectedOption.value) {
+        return getSelectedQuote.value?.quote.value.toRBTCTrimmedString();
+      }
+      return estimatedBtcToReceive.value.toBTCTrimmedString();
+    });
 
     return {
       environmentContext,
@@ -351,6 +361,7 @@ export default defineComponent({
       selectedOption,
       changeSelectedOption,
       mdiArrowRight,
+      amountToReceive,
     };
   },
 });
