@@ -35,14 +35,12 @@
 import { ref, defineComponent } from 'vue';
 import { useRouter } from 'vue-router';
 import PegInForm from '@/pegin/components/create/PegInForm.vue';
-import ConfirmLedgerTransaction from '@/pegin/components/ledger/ConfirmLedgerTransaction.vue';
 import ConfirmTx from '@/pegin/components/create/ConfirmTx.vue';
 import * as constants from '@/common/store/constants';
 import {
   SendBitcoinState, SatoshiBig, BtcWallet, LiqualityError, Utxo, TxStatusType,
 } from '@/common/types';
 import { Machine, getClearPeginTxState } from '@/common/utils';
-import ConfirmLiqualityTransaction from '@/pegin/components/liquality/ConfirmLiqualityTransaction.vue';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import TrezorTxBuilder from '@/pegin/middleware/TxBuilder/TrezorTxBuilder';
 import LedgerTxBuilder from '@/pegin/middleware/TxBuilder/LedgerTxBuilder';
@@ -60,8 +58,6 @@ export default defineComponent({
   name: 'SendBitcoin',
   components: {
     PegInForm,
-    ConfirmLedgerTransaction,
-    ConfirmLiqualityTransaction,
     ConfirmTx,
     ConnectDevice,
     DeviceErrorDialog,
