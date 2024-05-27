@@ -1,61 +1,55 @@
 <template>
-  <div id="option-4" class="pt-4 pb-2">
-    <v-row class="align-start mx-0">
-      <v-col cols="auto" class="pl-0">
-        <div v-bind:class="[focus ?
-              'number-filled' : 'number']">4</div>
-      </v-col>
-      <v-col class="pl-0">
-        <p v-bind:class="{'boldie' : focus}">
-          Select transaction fee:
-        </p>
-        <v-row class="ma-0 d-flex justify-start">
-          <v-col cols="11 pl-0">
-            <v-row class="ma-0">
-              <v-slider v-model="txFeeIndex" :ticks="transactionFees" max="2"
-                        track-size="2"
-                        thumb-size="12"
-                        show-ticks="always"
-                        :color="txFeeColor" :track-color="txFeeColor" step="1"
-                        @update:focused="focus = !focus"
-                        @blur="focus = false"
-                        />
-            </v-row>
-            <v-row class="ma-0">
-              <v-col cols="4" class="d-flex justify-start pa-0">
-                      <span class="text-left">{{ slowFee }}
-                      {{environmentContext.getBtcTicker()}}</span>
-              </v-col>
-              <v-col cols="4" class="d-flex justify-center pa-0">
-                      <span class="text-center">{{ averageFee }}
-                      {{environmentContext.getBtcTicker()}}</span>
-              </v-col>
-              <v-col cols="4" class="d-flex justify-end pa-0">
-                      <span class="text-right">{{ fastFee }}
-                      {{environmentContext.getBtcTicker()}}</span>
-              </v-col>
-            </v-row>
-            <v-row class="ma-0">
-              <v-col cols="4" class="d-flex justify-start pa-0">
-                <span class="boldie text-left">$ {{ slowFeeUSD }}</span>
-              </v-col>
-              <v-col cols="4" class="d-flex justify-center pa-0">
-                <span class="boldie text-center">$ {{ averageFeeUSD }}</span>
-              </v-col>
-              <v-col cols="4" class="d-flex justify-end pa-0">
-                <span class="boldie text-right">$ {{ fastFeeUSD }}</span>
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
-        <v-row v-if="showErrorMessage" class="ma-0 d-flex justify-start">
-          <span class="message-error-fee">
-            You don't have the balance for this fee + amount
-          </span>
-        </v-row>
-      </v-col>
-    </v-row>
-  </div>
+  <v-row class="align-start mx-0">
+    <v-col class="pl-0">
+      <span class="d-inline-block font-weight-bold">
+        Select transaction fee:
+      </span>
+      <v-row class="ma-0 d-flex justify-start">
+        <v-col cols="11 pl-0">
+          <v-row class="ma-0">
+            <v-slider v-model="txFeeIndex" :ticks="transactionFees" max="2"
+                      track-size="2"
+                      thumb-size="12"
+                      show-ticks="always"
+                      :color="txFeeColor" :track-color="txFeeColor" step="1"
+                      @update:focused="focus = !focus"
+                      @blur="focus = false"
+                      />
+          </v-row>
+          <v-row class="ma-0">
+            <v-col cols="4" class="d-flex justify-start pa-0">
+                    <span class="text-left">{{ slowFee }}
+                    {{environmentContext.getBtcTicker()}}</span>
+            </v-col>
+            <v-col cols="4" class="d-flex justify-center pa-0">
+                    <span class="text-center">{{ averageFee }}
+                    {{environmentContext.getBtcTicker()}}</span>
+            </v-col>
+            <v-col cols="4" class="d-flex justify-end pa-0">
+                    <span class="text-right">{{ fastFee }}
+                    {{environmentContext.getBtcTicker()}}</span>
+            </v-col>
+          </v-row>
+          <v-row class="ma-0">
+            <v-col cols="4" class="d-flex justify-start pa-0">
+              <span class="boldie text-left">$ {{ slowFeeUSD }}</span>
+            </v-col>
+            <v-col cols="4" class="d-flex justify-center pa-0">
+              <span class="boldie text-center">$ {{ averageFeeUSD }}</span>
+            </v-col>
+            <v-col cols="4" class="d-flex justify-end pa-0">
+              <span class="boldie text-right">$ {{ fastFeeUSD }}</span>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+      <v-row v-if="showErrorMessage" class="ma-0 d-flex justify-start">
+        <span class="message-error-fee">
+          You don't have the balance for this fee + amount
+        </span>
+      </v-row>
+    </v-col>
+  </v-row>
 </template>
 
 <script lang="ts">
@@ -76,7 +70,7 @@ export default defineComponent({
     const hasChange = ref(false);
     const txFeeIndex = ref(1);
     const fixedUSDDecimals = 2;
-    const transactionFees = ['Slow', 'Average', 'Fast'];
+    const transactionFees = { 0: 'Slow', 1: 'Average', 2: 'Fast' };
 
     const bitcoinPrice = useStateAttribute<number>('web3Session', 'bitcoinPrice');
     const account = useStateAttribute<string>('web3Session', 'account');

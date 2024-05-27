@@ -14,6 +14,7 @@
       </v-col>
     </v-row>
     <btc-input-amount />
+    <btc-fee-select/>
     <v-row>
       <v-col class="mr-3">
         <pegin-option-card
@@ -73,6 +74,7 @@ import { TxSummaryOrientation } from '@/common/types/Status';
 import { Feature, FeatureNames } from '@/common/types';
 import { useGetter, useState, useStateAttribute } from '@/common/store/helper';
 import AddressWarningDialog from '@/common/components/exchange/AddressWarningDialog.vue';
+import BtcFeeSelect from '@/pegin/components/create/BtcFeeSelect.vue';
 
 export default defineComponent({
   name: 'PegInForm',
@@ -81,6 +83,7 @@ export default defineComponent({
     BtcInputAmount,
     PeginOptionCard,
     AddressWarningDialog,
+    BtcFeeSelect,
   },
   setup(_, context) {
     const pegInFormState = ref<Machine<'loading' | 'goingHome' | 'fill'>>(new Machine('fill'));
@@ -99,6 +102,8 @@ export default defineComponent({
 
     const isReadyToCreate = computed((): boolean => pegInTxState.value.isValidAmountToTransfer
         && !pegInTxState.value.loadingFee
+        && !!pegInTxState.value.rskAddressSelected
+        && pegInTxState.value.rskAddressSelected !== '0x'
         && enoughBalanceSelectedFee.value);
 
     function back() {
