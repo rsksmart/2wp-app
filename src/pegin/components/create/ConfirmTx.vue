@@ -1,38 +1,43 @@
 <template>
-  <v-container>
-  <v-row>
-    <v-btn variant="text" class="px-0"
-      :prepend-icon="mdiArrowLeft"
-      @click="toPegInForm"
-      :disabled="confirmTxState.matches(['error', 'goingHome', 'loading'])"
-      >
-      Go Back
-    </v-btn>
-  </v-row>
-  <confirmation-summary />
-  <v-row justify="end">
-      <v-col cols="auto" class="py-8">
-        <v-btn-rsk
-          @click="toTrackId"
-          :disabled="confirmTxState.matches(['error', 'goingHome', 'loading'])">
-          Confirm
-          <template #append>
-            <v-icon :icon="mdiArrowRight" />
-          </template>
-        </v-btn-rsk>
-      </v-col>
-    </v-row>
-    <v-row v-if="confirmTxState.matches(['loading'])" class="mx-0 d-flex justify-center">
-      <v-col>
-        <v-row class="mx-0 mb-5 d-flex justify-center">
-          See your {{ walletService.name().formal_name }} wallet to confirm your transaction!
-        </v-row>
-        <v-row class="mx-0 mb-5 mt-10 d-flex justify-center">
-          <v-progress-circular indeterminate :size="60" :width="8" />
-        </v-row>
-      </v-col>
-    </v-row>
-  </v-container>
+  <template v-if="!confirmTxState.matches(['loading'])">
+    <v-container>
+      <v-row>
+        <v-btn variant="text" class="px-0"
+               :prepend-icon="mdiArrowLeft"
+               @click="toPegInForm"
+               :disabled="confirmTxState.matches(['error', 'goingHome', 'loading'])"
+        >
+          Go Back
+        </v-btn>
+      </v-row>
+      <confirmation-summary />
+      <v-row justify="end">
+        <v-col cols="auto" class="py-8">
+          <v-btn-rsk
+            @click="toTrackId"
+            :disabled="confirmTxState.matches(['error', 'goingHome', 'loading'])">
+            Confirm
+            <template #append>
+              <v-icon :icon="mdiArrowRight" />
+            </template>
+          </v-btn-rsk>
+        </v-col>
+      </v-row>
+      <v-row v-if="confirmTxState.matches(['loading'])" class="mx-0 d-flex justify-center">
+        <v-col>
+          <v-row class="mx-0 mb-5 d-flex justify-center">
+            See your {{ walletService.name().formal_name }} wallet to confirm your transaction!
+          </v-row>
+          <v-row class="mx-0 mb-5 mt-10 d-flex justify-center">
+            <v-progress-circular indeterminate :size="60" :width="8" />
+          </v-row>
+        </v-col>
+      </v-row>
+    </v-container>
+  </template>
+  <template v-else>
+    <confirm-ledger-transaction />
+  </template>
 </template>
 
 <script lang="ts">
@@ -50,11 +55,13 @@ import {
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { mdiInformation, mdiArrowLeft, mdiArrowRight } from '@mdi/js';
 import ConfirmationSummary from '@/pegin/components/create/ConfirmationSummary.vue';
+import ConfirmLedgerTransaction from '@/pegin/components/ledger/ConfirmLedgerTransaction.vue';
 
 export default defineComponent({
   name: 'ConfirmTx',
   components: {
     ConfirmationSummary,
+    ConfirmLedgerTransaction,
   },
   props: {
     confirmTxState: {

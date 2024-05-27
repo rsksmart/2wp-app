@@ -35,7 +35,6 @@
 import { ref, defineComponent } from 'vue';
 import { useRouter } from 'vue-router';
 import PegInForm from '@/pegin/components/create/PegInForm.vue';
-import ConfirmLedgerTransaction from '@/pegin/components/ledger/ConfirmLedgerTransaction.vue';
 import ConfirmTx from '@/pegin/components/create/ConfirmTx.vue';
 import * as constants from '@/common/store/constants';
 import {
@@ -58,7 +57,6 @@ export default defineComponent({
   name: 'SendBitcoin',
   components: {
     PegInForm,
-    ConfirmLedgerTransaction,
     ConfirmTx,
     ConnectDevice,
     DeviceErrorDialog,

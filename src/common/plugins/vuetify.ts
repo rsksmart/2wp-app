@@ -74,6 +74,8 @@ export const vuetify = createVuetify({
         variables: {
           'theme-on-purple': '#000',
           'theme-on-green': '#000',
+          'theme-on-teal': '#000',
+          'theme-on-pink': '#000',
         },
       },
     },
