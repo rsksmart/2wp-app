@@ -14,18 +14,7 @@
       </v-col>
     </v-row>
     <div class="d-flex flex-column ga-2 py-4">
-      <span>Destination Address</span>
-      <!-- TODO: Replace with input with validations or connected account -->
-      <div v-if="rskAddress" class="bg-surface py-2 px-4 rounded-lg border">
-        <p class="text-bw-400">
-          Connected Wallet {{ rskAddress }}
-        </p>
-      </div>
-      <v-text-field v-else variant="solo" flat rounded="lg" hide-details
-      placeholder="Enter Rootstock address"
-      density="compact"
-      >
-    </v-text-field>
+      <rsk-address-input/>
     </div>
     <!-- TODO: Use real values -->
     <span class="text-h4">Features</span>
@@ -38,15 +27,19 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue';
+import {
+  computed, defineComponent,
+} from 'vue';
 import * as constants from '@/common/store/constants';
 import { mdiInformationOutline } from '@mdi/js';
 import { useStateAttribute } from '@/common/store/helper';
 import { truncateString } from '@/common/utils';
+import RskAddressInput from '@/pegin/components/create/RskAddressInput.vue';
 
 export default defineComponent({
   name: 'PeginOptionCard',
   components: {
+    RskAddressInput,
   },
   props: {
     optionType: {

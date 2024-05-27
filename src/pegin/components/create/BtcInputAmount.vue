@@ -60,6 +60,13 @@
     </div>
     </v-col>
   </v-row>
+  <v-row class="my-0" v-if="stepState === 'error'">
+    <v-col cols="6" align-self="start">
+      <v-alert :text="amountErrorMessage" class="pa-2"
+          type="warning" color="alert">
+        </v-alert>
+    </v-col>
+  </v-row>
 </template>
 
 <script lang="ts">
@@ -217,7 +224,10 @@ export default defineComponent({
     }
 
     function setMin() {
-      // TODO: implement
+      const tempValue = new SatoshiBig(peginConfiguration.value.minValue, 'satoshi');
+      bitcoinAmount.value = tempValue.toBTCTrimmedString();
+      setBtcAmount(tempValue);
+      setIsValidAmount(true);
     }
 
     async function setMax() {
