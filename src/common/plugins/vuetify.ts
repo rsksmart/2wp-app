@@ -55,6 +55,7 @@ export const vuetify = createVuetify({
           background: '#000',
           surface: '#252525',
           'theme-primary': '#9E76FF',
+          alert: '#FF9100',
         },
         variables: {
           'theme-on-purple': '#000',
@@ -68,6 +69,7 @@ export const vuetify = createVuetify({
           background: '#FAF9F5',
           surface: '#FAF9F5',
           'theme-primary': '#FF9100',
+          alert: '#9E76FF',
         },
         variables: {
           'theme-on-purple': '#000',

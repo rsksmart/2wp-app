@@ -124,11 +124,12 @@ export default defineComponent({
     const txError = ref<ServiceError>(new ServiceError('', '', '', ''));
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const pegOutFormState = ref<Machine<'loading' | 'goingHome' | 'fill'>>(new Machine('fill'));
-    const injectedProvider = ref('');
     const showAddressDialog = ref(false);
     const loadingQuotes = ref(false);
     const showStep = ref(false);
     const showQuoteDiff = ref(false);
+    const isWalletAuthorizedToSign = ref(true);
+
     const pegOutTxState = useState<PegOutTxState>('pegOutTx');
     const flyoverPegoutState = useState<FlyoverPegoutState>('flyoverPegout');
     const session = useState<SessionState>('web3Session');
@@ -209,10 +210,6 @@ export default defineComponent({
       }
       return differences;
     });
-
-    const isWalletAuthorizedToSign = computed(() => (
-      currentWallet.value !== constants.WALLET_NAMES.LIQUALITY
-    ));
 
     const validAmountToReceive = computed((): boolean => estimatedBtcToReceive.value.gt(0));
 
