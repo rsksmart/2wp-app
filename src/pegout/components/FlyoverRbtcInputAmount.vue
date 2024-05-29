@@ -22,15 +22,18 @@
         rounded="lg"
         :class="stepState === 'error' && 'input-error'"
         class="text-h4"
-        v-model="rbtcAmount"
+        v-model="rbtcAmountModel"
         type="number"
         step="0.00000001"
         @keydown="blockLetterKeyDown"
         @focus="focus = true"
         @blur="focus = false"
-        @update:modelValue="updateStore()">
+        >
           <template #prepend-inner>
-            <v-chip :prepend-icon="mdiBitcoin" class="btc-icon">
+            <v-chip class="pl-2 pr-3">
+                <v-avatar class="mr-2 rbtc-icon">
+                  <v-img :src="require('@/assets/exchange/rbtc.png')" />
+                </v-avatar>
               {{ environmentContext.getRbtcTicker() }}
             </v-chip>
           </template>
@@ -55,7 +58,7 @@
           {{ environmentContext.getBtcTicker() }}
         </v-chip>
         <span class="text-h4">
-          {{ willReceive }}
+          {{ stepState === 'valid' ? willReceive : '' }}
         </span>
       </div>
     </div>
@@ -84,8 +87,12 @@ import { mdiArrowRight, mdiBitcoin, mdiInformationOutline } from '@mdi/js';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import * as constants from '@/common/store/constants';
 import { isRBTCAmountValidRegex } from '@/common/utils';
-import { SatoshiBig, SessionState, WeiBig } from '@/common/types';
-import { useAction, useGetter, useState } from '@/common/store/helper';
+import {
+  PegoutConfiguration, SatoshiBig, SessionState, WeiBig,
+} from '@/common/types';
+import {
+  useAction, useGetter, useState, useStateAttribute,
+} from '@/common/store/helper';
 
 export default defineComponent({
   name: 'FlyoverRbtcInputAmount',
@@ -98,23 +105,46 @@ export default defineComponent({
   setup(_, context) {
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const focus = ref(false);
-    const isMaxValueZero = ref(false);
     const rbtcAmount = ref('');
     const amountStyle = ref('');
     const stepState = ref<'unset' | 'valid' |'error'>('unset');
-
     const web3SessionState = useState<SessionState>('web3Session');
-    const minMaxValues = useGetter<{minValue: WeiBig; maxValue: WeiBig}>('flyoverPegout', constants.FLYOVER_PEGOUT_GET_MIN_MAX_VALUES);
     const setRbtcAmount = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ADD_AMOUNT);
     const addAmount = useAction('pegOutTx', constants.PEGOUT_TX_ADD_AMOUNT);
     const calculateFee = useAction('pegOutTx', constants.PEGOUT_TX_CALCULATE_FEE);
-    const account = computed<string>(() => web3SessionState.value.account as string);
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
+    const getRbtcGasFee = useGetter<Promise<WeiBig>>('web3Session', constants.SESSION_GET_RBTC_GAS_FEE);
+    const pegoutConfiguration = useStateAttribute<PegoutConfiguration>('pegOutTx', 'pegoutConfiguration');
+
+    const isValidAmount = (amount: WeiBig) => {
+      const { minValue, maxValue } = pegoutConfiguration.value;
+      const { balance } = web3SessionState.value;
+      return isRBTCAmountValidRegex(amount.toRBTCString())
+          && amount.gte(minValue)
+          && amount.lte(balance)
+          && amount.lte(maxValue);
+    };
+
+    const rbtcAmountModel = computed({
+      get() {
+        return rbtcAmount.value;
+      },
+      set(amount: string) {
+        rbtcAmount.value = amount;
+        const weiBigAmount = new WeiBig(amount, 'rbtc');
+        if (isValidAmount(weiBigAmount)) {
+          setRbtcAmount(weiBigAmount);
+          addAmount(weiBigAmount)
+            .then(() => calculateFee());
+          context.emit('get-quotes');
+        }
+      },
+    });
 
     const safeAmount = computed((): WeiBig => new WeiBig(rbtcAmount.value ?? '0', 'rbtc'));
 
     const amountErrorMessage = computed(() => {
-      const { minValue, maxValue } = minMaxValues.value;
+      const { minValue, maxValue } = pegoutConfiguration.value;
       const { balance } = web3SessionState.value;
       if (rbtcAmount.value.toString() === '') {
         return 'Please, enter an amount';
@@ -141,15 +171,13 @@ export default defineComponent({
     });
 
     const insufficientAmount = computed(() => {
-      const { minValue, maxValue } = minMaxValues.value;
+      const { minValue, maxValue } = pegoutConfiguration.value;
       const { balance } = web3SessionState.value;
       return safeAmount.value.lte('0')
           || safeAmount.value.gt(balance)
           || safeAmount.value.lt(minValue)
           || safeAmount.value.gt(maxValue);
     });
-
-    const isWalletConnected = computed((): boolean => web3SessionState.value.account !== undefined);
 
     function blockLetterKeyDown(e: KeyboardEvent) {
       if (rbtcAmount.value.toString().length > 18
@@ -164,56 +192,33 @@ export default defineComponent({
       if (e.key === '-') e.preventDefault();
     }
 
-    function updateStore() {
-      setRbtcAmount(new WeiBig(rbtcAmount.value, 'rbtc'));
-      addAmount(new WeiBig(rbtcAmount.value, 'rbtc')).then(() => {
-        calculateFee();
-      });
-    }
-
     function checkAmount() {
-      if (!isWalletConnected.value) return;
       stepState.value = !insufficientAmount.value && isRBTCAmountValidRegex(rbtcAmount.value)
         ? 'valid' : 'error';
-      amountStyle.value = stepState.value === 'valid' ? 'black-box' : 'yellow-box';
     }
 
-    function clearStateWhenWalletIsDisconnected() {
-      if (!isWalletConnected.value) {
-        rbtcAmount.value = '';
-        amountStyle.value = '';
-        stepState.value = 'unset';
-        isMaxValueZero.value = false;
-        context.emit('walletDisconnected');
-      }
-    }
-
-    watch(account, clearStateWhenWalletIsDisconnected);
-    watch(rbtcAmount, checkAmount);
+    watch(rbtcAmountModel, checkAmount);
 
     function setMin() {
-      const { minValue } = minMaxValues.value;
-      rbtcAmount.value = minValue.toRBTCTrimmedString();
-      updateStore();
+      const { minValue } = pegoutConfiguration.value;
+      rbtcAmountModel.value = minValue.toRBTCTrimmedString();
     }
 
-    function setMax() {
-      const { minValue, maxValue } = minMaxValues.value;
+    async function setMax() {
+      const { minValue, maxValue } = pegoutConfiguration.value;
       const { balance } = web3SessionState.value;
+      const minFee = await getRbtcGasFee.value;
       if (balance.gt(minValue) && balance.lt(maxValue)) {
-        rbtcAmount.value = balance.toRBTCTrimmedString();
+        rbtcAmountModel.value = balance.minus(minFee).toRBTCTrimmedString();
       } else {
-        rbtcAmount.value = maxValue.toRBTCTrimmedString();
+        rbtcAmountModel.value = maxValue.toRBTCTrimmedString();
       }
-      updateStore();
     }
 
     return {
       amountStyle,
-      isWalletConnected,
       rbtcAmount,
       focus,
-      updateStore,
       blockLetterKeyDown,
       stepState,
       amountErrorMessage,
@@ -224,6 +229,7 @@ export default defineComponent({
       setMin,
       setMax,
       estimatedBtcToReceive,
+      rbtcAmountModel,
     };
   },
 });

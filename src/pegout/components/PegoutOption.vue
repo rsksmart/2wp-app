@@ -34,15 +34,19 @@
           <template #prepend>
             <v-icon size="small" :icon="mdiInformationOutline" />
           </template>
-          The input address is not valid, remember we only accept legacy (P2PKH)
-          and segwit(P2SH) addresses.
+          Invalid address. Currently only Legacy (P2PKH) and Segwit (P2SH) addresses are supported.
         </v-alert>
       </div>
       <div v-else>
-        <div class="bg-surface py-2 px-4 rounded-lg border">
+        <div class="d-flex align-center justify-space-between
+          bg-surface py-2 px-4 rounded-lg border">
           <p class="text-bw-400">
-            Address needs to be generated
+            {{ session.btcDerivedAddress || 'Address needs to be generated' }}
           </p>
+          <v-chip v-if="isWalletAuthorizedToSign && !session.btcDerivedAddress" variant="outlined"
+            @click="$emit('openAddressDialog')">
+            Generate
+          </v-chip>
         </div>
         <v-alert
           variant="text" type="warning" density="compact" class="text-body-1 px-0" prominent>
@@ -58,20 +62,8 @@
           </p>
         </v-alert>
       </div>
-      <div v-if="isWalletAuthorizedToSign && isBtcAddressDerivationEnabled">
-        <div class="d-flex align-center">
-          <v-divider />
-          <span class="d-inline-block px-2 text-bw-500">or</span>
-          <v-divider />
-        </div>
-        <v-btn
-          class="mt-2 w-100"
-          @click="$emit('openAddressDialog')">
-            Get Bitcoin destination address
-        </v-btn>
-      </div>
     </div>
-
+    <v-spacer class="fill-height" />
     <span class="text-h4">Features</span>
 
     <div class="d-flex flex-column">
@@ -87,7 +79,7 @@
         {{ quote.quote.gasFee.toRBTCTrimmedString() }}
         {{ environmentContext.getRbtcTicker() }}
       </span>
-      <span class="text-bw-400">{{ toUSD(quote.quote.gasFee.toRBTCString()) }} USD</span>
+      <span class="text-bw-400">USD {{ toUSD(quote.quote.gasFee.toRBTCString()) }}</span>
     </div>
 
     <div class="d-flex flex-column">
@@ -99,7 +91,7 @@
         {{ environmentContext.getBtcTicker() }}
       </span>
       <span class="text-bw-400">
-        {{ toUSD(quote.quote.callFee.plus(quote.quote.productFeeAmount).toRBTCString()) }} USD
+        USD {{ toUSD(quote.quote.callFee.plus(quote.quote.productFeeAmount).toRBTCString()) }}
       </span>
     </div>
 
@@ -108,7 +100,7 @@
       <span class="text-bw-400">
         {{ amountToSend }} {{ environmentContext.getBtcTicker() }}
       </span>
-      <span class="text-bw-400">{{ toUSD(amountToSend) }} USD</span>
+      <span class="text-bw-400">USD {{ toUSD(amountToSend) }}</span>
     </div>
 
     <div class="d-flex flex-column">
@@ -118,10 +110,8 @@
       <span class="text-bw-400">
         {{ estimatedValueToReceive }} {{ environmentContext.getBtcTicker() }}
       </span>
-      <span class="text-bw-400">{{ toUSD(estimatedValueToReceive) }} USD</span>
+      <span class="text-bw-400">USD {{ toUSD(estimatedValueToReceive) }}</span>
     </div>
-
-    <v-spacer class="fill-height" />
   </v-card>
 </template>
 
@@ -159,7 +149,6 @@ export default defineComponent({
     const setBtcAddress = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ADD_BTC_ADDRESS);
     const fixedUSDDecimals = 2;
     const btcAddress = ref('');
-    const isBtcAddressDerivationEnabled = false;
     const isFlyover = computed(() => props.quote.quoteHash.length > 0);
 
     const amountToSend = computed(() => {
@@ -246,7 +235,6 @@ export default defineComponent({
       showAddressWarning,
       mdiInformationOutline,
       selectOption,
-      isBtcAddressDerivationEnabled,
     };
   },
 });

@@ -10,13 +10,15 @@
     </v-row>
     <v-row>
       <v-col>
-        <flyover-rbtc-input-amount @walletDisconnected="clearState" :willReceive="amountToReceive"/>
+        <flyover-rbtc-input-amount
+          @walletDisconnected="clearState"
+          @getQuotes="getQuotes"
+          :willReceive="amountToReceive" />
       </v-col>
     </v-row>
     <span class="d-inline-block font-weight-bold my-3">
       Speed/Time options
     </span>
-    <v-btn v-if="flyoverEnabled" @click="getQuotes" class="ml-2">Get quotes</v-btn>
     <v-row v-if="showStep && !loadingQuotes">
       <v-col cols="6" v-for="(quote, index) in pegoutQuotes" :key="index" >
         <pegout-option
@@ -29,41 +31,51 @@
         />
       </v-col>
     </v-row>
+    <v-row v-else-if="loadingQuotes" class="pt-4 justify-center">
+      <v-progress-circular
+        :size="250"
+        :width="18"
+        color="warning"
+        indeterminate>
+        Searching Options...
+      </v-progress-circular>
+    </v-row>
     <v-row justify="end">
         <v-col cols="auto">
             <v-btn-rsk v-if="!pegOutFormState.matches(['loading'])"
             @click="send(selectedOption)"
-            :disabled="!isReadyToCreate || pegOutFormState.matches(['goingHome'])"
+            :disabled="!isReadyToCreate
+              || !isFlyoverReady
+              || pegOutFormState.matches(['goingHome'])"
             >
             <template #append>
               <v-icon :icon="mdiArrowRight" />
             </template>
             Continue to Summary
           </v-btn-rsk>
-          <v-progress-circular v-else indeterminate />
         </v-col>
       </v-row>
     <!-- Address Dialog -->
     <v-row v-if="showAddressDialog">
       <address-dialog @closeDialog="showAddressDialog = false"/>
     </v-row>
-    <!-- Ledger loading message -->
-    <v-row v-if="pegOutFormState.matches(['loading']) && isLedgerConnected"
-      class="mx-0 justify-center">
-      See your ledger device to confirm your transaction.
-    </v-row>
-    <!-- Loading Dialogs -->
-    <loading-dialog v-model="loadingQuotes"
-      title="Searching"
-      text="We are currently searching for peg-out options,
-          you will receive the fastest and cheapest option so you can choose
-          the one that suits you best."
-    />
-    <loading-dialog v-model="sendingPegout"
-      title="Signing and Broadcasting"
-      text="We are sending your peg-out transaction to be signed,
-          and then broadcasting it to the network."
-    />
+    <v-overlay
+      v-model="sendingPegout"
+      class="align-center justify-center"
+    >
+    <div class="d-flex flex-column align-center ga-2">
+      <v-progress-circular
+        :size="250"
+        :width="18"
+        color="warning"
+        indeterminate
+        />
+      <p v-if="isLedgerConnected" class="text-warning">
+        See your Ledger device to confirm your transaction.
+      </p>
+    </div>
+
+    </v-overlay>
     <!-- Send tx error message -->
     <template v-if="showTxErrorDialog">
       <full-tx-error-dialog
@@ -95,11 +107,10 @@ import {
   FlyoverPegoutState, ObjectDifference, PegOutTxState, QuotePegOut2WP,
   SatoshiBig, TxStatusType, WeiBig,
 } from '@/common/types';
-import { Machine, ServiceError } from '@/common/utils';
+import { Machine, ServiceError, validateAddress } from '@/common/utils';
 import router from '@/common/router';
 import ApiService from '@/common/services/ApiService';
 import FullTxErrorDialog from '@/common/components/exchange/FullTxErrorDialog.vue';
-import LoadingDialog from '@/pegout/components/LoadingDialog.vue';
 import PegoutOption from './PegoutOption.vue';
 
 export default defineComponent({
@@ -109,7 +120,6 @@ export default defineComponent({
     AddressDialog,
     PegoutOption,
     FullTxErrorDialog,
-    LoadingDialog,
     QuoteDiffDialog,
   },
   props: {
@@ -227,6 +237,20 @@ export default defineComponent({
         && validAmountToReceive.value
         && selectedOption.value !== undefined);
 
+    const isFlyoverReady = computed(() => {
+      if (selectedOption.value) {
+        const { btcRecipientAddress } = flyoverPegoutState.value;
+        const { bridgeContractAddress } = pegOutTxState.value.pegoutConfiguration;
+        const { valid, addressType } = validateAddress(btcRecipientAddress);
+        const allowedAdressType = (addressType === constants.BITCOIN_LEGACY_ADDRESS
+          || addressType === constants.BITCOIN_SEGWIT_ADDRESS);
+        return valid
+          && btcRecipientAddress !== bridgeContractAddress
+          && allowedAdressType;
+      }
+      return true;
+    });
+
     const sendingPegout = computed(():boolean => pegOutFormState.value.matches(['loading']));
 
     function handlePegoutError(error: ServiceError) {
@@ -234,12 +258,14 @@ export default defineComponent({
       showTxErrorDialog.value = true;
     }
 
-    function changePage() {
+    function changePage(type: string) {
       router.push({
         name: 'SuccessTx',
         params: {
-          type: TxStatusType.PEGOUT.toLowerCase(),
-          txId: pegOutTxState.value.txHash,
+          type,
+          txId: type === TxStatusType.FLYOVER_PEGOUT.toLowerCase()
+            ? flyoverPegoutState.value.txHash
+            : pegOutTxState.value.txHash,
         },
       });
       context.emit('changePage', nextPage);
@@ -283,6 +309,9 @@ export default defineComponent({
     }));
 
     async function send(quoteHash: string) {
+      const type = quoteHash
+        ? TxStatusType.FLYOVER_PEGOUT.toLowerCase()
+        : TxStatusType.PEGOUT.toLowerCase();
       pegOutFormState.value.send('loading');
       try {
         if (quoteHash) {
@@ -291,7 +320,7 @@ export default defineComponent({
           await sendTx();
         }
         ApiService.registerTx(quoteHash ? registerFlyover.value : registerPegout.value);
-        changePage();
+        changePage(type);
       } catch (e) {
         if (e instanceof ServiceError) {
           handlePegoutError(e);
@@ -332,10 +361,14 @@ export default defineComponent({
     }
 
     const amountToReceive = computed(() => {
+      let finalAmount = '';
       if (selectedOption.value) {
-        return getSelectedQuote.value?.quote.value.toRBTCTrimmedString();
+        finalAmount = getSelectedQuote.value?.quote.value.toRBTCTrimmedString();
+      } else {
+        finalAmount = new WeiBig(estimatedBtcToReceive.value.toBTCString(), 'rbtc')
+          .minus(pegOutTxState.value.calculatedFee).toRBTCTrimmedString();
       }
-      return estimatedBtcToReceive.value.toBTCTrimmedString();
+      return new SatoshiBig(finalAmount, 'btc').toBTCTrimmedString();
     });
 
     return {
@@ -362,6 +395,7 @@ export default defineComponent({
       changeSelectedOption,
       mdiArrowRight,
       amountToReceive,
+      isFlyoverReady,
     };
   },
 });

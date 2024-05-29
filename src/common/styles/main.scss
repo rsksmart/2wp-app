@@ -19,4 +19,7 @@ a:hover {
   &.btc-icon .v-chip__prepend {
     color: rgb(var(--v-theme-orange));
   }
+  .v-avatar.rbtc-icon {
+    --v-avatar-height: 16px;
+  }
 }

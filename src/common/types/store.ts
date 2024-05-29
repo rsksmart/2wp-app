@@ -3,10 +3,12 @@ import { PegStatus } from '@/common/store/constants';
 import SatoshiBig from '@/common/types/SatoshiBig';
 import { PegInTxState } from '@/common/types/pegInTx';
 import { SessionState } from '@/common/types/session';
+import { PegOutTxState } from './pegOutTx';
 
 export interface RootState {
   pegInTx?: PegInTxState,
   web3Session?: SessionState,
+  pegOutTx?: PegOutTxState,
   version: string;
 }
 
