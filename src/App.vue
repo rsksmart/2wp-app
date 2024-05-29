@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onBeforeMount, ref } from 'vue';
 import Top from '@/common/components/layouts/Top.vue';
 import FooterRsk from '@/common/components/layouts/Footer.vue';
 import Mobile from '@/common/views/Mobile.vue';
@@ -92,7 +92,9 @@ export default {
       showTermsAndConditions.value = show;
     }
 
-    getFeatures();
+    onBeforeMount(() => {
+      getFeatures();
+    });
     appendHotjar();
     appendClarity();
     appendCSP();
