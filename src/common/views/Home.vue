@@ -52,22 +52,22 @@
             Transaction Status
           </v-btn>
         </div>
+        <v-row v-if="termsAndConditionsEnabled" class="d-flex justify-center">
+          <label for="termscheck" class="pa-0 d-flex align-center mx-3">
+            {{ '' }}
+          <input id="termscheck" type="checkbox" :checked="areTermsAccepted" @click="updateCookie">
+          </label>
+          <span>
+            I acknowledge and accept the
+            <a href="#" rel="noopener" @key-press="toggleCheck" class="px-1 text-bw-500"
+              @click.prevent="$emit('update:showDialog', true)">
+              terms and conditions
+            </a>
+          </span>
+      </v-row>
       </v-col>
     </v-row>
   </v-container>
-  <v-row v-if="termsAndConditionsEnabled" class="d-flex justify-center">
-    <label for="termscheck" class="pa-0 d-flex align-center mx-3">
-      {{ '' }}
-      <input id="termscheck" type="checkbox" :checked="areTermsAccepted" @click="updateCookie">
-    </label>
-    <span>
-      I acknowledge and accept the
-      <a href="#" rel="noopener" @key-press="toggleCheck" class="px-1"
-        @click.prevent="$emit('update:showDialog', true)">
-        terms and conditions
-      </a>
-    </span>
-  </v-row>
   <v-dialog v-model="show" width="500">
     <v-card class="d-flex pa-6" rounded="lg">
       <div class="d-flex justify-space-between">
@@ -85,13 +85,13 @@
 </template>
 
 <script lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import * as constants from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { isAllowedCurrentBrowser } from '@/common/utils';
-import { Feature, TransactionType } from '@/common/types';
-import { useAction, useStateAttribute } from '@/common/store/helper';
+import { Feature, FeatureNames, TransactionType } from '@/common/types';
+import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import { mdiCloseCircleOutline } from '@mdi/js';
 
 export default {
@@ -102,7 +102,6 @@ export default {
     const isAllowedBrowser = isAllowedCurrentBrowser();
     const showTermsAndConditions = ref(false);
     const areTermsAccepted = useStateAttribute<boolean>('web3Session', 'acceptedTerms');
-    const termsAndConditionsEnabled = useStateAttribute<Feature>('web3Session', 'termsAndConditionsEnabled');
     const clearPegin = useAction('pegInTx', constants.PEGIN_TX_CLEAR_STATE);
     const clearPegOut = useAction('pegOutTx', constants.PEGOUT_TX_CLEAR);
     const addPeg = useAction('web3Session', constants.SESSION_ADD_TX_TYPE);
@@ -117,6 +116,12 @@ export default {
       [constants.PEG_IN_TRANSACTION_TYPE]: 'PegIn',
       [constants.PEG_OUT_TRANSACTION_TYPE]: 'PegOut',
     };
+
+    const getFeature = useGetter<(name: FeatureNames) => Feature>('web3Session', constants.SESSION_GET_FEATURE);
+    const termsAndConditionsEnabled = computed(() => {
+      const feature = getFeature.value(FeatureNames.TERMS_AND_CONDITIONS);
+      return feature?.value;
+    });
 
     async function selectConversion(txType: NonNullable<TransactionType>) {
       addPeg(txType);
@@ -191,3 +196,8 @@ export default {
   },
 };
 </script>
+<style scoped>
+input[type="checkbox"] {
+  accent-color: rgb(var(--v-theme-on-background));
+}
+</style>
