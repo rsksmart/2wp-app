@@ -2,7 +2,7 @@ import { GetterTree } from 'vuex';
 import * as constants from '@/common/store/constants';
 import { SessionState } from '@/common/types/session';
 import { RootState } from '@/common/types/store';
-import { Feature, FeatureNames } from '@/common/types';
+import { Feature, FeatureNames, WeiBig } from '@/common/types';
 
 export const getters: GetterTree<SessionState, RootState> = {
   [constants.SESSION_IN_TX_FLOW]: (state): boolean => state.txType !== undefined,
@@ -16,4 +16,18 @@ export const getters: GetterTree<SessionState, RootState> = {
   [constants.SESSION_IS_RLOGIN_DEFINED]: (state): boolean => state.rLogin !== undefined,
   [constants.SESSION_GET_FEATURE]: (state) => (feature: FeatureNames)
   : Feature | undefined => state.features.find((f) => f.name === feature),
+  [constants.SESSION_GET_RBTC_GAS_FEE]: async (
+    { account, balance, ethersProvider },
+    _,
+    rootState,
+  ) => {
+    const gas = await ethersProvider?.estimateGas({
+      from: account,
+      to: rootState.pegOutTx?.pegoutConfiguration.bridgeContractAddress,
+      value: balance.toWeiString(),
+    });
+    const gasPrice = Number(await ethersProvider?.getGasPrice());
+    const calculatedFee = new WeiBig(gasPrice * Number(gas), 'wei');
+    return calculatedFee;
+  },
 };
