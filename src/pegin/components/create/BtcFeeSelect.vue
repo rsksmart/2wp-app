@@ -1,12 +1,12 @@
 <template>
   <v-row class="align-start mx-0">
-    <v-col class="pl-0">
+    <v-col class="px-0">
       <span class="d-inline-block font-weight-bold">
         Select transaction fee:
       </span>
       <v-row class="ma-0 d-flex justify-start">
-        <v-col cols="11 pl-0">
-          <v-row class="ma-0">
+        <v-col class="pa-0">
+          <v-row class="ma-0 pa-0">
             <v-slider v-model="txFeeIndex" :ticks="transactionFees" max="2"
                       track-size="2"
                       thumb-size="12"
@@ -14,6 +14,7 @@
                       :color="txFeeColor" :track-color="txFeeColor" step="1"
                       @update:focused="focus = !focus"
                       @blur="focus = false"
+                      class="ma-0"
                       />
           </v-row>
           <v-row class="ma-0">
