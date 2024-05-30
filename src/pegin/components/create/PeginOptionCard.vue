@@ -23,7 +23,9 @@
     </div>
     <div class="d-flex flex-column">
       <span>{{ environmentContext.getBtcTicker() }} fee</span>
-      <span class="text-bw-400">{{ selectedFee }} {{ environmentContext.getBtcTicker() }}</span>
+      <span class="text-bw-400">
+        {{ selectedFee.toBTCTrimmedString() }} {{ environmentContext.getBtcTicker() }}
+      </span>
     </div>
     <div class="d-flex flex-column">
       <span>Provider fee</span>
@@ -51,7 +53,7 @@ import { useGetter, useState, useStateAttribute } from '@/common/store/helper';
 import { truncateString } from '@/common/utils';
 import RskAddressInput from '@/pegin/components/create/RskAddressInput.vue';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { PegInTxState } from '@/common/types';
+import { PegInTxState, SatoshiBig } from '@/common/types';
 
 export default defineComponent({
   name: 'PeginOptionCard',
@@ -73,7 +75,7 @@ export default defineComponent({
     const rskAddress = computed(() => truncateString(account.value));
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const pegInTxState = useState<PegInTxState>('pegInTx');
-    const selectedFee = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
+    const selectedFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
 
     const PeginOptions = {
       native: {
