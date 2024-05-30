@@ -747,7 +747,7 @@ export default defineComponent({
     }
 
     function cropHash(hash: string):string {
-      return `${hash.substr(0, 14)}...${hash.substr(hash.length - 14, hash.length)}`;
+      return `${hash.substring(0, 14)}...${hash.substring(hash.length - 14, hash.length)}`;
     }
 
     return {
