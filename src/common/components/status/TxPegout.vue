@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row>
-      <status-progress-bar :isPegOut="true" :isFlyover="isFlyover"/>
+      <status-progress-bar :isFlyover="isFlyover"/>
     </v-row>
     <v-row   class="pt-4 mt-12">
       <tx-summary-fixed
