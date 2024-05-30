@@ -169,7 +169,7 @@
                             textStyles="breakable-address status-text-ellipsis"
                             @copyToClipboard="copyToClipboard"
                             id="txId"
-                            :textValue="summary.txId"
+                            :textValue="cropHash(summary.txId)"
                             />
                         </v-col>
                         <v-col cols="1" class="col-address-button pa-0">
@@ -204,7 +204,7 @@
                           <v-btn icon size="small" variant="plain" v-bind="props" density="compact">
                             <v-icon v-if="recipientAddress === '-'"
                                   class="tooltip-clickable-icon"
-                                  size="small"
+                                  size="small" color="bw-400"
                                   :icon="mdiInformation"
                                   @click="openDerivationAddressDocumentation">
                             </v-icon>
@@ -243,7 +243,7 @@
                           <v-btn @click="openExplorerToAddress" icon
                           density="compact"
                           size="small" variant="plain">
-                            <v-icon color="#000000" :icon="mdiOpenInNew"></v-icon>
+                            <v-icon :icon="mdiOpenInNew"></v-icon>
                           </v-btn>
                         </v-col>
                       </v-row>
@@ -746,6 +746,10 @@ export default defineComponent({
       window.open(`${appConstants.DERIVE_BTC_ADDRESS_DOCUMENTATION_URL}`);
     }
 
+    function cropHash(hash: string):string {
+      return `${hash.substr(0, 14)}...${hash.substr(hash.length - 14, hash.length)}`;
+    }
+
     return {
       over,
       VALUE_INCOMPLETE_MESSAGE,
@@ -784,6 +788,7 @@ export default defineComponent({
       accountLabel,
       releasedPegout,
       openAddressInExplorer,
+      cropHash,
     };
   },
 });
