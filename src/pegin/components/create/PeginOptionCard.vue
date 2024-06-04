@@ -83,7 +83,8 @@ export default defineComponent({
         subtitle: 'Maximum Security',
         subtitleColor: 'purple',
         estimatedTime: () => '34 Hours',
-        amountToTransfer: () => pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
+        amountToTransfer: () => pegInTxState.value.amountToTransfer
+          .plus(selectedFee.value).toBTCTrimmedString(),
         providerFee: () => '0',
         valueToReceive: () => pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
       },
