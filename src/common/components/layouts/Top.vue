@@ -7,11 +7,11 @@
       <h1 class="text-purple text-h5">2 Way Peg</h1>
     </div>
     <div class="d-flex align-center ga-5">
-      <div class="d-flex align-center ga-2" v-if="truncatedAccount">
+      <div class="d-flex align-center ga-2" v-if="truncatedAccount && accountBalance">
         <v-btn variant="text" size="small" density="compact" rounded="full" :icon="mdiContentCopy"
           @click="copyFullAccountAddress"
         />
-        <span>{{ truncatedAccount }}</span>
+        <span>{{ truncatedAccount }} | {{ accountBalance }} </span>
         <v-btn variant="flat" size="x-small" color="theme-primary" rounded="full" :icon="mdiLinkOff"
           @click="disconnectWallet" />
       </div>
@@ -31,6 +31,8 @@ import { mdiContentCopy, mdiLinkOff } from '@mdi/js';
 import * as constants from '@/common/store/constants';
 import { computed, ref, watch } from 'vue';
 import { truncateString } from '@/common/utils';
+import { WeiBig } from '@/common/types';
+import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 
 export default {
   name: 'TopBar',
@@ -49,6 +51,14 @@ export default {
 
     const account = useStateAttribute<string>('web3Session', 'account');
     const truncatedAccount = computed(() => truncateString(account.value));
+
+    const balance = useStateAttribute<WeiBig>('web3Session', 'balance');
+    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+
+    const accountBalance = computed(() => {
+      const amount = balance.value.toRBTCTrimmedString().slice(0, 7);
+      return `${amount} ${environmentContext.getRbtcTicker()}`;
+    });
 
     const clearSession = useAction('web3Session', constants.WEB3_SESSION_CLEAR_ACCOUNT);
     function disconnectWallet() {
@@ -73,6 +83,7 @@ export default {
       mdiContentCopy,
       copyFullAccountAddress,
       themeLight,
+      accountBalance,
     };
   },
 };

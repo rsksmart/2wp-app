@@ -40,10 +40,10 @@
           <template #append-inner>
             <div class="d-flex px-2 ga-1">
               <v-chip variant="outlined" density="compact" @click="setMin">
-                MIN
+                {{ minStrVal }} MIN
               </v-chip>
               <v-chip variant="outlined" density="compact" @click="setMax">
-                MAX
+                {{ maxStrVal }} MAX
               </v-chip>
             </div>
           </template>
@@ -115,6 +115,8 @@ export default defineComponent({
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
     const getRbtcGasFee = useGetter<Promise<WeiBig>>('web3Session', constants.SESSION_GET_RBTC_GAS_FEE);
     const pegoutConfiguration = useStateAttribute<PegoutConfiguration>('pegOutTx', 'pegoutConfiguration');
+    const minStrVal = computed(() => pegoutConfiguration.value.minValue.toRBTCString().slice(0, 5));
+    const maxStrVal = computed(() => pegoutConfiguration.value.maxValue.toRBTCString().slice(0, 5));
 
     const isValidAmount = (amount: WeiBig) => {
       const { minValue, maxValue } = pegoutConfiguration.value;
@@ -162,10 +164,10 @@ export default defineComponent({
         return 'You don\'t have the balance for this amount';
       }
       if (safeAmount.value.lt(minValue)) {
-        return `The minimum accepted value is ${minValue.toRBTCTrimmedString()} ${environmentContext.getRbtcTicker()}`;
+        return `This value is below the minimum allowed value of ${minValue.toRBTCTrimmedString()} ${environmentContext.getRbtcTicker()}`;
       }
       if (safeAmount.value.gt(maxValue)) {
-        return `The maximum accepted value is ${maxValue.toRBTCTrimmedString()} ${environmentContext.getRbtcTicker()}`;
+        return `This value is above the maximum allowed value of  ${maxValue.toRBTCTrimmedString()} ${environmentContext.getRbtcTicker()}`;
       }
       return '';
     });
@@ -201,14 +203,19 @@ export default defineComponent({
 
     function setMin() {
       const { minValue } = pegoutConfiguration.value;
-      rbtcAmountModel.value = minValue.toRBTCTrimmedString();
+      const { balance } = web3SessionState.value;
+      if (balance.lt(minValue)) {
+        rbtcAmountModel.value = balance.toRBTCTrimmedString();
+      } else {
+        rbtcAmountModel.value = minValue.toRBTCTrimmedString();
+      }
     }
 
     async function setMax() {
-      const { minValue, maxValue } = pegoutConfiguration.value;
+      const { maxValue } = pegoutConfiguration.value;
       const { balance } = web3SessionState.value;
       const minFee = await getRbtcGasFee.value;
-      if (balance.gt(minValue) && balance.lt(maxValue)) {
+      if (balance.lt(maxValue)) {
         rbtcAmountModel.value = balance.minus(minFee).toRBTCTrimmedString();
       } else {
         rbtcAmountModel.value = maxValue.toRBTCTrimmedString();
@@ -230,6 +237,8 @@ export default defineComponent({
       setMax,
       estimatedBtcToReceive,
       rbtcAmountModel,
+      minStrVal,
+      maxStrVal,
     };
   },
 });
