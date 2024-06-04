@@ -4,8 +4,12 @@
   <v-row class="my-2">
     <v-combobox
       variant="solo" flat rounded="lg" hide-details
+      hide-selected
+      no-filter
       v-model="selectedAddress"
       density="compact"
+      placeholder="Select the address"
+      :persistent-placeholder="false"
       :items="addressItems"
       @update:model-value="checkStep"
       type="text"
@@ -31,7 +35,7 @@ import { EnvironmentAccessorService } from '@/common/services/enviroment-accesso
 import * as constants from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { useAction, useStateAttribute } from '@/common/store/helper';
-import { Machine } from '@/common/utils';
+import { Machine, getChunkedValue } from '@/common/utils';
 
 interface AddressItem {
   title: string;
@@ -54,16 +58,13 @@ export default defineComponent({
 
     const account = useStateAttribute<string>('web3Session', 'account');
     const storeRskAddressSelected = useStateAttribute<string>('pegInTx', 'rskAddressSelected');
-
     const setRskAddress = useAction('pegInTx', constants.PEGIN_TX_ADD_RSK_ADDRESS);
 
     const web3Address = computed(() => account.value ?? '');
 
-    const selectedAddress = ref<string | AddressItem>('');
-
     const addressItems: AddressItem[] = [
       {
-        title: `Connected wallet (${account.value})`,
+        title: `Connected wallet (${getChunkedValue(account.value, 9)})`,
         value: account.value,
         id: 0,
       },
@@ -73,6 +74,8 @@ export default defineComponent({
         id: 1,
       },
     ];
+
+    const selectedAddress = ref<string | AddressItem>(addressItems[0]);
 
     const computedRskAddress = computed<string>((): string => {
       let address = '';
@@ -87,10 +90,12 @@ export default defineComponent({
       return address;
     });
 
+    const isConnectedWallet = computed<boolean>(() => typeof selectedAddress.value === 'object' && selectedAddress.value.id === 1);
+
     watch(selectedAddress, (newValue) => {
       const value = newValue as AddressItem;
       if (!value) return;
-      if (typeof value === 'object' && value.id === 1) {
+      if (isConnectedWallet.value) {
         selectedAddress.value = '';
         setRskAddress('');
       }
@@ -161,6 +166,7 @@ export default defineComponent({
       selectedAddress,
       computedRskAddress,
       state,
+      isConnectedWallet,
     };
   },
 });
