@@ -36,10 +36,10 @@
           <template #append-inner>
             <div class="d-flex px-2 ga-1">
               <v-chip variant="outlined" density="compact" @click="setMin">
-                MIN
+                {{ boundaries.minValue.toBTCString().slice(0,5) }} MIN
               </v-chip>
               <v-chip variant="outlined" density="compact" @click="setMax">
-                MAX
+                {{ boundaries.maxValue.toBTCString().slice(0,5) }} MAX
               </v-chip>
             </div>
           </template>
@@ -133,10 +133,18 @@ export default defineComponent({
       return fee;
     });
 
-    const amountErrorMessage = computed(() => { // mayor rework
-      const feePlusAmount: SatoshiBig = safeAmount.value.plus(safeTxFee.value);
+    const boundaries = computed(() => {
       const minValue: SatoshiBig = new SatoshiBig(peginConfiguration.value.minValue, 'satoshi');
       const maxValue: SatoshiBig = new SatoshiBig(peginConfiguration.value.maxValue, 'satoshi');
+      return {
+        minValue,
+        maxValue,
+      };
+    });
+
+    const amountErrorMessage = computed(() => { // mayor rework
+      const feePlusAmount: SatoshiBig = safeAmount.value.plus(safeTxFee.value);
+      const { minValue, maxValue } = boundaries.value;
       if (selectedAccountBalance.value.eq('0') && !isValidAmountToTransfer.value) {
         return 'Selected account has no balance';
       }
@@ -172,8 +180,7 @@ export default defineComponent({
 
     const insufficientAmount = computed(() => {
       const feePlusAmount: SatoshiBig = safeAmount.value.plus(safeTxFee.value);
-      const minValue: SatoshiBig = new SatoshiBig(peginConfiguration.value.minValue, 'satoshi');
-      const maxValue: SatoshiBig = new SatoshiBig(peginConfiguration.value.maxValue, 'satoshi');
+      const { minValue, maxValue } = boundaries.value;
       if (safeAmount.value.lte('0')
         || feePlusAmount.gt(selectedAccountBalance.value)
         || safeAmount.value.lt(minValue)
@@ -284,6 +291,7 @@ export default defineComponent({
       setMax,
       setMin,
       mdiBitcoin,
+      boundaries,
     };
   },
 });

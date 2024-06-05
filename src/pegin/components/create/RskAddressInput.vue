@@ -75,7 +75,7 @@ export default defineComponent({
       },
     ];
 
-    const selectedAddress = ref<string | AddressItem>(addressItems[0]);
+    const selectedAddress = ref<string | AddressItem>();
 
     const computedRskAddress = computed<string>((): string => {
       let address = '';
