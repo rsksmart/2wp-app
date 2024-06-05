@@ -23,10 +23,17 @@ export interface BtcPeginStatus {
   fees: number;
 }
 
+export enum RskStatus {
+  LOCKED = 'LOCKED',
+  REJECTED_NO_REFUND = 'REJECTED_NO_REFUND',
+  REJECTED_REFUND = 'REJECTED_REFUND',
+}
+
 export interface RskPeginStatus {
   recipientAddress: string;
   confirmations: number;
   createOn: Date;
+  status: RskStatus;
 }
 
 export interface PeginStatus {
