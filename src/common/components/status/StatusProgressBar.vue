@@ -181,11 +181,11 @@ export default defineComponent({
         }
       }
       return {
-        0: [isPegOut.value ? 'Bitcoin Network' : 'Rootstock Network', zero],
+        0: [isPegOut.value ? 'Rootstock Network' : 'Bitcoin Network', zero],
         1: [labelOne, first],
         2: [labelTwo, second],
         3: [labelThree, third],
-        4: [isPegOut.value ? 'Rootstock Network' : 'Bitcoin Network', fourth],
+        4: [isPegOut.value ? 'Bitcoin Network' : 'Rootstock Network', fourth],
       };
     });
     return {
