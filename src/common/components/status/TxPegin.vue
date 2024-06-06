@@ -3,13 +3,7 @@
     <v-row>
       <status-progress-bar :isFlyover="isFlyover"/>
     </v-row>
-    <v-row class="pt-4 mt-12">
-      <tx-summary-fixed
-        :summary="txPeginSummary"
-        :initialExpand="true"
-        :type="typeSummary"
-        :orientation="orientationSummary"/>
-    </v-row>
+    <status-summary :details="txPeginSummary" :type="typeSummary"></status-summary>
   </v-container>
 </template>
 
@@ -27,14 +21,14 @@ import EnvironmentContextProviderService from '@/common/providers/EnvironmentCon
 import * as constants from '@/common/store/constants';
 import { getTime, setStatusMessage } from '@/common/utils';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
-import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
 import StatusProgressBar from '@/common/components/status/StatusProgressBar.vue';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import StatusSummary from '@/common/components/status/StatusSummary.vue';
 
 export default defineComponent({
   name: 'TxPegin',
   components: {
-    TxSummaryFixed,
+    StatusSummary,
     StatusProgressBar,
   },
   props: {
@@ -110,6 +104,7 @@ export default defineComponent({
         txId: status.btc.txId,
         refundAddress: status.btc.refundAddress,
         federationAddress: status.btc.federationAddress,
+        total: status.btc.amountTransferred + status.btc.fees,
       };
     });
 

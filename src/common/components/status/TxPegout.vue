@@ -3,15 +3,7 @@
     <v-row>
       <status-progress-bar :isFlyover="isFlyover"/>
     </v-row>
-    <v-row   class="pt-4 mt-12">
-      <tx-summary-fixed
-        :summary="summary"
-        :initialExpand="true"
-        :type="typeSummary"
-        :txId="txId"
-        :isRejected="isRejectedPegout"
-        :orientation="orientationSummary"/>
-    </v-row>
+      <status-summary :details="txPegoutSummary" :type="typeSummary"></status-summary>
   </v-container>
 </template>
 
@@ -20,19 +12,18 @@ import { computed, defineComponent } from 'vue';
 import {
   SatoshiBig,
   TxStatusType,
-  TxSummaryOrientation,
   PegoutStatus,
   PegoutStatusDataModel, NormalizedSummary, FlyoverStatusModel,
 } from '@/common/types';
 import StatusProgressBar from '@/common/components/status/StatusProgressBar.vue';
 import { useStateAttribute } from '@/common/store/helper';
-import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
+import StatusSummary from '@/common/components/status/StatusSummary.vue';
 
 export default defineComponent({
   name: 'TxPegout',
   components: {
     StatusProgressBar,
-    TxSummaryFixed,
+    StatusSummary,
   },
   props: {
     txId: String,
@@ -40,7 +31,6 @@ export default defineComponent({
   },
   setup(props) {
     const typeSummary = TxStatusType.PEGOUT;
-    const orientationSummary = TxSummaryOrientation.HORIZONTAL;
 
     const txDetails = useStateAttribute<PegoutStatusDataModel | FlyoverStatusModel>('status', 'txDetails');
     const pegOutEstimatedFee = useStateAttribute<SatoshiBig>('status', 'pegOutEstimatedFee');
@@ -93,7 +83,7 @@ export default defineComponent({
 
     return {
       typeSummary,
-      orientationSummary,
+      txPegoutSummary,
       summary,
       isRejectedPegout,
     };

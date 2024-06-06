@@ -56,6 +56,23 @@ export function getBtcAddressExplorerUrl(address: string) {
   return `${getBtcBaseExplorerUrl()}/address/${address}`;
 }
 
+export function getRskBaseExplorerUrl() {
+  let network = '';
+  if (EnvironmentAccessorService
+    .getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_TESTNET) {
+    network = '.testnet';
+  }
+  return `https://explorer${network}.rootstock.io`;
+}
+
+export function getRskTxExplorerUrl(txId: string) {
+  return `${getRskBaseExplorerUrl()}/tx/${txId}`;
+}
+
+export function getRskAddressExplorerUrl(address: string) {
+  return `${getRskBaseExplorerUrl()}/address/${address}`;
+}
+
 export function getEstimatedFee(): Promise<SatoshiBig> {
   return new Promise<SatoshiBig>((resolve, reject) => {
     const bridgeService = new BridgeService();
