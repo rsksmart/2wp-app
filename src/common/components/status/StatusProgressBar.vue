@@ -7,24 +7,26 @@
       <v-col class="px-0">
         <v-progress-linear color="green" :model-value="timeLineData[0][1]" />
       </v-col>
-      <v-col cols="auto" class="pt-2 px-1">
-        <v-img :src="require('@/assets/status/ellipse.svg')" width="12" height="12" contain/>
-      </v-col>
-      <v-col class="px-0">
-        <v-progress-linear color="green" :model-value="timeLineData[1][1]" />
-      </v-col>
-      <v-col cols="auto" class="pt-2 px-1">
-        <v-img :src="require('@/assets/status/ellipse.svg')" width="12" height="12" contain/>
-      </v-col>
-      <v-col class="px-0">
-        <v-progress-linear color="green" :model-value="timeLineData[2][1]" />
-      </v-col>
-      <v-col cols="auto" class="pt-2 px-1">
-        <v-img :src="require('@/assets/status/ellipse.svg')" width="12" height="12" contain/>
-      </v-col>
-      <v-col class="px-0">
-        <v-progress-linear color="green" :model-value="timeLineData[3][1]" />
-      </v-col>
+      <template v-if="!isFlyover">
+        <v-col cols="auto" class="pt-2 px-1">
+          <v-img :src="require('@/assets/status/ellipse.svg')" width="12" height="12" contain/>
+        </v-col>
+        <v-col class="px-0">
+          <v-progress-linear color="green" :model-value="timeLineData[1][1]" />
+        </v-col>
+        <v-col cols="auto" class="pt-2 px-1">
+          <v-img :src="require('@/assets/status/ellipse.svg')" width="12" height="12" contain/>
+        </v-col>
+        <v-col class="px-0">
+          <v-progress-linear color="green" :model-value="timeLineData[2][1]" />
+        </v-col>
+        <v-col cols="auto" class="pt-2 px-1">
+          <v-img :src="require('@/assets/status/ellipse.svg')" width="12" height="12" contain/>
+        </v-col>
+        <v-col class="px-0">
+          <v-progress-linear color="green" :model-value="timeLineData[3][1]" />
+        </v-col>
+      </template>
       <v-col cols="auto" class="pt-0">
         <v-img class="d-flex flex-0-0" :src="finalStepImage" width="32" height="32" contain/>
       </v-col>
@@ -34,18 +36,20 @@
         <p class="text-center text-bw-400">{{ timeLineData[0][0] }}</p>
       </v-col>
       <v-spacer />
-      <v-col class="pa-0">
-        <p class="text-center text-bw-400">{{ timeLineData[1][0] }}</p>
-      </v-col>
-      <v-spacer />
-      <v-col class="pa-0">
-        <p class="text-center text-bw-400">{{ timeLineData[2][0] }}</p>
-      </v-col>
-      <v-spacer />
-      <v-col class="pa-0">
-        <p class="text-center text-bw-400">{{ timeLineData[3][0] }}</p>
-      </v-col>
-      <v-spacer />
+      <template v-if="!isFlyover">
+        <v-col class="pa-0">
+          <p class="text-center text-bw-400">{{ timeLineData[1][0] }}</p>
+        </v-col>
+        <v-spacer />
+        <v-col class="pa-0">
+          <p class="text-center text-bw-400">{{ timeLineData[2][0] }}</p>
+        </v-col>
+        <v-spacer />
+        <v-col class="pa-0">
+          <p class="text-center text-bw-400">{{ timeLineData[3][0] }}</p>
+        </v-col>
+        <v-spacer />
+      </template>
       <v-col class="pa-0">
         <p class="text-center text-bw-400">{{ timeLineData[4][0] }}</p>
       </v-col>
@@ -65,7 +69,7 @@ import {
   TxStatus,
   TxStatusType,
 } from '@/common/types';
-import { PegStatus } from '@/common/store/constants';
+import { PegStatus, FlyoverPegoutStatus } from '@/common/store/constants';
 
 export default defineComponent({
   name: 'StatusProgressBar',
@@ -100,24 +104,32 @@ export default defineComponent({
       let third = 0;
       let fourth = 0;
       if (isPegOut.value) {
+        labelOne = 'Transaction Broadcasted';
+        labelTwo = 'Transaction Confirmed';
+        labelThree = 'Sent to Bitcoin';
         if (props.isFlyover) {
-          zero = 50;
+          if ((txDetails.value.status as unknown as FlyoverPegoutStatus) === FlyoverPegoutStatus
+            .COMPLETED) zero = 100;
+          else zero = 60;
         } else {
           switch (txDetails.value.status as PegoutStatus) {
             case PegoutStatus.PENDING:
-              zero = 60;
+              zero = 95;
               break;
             case PegoutStatus.RECEIVED:
               zero = 100;
+              first = 70;
               break;
             case PegoutStatus.WAITING_FOR_CONFIRMATION:
               zero = 100;
-              first = 60;
+              first = 100;
+              second = 70;
               break;
             case PegoutStatus.WAITING_FOR_SIGNATURE:
               zero = 100;
               first = 100;
-              second = 50;
+              second = 100;
+              third = 50;
               break;
             case PegoutStatus.RELEASE_BTC:
               zero = 100;
