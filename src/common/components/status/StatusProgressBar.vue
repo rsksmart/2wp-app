@@ -80,15 +80,15 @@ export default defineComponent({
 
     const initialStepImage = computed(() => {
       if (isPegOut.value) {
-        return require('@/assets/status/btc.svg');
-      }
-      return require('@/assets/status/rbtc.svg');
-    });
-    const finalStepImage = computed(() => {
-      if (isPegOut.value) {
         return require('@/assets/status/rbtc.svg');
       }
       return require('@/assets/status/btc.svg');
+    });
+    const finalStepImage = computed(() => {
+      if (isPegOut.value) {
+        return require('@/assets/status/btc.svg');
+      }
+      return require('@/assets/status/rbtc.svg');
     });
     const timeLineData = computed(() => {
       let labelOne = 'step';
