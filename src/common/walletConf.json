@@ -1,18 +1,6 @@
 {
     "wallets": [
         {
-            "name": "Liquality",
-            "icon": "wallet-icons/liquality.svg",
-            "iconWhite": "wallet-icons/liquality.svg",
-            "constant": "WALLET_LIQUALITY",
-            "pegin": true,
-            "pegout": true,
-            "hover": false,
-            "btnClass": "btn-liquality",
-            "kind": "Software Wallet",
-            "installation": "https://www.liquality.io/wallet-extension"
-        },
-        {
             "name": "Trezor",
             "icon": "wallet-icons/trezor.svg",
             "iconWhite": "wallet-icons/trezor-white.svg",
