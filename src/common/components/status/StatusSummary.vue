@@ -18,7 +18,7 @@
           <v-chip v-if="ticker" :prepend-icon="mdiBitcoin" class="btc-icon">
             {{ environmentContext.getBtcTicker() }}
           </v-chip>
-          <v-btn v-else-if="link" height="32"
+          <v-btn v-else-if="link" height="32" :disabled="value === '-'"
             variant="plain" :href="link" target="_blank" density="compact" :icon="mdiOpenInNew">
           </v-btn>
         </div>
@@ -26,7 +26,7 @@
     </v-col>
     <v-col order="6" cols="auto">
       <v-divider vertical class="border-opacity-50" />
-    </v-col>
+      </v-col>
     <v-col :order="columnOrder.rsk" cols="auto" class="d-flex flex-column ga-4 flex-grow-1">
       <div class="pb-4">
         <h3 class="text-h3 pa-1 pb-2 bg-green d-inline-block">
@@ -45,7 +45,7 @@
                 </v-avatar>
               {{ environmentContext.getRbtcTicker() }}
           </v-chip>
-          <v-btn v-else-if="link" height="32"
+          <v-btn v-else-if="link" height="32" :disabled="value === '-'"
             variant="plain" :href="link" target="_blank" density="compact" :icon="mdiOpenInNew">
           </v-btn>
         </div>
@@ -92,13 +92,13 @@ export default defineComponent({
         return [
           {
             title: 'Recipient Address',
-            value: props.details.recipientAddress,
+            value: props.details.recipientAddress || '-',
             link: getBtcAddressExplorerUrl(props.details.recipientAddress),
           },
           {
             title: 'Transaction ID',
-            value: '',
-            link: getBtcTxExplorerUrl(''),
+            value: props.details.btcTxId || '-',
+            link: getBtcTxExplorerUrl(props.details.btcTxId),
           },
           {
             title: 'You will receive',
@@ -120,12 +120,12 @@ export default defineComponent({
       return [
         {
           title: 'Sender Address',
-          value: props.details.senderAddress,
+          value: props.details.senderAddress || '-',
           link: getBtcAddressExplorerUrl(props.details.senderAddress),
         },
         {
           title: 'Transaction ID',
-          value: props.details.txId,
+          value: props.details.txId || '-',
           link: getBtcTxExplorerUrl(props.details.txId),
         },
         {
@@ -151,12 +151,12 @@ export default defineComponent({
         return [
           {
             title: 'Sender Address',
-            value: props.details.senderAddress,
+            value: props.details.senderAddress || '-',
             link: getRskAddressExplorerUrl(props.details.senderAddress),
           },
           {
             title: 'Transaction ID',
-            value: props.details.txId,
+            value: props.details.txId || '-',
             link: getRskTxExplorerUrl(props.details.txId),
           },
           {
@@ -166,25 +166,25 @@ export default defineComponent({
           },
           {
             title: 'Fee',
-            value: '',
+            value: '-',
             ticker: true,
           },
           {
             title: 'Total',
-            value: '',
+            value: '-',
             ticker: true,
           }];
       }
       return [
         {
           title: 'Recipient Address',
-          value: props.details.recipientAddress,
+          value: props.details.recipientAddress || '-',
           link: getRskAddressExplorerUrl(props.details.recipientAddress),
         },
         {
           title: 'Transaction ID',
-          value: '',
-          link: getRskTxExplorerUrl(''),
+          value: props.details.rskTxId || '-',
+          link: getRskTxExplorerUrl(props.details.rskTxId),
         },
         {
           title: 'You will receive',
