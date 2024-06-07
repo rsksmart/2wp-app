@@ -1,20 +1,24 @@
 <template>
   <v-dialog v-model="showAddressDialog" width="520" persistent >
     <v-card class="d-flex ga-4 pa-8">
-        <p class="text-h4 text-center">Sign this message</p>
-        <div>
-          <p>
-            We will use the signature to get your Bitcoin destination address.
-            This does not expose your data nor spend your funds.
-          </p>
-        </div>
-        <div class="px-4 py-2 text-bw-500 border">
-          <p>{{messageToBeSigned}}</p>
-        </div>
-            <div class="d-flex justify-space-around">
-              <v-btn-rsk width="110" @click="closeDialog">Cancel</v-btn-rsk>
-              <v-btn-rsk width="110" @click="toSign">Sign</v-btn-rsk>
-            </div>
+      <div class="d-flex text-h3 ga-1 flex-wrap">
+            <span class='pa-2 bg-purple'>
+              Sign this message
+            </span>
+      </div>
+      <div>
+        <p>
+          We will use the signature to get your Bitcoin destination address.
+          This does not expose your data nor spend your funds.
+        </p>
+      </div>
+      <div class="px-4 py-2 text-bw-500 border">
+        <p>{{messageToBeSigned}}</p>
+      </div>
+        <div class="d-flex justify-space-around">
+          <v-btn-rsk width="110" @click="closeDialog">Cancel</v-btn-rsk>
+          <v-btn-rsk width="110" variant="flat" @click="toSign">Sign</v-btn-rsk>
+      </div>
     </v-card>
   </v-dialog>
 </template>
