@@ -1,0 +1,11 @@
+.terms-txt {
+    overflow-y: scroll;
+    max-height: 30vh;
+    border: 0.1rem inset rgb(var(--v-theme-on-background));
+    p {
+        text-align: justify;
+        text-justify: inter-word;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+}

@@ -71,14 +71,18 @@
   <v-dialog v-model="show" width="500">
     <v-card class="d-flex pa-6" rounded="lg">
       <div class="d-flex justify-space-between">
-        <h2>Connect wallet</h2>
+        <div class="d-flex text-h3 ga-1 flex-wrap">
+            <span class='pa-2 bg-purple'>
+              Connect your wallet
+            </span>
+      </div>
         <v-btn variant="plain" density="compact" width="24" height="24"
           @click="show = false" :icon="mdiCloseCircleOutline" />
       </div>
-      <p class="text-bw-500 py-2">Please start by connecting the wallet of your choice.</p>
+      <p class="py-2 mt-3">Please start by connecting the wallet of your choice.</p>
       <div class="d-flex justify-space-between pt-8">
         <v-btn-rsk @click="show = false">Cancel</v-btn-rsk>
-        <v-btn-rsk @click="reconnect">Connect your wallet</v-btn-rsk>
+        <v-btn-rsk variant="flat" @click="reconnect">Connect your wallet</v-btn-rsk>
       </div>
     </v-card>
   </v-dialog>
