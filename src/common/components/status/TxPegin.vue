@@ -105,6 +105,7 @@ export default defineComponent({
         refundAddress: status.btc.refundAddress,
         federationAddress: status.btc.federationAddress,
         total: status.btc.amountTransferred + status.btc.fees,
+        senderAddress: status.btc.senderAddress,
       };
     });
 

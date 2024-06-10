@@ -21,6 +21,7 @@ export interface BtcPeginStatus {
   confirmations: number;
   requiredConfirmation: number;
   fees: number;
+  senderAddress: string;
 }
 
 export enum RskStatus {
