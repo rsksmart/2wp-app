@@ -224,7 +224,10 @@ export default defineComponent({
     }
 
     function fillMaxValueAvailable() {
-      const tempValue = selectedAccountBalance.value.minus(safeTxFee.value);
+      const maxAvailable = selectedAccountBalance.value
+        .cmp(boundaries.value.maxValue.plus(safeTxFee.value)) === -1
+        ? selectedAccountBalance.value : boundaries.value.maxValue;
+      const tempValue = maxAvailable.minus(safeTxFee.value);
       bitcoinAmount.value = tempValue.toBTCTrimmedString();
       setBtcAmount(tempValue);
       setIsValidAmount(selectedAccountBalance.value.gt('0'));
