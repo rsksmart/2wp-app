@@ -3,7 +3,7 @@
     <h2 class="mt-4 mb-2 w-100 text-center">Summary</h2>
   </v-row>
   <v-row class="rounded-lg py-8 px-4 border-md">
-    <v-col :order="columnOrder.btc" cols="auto" class="d-flex flex-column ga-4 flex-grow-1">
+    <v-col :order="columnOrder.btc" cols="6" class="d-flex flex-column ga-4">
       <div class="pb-4">
         <h3 class="text-h3 pa-1 pb-2 bg-orange d-inline-block">
           Bitcoin
@@ -24,10 +24,7 @@
         </div>
       </div>
     </v-col>
-    <v-col order="6" cols="auto">
-      <v-divider vertical class="border-opacity-50" />
-      </v-col>
-    <v-col :order="columnOrder.rsk" cols="auto" class="d-flex flex-column ga-4 flex-grow-1">
+    <v-col :order="columnOrder.rsk" cols="6" class="d-flex flex-column ga-4">
       <div class="pb-4">
         <h3 class="text-h3 pa-1 pb-2 bg-green d-inline-block">
           Rootstock
@@ -218,3 +215,12 @@ export default defineComponent({
   },
 });
 </script>
+<style scoped>
+.v-col.order-12 {
+  padding-left: 20px;
+  box-shadow: inset 1px 0 rgb(var(--v-theme-bw-500));
+}
+.v-col.order-1 {
+  padding-right: 20px;
+}
+</style>
