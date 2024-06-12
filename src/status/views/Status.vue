@@ -1,13 +1,13 @@
 <template>
   <v-container>
-    <v-row no-gutters class="d-flex justify-start">
+    <v-row no-gutters class="d-flex justify-start mx-6">
       <span class="text-h1 pa-2 bg-purple">Transaction </span>
       <span class="text-h1 pa-2 ml-2 bg-orange">Status</span>
     </v-row>
-    <v-row no-gutters class="mt-16">
+    <v-row no-gutters class="mt-16 mx-6">
       <span class="d-flex flex-0-0">Transaction id</span>
     </v-row>
-    <v-row no-gutters class="mb-16">
+    <v-row no-gutters class="mb-16 ml-6 mr-4">
       <v-text-field comfortable variant="outlined"
                     v-model="txId" @keydown.enter="getPegStatus"
                     :append-inner-icon="mdiMagnify"
@@ -19,10 +19,9 @@
       <p>Estimated time: {{ releaseTimeText }}</p>
     </v-row>
     <v-row no-gutters>
-      <tx-pegin v-if="!activeMessage.isRejected && isPegIn
-                && !activeMessage.error" :txId="txId" :isFlyover="isFlyover" />
-      <tx-pegout v-if="((!activeMessage.isRejected && !activeMessage.error) || isRejected)
-                && isPegOut" :txId="txId" :isFlyover="isFlyover"/>
+      <tx-pegin v-if="isPegIn" :txId="txId" :isFlyover="isFlyover" />
+      <tx-pegout v-if="isPegOut" :txId="txId" :isFlyover="isFlyover"/>
+      <status-progress-bar v-if="txWithErrorType" :isFlyover="isFlyover"/>
     </v-row>
   </v-container>
 </template>
@@ -41,10 +40,12 @@ import {
 } from '@/common/types';
 import * as constants from '@/common/store/constants';
 import { useAction, useGetter, useState } from '@/common/store/helper';
+import StatusProgressBar from '@/common/components/status/StatusProgressBar.vue';
 
 export default defineComponent({
   name: 'StatusSearch',
   components: {
+    StatusProgressBar,
     TxPegout,
     TxPegin,
   },
@@ -79,6 +80,9 @@ export default defineComponent({
       || status.value.type === TxStatusType.FLYOVER_PEGOUT);
 
     const isFlyover = computed((): boolean => status.value.type === TxStatusType.FLYOVER_PEGOUT);
+
+    const txWithErrorType = computed((): boolean => status.value.type === TxStatusType.INVALID_DATA
+      || status.value.type === TxStatusType.UNEXPECTED_ERROR);
 
     const showTimeLeft = computed((): boolean => {
       const txDetails = status.value.txDetails as PegoutStatusDataModel;
@@ -175,6 +179,7 @@ export default defineComponent({
       back,
       mdiMagnify,
       rules,
+      txWithErrorType,
     };
   },
 });
