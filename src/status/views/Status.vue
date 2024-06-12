@@ -64,7 +64,6 @@ export default defineComponent({
 
     const setTxStatus = useAction('status', constants.STATUS_GET_TX_STATUS);
     const clearStatus = useAction('status', constants.STATUS_CLEAR);
-    const getBtcPrice = useAction('pegInTx', constants.PEGIN_TX_ADD_BITCOIN_PRICE);
     const activeMessage = useGetter<TxStatusMessage>('status', constants.STATUS_GET_ACTIVE_MESSAGE);
     const releaseTimeText = useGetter<string>('status', constants.STATUS_GET_RELEASE_TIME_TEXT);
 
@@ -156,7 +155,6 @@ export default defineComponent({
     watch(route, onUrlChange, { immediate: true, deep: true });
 
     clearStatus();
-    getBtcPrice();
 
     onUnmounted(clean);
 

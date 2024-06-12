@@ -228,6 +228,7 @@ export default defineComponent({
       bitcoinAmount.value = tempValue.toBTCTrimmedString();
       setBtcAmount(tempValue);
       setIsValidAmount(true);
+      updateStore();
     }
 
     async function setMax() {
