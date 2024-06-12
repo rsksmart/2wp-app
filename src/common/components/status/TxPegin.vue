@@ -96,6 +96,8 @@ export default defineComponent({
 
     const txPeginSummary = computed((): NormalizedSummary => {
       const status = txDetails.value;
+      const total = new SatoshiBig(status.btc.amountTransferred, 'btc')
+        .plus(new SatoshiBig(status.btc.fees, 'btc'));
       return {
         amountFromString: status.btc.amountTransferred.toString(),
         amountReceivedString: status.btc.amountTransferred.toString(),
@@ -104,7 +106,7 @@ export default defineComponent({
         txId: status.btc.txId,
         refundAddress: status.btc.refundAddress,
         federationAddress: status.btc.federationAddress,
-        total: status.btc.amountTransferred + status.btc.fees,
+        total: total.toBTCTrimmedString(),
         senderAddress: status.btc.senderAddress,
       };
     });
