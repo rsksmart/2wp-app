@@ -75,7 +75,7 @@ export default defineComponent({
       },
     ];
 
-    const selectedAddress = ref<string | AddressItem>(addressItems[0]);
+    const selectedAddress = ref<string | AddressItem>();
 
     const computedRskAddress = computed<string>((): string => {
       let address = '';
@@ -146,6 +146,7 @@ export default defineComponent({
       useWeb3Wallet.value = true;
       focus.value = false;
       rskAddressSelected.value = storeRskAddressSelected.value;
+      [selectedAddress.value] = addressItems;
       checkStep();
     }
 
