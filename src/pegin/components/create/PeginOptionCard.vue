@@ -19,25 +19,35 @@
     <span class="text-h4">Features</span>
     <div class="d-flex flex-column">
       <span>Estimated Time</span>
-      <span class="text-bw-400">{{ estimatedTime }}</span>
+      <span class="text-bw-400">{{ option.estimatedTime() }}</span>
     </div>
     <div class="d-flex flex-column">
       <span>{{ environmentContext.getBtcTicker() }} fee</span>
       <span class="text-bw-400">
         {{ selectedFee.toBTCTrimmedString() }} {{ environmentContext.getBtcTicker() }}
       </span>
+      <span class="text-bw-400">USD {{ toUSD(selectedFee) }}</span>
     </div>
     <div class="d-flex flex-column">
       <span>Provider fee</span>
-      <span class="text-bw-400">{{ providerFee }} {{ environmentContext.getBtcTicker() }}</span>
+      <span class="text-bw-400">
+        {{ option.providerFee().toBTCTrimmedString() }} {{ environmentContext.getBtcTicker() }}
+      </span>
+      <span class="text-bw-400">USD {{ toUSD(option.providerFee()) }}</span>
     </div>
     <div class="d-flex flex-column">
       <span>Amount to send</span>
-      <span class="text-bw-400">{{ amountToSend }} {{ environmentContext.getBtcTicker() }}</span>
+      <span class="text-bw-400">
+        {{ option.amountToTransfer().toBTCTrimmedString() }} {{ environmentContext.getBtcTicker() }}
+      </span>
+      <span class="text-bw-400">USD {{ toUSD(option.amountToTransfer()) }}</span>
     </div>
     <div class="d-flex flex-column">
       <span>Value to receive</span>
-      <span class="text-bw-400">{{ valueToReceive }} {{ environmentContext.getRbtcTicker() }}</span>
+      <span class="text-bw-400">
+        {{ option.valueToReceive().toBTCTrimmedString() }} {{ environmentContext.getRbtcTicker() }}
+      </span>
+      <span class="text-bw-400">USD {{ toUSD(option.valueToReceive()) }}</span>
     </div>
     <v-spacer class="fill-height" />
   </v-card>
@@ -76,6 +86,9 @@ export default defineComponent({
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const pegInTxState = useState<PegInTxState>('pegInTx');
     const selectedFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
+    const bitcoinPrice = useStateAttribute<number>('pegInTx', 'bitcoinPrice');
+
+    const fixedUSDDecimals = 2;
 
     const PeginOptions = {
       native: {
@@ -84,28 +97,28 @@ export default defineComponent({
         subtitleColor: 'purple',
         estimatedTime: () => '34 Hours',
         amountToTransfer: () => pegInTxState.value.amountToTransfer
-          .plus(selectedFee.value).toBTCTrimmedString(),
-        providerFee: () => '0',
-        valueToReceive: () => pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
+          .plus(selectedFee.value),
+        providerFee: () => new SatoshiBig('0', 'btc'),
+        valueToReceive: () => pegInTxState.value.amountToTransfer,
       },
       flyover: {
         title: 'Flyover (For Less Advanced Users)',
         subtitle: 'Faster Option',
         subtitleColor: 'orange',
         estimatedTime: () => '15 minutes',
-        amountToTransfer: () => '0.0006',
-        providerFee: () => '0.0002',
-        valueToReceive: () => '0.00051',
+        amountToTransfer: () => new SatoshiBig('0.0006', 'btc'),
+        providerFee: () => new SatoshiBig('0.0002', 'btc'),
+        valueToReceive: () => new SatoshiBig('0.00051', 'btc'),
       },
     };
     const option = computed(() => PeginOptions[props.optionType as keyof typeof PeginOptions]);
-    const estimatedTime = computed(() => option.value.estimatedTime());
-    const amountToSend = computed(() => option.value.amountToTransfer());
-    const providerFee = computed(() => option.value.providerFee());
-    const valueToReceive = computed(() => option.value.valueToReceive());
 
     function selectOption() {
       context.emit('selected-option', props.optionType);
+    }
+
+    function toUSD(value: SatoshiBig) {
+      return value.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
     }
 
     return {
@@ -115,11 +128,8 @@ export default defineComponent({
       option,
       rskAddress,
       environmentContext,
-      estimatedTime,
-      amountToSend,
-      providerFee,
-      valueToReceive,
       selectedFee,
+      toUSD,
     };
   },
 });
