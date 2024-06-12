@@ -50,7 +50,10 @@
       <div class="d-flex justify-space-between align-center flex-grow-1
         bg-surface pa-3 rounded-lg border">
       <div class="d-flex ga-2 align-center">
-        <v-chip :prepend-icon="mdiBitcoin" class="btc-icon">
+        <v-chip class="pl-2 pr-3">
+          <v-avatar class="mr-2 rbtc-icon">
+            <v-img :src="require('@/assets/exchange/rbtc.png')" />
+          </v-avatar>
           {{ environmentContext.getRbtcTicker() }}
         </v-chip>
         <span class="text-h4">
