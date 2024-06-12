@@ -37,6 +37,7 @@ export default {
     let hotjarScriptTag: HTMLScriptElement;
     const { smAndDown } = useDisplay();
     const getFeatures = useAction('web3Session', constants.SESSION_ADD_FEATURES);
+    const getBtcPrice = useAction('pegInTx', constants.PEGIN_TX_ADD_BITCOIN_PRICE);
     const showTermsAndConditions = ref(false);
     const contentSecurityPolicy = computed((): string => {
       const envVariables = EnvironmentAccessorService.getEnvironmentVariables();
@@ -94,6 +95,7 @@ export default {
 
     onBeforeMount(() => {
       getFeatures();
+      getBtcPrice();
     });
     appendHotjar();
     appendClarity();
