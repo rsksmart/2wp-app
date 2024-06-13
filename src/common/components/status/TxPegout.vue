@@ -3,7 +3,7 @@
     <v-row>
       <status-progress-bar :isFlyover="isFlyover"/>
     </v-row>
-      <status-summary :details="txPegoutSummary" :type="typeSummary"></status-summary>
+      <status-summary :details="summary" :type="typeSummary" />
   </v-container>
 </template>
 
@@ -13,7 +13,9 @@ import {
   SatoshiBig,
   TxStatusType,
   PegoutStatus,
-  PegoutStatusDataModel, NormalizedSummary, FlyoverStatusModel,
+  PegoutStatusDataModel,
+  NormalizedSummary,
+  FlyoverStatusModel,
 } from '@/common/types';
 import StatusProgressBar from '@/common/components/status/StatusProgressBar.vue';
 import { useStateAttribute } from '@/common/store/helper';
@@ -66,14 +68,14 @@ export default defineComponent({
       const status = txDetails.value as FlyoverStatusModel;
       const amount = new SatoshiBig(status.amount, 'btc');
       const fee = new SatoshiBig(status.fee, 'btc');
-      const totalAmount = amount.plus(fee).toBTCTrimmedString();
+      const amountAsString = amount.toBTCTrimmedString();
       return {
-        amountFromString: totalAmount,
-        amountReceivedString: amount.toBTCTrimmedString(),
+        amountFromString: amountAsString,
+        amountReceivedString: amountAsString,
         fee: Number(fee.toBTCTrimmedString()),
         recipientAddress: status.recipientAddress,
         senderAddress: status.senderAddress,
-        txId: props.txId,
+        txId: status.txHash,
       };
     });
 
@@ -83,7 +85,6 @@ export default defineComponent({
 
     return {
       typeSummary,
-      txPegoutSummary,
       summary,
       isRejectedPegout,
     };
