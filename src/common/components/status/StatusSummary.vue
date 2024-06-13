@@ -57,7 +57,7 @@ import {
   mdiBitcoin, mdiArrowRight, mdiArrowLeft, mdiOpenInNew,
 } from '@mdi/js';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { TxStatusType } from '@/common/types';
+import { TxStatus, TxStatusType } from '@/common/types';
 import {
   getBtcAddressExplorerUrl,
   getBtcTxExplorerUrl,
@@ -65,6 +65,7 @@ import {
   getRskTxExplorerUrl,
   truncateString,
 } from '@/common/utils';
+import { useState } from '@/common/store/helper';
 
 export default defineComponent({
   name: 'StatusSummary',
@@ -83,9 +84,11 @@ export default defineComponent({
     const columnOrder = computed(
       () => (props.type === TxStatusType.PEGOUT ? { btc: 12, rsk: 1 } : { btc: 1, rsk: 12 }),
     );
+    const status = useState<TxStatus>('status');
 
     const btcSide = computed(() => {
       if (props.type === TxStatusType.PEGOUT) {
+        const fee = props.details.fee === 0 ? props.details.estimatedFee : props.details.fee;
         return [
           {
             title: 'Recipient Address',
@@ -104,12 +107,13 @@ export default defineComponent({
           },
           {
             title: props.details.fee === 0 ? 'Estimated Fee' : 'Fee',
-            value: props.details.fee === 0 ? props.details.estimatedFee : props.details.fee,
+            value: status.value.type === TxStatusType.FLYOVER_PEGOUT ? '-' : fee,
             ticker: true,
           },
           {
             title: 'Total',
-            value: props.details.amountFromString,
+            value: status.value.type === TxStatusType.FLYOVER_PEGOUT
+              ? '-' : props.details.amountFromString,
             ticker: true,
           },
         ];
@@ -163,12 +167,13 @@ export default defineComponent({
           },
           {
             title: 'Fee',
-            value: '-',
+            value: status.value.type === TxStatusType.FLYOVER_PEGOUT ? props.details.fee : '-',
             ticker: true,
           },
           {
             title: 'Total',
-            value: '-',
+            value: status.value.type === TxStatusType.FLYOVER_PEGOUT
+              ? props.details.amountFromString : '-',
             ticker: true,
           }];
       }

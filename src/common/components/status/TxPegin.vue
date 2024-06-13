@@ -3,7 +3,7 @@
     <v-row>
       <status-progress-bar :isFlyover="isFlyover"/>
     </v-row>
-    <status-summary :details="txPeginSummary" :type="typeSummary"></status-summary>
+    <status-summary :details="summary" :type="typeSummary" />
   </v-container>
 </template>
 
@@ -15,7 +15,10 @@ import { mdiInformation } from '@mdi/js';
 import {
   PeginStatus,
   SatoshiBig,
-  TxStatusType, TxSummaryOrientation, NormalizedSummary, TxStatusMessage,
+  TxStatusType,
+  TxSummaryOrientation,
+  NormalizedSummary,
+  TxStatusMessage,
 } from '@/common/types';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import * as constants from '@/common/store/constants';
@@ -110,6 +113,22 @@ export default defineComponent({
         senderAddress: status.btc.senderAddress,
       };
     });
+
+    const flyoverPeginSummary = computed((): NormalizedSummary => ({
+      amountFromString: '',
+      amountReceivedString: '',
+      fee: 0,
+      recipientAddress: '',
+      txId: '',
+      refundAddress: '',
+      federationAddress: '',
+      total: '',
+      senderAddress: '',
+    }));
+
+    const summary = computed(() => (props.isFlyover
+      ? flyoverPeginSummary.value
+      : txPeginSummary.value));
 
     function refreshPercentage() {
       if (txDetails) {
@@ -230,7 +249,7 @@ export default defineComponent({
       typeSummary,
       orientationSummary,
       environmentContext,
-      txPeginSummary,
+      summary,
       btcConfirmationsAreDone,
       rskConfirmationsAreDone,
       isRejected,
