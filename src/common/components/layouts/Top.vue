@@ -11,7 +11,14 @@
         <v-btn variant="text" size="small" density="compact" rounded="full" :icon="mdiContentCopy"
           @click="copyFullAccountAddress"
         />
-        <span>{{ truncatedAccount }} | {{ accountBalance }} </span>
+        <span>
+          {{ truncatedAccount }} | {{ accountBalance }}
+          <v-tooltip
+            activator="parent"
+            location="bottom"
+          >{{ balance.toRBTCTrimmedString() }} {{ environmentContext.getRbtcTicker() }}
+          </v-tooltip>
+        </span>
         <v-btn variant="flat" size="x-small" color="theme-primary" rounded="full" :icon="mdiLinkOff"
           @click="disconnectWallet" />
       </div>
@@ -84,6 +91,8 @@ export default {
       copyFullAccountAddress,
       themeLight,
       accountBalance,
+      balance,
+      environmentContext,
     };
   },
 };
