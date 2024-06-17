@@ -3,15 +3,14 @@
     @click="selectOption"
     :class="selectedOption && 'selected'"
     class="d-flex flex-column ga-4 pa-8 fill-height">
-    <span class="text-h4">
-      {{ header.title }}
-    </span>
     <v-row no-gutters>
       <v-col cols="3">
         <div class="d-flex text-h3 ga-1 flex-wrap">
-          <span v-for="(word, i) in header.subtitle.split(' ')" :key="i"
+          <span v-for="(word, i) in header.title.split(' ')" :key="i"
             :class="`pa-2 bg-${header.subtitleBgColor}`">
-            {{ word }}
+            <a :href="header.link" target="_blank" rel="noopener">
+              {{ word }}
+            </a>
           </span>
         </div>
       </v-col>
@@ -183,15 +182,15 @@ export default defineComponent({
     const header = computed(() => {
       if (isFlyover.value) {
         return {
-          title: 'Flyover (For Less Advanced Users)',
-          subtitle: 'Faster Option',
+          title: 'Faster Option',
           subtitleBgColor: 'orange',
+          link: 'https://dev.rootstock.io/guides/flyover/',
         };
       }
       return {
-        title: 'Native (For Advanced Users)',
-        subtitle: 'Maximum Security',
+        title: 'Native Powpeg',
         subtitleBgColor: 'purple',
+        link: 'https://dev.rootstock.io/rsk/architecture/powpeg/',
       };
     });
 

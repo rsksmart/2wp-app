@@ -1,10 +1,19 @@
 <template>
   <header class="d-flex justify-space-between align-center py-4 px-8">
-    <div class="d-flex align-center ga-2">
+    <div class="d-flex align-start ga-2">
       <v-img inline width="160" alt="Rootstock logo" class="cursor-pointer"
         :src="getLogoSrc()" @click="goHome">
       </v-img>
-      <h1 class="text-purple text-h5">2 Way Peg</h1>
+      <v-container>
+        <v-row class="py-1">
+          <h1 class="text-purple text-h6">2 Way Peg</h1>
+        </v-row>
+        <v-row justify="end">
+          <v-chip class="" variant="flat" color="purple" density="compact" >
+            {{ environmentText }}
+          </v-chip>
+        </v-row>
+      </v-container>
     </div>
     <div class="d-flex align-center ga-5">
       <div class="d-flex align-center ga-2" v-if="truncatedAccount && accountBalance">
@@ -30,7 +39,7 @@ import { useTheme } from 'vuetify';
 import { mdiContentCopy, mdiLinkOff } from '@mdi/js';
 import * as constants from '@/common/store/constants';
 import { computed, ref, watch } from 'vue';
-import { truncateString } from '@/common/utils';
+import { truncateString, getEnvironmentText } from '@/common/utils';
 import { WeiBig } from '@/common/types';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 
@@ -59,6 +68,7 @@ export default {
       const amount = balance.value.toRBTCTrimmedString().slice(0, 7);
       return `${amount} ${environmentContext.getRbtcTicker()}`;
     });
+    const environmentText = computed(() => getEnvironmentText());
 
     const clearSession = useAction('web3Session', constants.WEB3_SESSION_CLEAR_ACCOUNT);
     function disconnectWallet() {
@@ -84,6 +94,7 @@ export default {
       copyFullAccountAddress,
       themeLight,
       accountBalance,
+      environmentText,
     };
   },
 };
