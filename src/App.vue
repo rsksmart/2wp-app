@@ -1,6 +1,6 @@
 <template>
   <v-app class="h-screen">
-    <mobile v-if="smAndDown" />
+    <mobile v-if="smAndDown || mobile" />
     <div class="d-flex flex-column h-100" v-else>
       <top />
       <div class="bg-background flex-grow-1">
@@ -35,7 +35,7 @@ export default {
   setup() {
     let scriptTag: HTMLScriptElement;
     let hotjarScriptTag: HTMLScriptElement;
-    const { smAndDown } = useDisplay();
+    const { smAndDown, mobile } = useDisplay();
     const getFeatures = useAction('web3Session', constants.SESSION_ADD_FEATURES);
     const getBtcPrice = useAction('pegInTx', constants.PEGIN_TX_ADD_BITCOIN_PRICE);
     const showTermsAndConditions = ref(false);
@@ -105,6 +105,7 @@ export default {
       showTermsDialog,
       showTermsAndConditions,
       smAndDown,
+      mobile,
     };
   },
 };
