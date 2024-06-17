@@ -344,3 +344,11 @@ export function truncateString(str: string) {
   if (!str) return '';
   return `${str.slice(0, 6)}...${str.slice(-4)}`;
 }
+
+export function getEnvironmentText() {
+  if (EnvironmentAccessorService
+    .getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_TESTNET) {
+    return 'Testnet';
+  }
+  return 'Mainnet';
+}
