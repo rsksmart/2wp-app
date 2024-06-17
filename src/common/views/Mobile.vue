@@ -9,7 +9,8 @@
 export default {
   name: 'MobileView',
   setup() {
-    const copy = 'The mobile functionality is not currently implemented. Redirect to your computer to use the service. Thank you.';
+    const copy = 'Support for Mobile browsers is not supported at this time. '
+      + 'Please use desktop browser';
 
     return {
       copy,
