@@ -22,7 +22,7 @@ import { markRaw } from 'vue';
 import { toUtf8Bytes } from 'ethers/lib/utils';
 
 export const actions: ActionTree<SessionState, RootState> = {
-  [constants.SESSION_CONNECT_WEB3]: ({ commit, state }): Promise<void> => {
+  [constants.SESSION_CONNECT_WEB3]: ({ commit, state, dispatch }): Promise<void> => {
     const rpcUrls = {};
     const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
     if (network === constants.BTC_NETWORK_MAINNET) {
@@ -86,8 +86,10 @@ export const actions: ActionTree<SessionState, RootState> = {
           commit(constants.SESSION_SET_WEB3_INSTANCE, markRaw(provider));
           return provider.listAccounts();
         }).then((accounts) => {
-          resolve(commit(constants.SESSION_SET_ACCOUNT, accounts[0]));
+          commit(constants.SESSION_SET_ACCOUNT, accounts[0]);
+          return dispatch(constants.WEB3_SESSION_ADD_BALANCE);
         })
+        .then(resolve)
         .catch((e) => {
           commit(constants.SESSION_IS_ENABLED, false);
           commit(constants.SESSION_SET_RLOGIN_INSTANCE, rLogin);
