@@ -39,7 +39,7 @@ import { useTheme } from 'vuetify';
 import { mdiContentCopy, mdiLinkOff } from '@mdi/js';
 import * as constants from '@/common/store/constants';
 import { computed, ref, watch } from 'vue';
-import { truncateString, getEnvironmentText } from '@/common/utils';
+import { truncateString } from '@/common/utils';
 import { WeiBig } from '@/common/types';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 
@@ -68,7 +68,7 @@ export default {
       const amount = balance.value.toRBTCTrimmedString().slice(0, 7);
       return `${amount} ${environmentContext.getRbtcTicker()}`;
     });
-    const environmentText = computed(() => getEnvironmentText());
+    const environmentText = environmentContext.getNetworkName();
 
     const clearSession = useAction('web3Session', constants.WEB3_SESSION_CLEAR_ACCOUNT);
     function disconnectWallet() {

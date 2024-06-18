@@ -47,4 +47,9 @@ export default class EnvironmentContextImplTestnet implements EnvironmentContext
       nativeSegwit: new RegExp(constants.TESTNET_ADDRESS_NSEGWIT),
     };
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  getNetworkName(): string {
+    return 'Testnet';
+  }
 }
