@@ -172,4 +172,17 @@ export const actions: ActionTree<SessionState, RootState> = {
   [constants.SESSION_SWITCH_LOCALE]: ({ commit }, locale: AppLocale) => {
     commit(constants.SESSION_SET_LOCALE, locale);
   },
+  [constants.SESSION_ADD_API_VERSION]: ({ commit }) => {
+    const version = getCookie('2wpApiVersion');
+    if (version) {
+      commit(constants.SESSION_SET_API_VERSION, version);
+    } else {
+      ApiService.getApiInformation()
+        .then(({ version: apiVersion }) => {
+          const expirationHours = 48;
+          setCookie('2wpApiVersion', apiVersion, expirationHours);
+          commit(constants.SESSION_SET_API_VERSION, apiVersion);
+        });
+    }
+  },
 };

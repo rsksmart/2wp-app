@@ -93,6 +93,7 @@ export const getClearSessionState = ():SessionState => (
     btcDerivedAddress: '',
     bitcoinPrice: 0,
     features: [],
+    apiVersion: '',
   }
 );
 
