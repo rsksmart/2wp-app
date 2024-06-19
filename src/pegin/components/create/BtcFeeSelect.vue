@@ -1,8 +1,8 @@
 <template>
   <v-row class="align-start mx-0">
-    <v-col class="px-0">
+    <v-col class="px-0 py-6">
       <span class="d-inline-block font-weight-bold">
-        Select transaction fee:
+        Select transaction fee
       </span>
       <v-row class="ma-0 d-flex justify-start">
         <v-col class="pa-0">
@@ -33,13 +33,13 @@
           </v-row>
           <v-row class="ma-0">
             <v-col cols="4" class="d-flex justify-start pa-0">
-              <span class="boldie text-left">$ {{ slowFeeUSD }}</span>
+              <span class="boldie text-left">USD {{ slowFeeUSD }}</span>
             </v-col>
             <v-col cols="4" class="d-flex justify-center pa-0">
-              <span class="boldie text-center">$ {{ averageFeeUSD }}</span>
+              <span class="boldie text-center">USD {{ averageFeeUSD }}</span>
             </v-col>
             <v-col cols="4" class="d-flex justify-end pa-0">
-              <span class="boldie text-right">$ {{ fastFeeUSD }}</span>
+              <span class="boldie text-right">USD {{ fastFeeUSD }}</span>
             </v-col>
           </v-row>
         </v-col>
