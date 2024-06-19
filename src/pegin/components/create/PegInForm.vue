@@ -13,9 +13,9 @@
         <peg-in-account-select />
       </v-col>
     </v-row>
-    <btc-input-amount />
+    <btc-input-amount @getPeginQuotes="getQuotes"/>
     <btc-fee-select/>
-    <v-row>
+    <v-row v-if="showOptions && !loadingQuotes">
       <v-col class="mr-3">
         <pegin-option-card
           option-type="native"
@@ -30,9 +30,16 @@
           :selected="selected === 'flyover'"
         />
       </v-col>
-      </v-row>
-      <v-row>
-      </v-row>
+    </v-row>
+    <v-row v-else-if="loadingQuotes" class="py-8 justify-center">
+      <v-progress-circular
+        :size="250"
+        :width="18"
+        color="warning"
+        indeterminate>
+        Searching Options...
+      </v-progress-circular>
+    </v-row>
       <v-row justify="end">
         <v-col cols="auto">
             <v-btn-rsk v-if="!pegInFormState.matches(['loading'])"
@@ -128,6 +135,19 @@ export default defineComponent({
       selected.value = selectedType;
     }
 
+    const showOptions = ref(false);
+    const loadingQuotes = ref(false);
+
+    async function getQuotes() {
+      loadingQuotes.value = true;
+      // TODO: get flyover quotes
+      new Promise((resolve) => { setTimeout(resolve, 500); })
+        .then(() => {
+          loadingQuotes.value = false;
+          showOptions.value = true;
+        });
+    }
+
     onBeforeMount(() => {
       const feature = flyoverFeature.value(FeatureNames.FLYOVER_PEG_IN);
       flyoverEnabled.value = feature?.value === 'enabled';
@@ -149,6 +169,9 @@ export default defineComponent({
       changeSelectedOption,
       selected,
       flyoverEnabled,
+      showOptions,
+      loadingQuotes,
+      getQuotes,
     };
   },
 });

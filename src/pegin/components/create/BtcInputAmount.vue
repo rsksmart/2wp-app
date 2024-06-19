@@ -21,14 +21,14 @@
         density="comfortable"
         rounded="lg"
         class="text-h4"
-        v-model="bitcoinAmount"
+        v-model="bitcoinAmountModel"
         type="number"
         step="0.00000001"
         @keydown="blockLetterKeyDown"
         @wheel.prevent
         @focus="focus = true"
         @blur="focus = false"
-        @update:modelValue="updateStore()">
+        >
           <template #prepend-inner>
             <v-chip :prepend-icon="mdiBitcoin" class="btc-icon">
               {{ environmentContext.getBtcTicker() }}
@@ -229,6 +229,28 @@ export default defineComponent({
         .catch(console.error);
     }
 
+    const isValidAmount = (amount: SatoshiBig) => {
+      const { minValue, maxValue } = peginConfiguration.value;
+      return isBTCAmountValidRegex(amount.toBTCString())
+          && amount.gte(minValue)
+          && amount.lte(maxValue);
+    };
+
+    const bitcoinAmountModel = computed({
+      get() {
+        return bitcoinAmount.value;
+      },
+      set(amount: string) {
+        bitcoinAmount.value = amount;
+        const amountInSats = new SatoshiBig(amount, 'btc');
+        if (isValidAmount(amountInSats)) {
+          setBtcAmount(amountInSats);
+          calculateTxFee();
+          context.emit('get-pegin-quotes');
+        }
+      },
+    });
+
     function fillMaxValueAvailable() {
       const maxAvailable = selectedAccountBalance.value
         .cmp(boundaries.value.maxValue.plus(safeTxFee.value)) === -1
@@ -240,11 +262,8 @@ export default defineComponent({
     }
 
     function setMin() {
-      const tempValue = new SatoshiBig(peginConfiguration.value.minValue, 'satoshi');
-      bitcoinAmount.value = tempValue.toBTCTrimmedString();
-      setBtcAmount(tempValue);
-      setIsValidAmount(true);
-      updateStore();
+      const min = new SatoshiBig(peginConfiguration.value.minValue, 'satoshi');
+      bitcoinAmountModel.value = min.toBTCTrimmedString();
     }
 
     async function setMax() {
@@ -252,7 +271,7 @@ export default defineComponent({
       calculateTxFee()
         .then(() => {
           fillMaxValueAvailable();
-          updateStore();
+          bitcoinAmountModel.value = bitcoinAmount.value;
         })
         .catch(console.error);
     }
@@ -302,6 +321,7 @@ export default defineComponent({
       setMin,
       mdiBitcoin,
       boundaries,
+      bitcoinAmountModel,
     };
   },
 });
