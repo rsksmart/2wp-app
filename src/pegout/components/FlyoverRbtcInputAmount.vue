@@ -25,6 +25,7 @@
         v-model="rbtcAmountModel"
         type="number"
         step="0.00000001"
+        @wheel.prevent
         @keydown="blockLetterKeyDown"
         @focus="focus = true"
         @blur="focus = false"
@@ -192,6 +193,8 @@ export default defineComponent({
       if (e.key === 'e') e.preventDefault();
       if (e.key === '+') e.preventDefault();
       if (e.key === '-') e.preventDefault();
+      if (e.key === 'ArrowUp') e.preventDefault();
+      if (e.key === 'ArrowDown') e.preventDefault();
     }
 
     function checkAmount() {

@@ -25,6 +25,7 @@
         type="number"
         step="0.00000001"
         @keydown="blockLetterKeyDown"
+        @wheel.prevent
         @focus="focus = true"
         @blur="focus = false"
         @update:modelValue="updateStore()">
@@ -207,6 +208,8 @@ export default defineComponent({
       if (e.key === 'e') e.preventDefault();
       if (e.key === '+') e.preventDefault();
       if (e.key === '-') e.preventDefault();
+      if (e.key === 'ArrowUp') e.preventDefault();
+      if (e.key === 'ArrowDown') e.preventDefault();
     }
 
     function checkStep() {
