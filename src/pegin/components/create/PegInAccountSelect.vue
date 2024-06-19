@@ -103,7 +103,7 @@ export default defineComponent({
 
     accountChanged(constants.BITCOIN_NATIVE_SEGWIT_ADDRESS);
 
-    const balancesPerAccountType = [
+    const balancesPerAccountType = computed(() => ([
       {
         title: balances.value.legacy.toBTCTrimmedString(),
         value: constants.BITCOIN_LEGACY_ADDRESS,
@@ -122,7 +122,7 @@ export default defineComponent({
         appendText: 'Native Segwit',
         appendColor: 'teal',
       },
-    ];
+    ]));
 
     const onlyNativeSegwit = computed(() => {
       const wallets = [
@@ -132,7 +132,7 @@ export default defineComponent({
     });
 
     const selectedAccountTypeBadge = computed(() => {
-      const selected = balancesPerAccountType
+      const selected = balancesPerAccountType.value
         .find(({ value }) => value === selectedAccountType.value);
       return { color: selected?.appendColor, text: selected?.appendText };
     });

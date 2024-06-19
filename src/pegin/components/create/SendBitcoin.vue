@@ -10,7 +10,7 @@
       <component :is="currentComponent"
                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
                  :txBuilder="txBuilder"
-                 :txId="txId" @back="backToConnectDevice"
+                 :txId="txId" @back="back"
                  @toPegInForm="toPegInForm"
                  :confirmTxState="confirmTxState"/>
     </template>
@@ -240,6 +240,7 @@ export default defineComponent({
       txBuilder,
       txId,
       backToConnectDevice,
+      back,
       toPegInForm,
       confirmTxState,
       showErrorDialog,
