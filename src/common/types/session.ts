@@ -21,4 +21,5 @@ export interface SessionState {
   bitcoinPrice: number;
   acceptedTerms?: boolean;
   features: Array<Feature>;
+  apiVersion: string;
 }

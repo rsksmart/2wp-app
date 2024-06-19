@@ -34,13 +34,11 @@
 </template>
 
 <script lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onBeforeMount } from 'vue';
 import { useStore } from 'vuex';
 import { mdiTwitter, mdiGithub, mdiDiscord } from '@mdi/js';
-import { ApiInformation } from '@/common/types/ApiInformation';
-import { ApiService } from '@/common/services';
 import { useRoute } from 'vue-router';
-import { useGetter, useStateAttribute } from '@/common/store/helper';
+import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import * as constants from '@/common/store/constants';
 import { Feature } from '@/common/types';
 import { useTheme } from 'vuetify';
@@ -48,7 +46,6 @@ import { useTheme } from 'vuetify';
 export default {
   name: 'FooterRsk',
   setup() {
-    const apiVersion = ref('0');
     const store = useStore();
     const appVersion = computed<string>(() => store.getters.appVersion);
     const route = useRoute();
@@ -57,6 +54,8 @@ export default {
     const isMetamask = useGetter<boolean>('web3Session', constants.SESSION_IS_METAMASK_CONNECTED);
     const isRloginDefined = useGetter<boolean>('web3Session', constants.SESSION_IS_RLOGIN_DEFINED);
     const termsAndConditionsEnabled = useStateAttribute<Feature>('web3Session', 'termsAndConditionsEnabled');
+    const getApiVersion = useAction('web3Session', constants.SESSION_ADD_API_VERSION);
+    const apiVersion = useStateAttribute<string>('web3Session', 'apiVersion');
 
     const urlApp = computed(() => `https://github.com/rsksmart/2wp-app/releases/tag/v${appVersion.value}`);
     const urlApi = computed(() => `https://github.com/rsksmart/2wp-api/releases/tag/v${apiVersion.value}`);
@@ -91,10 +90,7 @@ export default {
 
     const helpUrl = computed(() => `https://dev.rootstock.io/guides/two-way-peg-app/${getDevPortalSlug()}`);
 
-    ApiService.getApiInformation()
-      .then((res: ApiInformation) => {
-        apiVersion.value = res.version;
-      });
+    onBeforeMount(getApiVersion);
 
     return {
       urlApi,
