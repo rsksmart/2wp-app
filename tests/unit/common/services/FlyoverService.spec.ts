@@ -258,6 +258,40 @@ describe('FlyoverService', () => {
     });
   });
 
+  describe('acceptPeginQuote', () => {
+    beforeEach(() => {
+      const stubedInstance = sinon.createStubInstance(Flyover);
+      flyoverService.flyover = stubedInstance;
+      stubedInstance.getLiquidityProviders.resolves(testLiquidProviders);
+      stubedInstance.getQuotes.resolves(testPeginQuotes);
+      stubedInstance.acceptQuote.resolves({
+        bitcoinDepositAddressHash: 'bitcoinDepositAddressHash',
+        signature: 'signature',
+      });
+    });
+    it('should accept the quote when found', async () => {
+      const rskRefundAddress = '0xe9a84d226bb3008f09a46096b00dd6782be4d5f2';
+      const btcRefundAddress = 'n2y5V6LYszsrsxkMdMypL98YQxtBoLCXdc';
+      const valueToTransfer = new SatoshiBig('0.005', 'btc');
+
+      const quotes = await flyoverService.getPeginQuotes(
+        rskRefundAddress,
+        btcRefundAddress,
+        valueToTransfer,
+      );
+      const { quoteHash } = quotes[0];
+      const acceptedQuote = await flyoverService.acceptPeginQuote(quoteHash);
+      expect(acceptedQuote).toHaveProperty('bitcoinDepositAddressHash', 'bitcoinDepositAddressHash');
+      expect(acceptedQuote).toHaveProperty('signature');
+    });
+
+    it('should reject when the quote is not found', async () => {
+      const quoteHash = 'invalidHash';
+      await expect(flyoverService.acceptPeginQuote(quoteHash))
+        .rejects.toThrow('The selected option does not exist');
+    });
+  });
+
   describe('acceptAndSendQuote', () => {
     /* eslint-disable @typescript-eslint/no-explicit-any, dot-notation */
     beforeEach(() => {
