@@ -1,7 +1,8 @@
 import { BlockchainConnection, Network } from '@rsksmart/bridges-core-sdk';
 import {
   AcceptedPegoutQuote, Flyover,
-  LiquidityProvider, PegoutQuote, Quote
+  LiquidityProvider, PegoutQuote, Quote,
+  AcceptedQuote,
 } from '@rsksmart/flyover-sdk';
 import * as constants from '@/common/store/constants';
 import {
@@ -24,6 +25,8 @@ export default class FlyoverService {
   private pegoutQuotes: PegoutQuote[] = [];
 
   private providerUrl?: string;
+
+  private peginQuotes: Quote[] = [];
 
   constructor(providerUrl?: string) {
     this.providerUrl = providerUrl;
@@ -308,6 +311,7 @@ export default class FlyoverService {
         callEoaOrContractAddress: '',
       })
         .then((quotes: Quote[]) => {
+          this.peginQuotes = quotes;
           const peginQuotes = quotes
             .filter((quote: Quote) => this.isValidPeginQuote(quote, {
               rskRefundAddress,
@@ -366,5 +370,62 @@ export default class FlyoverService {
       return false;
     }
     return true;
+  }
+
+  public acceptPeginQuote(quoteHash: string): Promise<AcceptedQuote> {
+    return new Promise<AcceptedQuote>((resolve, reject) => {
+      const selectedQuote = this.peginQuotes
+        .find((quote: Quote) => quote.quoteHash === quoteHash);
+      if (selectedQuote) {
+        this.flyover?.acceptQuote(selectedQuote)
+          .then(resolve)
+          .catch((error: Error) => {
+            reject(new ServiceError(
+              'FlyoverService',
+              'acceptPeginQuote',
+              'There was an error accepting the option from the Flyover server',
+              error.message,
+            ));
+          });
+      } else {
+        reject(new ServiceError(
+          'FlyoverService',
+          'acceptPeginQuote',
+          'The selected option does not exist',
+          'Quote not found',
+        ));
+      }
+    });
+  }
+
+  public registerPeginQuote(
+    quoteHash: string,
+    signature: string,
+    btcRawTransaction: string,
+    partialMerkleTree: string,
+    blockheight: number,
+  ): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      const selectedQuote = this.peginQuotes
+        .find((quote: Quote) => quote.quoteHash === quoteHash);
+      if (selectedQuote) {
+        this.flyover?.registerPegin({
+          quote: selectedQuote,
+          signature,
+          btcRawTransaction,
+          partialMerkleTree,
+          height: blockheight,
+        })
+          .then((txHash: string) => resolve(txHash))
+          .catch((error: Error) => {
+            reject(new ServiceError(
+              'FlyoverService',
+              'registerPeginQuote',
+              'Somenthing went wrong with the registration of your transaction.',
+              error.message,
+            ));
+          });
+      }
+    });
   }
 }
