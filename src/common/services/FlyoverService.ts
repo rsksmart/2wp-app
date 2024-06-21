@@ -1,11 +1,11 @@
 import { BlockchainConnection, Network } from '@rsksmart/bridges-core-sdk';
 import {
   AcceptedPegoutQuote, Flyover,
-  LiquidityProvider, PegoutQuote,
+  LiquidityProvider, PegoutQuote, Quote
 } from '@rsksmart/flyover-sdk';
 import * as constants from '@/common/store/constants';
 import {
-  LiquidityProvider2WP, QuotePegOut2WP,
+  LiquidityProvider2WP, QuotePegIn2WP, QuotePegOut2WP,
   SatoshiBig, WeiBig,
 } from '@/common/types';
 import { providers } from 'ethers';
@@ -138,7 +138,7 @@ export default class FlyoverService {
             },
             quoteHash: pegoutQuote.quoteHash,
           }));
-          const valids = pegoutQuotes.filter((quote: QuotePegOut2WP) => this.isValidQuote({
+          const valids = pegoutQuotes.filter((quote: QuotePegOut2WP) => this.isValidPegoutQuote({
             rskRefundAddress,
             btcRefundAddress,
             btcRecipientAddress,
@@ -244,7 +244,7 @@ export default class FlyoverService {
     return Promise.resolve(true);
   }
 
-  private isValidQuote(
+  private isValidPegoutQuote(
     quoteRequest: {
       rskRefundAddress: string;
       btcRefundAddress: string;
@@ -291,6 +291,80 @@ export default class FlyoverService {
 
     // TODO: Validate liquidityProviderRskAddress and lpBtcAddr
     // TODO: Check if nonce needs to be validated
+    return true;
+  }
+
+  public getPeginQuotes(
+    rskRefundAddress: string,
+    bitcoinRefundAddress: string,
+    valueToTransfer: SatoshiBig,
+  ):Promise<Array<QuotePegIn2WP>> {
+    return new Promise<Array<QuotePegIn2WP>>((resolve, reject) => {
+      this.flyover?.getQuotes({
+        rskRefundAddress,
+        bitcoinRefundAddress,
+        valueToTransfer: valueToTransfer.toSatoshiBigInt(),
+        callContractArguments: '',
+        callEoaOrContractAddress: '',
+      })
+        .then((quotes: Quote[]) => {
+          const peginQuotes = quotes
+            .filter((quote: Quote) => this.isValidPeginQuote(quote, {
+              rskRefundAddress,
+              bitcoinRefundAddress,
+              valueToTransfer,
+            }))
+            .map(({ quote, quoteHash }: Quote) => ({
+              quote: {
+                ...quote,
+                timeForDepositInSeconds: quote.timeForDeposit,
+                callFee: new SatoshiBig(quote.callFee ?? 0, 'satoshi'),
+                gasFee: new WeiBig(quote.gasFee ?? 0, 'wei'),
+                penaltyFee: new WeiBig(quote.penaltyFee ?? 0, 'wei'),
+                productFeeAmount: new SatoshiBig(quote.productFeeAmount ?? 0, 'satoshi'),
+                value: new SatoshiBig(quote.value ?? 0, 'satoshi'),
+              },
+              quoteHash,
+            }));
+          resolve(peginQuotes);
+        })
+        .catch((error: Error) => {
+          reject(new ServiceError(
+            'FlyoverService',
+            'getPeginQuotes',
+            'There was an error getting the options from the Flyover server',
+            error.message,
+          ));
+        });
+    });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private isValidPeginQuote(
+    { quote }: Quote,
+    quoteRequest: {
+        rskRefundAddress: string;
+        bitcoinRefundAddress: string;
+        valueToTransfer: SatoshiBig;
+      },
+  ): boolean {
+    if (
+      new Date(quote.agreementTimestamp).getTime() <= 0
+      || quote.timeForDeposit <= 0
+    ) {
+      return false;
+    }
+
+    if (
+      quoteRequest.bitcoinRefundAddress !== quote.btcRefundAddr
+      || quoteRequest.rskRefundAddress !== quote.rskRefundAddr
+      || quoteRequest.valueToTransfer.toSatoshiBigInt() !== BigInt(quote.value)
+    ) {
+      return false;
+    }
+    if (quote.lbcAddr !== this.lbcAddress) {
+      return false;
+    }
     return true;
   }
 }

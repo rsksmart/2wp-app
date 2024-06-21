@@ -1,6 +1,6 @@
 import FlyoverService from '@/common/services/FlyoverService';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
-import { WeiBig } from '@/common/types';
+import { SatoshiBig, WeiBig } from '@/common/types';
 import { Flyover } from '@rsksmart/flyover-sdk';
 import * as constants from '@/common/store/constants';
 import sinon from 'sinon';
@@ -32,7 +32,7 @@ describe('FlyoverService', () => {
     },
   ];
 
-  const testQuotes = [
+  const testPegoutQuotes = [
     {
       quote: {
         lbcAddress: '0xc2A630c053D12D63d32b025082f6Ba268db18300',
@@ -54,6 +54,34 @@ describe('FlyoverService', () => {
         expireBlocks: 4764623,
         gasFee: 105689215476000n,
         productFeeAmount: 50000000000000n,
+      },
+      quoteHash: '7360231032856e3e655ae1e2e4c82dabc5bc4e09a2a19e7c315dca1369f542aa',
+    },
+  ];
+
+  const testPeginQuotes = [
+    {
+      quote: {
+        lbcAddr: '0xc2A630c053D12D63d32b025082f6Ba268db18300',
+        btcRefundAddr: 'n2y5V6LYszsrsxkMdMypL98YQxtBoLCXdc',
+        rskRefundAddr: '0xe9a84d226bb3008f09a46096b00dd6782be4d5f2',
+        lpBTCAddr: 'mhghaQCHedKZZQuFqSzg6Z3Rf1TqqDEPCc',
+        callFee: 100000000000000n,
+        penaltyFee: 1000000n,
+        nonce: 3634522701524682751n,
+        value: 500000n,
+        agreementTimestamp: 1706817591,
+        timeForDeposit: 120,
+        gasFee: 105689215476000n,
+        productFeeAmount: 50000000000000n,
+        callOnRegister: true,
+        confirmations: 60,
+        contractAddr: '0xe9a84d226bb3008f09a46096b00dd6782be4d5f2',
+        data: '',
+        fedBTCAddr: 'mhghaQCHedKZZQuFqSzg6Z3Rf1TqqDEPCc',
+        gasLimit: 200,
+        lpCallTime: 360,
+        lpRSKAddr: '0x7C4890A0f1D4bBf2C669Ac2d1efFa185c505359b',
       },
       quoteHash: '7360231032856e3e655ae1e2e4c82dabc5bc4e09a2a19e7c315dca1369f542aa',
     },
@@ -108,7 +136,7 @@ describe('FlyoverService', () => {
       const stubedInstance = sinon.createStubInstance(Flyover);
       flyoverService.flyover = stubedInstance;
       stubedInstance.getLiquidityProviders.resolves(testLiquidProviders);
-      stubedInstance.getPegoutQuotes.resolves(testQuotes);
+      stubedInstance.getPegoutQuotes.resolves(testPegoutQuotes);
     });
 
     it('should return an array of QuotePegOut2WP', async () => {
@@ -118,7 +146,7 @@ describe('FlyoverService', () => {
       const valueToTransfer = new WeiBig('0.005', 'rbtc');
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const spyIsValidQuote = jest.spyOn(FlyoverService.prototype as any, 'isValidQuote');
+      const spyisValidPegoutQuote = jest.spyOn(FlyoverService.prototype as any, 'isValidPegoutQuote');
 
       const quotes = await flyoverService.getPegoutQuotes(
         rskRefundAddress,
@@ -132,7 +160,7 @@ describe('FlyoverService', () => {
       expect(quotes[0]).toHaveProperty('quoteHash');
       expect(quotes[0]).toHaveProperty('quote');
       expect(quotes[0].quote.value.toRBTCTrimmedString()).toEqual('0.005');
-      expect(spyIsValidQuote).toHaveBeenCalled();
+      expect(spyisValidPegoutQuote).toHaveBeenCalled();
     });
 
     it('should return only the valid quotes', async () => {
@@ -153,12 +181,58 @@ describe('FlyoverService', () => {
     });
   });
 
-  describe('acceptQuote', () => {
+  describe('getPeginQuotes', () => {
     beforeEach(() => {
       const stubedInstance = sinon.createStubInstance(Flyover);
       flyoverService.flyover = stubedInstance;
       stubedInstance.getLiquidityProviders.resolves(testLiquidProviders);
-      stubedInstance.getPegoutQuotes.resolves(testQuotes);
+      stubedInstance.getQuotes.resolves(testPeginQuotes);
+    });
+
+    it('should return an array of QuotePegIn2WP', async () => {
+      const rskRefundAddress = '0xe9a84d226bb3008f09a46096b00dd6782be4d5f2';
+      const bitcoinRefundAddress = 'n2y5V6LYszsrsxkMdMypL98YQxtBoLCXdc';
+      const valueToTransfer = new SatoshiBig('0.005', 'btc');
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const spyisValidQuote = jest.spyOn(FlyoverService.prototype as any, 'isValidPeginQuote');
+
+      const quotes = await flyoverService.getPeginQuotes(
+        rskRefundAddress,
+        bitcoinRefundAddress,
+        valueToTransfer,
+      );
+
+      expect(quotes).toBeInstanceOf(Array);
+      expect(quotes.length).toBeGreaterThan(0);
+      expect(quotes[0]).toHaveProperty('quoteHash');
+      expect(quotes[0]).toHaveProperty('quote');
+      expect(quotes[0].quote.value.toBTCTrimmedString()).toEqual('0.005');
+      expect(spyisValidQuote).toHaveBeenCalled();
+    });
+
+    it('should return only the valid quotes', async () => {
+      const rskRefundAddress = '0xaFf12FA1c482BEab1D70C68fe0Fc5825447A9818';
+      const btcRefundAddress = 'n2y5V6LYszsrsxkMdMypL98YQxtBoLCXdc';
+      const valueToTransfer = new SatoshiBig('0.005', 'btc');
+
+      const quotes = await flyoverService.getPeginQuotes(
+        rskRefundAddress,
+        btcRefundAddress,
+        valueToTransfer,
+      );
+
+      expect(quotes).toBeInstanceOf(Array);
+      expect(quotes.length).toBe(0);
+    });
+  });
+
+  describe('acceptPegoutQuote', () => {
+    beforeEach(() => {
+      const stubedInstance = sinon.createStubInstance(Flyover);
+      flyoverService.flyover = stubedInstance;
+      stubedInstance.getLiquidityProviders.resolves(testLiquidProviders);
+      stubedInstance.getPegoutQuotes.resolves(testPegoutQuotes);
       stubedInstance.acceptPegoutQuote.resolves({
         lbcAddress: EnvironmentAccessorService.getEnvironmentVariables().lbcAddress,
         signature: 'signature',
@@ -190,7 +264,7 @@ describe('FlyoverService', () => {
       const stubedInstance = sinon.createStubInstance(Flyover);
       flyoverService.flyover = stubedInstance;
       stubedInstance.getLiquidityProviders.resolves(testLiquidProviders);
-      stubedInstance.getPegoutQuotes.resolves(testQuotes);
+      stubedInstance.getPegoutQuotes.resolves(testPegoutQuotes);
       stubedInstance.acceptPegoutQuote.resolves({
         lbcAddress: EnvironmentAccessorService.getEnvironmentVariables().lbcAddress,
         signature: 'signature',
