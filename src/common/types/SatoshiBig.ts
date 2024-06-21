@@ -77,4 +77,8 @@ export default class SatoshiBig extends Big {
     const isRightZeroPadded = rightZeroPaddedRegex.test(btcString);
     return isRightZeroPadded ? '0' : btcString;
   }
+
+  toSatoshiBigInt(): bigint {
+    return BigInt(this.toFixed(0));
+  }
 }
