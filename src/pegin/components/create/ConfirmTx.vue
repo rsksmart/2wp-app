@@ -10,7 +10,7 @@
           Go Back
         </v-btn>
       </v-row>
-      <confirmation-summary />
+      <status-summary :details="summaryDetails" :type="typeSummary" :with-tx-ids="false" />
       <v-row justify="end">
         <v-col cols="auto" class="py-8">
           <v-btn-rsk
@@ -50,17 +50,18 @@ import * as constants from '@/common/store/constants';
 import { ApiService, WalletService } from '@/common/services';
 import { useState, useGetter, useStateAttribute } from '@/common/store/helper';
 import {
+  NormalizedSummary,
   PegInTxState, SatoshiBig, TxStatusType, TxSummaryOrientation,
 } from '@/common/types';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { mdiInformation, mdiArrowLeft, mdiArrowRight } from '@mdi/js';
-import ConfirmationSummary from '@/pegin/components/create/ConfirmationSummary.vue';
+import StatusSummary from '@/common/components/status/StatusSummary.vue';
 import ConfirmLedgerTransaction from '@/pegin/components/ledger/ConfirmLedgerTransaction.vue';
 
 export default defineComponent({
   name: 'ConfirmTx',
   components: {
-    ConfirmationSummary,
+    StatusSummary,
     ConfirmLedgerTransaction,
   },
   props: {
@@ -151,6 +152,15 @@ export default defineComponent({
         });
     }
 
+    const summaryDetails = computed((): NormalizedSummary => ({
+      amountFromString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
+      amountReceivedString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
+      fee: Number(safeFee.value.toBTCTrimmedString()),
+      total: computedPlusFeeFullAmount.value,
+      recipientAddress: pegInTxState.value.rskAddressSelected,
+      senderAddress: pegInTxState.value.normalizedTx.inputs[0].address,
+    }));
+
     async function toPegInForm() {
       props.confirmTxState.send('loading');
       context.emit('toPegInForm', 'PegInForm');
@@ -190,6 +200,7 @@ export default defineComponent({
       isHdWallet,
       mdiArrowLeft,
       mdiArrowRight,
+      summaryDetails,
     };
   },
 });
