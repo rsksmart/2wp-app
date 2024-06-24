@@ -21,7 +21,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          ref: qa 
+          ref: qa
 
       - name: Setup NodeJS
         uses: actions/setup-node@v3
@@ -45,7 +45,7 @@ jobs:
           VUE_APP_WALLET_ADDRESSES_HARD_STOP=100
           VUE_APP_WALLET_ADDRESS_PER_CALL=20
           VUE_APP_PEGOUT_MIN_AMOUNT_ALLOWED_IN_RBTC=0.004
-          VUE_APP_PEGOUT_MAX_AMOUNT_ALLOWED_IN_RBTC=1
+          VUE_APP_PEGOUT_MAX_AMOUNT_ALLOWED_IN_RBTC=10
           VUE_APP_LBC_ADDRESS='0xc2A630c053D12D63d32b025082f6Ba268db18300'
           npm run-script build
 

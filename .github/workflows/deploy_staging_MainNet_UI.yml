@@ -45,7 +45,7 @@ jobs:
           VUE_APP_WALLET_ADDRESSES_HARD_STOP=100
           VUE_APP_WALLET_ADDRESS_PER_CALL=20
           VUE_APP_PEGOUT_MIN_AMOUNT_ALLOWED_IN_RBTC=0.004
-          VUE_APP_PEGOUT_MAX_AMOUNT_ALLOWED_IN_RBTC=1
+          VUE_APP_PEGOUT_MAX_AMOUNT_ALLOWED_IN_RBTC=10
           npm run-script build
 
       - name: Configure AWS credentials
