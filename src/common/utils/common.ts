@@ -2,6 +2,7 @@ import { PegInTxState } from '@/common/types/pegInTx';
 import SatoshiBig from '@/common/types/SatoshiBig';
 import { BITCOIN_AVERAGE_FEE_LEVEL } from '@/common/store/constants';
 import {
+  FlyoverPeginState,
   FlyoverPegoutState, ObjectDifference, PegOutTxState,
   SessionState, WeiBig,
 } from '@/common/types';
@@ -107,6 +108,17 @@ export const getClearFlyoverPegoutState = (): FlyoverPegoutState => ({
   flyoverService: markRaw(new FlyoverService()),
   selectedQuoteHash: '',
   differences: [],
+});
+
+export const getClearFlyoverPeginState = (): FlyoverPeginState => ({
+  amountToTransfer: new SatoshiBig(0, 'satoshi'),
+  validAmount: false,
+  rootstockRecipientAddress: '',
+  valueToReceive: new WeiBig(0, 'wei'),
+  liquidityProviders: [],
+  quotes: {},
+  flyoverService: markRaw(new FlyoverService()),
+  selectedQuoteHash: '',
 });
 
 export const compareObjects = (
