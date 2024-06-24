@@ -14,7 +14,7 @@ import {
   BtcAccount, BtcWallet, MiningSpeedFee, UtxoListPerAccount, Utxo,
 } from '@/common/types';
 import { getCookie, setCookie } from '@/common/utils';
-import TxFeeService from '../services/TxFeeService';
+import TxFeeService from '../../services/TxFeeService';
 
 export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.IS_TREZOR_CONNECTED]: ({ commit }, trezorConnected: boolean) => {

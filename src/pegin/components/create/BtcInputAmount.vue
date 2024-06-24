@@ -89,7 +89,7 @@ import EnvironmentContextProviderService from '@/common/providers/EnvironmentCon
 import { isBTCAmountValidRegex } from '@/common/utils';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import { FeeAmountData } from '@/common/types';
-import { pegInTx } from '@/pegin/store';
+import { pegInTx } from '@/pegin/store/PeginTx';
 
 export default defineComponent({
   name: 'BtcInputAmount',
