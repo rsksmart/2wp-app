@@ -18,6 +18,7 @@ import {
   PegoutStatusDataModel,
   NormalizedSummary,
   FlyoverStatusModel,
+  WeiBig,
 } from '@/common/types';
 import StatusProgressBar from '@/common/components/status/StatusProgressBar.vue';
 import { useStateAttribute } from '@/common/store/helper';
@@ -40,6 +41,7 @@ export default defineComponent({
 
     const txDetails = useStateAttribute<PegoutStatusDataModel | FlyoverStatusModel>('status', 'txDetails');
     const pegOutEstimatedFee = useStateAttribute<SatoshiBig>('status', 'pegOutEstimatedFee');
+    const calculatedGasFee = useStateAttribute<WeiBig>('pegOutTx', 'calculatedFee');
 
     const isRejectedPegout = computed(() => txDetails.value.status === PegoutStatus.REJECTED);
 
@@ -57,9 +59,12 @@ export default defineComponent({
 
     const txPegoutSummary = computed((): NormalizedSummary => {
       const status = txDetails.value as PegoutStatusDataModel;
+      const valueRequested = new SatoshiBig(status.valueRequestedInSatoshis, 'satoshi').toBTCTrimmedString();
+      const amountSent = new WeiBig(valueRequested, 'rbtc').plus(calculatedGasFee.value).toRBTCTrimmedString();
       return {
-        amountFromString: new SatoshiBig(status.valueRequestedInSatoshis, 'satoshi').toBTCTrimmedString(),
+        amountFromString: amountSent,
         amountReceivedString: amountToBeReceived.value,
+        gas: calculatedGasFee.value,
         fee: Number(new SatoshiBig(status.feeInSatoshisToBePaid ?? 0, 'satoshi').toBTCTrimmedString()),
         recipientAddress: status.btcRecipientAddress,
         senderAddress: status.rskSenderAddress,
@@ -73,9 +78,10 @@ export default defineComponent({
       const status = txDetails.value as FlyoverStatusModel;
       const amount = new SatoshiBig(status.amount, 'btc');
       const fee = new SatoshiBig(status.fee, 'btc');
+      const total = amount.plus(fee).toBTCTrimmedString();
       const amountAsString = amount.toBTCTrimmedString();
       return {
-        amountFromString: amountAsString,
+        amountFromString: total,
         amountReceivedString: amountAsString,
         fee: Number(fee.toBTCTrimmedString()),
         recipientAddress: status.recipientAddress,
