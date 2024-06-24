@@ -78,6 +78,10 @@ export default defineComponent({
       type: String,
       required: true,
     },
+    withTxIds: {
+      type: Boolean,
+      default: true,
+    },
     txWithErrorType: Boolean,
     txWithError: Boolean,
   },
@@ -105,21 +109,13 @@ export default defineComponent({
             link: getBtcTxExplorerUrl(props.details.btcTxId),
           },
           {
-            title: 'You will receive',
-            value: props.details.amountReceivedString && !props.txWithError
-              ? props.details.amountReceivedString : '-',
-            ticker: true,
-          },
-          {
             title: props.details.fee === 0 ? 'Estimated Fee' : 'Fee',
-            value: status.value.type === TxStatusType.FLYOVER_PEGOUT || props.txWithError
-              ? '-' : fee,
+            value: status.value.type === TxStatusType.FLYOVER_PEGOUT || props.txWithError ? '-' : fee,
             ticker: true,
           },
           {
-            title: 'Total',
-            value: status.value.type === TxStatusType.FLYOVER_PEGOUT || props.txWithError
-              ? '-' : props.details.amountFromString,
+            title: 'You will receive',
+            value: props.txWithError ? '-' : props.details.amountReceivedString,
             ticker: true,
           },
         ];
@@ -130,23 +126,18 @@ export default defineComponent({
           value: props.details.senderAddress || '-',
           link: getBtcAddressExplorerUrl(props.details.senderAddress),
         },
-        {
+        ...(props.withTxIds ? [{
           title: 'Transaction ID',
           value: props.details.txId || '-',
           link: getBtcTxExplorerUrl(props.details.txId),
-        },
-        {
-          title: 'You will send',
-          value: props.details.amountFromString,
-          ticker: true,
-        },
+        }] : []),
         {
           title: 'Fee',
           value: props.details.fee,
           ticker: true,
         },
         {
-          title: 'Total',
+          title: 'You will send',
           value: props.details.total,
           ticker: true,
         },
@@ -155,6 +146,7 @@ export default defineComponent({
 
     const rskSide = computed(() => {
       if (props.type === TxStatusType.PEGOUT) {
+        const gasFee = props.details.gas?.gt(0) ? props.details.gas.toRBTCTrimmedString() : '-';
         return [
           {
             title: 'Sender Address',
@@ -167,19 +159,15 @@ export default defineComponent({
             link: getRskTxExplorerUrl(props.details.txId),
           },
           {
+            title: 'Fee',
+            value: status.value.type === TxStatusType.FLYOVER_PEGOUT
+              ? props.details.fee
+              : gasFee,
+            ticker: true,
+          },
+          {
             title: 'You will send',
             value: props.details.amountFromString,
-            ticker: true,
-          },
-          {
-            title: 'Fee',
-            value: status.value.type === TxStatusType.FLYOVER_PEGOUT ? props.details.fee : '-',
-            ticker: true,
-          },
-          {
-            title: 'Total',
-            value: status.value.type === TxStatusType.FLYOVER_PEGOUT
-              ? props.details.amountFromString : '-',
             ticker: true,
           }];
       }
@@ -190,25 +178,19 @@ export default defineComponent({
             ? props.details.recipientAddress : '-',
           link: getRskAddressExplorerUrl(props.details.recipientAddress),
         },
-        {
+        ...(props.withTxIds ? [{
           title: 'Transaction ID',
           value: props.details.rskTxId && !props.txWithError
             ? props.details.rskTxId : '-',
           link: getRskTxExplorerUrl(props.details.rskTxId),
-        },
-        {
-          title: 'You will receive',
-          value: props.details.amountReceivedString && !props.txWithError
-            ? props.details.amountReceivedString : '-',
-          ticker: true,
-        },
+        }] : []),
         {
           title: 'Fee',
           value: props.txWithError ? '-' : '0',
           ticker: true,
         },
         {
-          title: 'Total',
+          title: 'You will receive',
           value: props.details.amountReceivedString && !props.txWithError
             ? props.details.amountReceivedString : '-',
           ticker: true,
