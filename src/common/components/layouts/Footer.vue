@@ -19,6 +19,7 @@
       </a>
       <a :href="urlApi" target="_blank" rel="noopener">Api Version: {{ apiVersion }}</a>
       <a :href="urlApp" target="_blank" rel="noopener">App Version: {{ appVersion }}</a>
+      <a href="https://rootstock.io/ecosystem/" target="_blank" rel="noopener">Ecosystem</a>
     </div>
     <div class="d-flex ga-2">
       <v-btn variant="plain" href="https://twitter.com/rootstock_io" target="_blank" density="compact" :icon="mdiTwitter">

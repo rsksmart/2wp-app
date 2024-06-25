@@ -7,9 +7,9 @@
       <v-col lg="4" xl="3" xxl="2">
         <div class="d-flex text-h1 flex-wrap">
           <span class="mx-1 my-2 pa-4 bg-purple">{{ $t('home.title.bridging') }}</span>
-          <span class="mx-1 my-2 pa-4 bg-orange">{{ environmentContext.getBtcTicker() }}</span>
+          <span class="mx-1 my-2 pa-4 bg-orange">Bitcoin</span>
           <span class="mx-1 my-2 pa-4 bg-off-white">{{ $t('home.title.and') }}</span>
-          <span class="mx-1 my-2 pa-4 bg-green">{{ environmentContext.getRbtcTicker() }}</span>
+          <span class="mx-1 my-2 pa-4 bg-green">Rootstock</span>
         </div>
       </v-col>
       <v-col lg="4" xl="3" xxl="2" class="d-flex flex-column ga-6">

@@ -16,9 +16,6 @@
           :willReceive="amountToReceive" />
       </v-col>
     </v-row>
-    <span class="d-inline-block font-weight-bold my-3">
-      Speed/Time options
-    </span>
     <v-row v-if="showStep && !loadingQuotes">
       <v-col cols="6" v-for="(quote, index) in pegoutQuotes" :key="index" >
         <pegout-option

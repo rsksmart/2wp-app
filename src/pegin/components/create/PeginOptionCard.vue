@@ -2,11 +2,10 @@
   <v-card :ripple="false" @click="selectOption" rounded="lg" flat variant="outlined"
     :class="selected && 'selected'"
     class="d-flex flex-column ga-4 pa-8 fill-height">
-    <span class="text-h4">{{ option.title }}</span>
     <v-row no-gutters>
       <v-col cols="3">
         <div class="d-flex text-h3 ga-1 flex-wrap">
-          <span v-for="(word, i) in option.subtitle.split(' ')" :key="i"
+          <span v-for="(word, i) in option.title.split(' ')" :key="i"
             :class='`pa-2 bg-${option.subtitleColor}`'>
             {{ word }}
           </span>
@@ -92,9 +91,9 @@ export default defineComponent({
 
     const PeginOptions = {
       native: {
-        title: 'Native (For Advanced Users)',
-        subtitle: 'Maximum Security',
+        title: 'Native Powpeg',
         subtitleColor: 'purple',
+        link: 'https://dev.rootstock.io/rsk/architecture/powpeg/',
         estimatedTime: () => '34 Hours',
         amountToTransfer: () => pegInTxState.value.amountToTransfer
           .plus(selectedFee.value),
@@ -102,9 +101,9 @@ export default defineComponent({
         valueToReceive: () => pegInTxState.value.amountToTransfer,
       },
       flyover: {
-        title: 'Flyover (For Less Advanced Users)',
-        subtitle: 'Faster Option',
+        title: 'Faster Option',
         subtitleColor: 'orange',
+        link: 'https://dev.rootstock.io/guides/flyover/',
         estimatedTime: () => '15 minutes',
         amountToTransfer: () => new SatoshiBig('0.0006', 'btc'),
         providerFee: () => new SatoshiBig('0.0002', 'btc'),
