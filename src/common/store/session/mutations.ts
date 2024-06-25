@@ -54,4 +54,7 @@ export const mutations: MutationTree<SessionState> = {
   [constants.SESSION_SET_FEATURES]: (state, features: Array<Feature>) => {
     state.features = features;
   },
+  [constants.SESSION_SET_API_VERSION]: (state, apiVersion: string) => {
+    state.apiVersion = apiVersion;
+  },
 };

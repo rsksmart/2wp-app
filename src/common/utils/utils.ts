@@ -311,7 +311,11 @@ export function getCookie(cname: string) {
   return cookieValue;
 }
 
-export function setCookie(cookieName: string, cookieValue: number, expirationHours: number) {
+export function setCookie(
+  cookieName: string,
+  cookieValue: number | string,
+  expirationHours: number,
+) {
   const d = new Date();
   d.setTime(d.getTime() + (expirationHours * 60 * 60 * 1000));
   const expires = `expires=${d.toUTCString()}`;
