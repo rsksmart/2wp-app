@@ -1,9 +1,11 @@
 <template>
   <v-container>
     <v-row>
-      <status-progress-bar :isFlyover="isFlyover"/>
+      <status-progress-bar :isFlyover="isFlyover" :txWithErrorType="txWithErrorType"
+                           :txWithError="txWithError" />
     </v-row>
-    <status-summary :details="summary" :type="typeSummary" />
+    <status-summary :details="summary" :type="typeSummary" :txWithErrorType="txWithErrorType"
+                    :txWithError="txWithError" />
   </v-container>
 </template>
 
@@ -37,6 +39,8 @@ export default defineComponent({
   props: {
     txId: String,
     isFlyover: Boolean,
+    txWithErrorType: Boolean,
+    txWithError: Boolean,
   },
   setup(props, context) {
     const currentFee = ref(new SatoshiBig('0', 'btc'));
@@ -111,6 +115,7 @@ export default defineComponent({
         federationAddress: status.btc.federationAddress,
         total: total.toBTCTrimmedString(),
         senderAddress: status.btc.senderAddress,
+        status: status.status,
       };
     });
 

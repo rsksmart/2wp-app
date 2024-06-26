@@ -19,9 +19,12 @@
       <p>Estimated time: {{ releaseTimeText }}</p>
     </v-row>
     <v-row no-gutters>
-      <tx-pegin v-if="isPegIn" :txId="txId" :isFlyover="isFlyover" />
-      <tx-pegout v-if="isPegOut" :txId="txId" :isFlyover="isFlyover"/>
-      <status-progress-bar v-if="txWithErrorType" :isFlyover="isFlyover"/>
+      <tx-pegin v-if="isPegIn" :txId="txId" :isFlyover="isFlyover"
+                :txWithErrorType="txWithErrorType" :txWithError="txWithError" />
+      <tx-pegout v-if="isPegOut" :txId="txId" :isFlyover="isFlyover"
+                 :txWithErrorType="txWithErrorType" :txWithError="txWithError" />
+      <status-progress-bar v-if="txWithErrorType" :isFlyover="isFlyover"
+                           :txWithErrorType="txWithErrorType" :txWithError="txWithError" />
     </v-row>
   </v-container>
 </template>
@@ -36,11 +39,15 @@ import TxPegout from '@/common/components/status/TxPegout.vue';
 import TxPegin from '@/common/components/status/TxPegin.vue';
 import {
   PegoutStatus, TxStatusType,
-  PegoutStatusDataModel, TxStatus, TxStatusMessage,
+  PegoutStatusDataModel, TxStatus, TxStatusMessage, PeginStatus,
 } from '@/common/types';
 import * as constants from '@/common/store/constants';
-import { useAction, useGetter, useState } from '@/common/store/helper';
+import {
+  useAction, useGetter,
+  useState, useStateAttribute,
+} from '@/common/store/helper';
 import StatusProgressBar from '@/common/components/status/StatusProgressBar.vue';
+import { PegStatus } from '@/common/store/constants';
 
 export default defineComponent({
   name: 'StatusSearch',
@@ -67,6 +74,7 @@ export default defineComponent({
     const clearStatus = useAction('status', constants.STATUS_CLEAR);
     const activeMessage = useGetter<TxStatusMessage>('status', constants.STATUS_GET_ACTIVE_MESSAGE);
     const releaseTimeText = useGetter<string>('status', constants.STATUS_GET_RELEASE_TIME_TEXT);
+    const txDetails = useStateAttribute<PegoutStatusDataModel|PeginStatus>('status', 'txDetails');
 
     const showStatus = computed(() => !loading.value
         && !activeMessage.value.error
@@ -85,11 +93,24 @@ export default defineComponent({
       || status.value.type === TxStatusType.UNEXPECTED_ERROR);
 
     const showTimeLeft = computed((): boolean => {
-      const txDetails = status.value.txDetails as PegoutStatusDataModel;
+      const details = txDetails.value as PegoutStatusDataModel;
       return status.value.type === TxStatusType.PEGOUT
-          && (txDetails.status === PegoutStatus.WAITING_FOR_CONFIRMATION
-          || txDetails.status === PegoutStatus.RECEIVED
-          || txDetails.status === PegoutStatus.WAITING_FOR_SIGNATURE);
+          && (details.status === PegoutStatus.WAITING_FOR_CONFIRMATION
+          || details.status === PegoutStatus.RECEIVED
+          || details.status === PegoutStatus.WAITING_FOR_SIGNATURE);
+    });
+
+    const txWithError = computed(() => {
+      if (txWithErrorType.value) return true;
+      const { status: errorStatus } = txDetails.value;
+      return errorStatus as PegStatus === PegStatus.REJECTED_REFUND
+        || errorStatus as PegStatus === PegStatus.REJECTED_NO_REFUND
+        || errorStatus as PegStatus === PegStatus.ERROR_BELOW_MIN
+        || errorStatus as PegStatus === PegStatus.ERROR_NOT_A_PEGIN
+        || errorStatus as PegStatus === PegStatus.ERROR_UNEXPECTED
+        || errorStatus as PegoutStatus === PegoutStatus.NOT_PEGOUT_TX
+        || errorStatus as PegoutStatus === PegoutStatus.NOT_FOUND
+        || errorStatus as PegoutStatus === PegoutStatus.REJECTED;
     });
 
     const rules = {
@@ -180,6 +201,7 @@ export default defineComponent({
       mdiMagnify,
       rules,
       txWithErrorType,
+      txWithError,
     };
   },
 });

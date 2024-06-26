@@ -77,14 +77,14 @@ export default defineComponent({
   name: 'StatusProgressBar',
   props: {
     isFlyover: Boolean,
+    txWithErrorType: Boolean,
+    txWithError: Boolean,
   },
   setup(props) {
     const status = useState<TxStatus>('status');
     const txDetails = useStateAttribute<PegoutStatusDataModel|PeginStatus>('status', 'txDetails');
     const isPegOut = computed((): boolean => status.value.type === TxStatusType.PEGOUT
       || status.value.type === TxStatusType.FLYOVER_PEGOUT);
-    const txWithErrorType = computed((): boolean => status.value.type === TxStatusType.INVALID_DATA
-      || status.value.type === TxStatusType.UNEXPECTED_ERROR);
 
     const initialStepImage = computed(() => {
       if (isPegOut.value) {
@@ -98,20 +98,8 @@ export default defineComponent({
       }
       return require('@/assets/status/rbtc.svg');
     });
-    const txWithError = computed(() => {
-      if (txWithErrorType.value) return true;
-      const { status: errorStatus } = txDetails.value;
-      return errorStatus as PegStatus === PegStatus.REJECTED_REFUND
-      || errorStatus as PegStatus === PegStatus.REJECTED_NO_REFUND
-      || errorStatus as PegStatus === PegStatus.ERROR_BELOW_MIN
-      || errorStatus as PegStatus === PegStatus.ERROR_NOT_A_PEGIN
-      || errorStatus as PegStatus === PegStatus.ERROR_UNEXPECTED
-      || errorStatus as PegoutStatus === PegoutStatus.NOT_PEGOUT_TX
-      || errorStatus as PegoutStatus === PegoutStatus.NOT_FOUND
-      || errorStatus as PegoutStatus === PegoutStatus.REJECTED;
-    });
-    const initialImgSize = computed(() => (txWithError.value ? 32 : 12));
-    const barColor = computed(() => (txWithError.value ? 'red' : 'green'));
+    const initialImgSize = computed(() => (props.txWithError ? 32 : 12));
+    const barColor = computed(() => (props.txWithError ? 'red' : 'green'));
     const timeLineData = computed(() => {
       let labelOne = 'Transaction Broadcasted';
       let labelTwo = 'Transaction Confirmed';
@@ -121,8 +109,10 @@ export default defineComponent({
       let second = 0;
       let third = 0;
       let fourth = 0;
-      if (txWithErrorType.value) zero = 100;
-      else if (isPegOut.value) {
+      if (props.txWithErrorType) {
+        zero = 100;
+        labelOne = 'Error occurred';
+      } else if (isPegOut.value) {
         labelThree = 'Sent to Bitcoin';
         if (props.isFlyover) {
           if ((txDetails.value.status as unknown as FlyoverPegoutStatus) === FlyoverPegoutStatus
@@ -135,12 +125,12 @@ export default defineComponent({
               break;
             case PegoutStatus.RECEIVED:
               zero = 100;
-              first = 70;
+              first = 50;
               break;
             case PegoutStatus.WAITING_FOR_CONFIRMATION:
               zero = 100;
               first = 100;
-              second = 70;
+              second = 50;
               break;
             case PegoutStatus.WAITING_FOR_SIGNATURE:
               zero = 100;
@@ -183,11 +173,11 @@ export default defineComponent({
         labelThree = 'Confirming on Rootstock';
         switch (txDetailsPegIn.status as PegStatus) {
           case PegStatus.NOT_IN_BTC_YET:
-            zero = 70;
+            zero = 50;
             break;
           case PegStatus.WAITING_CONFIRMATIONS:
             zero = 100;
-            first = 70;
+            first = 50;
             if (btc.confirmations >= btc.requiredConfirmation) {
               first = 100;
               second = 70;
@@ -197,12 +187,13 @@ export default defineComponent({
             zero = 100;
             first = 100;
             second = 100;
-            third = 70;
+            third = 50;
             break;
           case PegStatus.CONFIRMED:
             zero = 100;
             first = 100;
             second = 100;
+            third = 50;
             if (rsk.status === RskStatus.LOCKED) {
               third = 100;
             }
@@ -248,7 +239,7 @@ export default defineComponent({
       };
     });
     const imgStep1 = computed(() => {
-      if (txWithError.value) return require('@/assets/status/ellipse_error.svg');
+      if (props.txWithError) return require('@/assets/status/ellipse_error.svg');
       if (timeLineData.value[0][1] === 100) return require('@/assets/status/ellipse.svg');
       return require('@/assets/status/ellipse_empty.svg');
     });
@@ -269,7 +260,6 @@ export default defineComponent({
       initialStepImage,
       finalStepImage,
       timeLineData,
-      txWithError,
       imgStep1,
       imgStep2,
       imgStep3,
@@ -288,7 +278,7 @@ export default defineComponent({
 }
 #indicator-50 {
   background-image: linear-gradient(to right,
-    rgb(var(--v-theme-green)) 40%, rgba(58, 58, 58, 0.3));
+    rgb(var(--v-theme-green)) 30%, rgba(58, 58, 58, 0.3));
 }
 #indicator-70 {
   background-image: linear-gradient(to right,
