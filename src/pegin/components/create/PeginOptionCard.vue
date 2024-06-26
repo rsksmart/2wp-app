@@ -54,6 +54,7 @@
 
 <script lang="ts">
 import {
+  PropType,
   computed, defineComponent,
 } from 'vue';
 import * as constants from '@/common/store/constants';
@@ -62,7 +63,7 @@ import { useGetter, useState, useStateAttribute } from '@/common/store/helper';
 import { truncateString } from '@/common/utils';
 import RskAddressInput from '@/pegin/components/create/RskAddressInput.vue';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { PegInTxState, SatoshiBig } from '@/common/types';
+import { PegInTxState, QuotePegIn2WP, SatoshiBig } from '@/common/types';
 
 export default defineComponent({
   name: 'PeginOptionCard',
@@ -78,6 +79,9 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    quote: {
+      type: Object as PropType<QuotePegIn2WP>,
+    },
   },
   setup(props, context) {
     const account = useStateAttribute<string>('web3Session', 'account');
@@ -88,6 +92,14 @@ export default defineComponent({
     const bitcoinPrice = useStateAttribute<number>('pegInTx', 'bitcoinPrice');
 
     const fixedUSDDecimals = 2;
+    const quote = computed(() => props.quote?.quote);
+
+    const quoteFee = computed(() => {
+      if (!quote.value) return new SatoshiBig('0', 'btc');
+      return quote.value.productFeeAmount
+        .plus(quote.value.callFee)
+        .plus(new SatoshiBig(quote.value.gasFee.toRBTCString(), 'btc'));
+    });
 
     const PeginOptions = {
       native: {
@@ -105,9 +117,9 @@ export default defineComponent({
         subtitleColor: 'orange',
         link: 'https://dev.rootstock.io/guides/flyover/',
         estimatedTime: () => '15 minutes',
-        amountToTransfer: () => new SatoshiBig('0.0006', 'btc'),
-        providerFee: () => new SatoshiBig('0.0002', 'btc'),
-        valueToReceive: () => new SatoshiBig('0.00051', 'btc'),
+        amountToTransfer: () => quote.value?.value ?? new SatoshiBig('0', 'btc'),
+        providerFee: () => quoteFee.value,
+        valueToReceive: () => quote.value?.value.minus(quoteFee.value) ?? new SatoshiBig('0', 'btc'),
       },
     };
     const option = computed(() => PeginOptions[props.optionType as keyof typeof PeginOptions]);

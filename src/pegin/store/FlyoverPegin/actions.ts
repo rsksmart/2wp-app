@@ -1,4 +1,6 @@
-import { FlyoverPeginState, RootState, SatoshiBig } from '@/common/types';
+import {
+  FlyoverPeginState, QuotePegIn2WP, RootState, SatoshiBig,
+} from '@/common/types';
 import { ActionTree } from 'vuex';
 import * as constants from '@/common/store/constants';
 
@@ -23,4 +25,31 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
   [constants.FLYOVER_PEGIN_USE_LIQUIDITY_PROVIDER]: ({ state }, providerId: number) => {
     state.flyoverService.useLiquidityProvider(providerId);
   },
+  [constants.FLYOVER_PEGIN_GET_QUOTES]:
+  (
+    { state, commit, dispatch },
+    { rootstockRecipientAddress, bitcoinRefundAddress },
+  ) => new Promise((resolve, reject) => {
+    const quotePromises: Promise<QuotePegIn2WP[]>[] = [];
+    state.liquidityProviders.forEach((provider) => {
+      dispatch(constants.FLYOVER_PEGIN_USE_LIQUIDITY_PROVIDER, provider.id);
+      quotePromises.push(state.flyoverService.getPeginQuotes(
+        rootstockRecipientAddress,
+        bitcoinRefundAddress,
+        state.amountToTransfer,
+      ));
+    });
+    let quotesByProvider: Record<number, QuotePegIn2WP[]> = {};
+    Promise.allSettled(quotePromises)
+      .then((responses) => responses.forEach((response, index) => {
+        if (response.status === 'fulfilled') {
+          quotesByProvider = {
+            ...quotesByProvider,
+            [state.liquidityProviders[index].id]: response.value,
+          };
+        }
+      }))
+      .then(() => resolve(commit(constants.FLYOVER_PEGIN_SET_QUOTES, quotesByProvider)))
+      .catch(reject);
+  }),
 };

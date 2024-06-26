@@ -69,7 +69,7 @@ describe('FlyoverService', () => {
         callFee: 100000000000000n,
         penaltyFee: 1000000n,
         nonce: 3634522701524682751n,
-        value: 500000n,
+        value: 5000000000000000n,
         agreementTimestamp: 1706817591,
         timeForDeposit: 120,
         gasFee: 105689215476000n,
