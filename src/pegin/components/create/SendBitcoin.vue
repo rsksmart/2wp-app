@@ -48,7 +48,6 @@ import TxBuilder from '@/pegin/middleware/TxBuilder/TxBuilder';
 import DeviceErrorDialog from '@/common/components/exchange/DeviceErrorDialog.vue';
 import ConnectDevice from '@/common/components/exchange/ConnectDevice.vue';
 import TxErrorDialog from '@/common/components/exchange/TxErrorDialog.vue';
-import { BridgeService } from '@/common/services/BridgeService';
 import { TrezorError } from '@/common/types/exception/TrezorError';
 import LeatherTxBuilder from '@/pegin/middleware/TxBuilder/LeatherTxBuilder';
 import PeginTxService from '../../services/PeginTxService';
@@ -102,22 +101,26 @@ export default defineComponent({
       amountToTransferInSatoshi,
       refundAddress,
       recipient,
+      btcRecipient,
+      peginType,
     }: {
       amountToTransferInSatoshi: SatoshiBig;
       refundAddress: string;
       recipient: string;
       accountType: string;
+      btcRecipient: string;
+      peginType: constants.peginType;
     }) {
-      const bridgeService = new BridgeService();
       const normalizedTx = PeginTxService.buildNormalizedTx(
         {
           amountToTransfer: amountToTransferInSatoshi,
-          federationAddress: await bridgeService.getFederationAddress(),
+          federationOrLPAddress: btcRecipient,
           refundAddress,
           rskRecipientAddress: recipient,
           changeAddress: getChangeAddress.value,
           totalFee: selectedFee.value,
           selectedUtxoList: selectedUtxoList.value,
+          peginType,
         },
       );
       await addNormalizedTx(normalizedTx);

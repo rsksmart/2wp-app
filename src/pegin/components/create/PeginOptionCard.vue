@@ -102,7 +102,7 @@ export default defineComponent({
     });
 
     const PeginOptions = {
-      native: {
+      POWPEG: {
         title: 'Native Powpeg',
         subtitleColor: 'purple',
         link: 'https://dev.rootstock.io/rsk/architecture/powpeg/',
@@ -112,20 +112,21 @@ export default defineComponent({
         providerFee: () => new SatoshiBig('0', 'btc'),
         valueToReceive: () => pegInTxState.value.amountToTransfer,
       },
-      flyover: {
+      FLYOVER: {
         title: 'Faster Option',
         subtitleColor: 'orange',
         link: 'https://dev.rootstock.io/guides/flyover/',
         estimatedTime: () => '15 minutes',
-        amountToTransfer: () => quote.value?.value ?? new SatoshiBig('0', 'btc'),
+        amountToTransfer: () => quote.value?.value
+          .plus(quoteFee.value).plus(selectedFee.value) ?? new SatoshiBig('0', 'btc'),
         providerFee: () => quoteFee.value,
-        valueToReceive: () => quote.value?.value.minus(quoteFee.value) ?? new SatoshiBig('0', 'btc'),
+        valueToReceive: () => quote.value?.value ?? new SatoshiBig('0', 'btc'),
       },
     };
     const option = computed(() => PeginOptions[props.optionType as keyof typeof PeginOptions]);
 
     function selectOption() {
-      context.emit('selected-option', props.optionType);
+      context.emit('selected-option', props.optionType, props.quote);
     }
 
     function toUSD(value: SatoshiBig) {
