@@ -1,9 +1,11 @@
 <template>
   <v-container>
     <v-row>
-      <status-progress-bar :isFlyover="isFlyover"/>
+      <status-progress-bar :isFlyover="isFlyover" :txWithErrorType="txWithErrorType"
+                           :txWithError="txWithError"/>
     </v-row>
-      <status-summary :details="summary" :type="typeSummary" />
+      <status-summary :details="summary" :type="typeSummary" :txWithErrorType="txWithErrorType"
+                      :txWithError="txWithError" />
   </v-container>
 </template>
 
@@ -30,6 +32,8 @@ export default defineComponent({
   props: {
     txId: String,
     isFlyover: Boolean,
+    txWithErrorType: Boolean,
+    txWithError: Boolean,
   },
   setup(props) {
     const typeSummary = TxStatusType.PEGOUT;
@@ -61,6 +65,7 @@ export default defineComponent({
         senderAddress: status.rskSenderAddress,
         txId: status.rskTxHash ? status.rskTxHash : props.txId,
         estimatedFee: Number(pegOutEstimatedFee.value.toBTCTrimmedString()),
+        status: status.status,
       };
     });
 
