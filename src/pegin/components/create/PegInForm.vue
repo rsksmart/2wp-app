@@ -23,11 +23,12 @@
           :selected="selected === 'native'"
         />
       </v-col>
-      <v-col v-if="flyoverEnabled">
+      <v-col v-for="(quote, index) in peginQuotes" :key="index">
         <pegin-option-card
           option-type="flyover"
           @selected-option="changeSelectedOption"
           :selected="selected === 'flyover'"
+          :quote="quote"
         />
       </v-col>
     </v-row>
@@ -78,8 +79,12 @@ import { Machine } from '@/common/utils';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { TxStatusType } from '@/common/types/store';
 import { TxSummaryOrientation } from '@/common/types/Status';
-import { Feature, FeatureNames } from '@/common/types';
-import { useGetter, useState, useStateAttribute } from '@/common/store/helper';
+import {
+  Feature, FeatureNames, QuotePegIn2WP, SessionState,
+} from '@/common/types';
+import {
+  useAction, useGetter, useState, useStateAttribute,
+} from '@/common/store/helper';
 import AddressWarningDialog from '@/common/components/exchange/AddressWarningDialog.vue';
 import BtcFeeSelect from '@/pegin/components/create/BtcFeeSelect.vue';
 
@@ -95,23 +100,40 @@ export default defineComponent({
   setup(_, context) {
     const pegInFormState = ref<Machine<'loading' | 'goingHome' | 'fill'>>(new Machine('fill'));
     const showWarningMessage = ref(false);
-    const account = useStateAttribute<string>('web3Session', 'account');
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const typeSummary = TxStatusType.PEGIN;
     const orientationSummary = TxSummaryOrientation.VERTICAL;
-    const flyoverFeature = useGetter<(name: FeatureNames) => Feature>('web3Session', constants.SESSION_GET_FEATURE);
     const flyoverEnabled = ref(true);
+    const showOptions = ref(false);
+    const loadingQuotes = ref(false);
 
+    const account = useStateAttribute<string>('web3Session', 'account');
+    const flyoverFeature = useGetter<(name: FeatureNames) => Feature>('web3Session', constants.SESSION_GET_FEATURE);
     const pegInTxState = useState<PegInTxState>('pegInTx');
-
     const refundAddress = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_REFUND_ADDRESS);
     const enoughBalanceSelectedFee = useGetter<boolean>('pegInTx', constants.PEGIN_TX_GET_ENOUGH_FEE_VALUE);
+    const getPeginQuotes = useAction('flyoverPegin', constants.FLYOVER_PEGIN_GET_QUOTES);
+    const session = useState<SessionState>('web3Session');
+    const quotes = useStateAttribute<Record<number, QuotePegIn2WP[]>>('flyoverPegin', 'quotes');
 
     const isReadyToCreate = computed((): boolean => pegInTxState.value.isValidAmountToTransfer
         && !pegInTxState.value.loadingFee
         && !!pegInTxState.value.rskAddressSelected
         && pegInTxState.value.rskAddressSelected !== '0x'
         && enoughBalanceSelectedFee.value);
+
+    const peginQuotes = computed(() => {
+      if (!flyoverEnabled.value) {
+        return [];
+      }
+      const quoteList: QuotePegIn2WP[] = [];
+      Object.values(quotes.value).forEach((providerQuotes) => {
+        providerQuotes.forEach((quote) => {
+          quoteList.push(quote);
+        });
+      });
+      return quoteList;
+    });
 
     function back() {
       pegInFormState.value.send('loading');
@@ -135,13 +157,12 @@ export default defineComponent({
       selected.value = selectedType;
     }
 
-    const showOptions = ref(false);
-    const loadingQuotes = ref(false);
-
     async function getQuotes() {
       loadingQuotes.value = true;
-      // TODO: get flyover quotes
-      new Promise((resolve) => { setTimeout(resolve, 500); })
+      getPeginQuotes({
+        rootstockRecipientAddress: session.value.account,
+        bitcoinRefundAddress: refundAddress.value,
+      })
         .then(() => {
           loadingQuotes.value = false;
           showOptions.value = true;
@@ -172,6 +193,7 @@ export default defineComponent({
       showOptions,
       loadingQuotes,
       getQuotes,
+      peginQuotes,
     };
   },
 });
