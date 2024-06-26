@@ -18,16 +18,16 @@
     <v-row v-if="showOptions && !loadingQuotes">
       <v-col class="mr-3">
         <pegin-option-card
-          option-type="native"
+          :option-type="peginType.POWPEG"
           @selected-option="changeSelectedOption"
-          :selected="selected === 'native'"
+          :selected="selected === peginType.POWPEG"
         />
       </v-col>
       <v-col v-for="(quote, index) in peginQuotes" :key="index">
         <pegin-option-card
-          option-type="flyover"
+          :option-type="peginType.FLYOVER"
           @selected-option="changeSelectedOption"
-          :selected="selected === 'flyover'"
+          :selected="selected === peginType.FLYOVER"
           :quote="quote"
         />
       </v-col>
@@ -80,13 +80,14 @@ import EnvironmentContextProviderService from '@/common/providers/EnvironmentCon
 import { TxStatusType } from '@/common/types/store';
 import { TxSummaryOrientation } from '@/common/types/Status';
 import {
-  Feature, FeatureNames, QuotePegIn2WP, SessionState,
+  Feature, FeatureNames, QuotePegIn2WP, SatoshiBig, SessionState,
 } from '@/common/types';
 import {
   useAction, useGetter, useState, useStateAttribute,
 } from '@/common/store/helper';
 import AddressWarningDialog from '@/common/components/exchange/AddressWarningDialog.vue';
 import BtcFeeSelect from '@/pegin/components/create/BtcFeeSelect.vue';
+import { BridgeService } from '@/common/services/BridgeService';
 
 export default defineComponent({
   name: 'PegInForm',
@@ -106,6 +107,8 @@ export default defineComponent({
     const flyoverEnabled = ref(true);
     const showOptions = ref(false);
     const loadingQuotes = ref(false);
+    const selected = ref();
+    const selectedQuote = ref<QuotePegIn2WP>();
 
     const account = useStateAttribute<string>('web3Session', 'account');
     const flyoverFeature = useGetter<(name: FeatureNames) => Feature>('web3Session', constants.SESSION_GET_FEATURE);
@@ -140,21 +143,39 @@ export default defineComponent({
       context.emit('back');
     }
 
-    function createTx() {
+    async function createTx() {
       showWarningMessage.value = false;
       pegInFormState.value.send('loading');
-      context.emit('createTx', {
-        amountToTransferInSatoshi: pegInTxState.value.amountToTransfer,
-        refundAddress: refundAddress.value,
-        recipient: pegInTxState.value.rskAddressSelected || account.value,
-        feeLevel: pegInTxState.value.selectedFee,
-        accountType: pegInTxState.value.selectedAccount,
-      });
+      const bridgeService = new BridgeService();
+      if (selected.value === constants.peginType.POWPEG) {
+        context.emit('createTx', {
+          amountToTransferInSatoshi: pegInTxState.value.amountToTransfer,
+          refundAddress: refundAddress.value,
+          recipient: pegInTxState.value.rskAddressSelected || account.value,
+          feeLevel: pegInTxState.value.selectedFee,
+          accountType: pegInTxState.value.selectedAccount,
+          btcRecipient: await bridgeService.getFederationAddress(),
+          peginType: constants.peginType.POWPEG,
+        });
+      } else {
+        context.emit('createTx', {
+          amountToTransferInSatoshi: selectedQuote.value?.quote.value
+            .plus(selectedQuote.value?.quote.productFeeAmount)
+            .plus(selectedQuote.value?.quote.callFee)
+            .plus(new SatoshiBig(selectedQuote.value?.quote.gasFee.toRBTCString(), 'btc')),
+          refundAddress: '',
+          recipient: '',
+          feeLevel: pegInTxState.value.selectedFee,
+          accountType: pegInTxState.value.selectedAccount,
+          btcRecipient: selectedQuote.value?.quote.lpBTCAddr,
+          peginType: constants.peginType.FLYOVER,
+        });
+      }
     }
 
-    const selected = ref();
-    function changeSelectedOption(selectedType: 'native' | 'flyover') {
+    function changeSelectedOption(selectedType: constants.peginType, quote?: QuotePegIn2WP) {
       selected.value = selectedType;
+      selectedQuote.value = quote;
     }
 
     async function getQuotes() {
@@ -194,6 +215,7 @@ export default defineComponent({
       loadingQuotes,
       getQuotes,
       peginQuotes,
+      peginType: constants.peginType,
     };
   },
 });

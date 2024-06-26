@@ -332,5 +332,7 @@ export const POWPEG_RSKT_HEADER = '52534b5401';
 export const PEGIN_OUTPUTS = 3;
 export const COOKIE_EXPIRATION_HOURS = 12;
 
-export const POWPEG = 'powpeg';
-export const FLYOVER = 'flyover';
+export enum peginType {
+  POWPEG = 'POWPEG',
+  FLYOVER = 'FLYOVER'
+}
