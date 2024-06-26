@@ -298,23 +298,24 @@ export default class FlyoverService {
   }
 
   public getPeginQuotes(
-    rskRefundAddress: string,
+    rootstockRecipientAddress: string,
     bitcoinRefundAddress: string,
     valueToTransfer: SatoshiBig,
   ):Promise<Array<QuotePegIn2WP>> {
     return new Promise<Array<QuotePegIn2WP>>((resolve, reject) => {
       this.flyover?.getQuotes({
-        rskRefundAddress,
+        rskRefundAddress: rootstockRecipientAddress,
         bitcoinRefundAddress,
-        valueToTransfer: valueToTransfer.toSatoshiBigInt(),
+        // TODO: this should be fixed in the SDK: valueToTransfer is in BTC
+        valueToTransfer: new WeiBig(valueToTransfer.toBTCString(), 'rbtc').toWeiBigInt(),
         callContractArguments: '',
-        callEoaOrContractAddress: '',
+        callEoaOrContractAddress: rootstockRecipientAddress,
       })
         .then((quotes: Quote[]) => {
           this.peginQuotes = quotes;
           const peginQuotes = quotes
             .filter((quote: Quote) => this.isValidPeginQuote(quote, {
-              rskRefundAddress,
+              rootstockRecipientAddress,
               bitcoinRefundAddress,
               valueToTransfer,
             }))
@@ -322,11 +323,11 @@ export default class FlyoverService {
               quote: {
                 ...quote,
                 timeForDepositInSeconds: quote.timeForDeposit,
-                callFee: new SatoshiBig(quote.callFee ?? 0, 'satoshi'),
+                callFee: new SatoshiBig(new WeiBig(quote.callFee ?? 0, 'wei').toRBTCString(), 'btc'),
                 gasFee: new WeiBig(quote.gasFee ?? 0, 'wei'),
                 penaltyFee: new WeiBig(quote.penaltyFee ?? 0, 'wei'),
-                productFeeAmount: new SatoshiBig(quote.productFeeAmount ?? 0, 'satoshi'),
-                value: new SatoshiBig(quote.value ?? 0, 'satoshi'),
+                productFeeAmount: new SatoshiBig(new WeiBig(quote.productFeeAmount ?? 0, 'wei').toRBTCString(), 'btc'),
+                value: new SatoshiBig(new WeiBig(quote.value ?? 0, 'wei').toRBTCString(), 'btc'),
               },
               quoteHash,
             }));
@@ -343,11 +344,10 @@ export default class FlyoverService {
     });
   }
 
-  // eslint-disable-next-line class-methods-use-this
   private isValidPeginQuote(
     { quote }: Quote,
     quoteRequest: {
-        rskRefundAddress: string;
+      rootstockRecipientAddress: string;
         bitcoinRefundAddress: string;
         valueToTransfer: SatoshiBig;
       },
@@ -361,8 +361,8 @@ export default class FlyoverService {
 
     if (
       quoteRequest.bitcoinRefundAddress !== quote.btcRefundAddr
-      || quoteRequest.rskRefundAddress !== quote.rskRefundAddr
-      || quoteRequest.valueToTransfer.toSatoshiBigInt() !== BigInt(quote.value)
+      || quoteRequest.rootstockRecipientAddress !== quote.rskRefundAddr
+      || new WeiBig(quoteRequest.valueToTransfer.toBTCString(), 'rbtc').toWeiBigInt() !== BigInt(quote.value)
     ) {
       return false;
     }
