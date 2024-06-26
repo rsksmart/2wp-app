@@ -333,5 +333,7 @@ export const PEGIN_OUTPUTS = 3;
 export const COOKIE_EXPIRATION_HOURS = 12;
 export const FEATURES_COOKIE_EXPIRATION_HOURS = 48;
 
-export const POWPEG = 'powpeg';
-export const FLYOVER = 'flyover';
+export enum peginType {
+  POWPEG = 'POWPEG',
+  FLYOVER = 'FLYOVER'
+}

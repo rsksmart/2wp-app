@@ -37,10 +37,11 @@ describe('PeginTx Service', () => {
     selectedUtxoList,
     totalFee: new SatoshiBig(50000, 'satoshi'),
     amountToTransfer: new SatoshiBig(1500000, 'satoshi'),
-    federationAddress: '',
+    federationOrLPAddress: '',
     refundAddress: 'mzBc4XEFSdzCDcTxAgf6EZXgsZWpztRhef',
     rskRecipientAddress: '224d0b72bab9342f898c633ef187abff8a96c0fa',
     changeAddress: 'mzBc4XEFSdzCDcTxAgf6EZXgsZWpztRhef',
+    peginType: constants.peginType.POWPEG,
   };
   it('should build a normalized tx with legacy refund address', () => {
     const normalizedTx = {
@@ -66,7 +67,7 @@ describe('PeginTx Service', () => {
             '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa01ccc198c15d8344c73da67a75509a85a8f4226636',
         },
         {
-          address: denormalizedTx.federationAddress,
+          address: denormalizedTx.federationOrLPAddress,
           amount: denormalizedTx.amountToTransfer.toSatoshiString(),
         },
         {
@@ -103,7 +104,7 @@ describe('PeginTx Service', () => {
             '52534b5401224d0b72bab9342f898c633ef187abff8a96c0fa02379ad9b7ba73bdc1e29e286e014d4e2e1f6884e3',
         },
         {
-          address: denormalizedTx.federationAddress,
+          address: denormalizedTx.federationOrLPAddress,
           amount: denormalizedTx.amountToTransfer.toSatoshiString(),
         },
         {
@@ -134,10 +135,11 @@ describe('PeginTx Service', () => {
       ],
       totalFee: new SatoshiBig(6000, 'satoshi'),
       amountToTransfer: new SatoshiBig(28000, 'satoshi'),
-      federationAddress: '',
+      federationOrLPAddress: '',
       refundAddress: 'mzBc4XEFSdzCDcTxAgf6EZXgsZWpztRhef',
       rskRecipientAddress: '224d0b72bab9342f898c633ef187abff8a96c0fa',
       changeAddress: '',
+      peginType: constants.peginType.POWPEG,
     };
     expect(PeginTxService.buildNormalizedTx(data).outputs.length).toEqual(2);
   });
