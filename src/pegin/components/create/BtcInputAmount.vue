@@ -107,7 +107,8 @@ export default defineComponent({
     const amountToTransfer = useStateAttribute<SatoshiBig>('pegInTx', 'amountToTransfer');
     const isValidAmountToTransfer = useStateAttribute<boolean>('pegInTx', 'isValidAmountToTransfer');
 
-    const setBtcAmount = useAction('pegInTx', constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER);
+    const setBtcAmountPeginTx = useAction('pegInTx', constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER);
+    const setBtcAmountFlyover = useAction('flyoverPegin', constants.FLYOVER_PEGIN_ADD_AMOUNT);
     const calculateTxFee = useAction('pegInTx', constants.PEGIN_TX_CALCULATE_TX_FEE);
     const setIsValidAmount = useAction('pegInTx', constants.PEGIN_TX_ADD_IS_VALID_AMOUNT);
     const selectedAccountBalance = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SELECTED_BALANCE);
@@ -196,6 +197,11 @@ export default defineComponent({
       }
       return false;
     });
+
+    function setBtcAmount(amount: SatoshiBig) {
+      setBtcAmountPeginTx(amount);
+      setBtcAmountFlyover(amount);
+    }
 
     function blockLetterKeyDown(e: KeyboardEvent) {
       if (bitcoinAmount.value.toString().length > 15
