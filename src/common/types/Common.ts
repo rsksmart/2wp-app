@@ -1,5 +1,7 @@
 import SatoshiBig from '@/common/types/SatoshiBig';
 import { Utxo } from '@/common/types/pegInTx';
+import { PegoutStatus } from '@/common/types/store';
+import { PegStatus } from '@/common/store/constants';
 import WeiBig from './WeiBig';
 
 export interface Tx {
@@ -122,6 +124,7 @@ export interface NormalizedSummary {
   selectedAccount?: string;
   federationAddress?: string;
   total?: string;
+  status?: PegStatus | PegoutStatus;
 }
 
 export type AddressType = 'BITCOIN_LEGACY_ADDRESS' | 'BITCOIN_SEGWIT_ADDRESS' | 'BITCOIN_NATIVE_SEGWIT_ADDRESS' |
