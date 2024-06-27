@@ -8,6 +8,7 @@ import {
 } from '@/common/types';
 import { FlyoverService } from '@/common/services';
 import { markRaw } from 'vue';
+import * as constants from '@/common/store/constants';
 
 export const getChunkedValue = (value: string, maxLength: number) => (value.length < maxLength ? value : `${value.substr(0, maxLength / 2)}...${value.substr(value.length - maxLength / 2, value.length)}`);
 
@@ -65,6 +66,7 @@ export const getClearPeginTxState = (): PegInTxState => ({
     refundAddress: '',
     safeFee: new SatoshiBig(0, 'btc'),
   },
+  peginType: constants.peginType.POWPEG,
 });
 
 export const getClearPegoutTxState = (): PegOutTxState => ({
