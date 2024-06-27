@@ -88,6 +88,7 @@ import {
 import AddressWarningDialog from '@/common/components/exchange/AddressWarningDialog.vue';
 import BtcFeeSelect from '@/pegin/components/create/BtcFeeSelect.vue';
 import { BridgeService } from '@/common/services/BridgeService';
+import { FlyoverService } from '@/common/services';
 
 export default defineComponent({
   name: 'PegInForm',
@@ -107,7 +108,7 @@ export default defineComponent({
     const flyoverEnabled = ref(true);
     const showOptions = ref(false);
     const loadingQuotes = ref(false);
-    const selected = ref();
+    const selected = ref<constants.peginType>();
     const selectedQuote = ref<QuotePegIn2WP>();
 
     const account = useStateAttribute<string>('web3Session', 'account');
@@ -116,8 +117,12 @@ export default defineComponent({
     const refundAddress = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_REFUND_ADDRESS);
     const enoughBalanceSelectedFee = useGetter<boolean>('pegInTx', constants.PEGIN_TX_GET_ENOUGH_FEE_VALUE);
     const getPeginQuotes = useAction('flyoverPegin', constants.FLYOVER_PEGIN_GET_QUOTES);
+    const setSelectedQuote = useAction('flyoverPegin', constants.FLYOVER_PEGIN_ADD_SELECTED_QUOTE);
     const session = useState<SessionState>('web3Session');
     const quotes = useStateAttribute<Record<number, QuotePegIn2WP[]>>('flyoverPegin', 'quotes');
+    const setPeginType = useAction('pegInTx', constants.PEGIN_TX_ADD_PEGIN_TYPE);
+    const selectedQuoteHash = useStateAttribute<string>('flyoverPegin', 'selectedQuoteHash');
+    const flyoverService = useStateAttribute<FlyoverService>('flyoverPegin', 'flyoverService');
 
     const isReadyToCreate = computed((): boolean => pegInTxState.value.isValidAmountToTransfer
         && !pegInTxState.value.loadingFee
@@ -158,6 +163,7 @@ export default defineComponent({
           peginType: constants.peginType.POWPEG,
         });
       } else {
+        const acceptedQuote = await flyoverService.value.acceptPeginQuote(selectedQuoteHash.value);
         context.emit('createTx', {
           amountToTransferInSatoshi: selectedQuote.value?.quote.value
             .plus(selectedQuote.value?.quote.productFeeAmount)
@@ -167,15 +173,17 @@ export default defineComponent({
           recipient: '',
           feeLevel: pegInTxState.value.selectedFee,
           accountType: pegInTxState.value.selectedAccount,
-          btcRecipient: selectedQuote.value?.quote.lpBTCAddr,
+          btcRecipient: acceptedQuote.bitcoinDepositAddressHash,
           peginType: constants.peginType.FLYOVER,
         });
       }
     }
 
-    function changeSelectedOption(selectedType: constants.peginType, quote?: QuotePegIn2WP) {
+    async function changeSelectedOption(selectedType: constants.peginType, quote?: QuotePegIn2WP) {
       selected.value = selectedType;
+      await setPeginType(selected.value);
       selectedQuote.value = quote;
+      setSelectedQuote(quote?.quoteHash);
     }
 
     async function getQuotes() {
