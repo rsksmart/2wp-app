@@ -78,6 +78,8 @@ export default defineComponent({
       type: String,
       required: true,
     },
+    txWithErrorType: Boolean,
+    txWithError: Boolean,
   },
   setup(props) {
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
@@ -92,27 +94,31 @@ export default defineComponent({
         return [
           {
             title: 'Recipient Address',
-            value: props.details.recipientAddress || '-',
+            value: props.details.recipientAddress && !props.txWithError
+              ? props.details.recipientAddress : '-',
             link: getBtcAddressExplorerUrl(props.details.recipientAddress),
           },
           {
             title: 'Transaction ID',
-            value: props.details.btcTxId || '-',
+            value: props.details.btcTxId && !props.txWithError
+              ? props.details.btcTxId : '-',
             link: getBtcTxExplorerUrl(props.details.btcTxId),
           },
           {
             title: 'You will receive',
-            value: props.details.amountReceivedString,
+            value: props.details.amountReceivedString && !props.txWithError
+              ? props.details.amountReceivedString : '-',
             ticker: true,
           },
           {
             title: props.details.fee === 0 ? 'Estimated Fee' : 'Fee',
-            value: status.value.type === TxStatusType.FLYOVER_PEGOUT ? '-' : fee,
+            value: status.value.type === TxStatusType.FLYOVER_PEGOUT || props.txWithError
+              ? '-' : fee,
             ticker: true,
           },
           {
             title: 'Total',
-            value: status.value.type === TxStatusType.FLYOVER_PEGOUT
+            value: status.value.type === TxStatusType.FLYOVER_PEGOUT || props.txWithError
               ? '-' : props.details.amountFromString,
             ticker: true,
           },
@@ -180,27 +186,31 @@ export default defineComponent({
       return [
         {
           title: 'Recipient Address',
-          value: props.details.recipientAddress || '-',
+          value: props.details.recipientAddress && !props.txWithError
+            ? props.details.recipientAddress : '-',
           link: getRskAddressExplorerUrl(props.details.recipientAddress),
         },
         {
           title: 'Transaction ID',
-          value: props.details.rskTxId || '-',
+          value: props.details.rskTxId && !props.txWithError
+            ? props.details.rskTxId : '-',
           link: getRskTxExplorerUrl(props.details.rskTxId),
         },
         {
           title: 'You will receive',
-          value: props.details.amountReceivedString,
+          value: props.details.amountReceivedString && !props.txWithError
+            ? props.details.amountReceivedString : '-',
           ticker: true,
         },
         {
           title: 'Fee',
-          value: '0',
+          value: props.txWithError ? '-' : '0',
           ticker: true,
         },
         {
           title: 'Total',
-          value: props.details.amountReceivedString,
+          value: props.details.amountReceivedString && !props.txWithError
+            ? props.details.amountReceivedString : '-',
           ticker: true,
         },
       ];
