@@ -52,4 +52,7 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
       .then(() => resolve(commit(constants.FLYOVER_PEGIN_SET_QUOTES, quotesByProvider)))
       .catch(reject);
   }),
+  [constants.FLYOVER_PEGIN_ADD_SELECTED_QUOTE]: ({ commit }, quoteHash: string) => {
+    commit(constants.FLYOVER_PEGIN_SET_SELECTED_QUOTE, quoteHash);
+  },
 };

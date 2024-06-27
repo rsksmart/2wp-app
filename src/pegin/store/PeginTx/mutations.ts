@@ -82,4 +82,7 @@ export const mutations: MutationTree<PegInTxState> = {
   [constants.PEGIN_TX_SET_STATUS_TX_ID]: (state, txId: string) => {
     state.statusInfo.txId = txId;
   },
+  [constants.PEGIN_TX_SET_PEGIN_TYPE]: (state, peginType: constants.peginType) => {
+    state.peginType = peginType;
+  },
 };

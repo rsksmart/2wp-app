@@ -50,7 +50,7 @@ import ConnectDevice from '@/common/components/exchange/ConnectDevice.vue';
 import TxErrorDialog from '@/common/components/exchange/TxErrorDialog.vue';
 import { TrezorError } from '@/common/types/exception/TrezorError';
 import LeatherTxBuilder from '@/pegin/middleware/TxBuilder/LeatherTxBuilder';
-import PeginTxService from '../../services/PeginTxService';
+import PeginTxService from '@/pegin/services/PeginTxService';
 
 export default defineComponent({
   name: 'SendBitcoin',
