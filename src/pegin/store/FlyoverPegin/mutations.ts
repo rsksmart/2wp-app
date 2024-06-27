@@ -17,4 +17,7 @@ export const mutations: MutationTree<FlyoverPeginState> = {
   [constants.FLYOVER_PEGIN_SET_QUOTES]: (state, quotes: Record<number, Array<QuotePegIn2WP>>) => {
     state.quotes = quotes;
   },
+  [constants.FLYOVER_PEGIN_SET_SELECTED_QUOTE]: (state, quoteHash: string) => {
+    state.selectedQuoteHash = quoteHash;
+  },
 };
