@@ -40,7 +40,7 @@
                 {{ boundaries.minValue.toBTCString().slice(0,5) }} MIN
               </v-chip>
               <v-chip variant="outlined" density="compact" @click="setMax">
-                {{ boundaries.maxValue.toBTCString().slice(0,5) }} MAX
+                {{ boundaries.maxValue.toBTCStringBg().slice(0,5) }} MAX
               </v-chip>
             </div>
           </template>

@@ -53,6 +53,11 @@ export default class SatoshiBig extends Big {
     return btcString;
   }
 
+  toBTCStringBg(): string {
+    const btcString = super.div(100_000_000_000_000_000).toFixed(4);
+    return btcString;
+  }
+
   tomBTCString(): string {
     const mBTCString = super.div(100_000).toFixed(5);
     return mBTCString;
