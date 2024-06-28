@@ -158,15 +158,21 @@ export const actions: ActionTree<SessionState, RootState> = {
     commit(constants.SESSION_SET_TERMS_ACCEPTED, value);
   },
   [constants.SESSION_ADD_FEATURES]: async ({ commit, dispatch }) => {
-    try {
-      const features = await ApiService.getFeatures();
-      commit(constants.SESSION_SET_FEATURES, features);
-      const flag = features.find(({ name }) => name === 'terms_and_conditions');
-      if (!flag?.version) return;
-      const versionAccepted = Number(localStorage.getItem('TERMS_AND_CONDITIONS_ACCEPTED'));
-      dispatch(constants.SESSION_ADD_TERMS_VALUE, flag?.version === versionAccepted);
-    } catch (e) {
-      dispatch(constants.SESSION_ADD_TERMS_VALUE, false);
+    const storedFeatures = getCookie('2wpFeatures');
+    if (storedFeatures) {
+      commit(constants.SESSION_SET_FEATURES, JSON.parse(storedFeatures));
+    } else {
+      try {
+        const features = await ApiService.getFeatures();
+        setCookie('2wpFeatures', JSON.stringify(features), constants.FEATURES_COOKIE_EXPIRATION_HOURS);
+        commit(constants.SESSION_SET_FEATURES, features);
+        const flag = features.find(({ name }) => name === 'terms_and_conditions');
+        if (!flag?.version) return;
+        const versionAccepted = Number(localStorage.getItem('TERMS_AND_CONDITIONS_ACCEPTED'));
+        dispatch(constants.SESSION_ADD_TERMS_VALUE, flag?.version === versionAccepted);
+      } catch (e) {
+        dispatch(constants.SESSION_ADD_TERMS_VALUE, false);
+      }
     }
   },
   [constants.SESSION_SWITCH_LOCALE]: ({ commit }, locale: AppLocale) => {
