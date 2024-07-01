@@ -2,6 +2,7 @@ const path = require('path');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const webpack = require('webpack');
 const { defineConfig } = require('@vue/cli-service');
+const { VuetifyPlugin } = require('webpack-plugin-vuetify');
 
 module.exports = defineConfig({
   transpileDependencies: true,
@@ -26,9 +27,21 @@ module.exports = defineConfig({
         process: 'process/browser',
         Buffer: ['buffer', 'Buffer'],
       }),
+      new VuetifyPlugin({ styles: { configFile: 'src/scss/settings.scss' } }),
     ],
   },
   devServer: {
     https: true,
+  },
+  pluginOptions: {
+    i18n: {
+      locale: 'en',
+      fallbackLocale: 'en',
+      localeDir: 'locales',
+      enableLegacy: false,
+      runtimeOnly: false,
+      compositionOnly: false,
+      fullInstall: true,
+    },
   },
 });

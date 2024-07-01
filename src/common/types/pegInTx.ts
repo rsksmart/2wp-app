@@ -1,6 +1,7 @@
 import { AccountBalance, FeeAmountData, NormalizedTx } from '@/common/types/Common';
 import SatoshiBig from '@/common/types/SatoshiBig';
 import { WalletService } from '@/common/services';
+import * as constants from '@/common/store/constants';
 
 export type BtcAccount = 'BITCOIN_LEGACY_ADDRESS' |
   'BITCOIN_SEGWIT_ADDRESS' |
@@ -72,6 +73,7 @@ export interface PegInTxState {
     refundAddress: string;
     safeFee: SatoshiBig;
   }
+  peginType: constants.peginType;
 }
 
 export interface UnusedWalletAddress {

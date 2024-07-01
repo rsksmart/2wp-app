@@ -1,25 +1,31 @@
 <template>
     <v-dialog v-model="show" width="650" :persistent="!areTermsAccepted">
-      <v-card class="container dialog">
-        <v-row class="mx-0 mt-6 d-flex justify-center">
-          <v-img :src="require('@/assets/common/terms-conditions.png')" height="60" contain />
+      <v-card class="container dialog pa-3">
+        <v-row class="d-flex justify-end mr-3 mt-3">
+          <v-btn variant="plain" :icon="mdiCloseCircleOutline"
+          size="regular" @click="close" >
+          </v-btn>
         </v-row>
-        <v-row class="mx-0 mt-6 mb-3 d-flex justify-center">
-          <h2>Terms and conditions</h2>
+        <v-row class="mx-0 mb-3 d-flex justify-center">
+          <div class="d-flex text-h3 ga-1 flex-wrap">
+            <span class='pa-2 bg-purple'>
+              Terms and conditions
+            </span>
+          </div>
         </v-row>
-        <v-row>
-          <v-container class="terms-txt mx-15 my-6 pa-10" @scroll="onScroll" ref="scrollableArea">
-            <v-row>
+        <v-row class="mx-15 my-6">
+          <v-container class="terms-txt" @scroll="onScroll" ref="scrollableArea">
+            <v-row class="pa-4 ma-0">
               <p>{{ dialogText }}</p>
             </v-row>
            </v-container>
         </v-row>
         <v-row class="d-flex justify-end mx-11 my-5">
-          <v-btn rounded variant="outlined" color="#000000" width="110"
-                 @click="$emit('update:showDialog', false)"
+          <v-btn-rsk rounded variant="flat" width="110"
+                 @click="close"
                  :disabled="requiresScroll && !scrolledText && !areTermsAccepted">
             <span>Back</span>
-          </v-btn>
+          </v-btn-rsk>
         </v-row>
       </v-card>
     </v-dialog>
@@ -29,8 +35,10 @@
 import {
   ref, defineComponent, computed, watchEffect,
 } from 'vue';
-import { useStateAttribute } from '@/common/store/helper';
-import { Feature } from '@/common/types';
+import { useGetter, useStateAttribute } from '@/common/store/helper';
+import { Feature, FeatureNames } from '@/common/types';
+import { mdiCloseCircleOutline } from '@mdi/js';
+import * as constants from '@/common/store/constants';
 
 export default defineComponent({
   name: 'TermsDialog',
@@ -39,8 +47,11 @@ export default defineComponent({
   },
   setup(props, context) {
     const areTermsAccepted = useStateAttribute<boolean>('web3Session', 'acceptedTerms');
-    const termsAndConditionsEnabled = useStateAttribute<Feature>('web3Session', 'termsAndConditionsEnabled');
-    const dialogText = computed(() => termsAndConditionsEnabled.value?.value);
+    const getFeature = useGetter<(f:FeatureNames) =>Feature>('web3Session', constants.SESSION_GET_FEATURE);
+    const dialogText = computed(() => {
+      const currentTernms = getFeature.value(FeatureNames.TERMS_AND_CONDITIONS);
+      return currentTernms.value;
+    });
     const show = computed({
       get() {
         return props.showDialog;
@@ -72,6 +83,10 @@ export default defineComponent({
       }
     });
 
+    function close() {
+      context.emit('update:showDialog', false);
+    }
+
     return {
       show,
       scrolledText,
@@ -80,6 +95,8 @@ export default defineComponent({
       scrollableArea,
       requiresScroll,
       areTermsAccepted,
+      mdiCloseCircleOutline,
+      close,
     };
   },
 });

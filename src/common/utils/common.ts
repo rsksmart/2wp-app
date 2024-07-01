@@ -2,11 +2,13 @@ import { PegInTxState } from '@/common/types/pegInTx';
 import SatoshiBig from '@/common/types/SatoshiBig';
 import { BITCOIN_AVERAGE_FEE_LEVEL } from '@/common/store/constants';
 import {
+  FlyoverPeginState,
   FlyoverPegoutState, ObjectDifference, PegOutTxState,
   SessionState, WeiBig,
 } from '@/common/types';
 import { FlyoverService } from '@/common/services';
 import { markRaw } from 'vue';
+import * as constants from '@/common/store/constants';
 
 export const getChunkedValue = (value: string, maxLength: number) => (value.length < maxLength ? value : `${value.substr(0, maxLength / 2)}...${value.substr(value.length - maxLength / 2, value.length)}`);
 
@@ -64,6 +66,7 @@ export const getClearPeginTxState = (): PegInTxState => ({
     refundAddress: '',
     safeFee: new SatoshiBig(0, 'btc'),
   },
+  peginType: constants.peginType.POWPEG,
 });
 
 export const getClearPegoutTxState = (): PegOutTxState => ({
@@ -92,6 +95,8 @@ export const getClearSessionState = ():SessionState => (
     balance: new WeiBig('0', 'wei'),
     btcDerivedAddress: '',
     bitcoinPrice: 0,
+    features: [],
+    apiVersion: '',
   }
 );
 
@@ -105,6 +110,17 @@ export const getClearFlyoverPegoutState = (): FlyoverPegoutState => ({
   flyoverService: markRaw(new FlyoverService()),
   selectedQuoteHash: '',
   differences: [],
+});
+
+export const getClearFlyoverPeginState = (): FlyoverPeginState => ({
+  amountToTransfer: new SatoshiBig(0, 'satoshi'),
+  validAmount: false,
+  rootstockRecipientAddress: '',
+  valueToReceive: new WeiBig(0, 'wei'),
+  liquidityProviders: [],
+  quotes: {},
+  flyoverService: markRaw(new FlyoverService()),
+  selectedQuoteHash: '',
 });
 
 export const compareObjects = (

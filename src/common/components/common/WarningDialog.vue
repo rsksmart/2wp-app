@@ -6,7 +6,7 @@
         </v-row>
         <v-col cols="12" align-self="center" class="pt-0">
           <v-row class="ma-0 d-flex justify-center">
-            <v-icon class="ml-2" color="#000000" :icon="mdiAlertOutline" size="80"></v-icon>
+            <v-icon class="ml-2" :icon="mdiAlertOutline" size="80"></v-icon>
           </v-row>
           <v-col offset="1" cols="10">
             <p class="justify-center">
@@ -15,8 +15,8 @@
           </v-col>
           <v-row class="mx-0 mb-8 mt-3" justify="space-around">
             <v-col class="d-flex justify-center">
-              <v-btn width="100" height="40" dense outlined rounded color="#000000" @click="send">
-                <span class="whiteish">continue</span>
+              <v-btn width="100" height="40" dense outlined rounded @click="send">
+                <span>Continue</span>
               </v-btn>
             </v-col>
           </v-row>

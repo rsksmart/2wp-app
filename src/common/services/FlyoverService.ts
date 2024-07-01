@@ -1,11 +1,12 @@
 import { BlockchainConnection, Network } from '@rsksmart/bridges-core-sdk';
 import {
   AcceptedPegoutQuote, Flyover,
-  LiquidityProvider, PegoutQuote,
+  LiquidityProvider, PegoutQuote, Quote,
+  AcceptedQuote,
 } from '@rsksmart/flyover-sdk';
 import * as constants from '@/common/store/constants';
 import {
-  LiquidityProvider2WP, QuotePegOut2WP,
+  LiquidityProvider2WP, QuotePegIn2WP, QuotePegOut2WP,
   SatoshiBig, WeiBig,
 } from '@/common/types';
 import { providers } from 'ethers';
@@ -24,6 +25,8 @@ export default class FlyoverService {
   private pegoutQuotes: PegoutQuote[] = [];
 
   private providerUrl?: string;
+
+  private peginQuotes: Quote[] = [];
 
   constructor(providerUrl?: string) {
     this.providerUrl = providerUrl;
@@ -138,7 +141,7 @@ export default class FlyoverService {
             },
             quoteHash: pegoutQuote.quoteHash,
           }));
-          const valids = pegoutQuotes.filter((quote: QuotePegOut2WP) => this.isValidQuote({
+          const valids = pegoutQuotes.filter((quote: QuotePegOut2WP) => this.isValidPegoutQuote({
             rskRefundAddress,
             btcRefundAddress,
             btcRecipientAddress,
@@ -244,7 +247,7 @@ export default class FlyoverService {
     return Promise.resolve(true);
   }
 
-  private isValidQuote(
+  private isValidPegoutQuote(
     quoteRequest: {
       rskRefundAddress: string;
       btcRefundAddress: string;
@@ -292,5 +295,137 @@ export default class FlyoverService {
     // TODO: Validate liquidityProviderRskAddress and lpBtcAddr
     // TODO: Check if nonce needs to be validated
     return true;
+  }
+
+  public getPeginQuotes(
+    rootstockRecipientAddress: string,
+    bitcoinRefundAddress: string,
+    valueToTransfer: SatoshiBig,
+  ):Promise<Array<QuotePegIn2WP>> {
+    return new Promise<Array<QuotePegIn2WP>>((resolve, reject) => {
+      this.flyover?.getQuotes({
+        rskRefundAddress: rootstockRecipientAddress,
+        bitcoinRefundAddress,
+        // TODO: this should be fixed in the SDK: valueToTransfer is in BTC
+        valueToTransfer: new WeiBig(valueToTransfer.toBTCString(), 'rbtc').toWeiBigInt(),
+        callContractArguments: '',
+        callEoaOrContractAddress: rootstockRecipientAddress,
+      })
+        .then((quotes: Quote[]) => {
+          this.peginQuotes = quotes;
+          const peginQuotes = quotes
+            .filter((quote: Quote) => this.isValidPeginQuote(quote, {
+              rootstockRecipientAddress,
+              bitcoinRefundAddress,
+              valueToTransfer,
+            }))
+            .map(({ quote, quoteHash }: Quote) => ({
+              quote: {
+                ...quote,
+                timeForDepositInSeconds: quote.timeForDeposit,
+                callFee: new SatoshiBig(new WeiBig(quote.callFee ?? 0, 'wei').toRBTCString(), 'btc'),
+                gasFee: new WeiBig(quote.gasFee ?? 0, 'wei'),
+                penaltyFee: new WeiBig(quote.penaltyFee ?? 0, 'wei'),
+                productFeeAmount: new SatoshiBig(new WeiBig(quote.productFeeAmount ?? 0, 'wei').toRBTCString(), 'btc'),
+                value: new SatoshiBig(new WeiBig(quote.value ?? 0, 'wei').toRBTCString(), 'btc'),
+              },
+              quoteHash,
+            }));
+          resolve(peginQuotes);
+        })
+        .catch((error: Error) => {
+          reject(new ServiceError(
+            'FlyoverService',
+            'getPeginQuotes',
+            'There was an error getting the options from the Flyover server',
+            error.message,
+          ));
+        });
+    });
+  }
+
+  private isValidPeginQuote(
+    { quote }: Quote,
+    quoteRequest: {
+      rootstockRecipientAddress: string;
+        bitcoinRefundAddress: string;
+        valueToTransfer: SatoshiBig;
+      },
+  ): boolean {
+    if (
+      new Date(quote.agreementTimestamp).getTime() <= 0
+      || quote.timeForDeposit <= 0
+    ) {
+      return false;
+    }
+
+    if (
+      quoteRequest.bitcoinRefundAddress !== quote.btcRefundAddr
+      || quoteRequest.rootstockRecipientAddress !== quote.rskRefundAddr
+      || new WeiBig(quoteRequest.valueToTransfer.toBTCString(), 'rbtc').toWeiBigInt() !== BigInt(quote.value)
+    ) {
+      return false;
+    }
+    if (quote.lbcAddr !== this.lbcAddress) {
+      return false;
+    }
+    return true;
+  }
+
+  public acceptPeginQuote(quoteHash: string): Promise<AcceptedQuote> {
+    return new Promise<AcceptedQuote>((resolve, reject) => {
+      const selectedQuote = this.peginQuotes
+        .find((quote: Quote) => quote.quoteHash === quoteHash);
+      if (selectedQuote) {
+        this.flyover?.acceptQuote(selectedQuote)
+          .then(resolve)
+          .catch((error: Error) => {
+            reject(new ServiceError(
+              'FlyoverService',
+              'acceptPeginQuote',
+              'There was an error accepting the option from the Flyover server',
+              error.message,
+            ));
+          });
+      } else {
+        reject(new ServiceError(
+          'FlyoverService',
+          'acceptPeginQuote',
+          'The selected option does not exist',
+          'Quote not found',
+        ));
+      }
+    });
+  }
+
+  public registerPeginQuote(
+    quoteHash: string,
+    signature: string,
+    btcRawTransaction: string,
+    partialMerkleTree: string,
+    blockheight: number,
+  ): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      const selectedQuote = this.peginQuotes
+        .find((quote: Quote) => quote.quoteHash === quoteHash);
+      if (selectedQuote) {
+        this.flyover?.registerPegin({
+          quote: selectedQuote,
+          signature,
+          btcRawTransaction,
+          partialMerkleTree,
+          height: blockheight,
+        })
+          .then((txHash: string) => resolve(txHash))
+          .catch((error: Error) => {
+            reject(new ServiceError(
+              'FlyoverService',
+              'registerPeginQuote',
+              'Somenthing went wrong with the registration of your transaction.',
+              error.message,
+            ));
+          });
+      }
+    });
   }
 }

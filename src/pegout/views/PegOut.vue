@@ -1,6 +1,7 @@
 <template>
   <v-container fluid class="exchange container max-width mx-6">
     <component :is="currentComponent"
+    :flyoverEnabled="flyoverEnabled"
     :confirmTxState="confirmTxState"
     @changePage="changePage"/>
   </v-container>
@@ -12,8 +13,8 @@ import * as constants from '@/common/store/constants';
 import PegOutForm from '@/pegout/components/PegOutForm.vue';
 import FlyoverPegout from '@/pegout/components/FlyoverPegout.vue';
 import { Machine } from '@/common/utils';
-import { useAction } from '@/common/store/helper';
-import { ApiService } from '@/common/services';
+import { useAction, useGetter } from '@/common/store/helper';
+import { Feature, FeatureNames } from '@/common/types';
 import Confirmation from '../components/Confirmation.vue';
 
 export default defineComponent({
@@ -24,7 +25,7 @@ export default defineComponent({
     FlyoverPegout,
   },
   setup() {
-    const currentComponent = ref('');
+    const currentComponent = ref('FlyoverPegout');
     const confirmTxState = ref<Machine<
       'idle'
       | 'loading'
@@ -33,6 +34,9 @@ export default defineComponent({
       > >(new Machine('idle'));
     const init = useAction('pegOutTx', constants.PEGOUT_TX_INIT);
     const initFlyover = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_INIT);
+    const getBalance = useAction('web3Session', constants.WEB3_SESSION_ADD_BALANCE);
+    const flyoverFeature = useGetter<(name: FeatureNames) => Feature>('web3Session', constants.SESSION_GET_FEATURE);
+    const flyoverEnabled = ref(false);
 
     function changePage(componentName: string) {
       currentComponent.value = componentName;
@@ -40,27 +44,21 @@ export default defineComponent({
     }
 
     onBeforeMount(() => {
-      ApiService.getFeatures()
-        .then((features) => {
-          const flag = features.find((feature) => feature.name === 'flyover_pegout');
-          if (flag?.value === 'enabled') {
-            initFlyover();
-            currentComponent.value = 'FlyoverPegout';
-          } else {
-            currentComponent.value = 'PegOutForm';
-          }
-        })
-        .catch(() => {
-          currentComponent.value = 'PegOutForm';
-        });
+      const feature = flyoverFeature.value(FeatureNames.FLYOVER_PEG_OUT);
+      if (feature?.value === 'enabled') {
+        initFlyover();
+        flyoverEnabled.value = true;
+      }
     });
 
     init();
+    getBalance();
 
     return {
       currentComponent,
       confirmTxState,
       changePage,
+      flyoverEnabled,
     };
   },
 });

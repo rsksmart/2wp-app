@@ -1,9 +1,10 @@
 import { MutationTree } from 'vuex';
 import * as constants from '@/common/store/constants';
-import { WeiBig } from '@/common/types';
+import { AppLocale, Feature, WeiBig } from '@/common/types';
 import { TransactionType, SessionState } from '@/common/types/session';
 import { getClearSessionState } from '@/common/utils';
 import { providers } from 'ethers';
+import i18n from '@/i18n';
 
 export const mutations: MutationTree<SessionState> = {
   [constants.SESSION_SET_ACCOUNT]: (state, account: string) => {
@@ -45,7 +46,15 @@ export const mutations: MutationTree<SessionState> = {
   [constants.SESSION_SET_TERMS_ACCEPTED]: (state, value) => {
     state.acceptedTerms = value;
   },
-  [constants.SESSION_SET_TERMS_AND_CONDITIONS_ENABLED]: (state, value) => {
-    state.termsAndConditionsEnabled = value;
+  [constants.SESSION_SET_LOCALE]: (state, newLocale: AppLocale) => {
+    if (newLocale && i18n.global.availableLocales.includes(newLocale)) {
+      i18n.global.locale.value = newLocale;
+    }
+  },
+  [constants.SESSION_SET_FEATURES]: (state, features: Array<Feature>) => {
+    state.features = features;
+  },
+  [constants.SESSION_SET_API_VERSION]: (state, apiVersion: string) => {
+    state.apiVersion = apiVersion;
   },
 };

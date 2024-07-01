@@ -32,6 +32,8 @@ module.exports = {
       ignoreUrls: true,
     }],
     'vuejs-accessibility/mouse-events-have-key-events': 'off',
+    'import/extensions': 'off',
+    'global-require': 'off',
   },
   overrides: [
     {

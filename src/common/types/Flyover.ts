@@ -48,3 +48,31 @@ export interface QuotePegOut2WP {
     quote: PegoutQuoteDTO2WP;
     quoteHash: string;
 }
+
+export interface PeginQuoteDTO2WP {
+    agreementTimestamp: number;
+    btcRefundAddr: string;
+    callFee: SatoshiBig;
+    callOnRegister: boolean;
+    confirmations: number;
+    contractAddr: string;
+    data: string;
+    fedBTCAddr: string;
+    gasFee: WeiBig;
+    gasLimit: number;
+    lbcAddr: string;
+    lpBTCAddr: string;
+    lpCallTime: number;
+    lpRSKAddr: string;
+    nonce: bigint;
+    penaltyFee: WeiBig;
+    productFeeAmount: SatoshiBig;
+    rskRefundAddr: string;
+    timeForDepositInSeconds: number;
+    value: SatoshiBig;
+}
+
+export interface QuotePegIn2WP {
+    quote: PeginQuoteDTO2WP;
+    quoteHash: string;
+}

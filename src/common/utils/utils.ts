@@ -56,6 +56,23 @@ export function getBtcAddressExplorerUrl(address: string) {
   return `${getBtcBaseExplorerUrl()}/address/${address}`;
 }
 
+export function getRskBaseExplorerUrl() {
+  let network = '';
+  if (EnvironmentAccessorService
+    .getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_TESTNET) {
+    network = '.testnet';
+  }
+  return `https://explorer${network}.rootstock.io`;
+}
+
+export function getRskTxExplorerUrl(txId: string) {
+  return `${getRskBaseExplorerUrl()}/tx/${txId}`;
+}
+
+export function getRskAddressExplorerUrl(address: string) {
+  return `${getRskBaseExplorerUrl()}/address/${address}`;
+}
+
 export function getEstimatedFee(): Promise<SatoshiBig> {
   return new Promise<SatoshiBig>((resolve, reject) => {
     const bridgeService = new BridgeService();
@@ -64,7 +81,7 @@ export function getEstimatedFee(): Promise<SatoshiBig> {
       bridgeService.getQueuedPegoutsCount(),
     ])
       .then(([nextPegoutCost, pegoutQueueCount]) => {
-        const estimatedFee = nextPegoutCost / (pegoutQueueCount + 1);
+        const estimatedFee = nextPegoutCost / (pegoutQueueCount + 1n);
         resolve(new SatoshiBig(estimatedFee, 'satoshi'));
       })
       .catch(reject);
@@ -85,11 +102,6 @@ export class Machine<States extends string> {
   public send(newValue: States) {
     this.value = newValue;
   }
-}
-
-export function getMainLogo() {
-  // eslint-disable-next-line global-require
-  return require('@/assets/logo-rootstock-black.png');
 }
 
 export function getTime(totalMinutes: number): string {
@@ -299,7 +311,11 @@ export function getCookie(cname: string) {
   return cookieValue;
 }
 
-export function setCookie(cookieName: string, cookieValue: number, expirationHours: number) {
+export function setCookie(
+  cookieName: string,
+  cookieValue: number | string,
+  expirationHours: number,
+) {
   const d = new Date();
   d.setTime(d.getTime() + (expirationHours * 60 * 60 * 1000));
   const expires = `expires=${d.toUTCString()}`;
@@ -322,4 +338,9 @@ export function awaitTimeout(ms: number) {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function promiseWithTimeout(promise: Promise<any>, timeoutMs: number) {
   return Promise.race([promise, awaitTimeout(timeoutMs)]);
+}
+
+export function truncateString(str: string) {
+  if (!str) return '';
+  return `${str.slice(0, 6)}...${str.slice(-4)}`;
 }

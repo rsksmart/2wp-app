@@ -34,6 +34,19 @@ function checkFromRoute(to: RouteLocationNormalized, from: RouteLocationNormaliz
   }
 }
 
+function checkRSKConnection(
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized,
+  next: NavigationGuardNext,
+) {
+  const store = useStore();
+  if (!store.getters[`web3Session/${constants.SESSION_IS_ACCOUNT_CONNECTED}`]) {
+    next({ name: 'Home' });
+  } else {
+    next();
+  }
+}
+
 const routes: Readonly<RouteRecordRaw[]> = [
   {
     path: '/',
@@ -56,13 +69,13 @@ const routes: Readonly<RouteRecordRaw[]> = [
     path: '/pegin',
     name: 'PegIn',
     component: () => import(/* webpackChunkName: "pegin" */ '../../pegin/views/PegIn.vue'),
-    beforeEnter: checkAcceptedTerms,
+    beforeEnter: [checkAcceptedTerms, checkRSKConnection],
   },
   {
     path: '/pegout',
     name: 'PegOut',
     component: () => import(/* webpackChunkName: "pegout" */ '../../pegout/views/PegOut.vue'),
-    beforeEnter: checkAcceptedTerms,
+    beforeEnter: [checkAcceptedTerms, checkRSKConnection],
   },
   {
     path: '/pegout/:type/:wallet/success',
@@ -84,6 +97,16 @@ const routes: Readonly<RouteRecordRaw[]> = [
     name: 'Success',
     component:
       () => import(/* webpackChunkName: "pegin-success" */ '../../pegin/views/Success.vue'),
+    beforeEnter: [checkFromRoute],
+  },
+  {
+    path: '/:type/success/tx/:txId',
+    name: 'SuccessTx',
+    component: () => import(/* webpackChunkName: "tx-success" */ '../views/SuccessTx.vue'),
+    props: (route) => ({
+      type: route.params.type,
+      txId: route.params.txId,
+    }),
     beforeEnter: [checkFromRoute],
   },
 ];

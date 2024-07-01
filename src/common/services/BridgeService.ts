@@ -84,8 +84,8 @@ export class BridgeService {
     });
   }
 
-  public getEstimatedFeesForNextPegOutEvent(): Promise<number> {
-    return new Promise<number>((resolve, reject) => {
+  public getEstimatedFeesForNextPegOutEvent(): Promise<bigint> {
+    return new Promise<bigint>((resolve, reject) => {
       this.bridgeContract.methods
         .getEstimatedFeesForNextPegOutEvent()
         .call()
@@ -94,8 +94,8 @@ export class BridgeService {
     });
   }
 
-  public getQueuedPegoutsCount(): Promise<number> {
-    return new Promise<number>((resolve, reject) => {
+  public getQueuedPegoutsCount(): Promise<bigint> {
+    return new Promise<bigint>((resolve, reject) => {
       this.bridgeContract.methods
         .getQueuedPegoutsCount()
         .call()

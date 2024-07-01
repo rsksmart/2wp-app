@@ -8,17 +8,21 @@
             "pegin": true,
             "pegout": true,
             "hover": false,
-            "btnClass": "btn-trezor"
+            "btnClass": "btn-trezor",
+            "kind": "Hardware Wallet",
+            "installation": "https://trezor.io/trezor-suite"
         },
         {
             "name": "Ledger",
-            "icon": "wallet-icons/ledger.png",
-            "iconWhite": "wallet-icons/ledger-white.png",
+            "icon": "wallet-icons/ledger.svg",
+            "iconWhite": "wallet-icons/ledger-white.svg",
             "constant": "WALLET_LEDGER",
             "pegin": true,
             "pegout": true,
             "hover": false,
-            "btnClass": "btn-ledger"
+            "btnClass": "btn-ledger",
+            "kind": "Hardware Wallet",
+            "installation": "https://www.ledger.com/ledger-live"
         },
         {
             "name": "Leather",
@@ -28,7 +32,9 @@
             "pegin": true,
             "pegout": false,
             "hover": false,
-            "btnClass": "btn-leather"
+            "btnClass": "btn-leather",
+            "kind": "Software Wallet",
+            "installation": "https://leather.io/install-extension"
         }
     ]
 }

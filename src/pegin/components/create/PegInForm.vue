@@ -1,56 +1,58 @@
 <template>
   <v-container fluid class="pa-0">
-    <v-col class="exchange-form pa-0 ma-0">
-      <v-row class="mx-0">
-        <v-col cols="1" class="pa-0 d-flex align-center" style="margin-left: -26px;">
-          <v-img position="center left"
-                 :src="require('@/assets/exchange/arrow.png')" height="40" contain/>
-        </v-col>
-        <v-col class="px-0">
-         <h1 class="justify-center text-left">Send {{environmentContext.getBtcTicker()}}.
-            Get {{environmentContext.getRbtcTicker()}}.</h1>
-        </v-col>
-      </v-row>
-      <v-row class="mx-0 mt-8 justify-space-between">
-        <v-col id="options-col" cols="8" lg="7" class="pa-0">
-          <peg-in-account-select/>
-          <v-divider />
-          <btc-input-amount :enable-button="true"/>
-          <v-divider />
-          <rsk-address-input @state="setRskAddressState"/>
-          <v-divider />
-          <btc-fee-select/>
-        </v-col>
-        <v-col id="summary-col" cols="4" lg="4">
-          <tx-summary-fixed
-            :summary="pegInFormSummary"
-            :initialExpand="true"
-            :type="typeSummary"
-            :orientation="orientationSummary"/>
-        </v-col>
-      </v-row>
-      <v-row class="mx-0 mt-12">
-        <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
-          <v-btn rounded variant="outlined" color="#000000" width="110" @click="back"
-                 :disabled="pegInFormState.matches(['loading', 'goingHome'])">
-            <span>Back</span>
-          </v-btn>
-        </v-col>
-        <v-col cols="10" class="d-flex justify-end ma-0 py-0 pl-0">
-          <v-btn v-if="!pegInFormState.matches(['loading'])" rounded
-                  variant="flat"
-                  color="black"
-                 @click="sendTx"
-                 :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])"
-                 :append-icon="mdiSendOutline"
-                 >
-            <template v-slot:append>
-              <v-icon color="white"></v-icon>
+    <v-row>
+      <v-btn variant="text"
+        :prepend-icon="mdiArrowLeft"
+        @click="back"
+        :disabled="pegInFormState.matches(['loading', 'goingHome'])">
+        Go Back
+      </v-btn>
+    </v-row>
+    <v-row>
+      <v-col cols="6">
+        <peg-in-account-select />
+      </v-col>
+    </v-row>
+    <btc-input-amount @getPeginQuotes="getQuotes"/>
+    <btc-fee-select/>
+    <v-row v-if="showOptions && !loadingQuotes">
+      <v-col class="mr-3">
+        <pegin-option-card
+          :option-type="peginType.POWPEG"
+          @selected-option="changeSelectedOption"
+          :selected="selected === peginType.POWPEG"
+        />
+      </v-col>
+      <v-col v-for="(quote, index) in peginQuotes" :key="index">
+        <pegin-option-card
+          :option-type="peginType.FLYOVER"
+          @selected-option="changeSelectedOption"
+          :selected="selected === peginType.FLYOVER"
+          :quote="quote"
+        />
+      </v-col>
+    </v-row>
+    <v-row v-else-if="loadingQuotes" class="py-8 justify-center">
+      <v-progress-circular
+        :size="250"
+        :width="18"
+        color="warning"
+        indeterminate>
+        Searching Options...
+      </v-progress-circular>
+    </v-row>
+      <v-row justify="end">
+        <v-col cols="auto">
+            <v-btn-rsk v-if="!pegInFormState.matches(['loading'])"
+            @click="createTx"
+            :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])"
+            >
+            <template #append>
+              <v-icon :icon="mdiArrowRight" />
             </template>
-            <span class="whiteish">Continue</span>
-          </v-btn>
-          <v-progress-circular v-if="pegInFormState.matches(['loading'])"
-                               indeterminate color="#000000" class="mr-10"/>
+            Continue to Summary
+          </v-btn-rsk>
+          <v-progress-circular v-else indeterminate />
         </v-col>
       </v-row>
       <v-row>
@@ -60,111 +62,168 @@
                                 @cancel="showWarningMessage = false"
         />
       </v-row>
-    </v-col>
   </v-container>
 </template>
 
 <script lang="ts">
-import { computed, ref, defineComponent } from 'vue';
-import { mdiSendOutline } from '@mdi/js';
+import {
+  computed, ref, defineComponent, onBeforeMount,
+} from 'vue';
+import { mdiArrowLeft, mdiArrowRight, mdiSendOutline } from '@mdi/js';
 import PegInAccountSelect from '@/pegin/components/create/PegInAccountSelect.vue';
 import BtcInputAmount from '@/pegin/components/create/BtcInputAmount.vue';
-import RskAddressInput from '@/pegin/components/create/RskAddressInput.vue';
-import BtcFeeSelect from '@/pegin/components/create/BtcFeeSelect.vue';
+import PeginOptionCard from '@/pegin/components/create/PeginOptionCard.vue';
 import { PegInTxState } from '@/common/types/pegInTx';
 import * as constants from '@/common/store/constants';
 import { Machine } from '@/common/utils';
-import SatoshiBig from '@/common/types/SatoshiBig';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { TxStatusType } from '@/common/types/store';
 import { TxSummaryOrientation } from '@/common/types/Status';
-import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
-import { NormalizedSummary } from '@/common/types';
-import { useGetter, useState } from '@/common/store/helper';
+import {
+  Feature, FeatureNames, QuotePegIn2WP, SatoshiBig, SessionState,
+} from '@/common/types';
+import {
+  useAction, useGetter, useState, useStateAttribute,
+} from '@/common/store/helper';
 import AddressWarningDialog from '@/common/components/exchange/AddressWarningDialog.vue';
+import BtcFeeSelect from '@/pegin/components/create/BtcFeeSelect.vue';
+import { BridgeService } from '@/common/services/BridgeService';
+import { FlyoverService } from '@/common/services';
 
 export default defineComponent({
   name: 'PegInForm',
   components: {
     PegInAccountSelect,
     BtcInputAmount,
-    RskAddressInput,
-    BtcFeeSelect,
-    TxSummaryFixed,
+    PeginOptionCard,
     AddressWarningDialog,
+    BtcFeeSelect,
   },
   setup(_, context) {
     const pegInFormState = ref<Machine<'loading' | 'goingHome' | 'fill'>>(new Machine('fill'));
     const showWarningMessage = ref(false);
-    const rskAddressState = ref('invalid');
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const typeSummary = TxStatusType.PEGIN;
     const orientationSummary = TxSummaryOrientation.VERTICAL;
+    const flyoverEnabled = ref(true);
+    const showOptions = ref(false);
+    const loadingQuotes = ref(false);
+    const selected = ref<constants.peginType>();
+    const selectedQuote = ref<QuotePegIn2WP>();
 
+    const account = useStateAttribute<string>('web3Session', 'account');
+    const flyoverFeature = useGetter<(name: FeatureNames) => Feature>('web3Session', constants.SESSION_GET_FEATURE);
     const pegInTxState = useState<PegInTxState>('pegInTx');
-
     const refundAddress = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_REFUND_ADDRESS);
-    const safeFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
-    const accountBalanceText = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_ACCOUNT_BALANCE_TEXT);
     const enoughBalanceSelectedFee = useGetter<boolean>('pegInTx', constants.PEGIN_TX_GET_ENOUGH_FEE_VALUE);
+    const getPeginQuotes = useAction('flyoverPegin', constants.FLYOVER_PEGIN_GET_QUOTES);
+    const setSelectedQuote = useAction('flyoverPegin', constants.FLYOVER_PEGIN_ADD_SELECTED_QUOTE);
+    const session = useState<SessionState>('web3Session');
+    const quotes = useStateAttribute<Record<number, QuotePegIn2WP[]>>('flyoverPegin', 'quotes');
+    const setPeginType = useAction('pegInTx', constants.PEGIN_TX_ADD_PEGIN_TYPE);
+    const selectedQuoteHash = useStateAttribute<string>('flyoverPegin', 'selectedQuoteHash');
+    const flyoverService = useStateAttribute<FlyoverService>('flyoverPegin', 'flyoverService');
 
     const isReadyToCreate = computed((): boolean => pegInTxState.value.isValidAmountToTransfer
         && !pegInTxState.value.loadingFee
-        && rskAddressState.value !== 'invalid'
-        && enoughBalanceSelectedFee.value
-        && pegInTxState.value.rskAddressSelected !== '');
+        && !!pegInTxState.value.rskAddressSelected
+        && pegInTxState.value.rskAddressSelected !== '0x'
+        && enoughBalanceSelectedFee.value);
 
-    const pegInFormSummary = computed((): NormalizedSummary => ({
-      amountFromString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
-      amountReceivedString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
-      fee: Number(safeFee.value.toBTCString()),
-      recipientAddress: pegInTxState.value.rskAddressSelected,
-      refundAddress: refundAddress.value,
-      selectedAccount: accountBalanceText.value,
-      federationAddress: pegInTxState.value.peginConfiguration.federationAddress,
-    }));
-
-    function setRskAddressState(state: string) {
-      rskAddressState.value = state;
-    }
+    const peginQuotes = computed(() => {
+      if (!flyoverEnabled.value) {
+        return [];
+      }
+      const quoteList: QuotePegIn2WP[] = [];
+      Object.values(quotes.value).forEach((providerQuotes) => {
+        providerQuotes.forEach((quote) => {
+          quoteList.push(quote);
+        });
+      });
+      return quoteList;
+    });
 
     function back() {
       pegInFormState.value.send('loading');
       context.emit('back');
     }
 
-    function createTx() {
+    async function createTx() {
       showWarningMessage.value = false;
       pegInFormState.value.send('loading');
-      context.emit('createTx', {
-        amountToTransferInSatoshi: pegInTxState.value.amountToTransfer,
-        refundAddress: refundAddress.value,
-        recipient: pegInTxState.value.rskAddressSelected,
-        feeLevel: pegInTxState.value.selectedFee,
-        accountType: pegInTxState.value.selectedAccount,
-      });
+      const bridgeService = new BridgeService();
+      if (selected.value === constants.peginType.POWPEG) {
+        context.emit('createTx', {
+          amountToTransferInSatoshi: pegInTxState.value.amountToTransfer,
+          refundAddress: refundAddress.value,
+          recipient: pegInTxState.value.rskAddressSelected || account.value,
+          feeLevel: pegInTxState.value.selectedFee,
+          accountType: pegInTxState.value.selectedAccount,
+          btcRecipient: await bridgeService.getFederationAddress(),
+          peginType: constants.peginType.POWPEG,
+        });
+      } else {
+        const acceptedQuote = await flyoverService.value.acceptPeginQuote(selectedQuoteHash.value);
+        context.emit('createTx', {
+          amountToTransferInSatoshi: selectedQuote.value?.quote.value
+            .plus(selectedQuote.value?.quote.productFeeAmount)
+            .plus(selectedQuote.value?.quote.callFee)
+            .plus(new SatoshiBig(selectedQuote.value?.quote.gasFee.toRBTCString(), 'btc')),
+          refundAddress: '',
+          recipient: '',
+          feeLevel: pegInTxState.value.selectedFee,
+          accountType: pegInTxState.value.selectedAccount,
+          btcRecipient: acceptedQuote.bitcoinDepositAddressHash,
+          peginType: constants.peginType.FLYOVER,
+        });
+      }
     }
 
-    function sendTx() {
-      if (rskAddressState.value === 'warning') showWarningMessage.value = true;
-      else createTx();
+    async function changeSelectedOption(selectedType: constants.peginType, quote?: QuotePegIn2WP) {
+      selected.value = selectedType;
+      await setPeginType(selected.value);
+      selectedQuote.value = quote;
+      setSelectedQuote(quote?.quoteHash);
     }
+
+    async function getQuotes() {
+      loadingQuotes.value = true;
+      getPeginQuotes({
+        rootstockRecipientAddress: session.value.account,
+        bitcoinRefundAddress: refundAddress.value,
+      })
+        .then(() => {
+          loadingQuotes.value = false;
+          showOptions.value = true;
+        });
+    }
+
+    onBeforeMount(() => {
+      const feature = flyoverFeature.value(FeatureNames.FLYOVER_PEG_IN);
+      flyoverEnabled.value = feature?.value === 'enabled';
+    });
 
     return {
       pegInFormState,
       showWarningMessage,
-      rskAddressState,
       environmentContext,
       typeSummary,
       orientationSummary,
-      setRskAddressState,
-      pegInFormSummary,
       back,
-      sendTx,
       isReadyToCreate,
       pegInTxState,
       createTx,
       mdiSendOutline,
+      mdiArrowLeft,
+      mdiArrowRight,
+      changeSelectedOption,
+      selected,
+      flyoverEnabled,
+      showOptions,
+      loadingQuotes,
+      getQuotes,
+      peginQuotes,
+      peginType: constants.peginType,
     };
   },
 });

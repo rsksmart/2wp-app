@@ -1,7 +1,8 @@
 import { createStore, StoreOptions } from 'vuex';
 import { RootState } from '@/common/types';
 import { status } from '@/status/store';
-import { pegInTx } from '@/pegin/store';
+import { pegInTx } from '@/pegin/store/PeginTx';
+import { flyoverPegin } from '@/pegin/store/FlyoverPegin';
 import { pegOutTx } from '@/pegout/store/pegoutTx';
 import { flyoverPegout } from '@/pegout/store/FlyoverPegout';
 import { web3Session } from './session';
@@ -22,6 +23,7 @@ const store: StoreOptions<RootState> = {
     status,
     pegOutTx,
     flyoverPegout,
+    flyoverPegin,
   },
 };
 

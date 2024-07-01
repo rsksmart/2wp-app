@@ -1,92 +1,83 @@
 <template>
-  <div id="option-2" class="py-4">
-    <v-row class="align-start mx-0">
-      <v-col cols="auto" class="pl-0">
-        <div v-bind:class="[focus ?
-              'number-filled' : 'number']">2</div>
+  <v-row no-gutters>
+    <v-col>
+      <span class="d-inline-block font-weight-bold my-3">
+        I will send
+      </span>
+    </v-col>
+    <v-col>
+      <span class="d-inline-block font-weight-bold my-3 ml-6">
+        I will receive
+      </span>
+    </v-col>
+  </v-row>
+  <v-row no-gutters align="center">
+    <v-col>
+      <v-text-field
+        hide-details
+        hide-spin-buttons
+        flat
+        variant="solo"
+        density="comfortable"
+        rounded="lg"
+        class="text-h4"
+        v-model="bitcoinAmountModel"
+        type="number"
+        step="0.00000001"
+        @keydown="blockLetterKeyDown"
+        @wheel.prevent
+        @focus="focus = true"
+        @blur="focus = false"
+        >
+          <template #prepend-inner>
+            <v-chip :prepend-icon="mdiBitcoin" class="btc-icon">
+              {{ environmentContext.getBtcTicker() }}
+            </v-chip>
+          </template>
+          <template #append-inner>
+            <div class="d-flex px-2 ga-1">
+              <v-chip variant="outlined" density="compact" @click="setMin">
+                {{ boundaries.minValue.toBTCString().slice(0,5) }} MIN
+              </v-chip>
+              <v-chip variant="outlined" density="compact" @click="setMax">
+                {{ boundaries.maxValue.toBTCStringBg().slice(0,5) }} MAX
+              </v-chip>
+            </div>
+          </template>
+        </v-text-field>
       </v-col>
-      <v-col class="pl-0">
-        <p v-bind:class="{'boldie': focus}">
-          Enter the amount you want to send:
-        </p>
-        <v-row class="ma-0 mt-4 pb-0 d-flex align-center">
-          <v-col cols="4" v-bind:class="[amountStyle]" class="input-box-outline">
-            <v-col cols="8" class="pa-0 pl-1">
-              <v-text-field solo hide-details full-width single-line flat
-                            variant="solo"
-                            density="compact"
-                            class="amount-input"
-                            placeholder="Add amount"
-                            v-model="bitcoinAmount" type="number"
-                            step="0.00000001"
-                            @keydown="blockLetterKeyDown"
-                            @focus="focus = true"
-                            @blur="focus = false"
-                            @update:modelValue="updateStore()"/>
-            </v-col>
-            <v-col cols="4" class="pa-0">
-              <v-row class="ma-0">
-                <v-col cols="5" class="pa-0">
-                  <v-img :src="require('@/assets/exchange/btc.png')" height="20" contain/>
-                </v-col>
-                <v-col cols="7" class="pa-0 d-flex align-center">
-                  <span>{{environmentContext.getBtcTicker()}}</span>
-                </v-col>
-              </v-row>
-            </v-col>
-          </v-col>
-          <v-col cols="1" class="d-flex justify-center">
-            <v-icon :icon="mdiArrowRight" color="#000"></v-icon>
-          </v-col>
-          <v-col cols="4" class="pa-0 input-box-flat">
-            <v-col cols="8" class="pa-0 pl-1">
-              <v-text-field
-              class="amount-input"
-              solo hide-details full-width single-line flat readonly
-              variant="plain"
-                            v-model="rbtcAmount" type="number"/>
-            </v-col>
-            <v-col cols="4" class="pa-0">
-              <v-row class="ma-0">
-                <v-col cols="5" class="pa-0">
-                  <v-img :src="require('@/assets/exchange/rbtc.png')" height="20" contain/>
-                </v-col>
-                <v-col cols="7" class="pa-0 d-flex align-center">
-                  <span>{{environmentContext.getRbtcTicker()}}</span>
-                </v-col>
-              </v-row>
-            </v-col>
-          </v-col>
-          <v-col/>
-        </v-row>
-        <v-col cols="4" class="pa-0">
-          <v-row class="derive-button ma-0 d-flex justify-center">
-            <v-btn
-              :disabled="!enableButton"
-              outlined rounded
-              width="100%" height="38"
-              @click="setMax" id="max-btn">
-              <span>
-                Use max available balance
-              </span>
-            </v-btn>
-          </v-row>
-        </v-col>
-        <v-row class="pt-1 ma-0" style="min-height: 17px;">
-          <span v-if="stepState === 'error'" class="yellowish">
-            {{amountErrorMessage}}
-          </span>
-        </v-row>
-      </v-col>
-    </v-row>
-  </div>
+      <v-icon class="mx-2" :icon="mdiArrowRight" color="bw-600" />
+    <v-col>
+      <div class="d-flex justify-space-between align-center flex-grow-1
+        bg-surface pa-3 rounded-lg border">
+      <div class="d-flex ga-2 align-center">
+        <v-chip class="pl-2 pr-3">
+          <v-avatar class="mr-2 rbtc-icon">
+            <v-img :src="require('@/assets/exchange/rbtc.png')" />
+          </v-avatar>
+          {{ environmentContext.getRbtcTicker() }}
+        </v-chip>
+        <span class="text-h4">
+          {{ bitcoinAmount }}
+        </span>
+      </div>
+    </div>
+    </v-col>
+  </v-row>
+  <v-row class="my-0" v-if="stepState === 'error'">
+    <v-col cols="6" align-self="start">
+      <v-alert :text="amountErrorMessage" class="pa-2"
+          type="warning" color="alert">
+        </v-alert>
+    </v-col>
+  </v-row>
 </template>
 
 <script lang="ts">
 import {
   computed, ref, watch, defineComponent,
 } from 'vue';
-import { mdiArrowRight } from '@mdi/js';
+import { mdiArrowRight, mdiBitcoin } from '@mdi/js';
 import SatoshiBig from '@/common/types/SatoshiBig';
 import {
   BtcAccount,
@@ -98,15 +89,11 @@ import EnvironmentContextProviderService from '@/common/providers/EnvironmentCon
 import { isBTCAmountValidRegex } from '@/common/utils';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import { FeeAmountData } from '@/common/types';
-import { pegInTx } from '@/pegin/store';
+import { pegInTx } from '@/pegin/store/PeginTx';
 
 export default defineComponent({
   name: 'BtcInputAmount',
-  props: {
-    enableButton: Boolean,
-  },
   setup(props, context) {
-    const enableButton = ref(props.enableButton);
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const focus = ref(false);
     const amountStyle = ref('');
@@ -120,7 +107,8 @@ export default defineComponent({
     const amountToTransfer = useStateAttribute<SatoshiBig>('pegInTx', 'amountToTransfer');
     const isValidAmountToTransfer = useStateAttribute<boolean>('pegInTx', 'isValidAmountToTransfer');
 
-    const setBtcAmount = useAction('pegInTx', constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER);
+    const setBtcAmountPeginTx = useAction('pegInTx', constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER);
+    const setBtcAmountFlyover = useAction('flyoverPegin', constants.FLYOVER_PEGIN_ADD_AMOUNT);
     const calculateTxFee = useAction('pegInTx', constants.PEGIN_TX_CALCULATE_TX_FEE);
     const setIsValidAmount = useAction('pegInTx', constants.PEGIN_TX_ADD_IS_VALID_AMOUNT);
     const selectedAccountBalance = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SELECTED_BALANCE);
@@ -150,10 +138,18 @@ export default defineComponent({
       return fee;
     });
 
-    const amountErrorMessage = computed(() => { // mayor rework
-      const feePlusAmount: SatoshiBig = safeAmount.value.plus(safeTxFee.value);
+    const boundaries = computed(() => {
       const minValue: SatoshiBig = new SatoshiBig(peginConfiguration.value.minValue, 'satoshi');
       const maxValue: SatoshiBig = new SatoshiBig(peginConfiguration.value.maxValue, 'satoshi');
+      return {
+        minValue,
+        maxValue,
+      };
+    });
+
+    const amountErrorMessage = computed(() => { // mayor rework
+      const feePlusAmount: SatoshiBig = safeAmount.value.plus(safeTxFee.value);
+      const { minValue, maxValue } = boundaries.value;
       if (selectedAccountBalance.value.eq('0') && !isValidAmountToTransfer.value) {
         return 'Selected account has no balance';
       }
@@ -189,8 +185,7 @@ export default defineComponent({
 
     const insufficientAmount = computed(() => {
       const feePlusAmount: SatoshiBig = safeAmount.value.plus(safeTxFee.value);
-      const minValue: SatoshiBig = new SatoshiBig(peginConfiguration.value.minValue, 'satoshi');
-      const maxValue: SatoshiBig = new SatoshiBig(peginConfiguration.value.maxValue, 'satoshi');
+      const { minValue, maxValue } = boundaries.value;
       if (safeAmount.value.lte('0')
         || feePlusAmount.gt(selectedAccountBalance.value)
         || safeAmount.value.lt(minValue)
@@ -203,6 +198,11 @@ export default defineComponent({
       return false;
     });
 
+    function setBtcAmount(amount: SatoshiBig) {
+      setBtcAmountPeginTx(amount);
+      setBtcAmountFlyover(amount);
+    }
+
     function blockLetterKeyDown(e: KeyboardEvent) {
       if (bitcoinAmount.value.toString().length > 15
         && !(e.key === 'Backspace'
@@ -214,6 +214,8 @@ export default defineComponent({
       if (e.key === 'e') e.preventDefault();
       if (e.key === '+') e.preventDefault();
       if (e.key === '-') e.preventDefault();
+      if (e.key === 'ArrowUp') e.preventDefault();
+      if (e.key === 'ArrowDown') e.preventDefault();
     }
 
     function checkStep() {
@@ -233,11 +235,41 @@ export default defineComponent({
         .catch(console.error);
     }
 
+    const isValidAmount = (amount: SatoshiBig) => {
+      const { minValue, maxValue } = peginConfiguration.value;
+      return isBTCAmountValidRegex(amount.toBTCString())
+          && amount.gte(minValue)
+          && amount.lte(maxValue);
+    };
+
+    const bitcoinAmountModel = computed({
+      get() {
+        return bitcoinAmount.value;
+      },
+      set(amount: string) {
+        bitcoinAmount.value = amount;
+        const amountInSats = new SatoshiBig(amount, 'btc');
+        if (isValidAmount(amountInSats)) {
+          setBtcAmount(amountInSats);
+          calculateTxFee();
+          context.emit('get-pegin-quotes');
+        }
+      },
+    });
+
     function fillMaxValueAvailable() {
-      const tempValue = selectedAccountBalance.value.minus(safeTxFee.value);
+      const maxAvailable = selectedAccountBalance.value
+        .cmp(boundaries.value.maxValue.plus(safeTxFee.value)) === -1
+        ? selectedAccountBalance.value : boundaries.value.maxValue;
+      const tempValue = maxAvailable.minus(safeTxFee.value);
       bitcoinAmount.value = tempValue.toBTCTrimmedString();
       setBtcAmount(tempValue);
       setIsValidAmount(selectedAccountBalance.value.gt('0'));
+    }
+
+    function setMin() {
+      const min = new SatoshiBig(peginConfiguration.value.minValue, 'satoshi');
+      bitcoinAmountModel.value = min.toBTCTrimmedString();
     }
 
     async function setMax() {
@@ -245,7 +277,7 @@ export default defineComponent({
       calculateTxFee()
         .then(() => {
           fillMaxValueAvailable();
-          updateStore();
+          bitcoinAmountModel.value = bitcoinAmount.value;
         })
         .catch(console.error);
     }
@@ -264,7 +296,6 @@ export default defineComponent({
 
     function accountChanged() {
       if (stepState.value !== 'unused') {
-        enableButton.value = true;
         checkStep();
         calculateTxFee();
         amountStyle.value = stepState.value === 'done' ? 'black-box' : 'yellow-box';
@@ -293,6 +324,10 @@ export default defineComponent({
       amountErrorMessage,
       mdiArrowRight,
       setMax,
+      setMin,
+      mdiBitcoin,
+      boundaries,
+      bitcoinAmountModel,
     };
   },
 });

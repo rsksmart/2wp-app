@@ -1,16 +1,12 @@
 <template>
-  <v-col>
-      <v-row justify="center" class="mt-1">
-        <pegout-progress-bar v-if="!isFlyover"/>
-        <tx-summary-fixed
-          :summary="summary"
-          :initialExpand="true"
-          :type="typeSummary"
-          :txId="txId"
-          :isRejected="isRejectedPegout"
-          :orientation="orientationSummary"/>
-      </v-row>
-  </v-col>
+  <v-container>
+    <v-row>
+      <status-progress-bar :isFlyover="isFlyover" :txWithErrorType="txWithErrorType"
+                           :txWithError="txWithError"/>
+    </v-row>
+      <status-summary :details="summary" :type="typeSummary" :txWithErrorType="txWithErrorType"
+                      :txWithError="txWithError" />
+  </v-container>
 </template>
 
 <script lang="ts">
@@ -18,30 +14,34 @@ import { computed, defineComponent } from 'vue';
 import {
   SatoshiBig,
   TxStatusType,
-  TxSummaryOrientation,
   PegoutStatus,
-  PegoutStatusDataModel, NormalizedSummary, FlyoverStatusModel,
+  PegoutStatusDataModel,
+  NormalizedSummary,
+  FlyoverStatusModel,
+  WeiBig,
 } from '@/common/types';
-import PegoutProgressBar from '@/common/components/status/PegoutProgressBar.vue';
+import StatusProgressBar from '@/common/components/status/StatusProgressBar.vue';
 import { useStateAttribute } from '@/common/store/helper';
-import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
+import StatusSummary from '@/common/components/status/StatusSummary.vue';
 
 export default defineComponent({
   name: 'TxPegout',
   components: {
-    PegoutProgressBar,
-    TxSummaryFixed,
+    StatusProgressBar,
+    StatusSummary,
   },
   props: {
     txId: String,
     isFlyover: Boolean,
+    txWithErrorType: Boolean,
+    txWithError: Boolean,
   },
   setup(props) {
     const typeSummary = TxStatusType.PEGOUT;
-    const orientationSummary = TxSummaryOrientation.HORIZONTAL;
 
     const txDetails = useStateAttribute<PegoutStatusDataModel | FlyoverStatusModel>('status', 'txDetails');
     const pegOutEstimatedFee = useStateAttribute<SatoshiBig>('status', 'pegOutEstimatedFee');
+    const calculatedGasFee = useStateAttribute<WeiBig>('pegOutTx', 'calculatedFee');
 
     const isRejectedPegout = computed(() => txDetails.value.status === PegoutStatus.REJECTED);
 
@@ -59,14 +59,18 @@ export default defineComponent({
 
     const txPegoutSummary = computed((): NormalizedSummary => {
       const status = txDetails.value as PegoutStatusDataModel;
+      const valueRequested = new SatoshiBig(status.valueRequestedInSatoshis, 'satoshi').toBTCTrimmedString();
+      const amountSent = new WeiBig(valueRequested, 'rbtc').plus(calculatedGasFee.value).toRBTCTrimmedString();
       return {
-        amountFromString: new SatoshiBig(status.valueRequestedInSatoshis, 'satoshi').toBTCTrimmedString(),
+        amountFromString: amountSent,
         amountReceivedString: amountToBeReceived.value,
+        gas: calculatedGasFee.value,
         fee: Number(new SatoshiBig(status.feeInSatoshisToBePaid ?? 0, 'satoshi').toBTCTrimmedString()),
         recipientAddress: status.btcRecipientAddress,
         senderAddress: status.rskSenderAddress,
         txId: status.rskTxHash ? status.rskTxHash : props.txId,
         estimatedFee: Number(pegOutEstimatedFee.value.toBTCTrimmedString()),
+        status: status.status,
       };
     });
 
@@ -74,14 +78,15 @@ export default defineComponent({
       const status = txDetails.value as FlyoverStatusModel;
       const amount = new SatoshiBig(status.amount, 'btc');
       const fee = new SatoshiBig(status.fee, 'btc');
-      const totalAmount = amount.plus(fee).toBTCTrimmedString();
+      const total = amount.plus(fee).toBTCTrimmedString();
+      const amountAsString = amount.toBTCTrimmedString();
       return {
-        amountFromString: totalAmount,
-        amountReceivedString: amount.toBTCTrimmedString(),
+        amountFromString: total,
+        amountReceivedString: amountAsString,
         fee: Number(fee.toBTCTrimmedString()),
         recipientAddress: status.recipientAddress,
         senderAddress: status.senderAddress,
-        txId: props.txId,
+        txId: status.txHash,
       };
     });
 
@@ -91,7 +96,6 @@ export default defineComponent({
 
     return {
       typeSummary,
-      orientationSummary,
       summary,
       isRejectedPegout,
     };

@@ -1,0 +1,44 @@
+.v-field--variant-solo {
+  border: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+}
+
+.v-field .v-chip {
+  --v-chip-height: 32px;
+}
+
+.v-field__prepend-inner {
+  padding-inline-start: 4px;
+}
+
+.v-select .v-field {
+  border: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+}
+.v-list-item__content {
+  flex-grow: 1;
+}
+.v-menu > .v-overlay__content > .v-list {
+  border: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+  box-shadow: none;
+  margin-top: 10px;
+}
+
+input[type=number].v-field__input, .v-select__selection {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.v-field--focused {
+  border: 1px solid rgba(var(--v-border-color));
+}
+
+.v-select--active-menu {
+  border: 1px solid rgba(var(--v-border-color));
+}
+
+.input-error .v-alert__prepend {
+  margin-inline-end: 6px;
+}
+.input-error .v-field {
+  border-color: rgba(var(--v-theme-warning));
+}

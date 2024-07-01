@@ -1,37 +1,40 @@
 <template>
   <v-dialog v-model="show" width="600" persistent>
-    <v-card class="container dialog px-4 align-center">
-      <v-row class="mx-0 mt-4 d-flex align-self-end">
-        <v-btn height="50" @click="closeDialog" variant="text">
-          <v-icon size="36" :icon="mdiCloseCircleOutline" color="#616161">
-          </v-icon>
-        </v-btn>
-      </v-row>
-      <v-row class="mx-0 mt-5 mb-3 d-flex justify-center">
-        <h2>{{environmentContext.getBtcTicker()}} TO
-        {{environmentContext.getRbtcTicker()}} CONVERSION REQUIRES THESE STEPS</h2>
-      </v-row>
-      <v-row class="mx-0 d-flex justify-center">
-        <v-col cols="10">
-          <p>Please take into consideration that the {{environmentContext.getBtcTicker()}} to
-          {{environmentContext.getRbtcTicker()}} conversion process requires 100
-            {{environmentContext.getBtcText()}} block confirmations.
-            It is estimated to take around 17 hours (can vary
-            depending on conditions of the {{environmentContext.getBtcText()}} network).</p>
-        </v-col>
-      </v-row>
-      <v-row class="mx-0 mb-3 mt-3">
-        <v-img
-        :src="imgSrc"
-        height="135" min-width="500"
-        />
-      </v-row>
-      <v-row class="mx-0 mt-8 mb-4 d-flex justify-center">
-        <v-checkbox
-          v-model="checkbox"
-          :label="`Don't show again`">
+    <v-card rounded="10px" class="align-center">
+      <v-container>
+        <v-row class="mx-0 mt-4 d-flex align-self-end">
+          <v-col>
+            <h2>{{environmentContext.getBtcTicker()}} TO
+              {{environmentContext.getRbtcTicker()}} CONVERSION REQUIRES THESE STEPS</h2>
+          </v-col>
+          <v-col cols="auto" class="pa-0">
+            <v-btn class="pa-0" height="50" @click="closeDialog" variant="text">
+              <v-icon size="36" :icon="mdiCloseCircleOutline" color="#616161" />
+            </v-btn>
+          </v-col>
+        </v-row>
+        <v-row class="mx-0 d-flex justify-center">
+          <v-col class="py-0">
+            <p>Please take into consideration that the {{environmentContext.getBtcTicker()}} to
+              {{environmentContext.getRbtcTicker()}} conversion process requires 100
+              {{environmentContext.getBtcText()}} block confirmations.
+              It is estimated to take around 17 hours (can vary
+              depending on conditions of the {{environmentContext.getBtcText()}} network).</p>
+          </v-col>
+        </v-row>
+        <v-row class="mx-0 mb-3 mt-3">
+          <v-img
+            :src="imgSrc"
+            height="135" min-width="500"
+          />
+        </v-row>
+        <v-row class="mx-0 mt-2 d-flex justify-center">
+          <v-checkbox
+            v-model="checkbox"
+            :label="`Don't show again`">
           </v-checkbox>
-      </v-row>
+        </v-row>
+      </v-container>
     </v-card>
   </v-dialog>
 </template>

@@ -1,18 +1,19 @@
 <template>
-  <v-app style="z-index: 0 !important; position: relative;" class="d-flex">
-    <mobile />
-    <div class="custom-background">
-      <top/>
-      <v-row class="d-flex justify-center ma-0">
+  <v-app class="h-screen">
+    <mobile v-if="smAndDown || mobile" />
+    <div class="d-flex flex-column h-100" v-else>
+      <top />
+      <div class="bg-background flex-grow-1">
         <router-view @update:showDialog="showTermsDialog" />
-      </v-row>
+      </div>
       <terms-dialog v-model:showDialog="showTermsAndConditions" />
-      <footer-rsk @update:showDialog="showTermsDialog" />
+      <footer-rsk class="flex-grow-0" @update:showDialog="showTermsDialog" />
     </div>
   </v-app>
 </template>
+
 <script lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onBeforeMount, ref } from 'vue';
 import Top from '@/common/components/layouts/Top.vue';
 import FooterRsk from '@/common/components/layouts/Footer.vue';
 import Mobile from '@/common/views/Mobile.vue';
@@ -21,6 +22,7 @@ import { EnvironmentAccessorService } from '@/common/services/enviroment-accesso
 import * as constants from '@/common/store/constants';
 import { useAction } from '@/common/store/helper';
 import { vuetifyNonce } from '@/common/plugins/vuetify';
+import { useDisplay } from 'vuetify';
 
 export default {
   name: 'App',
@@ -33,7 +35,9 @@ export default {
   setup() {
     let scriptTag: HTMLScriptElement;
     let hotjarScriptTag: HTMLScriptElement;
-    const enableTermsAndConditions = useAction('web3Session', constants.SESSION_ADD_TERMS_AND_CONDITIONS_ENABLED);
+    const { smAndDown, mobile } = useDisplay();
+    const getFeatures = useAction('web3Session', constants.SESSION_ADD_FEATURES);
+    const getBtcPrice = useAction('pegInTx', constants.PEGIN_TX_ADD_BITCOIN_PRICE);
     const showTermsAndConditions = ref(false);
     const contentSecurityPolicy = computed((): string => {
       const envVariables = EnvironmentAccessorService.getEnvironmentVariables();
@@ -89,13 +93,19 @@ export default {
       showTermsAndConditions.value = show;
     }
 
-    enableTermsAndConditions();
+    onBeforeMount(() => {
+      getFeatures();
+      getBtcPrice();
+    });
     appendHotjar();
     appendClarity();
     appendCSP();
+
     return {
       showTermsDialog,
       showTermsAndConditions,
+      smAndDown,
+      mobile,
     };
   },
 };

@@ -1,16 +1,16 @@
 <template>
-  <v-container fluid class="mt-0">
+  <v-container>
     <template v-if="!walletDataReady">
       <connect-device @continueToForm="startAskingForBalance"
                       :sendBitcoinState="sendBitcoinState"
                       :show-dialog="showConnectDeviceDialog"
       />
     </template>
-    <template v-if="walletDataReady">
+    <template v-else>
       <component :is="currentComponent"
                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
                  :txBuilder="txBuilder"
-                 :txId="txId" @back="backToConnectDevice"
+                 :txId="txId" @back="back"
                  @toPegInForm="toPegInForm"
                  :confirmTxState="confirmTxState"/>
     </template>
@@ -35,11 +35,10 @@
 import { ref, defineComponent } from 'vue';
 import { useRouter } from 'vue-router';
 import PegInForm from '@/pegin/components/create/PegInForm.vue';
-import ConfirmLedgerTransaction from '@/pegin/components/ledger/ConfirmLedgerTransaction.vue';
 import ConfirmTx from '@/pegin/components/create/ConfirmTx.vue';
 import * as constants from '@/common/store/constants';
 import {
-  SendBitcoinState, SatoshiBig, BtcWallet, Utxo,
+  SendBitcoinState, SatoshiBig, BtcWallet, Utxo, TxStatusType,
 } from '@/common/types';
 import { Machine, getClearPeginTxState } from '@/common/utils';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
@@ -49,16 +48,14 @@ import TxBuilder from '@/pegin/middleware/TxBuilder/TxBuilder';
 import DeviceErrorDialog from '@/common/components/exchange/DeviceErrorDialog.vue';
 import ConnectDevice from '@/common/components/exchange/ConnectDevice.vue';
 import TxErrorDialog from '@/common/components/exchange/TxErrorDialog.vue';
-import { BridgeService } from '@/common/services/BridgeService';
 import { TrezorError } from '@/common/types/exception/TrezorError';
 import LeatherTxBuilder from '@/pegin/middleware/TxBuilder/LeatherTxBuilder';
-import PeginTxService from '../../services/PeginTxService';
+import PeginTxService from '@/pegin/services/PeginTxService';
 
 export default defineComponent({
   name: 'SendBitcoin',
   components: {
     PegInForm,
-    ConfirmLedgerTransaction,
     ConfirmTx,
     ConnectDevice,
     DeviceErrorDialog,
@@ -104,22 +101,26 @@ export default defineComponent({
       amountToTransferInSatoshi,
       refundAddress,
       recipient,
+      btcRecipient,
+      peginType,
     }: {
       amountToTransferInSatoshi: SatoshiBig;
       refundAddress: string;
       recipient: string;
       accountType: string;
+      btcRecipient: string;
+      peginType: constants.peginType;
     }) {
-      const bridgeService = new BridgeService();
       const normalizedTx = PeginTxService.buildNormalizedTx(
         {
           amountToTransfer: amountToTransferInSatoshi,
-          federationAddress: await bridgeService.getFederationAddress(),
+          federationOrLPAddress: btcRecipient,
           refundAddress,
           rskRecipientAddress: recipient,
           changeAddress: getChangeAddress.value,
           totalFee: selectedFee.value,
           selectedUtxoList: selectedUtxoList.value,
+          peginType,
         },
       );
       await addNormalizedTx(normalizedTx);
@@ -139,7 +140,10 @@ export default defineComponent({
         showTxErrorDialog.value = true;
         txId.value = txHash;
       } else if (txHash) {
-        router.push({ name: 'Success', params: { txId: txHash, wallet: currentWallet.value } });
+        router.push({
+          name: 'SuccessTx',
+          params: { txId: txHash, type: (TxStatusType.PEGIN).toLowerCase() },
+        });
       }
     }
 
@@ -239,6 +243,7 @@ export default defineComponent({
       txBuilder,
       txId,
       backToConnectDevice,
+      back,
       toPegInForm,
       confirmTxState,
       showErrorDialog,

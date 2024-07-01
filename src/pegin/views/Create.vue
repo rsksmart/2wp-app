@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import * as constants from '@/common/store/constants';
 import { useAction } from '@/common/store/helper';
@@ -18,12 +18,17 @@ export default defineComponent({
   },
   setup() {
     const clear = useAction('pegInTx', constants.PEGIN_TX_CLEAR_STATE);
+    const initFlyover = useAction('flyoverPegin', constants.FLYOVER_PEGIN_INIT);
     const router = useRouter();
 
     function back() {
       clear();
       router.push({ name: 'PegIn' });
     }
+
+    onMounted(() => {
+      initFlyover();
+    });
 
     return {
       back,

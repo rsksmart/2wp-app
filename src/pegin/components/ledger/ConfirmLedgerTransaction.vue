@@ -1,231 +1,284 @@
 <template>
-  <div class="transactions">
-    <v-row class="mx-0 d-flex justify-center">
-      <v-col cols="10" lg="8" xl="6" class="d-flex justify-center">
-        <h1 class="text-center">Confirm transaction on your device</h1>
-      </v-col>
+  <v-container>
+    <v-row>
+      <p>Confirm Transaction on your Ledger Wallet</p>
     </v-row>
-    <v-row class="mx-0 my-8 d-flex justify-center">
-      <p class="text-center">
-        Make sure the amount, address and transaction fee displayed
-        on the Ledger device are correct.
-        <br>
-        To prevent malware attacks, double-check the address with the recipient.
-        <br>
-        Press <strong>Send</strong> when you finish.
-      </p>
-    </v-row>
-    <v-row id="instructions-ledger" justify="center" class="ma-0">
-      <v-col id="instruction-1" cols="3" xl="3">
-        <v-row justify="center" class="ma-0">
-          <v-img :src="require('@/assets/exchange/rootstock_black.png')" height="40" contain/>
-        </v-row>
-        <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center">
-            <span class="number">1</span>
-            Confirm on {{environmentContext.getRskText()}}
-          </h4>
-        </v-row>
-      </v-col>
-      <v-col id="instruction-2" cols="3" xl="3">
-        <v-row justify="center" class="ma-0">
-          <v-img :src="require('@/assets/exchange/trezor/transfer.png')" height="40" contain/>
-        </v-row>
-        <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center"><span class="number">2</span>Confirm funds transfer</h4>
-        </v-row>
-      </v-col>
-      <v-col v-if="parseFloat(changeAmount) > 0" id="instruction-3" cols="3" xl="3">
-        <v-row justify="center" class="ma-0">
-          <v-img :src="require('@/assets/exchange/trezor/change.png')" height="40" contain/>
-        </v-row>
-        <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center"><span class="number">3</span>Confirm change address</h4>
-        </v-row>
-      </v-col>
-      <v-col id="instruction-4" cols="3" xl="3">
-        <v-row justify="center" class="ma-0">
-          <v-img :src="require('@/assets/exchange/trezor/fee.png')" height="40" contain/>
-        </v-row>
-        <v-row class="mx-0 d-flex justify-center">
-          <h4 class="text-center">
-            <span class="number">
-              {{ parseFloat(changeAmount) > 0 ? 4 : 3 }}
-            </span>
-            Confirm transaction fee
-          </h4>
-        </v-row>
-      </v-col>
-    </v-row>
-    <v-row justify="center" class="ma-0">
-      <v-col cols="3" >
-        <fieldset class="confirmation-box">
-          <legend class="px-4">See on Ledger</legend>
-          <v-row justify="center" class="mt-5 mx-0 text-center">Review output #1</v-row>
-          <v-row justify="center" class="mt-5 mx-0 text-center">Amount: 0</v-row>
-          <v-row justify="center" align="start" class="mt-5 mx-0 text-center" >
-            <span>
-              OP_RETURN
-            </span>
-            <v-tooltip right>
-              <template v-slot:activator="{props}">
-                <v-icon small color="black" v-bind="props.attrs" v-on="props.on" class="ml-2">
-                  mdi-information
-                </v-icon>
-              </template>
-              <p class="tooltip-form mb-0">
-                The OP_RETURN is an output with information required for the
-                {{environmentContext.getRskText()}} network.
+    <v-row>
+      <v-col cols="3" class="pl-0">
+        <v-card variant="outlined" color="bw-400">
+          <v-container>
+            <v-row justify="start" class="mt-2">
+              <v-img :src="require('@/assets/exchange/steps/0.svg')"
+                     position="left top" height="180" contain/>
+            </v-row>
+            <v-row no-gutters>
+              <p class="text-h5 bg-orange pa-1 mb-1">
+                Your
               </p>
-            </v-tooltip>
-          </v-row>
-          <v-row justify="center" class="mt-5 mb-3 mx-0">Accept</v-row>
-        </fieldset>
+            </v-row>
+            <v-row no-gutters class="mb-16">
+              <p class="text-h5 bg-orange pa-1">
+                Transaction
+              </p>
+            </v-row>
+            <v-row no-gutters>
+              <p class="text-h6 text-off-white">
+                See on
+              </p>
+            </v-row>
+            <v-row no-gutters class="mb-5">
+              <p class="text-h6 text-off-white">
+                Ledger
+              </p>
+            </v-row>
+            <v-row no-gutters>
+              <v-text-field readonly hide-details
+                            class="text-bw-400"
+                            variant="outlined"
+                            density="compact"
+                            model-value="OP_RETURN" />
+            </v-row>
+            <v-row no-gutters>
+              <v-text-field readonly hide-details class="my-2 text-bw-400"
+                            variant="outlined"
+                            density="compact"
+                            model-value="Amount: 0 RBTC" />
+            </v-row>
+            <v-row no-gutters>
+              <v-textarea hide-details auto-grow readonly
+                          class="text-bw-400"
+                          variant="outlined" density="compact" rows="1"
+                          :model-value="opReturnData" />
+            </v-row>
+            <v-row no-gutters>
+              <v-text-field readonly hide-details class="mt-2 white"
+                            bg-color="rgba(243, 139, 1, 0.4)" base-color="orange"
+                            variant="outlined"
+                            density="compact"
+                            model-value="Press Confirm on Ledger">
+                <template v-slot:prepend-inner>
+                  <v-icon color="white">
+                    {{ mdiInformation }}
+                  </v-icon>
+                </template>
+              </v-text-field>
+            </v-row>
+          </v-container>
+        </v-card>
       </v-col>
-      <v-col cols="3" >
-        <fieldset class="confirmation-box">
-          <legend class="px-4">See on Ledger</legend>
-          <v-row justify="center" class="mt-5 mx-0 text-center">Review output #2</v-row>
-          <v-row justify="center" class="mt-5 mx-0 text-center">
-            Amount: {{pegInTxState.amountToTransfer.toBTCTrimmedString()}}
-          </v-row>
-          <v-row justify="center" class="mt-5 mx-0 d-none d-lg-block">
-            <v-col class="pa-0 d-flex flex-column align-center">
-              <span v-for="value in splitString(rskFederationAddress)" :key="value">
-                {{ value }}
-              </span>
-            </v-col>
-          </v-row>
-          <v-row justify="center" class="mt-5 mx-0 d-lg-none">
-            <span>
-              {{cropAddress(rskFederationAddress)}}
-            </span>
-          </v-row>
-          <v-row justify="center" class="mt-5 mb-3 mx-0">Accept</v-row>
-        </fieldset>
+      <v-col cols="3">
+        <v-card variant="outlined" color="bw-400">
+          <v-container>
+            <v-row justify="start" class="mt-2">
+              <v-img :src="require('@/assets/exchange/steps/1.svg')"
+                     position="left top" height="180" contain/>
+            </v-row>
+            <v-row no-gutters>
+              <p class="text-h5 bg-teal pa-1 mb-1">
+                Funds
+              </p>
+            </v-row>
+            <v-row no-gutters class="mb-16">
+              <p class="text-h5 bg-teal pa-1">
+                Transfer
+              </p>
+            </v-row>
+            <v-row no-gutters>
+              <p class="text-h6 text-off-white">
+                See on
+              </p>
+            </v-row>
+            <v-row no-gutters class="mb-5">
+              <p class="text-h6 text-off-white">
+                Ledger
+              </p>
+            </v-row>
+            <v-row no-gutters>
+              <v-text-field readonly hide-details
+                            class="text-bw-400"
+                            variant="outlined"
+                            density="compact"
+                            :model-value="rskFederationAddress" />
+            </v-row>
+            <v-row no-gutters>
+              <v-text-field readonly hide-details class="my-2 text-bw-400"
+                            variant="outlined"
+                            density="compact"
+                            :model-value="amountTransferString" />
+            </v-row>
+            <v-row no-gutters>
+              <v-textarea hide-details no-resize auto-grow readonly
+                          class="text-bw-400"
+                          variant="outlined" density="compact" rows="1"
+                          model-value="" />
+            </v-row>
+            <v-row no-gutters>
+              <v-text-field readonly hide-details class="mt-2 white"
+                            bg-color="rgba(9, 243, 198, 0.4)" base-color="teal"
+                            variant="outlined"
+                            density="compact"
+                            model-value="Press Confirm on Ledger">
+                <template v-slot:prepend-inner>
+                  <v-icon color="white">
+                    {{ mdiInformation }}
+                  </v-icon>
+                </template>
+              </v-text-field>
+            </v-row>
+          </v-container>
+        </v-card>
       </v-col>
-      <v-col v-if="parseFloat(changeAmount) > 0" cols="3" >
-        <fieldset class="confirmation-box">
-          <legend class="px-4">See on Ledger</legend>
-          <v-row justify="center" class="mt-5 mx-0 text-center">Review output #3</v-row>
-          <v-row justify="center" class="mt-5 mx-0 text-center">Amount: {{changeAmount}}</v-row>
-          <v-row justify="center" class="mt-5 mx-0 d-none d-lg-block">
-            <v-col class="pa-0 d-flex flex-column align-center">
-              <span v-for="value in splitString(changeAddress)" :key="value">
-                {{ value }}
-              </span>
-            </v-col>
-          </v-row>
-          <v-row justify="center" class="mt-5 mx-0 d-lg-none">
-            <span>
-              {{cropAddress(changeAddress)}}
-            </span>
-          </v-row>
-          <v-row justify="center" class="mt-5 mb-3 mx-0">Accept</v-row>
-        </fieldset>
+      <v-col cols="3">
+        <v-card variant="outlined" color="bw-400">
+          <v-container>
+            <v-row justify="start" class="mt-2">
+              <v-img :src="require('@/assets/exchange/steps/2.svg')"
+                     position="left top" height="180" contain/>
+            </v-row>
+            <v-row no-gutters>
+              <p class="text-h5 bg-green pa-1 mb-1">
+                Change
+              </p>
+            </v-row>
+            <v-row no-gutters class="mb-16">
+              <p class="text-h5 bg-green pa-1">
+                Address
+              </p>
+            </v-row>
+            <v-row no-gutters>
+              <p class="text-h6 text-off-white">
+                See on
+              </p>
+            </v-row>
+            <v-row no-gutters class="mb-5">
+              <p class="text-h6 text-off-white">
+                Ledger
+              </p>
+            </v-row>
+            <v-row no-gutters>
+              <v-text-field readonly hide-details
+                            class="text-bw-400"
+                            variant="outlined"
+                            density="compact"
+                            :model-value="changeAddress" />
+            </v-row>
+            <v-row no-gutters>
+              <v-text-field readonly hide-details class="my-2 text-bw-400"
+                            variant="outlined"
+                            density="compact"
+                            :model-value="changeAmountString" />
+            </v-row>
+            <v-row no-gutters>
+              <v-textarea hide-details no-resize auto-grow readonly
+                          class="text-bw-400"
+                          variant="outlined" density="compact" rows="1"
+                          model-value="" />
+            </v-row>
+            <v-row no-gutters>
+              <v-text-field readonly hide-details class="mt-2 white"
+                            bg-color="rgba(116, 189, 1, 0.4)" base-color="green"
+                            variant="outlined"
+                            density="compact"
+                            model-value="Press Confirm on Ledger">
+                <template v-slot:prepend-inner>
+                  <v-icon color="white">
+                    {{ mdiInformation }}
+                  </v-icon>
+                </template>
+              </v-text-field>
+            </v-row>
+          </v-container>
+        </v-card>
       </v-col>
-      <v-col cols="3" >
-        <fieldset class="confirmation-box">
-          <legend class="px-4">See on Ledger</legend>
-          <v-row justify="center" class="mt-5 mx-0 text-center">Confirm transaction</v-row>
-          <v-row justify="center" class="mt-5 mx-0 text-center" >
-            Fees: {{safeFee.toBTCTrimmedString()}}
-          </v-row>
-          <v-row justify="center" class="mt-4 mx-0 text-center">
-            Please make sure to check that the fee this transaction is paying
-            is along your expectations.
-          </v-row>
-          <v-row justify="center" class="mt-5 mb-3 mx-0">Accept and send</v-row>
-        </fieldset>
+      <v-col cols="3">
+        <v-card variant="outlined" color="bw-400">
+          <v-container>
+            <v-row justify="start" class="mt-2">
+              <v-img :src="require('@/assets/exchange/steps/3.svg')"
+                     position="left top" height="180" contain/>
+            </v-row>
+            <v-row no-gutters>
+              <p class="text-h5 bg-pink pa-1 mb-1">
+                Transaction
+              </p>
+            </v-row>
+            <v-row no-gutters class="mb-16">
+              <p class="text-h5 bg-pink pa-1">
+                Fee
+              </p>
+            </v-row>
+            <v-row no-gutters>
+              <p class="text-h6 text-off-white">
+                See on
+              </p>
+            </v-row>
+            <v-row no-gutters class="mb-5">
+              <p class="text-h6 text-off-white">
+                Ledger
+              </p>
+            </v-row>
+            <v-row no-gutters>
+              <v-text-field readonly hide-details
+                            class="text-bw-400"
+                            variant="outlined"
+                            density="compact"
+                            model-value="" />
+            </v-row>
+            <v-row no-gutters>
+              <v-text-field readonly hide-details class="my-2 text-bw-400"
+                            variant="outlined"
+                            density="compact"
+                            :model-value="feeString" />
+            </v-row>
+            <v-row no-gutters>
+              <v-textarea hide-details no-resize auto-grow readonly
+                          class="text-bw-400"
+                          variant="outlined" density="compact" rows="1"
+                          model-value="" />
+            </v-row>
+            <v-row no-gutters>
+              <v-text-field readonly hide-details class="mt-2 white"
+                            bg-color="rgba(243, 108, 215, 0.4)" base-color="pink"
+                            variant="outlined"
+                            density="compact"
+                            model-value="Press Confirm on Ledger">
+                <template v-slot:prepend-inner>
+                  <v-icon color="white">
+                    {{ mdiInformation }}
+                  </v-icon>
+                </template>
+              </v-text-field>
+            </v-row>
+          </v-container>
+        </v-card>
       </v-col>
     </v-row>
-    <v-divider/>
-    <v-row class="mx-0 my-8">
-        <tx-summary-fixed
-          :summary="confirmLedgerTxSummary"
-          :initialExpand="true"
-          :type='typeSummary'
-          :orientation='orientationSummary'/>
-    </v-row>
-    <v-row class="mx-0 my-8">
-      <advanced-data :rawTx="rawTx" :initial-expand="false"/>
-    </v-row>
-    <v-row v-if="confirmTxState.matches(['idle', 'error', 'goingHome'])" class="ma-0">
-      <v-col cols="2" class="d-flex justify-start ma-0 py-0">
-        <v-btn rounded variant="outlined" color="#000000" width="110" @click="toPegInForm"
-               :disabled="confirmTxState.matches(['error', 'goingHome', 'loading'])">
-          <span>Back</span>
-        </v-btn>
-      </v-col>
-      <v-col cols="10" class="d-flex justify-end ma-0 py-0">
-        <v-btn rounded color="#000000" width="110" @click="toTrackId"
-               :disabled="confirmTxState.matches(['error', 'goingHome', 'loading'])">
-          <span class="whiteish">Send</span>
-        </v-btn>
-      </v-col>
-    </v-row>
-    <v-row v-if="confirmTxState.matches(['loading'])" class="mx-0 d-flex justify-center">
-      <v-col>
-        <v-row class="mx-0 mb-5 d-flex justify-center">
-          See your Ledger device to confirm your transaction!
-        </v-row>
-        <v-row class="mx-0 mb-5 mt-10 d-flex justify-center">
-          <v-progress-circular indeterminate :size="60" :width="8" color="#000000" />
-        </v-row>
-      </v-col>
-    </v-row>
-  </div>
+  </v-container>
 </template>
 
 <script lang="ts">
-import {
-  computed, PropType, ref, defineComponent, onBeforeMount,
-} from 'vue';
-import {
-  LedgerTx, LedgerSignedTx, NormalizedSummary,
-} from '@/common/types';
-import ApiService from '@/common/services/ApiService';
+import { computed, defineComponent } from 'vue';
 import SatoshiBig from '@/common/types/SatoshiBig';
-import LedgerTxBuilder from '@/pegin/middleware/TxBuilder/LedgerTxBuilder';
-import { WalletService } from '@/common/services';
-import { addTag, Machine } from '@/common/utils';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { PegInTxState } from '@/common/types/pegInTx';
 import * as constants from '@/common/store/constants';
-import { TxStatusType } from '@/common/types/store';
-import { TxSummaryOrientation } from '@/common/types/Status';
-import TxSummaryFixed from '@/common/components/exchange/TxSummaryFixed.vue';
-import { useGetter, useState, useStateAttribute } from '@/common/store/helper';
-import AdvancedData from '@/common/components/exchange/AdvancedData.vue';
+import { useGetter, useState } from '@/common/store/helper';
+import { mdiInformation } from '@mdi/js';
 
 export default defineComponent({
   name: 'ConfirmLedgerTransaction',
-  components: {
-    TxSummaryFixed,
-    AdvancedData,
-  },
-  props: {
-    confirmTxState: {
-      type: Object as PropType<Machine< 'idle' | 'loading' | 'error' >>,
-      required: true,
-    },
-    txBuilder: Object as PropType<LedgerTxBuilder>,
-  },
-  setup(props, context) {
-    const txId = ref('');
-    const rawTx = ref('');
-    const typeSummary = TxStatusType.PEGIN;
-    const orientationSummary = TxSummaryOrientation.HORIZONTAL;
+  setup() {
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-
     const pegInTxState = useState<PegInTxState>('pegInTx');
-    const walletService = useGetter<WalletService>('pegInTx', constants.PEGIN_TX_GET_WALLET_SERVICE);
-    const refundAddress = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_REFUND_ADDRESS);
-    const accountBalanceText = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_ACCOUNT_BALANCE_TEXT);
     const safeFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
-    const sessionId = useStateAttribute<string>('pegInTx', 'sessionId');
+    const rskFederationAddress = computed(():string => pegInTxState.value
+      .normalizedTx.outputs[1]?.address?.trim()
+      ?? `${environmentContext.getBtcText()} Powpeg address not found`);
 
-    const rskFederationAddress = computed(():string => pegInTxState.value.normalizedTx.outputs[1]?.address?.trim() ?? `${environmentContext.getBtcText()} Powpeg address not found`);
+    const opReturnData = computed((): string => {
+      const [opReturnOutput] = pegInTxState.value.normalizedTx.outputs;
+      return opReturnOutput?.op_return_data ?? '';
+    });
 
     const changeAddress = computed((): string => {
       const [, , change] = pegInTxState.value.normalizedTx.outputs;
@@ -235,123 +288,28 @@ export default defineComponent({
       return 'Change address not found';
     });
 
-    const changeAmount = computed(() => {
+    const changeAmountString = computed(() => {
       const changeAmountInSB = new SatoshiBig(pegInTxState.value.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
-      return changeAmountInSB.toBTCTrimmedString();
+      return `Amount: ${changeAmountInSB.toBTCTrimmedString()} ${environmentContext.getBtcTicker()}`;
     });
 
-    const addressType = computed(() => accountBalanceText.value?.split('-')[0].trim() ?? '');
+    const amountTransferString = computed(() => `Amount: ${pegInTxState
+      .value.amountToTransfer.toBTCTrimmedString()}  ${environmentContext.getBtcTicker()}`);
 
-    const confirmLedgerTxSummary = computed((): NormalizedSummary => ({
-      amountFromString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
-      amountReceivedString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
-      fee: Number(safeFee.value.toBTCTrimmedString()),
-      recipientAddress: pegInTxState.value.rskAddressSelected,
-      refundAddress: refundAddress.value,
-      selectedAccount: accountBalanceText.value,
-      federationAddress: pegInTxState.value.peginConfiguration.federationAddress,
-    }));
-
-    async function toTrackId() {
-      let txError = '';
-      props.confirmTxState?.send('loading');
-      await walletService.value.isConnected()
-        .then((isConnected) => {
-          if (!isConnected) {
-            walletService.value.reconnect().then(() => walletService.value.stopAskingForBalance());
-          } else {
-            walletService.value.stopAskingForBalance();
-          }
-        })
-        .then(() => {
-          if (pegInTxState.value.selectedAccount && props.txBuilder) {
-            return props.txBuilder
-              .buildTx(pegInTxState.value.normalizedTx, pegInTxState.value.selectedAccount);
-          }
-          throw new Error('The account type is not set');
-        })
-        .then((ledgerTx: LedgerTx) => walletService.value.sign(ledgerTx) as Promise<LedgerSignedTx>)
-        .then((tx: LedgerSignedTx) => ApiService
-          .broadcast(tx.signedTx))
-        .then((id) => {
-          txId.value = id;
-          ApiService.registerTx({
-            sessionId: sessionId.value,
-            txHash: txId.value,
-            type: TxStatusType.PEGIN.toLowerCase(),
-            value: Number(pegInTxState.value.amountToTransfer.toBTCTrimmedString()),
-            wallet: constants.WALLET_NAMES.LEDGER.short_name,
-            addressType: addressType.value,
-            fee: Number(safeFee.value.toBTCTrimmedString()),
-          });
-        })
-        .catch((err) => {
-          props.confirmTxState?.send('error');
-          const stringError = JSON.stringify(err);
-          switch (err.statusCode) {
-            case constants.LEDGER_STATUS_CODES.DEVICE_LOCKED:
-              txError = 'Please unlock your Ledger device.';
-              break;
-            case constants.LEDGER_STATUS_CODES.TRANSACTION_CANCELLED_BY_USER:
-              txError = 'Transaction cancelled by user.';
-              break;
-            case constants.LEDGER_STATUS_CODES.USER_EXITED_APP:
-              txError = 'Please access the correct app and try again.';
-              break;
-            default:
-              if (stringError.includes('No device selected')) {
-                txError = 'There are no device selected, please check your wallet connection, unlock your device and try again.';
-              } else {
-                txError = err.message;
-              }
-              break;
-          }
-        });
-      context.emit('successConfirmation', [txError, txId.value]);
-    }
-
-    function toPegInForm() {
-      props.confirmTxState?.send('loading');
-      context.emit('toPegInForm');
-    }
-
-    function cropAddress(address: string):string {
-      return `${address.substr(0, 6)}...${address.substr(address.length - 6, address.length)}`;
-    }
-
-    function splitString(s: string): string[] {
-      return s.match(/.{1,16}/g) ?? [];
-    }
-
-    function appendClarityScript(): void {
-      addTag(constants.OPERATION_TYPE, TxStatusType.PEGIN);
-      addTag(constants.WALLET_NAME, constants.WALLET_NAMES.LEDGER.long_name);
-      const amountFromString = pegInTxState.value.amountToTransfer.toBTCTrimmedString();
-      addTag(constants.OPERATION_AMOUNT, `${amountFromString}`);
-    }
-
-    onBeforeMount(appendClarityScript);
-
-    props.txBuilder?.getUnsignedRawTx(pegInTxState.value.normalizedTx)
-      .then((tx: string) => {
-        rawTx.value = tx;
-      });
+    const feeString = computed(() => `Fee: ${safeFee
+      .value.toBTCTrimmedString()}  ${environmentContext.getBtcTicker()}`);
 
     return {
       environmentContext,
-      changeAmount,
+      changeAmountString,
       pegInTxState,
-      splitString,
       rskFederationAddress,
-      cropAddress,
       changeAddress,
       safeFee,
-      confirmLedgerTxSummary,
-      typeSummary,
-      orientationSummary,
-      rawTx,
-      toPegInForm,
-      toTrackId,
+      mdiInformation,
+      opReturnData,
+      amountTransferString,
+      feeString,
     };
   },
 });

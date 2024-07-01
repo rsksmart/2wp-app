@@ -1,46 +1,27 @@
 <template>
-  <v-dialog v-model="show" width="470" persistent>
-    <v-card class="container dialog">
-      <v-row class="mx-0 mt-6 d-flex justify-center">
-        <v-img :src="require('@/assets/warning.png')" height="47" contain />
-      </v-row>
-      <v-row class="mx-0 mt-6 mb-3 d-flex justify-center">
-        <h2>ERROR CONNECTING TO WALLET</h2>
-      </v-row>
-      <v-col cols="12" align-self="center" class="pt-0" v-if="errorType">
-        <v-col offset="2" cols="8">
-          <p class="justify-center"><span>{{ errorMessage }}</span></p>
-          <p class="justify-center" v-if="urlToMoreInformation">
-            <a target='_blank' :href='urlToMoreInformation'>{{messageToUserOnLink}}</a>
-          </p>
-        </v-col>
-        <v-row class="mx-0 my-6" justify="space-around">
-          <v-btn width="200" height="50" variant="outlined" rounded color="#000000"
-            @click="toExchange">
-            <span class="blackish">Return to home</span>
-          </v-btn>
-          <v-btn v-if="installationLink && messageInstallationToUser" width="145" height="50"
-            dense rounded color="#000000" :href='installationLink' target="_blank">
-            <span class="whiteish">{{messageInstallationToUser}}</span>
-          </v-btn>
-        </v-row>
-      </v-col>
-      <v-col v-else cols="12" align-self="center" class="pt-0">
-        <v-col offset="3" cols="6">
-          <p class="justify-center"><span>{{ errorMessage }}</span></p>
-        </v-col>
-        <v-row class="mx-0 my-6" justify="space-around">
-          <v-btn width="200" height="50" variant="outlined" rounded color="#000000"
-            @click="toExchange"
-          >
-            <span class="blackish">Return to home</span>
-          </v-btn>
-          <v-btn id="err-dialog-close" width="145" height="50" dense
-                 rounded color="#000000" @click="closeErrorDialog">
-            <span class="whiteish">Close</span>
-          </v-btn>
-        </v-row>
-      </v-col>
+  <v-dialog v-model="show" width="500" persistent>
+    <v-card class="d-flex pa-6" rounded="lg">
+      <div class="d-flex">
+        <h2 class="text-h3 bg-purple pa-2">Error connecting to wallet</h2>
+      </div>
+      <div class="d-flex flex-column ga-1 mt-3 px-0">
+        <p>{{ errorMessage }}</p>
+        <p v-if="urlToMoreInformation">
+          <a target='_blank' :href='urlToMoreInformation'>{{messageToUserOnLink}}</a>
+        </p>
+        <div class="mt-8 d-flex justify-space-around">
+          <v-btn-rsk @click="toExchange">
+            <span>Return to home</span>
+          </v-btn-rsk>
+          <v-btn-rsk v-if="installationLink && messageInstallationToUser"
+            :href='installationLink' target="_blank">
+            <span>{{messageInstallationToUser}}</span>
+          </v-btn-rsk>
+          <v-btn-rsk v-if="!errorType" @click="closeErrorDialog">
+            <span>Close</span>
+          </v-btn-rsk>
+        </div>
+      </div>
     </v-card>
   </v-dialog>
 </template>

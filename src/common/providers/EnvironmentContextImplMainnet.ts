@@ -46,4 +46,9 @@ export default class EnvironmentContextImpl implements EnvironmentContext {
       nativeSegwit: new RegExp(constants.MAINNET_ADDRESS_NSEGWIT),
     };
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  getNetworkName(): string {
+    return 'Mainnet';
+  }
 }

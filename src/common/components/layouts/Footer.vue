@@ -1,71 +1,52 @@
 <template>
-    <v-footer padless color="white" class="footer-rsk d-flex justify-center align-end">
-      <v-col cols="11" class="pb-0">
-        <v-row justify="center" align="start" class="mx-0 py-md-0 py-xl-6">
-          <v-col>
-              <v-row class="footer-logo mx-0" align="end">
-                <span>Built by &nbsp;</span>
-                <v-col class="pa-0">
-                  <v-img position="center left"
-                         :src="require('@/assets/logo-rootstocklabs.png')"
-                         alt="RootstockLabs"
-                         width="100" contain class="rsk-main-logo"/>
-                </v-col>
-              </v-row>
-            <p>Copyright © 2024 RootstockLabs All rights reserved</p>
-          </v-col>
-          <v-col cols="7" class="pt-4">
-            <v-row justify="center" class="mx-0 footer-links">
-              <a href="https://rootstocklabs.com/" target="_blank">
-                About RootstockLabs
-              </a>
-              <a :href="helpUrl" target="_blank">Help</a>
-              <a :href="discordUrl" target="_blank">Support</a>
-              <a v-if="termsAndConditionsEnabled" href="#"
-                 @click.prevent="$emit('update:showDialog', true)">
-                Terms & Conditions
-              </a>
-              <a :href="urlApi" target="_blank" rel="noopener">Api Version: {{apiVersion}}</a>
-              <a :href="urlApp" target="_blank" rel="noopener">App Version: {{appVersion}}</a>
-            </v-row>
-          </v-col>
-          <v-col class="pt-1">
-            <v-row justify="end" class="mx-0 footer-icons">
-              <v-btn variant="plain" href="https://twitter.com/rootstock_io" target="_blank"
-                density="compact"
-                :icon="mdiTwitter">
-              </v-btn>
-              <v-btn variant="plain" href="https://github.com/rsksmart/2wp-app"  target="_blank"
-                density="compact"
-                :icon="mdiGithub">
-              </v-btn>
-              <v-btn variant="plain"
-                density="compact"
-                :href="discordUrl" target="_blank"
-                :icon="mdiDiscord">
-              </v-btn>
-            </v-row>
-          </v-col>
-        </v-row>
-      </v-col>
-    </v-footer>
+  <v-footer class="bg-background text-caption d-flex justify-space-between px-8 pb-4 pt-16">
+    <div>
+      <div class="d-flex align-baseline ga-1">
+        <span>Built by</span>
+        <v-img inline :src="getLogoSrc()" alt="RootstockLabs logo" width="100" />
+      </div>
+      <p class="text-bw-500">Copyright © 2024 RootstockLabs All rights reserved</p>
+    </div>
+    <div class="d-flex ga-4">
+      <a href="https://rootstocklabs.com/" target="_blank">
+        About RootstockLabs
+      </a>
+      <a :href="helpUrl" target="_blank">Help</a>
+      <a :href="discordUrl" target="_blank">Support</a>
+      <a v-if="termsAndConditionsEnabled" href="#"
+        @click.prevent="$emit('update:showDialog', true)">
+        Terms & Conditions
+      </a>
+      <a :href="urlApi" target="_blank" rel="noopener">Api Version: {{ apiVersion }}</a>
+      <a :href="urlApp" target="_blank" rel="noopener">App Version: {{ appVersion }}</a>
+      <a href="https://rootstock.io/ecosystem/" target="_blank" rel="noopener">Ecosystem</a>
+    </div>
+    <div class="d-flex ga-2">
+      <v-btn variant="plain" href="https://twitter.com/rootstock_io" target="_blank" density="compact" :icon="mdiTwitter">
+      </v-btn>
+      <v-btn variant="plain" href="https://github.com/rsksmart/2wp-app" target="_blank" density="compact"
+        :icon="mdiGithub">
+      </v-btn>
+      <v-btn variant="plain" density="compact" :href="discordUrl" target="_blank"
+        :icon="mdiDiscord">
+      </v-btn>
+    </div>
+  </v-footer>
 </template>
 
 <script lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onBeforeMount } from 'vue';
 import { useStore } from 'vuex';
 import { mdiTwitter, mdiGithub, mdiDiscord } from '@mdi/js';
-import { ApiInformation } from '@/common/types/ApiInformation';
-import { ApiService } from '@/common/services';
 import { useRoute } from 'vue-router';
-import { useGetter, useStateAttribute } from '@/common/store/helper';
+import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import * as constants from '@/common/store/constants';
 import { Feature } from '@/common/types';
+import { useTheme } from 'vuetify';
 
 export default {
   name: 'FooterRsk',
   setup() {
-    const apiVersion = ref('0');
     const store = useStore();
     const appVersion = computed<string>(() => store.getters.appVersion);
     const route = useRoute();
@@ -74,6 +55,8 @@ export default {
     const isMetamask = useGetter<boolean>('web3Session', constants.SESSION_IS_METAMASK_CONNECTED);
     const isRloginDefined = useGetter<boolean>('web3Session', constants.SESSION_IS_RLOGIN_DEFINED);
     const termsAndConditionsEnabled = useStateAttribute<Feature>('web3Session', 'termsAndConditionsEnabled');
+    const getApiVersion = useAction('web3Session', constants.SESSION_ADD_API_VERSION);
+    const apiVersion = useStateAttribute<string>('web3Session', 'apiVersion');
 
     const urlApp = computed(() => `https://github.com/rsksmart/2wp-app/releases/tag/v${appVersion.value}`);
     const urlApi = computed(() => `https://github.com/rsksmart/2wp-api/releases/tag/v${apiVersion.value}`);
@@ -101,12 +84,14 @@ export default {
       return feature;
     }
 
+    const { global: { current } } = useTheme();
+    function getLogoSrc() {
+      return current.value.dark ? require('@/assets/logo-rootstocklabs-white.svg') : require('@/assets/logo-rootstocklabs-black.svg');
+    }
+
     const helpUrl = computed(() => `https://dev.rootstock.io/guides/two-way-peg-app/${getDevPortalSlug()}`);
 
-    ApiService.getApiInformation()
-      .then((res: ApiInformation) => {
-        apiVersion.value = res.version;
-      });
+    onBeforeMount(getApiVersion);
 
     return {
       urlApi,
@@ -119,7 +104,15 @@ export default {
       mdiDiscord,
       mdiGithub,
       termsAndConditionsEnabled,
+      getLogoSrc,
     };
   },
 };
 </script>
+
+<style scoped>
+p {
+  font-size: 10px;
+  line-height: 1;
+}
+</style>

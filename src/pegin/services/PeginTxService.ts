@@ -33,18 +33,20 @@ export default class PeginTxService {
     selectedUtxoList,
     totalFee,
     amountToTransfer,
-    federationAddress,
+    federationOrLPAddress,
     refundAddress,
     rskRecipientAddress,
     changeAddress,
+    peginType,
   }: {
     selectedUtxoList: Utxo[];
     totalFee: SatoshiBig;
     amountToTransfer: SatoshiBig;
-    federationAddress: string;
+    federationOrLPAddress: string;
     refundAddress: string;
     rskRecipientAddress: string;
     changeAddress: string;
+    peginType: constants.peginType;
   }): NormalizedTx {
     const normalizedTx: NormalizedTx = {
       coin: EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin,
@@ -57,12 +59,14 @@ export default class PeginTxService {
       amount: utxo.amount.toString(),
       prev_index: utxo.vout,
     }));
-    const federationOutput: NormalizedOutput = {
-      address: federationAddress,
+    const federationOrLPOutput: NormalizedOutput = {
+      address: federationOrLPAddress,
       amount: amountToTransfer.toSatoshiString(),
     };
-    normalizedTx.outputs.push(this.getRskOutput(rskRecipientAddress, refundAddress));
-    normalizedTx.outputs.push(federationOutput);
+    if (peginType === constants.peginType.POWPEG) {
+      normalizedTx.outputs.push(this.getRskOutput(rskRecipientAddress, refundAddress));
+    }
+    normalizedTx.outputs.push(federationOrLPOutput);
     const totalBalance = selectedUtxoList.reduce((acc, { amount }) => acc + amount, 0);
     const totalBalanceInSatoshis = new SatoshiBig(totalBalance, 'satoshi');
     const changeOutput: NormalizedOutput = {

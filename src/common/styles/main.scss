@@ -1,12 +1,26 @@
-@import "../../../node_modules/vuetify/dist/vuetify.min.css";
+@import 'buttons.scss';
+@import 'inputs.scss';
+@import 'switch.scss';
+@import 'cards.scss';
+@import 'dialog.scss';
 
-@import "site";
-@import "top";
-@import "dialog";
-@import "exchange";
-@import "exchange-form";
-@import "status";
-@import "transactions";
-@import "mobile";
-@import "footer";
-@import "form";
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.v-overlay__scrim {
+  background-color: #000;
+}
+.v-chip {
+  &.btc-icon .v-chip__prepend {
+    color: rgb(var(--v-theme-orange));
+  }
+  .v-avatar.rbtc-icon {
+    --v-avatar-height: 16px;
+  }
+}

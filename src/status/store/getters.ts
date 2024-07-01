@@ -25,5 +25,7 @@ export const getters: GetterTree<TxStatus, RootState> = {
     return setStatusMessage(state.type, status);
   },
   [constants.STATUS_GET_RELEASE_TIME_TEXT]: (state: TxStatus):
-    string => state.estimatedReleaseTimeInMinutes.humanize(true, { h: 34 }),
+    string => (state.estimatedReleaseTimeInMinutes.asMinutes() <= 0
+    ? 'You will receive your transaction shortly'
+    : state.estimatedReleaseTimeInMinutes.humanize(true, { h: 34 })),
 };

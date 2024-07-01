@@ -7,6 +7,8 @@ import axios, { AxiosResponse } from 'axios';
 import * as constants from '@/common/store/constants';
 import {
   TransactionType, SessionState, RootState, WeiBig,
+  AppLocale,
+  FeatureNames,
 } from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { ApiService } from '@/common/services';
@@ -20,7 +22,7 @@ import { markRaw } from 'vue';
 import { toUtf8Bytes } from 'ethers/lib/utils';
 
 export const actions: ActionTree<SessionState, RootState> = {
-  [constants.SESSION_CONNECT_WEB3]: ({ commit, state }): Promise<void> => {
+  [constants.SESSION_CONNECT_WEB3]: ({ commit, state, dispatch }): Promise<void> => {
     const rpcUrls = {};
     const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
     if (network === constants.BTC_NETWORK_MAINNET) {
@@ -51,6 +53,7 @@ export const actions: ActionTree<SessionState, RootState> = {
     };
     const rLogin = state.rLoginInstance === undefined ? new RLogin({
       cacheProvider: false,
+      defaultTheme: 'dark',
       providerOptions: {
         walletconnect: {
           package: WalletConnectProvider,
@@ -83,8 +86,10 @@ export const actions: ActionTree<SessionState, RootState> = {
           commit(constants.SESSION_SET_WEB3_INSTANCE, markRaw(provider));
           return provider.listAccounts();
         }).then((accounts) => {
-          resolve(commit(constants.SESSION_SET_ACCOUNT, accounts[0]));
+          commit(constants.SESSION_SET_ACCOUNT, accounts[0]);
+          return dispatch(constants.WEB3_SESSION_ADD_BALANCE);
         })
+        .then(resolve)
         .catch((e) => {
           commit(constants.SESSION_IS_ENABLED, false);
           commit(constants.SESSION_SET_RLOGIN_INSTANCE, rLogin);
@@ -128,7 +133,6 @@ export const actions: ActionTree<SessionState, RootState> = {
     const storedPrice = getCookie('BtcPrice');
     if (storedPrice) {
       commit(constants.SESSION_SET_BITCOIN_PRICE, Number(storedPrice));
-      commit(constants.SESSION_SET_TX_TYPE, 'PEG_IN_TRANSACTION_TYPE');
     } else {
       axios.get(constants.COINGECKO_API_URL)
         .then((response: AxiosResponse) => {
@@ -138,33 +142,53 @@ export const actions: ActionTree<SessionState, RootState> = {
         })
         .catch(() => {
           commit(constants.SESSION_SET_BITCOIN_PRICE, 0);
-        })
-        .finally(() => {
-          commit(constants.SESSION_SET_TX_TYPE, 'PEG_IN_TRANSACTION_TYPE');
         });
     }
   },
   [constants.SESSION_CLEAR]: ({ commit }) => {
     commit(constants.SESSION_CLEAR_STATE);
   },
-  [constants.SESSION_ADD_TERMS_VALUE]: ({ commit, state }, value) => {
+  [constants.SESSION_ADD_TERMS_VALUE]: ({ commit, getters }, value) => {
+    const termsFeature = getters[constants.SESSION_GET_FEATURE](FeatureNames.TERMS_AND_CONDITIONS);
     if (value) {
-      localStorage.setItem('TERMS_AND_CONDITIONS_ACCEPTED', String(state.termsAndConditionsEnabled?.version));
+      localStorage.setItem('TERMS_AND_CONDITIONS_ACCEPTED', String(termsFeature.version));
     } else {
       localStorage.removeItem('TERMS_AND_CONDITIONS_ACCEPTED');
     }
     commit(constants.SESSION_SET_TERMS_ACCEPTED, value);
   },
-  [constants.SESSION_ADD_TERMS_AND_CONDITIONS_ENABLED]: async ({ commit, dispatch }) => {
-    try {
-      const features = await ApiService.getFeatures();
-      const flag = features.find(({ name }) => name === 'terms_and_conditions');
-      if (!flag?.version) return;
-      const versionAccepted = Number(localStorage.getItem('TERMS_AND_CONDITIONS_ACCEPTED'));
-      commit(constants.SESSION_SET_TERMS_AND_CONDITIONS_ENABLED, flag);
-      dispatch(constants.SESSION_ADD_TERMS_VALUE, flag?.version === versionAccepted);
-    } catch (e) {
-      dispatch(constants.SESSION_ADD_TERMS_VALUE, false);
+  [constants.SESSION_ADD_FEATURES]: async ({ commit, dispatch }) => {
+    const storedFeatures = getCookie('2wpFeatures');
+    if (storedFeatures) {
+      commit(constants.SESSION_SET_FEATURES, JSON.parse(storedFeatures));
+    } else {
+      try {
+        const features = await ApiService.getFeatures();
+        setCookie('2wpFeatures', JSON.stringify(features), constants.FEATURES_COOKIE_EXPIRATION_HOURS);
+        commit(constants.SESSION_SET_FEATURES, features);
+        const flag = features.find(({ name }) => name === 'terms_and_conditions');
+        if (!flag?.version) return;
+        const versionAccepted = Number(localStorage.getItem('TERMS_AND_CONDITIONS_ACCEPTED'));
+        dispatch(constants.SESSION_ADD_TERMS_VALUE, flag?.version === versionAccepted);
+      } catch (e) {
+        dispatch(constants.SESSION_ADD_TERMS_VALUE, false);
+      }
+    }
+  },
+  [constants.SESSION_SWITCH_LOCALE]: ({ commit }, locale: AppLocale) => {
+    commit(constants.SESSION_SET_LOCALE, locale);
+  },
+  [constants.SESSION_ADD_API_VERSION]: ({ commit }) => {
+    const version = getCookie('2wpApiVersion');
+    if (version) {
+      commit(constants.SESSION_SET_API_VERSION, version);
+    } else {
+      ApiService.getApiInformation()
+        .then(({ version: apiVersion }) => {
+          const expirationHours = 48;
+          setCookie('2wpApiVersion', apiVersion, expirationHours);
+          commit(constants.SESSION_SET_API_VERSION, apiVersion);
+        });
     }
   },
 };
