@@ -8,18 +8,16 @@ import {
 import { WalletService } from '@/common/services/index';
 import * as constants from '@/common/store/constants';
 import { LeatherTx } from '@/pegin/middleware/TxBuilder/LeatherTxBuilder';
-import { AppConfig, UserSession, showConnect } from '@stacks/connect';
 
 export default class LeatherService extends WalletService {
   private btcProvider;
 
-  userSession: UserSession;
+  stacksWorker: Worker;
 
   constructor() {
     super();
     this.btcProvider = window.btc;
-    const appConfig = new AppConfig();
-    this.userSession = new UserSession({ appConfig });
+    this.stacksWorker = new Worker(new URL('@/common/services/StacksWorker.ts', import.meta.url), { type: 'module' });
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -63,7 +61,10 @@ export default class LeatherService extends WalletService {
   // eslint-disable-next-line class-methods-use-this
   isConnected(): Promise<boolean> {
     return new Promise<boolean>((resolve) => {
-      resolve(this.userSession.isUserSignedIn());
+      this.stacksWorker.postMessage('isUserSignedIn');
+      this.stacksWorker.onmessage = (event) => {
+        resolve(event.data.isUserSignedIn);
+      };
     });
   }
 
@@ -71,22 +72,15 @@ export default class LeatherService extends WalletService {
   reconnect(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       try {
-        showConnect({
-          userSession: this.userSession,
-          appDetails: {
-            name: 'App Name',
-            icon: `${window.location.origin}/favicon.ico`,
-          },
-          onFinish: () => {
+        this.stacksWorker.postMessage('showConnect');
+        this.stacksWorker.onmessage = (event) => {
+          if (event.data.userSession) {
             this.btcProvider = window.btc;
             resolve();
-          },
-          onCancel: () => {
-            console.log('User closed the modal');
-            reject(new Error('User closed the modal'));
-          },
-        });
-        // resolve();
+          } else {
+            reject(new Error(event.data.error));
+          }
+        };
       } catch (e) {
         reject();
       }
