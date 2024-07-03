@@ -64,7 +64,14 @@
               terms and conditions
             </a>
           </span>
-      </v-row>
+        </v-row>
+        <v-row class="d-flex justify-center gc-2 align-baseline flex-wrap">
+          <span>To learn about the various RBTC Access Methods, visit the</span>
+          <v-btn variant="text" color="orange" density="compact" class="pa-0 text-body-1"
+            href="https://rootstock.io/rbtc/" target="_blank">
+            RBTC Webpage
+          </v-btn>
+        </v-row>
       </v-col>
     </v-row>
   </v-container>
