@@ -15,7 +15,7 @@
       <v-col lg="4" xl="3" xxl="2" class="d-flex flex-column ga-6">
         <v-btn @click="selectConversion(constants.PEG_IN_TRANSACTION_TYPE)"
           :disabled="!isAllowedBrowser || (!areTermsAccepted && !!termsAndConditionsEnabled)"
-          class="d-block pa-6 rounded-lg h-auto border-sm">
+          class="border-box d-block pa-6 rounded-lg h-auto">
           <v-row no-gutters align="center" justify="space-between">
             <v-col cols="4">
               <div class="d-flex text-h3 ga-1 flex-wrap">
@@ -31,7 +31,7 @@
         </v-btn>
         <v-btn @click="selectConversion(constants.PEG_OUT_TRANSACTION_TYPE)"
           :disabled="!areTermsAccepted && !!termsAndConditionsEnabled"
-          class="d-block pa-6 rounded-lg h-auto border-sm">
+          class="border-box d-block pa-6 rounded-lg h-auto">
           <v-row no-gutters align="center" justify="space-between">
             <v-col cols="4">
               <div class="d-flex text-h3 ga-1 flex-wrap">
@@ -203,5 +203,13 @@ export default {
 <style scoped>
 input[type="checkbox"] {
   accent-color: rgb(var(--v-theme-on-background));
+}
+.border-box {
+  color: rgb(var(--v-theme-background));
+  border: 2px solid rgb(var(--v-theme-bw-400));
+  &:hover {
+    transition: all 0.5s ease;
+    background-color: rgb(var(--v-theme-bw-400), 0.25);
+  }
 }
 </style>
