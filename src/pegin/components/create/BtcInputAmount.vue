@@ -20,10 +20,12 @@
         variant="solo"
         density="comfortable"
         rounded="lg"
-        class="text-h4"
+        :class="stepState === 'error' && 'input-error'"
+        class="text-h4 amount-input"
         v-model="bitcoinAmountModel"
-        type="number"
-        step="0.00000001"
+        type="text"
+        :readonly="isComposing"
+        @compositionstart="isComposing = true"
         @keydown="blockLetterKeyDown"
         @wheel.prevent
         @focus="focus = true"
@@ -66,8 +68,8 @@
   </v-row>
   <v-row class="my-0" v-if="stepState === 'error'">
     <v-col cols="6" align-self="start">
-      <v-alert :text="amountErrorMessage" class="pa-2"
-          type="warning" color="alert">
+      <v-alert :text="amountErrorMessage" class="pa-2 mr-2"
+          type="warning" color="orange">
         </v-alert>
     </v-col>
   </v-row>
@@ -89,10 +91,10 @@ import EnvironmentContextProviderService from '@/common/providers/EnvironmentCon
 import { isBTCAmountValidRegex } from '@/common/utils';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import { FeeAmountData } from '@/common/types';
-import { pegInTx } from '@/pegin/store/PeginTx';
 
 export default defineComponent({
   name: 'BtcInputAmount',
+  emits: ['get-pegin-quotes', 'stepState'],
   setup(props, context) {
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const focus = ref(false);
@@ -204,19 +206,20 @@ export default defineComponent({
     }
 
     function blockLetterKeyDown(e: KeyboardEvent) {
-      if (bitcoinAmount.value.toString().length > 15
-        && !(e.key === 'Backspace'
-          || e.key === 'Delete'
-          || e.key === 'Home'
-          || e.key === 'End'
-          || e.key === 'ArrowRight'
-          || e.key === 'ArrowLeft')) e.preventDefault();
-      if (e.key === 'e') e.preventDefault();
-      if (e.key === '+') e.preventDefault();
-      if (e.key === '-') e.preventDefault();
-      if (e.key === 'ArrowUp') e.preventDefault();
-      if (e.key === 'ArrowDown') e.preventDefault();
+      const allowedKeys = ['Backspace', 'Delete', 'Home', 'End', 'ArrowRight', 'ArrowLeft'];
+      if (allowedKeys.includes(e.key)) return;
+      if (e.key === '.' && (bitcoinAmount.value && !bitcoinAmount.value.includes('.'))) return;
+      const decimals = bitcoinAmount.value.split('.').pop() ?? '';
+      if (decimals.length >= 8 || Number.isNaN(Number(e.key)) || e.key === ' ') {
+        e.preventDefault();
+      }
     }
+
+    const isComposing = ref(false);
+    watch(isComposing, () => {
+      const timeout = setTimeout(() => { isComposing.value = false; }, 200);
+      return () => clearTimeout(timeout);
+    });
 
     function checkStep() {
       stepState.value = isBTCAmountValidNumberRegex.value && !insufficientAmount.value
@@ -305,7 +308,7 @@ export default defineComponent({
     watch(selectedFee, checkStep);
     watch(bitcoinAmount, watchBitcoinAmount);
     watch(selectedAccountBalance, watchBTCAccountTypeSelected);
-    watch(pegInTx, accountChanged);
+    watch(selectedAccount, accountChanged);
 
     const isInitialValue = amountToTransfer.value.toBTCString() === '0.00000000';
     if (!isInitialValue) {
@@ -328,6 +331,7 @@ export default defineComponent({
       mdiBitcoin,
       boundaries,
       bitcoinAmountModel,
+      isComposing,
     };
   },
 });

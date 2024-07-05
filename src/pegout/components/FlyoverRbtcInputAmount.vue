@@ -21,10 +21,11 @@
         density="comfortable"
         rounded="lg"
         :class="stepState === 'error' && 'input-error'"
-        class="text-h4"
+        class="text-h4 amount-input"
         v-model="rbtcAmountModel"
-        type="number"
-        step="0.00000001"
+        type="text"
+        :readonly="isComposing"
+        @compositionstart="isComposing = true"
         @wheel.prevent
         @keydown="blockLetterKeyDown"
         @focus="focus = true"
@@ -65,18 +66,12 @@
     </div>
     </v-col>
   </v-row>
-  <v-row no-gutters>
-    <v-col>
-      <v-alert v-show="stepState === 'error'"
-        variant="text" type="warning" density="compact" prominent
-        class="text-body-1 pa-0 pt-2 input-error">
-      <template #prepend>
-        <v-icon :icon="mdiInformationOutline" size="small"/>
-      </template>
-      {{ amountErrorMessage }}
-    </v-alert>
-  </v-col>
-  <v-spacer />
+  <v-row class="my-0" v-if="stepState === 'error'">
+    <v-col cols="6" align-self="start">
+      <v-alert :text="amountErrorMessage" class="pa-2 mr-2"
+          type="warning" color="orange">
+        </v-alert>
+    </v-col>
   </v-row>
   </template>
 
@@ -97,6 +92,7 @@ import {
 
 export default defineComponent({
   name: 'FlyoverRbtcInputAmount',
+  emits: ['get-quotes'],
   props: {
     willReceive: {
       type: String,
@@ -118,6 +114,7 @@ export default defineComponent({
     const pegoutConfiguration = useStateAttribute<PegoutConfiguration>('pegOutTx', 'pegoutConfiguration');
     const minStrVal = computed(() => pegoutConfiguration.value.minValue.toRBTCString().slice(0, 5));
     const maxStrVal = computed(() => pegoutConfiguration.value.maxValue.toRBTCString().slice(0, 5));
+    const isComposing = ref(false);
 
     const isValidAmount = (amount: WeiBig) => {
       const { minValue, maxValue } = pegoutConfiguration.value;
@@ -183,19 +180,19 @@ export default defineComponent({
     });
 
     function blockLetterKeyDown(e: KeyboardEvent) {
-      if (rbtcAmount.value.toString().length > 18
-          && !(e.key === 'Backspace'
-            || e.key === 'Delete'
-            || e.key === 'Home'
-            || e.key === 'End'
-            || e.key === 'ArrowRight'
-            || e.key === 'ArrowLeft')) e.preventDefault();
-      if (e.key === 'e') e.preventDefault();
-      if (e.key === '+') e.preventDefault();
-      if (e.key === '-') e.preventDefault();
-      if (e.key === 'ArrowUp') e.preventDefault();
-      if (e.key === 'ArrowDown') e.preventDefault();
+      const allowedKeys = ['Backspace', 'Delete', 'Home', 'End', 'ArrowRight', 'ArrowLeft'];
+      if (allowedKeys.includes(e.key)) return;
+      if (e.key === '.' && (rbtcAmount.value && !rbtcAmount.value.includes('.'))) return;
+      const decimals = rbtcAmount.value.split('.').pop() ?? '';
+      if (decimals.length >= 18 || Number.isNaN(Number(e.key)) || e.key === ' ') {
+        e.preventDefault();
+      }
     }
+
+    watch(isComposing, () => {
+      const timeout = setTimeout(() => { isComposing.value = false; }, 200);
+      return () => clearTimeout(timeout);
+    });
 
     function checkAmount() {
       stepState.value = !insufficientAmount.value && isRBTCAmountValidRegex(rbtcAmount.value)
@@ -242,6 +239,7 @@ export default defineComponent({
       rbtcAmountModel,
       minStrVal,
       maxStrVal,
+      isComposing,
     };
   },
 });

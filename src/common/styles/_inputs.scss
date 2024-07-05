@@ -22,7 +22,7 @@
   margin-top: 10px;
 }
 
-input[type=number].v-field__input, .v-select__selection {
+input[type=number].v-field__input, .v-select__selection, .amount-input input[type=text].v-field__input {
   font-size: 1.5rem;
   font-weight: 700;
   line-height: 1;

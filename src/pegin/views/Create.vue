@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="exchange container max-width mx-6">
+  <v-container fluid class="exchange container max-width">
     <send-bitcoin @back="back"/>
   </v-container>
 </template>
