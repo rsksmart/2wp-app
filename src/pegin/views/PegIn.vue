@@ -1,6 +1,5 @@
 <template>
-  <v-container fluid class="exchange normalized-height container
-  max-width mx-6">
+  <v-container fluid class="exchange normalized-height container max-width">
     <select-bitcoin-wallet/>
     <template v-if="showDialog">
       <btc-to-rbtc-dialog :showDialog="showDialog" @closeDialog="closeDialog"/>
