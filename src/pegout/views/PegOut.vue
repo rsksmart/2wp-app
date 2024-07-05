@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="exchange container max-width mx-6">
+  <v-container fluid class="exchange container max-width">
     <component :is="currentComponent"
     :flyoverEnabled="flyoverEnabled"
     :confirmTxState="confirmTxState"
