@@ -1,0 +1,13 @@
+.home {
+  input[type="checkbox"] {
+    accent-color: rgb(var(--v-theme-on-background));
+  }
+  .border-box {
+    color: rgb(var(--v-theme-background));
+    border: 2px solid rgb(var(--v-theme-bw-400));
+    &:hover {
+      transition: all 0.5s ease;
+      background-color: rgb(var(--v-theme-bw-400), 0.25);
+    }
+  }
+}

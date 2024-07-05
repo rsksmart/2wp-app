@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container fluid class="home">
     <v-alert v-if="!isAllowedBrowser" variant="outlined" type="warning" prominent>
       Only Chrome and Brave browsers are allowed
     </v-alert>
@@ -207,16 +207,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-input[type="checkbox"] {
-  accent-color: rgb(var(--v-theme-on-background));
-}
-.border-box {
-  color: rgb(var(--v-theme-background));
-  border: 2px solid rgb(var(--v-theme-bw-400));
-  &:hover {
-    transition: all 0.5s ease;
-    background-color: rgb(var(--v-theme-bw-400), 0.25);
-  }
-}
-</style>
