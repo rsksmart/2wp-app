@@ -22,8 +22,9 @@
               depending on conditions of the {{environmentContext.getBtcText()}} network).</p>
           </v-col>
         </v-row>
-        <v-row class="mx-0 mb-3 mt-3">
+        <v-row class="mx-0 mb-3 mt-8">
           <v-img
+            :class="theme === 'dark' && 'conversion-steps'"
             :src="imgSrc"
             height="135" min-width="500"
           />
@@ -42,6 +43,7 @@
 <script lang="ts">
 import { ref, defineComponent, computed } from 'vue';
 import { mdiCloseCircleOutline } from '@mdi/js';
+import { useTheme } from 'vuetify';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 
 export default defineComponent({
@@ -53,6 +55,7 @@ export default defineComponent({
     const show = ref(props.showDialog);
     const checkbox = ref(false);
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+    const { global: { name: theme } } = useTheme();
 
     const imgSrc = computed(() => {
       const ticker = environmentContext.getBtcTicker().toLowerCase();
@@ -74,7 +77,14 @@ export default defineComponent({
       show,
       mdiCloseCircleOutline,
       imgSrc,
+      theme,
     };
   },
 });
 </script>
+
+<style>
+.conversion-steps {
+  filter: invert(1) brightness(2);
+}
+</style>

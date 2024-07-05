@@ -11,7 +11,6 @@
     <v-row>
       <v-col>
         <flyover-rbtc-input-amount
-          @walletDisconnected="clearState"
           @getQuotes="getQuotes"
           :willReceive="amountToReceive" />
       </v-col>
