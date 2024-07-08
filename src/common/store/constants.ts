@@ -91,6 +91,12 @@ export const FLYOVER_PEGIN_ADD_ROOTSTOCK_ADDRESS = 'FLYOVER_PEGIN_ADD_ROOTSTOCK_
 export const FLYOVER_PEGIN_USE_LIQUIDITY_PROVIDER = 'FLYOVER_PEGIN_USE_LIQUIDITY_PROVIDER';
 export const FLYOVER_PEGIN_GET_QUOTES = 'FLYOVER_PEGIN_GET_QUOTES';
 export const FLYOVER_PEGIN_ADD_SELECTED_QUOTE = 'FLYOVER_PEGIN_ADD_SELECTED_QUOTE';
+// Hardcoded address for Leather wallet FYI the bridge requires a
+// BTC address but is not really used during PEGIN-FLYOVER process.
+export const VALID_ADDRESS_UNUSED_BY_FLYOVER = {
+  mainnet: '1AUT3G7dLt4huX4rNFYe4eVyqPA61WBeC2',
+  testnet: 'mhy7p4F5hn3i1rQCQY3GHXZfMDiUPnJ98S',
+};
 
 // Session actions
 export const WEB3_SESSION_GET_ACCOUNT = 'WEB3_SESSION_GET_ACCOUNT';
