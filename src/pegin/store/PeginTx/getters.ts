@@ -58,10 +58,14 @@ export const getters: GetterTree<PegInTxState, RootState> = {
   (state: PegInTxState, localGetters, rootState?:RootState, rootGetters?) => {
     let address = '';
     const currentView = rootGetters[constants.VIEW_GET_CURRENT_VIEW];
+    const coin = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
     if (currentView && currentView === 'Status') {
       address = state.statusInfo.refundAddress;
+    } else if (localGetters[constants.WALLET_NAME] === constants.WALLET_NAMES.LEATHER.formal_name) {
+      address = coin === 'main'
+        ? constants.VALID_ADDRESS_UNUSED_BY_FLYOVER.mainnet
+        : constants.VALID_ADDRESS_UNUSED_BY_FLYOVER.testnet;
     } else {
-      const coin = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
       const coinPath = coin === 'main' ? "/0'" : "/1'";
       state.addressList?.forEach((walletAddress) => {
         if (walletAddress.derivationPath === `m/44'${coinPath}/0'/0/0`) address = walletAddress.address;
