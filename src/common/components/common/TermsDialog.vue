@@ -16,7 +16,7 @@
         <v-row class="mx-15 my-6">
           <v-container class="terms-txt" @scroll="onScroll" ref="scrollableArea">
             <v-row class="pa-4 ma-0">
-              <p v-html="dialogText"></p>
+              <terms-content />
             </v-row>
            </v-container>
         </v-row>
@@ -35,27 +35,18 @@
 import {
   ref, defineComponent, computed, watchEffect,
 } from 'vue';
-import { useGetter, useStateAttribute } from '@/common/store/helper';
-import { Feature, FeatureNames } from '@/common/types';
+import { useStateAttribute } from '@/common/store/helper';
 import { mdiCloseCircleOutline } from '@mdi/js';
-import * as constants from '@/common/store/constants';
-import MarkdownIt from 'markdown-it';
+import TermsContent from '@/common/components/common/TermsContent.vue';
 
 export default defineComponent({
   name: 'TermsDialog',
+  components: { TermsContent },
   props: {
     showDialog: Boolean,
   },
   setup(props, context) {
     const areTermsAccepted = useStateAttribute<boolean>('web3Session', 'acceptedTerms');
-    const getFeature = useGetter<(f:FeatureNames) =>Feature>('web3Session', constants.SESSION_GET_FEATURE);
-    const md = MarkdownIt({
-      html: true,
-      linkify: true,
-      typographer: true,
-    });
-    const dialogText = computed(() => md
-      .render(getFeature.value(FeatureNames.TERMS_AND_CONDITIONS).value));
     const show = computed({
       get() {
         return props.showDialog;
@@ -95,7 +86,6 @@ export default defineComponent({
       show,
       scrolledText,
       onScroll,
-      dialogText,
       scrollableArea,
       requiresScroll,
       areTermsAccepted,
