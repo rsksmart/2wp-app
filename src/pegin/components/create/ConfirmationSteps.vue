@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row>
-      <p>Confirm Transaction on your Ledger Wallet</p>
+      <p>Confirm Transaction on your {{ walletName }} Wallet</p>
     </v-row>
     <v-row>
       <v-col cols="3" class="pl-0">
@@ -28,7 +28,7 @@
             </v-row>
             <v-row no-gutters class="mb-5">
               <p class="text-h6 text-off-white">
-                Ledger
+                {{ walletName }}
               </p>
             </v-row>
             <v-row no-gutters>
@@ -55,12 +55,13 @@
                             bg-color="rgba(243, 139, 1, 0.4)" base-color="orange"
                             variant="outlined"
                             density="compact"
-                            model-value="Press Confirm on Ledger">
+                            :model-value="`Press Confirm on ${walletName}`">
                 <template v-slot:prepend-inner>
                   <v-icon color="white">
                     {{ mdiInformation }}
                   </v-icon>
                 </template>
+
               </v-text-field>
             </v-row>
           </v-container>
@@ -90,7 +91,7 @@
             </v-row>
             <v-row no-gutters class="mb-5">
               <p class="text-h6 text-off-white">
-                Ledger
+                {{ walletName }}
               </p>
             </v-row>
             <v-row no-gutters>
@@ -117,7 +118,7 @@
                             bg-color="rgba(9, 243, 198, 0.4)" base-color="teal"
                             variant="outlined"
                             density="compact"
-                            model-value="Press Confirm on Ledger">
+                            :model-value="`Press Confirm on ${walletName}`">
                 <template v-slot:prepend-inner>
                   <v-icon color="white">
                     {{ mdiInformation }}
@@ -152,7 +153,7 @@
             </v-row>
             <v-row no-gutters class="mb-5">
               <p class="text-h6 text-off-white">
-                Ledger
+                {{ walletName }}
               </p>
             </v-row>
             <v-row no-gutters>
@@ -179,7 +180,7 @@
                             bg-color="rgba(116, 189, 1, 0.4)" base-color="green"
                             variant="outlined"
                             density="compact"
-                            model-value="Press Confirm on Ledger">
+                            :model-value="`Press Confirm on ${walletName}`">
                 <template v-slot:prepend-inner>
                   <v-icon color="white">
                     {{ mdiInformation }}
@@ -190,7 +191,7 @@
           </v-container>
         </v-card>
       </v-col>
-      <v-col cols="3">
+      <v-col cols="3" class="pr-0">
         <v-card variant="outlined" color="bw-400">
           <v-container>
             <v-row justify="start" class="mt-2">
@@ -214,7 +215,7 @@
             </v-row>
             <v-row no-gutters class="mb-5">
               <p class="text-h6 text-off-white">
-                Ledger
+                {{ walletName }}
               </p>
             </v-row>
             <v-row no-gutters>
@@ -241,7 +242,7 @@
                             bg-color="rgba(243, 108, 215, 0.4)" base-color="pink"
                             variant="outlined"
                             density="compact"
-                            model-value="Press Confirm on Ledger">
+                            :model-value="`Press Confirm on ${walletName}`">
                 <template v-slot:prepend-inner>
                   <v-icon color="white">
                     {{ mdiInformation }}
@@ -252,6 +253,9 @@
           </v-container>
         </v-card>
       </v-col>
+    </v-row>
+    <v-row justify="end">
+      <slot />
     </v-row>
   </v-container>
 </template>
@@ -266,11 +270,13 @@ import { useGetter, useState } from '@/common/store/helper';
 import { mdiInformation } from '@mdi/js';
 
 export default defineComponent({
-  name: 'ConfirmLedgerTransaction',
+  name: 'ConfirmationSteps',
   setup() {
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const pegInTxState = useState<PegInTxState>('pegInTx');
     const safeFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
+    const walletName = useGetter<string>('pegInTx', constants.WALLET_NAME);
+
     const rskFederationAddress = computed(():string => pegInTxState.value
       .normalizedTx.outputs[1]?.address?.trim()
       ?? `${environmentContext.getBtcText()} Powpeg address not found`);
@@ -310,6 +316,7 @@ export default defineComponent({
       opReturnData,
       amountTransferString,
       feeString,
+      walletName,
     };
   },
 });

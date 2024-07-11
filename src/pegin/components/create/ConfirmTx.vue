@@ -1,5 +1,5 @@
 <template>
-  <template v-if="!confirmTxState.matches(['loading'])">
+  <template v-if="!confirmTxState.matches(['loading', 'confirming'])">
     <v-container>
       <v-row>
         <v-btn variant="text" class="px-0"
@@ -14,7 +14,7 @@
       <v-row justify="end">
         <v-col cols="auto" class="py-8">
           <v-btn-rsk
-            @click="toTrackId"
+            @click="isHdWallet ? confirmTxState.send('loading') : toTrackId()"
             :disabled="confirmTxState.matches(['error', 'goingHome', 'loading'])">
             Confirm
             <template #append>
@@ -23,20 +23,26 @@
           </v-btn-rsk>
         </v-col>
       </v-row>
-      <v-row v-if="confirmTxState.matches(['loading'])" class="mx-0 d-flex justify-center">
-        <v-col>
-          <v-row class="mx-0 mb-5 d-flex justify-center">
-            See your {{ walletService.name().formal_name }} wallet to confirm your transaction!
-          </v-row>
-          <v-row class="mx-0 mb-5 mt-10 d-flex justify-center">
-            <v-progress-circular indeterminate :size="60" :width="8" />
-          </v-row>
-        </v-col>
-      </v-row>
     </v-container>
   </template>
+  <template v-else-if="isHdWallet">
+    <confirmation-steps>
+      <v-btn-rsk
+        @click="toTrackId"
+        :disabled="confirmTxState.matches(['error', 'goingHome', 'confirming'])">
+        Send
+      </v-btn-rsk>
+    </confirmation-steps>
+  </template>
   <template v-else>
-    <confirm-ledger-transaction />
+    <v-row>
+      <v-col align="center">
+        <p class="text-h4">
+          See your {{ walletService.name().formal_name }} wallet to confirm your transaction!
+        </p>
+        <v-progress-circular indeterminate :size="60" :width="8" class="mt-8"/>
+      </v-col>
+    </v-row>
   </template>
 </template>
 
@@ -56,17 +62,17 @@ import {
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { mdiInformation, mdiArrowLeft, mdiArrowRight } from '@mdi/js';
 import StatusSummary from '@/common/components/status/StatusSummary.vue';
-import ConfirmLedgerTransaction from '@/pegin/components/ledger/ConfirmLedgerTransaction.vue';
+import ConfirmationSteps from '@/pegin/components/create/ConfirmationSteps.vue';
 
 export default defineComponent({
   name: 'ConfirmTx',
   components: {
     StatusSummary,
-    ConfirmLedgerTransaction,
+    ConfirmationSteps,
   },
   props: {
     confirmTxState: {
-      type: Object as PropType<Machine < 'idle' | 'loading' | 'error' | 'goingHome' >>,
+      type: Object as PropType<Machine < 'idle' | 'loading' | 'error' | 'confirming' | 'goingHome' >>,
       required: true,
     },
     txBuilder: {
@@ -124,7 +130,7 @@ export default defineComponent({
 
     async function toTrackId() {
       let txError = '';
-      props.confirmTxState.send('loading');
+      props.confirmTxState.send('confirming');
       await walletService.value.stopAskingForBalance()
         .then(() => props.txBuilder.buildTx(
           pegInTxState.value.normalizedTx,
