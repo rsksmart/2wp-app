@@ -78,6 +78,7 @@ export default defineComponent({
     const confirmTxState = ref<Machine<
       'idle'
       | 'loading'
+      | 'confirming'
       | 'error'
       | 'goingHome'
       >>(new Machine('idle'));
