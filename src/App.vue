@@ -95,7 +95,6 @@ export default {
 
     onBeforeMount(() => {
       getFeatures();
-      console.log('getFeatures');
       getBtcPrice();
     });
     appendHotjar();
