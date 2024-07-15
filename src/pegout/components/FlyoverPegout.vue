@@ -47,7 +47,7 @@
             <template #append>
               <v-icon :icon="mdiArrowRight" />
             </template>
-            Continue to Summary
+            Send
           </v-btn-rsk>
         </v-col>
       </v-row>
