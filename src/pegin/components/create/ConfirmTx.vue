@@ -28,10 +28,12 @@
   <template v-else-if="isHdWallet">
     <confirmation-steps>
       <v-btn-rsk
+        v-if="!confirmTxState.matches(['confirming'])"
         @click="toTrackId"
-        :disabled="confirmTxState.matches(['error', 'goingHome', 'confirming'])">
+        :disabled="confirmTxState.matches(['error', 'goingHome'])">
         Send
       </v-btn-rsk>
+      <v-progress-circular v-else indeterminate :size="60" :width="8" />
     </confirmation-steps>
   </template>
   <template v-else>
