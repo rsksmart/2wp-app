@@ -4,8 +4,15 @@
       <v-container>
         <v-row class="mx-0 mt-4 d-flex align-self-end">
           <v-col>
-            <h2>{{environmentContext.getBtcTicker()}} TO
-              {{environmentContext.getRbtcTicker()}} CONVERSION REQUIRES THESE STEPS</h2>
+            <h2>
+              <span class="bg-purple mb-2 px-2">
+                {{environmentContext.getBtcTicker()}}
+                to {{environmentContext.getRbtcTicker()}} conversion requires
+              </span>
+              <span class="bg-purple mb-2 px-2">
+                these steps
+              </span>
+            </h2>
           </v-col>
           <v-col cols="auto" class="pa-0">
             <v-btn class="pa-0" height="50" @click="closeDialog" variant="text">
