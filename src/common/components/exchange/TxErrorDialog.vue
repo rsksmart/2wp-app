@@ -1,24 +1,23 @@
 <template>
   <v-dialog v-model="show" width="470" persistent>
-    <v-card class="container dialog">
+    <v-card class="container dialog" rounded>
       <v-row class="mx-0 mt-6 d-flex justify-center">
-        <v-img :src="require('@/assets/warning.png')" height="47" contain />
+        <v-img :src="require('@/assets/warning.svg')" height="47" contain />
       </v-row>
       <v-row class="mx-0 mt-6 mb-3 d-flex justify-center">
-        <h2>ERROR ON TRANSACTION</h2>
+        <h2 class="px-4 bg-purple">Error on Transaction</h2>
       </v-row>
       <v-col cols="12" align-self="center" class="pt-0">
         <v-col offset="2" cols="8">
           <p class="justify-center">{{ errorMessage }}</p>
         </v-col>
         <v-row class="ma-0 my-4" justify="space-around">
-          <v-btn width="200" height="50" variant="outlined" rounded color="#000000"
-            @click="toExchange">
-            <span class="blackish">Return to home</span>
-          </v-btn>
-          <v-btn width="145" height="50" dense rounded color="#000000" @click="closeErrorDialog">
-            <span class="whiteish">Close</span>
-          </v-btn>
+          <v-btn-rsk @click="toExchange">
+            <span>Return to home</span>
+          </v-btn-rsk>
+          <v-btn-rsk @click="closeErrorDialog">
+            <span>Close</span>
+          </v-btn-rsk>
         </v-row>
       </v-col>
     </v-card>
