@@ -14,6 +14,7 @@ import {
   BtcAccount, BtcWallet, MiningSpeedFee, UtxoListPerAccount, Utxo,
 } from '@/common/types';
 import { getCookie, setCookie } from '@/common/utils';
+import PeginConfigurationService from '@/pegin/services/peginConfigurationService';
 import TxFeeService from '../../services/TxFeeService';
 
 export const actions: ActionTree<PegInTxState, RootState> = {
@@ -21,10 +22,12 @@ export const actions: ActionTree<PegInTxState, RootState> = {
     commit(constants.PEGIN_TX_SET_TREZOR_CONNECTED, trezorConnected);
   },
   [constants.PEGIN_TX_ADD_PEGIN_CONFIGURATION]: ({ commit }) => {
-    ApiService.getPeginConfiguration()
-      .then((config: PeginConfiguration) => {
-        commit(constants.PEGIN_TX_SET_PEGIN_CONFIGURATION, config);
-        commit(constants.PEGIN_TX_SET_SESSION_ID, config.sessionId);
+    Promise.all([
+      PeginConfigurationService.getPeginConfiguration(),
+      ApiService.getPeginConfiguration()])
+      .then(([localConfig, apiConfig]: PeginConfiguration[]) => {
+        commit(constants.PEGIN_TX_SET_PEGIN_CONFIGURATION, localConfig);
+        commit(constants.PEGIN_TX_SET_SESSION_ID, apiConfig.sessionId);
       });
   },
   [constants.PEGIN_TX_ADD_SESSION_ID]: ({ commit }, sessionId: string) => {
