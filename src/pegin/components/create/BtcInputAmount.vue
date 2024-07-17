@@ -42,7 +42,7 @@
                 {{ boundaries.minValue.toBTCString().slice(0,5) }} MIN
               </v-chip>
               <v-chip variant="outlined" density="compact" @click="setMax">
-                {{ boundaries.maxValue.toBTCStringBg().slice(0,5) }} MAX
+                {{ boundaries.maxValue.toBTCString().slice(0,5) }} MAX
               </v-chip>
             </div>
           </template>
@@ -141,8 +141,8 @@ export default defineComponent({
     });
 
     const boundaries = computed(() => {
-      const minValue: SatoshiBig = new SatoshiBig(peginConfiguration.value.minValue, 'satoshi');
-      const maxValue: SatoshiBig = new SatoshiBig(peginConfiguration.value.maxValue, 'satoshi');
+      const minValue: SatoshiBig = new SatoshiBig(peginConfiguration.value.minValue, 'btc');
+      const maxValue: SatoshiBig = new SatoshiBig(peginConfiguration.value.maxValue, 'btc');
       return {
         minValue,
         maxValue,
@@ -271,7 +271,7 @@ export default defineComponent({
     }
 
     function setMin() {
-      const min = new SatoshiBig(peginConfiguration.value.minValue, 'satoshi');
+      const min = new SatoshiBig(peginConfiguration.value.minValue, 'btc');
       bitcoinAmountModel.value = min.toBTCTrimmedString();
     }
 
