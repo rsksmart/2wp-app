@@ -195,8 +195,8 @@ export const getters: GetterTree<PegInTxState, RootState> = {
     const feePlusAmount: SatoshiBig = state.amountToTransfer
       .plus(moduleGetters[constants.PEGIN_TX_GET_SAFE_TX_FEE]);
     const selectedAccountBalance = moduleGetters[constants.PEGIN_TX_GET_SELECTED_BALANCE];
-    const minValue: SatoshiBig = new SatoshiBig(state.peginConfiguration.minValue, 'satoshi');
-    const maxValue: SatoshiBig = new SatoshiBig(state.peginConfiguration.maxValue, 'satoshi');
+    const minValue: SatoshiBig = new SatoshiBig(state.peginConfiguration.minValue, 'btc');
+    const maxValue: SatoshiBig = new SatoshiBig(state.peginConfiguration.maxValue, 'btc');
     if (state.amountToTransfer.lte('0')
       || feePlusAmount.gt(selectedAccountBalance)
       || state.amountToTransfer.lt(minValue)

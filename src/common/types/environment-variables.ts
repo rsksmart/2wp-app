@@ -47,6 +47,10 @@ export class EnvironmentVariables {
 
   public lbcAddress: string;
 
+  public peginMinAmountAllowedInBtc: number;
+
+  public peginMaxAmountAllowedInBtc: number;
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(defaultValues: any = {}) {
     this.vueAppCoin = process.env.VUE_APP_COIN || defaultValues.vueAppCoin;
@@ -91,5 +95,9 @@ export class EnvironmentVariables {
       || defaultValues.maxAmountAllowedInSatoshis;
     this.lbcAddress = process.env.VUE_APP_LBC_ADDRESS || defaultValues.lbcAddress;
     this.debugMode = process.env.VUE_APP_DEBUG_MODE === 'true' || defaultValues.debugMode;
+    this.peginMinAmountAllowedInBtc = Number(process.env.VUE_APP_PEGIN_MIN_AMOUNT_ALLOWED_IN_BTC)
+      || defaultValues.peginMinValue;
+    this.peginMaxAmountAllowedInBtc = Number(process.env.VUE_APP_PEGIN_MAX_AMOUNT_ALLOWED_IN_BTC)
+      || defaultValues.peginMaxValue;
   }
 }

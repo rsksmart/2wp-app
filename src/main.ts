@@ -17,6 +17,8 @@ const defaultEnvironmentVariables = {
   vueAppManifestAppUrl: '',
   vueAppHotjarId: '',
   vueAppClarityId: '',
+  peginMinValue: 0.005,
+  peginMaxValue: 10,
   pegoutMinValue: 0.005,
   pegoutMaxValue: 10,
   minFeeSatPerByte: {
