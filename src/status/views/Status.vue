@@ -22,9 +22,9 @@
       <tx-pegin v-if="isPegIn" :txId="txId" :isFlyover="isFlyover"
                 :txWithErrorType="txWithErrorType" :txWithError="txWithError" />
       <tx-pegout v-if="isPegOut" :txId="txId" :isFlyover="isFlyover"
-                 :txWithErrorType="txWithErrorType" :txWithError="txWithError" />
+                :txWithErrorType="txWithErrorType" :txWithError="txWithError" />
       <status-progress-bar v-if="txWithErrorType" :isFlyover="isFlyover"
-                           :txWithErrorType="txWithErrorType" :txWithError="txWithError" />
+                :txWithErrorType="txWithErrorType" :txWithError="txWithError" />
     </v-row>
   </v-container>
 </template>
@@ -82,12 +82,14 @@ export default defineComponent({
 
     const isRejected = computed(() => status.value.txDetails?.status === 'REJECTED');
 
-    const isPegIn = computed((): boolean => status.value.type === TxStatusType.PEGIN);
+    const isPegIn = computed((): boolean => status.value.type === TxStatusType.PEGIN
+      || status.value.type === TxStatusType.FLYOVER_PEGIN);
 
     const isPegOut = computed((): boolean => status.value.type === TxStatusType.PEGOUT
       || status.value.type === TxStatusType.FLYOVER_PEGOUT);
 
-    const isFlyover = computed((): boolean => status.value.type === TxStatusType.FLYOVER_PEGOUT);
+    const isFlyover = computed((): boolean => status.value.type === TxStatusType.FLYOVER_PEGOUT
+      || status.value.type === TxStatusType.FLYOVER_PEGIN);
 
     const txWithErrorType = computed((): boolean => status.value.type === TxStatusType.INVALID_DATA
       || status.value.type === TxStatusType.UNEXPECTED_ERROR);
