@@ -58,8 +58,9 @@ import * as constants from '@/common/store/constants';
 import { ApiService, WalletService } from '@/common/services';
 import { useState, useGetter, useStateAttribute } from '@/common/store/helper';
 import {
+  LiquidityProvider2WP,
   NormalizedSummary,
-  PegInTxState, SatoshiBig, TxStatusType, TxSummaryOrientation,
+  PegInTxState, QuotePegIn2WP, SatoshiBig, TxStatusType, TxSummaryOrientation,
 } from '@/common/types';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { mdiInformation, mdiArrowLeft, mdiArrowRight } from '@mdi/js';
@@ -89,10 +90,16 @@ export default defineComponent({
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const pegInTxState = useState<PegInTxState>('pegInTx');
     const walletService = useGetter<WalletService>('pegInTx', constants.PEGIN_TX_GET_WALLET_SERVICE);
-    const accountBalanceText = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_ACCOUNT_BALANCE_TEXT);
+    const selectedAccountType = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_SELECTED_ACCOUNT_TYPE);
     const safeFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
     const sessionId = useStateAttribute<string>('pegInTx', 'sessionId');
     const isHdWallet = useGetter<boolean>('pegInTx', constants.PEGIN_TX_IS_HD_WALLET);
+    const selectedQuote = useGetter<QuotePegIn2WP>('flyoverPegin', constants.FLYOVER_PEGIN_GET_SELECTED_QUOTE);
+    const liquidityProviders = useStateAttribute<LiquidityProvider2WP[]>('flyoverPegin', 'liquidityProviders');
+    const recipientAddress = useStateAttribute<string>('flyoverPegin', 'rootstockRecipientAddress');
+    const peginType = useStateAttribute<string>('pegInTx', 'peginType');
+
+    const isFlyover = computed(() => peginType.value === constants.peginType.FLYOVER);
 
     const changeAmountComputed = computed((): string => {
       const changeAmount = new SatoshiBig(pegInTxState.value.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
@@ -128,7 +135,59 @@ export default defineComponent({
       return 'Change address not found';
     });
 
-    const addressType = computed(() => accountBalanceText.value?.split('-')[0].trim() ?? '');
+    function getLPName(): string {
+      const provider = liquidityProviders.value.find(
+        (lp) => lp.provider === selectedQuote.value.quote.lpRSKAddr,
+      );
+      return provider?.name ?? '';
+    }
+
+    function getProviderFee(): string {
+      return selectedQuote.value.quote.productFeeAmount
+        .plus(selectedQuote.value.quote.callFee)
+        .plus(new SatoshiBig(selectedQuote.value.quote.gasFee.toRBTCString(), 'btc'))
+        .toBTCTrimmedString();
+    }
+
+    const txPeginSummary = computed((): NormalizedSummary => ({
+      amountFromString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
+      amountReceivedString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
+      fee: Number(safeFee.value.toBTCTrimmedString()),
+      total: computedPlusFeeFullAmount.value,
+      recipientAddress: pegInTxState.value.rskAddressSelected,
+      senderAddress: pegInTxState.value.normalizedTx.inputs[0].address,
+    }));
+
+    const flyoverTotalFee = computed(() => new SatoshiBig(getProviderFee(), 'btc').plus(safeFee.value).toBTCTrimmedString());
+
+    const flyoverPeginSummary = computed((): NormalizedSummary => ({
+      amountFromString: selectedQuote.value.quote.value.toBTCTrimmedString(),
+      amountReceivedString: selectedQuote.value.quote.value.toBTCTrimmedString(),
+      fee: Number(flyoverTotalFee.value),
+      total: selectedQuote.value.quote.value.plus(new SatoshiBig(flyoverTotalFee.value, 'btc')).toBTCTrimmedString(),
+      recipientAddress: recipientAddress.value,
+      senderAddress: pegInTxState.value.normalizedTx.inputs[0].address,
+    }));
+
+    const summaryDetails = computed(() => (isFlyover.value
+      ? flyoverPeginSummary.value
+      : txPeginSummary.value));
+
+    const flyoverProps = computed(() => ({
+      value: Number(selectedQuote.value.quote.value.toBTCTrimmedString()),
+      fee: Number(flyoverTotalFee.value),
+      provider: getLPName(),
+      details: {
+        senderAddress: pegInTxState.value.normalizedTx.inputs[0].address,
+        recipientAddress: recipientAddress.value,
+        blocksToCompleteTransaction: selectedQuote.value.quote.confirmations,
+      },
+    }));
+
+    const nativeProps = computed(() => ({
+      value: Number(pegInTxState.value.amountToTransfer.toBTCTrimmedString()),
+      fee: Number(safeFee.value.toBTCTrimmedString()),
+    }));
 
     async function toTrackId() {
       let txError = '';
@@ -146,10 +205,9 @@ export default defineComponent({
             sessionId: sessionId.value,
             txHash: id,
             type: TxStatusType.PEGIN.toLowerCase(),
-            value: Number(pegInTxState.value.amountToTransfer.toBTCTrimmedString()),
             wallet: walletService.value.name().short_name,
-            addressType: addressType.value,
-            fee: Number(safeFee.value.toBTCTrimmedString()),
+            addressType: selectedAccountType.value,
+            ...(isFlyover.value ? flyoverProps.value : nativeProps.value),
           });
           context.emit('successConfirmation', [txError, id]);
         })
@@ -159,15 +217,6 @@ export default defineComponent({
           context.emit('successConfirmation', [txError, '']);
         });
     }
-
-    const summaryDetails = computed((): NormalizedSummary => ({
-      amountFromString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
-      amountReceivedString: pegInTxState.value.amountToTransfer.toBTCTrimmedString(),
-      fee: Number(safeFee.value.toBTCTrimmedString()),
-      total: computedPlusFeeFullAmount.value,
-      recipientAddress: pegInTxState.value.rskAddressSelected,
-      senderAddress: pegInTxState.value.normalizedTx.inputs[0].address,
-    }));
 
     async function toPegInForm() {
       props.confirmTxState.send('loading');

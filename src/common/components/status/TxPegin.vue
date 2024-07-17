@@ -21,6 +21,7 @@ import {
   TxSummaryOrientation,
   NormalizedSummary,
   TxStatusMessage,
+  FlyoverStatusModel,
 } from '@/common/types';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import * as constants from '@/common/store/constants';
@@ -84,7 +85,7 @@ export default defineComponent({
     const orientationSummary = TxSummaryOrientation.HORIZONTAL;
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
-    const txDetails = useStateAttribute<PeginStatus>('status', 'txDetails');
+    const txDetails = useStateAttribute<PeginStatus | FlyoverStatusModel>('status', 'txDetails');
     const isRejected = useGetter<boolean>('status', constants.STATUS_IS_REJECTED);
     const setAmount = useAction('pegInTx', constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER);
     const peginInit = useAction('pegInTx', constants.PEGIN_TX_INIT);
@@ -102,7 +103,7 @@ export default defineComponent({
       === constants.BTC_NETWORK_MAINNET);
 
     const txPeginSummary = computed((): NormalizedSummary => {
-      const status = txDetails.value;
+      const status = txDetails.value as PeginStatus;
       const total = new SatoshiBig(status.btc.amountTransferred, 'btc')
         .plus(new SatoshiBig(status.btc.fees, 'btc'));
       return {
@@ -119,61 +120,67 @@ export default defineComponent({
       };
     });
 
-    const flyoverPeginSummary = computed((): NormalizedSummary => ({
-      amountFromString: '',
-      amountReceivedString: '',
-      fee: 0,
-      recipientAddress: '',
-      txId: '',
-      refundAddress: '',
-      federationAddress: '',
-      total: '',
-      senderAddress: '',
-    }));
+    const flyoverPeginSummary = computed((): NormalizedSummary => {
+      const status = txDetails.value as FlyoverStatusModel;
+      const total = new SatoshiBig(status.amount, 'btc')
+        .plus(new SatoshiBig(status.fee, 'btc'));
+      return {
+        amountFromString: status.amount.toString(),
+        amountReceivedString: status.amount.toString(),
+        total: total.toBTCTrimmedString(),
+        fee: status.fee,
+        recipientAddress: status.recipientAddress,
+        senderAddress: status.senderAddress,
+        txId: status.txHash,
+      };
+    });
 
     const summary = computed(() => (props.isFlyover
       ? flyoverPeginSummary.value
       : txPeginSummary.value));
 
     function refreshPercentage() {
-      if (txDetails) {
+      if ('btc' in txDetails.value) {
         const { btc } = txDetails.value;
         btcConfirmationsRequired.value = btc.requiredConfirmation;
         btcConfirmations.value = btc.confirmations ?? 0;
         btcConfirmations.value = btcConfirmations.value > btcConfirmationsRequired.value
           ? btcConfirmationsRequired.value : btcConfirmations.value;
-      }
-      leftBtcTime.value = getTime((btcConfirmationsRequired.value - btcConfirmations.value) * 10);
-      btcConfirmationsPercentage.value = btcConfirmations.value <= btcConfirmationsRequired.value
-        ? (btcConfirmations.value * 100) / btcConfirmationsRequired.value : 100;
-      if (txDetails.value.status === constants.PegStatus.CONFIRMED) {
-        rskConfirmationsPercentage.value = 100;
-      } else {
-        rskConfirmationsPercentage.value = 0;
+        leftBtcTime.value = getTime((btcConfirmationsRequired.value - btcConfirmations.value) * 10);
+        btcConfirmationsPercentage.value = btcConfirmations.value <= btcConfirmationsRequired.value
+          ? (btcConfirmations.value * 100) / btcConfirmationsRequired.value : 100;
+        if (txDetails.value.status === constants.PegStatus.CONFIRMED) {
+          rskConfirmationsPercentage.value = 100;
+        } else {
+          rskConfirmationsPercentage.value = 0;
+        }
       }
     }
 
     function setSummaryData() {
-      const { btc, rsk } = txDetails.value;
-      const txData = {
-        amount: new SatoshiBig(btc.amountTransferred, 'btc'),
-        refundAddress: btc.refundAddress,
-        recipient: rsk.recipientAddress ? rsk.recipientAddress : '',
-        feeBTC: new SatoshiBig(btc.fees, 'btc'),
-        change: '',
-      };
-      peginInit();
-      setAmount(txData.amount);
-      currentFee.value = txData.feeBTC;
-      currentRefundAddress.value = txData.refundAddress;
-      setRskAddress(txData.recipient);
+      if ('btc' in txDetails.value) {
+        const { btc, rsk } = txDetails.value;
+        const txData = {
+          amount: new SatoshiBig(btc.amountTransferred, 'btc'),
+          refundAddress: btc.refundAddress,
+          recipient: rsk.recipientAddress ? rsk.recipientAddress : '',
+          feeBTC: new SatoshiBig(btc.fees, 'btc'),
+          change: '',
+        };
+        peginInit();
+        setAmount(txData.amount);
+        currentFee.value = txData.feeBTC;
+        currentRefundAddress.value = txData.refundAddress;
+        setRskAddress(txData.recipient);
+      }
     }
 
     function setMessage() {
       try {
         let msg: TxStatusMessage | string = '';
-        if (txDetails) {
-          msg = setStatusMessage(TxStatusType.PEGIN, txDetails.value.status);
+        if (txDetails.value) {
+          const type = props.isFlyover ? TxStatusType.FLYOVER_PEGIN : TxStatusType.PEGIN;
+          msg = setStatusMessage(type, txDetails.value.status);
         }
         context.emit('setMessage', msg);
       } catch (e) {
