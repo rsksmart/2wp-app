@@ -57,8 +57,10 @@ export default defineComponent({
     const state = ref(new Machine<'unset' | 'valid' | 'invalid'>('unset'));
 
     const account = useStateAttribute<string>('web3Session', 'account');
-    const storeRskAddressSelected = useStateAttribute<string>('pegInTx', 'rskAddressSelected');
     const setRskAddress = useAction('pegInTx', constants.PEGIN_TX_ADD_RSK_ADDRESS);
+    const setRskAddressForFlyover = useAction('flyoverPegin', constants.FLYOVER_PEGIN_ADD_ROOTSTOCK_ADDRESS);
+    const peginType = useStateAttribute<string>('pegInTx', 'peginType');
+    const isFlyover = computed(() => peginType.value === constants.peginType.FLYOVER);
 
     const web3Address = computed(() => account.value ?? '');
 
@@ -90,6 +92,9 @@ export default defineComponent({
       return address;
     });
 
+    const setRskRecipientAddress = computed(
+      () => (isFlyover.value ? setRskAddressForFlyover : setRskAddress),
+    );
     const isConnectedWallet = computed<boolean>(() => typeof selectedAddress.value === 'object' && selectedAddress.value.id === 1);
 
     watch(selectedAddress, (newValue) => {
@@ -97,7 +102,7 @@ export default defineComponent({
       if (!value) return;
       if (isConnectedWallet.value) {
         selectedAddress.value = '';
-        setRskAddress('');
+        setRskRecipientAddress.value('');
       }
     });
 
@@ -121,13 +126,13 @@ export default defineComponent({
     function checkStep() {
       if (computedRskAddress.value === '') {
         state.value.send('unset');
-        setRskAddress('');
+        setRskRecipientAddress.value('');
       } else if (!isValidPegInAddress.value) {
-        setRskAddress('');
+        setRskRecipientAddress.value('');
         state.value.send('invalid');
       } else {
         state.value.send('valid');
-        setRskAddress(computedRskAddress.value);
+        setRskRecipientAddress.value(computedRskAddress.value);
       }
       context.emit('state', state);
     }
@@ -141,14 +146,6 @@ export default defineComponent({
       checkStep();
       return message;
     });
-
-    if (storeRskAddressSelected.value) {
-      useWeb3Wallet.value = true;
-      focus.value = false;
-      rskAddressSelected.value = storeRskAddressSelected.value;
-      [selectedAddress.value] = addressItems;
-      checkStep();
-    }
 
     return {
       environmentContext,

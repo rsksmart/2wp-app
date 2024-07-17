@@ -63,6 +63,7 @@ import { computed, defineComponent } from 'vue';
 import { useState, useStateAttribute } from '@/common/store/helper';
 import {
   BtcPeginStatus,
+  FlyoverStatusModel,
   PeginStatus,
   PegoutStatus,
   PegoutStatusDataModel,
@@ -71,7 +72,7 @@ import {
   TxStatus,
   TxStatusType,
 } from '@/common/types';
-import { PegStatus, FlyoverPegoutStatus } from '@/common/store/constants';
+import { PegStatus, FlyoverStatus } from '@/common/store/constants';
 
 export default defineComponent({
   name: 'StatusProgressBar',
@@ -82,7 +83,7 @@ export default defineComponent({
   },
   setup(props) {
     const status = useState<TxStatus>('status');
-    const txDetails = useStateAttribute<PegoutStatusDataModel|PeginStatus>('status', 'txDetails');
+    const txDetails = useStateAttribute<PegoutStatusDataModel|PeginStatus|FlyoverStatusModel>('status', 'txDetails');
     const isPegOut = computed((): boolean => status.value.type === TxStatusType.PEGOUT
       || status.value.type === TxStatusType.FLYOVER_PEGOUT);
 
@@ -115,9 +116,7 @@ export default defineComponent({
       } else if (isPegOut.value) {
         labelThree = 'Sent to Bitcoin';
         if (props.isFlyover) {
-          if ((txDetails.value.status as unknown as FlyoverPegoutStatus) === FlyoverPegoutStatus
-            .COMPLETED) zero = 100;
-          else zero = 60;
+          zero = txDetails.value.status === FlyoverStatus.COMPLETED ? 100 : 50;
         } else {
           switch (txDetails.value.status as PegoutStatus) {
             case PegoutStatus.PENDING:
@@ -166,6 +165,8 @@ export default defineComponent({
               labelThree = '';
           }
         }
+      } else if (props.isFlyover) {
+        zero = txDetails.value.status === FlyoverStatus.COMPLETED ? 100 : 50;
       } else {
         const txDetailsPegIn = txDetails.value as PeginStatus;
         const btc = txDetailsPegIn.btc as BtcPeginStatus;

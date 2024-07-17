@@ -91,7 +91,7 @@ export enum TxStatusType {
 }
 
 export interface TxStatus {
-  txDetails?: PeginStatus | PegoutStatusDataModel;
+  txDetails?: PeginStatus | PegoutStatusDataModel | FlyoverStatusModel;
   type: TxStatusType;
   pegOutEstimatedFee: SatoshiBig;
   estimatedReleaseTimeInMinutes: Duration;
