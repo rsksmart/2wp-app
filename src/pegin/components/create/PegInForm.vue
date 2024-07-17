@@ -80,7 +80,7 @@ import EnvironmentContextProviderService from '@/common/providers/EnvironmentCon
 import { TxStatusType } from '@/common/types/store';
 import { TxSummaryOrientation } from '@/common/types/Status';
 import {
-  Feature, FeatureNames, QuotePegIn2WP, SatoshiBig, SessionState,
+  Feature, FeatureNames, FlyoverPeginState, QuotePegIn2WP, SatoshiBig, SessionState,
 } from '@/common/types';
 import {
   useAction, useGetter, useState, useStateAttribute,
@@ -114,6 +114,7 @@ export default defineComponent({
     const account = useStateAttribute<string>('web3Session', 'account');
     const flyoverFeature = useGetter<(name: FeatureNames) => Feature>('web3Session', constants.SESSION_GET_FEATURE);
     const pegInTxState = useState<PegInTxState>('pegInTx');
+    const flyoverPeginState = useState<FlyoverPeginState>('flyoverPegin');
     const refundAddress = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_REFUND_ADDRESS);
     const enoughBalanceSelectedFee = useGetter<boolean>('pegInTx', constants.PEGIN_TX_GET_ENOUGH_FEE_VALUE);
     const getPeginQuotes = useAction('flyoverPegin', constants.FLYOVER_PEGIN_GET_QUOTES);
@@ -124,11 +125,20 @@ export default defineComponent({
     const selectedQuoteHash = useStateAttribute<string>('flyoverPegin', 'selectedQuoteHash');
     const flyoverService = useStateAttribute<FlyoverService>('flyoverPegin', 'flyoverService');
 
-    const isReadyToCreate = computed((): boolean => pegInTxState.value.isValidAmountToTransfer
+    const isReadyToCreate = computed((): boolean => {
+      if (selected.value === constants.peginType.POWPEG) {
+        return pegInTxState.value.isValidAmountToTransfer
         && !pegInTxState.value.loadingFee
         && !!pegInTxState.value.rskAddressSelected
         && pegInTxState.value.rskAddressSelected !== '0x'
-        && enoughBalanceSelectedFee.value);
+        && enoughBalanceSelectedFee.value;
+      }
+
+      // TODO: check valid amount?
+      return !!flyoverPeginState.value.selectedQuoteHash
+        && !!flyoverPeginState.value.rootstockRecipientAddress
+        && flyoverPeginState.value.rootstockRecipientAddress !== '0x';
+    });
 
     const peginQuotes = computed(() => {
       if (!flyoverEnabled.value) {
