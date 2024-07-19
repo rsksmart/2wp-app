@@ -40,7 +40,7 @@
           <v-row class="mx-0 mb-8 mt-3" justify="space-around">
             <v-col class="d-flex justify-center">
               <v-btn-rsk @click="send">
-                <span>continue</span>
+                <span>Continue</span>
               </v-btn-rsk>
             </v-col>
           </v-row>
