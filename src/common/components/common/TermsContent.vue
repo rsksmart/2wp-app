@@ -15,9 +15,8 @@ export default defineComponent({
   name: 'TermsContent',
   setup() {
     const getFeature = useGetter<(f:FeatureNames) =>Feature>('web3Session', constants.SESSION_GET_FEATURE);
-    return () => h('div', {
-      innerHTML: md.render(getFeature.value(FeatureNames.TERMS_AND_CONDITIONS).value),
-    });
+    const termsContent = getFeature.value(FeatureNames.TERMS_AND_CONDITIONS).value || '';
+    return () => h('div', { innerHTML: md.render(termsContent) });
   },
 });
 </script>

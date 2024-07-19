@@ -52,21 +52,23 @@
             Transaction Status
           </v-btn>
         </div>
-        <v-row v-if="termsAndConditionsEnabled" class="d-flex justify-center">
-          <label for="termscheck" class="pa-0 d-flex align-center mx-3">
-            {{ '' }}
-          <input id="termscheck" type="checkbox" :checked="areTermsAccepted" @click="updateCookie">
-          </label>
-          <span>
-            I acknowledge and accept the
-            <a href="#" rel="noopener" @key-press="toggleCheck" class="px-1 text-bw-500"
-              @click.prevent="$emit('update:showDialog', true)">
-              terms and conditions
-            </a>
-          </span>
-        </v-row>
+        <template v-if="termsAndConditionsEnabled">
+          <v-row class="d-flex justify-center">
+            <label for="termscheck" class="pa-0 d-flex align-center mx-3">
+              {{ '' }}
+              <input id="termscheck" type="checkbox"
+                     :checked="areTermsAccepted" @click="setTermsAccepted">
+            </label>
+            <span>I acknowledge and accept
+              <a href="#" rel="noopener" @key-press="toggleCheck" class="px-1 text-bw-500"
+                 @click.prevent="$emit('update:showDialog', true)">
+                terms and conditions
+              </a>
+            </span>
+          </v-row>
+        </template>
         <v-row class="d-flex justify-center gc-2 align-baseline flex-wrap">
-          <span>To learn about the various RBTC Access Methods, visit the</span>
+          <span class="text-center">To learn about the various RBTC Access Methods, visit</span>
           <v-btn variant="text" color="orange" density="compact" class="pa-0 text-body-1"
             href="https://rootstock.io/rbtc/" target="_blank">
             RBTC Webpage
@@ -172,7 +174,7 @@ export default {
       }
     }
 
-    function updateCookie() {
+    function setTermsAccepted() {
       setTerms(!areTermsAccepted.value);
     }
 
@@ -197,7 +199,7 @@ export default {
       termsAndConditionsEnabled,
       showDialog,
       toggleCheck,
-      updateCookie,
+      setTermsAccepted,
       show,
       mdiCloseCircleOutline,
       constants,
