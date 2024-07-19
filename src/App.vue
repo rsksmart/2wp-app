@@ -1,6 +1,6 @@
 <template>
   <v-app class="h-screen">
-    <mobile v-if="smAndDown || mobile" />
+    <mobile v-if="isMobileDevice()" />
     <div class="d-flex flex-column h-100" v-else>
       <top />
       <div class="bg-background flex-grow-1">
@@ -22,7 +22,7 @@ import { EnvironmentAccessorService } from '@/common/services/enviroment-accesso
 import * as constants from '@/common/store/constants';
 import { useAction } from '@/common/store/helper';
 import { vuetifyNonce } from '@/common/plugins/vuetify';
-import { useDisplay } from 'vuetify';
+import { isMobileDevice } from '@/common/utils';
 
 export default {
   name: 'App',
@@ -35,7 +35,6 @@ export default {
   setup() {
     let scriptTag: HTMLScriptElement;
     let hotjarScriptTag: HTMLScriptElement;
-    const { smAndDown, mobile } = useDisplay();
     const getFeatures = useAction('web3Session', constants.SESSION_ADD_FEATURES);
     const getBtcPrice = useAction('pegInTx', constants.PEGIN_TX_ADD_BITCOIN_PRICE);
     const showTermsAndConditions = ref(false);
@@ -104,8 +103,7 @@ export default {
     return {
       showTermsDialog,
       showTermsAndConditions,
-      smAndDown,
-      mobile,
+      isMobileDevice,
     };
   },
 };
