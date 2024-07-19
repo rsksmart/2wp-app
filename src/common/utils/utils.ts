@@ -111,6 +111,11 @@ export function getTime(totalMinutes: number): string {
   return `${hours}:${paddedMinutes}`;
 }
 
+export function isMobileDevice() {
+  const platform = Bowser.getParser(window.navigator.userAgent).getPlatformType(true);
+  return platform === 'mobile';
+}
+
 export function isAllowedCurrentBrowser() {
   const browser = Bowser.getParser(window.navigator.userAgent);
   return browser.getBrowserName() === 'Chrome' || window.navigator.brave;
