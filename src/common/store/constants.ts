@@ -335,7 +335,6 @@ export const MAINNET_ADDRESS_NSEGWIT = '^[bc1][0-9A-HJ-NP-Za-z]{41,62}';
 export const POWPEG_RSKT_HEADER = '52534b5401';
 export const PEGIN_OUTPUTS = 3;
 export const COOKIE_EXPIRATION_HOURS = 12;
-export const FEATURES_COOKIE_EXPIRATION_HOURS = 48;
 
 export enum peginType {
   POWPEG = 'POWPEG',
