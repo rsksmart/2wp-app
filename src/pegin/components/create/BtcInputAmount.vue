@@ -239,7 +239,7 @@ export default defineComponent({
     }
 
     const isValidAmount = (amount: SatoshiBig) => {
-      const { minValue, maxValue } = peginConfiguration.value;
+      const { minValue, maxValue } = boundaries.value;
       return isBTCAmountValidRegex(amount.toBTCString())
           && amount.gte(minValue)
           && amount.lte(maxValue);
