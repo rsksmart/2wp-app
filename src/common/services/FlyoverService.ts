@@ -75,12 +75,9 @@ export default class FlyoverService {
   }
 
   public getProviders(): Promise<LiquidityProvider2WP[]> {
-    console.log('Calling get Providers...');
-    console.log(0);
     return new Promise<LiquidityProvider2WP[]>((resolve, reject) => {
       this.flyover?.getLiquidityProviders()
         .then((liquidityProviders: LiquidityProvider[]) => {
-          console.log(1);
           this.liquidityProviders = liquidityProviders;
           const providers2wp: LiquidityProvider2WP[] = liquidityProviders
             .map((provider: LiquidityProvider) => ({
@@ -98,12 +95,9 @@ export default class FlyoverService {
                 minTransactionValue: new WeiBig(provider.pegout.minTransactionValue, 'wei'),
               },
             }));
-          console.log(2);
           resolve(providers2wp);
         })
         .catch((error: Error) => {
-          console.log(3);
-          console.log(error);
           reject(new ServiceError(
             'FlyoverService',
             'getProviders',
@@ -135,7 +129,6 @@ export default class FlyoverService {
         valueToTransfer: valueToTransfer.toWeiBigInt(),
       })
         .then((quotes: PegoutQuote[]) => {
-          console.log('1');
           this.pegoutQuotes = quotes;
           const pegoutQuotes = quotes.map((pegoutQuote: PegoutQuote) => ({
             quote: {
@@ -148,19 +141,15 @@ export default class FlyoverService {
             },
             quoteHash: pegoutQuote.quoteHash,
           }));
-          console.log('2');
           const valids = pegoutQuotes.filter((quote: QuotePegOut2WP) => this.isValidPegoutQuote({
             rskRefundAddress,
             btcRefundAddress,
             btcRecipientAddress,
             valueToTransfer,
           }, quote));
-          console.log('3');
           resolve(valids);
         })
         .catch((error: Error) => {
-          console.log('4');
-          console.log(error);
           reject(new ServiceError(
             'FlyoverService',
             'getPegoutQuotes',
