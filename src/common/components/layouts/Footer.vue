@@ -20,6 +20,7 @@
       <a :href="urlApi" target="_blank" rel="noopener">Api Version: {{ apiVersion }}</a>
       <a :href="urlApp" target="_blank" rel="noopener">App Version: {{ appVersion }}</a>
       <a href="https://rootstock.io/ecosystem/" target="_blank" rel="noopener">Ecosystem</a>
+      <a href="#" rel="noopener" @click="showDialogPolicy">Policy</a>
     </div>
     <div class="d-flex ga-2">
       <v-btn variant="plain" href="https://twitter.com/rootstock_io" target="_blank" density="compact" :icon="mdiTwitter">
@@ -31,11 +32,13 @@
         :icon="mdiDiscord">
       </v-btn>
     </div>
+    <!-- eslint-disable-next-line max-len -->
+    <policy-dialog v-model:showDialogPolicy="showPolicyDialogRef" />
   </v-footer>
 </template>
 
 <script lang="ts">
-import { computed, onBeforeMount } from 'vue';
+import { computed, onBeforeMount, ref } from 'vue';
 import { useStore } from 'vuex';
 import { mdiTwitter, mdiGithub, mdiDiscord } from '@mdi/js';
 import { useRoute } from 'vue-router';
@@ -43,9 +46,13 @@ import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import * as constants from '@/common/store/constants';
 import { Feature } from '@/common/types';
 import { useTheme } from 'vuetify';
+import PolicyDialog from '@/common/components/common/PolicyDialog.vue';
 
 export default {
   name: 'FooterRsk',
+  components: {
+    PolicyDialog,
+  },
   setup() {
     const store = useStore();
     const appVersion = computed<string>(() => store.getters.appVersion);
@@ -57,6 +64,7 @@ export default {
     const termsAndConditionsEnabled = useStateAttribute<Feature>('web3Session', 'termsAndConditionsEnabled');
     const getApiVersion = useAction('web3Session', constants.SESSION_ADD_API_VERSION);
     const apiVersion = useStateAttribute<string>('web3Session', 'apiVersion');
+    const showPolicyDialogRef = ref(false);
 
     const urlApp = computed(() => `https://github.com/rsksmart/2wp-app/releases/tag/v${appVersion.value}`);
     const urlApi = computed(() => `https://github.com/rsksmart/2wp-api/releases/tag/v${apiVersion.value}`);
@@ -84,6 +92,15 @@ export default {
       return feature;
     }
 
+    function closeDialogPolicy() {
+      showPolicyDialogRef.value = false;
+    }
+
+    function showDialogPolicy() {
+      console.log('setting dialog == true');
+      showPolicyDialogRef.value = true;
+    }
+
     const { global: { current } } = useTheme();
     function getLogoSrc() {
       return current.value.dark ? require('@/assets/logo-rootstocklabs-white.svg') : require('@/assets/logo-rootstocklabs-black.svg');
@@ -104,6 +121,9 @@ export default {
       mdiDiscord,
       mdiGithub,
       termsAndConditionsEnabled,
+      showDialogPolicy,
+      closeDialogPolicy,
+      showPolicyDialogRef,
       getLogoSrc,
     };
   },
