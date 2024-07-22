@@ -86,7 +86,6 @@ export function isValidInput(input:NormalizedInput, userAddressList: string[]): 
         && tx.getId() === input.prev_hash
         && userAddressList.includes(expectedAddress);
     } catch (e) {
-      console.error(e);
       return false;
     }
   }

@@ -176,7 +176,8 @@
         </v-row>
         <v-row class="d-flex justify-end mx-11 my-5">
           <v-btn-rsk rounded variant="flat" width="110"
-                 @click="close">
+                 @click="close"
+                 :disabled="requiresScroll && !scrolledText && !areTermsAccepted">
             <span>Close</span>
           </v-btn-rsk>
         </v-row>
