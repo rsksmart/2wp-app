@@ -67,13 +67,13 @@
             </span>
           </v-row>
         </template>
-        <v-row class="d-flex justify-center gc-2 align-baseline flex-wrap">
+        <div class="d-flex justify-center gc-2 align-baseline flex-wrap">
           <span class="text-center">To learn about the various RBTC Access Methods, visit</span>
           <v-btn variant="text" color="orange" density="compact" class="pa-0 text-body-1"
-            href="https://rootstock.io/rbtc/" target="_blank">
+             href="https://rootstock.io/rbtc/" target="_blank">
             RBTC Webpage
           </v-btn>
-        </v-row>
+        </div>
       </v-col>
     </v-row>
   </v-container>
