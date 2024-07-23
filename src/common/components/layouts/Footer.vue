@@ -97,7 +97,6 @@ export default {
     }
 
     function showDialogPolicy() {
-      console.log('setting dialog == true');
       showPolicyDialogRef.value = true;
     }
 
