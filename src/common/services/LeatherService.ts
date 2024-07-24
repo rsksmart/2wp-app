@@ -9,15 +9,20 @@ import { WalletService } from '@/common/services/index';
 import * as constants from '@/common/store/constants';
 import { LeatherTx } from '@/pegin/middleware/TxBuilder/LeatherTxBuilder';
 import { AppConfig, UserSession, showConnect } from '@stacks/connect';
+import {
+  RpcErrorResponse,
+  LeatherProvider,
+  RpcResponse,
+} from '@leather.io/rpc';
 
 export default class LeatherService extends WalletService {
-  private btcProvider;
+  private btcProvider: typeof LeatherProvider;
 
   userSession: UserSession;
 
   constructor() {
     super();
-    this.btcProvider = window.btc;
+    this.btcProvider = window.LeatherProvider;
     const appConfig = new AppConfig();
     this.userSession = new UserSession({ appConfig });
   }
@@ -78,7 +83,7 @@ export default class LeatherService extends WalletService {
             icon: `${window.location.origin}/favicon.ico`,
           },
           onFinish: () => {
-            this.btcProvider = window.btc;
+            this.btcProvider = window.LeatherProvider;
             resolve();
           },
           onCancel: () => {
@@ -97,7 +102,7 @@ export default class LeatherService extends WalletService {
     return new Promise<WalletAddress[]>((resolve, reject) => {
       const walletAddresses: WalletAddress[] = [];
       this.btcProvider?.request('getAddresses')
-        .then((addresses) => {
+        .then((addresses: typeof RpcResponse) => {
           const [nativeSegwitAddress] = addresses.result.addresses;
           walletAddresses.push({
             address: nativeSegwitAddress.address,
@@ -106,7 +111,7 @@ export default class LeatherService extends WalletService {
           });
           resolve(walletAddresses);
         })
-        .catch((e) => {
+        .catch((e: Error) => {
           reject(e);
         });
     });
@@ -117,7 +122,7 @@ export default class LeatherService extends WalletService {
       this.btcProvider?.request('signPsbt', {
         hex: tx.hex,
       })
-        .then((response) => {
+        .then((response: typeof RpcResponse) => {
           const { hex } = response.result;
           const signedPsbt = bitcoin.Psbt.fromHex(hex)
             .finalizeAllInputs()
@@ -125,7 +130,7 @@ export default class LeatherService extends WalletService {
             .toHex();
           resolve({ signedTx: signedPsbt });
         })
-        .catch((e) => {
+        .catch((e: typeof RpcErrorResponse) => {
           if (e.error.code) {
             reject(new Error(e.error.message));
           } else {
