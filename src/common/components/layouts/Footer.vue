@@ -23,16 +23,16 @@
       <a href="#" rel="noopener" @click="showDialogPolicy">Policy</a>
     </div>
     <div class="d-flex ga-2">
-      <v-btn variant="plain" href="https://twitter.com/rootstock_io" target="_blank" density="compact" :icon="mdiTwitter">
+      <v-btn variant="plain" href="https://twitter.com/rootstock_io" target="_blank"
+             density="compact" :icon="mdiTwitter">
       </v-btn>
-      <v-btn variant="plain" href="https://github.com/rsksmart/2wp-app" target="_blank" density="compact"
-        :icon="mdiGithub">
+      <v-btn variant="plain" href="https://github.com/rsksmart/2wp-app" target="_blank"
+             density="compact" :icon="mdiGithub">
       </v-btn>
       <v-btn variant="plain" density="compact" :href="discordUrl" target="_blank"
         :icon="mdiDiscord">
       </v-btn>
     </div>
-    <!-- eslint-disable-next-line max-len -->
     <policy-dialog v-model:showDialogPolicy="showPolicyDialogRef" />
   </v-footer>
 </template>
