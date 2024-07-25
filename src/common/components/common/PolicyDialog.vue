@@ -10,7 +10,7 @@
         <v-row class="mx-0 mb-3 d-flex justify-center">
           <div class="d-flex text-h3 ga-1 flex-wrap">
             <span class='pa-2 bg-purple'>
-              Private Policy
+              Privacy Policy
             </span>
           </div>
         </v-row>
@@ -72,7 +72,7 @@
                 <p style="text-align: justify;"><span style="font-size:10pt;">Please refer to your device&rsquo;s help material to learn what controls you can use to remove cookies, block cookies, or disable IDFA tracking. If you do this, it may affect your use of the Services.</span></p>
                 <p style="text-align: justify;"><span style="font-size:10pt;">We may also partner with third parties who may collect anonymous usage or statistical data through your use of the Services (including, for example, sub-contractors in technical, payment and/or delivery services, business partners, advertising networks, analytics providers).</span></p>
                 <p style="text-align: justify;"><strong><span style="font-size:10pt;">Updating your information</span></strong></p>
-                <p style="text-align: justify;"><span style="font-size:10pt;">If you want to update the information you have previously given to us, you can contact us at&nbsp;</span><a href="mailto:legal@rootstocklabs.com"><u><span style="color:#1155cc;font-size:10pt;">legal@rootstocklabs.com</span></u></a><span style="font-size:10pt;">.&nbsp;</span></p>
+                <p style="text-align: justify;"><span style="font-size:10pt;">If you want to update the information you have previously given to us, you can contact us at&nbsp;</span><a href="mailto:legal@rootstocklabs.com"><u><span style="font-size:10pt;">legal@rootstocklabs.com</span></u></a><span style="font-size:10pt;">.&nbsp;</span></p>
                 <p style="text-align: justify;"><strong><u><span style="font-size:10pt;">HOW AND WHY WE USE/SHARE THE COLLECTED DATA</span></u></strong></p>
                 <p style="text-align: justify;"><strong><span style="font-size:10pt;">Provision of Services</span></strong></p>
                 <p style="text-align: justify;"><span style="font-size:10pt;">We may use the collected data in the following ways:</span></p>
@@ -143,7 +143,7 @@
                         <p style="text-align: justify;"><span style="font-size:10pt;">to a country that does not offer adequate protection but whose transfer has been governed by the standard contractual clauses of the applicable law or by implementing other appropriate cross-border transfer solutions to provide adequate protection.</span></p>
                     </li>
                 </ul>
-                <p style="text-align: justify;"><span style="font-size:10pt;">In the event that personal information is submitted, you agree to this transfer, storing or processing. If you would like more information about the mechanism via which your personal data is transferred please contact&nbsp;</span><a href="mailto:legal@rootstocklabs.com"><u><span style="color:#1155cc;font-size:10pt;">legal@rootstocklabs.com</span></u></a><span style="font-size:10pt;">.&nbsp;</span></p>
+                <p style="text-align: justify;"><span style="font-size:10pt;">In the event that personal information is submitted, you agree to this transfer, storing or processing. If you would like more information about the mechanism via which your personal data is transferred please contact&nbsp;</span><a href="mailto:legal@rootstocklabs.com"><u><span style="font-size:10pt;">legal@rootstocklabs.com</span></u></a><span style="font-size:10pt;">.&nbsp;</span></p>
                 <p style="text-align: justify;"><strong><span style="font-size:10pt;">Your Rights</span></strong></p>
                 <p style="text-align: justify;"><span style="font-size:10pt;">As a data subject, you have a number of rights in relation to your personal data. Below, you will be able to find a non-taxative list of the various rights that you have, as well as how you can exercise them.&nbsp;</span></p>
                 <ul>
@@ -161,11 +161,11 @@
                     </li>
                 </ul>
                 <p style="text-align: justify;">
-                    <span style="font-size:10pt;">To exercise any of the rights listed above and/or any other right stated by the applicable law, you can contact us to&nbsp;</span><a href="mailto:legal@rootstocklabs.com"><u><span style="color:#1155cc;font-size:10pt;">legal@rootstocklabs.com</span></u></a><span style="font-size:10pt;">. We will immediately process your request and inform you the results within the term established by the applicable law.&nbsp;</span></p>
+                    <span style="font-size:10pt;">To exercise any of the rights listed above and/or any other right stated by the applicable law, you can contact us to&nbsp;</span><a href="mailto:legal@rootstocklabs.com"><u><span style="font-size:10pt;">legal@rootstocklabs.com</span></u></a><span style="font-size:10pt;">. We will immediately process your request and inform you the results within the term established by the applicable law.&nbsp;</span></p>
                 <p style="text-align: justify;"><strong><span style="font-size:10pt;">Withdrawal of consent</span></strong></p>
                 <p style="text-align: justify;"><span style="font-size:10pt;">You may withdraw consent previously given by you to us at any time. However, this will not affect the lawfulness of any processing carried out before you withdraw your consent. If you withdraw your consent, we may not be able to provide certain products or services to you. We will advise you if this is the case at the time you withdraw your consent.</span></p>
                 <p style="text-align: justify;"><strong><u><span style="font-size:10pt;">CONTACT DETAILS</span></u></strong></p>
-                <p style="text-align: justify;"><span style="font-size:10pt;">If you have any queries regarding this Privacy Policy, if you wish to exercise any of your rights set out above or if you think that the Privacy Policy has not been followed, please contact us by emailing at&nbsp;</span><a href="mailto:legal@rootstocklabs.com"><u><span style="color:#1155cc;font-size:10pt;">legal@rootstocklabs.com</span></u></a><span style="font-size:10pt;">.</span></p>
+                <p style="text-align: justify;"><span style="font-size:10pt;">If you have any queries regarding this Privacy Policy, if you wish to exercise any of your rights set out above or if you think that the Privacy Policy has not been followed, please contact us by emailing at&nbsp;</span><a href="mailto:legal@rootstocklabs.com"><u><span style="font-size:10pt;">legal@rootstocklabs.com</span></u></a><span style="font-size:10pt;">.</span></p>
                 <p><br></p>
                 <p><br></p>
                 <p><br></p>
