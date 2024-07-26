@@ -25,27 +25,17 @@
       </v-row>
     </v-container>
   </template>
-  <template v-else-if="isHdWallet">
-    <confirmation-steps>
-      <v-btn-rsk
-        v-if="!confirmTxState.matches(['confirming'])"
-        @click="toTrackId"
-        :disabled="confirmTxState.matches(['error', 'goingHome'])">
-        Send
-      </v-btn-rsk>
-      <v-progress-circular v-else indeterminate :size="60" :width="8" />
-    </confirmation-steps>
-  </template>
-  <template v-else>
-    <v-row>
-      <v-col align="center">
-        <p class="text-h4">
-          See your {{ walletService.name().formal_name }} wallet to confirm your transaction!
-        </p>
-        <v-progress-circular indeterminate :size="60" :width="8" class="mt-8"/>
-      </v-col>
-    </v-row>
-  </template>
+<template v-else>
+  <confirmation-steps :hd-wallet="isHdWallet">
+    <v-btn-rsk
+      v-if="!confirmTxState.matches(['confirming'])"
+      @click="toTrackId"
+      :disabled="confirmTxState.matches(['error', 'goingHome'])">
+      Send
+    </v-btn-rsk>
+    <v-progress-circular v-else indeterminate :size="60" :width="8" class="mt-2" />
+  </confirmation-steps>
+</template>
 </template>
 
 <script lang="ts">
