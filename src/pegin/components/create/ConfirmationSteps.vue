@@ -285,7 +285,8 @@
               </span>
             </v-row>
             <v-col class="pl-4">
-              <v-row no-gutters class="mb-2">
+              <div v-if="!flyover">
+                <v-row no-gutters class="mb-2">
                 <span>
                   OP Return
                 </span>
@@ -303,9 +304,10 @@
                             variant="outlined" density="compact" rows="1"
                             :model-value="opReturnData" />
               </v-row>
+              </div>
               <v-row no-gutters class="mb-2 mt-4">
                 <span>
-                  Federation
+                  {{ flyover ? 'Provider' : 'Federation' }}
                 </span>
               </v-row>
               <v-row no-gutters>
@@ -321,24 +323,26 @@
                             variant="outlined" density="compact" rows="1"
                             :model-value="rskFederationAddress" />
               </v-row>
-              <v-row no-gutters class="mb-2 mt-4">
-                <span>
-                  Change
-                </span>
-              </v-row>
-              <v-row no-gutters>
-                <v-text-field readonly hide-details
-                              class="text-bw-400 mb-2"
-                              variant="outlined"
-                              density="compact"
-                              :model-value="changeAmountString" />
-              </v-row>
-              <v-row no-gutters>
-                <v-textarea hide-details auto-grow readonly
-                            class="text-bw-400"
-                            variant="outlined" density="compact" rows="1"
-                            :model-value="changeAddress" />
-              </v-row>
+              <div v-if="existChange" >
+                <v-row no-gutters class="mb-2 mt-4">
+                  <span>
+                    Change
+                  </span>
+                </v-row>
+                <v-row no-gutters>
+                  <v-text-field readonly hide-details
+                                class="text-bw-400 mb-2"
+                                variant="outlined"
+                                density="compact"
+                                :model-value="changeAmountString" />
+                </v-row>
+                <v-row no-gutters>
+                  <v-textarea hide-details auto-grow readonly
+                              class="text-bw-400"
+                              variant="outlined" density="compact" rows="1"
+                              :model-value="changeAddress" />
+                </v-row>
+              </div>
             </v-col>
           </v-container>
         </v-card>
@@ -426,6 +430,7 @@ import { computed, defineComponent } from 'vue';
 import SatoshiBig from '@/common/types/SatoshiBig';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { PegInTxState } from '@/common/types/pegInTx';
+import { QuotePegIn2WP } from '@/common/types';
 import * as constants from '@/common/store/constants';
 import { useGetter, useState } from '@/common/store/helper';
 import { mdiInformation } from '@mdi/js';
@@ -443,6 +448,19 @@ export default defineComponent({
     const pegInTxState = useState<PegInTxState>('pegInTx');
     const safeFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
     const walletName = useGetter<string>('pegInTx', constants.WALLET_NAME);
+    const selectedQuote = useGetter<QuotePegIn2WP>('flyoverPegin', constants.FLYOVER_PEGIN_GET_SELECTED_QUOTE);
+    const flyover = computed(() => pegInTxState.value.peginType === constants.peginType.FLYOVER);
+    const changeIdx = flyover.value ? 1 : 2;
+
+    function getProviderFee(): SatoshiBig {
+      return selectedQuote.value.quote.productFeeAmount
+        .plus(selectedQuote.value.quote.callFee)
+        .plus(new SatoshiBig(selectedQuote.value.quote.gasFee.toRBTCString(), 'btc'));
+    }
+
+    const amountToTransfer = computed(() => (flyover.value
+      ? selectedQuote.value.quote.value.plus(getProviderFee())
+      : pegInTxState.value.amountToTransfer));
 
     const rskFederationAddress = computed(():string => pegInTxState.value
       .normalizedTx.outputs[1]?.address?.trim()
@@ -454,7 +472,7 @@ export default defineComponent({
     });
 
     const changeAddress = computed((): string => {
-      const [, , change] = pegInTxState.value.normalizedTx.outputs;
+      const change = pegInTxState.value.normalizedTx.outputs[changeIdx];
       if (change && change.address) {
         return change.address;
       }
@@ -462,18 +480,21 @@ export default defineComponent({
     });
 
     const changeAmountString = computed(() => {
-      const changeAmountInSB = new SatoshiBig(pegInTxState.value.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
+      const changeAmountInSB = new SatoshiBig(pegInTxState.value.normalizedTx.outputs[changeIdx]?.amount ?? 0, 'satoshi');
       return `Amount: ${changeAmountInSB.toBTCTrimmedString()} ${environmentContext.getBtcTicker()}`;
     });
 
-    const amountTransferString = computed(() => `Amount: ${pegInTxState
-      .value.amountToTransfer.toBTCTrimmedString()}  ${environmentContext.getBtcTicker()}`);
+    const amountTransferString = computed(() => `Amount: ${amountToTransfer.value.toBTCTrimmedString()}  ${environmentContext.getBtcTicker()}`);
 
-    const amountPlusFeeString = computed(() => `Amount: ${pegInTxState
-      .value.amountToTransfer.plus(safeFee.value).toBTCTrimmedString()}  ${environmentContext.getBtcTicker()}`);
+    const amountPlusFeeString = computed(() => `Amount: ${amountToTransfer.value.plus(safeFee.value).toBTCTrimmedString()}  ${environmentContext.getBtcTicker()}`);
 
     const feeString = computed(() => `Fee: ${safeFee
       .value.toBTCTrimmedString()}  ${environmentContext.getBtcTicker()}`);
+
+    const existChange = computed(() => {
+      const change = new SatoshiBig(pegInTxState.value.normalizedTx.outputs[changeIdx]?.amount ?? 0, 'satoshi');
+      return change.gt(0);
+    });
 
     return {
       environmentContext,
@@ -488,6 +509,8 @@ export default defineComponent({
       feeString,
       walletName,
       amountPlusFeeString,
+      existChange,
+      flyover,
     };
   },
 });
