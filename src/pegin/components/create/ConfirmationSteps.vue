@@ -7,9 +7,9 @@
       <v-col cols="3" class="pl-0">
         <v-card variant="outlined" color="bw-400">
           <v-container>
-            <v-row justify="start" class="mt-2">
+            <v-row justify="start" class="mt-2 mb-6 px-3">
               <v-img :src="require('@/assets/exchange/steps/0.svg')"
-                     position="left top" height="180" contain/>
+                     position="left top" height="136" contain/>
             </v-row>
             <v-row no-gutters>
               <p class="text-h5 bg-orange pa-1 mb-1">
@@ -22,14 +22,14 @@
               </p>
             </v-row>
             <v-row no-gutters>
-              <p class="text-h6 text-off-white">
+              <span class="text-h4">
                 See on
-              </p>
+              </span>
             </v-row>
             <v-row no-gutters class="mb-5">
-              <p class="text-h6 text-off-white">
+              <span class="text-h4">
                 {{ walletName }}
-              </p>
+              </span>
             </v-row>
             <v-row no-gutters>
               <v-text-field readonly hide-details
@@ -70,9 +70,9 @@
       <v-col cols="3">
         <v-card variant="outlined" color="bw-400">
           <v-container>
-            <v-row justify="start" class="mt-2">
+            <v-row justify="start" class="mt-2 mb-6 px-3">
               <v-img :src="require('@/assets/exchange/steps/1.svg')"
-                     position="left top" height="180" contain/>
+                     position="left top" height="136" contain/>
             </v-row>
             <v-row no-gutters>
               <p class="text-h5 bg-teal pa-1 mb-1">
@@ -85,14 +85,14 @@
               </p>
             </v-row>
             <v-row no-gutters>
-              <p class="text-h6 text-off-white">
+              <span class="text-h4">
                 See on
-              </p>
+              </span>
             </v-row>
             <v-row no-gutters class="mb-5">
-              <p class="text-h6 text-off-white">
+              <span class="text-h4">
                 {{ walletName }}
-              </p>
+              </span>
             </v-row>
             <v-row no-gutters>
               <v-text-field readonly hide-details
@@ -132,9 +132,9 @@
       <v-col cols="3">
         <v-card variant="outlined" color="bw-400">
           <v-container>
-            <v-row justify="start" class="mt-2">
+            <v-row justify="start" class="mt-2 mb-6 px-3">
               <v-img :src="require('@/assets/exchange/steps/2.svg')"
-                     position="left top" height="180" contain/>
+                     position="left top" height="136" contain/>
             </v-row>
             <v-row no-gutters>
               <p class="text-h5 bg-green pa-1 mb-1">
@@ -147,14 +147,14 @@
               </p>
             </v-row>
             <v-row no-gutters>
-              <p class="text-h6 text-off-white">
+              <span class="text-h4">
                 See on
-              </p>
+              </span>
             </v-row>
             <v-row no-gutters class="mb-5">
-              <p class="text-h6 text-off-white">
+              <span class="text-h4">
                 {{ walletName }}
-              </p>
+              </span>
             </v-row>
             <v-row no-gutters>
               <v-text-field readonly hide-details
@@ -194,9 +194,9 @@
       <v-col cols="3" class="pr-0">
         <v-card variant="outlined" color="bw-400">
           <v-container>
-            <v-row justify="start" class="mt-2">
+            <v-row justify="start" class="mt-2 mb-6 px-3">
               <v-img :src="require('@/assets/exchange/steps/3.svg')"
-                     position="left top" height="180" contain/>
+                     position="left top" height="136" contain/>
             </v-row>
             <v-row no-gutters>
               <p class="text-h5 bg-pink pa-1 mb-1">
@@ -209,14 +209,14 @@
               </p>
             </v-row>
             <v-row no-gutters>
-              <p class="text-h6 text-off-white">
+              <span class="text-h4">
                 See on
-              </p>
+              </span>
             </v-row>
             <v-row no-gutters class="mb-5">
-              <p class="text-h6 text-off-white">
+              <span class="text-h4">
                 {{ walletName }}
-              </p>
+              </span>
             </v-row>
             <v-row no-gutters>
               <v-text-field readonly hide-details
@@ -280,15 +280,15 @@
             </v-row>
 
             <v-row no-gutters class="mb-3">
-              <p class="text-h6 text-off-white">
+              <span class="text-h4">
                 See on {{ walletName }}
-              </p>
+              </span>
             </v-row>
             <v-col class="pl-4">
               <v-row no-gutters class="mb-2">
-                <p class="text-h7 text-off-white">
+                <span>
                   OP Return
-                </p>
+                </span>
               </v-row>
               <v-row no-gutters>
                 <v-text-field readonly hide-details
@@ -304,9 +304,9 @@
                             :model-value="opReturnData" />
               </v-row>
               <v-row no-gutters class="mb-2 mt-4">
-                <p class="text-h7 text-off-white">
+                <span>
                   Federation
-                </p>
+                </span>
               </v-row>
               <v-row no-gutters>
                 <v-text-field readonly hide-details
@@ -322,9 +322,9 @@
                             :model-value="rskFederationAddress" />
               </v-row>
               <v-row no-gutters class="mb-2 mt-4">
-                <p class="text-h7 text-off-white">
+                <span>
                   Change
-                </p>
+                </span>
               </v-row>
               <v-row no-gutters>
                 <v-text-field readonly hide-details
@@ -367,15 +367,15 @@
                 </v-col>
               </v-row>
               <v-row no-gutters>
-                <p class="text-h6 text-off-white">
+                <span class="text-h6">
                   See on {{ walletName }}
-                </p>
+                </span>
               </v-row>
               <v-col class="pl-4">
                 <v-row no-gutters class="mb-2">
-                  <p class="text-h7 text-off-white">
+                  <span>
                     Chain Fee
-                  </p>
+                  </span>
                 </v-row>
                 <v-row no-gutters>
                   <v-text-field readonly hide-details
@@ -385,9 +385,9 @@
                                 :model-value="feeString" />
                 </v-row>
                 <v-row no-gutters class="mb-2 mt-4">
-                  <p class="text-h7 text-off-white">
+                  <span>
                     Total
-                  </p>
+                  </span>
                 </v-row>
                 <v-row no-gutters>
                   <v-text-field readonly hide-details
