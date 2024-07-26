@@ -3,7 +3,7 @@
     <v-row>
       <p>Confirm Transaction on your {{ walletName }} Wallet</p>
     </v-row>
-    <v-row>
+    <v-row v-if="hdWallet">
       <v-col cols="3" class="pl-0">
         <v-card variant="outlined" color="bw-400">
           <v-container>
@@ -254,6 +254,167 @@
         </v-card>
       </v-col>
     </v-row>
+    <v-row v-else class="d-flex">
+      <v-col cols="6" class="pl-0">
+        <v-card variant="outlined" color="bw-400">
+          <v-container>
+            <v-row justify="start" class="mt-2 mb-8">
+              <v-col cols="4">
+                <v-img :src="require('@/assets/exchange/steps/0.svg')"
+                position="left top" height="136" contain/>
+              </v-col>
+              <v-col class="d-flex">
+                <div class="flex-column align-self-end">
+                  <v-row no-gutters>
+                    <p class="text-h5 bg-orange pa-1 mb-1">
+                      Transaction
+                    </p>
+                  </v-row>
+                  <v-row no-gutters>
+                    <p class="text-h5 bg-orange pa-1">
+                      Outputs
+                    </p>
+                  </v-row>
+                </div>
+              </v-col>
+            </v-row>
+
+            <v-row no-gutters class="mb-3">
+              <p class="text-h6 text-off-white">
+                See on {{ walletName }}
+              </p>
+            </v-row>
+            <v-col class="pl-4">
+              <v-row no-gutters class="mb-2">
+                <p class="text-h7 text-off-white">
+                  OP Return
+                </p>
+              </v-row>
+              <v-row no-gutters>
+                <v-text-field readonly hide-details
+                              class="text-bw-400 mb-2"
+                              variant="outlined"
+                              density="compact"
+                              model-value="Amount: 0" />
+              </v-row>
+              <v-row no-gutters>
+                <v-textarea hide-details auto-grow readonly
+                            class="text-bw-400"
+                            variant="outlined" density="compact" rows="1"
+                            :model-value="opReturnData" />
+              </v-row>
+              <v-row no-gutters class="mb-2 mt-4">
+                <p class="text-h7 text-off-white">
+                  Federation
+                </p>
+              </v-row>
+              <v-row no-gutters>
+                <v-text-field readonly hide-details
+                              class="text-bw-400 mb-2"
+                              variant="outlined"
+                              density="compact"
+                              :model-value="amountTransferString" />
+              </v-row>
+              <v-row no-gutters>
+                <v-textarea hide-details auto-grow readonly
+                            class="text-bw-400"
+                            variant="outlined" density="compact" rows="1"
+                            :model-value="rskFederationAddress" />
+              </v-row>
+              <v-row no-gutters class="mb-2 mt-4">
+                <p class="text-h7 text-off-white">
+                  Change
+                </p>
+              </v-row>
+              <v-row no-gutters>
+                <v-text-field readonly hide-details
+                              class="text-bw-400 mb-2"
+                              variant="outlined"
+                              density="compact"
+                              :model-value="changeAmountString" />
+              </v-row>
+              <v-row no-gutters>
+                <v-textarea hide-details auto-grow readonly
+                            class="text-bw-400"
+                            variant="outlined" density="compact" rows="1"
+                            :model-value="changeAddress" />
+              </v-row>
+            </v-col>
+          </v-container>
+        </v-card>
+        </v-col>
+        <v-col cols="6" class="pr-0">
+          <v-card variant="outlined" color="bw-400" height="100%">
+            <v-container>
+              <v-row justify="start" class="mt-2 mb-8">
+                <v-col cols="4">
+                  <v-img :src="require('@/assets/exchange/steps/3.svg')"
+                  position="left top" height="136" contain/>
+                </v-col>
+                <v-col class="d-flex">
+                  <div class="flex-column align-self-end">
+                    <v-row no-gutters>
+                      <p class="text-h5 bg-pink pa-1 mb-1">
+                        Transaction
+                      </p>
+                    </v-row>
+                    <v-row no-gutters>
+                      <p class="text-h5 bg-pink pa-1">
+                        Fee
+                      </p>
+                    </v-row>
+                  </div>
+                </v-col>
+              </v-row>
+              <v-row no-gutters>
+                <p class="text-h6 text-off-white">
+                  See on {{ walletName }}
+                </p>
+              </v-row>
+              <v-col class="pl-4">
+                <v-row no-gutters class="mb-2">
+                  <p class="text-h7 text-off-white">
+                    Chain Fee
+                  </p>
+                </v-row>
+                <v-row no-gutters>
+                  <v-text-field readonly hide-details
+                                class="text-bw-400 mb-2"
+                                variant="outlined"
+                                density="compact"
+                                :model-value="feeString" />
+                </v-row>
+                <v-row no-gutters class="mb-2 mt-4">
+                  <p class="text-h7 text-off-white">
+                    Total
+                  </p>
+                </v-row>
+                <v-row no-gutters>
+                  <v-text-field readonly hide-details
+                                class="text-bw-400 mb-2"
+                                variant="outlined"
+                                density="compact"
+                                :model-value="amountPlusFeeString" />
+                </v-row>
+              </v-col>
+            </v-container>
+          </v-card>
+        </v-col>
+      <v-row no-gutters>
+        <v-text-field readonly hide-details class="mt-2 white"
+                      bg-color="rgba(116, 189, 1, 0.4)" base-color="green"
+                      variant="outlined"
+                      density="compact"
+                      :model-value="`Press Confirm on ${walletName}`">
+          <template v-slot:prepend-inner>
+            <v-icon color="white">
+              {{ mdiInformation }}
+            </v-icon>
+          </template>
+
+        </v-text-field>
+      </v-row>
+    </v-row>
     <v-row justify="end">
       <slot />
     </v-row>
@@ -271,6 +432,12 @@ import { mdiInformation } from '@mdi/js';
 
 export default defineComponent({
   name: 'ConfirmationSteps',
+  props: {
+    hdWallet: {
+      type: Boolean,
+      default: false,
+    },
+  },
   setup() {
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const pegInTxState = useState<PegInTxState>('pegInTx');
@@ -302,6 +469,9 @@ export default defineComponent({
     const amountTransferString = computed(() => `Amount: ${pegInTxState
       .value.amountToTransfer.toBTCTrimmedString()}  ${environmentContext.getBtcTicker()}`);
 
+    const amountPlusFeeString = computed(() => `Amount: ${pegInTxState
+      .value.amountToTransfer.plus(safeFee.value).toBTCTrimmedString()}  ${environmentContext.getBtcTicker()}`);
+
     const feeString = computed(() => `Fee: ${safeFee
       .value.toBTCTrimmedString()}  ${environmentContext.getBtcTicker()}`);
 
@@ -317,6 +487,7 @@ export default defineComponent({
       amountTransferString,
       feeString,
       walletName,
+      amountPlusFeeString,
     };
   },
 });
