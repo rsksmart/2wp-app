@@ -54,6 +54,7 @@ export default class FlyoverService {
             network: this.flyovernetwork,
             rskConnection: connection,
             captchaTokenResolver: this.tokenResolver,
+            disableChecksum: true,
           });
           resolve();
         })
