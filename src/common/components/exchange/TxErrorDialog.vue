@@ -26,6 +26,7 @@
 
 <script lang="ts">
 import { ref, defineComponent } from 'vue';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
   name: 'TxErrorDialog',
@@ -35,9 +36,10 @@ export default defineComponent({
   },
   setup(props, context) {
     const show = ref(props.showTxErrorDialog);
+    const router = useRouter();
 
     function toExchange() {
-      window.location.href = '/';
+      router.push({ name: 'Home' });
     }
 
     function closeErrorDialog() {

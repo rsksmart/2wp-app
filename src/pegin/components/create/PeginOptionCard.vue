@@ -106,7 +106,7 @@ export default defineComponent({
         title: 'Native Powpeg',
         subtitleColor: 'purple',
         link: 'https://dev.rootstock.io/rsk/architecture/powpeg/',
-        estimatedTime: () => '34 Hours',
+        estimatedTime: () => '17 hours',
         amountToTransfer: () => pegInTxState.value.amountToTransfer
           .plus(selectedFee.value),
         providerFee: () => new SatoshiBig('0', 'btc'),
