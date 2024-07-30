@@ -40,6 +40,7 @@
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import ServiceError from '@/common/utils/ServiceError';
 import { ref, defineComponent, PropType } from 'vue';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
   name: 'FullTxErrorDialog',
@@ -52,11 +53,12 @@ export default defineComponent({
   },
   setup(props, context) {
     const show = ref(props.showTxErrorDialog);
+    const router = useRouter();
 
     const showDevError = EnvironmentAccessorService.getEnvironmentVariables().debugMode;
 
     function toExchange() {
-      window.location.href = '/';
+      router.push({ name: 'Home' });
     }
 
     function closeErrorDialog() {
