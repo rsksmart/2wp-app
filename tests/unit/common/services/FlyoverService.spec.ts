@@ -17,6 +17,7 @@ describe('FlyoverService', () => {
       providerType: 'both',
       status: true,
       siteKey: '6LfOQC8pAAAAAGyu6RntC7DHxXDiU_-DuaXdVYaD',
+      liquidityCheckEnabled: false,
       pegin: {
         fee: 100000000000000n,
         minTransactionValue: 5000000000000000n,
