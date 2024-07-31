@@ -18,6 +18,9 @@ export default class LeatherService extends WalletService {
     super();
     this.btcProvider = window.btc;
     this.stacksWorker = new Worker(new URL('@/common/services/StacksWorker.ts', import.meta.url), { type: 'module' });
+    const stacksSession = window.localStorage.getItem('blockstack-session');
+    const document = JSON.parse(JSON.stringify(window.document));
+    this.stacksWorker.postMessage({ document, stacksSession });
   }
 
   // eslint-disable-next-line class-methods-use-this
