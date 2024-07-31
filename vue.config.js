@@ -31,7 +31,9 @@ module.exports = defineConfig({
     ],
   },
   devServer: {
-    https: true,
+    server: {
+      type: 'https',
+    },
   },
   pluginOptions: {
     i18n: {
