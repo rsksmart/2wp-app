@@ -350,3 +350,6 @@ export enum peginType {
   POWPEG = 'POWPEG',
   FLYOVER = 'FLYOVER'
 }
+
+export const BTC_AVG_BLOCK_TIME_IN_SECONDS = 600;
+export const RSK_AVG_BLOCK_TIME_IN_SECONDS = 30;

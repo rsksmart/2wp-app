@@ -342,9 +342,9 @@ export function setCookie(
   document.cookie = `${cookieName}=${cookieValue};${expires};path=/`;
 }
 
-export function blockConfirmationsToTimeString(confirmations: number): string {
-  const BLOCK_CONFIRMATION_TIME_IN_MINUTES = 10;
-  return moment.duration(confirmations * BLOCK_CONFIRMATION_TIME_IN_MINUTES, 'minutes').humanize(false, { h: 34 });
+export function blockConfirmationsToTimeString(confirmations: number, chain: 'btc' | 'rsk' = 'rsk'): string {
+  const timeInSeconds = chain === 'btc' ? constants.BTC_AVG_BLOCK_TIME_IN_SECONDS : constants.RSK_AVG_BLOCK_TIME_IN_SECONDS;
+  return moment.duration(confirmations * timeInSeconds, 'seconds').humanize(false, { h: 34 });
 }
 
 export function awaitTimeout(ms: number) {
