@@ -82,7 +82,7 @@
       />
     </template>
     <quote-diff-dialog :show-dialog="showQuoteDiff"
-      :differences="quoteDifferences" @continue="showQuoteDiff = false"/>
+      :differences="quoteDifferences" @continue="continueHandler"/>
   </v-container>
 </template>
 
@@ -134,7 +134,6 @@ export default defineComponent({
     const showAddressDialog = ref(false);
     const loadingQuotes = ref(false);
     const showStep = ref(false);
-    const showQuoteDiff = ref(false);
     const isWalletAuthorizedToSign = ref(true);
 
     const pegOutTxState = useState<PegOutTxState>('pegOutTx');
@@ -146,6 +145,7 @@ export default defineComponent({
     const clearFlyoverState = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_CLEAR_STATE);
     const getPegoutQuotes = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_GET_QUOTES);
     const quotes = useStateAttribute<Record<number, QuotePegOut2WP[]>>('flyoverPegout', 'quotes');
+    const quoteDifferences = useStateAttribute<Array<ObjectDifference>>('flyoverPegout', 'differences');
     const selectedQuote = useGetter<QuotePegOut2WP>('flyoverPegout', constants.FLYOVER_PEGOUT_GET_SELECTED_QUOTE);
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
     const isEnoughBalance = useGetter<boolean>('pegOutTx', constants.PEGOUT_TX_IS_ENOUGH_BALANCE);
@@ -154,7 +154,7 @@ export default defineComponent({
     const isMetamaskConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_METAMASK_CONNECTED);
     const setSelectedQuoteHash = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE_HASH);
     const getSelectedQuote = useGetter<QuotePegOut2WP>('flyoverPegout', constants.FLYOVER_PEGOUT_GET_SELECTED_QUOTE);
-    const selectedOption = ref('');
+    const selectedOption = ref<string | undefined>('');
 
     const pegoutQuotes = computed(() => {
       const quoteList: QuotePegOut2WP[] = [];
@@ -208,18 +208,7 @@ export default defineComponent({
       return '';
     });
 
-    const quoteDifferences = computed(() => {
-      let differences: Array<ObjectDifference> = [];
-      if (flyoverPegoutState.value.differences.length > 0) {
-        differences = flyoverPegoutState.value.differences;
-        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-        showQuoteDiff.value = true;
-      } else {
-        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-        showQuoteDiff.value = false;
-      }
-      return differences;
-    });
+    const showQuoteDiff = computed(() => quoteDifferences.value.length > 0);
 
     const validAmountToReceive = computed((): boolean => estimatedBtcToReceive.value.gt(0));
 
@@ -362,6 +351,11 @@ export default defineComponent({
       return new SatoshiBig(finalAmount, 'btc').toBTCTrimmedString();
     });
 
+    function continueHandler() {
+      setSelectedQuoteHash('');
+      selectedOption.value = undefined;
+    }
+
     return {
       environmentContext,
       showAddressDialog,
@@ -387,6 +381,7 @@ export default defineComponent({
       mdiArrowRight,
       amountToReceive,
       isFlyoverReady,
+      continueHandler,
     };
   },
 });
