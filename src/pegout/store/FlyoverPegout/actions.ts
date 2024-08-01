@@ -129,4 +129,7 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
   [constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE_HASH]: ({ commit }, quoteHash: string) => {
     commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, quoteHash);
   },
+  [constants.FLYOVER_PEGOUT_CLEAR_QUOTE_DIFFERENCES]: ({ commit }) => {
+    commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCES, []);
+  },
 };
