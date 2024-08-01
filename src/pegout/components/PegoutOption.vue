@@ -68,7 +68,7 @@
     <div class="d-flex flex-column">
       <span>Estimated Time to Receive</span>
       <span class="text-bw-400">
-        {{ blockConfirmationsToTimeString(quote.quote.depositConfirmations) }}
+        {{ estimatedTimeToReceive }}
       </span>
     </div>
 
@@ -193,6 +193,14 @@ export default defineComponent({
         .toBTCTrimmedString();
     });
 
+    const estimatedTimeToReceive = computed(() => {
+      const { depositConfirmations } = props.quote.quote;
+      if (depositConfirmations === 0) {
+        return '33 hours';
+      }
+      return blockConfirmationsToTimeString(depositConfirmations);
+    });
+
     const header = computed(() => {
       if (isFlyover.value) {
         return {
@@ -262,6 +270,7 @@ export default defineComponent({
       mdiInformationOutline,
       selectOption,
       hasChanged,
+      estimatedTimeToReceive,
     };
   },
 });
