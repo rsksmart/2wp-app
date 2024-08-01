@@ -1,10 +1,12 @@
 import {
   FlyoverPegoutState, QuotePegOut2WP, RootState, WeiBig,
+  FlyoverCall, LiquidityProvider2WP, TxStatusType,
 } from '@/common/types';
 import { ActionTree } from 'vuex';
 import * as constants from '@/common/store/constants';
 import { BridgeService } from '@/common/services/BridgeService';
 import { compareObjects, promiseWithTimeout } from '@/common/utils';
+import { ApiService } from '@/common/services';
 
 export const actions: ActionTree<FlyoverPegoutState, RootState> = {
   [constants.FLYOVER_PEGOUT_INIT]: async ({ state, dispatch }) => {
@@ -12,9 +14,24 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
       .then(() => dispatch(constants.FLYOVER_PEGOUT_GET_PROVIDERS));
   },
   [constants.FLYOVER_PEGOUT_GET_PROVIDERS]: async ({ state, commit }) => {
-    state.flyoverService.getProviders()
-      .then((providers) => commit(constants.FLYOVER_PEGOUT_SET_PROVIDERS, providers))
-      .catch((e) => console.log(e));
+    let result = constants.FlyoverCallResult.ERROR;
+    const flyoverCallPayload = {
+      operationType: TxStatusType.FLYOVER_PEGOUT,
+      functionType: constants.FlyoverCallFunction.LPS,
+    };
+    try {
+      const providers: LiquidityProvider2WP[] = await state.flyoverService.getProviders();
+      commit(constants.FLYOVER_PEGOUT_SET_PROVIDERS, providers);
+      result = constants.FlyoverCallResult.SUCCESS;
+    } catch (e) {
+      console.error(`Error getting flyover providers: ${e}`);
+    } finally {
+      try {
+        await ApiService.registerFlyoverCall({ ...flyoverCallPayload, result } as FlyoverCall);
+      } catch (e) {
+        console.error(`Error registering flyover ${flyoverCallPayload.functionType} call: ${e}`);
+      }
+    }
   },
   [constants.FLYOVER_PEGOUT_ADD_AMOUNT]: ({ commit }, amount: WeiBig) => {
     commit(constants.FLYOVER_PEGOUT_SET_AMOUNT, amount);
@@ -44,20 +61,35 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
       const quotePromisesWithTimeout = quotePromises.map(
         (promise) => promiseWithTimeout(promise, MAX_RESPONSE_TIME_IN_MS),
       );
-      Promise.allSettled(quotePromisesWithTimeout)
-        .then((responses) => responses.forEach((response, index) => {
-          if (response.status === 'fulfilled') {
-            quotesByProvider = {
-              ...quotesByProvider,
-              [state.liquidityProviders[index].id]: response.value,
-            };
-          }
-        }))
-        .then(() => {
+      let result = constants.FlyoverCallResult.ERROR;
+      const flyoverCallPayload = {
+        operationType: TxStatusType.FLYOVER_PEGOUT,
+        functionType: constants.FlyoverCallFunction.QUOTE,
+      };
+      (async () => {
+        try {
+          const responses = await Promise.allSettled(quotePromisesWithTimeout);
+          responses.forEach((response, index) => {
+            if (response.status === constants.FULFILLED) {
+              quotesByProvider = {
+                ...quotesByProvider,
+                [state.liquidityProviders[index].id]: response.value,
+              };
+            }
+          });
+          result = constants.FlyoverCallResult.SUCCESS;
           commit(constants.FLYOVER_PEGOUT_SET_QUOTES, quotesByProvider);
           resolve();
-        })
-        .catch(reject);
+        } catch (e) {
+          reject();
+        } finally {
+          try {
+            await ApiService.registerFlyoverCall({ ...flyoverCallPayload, result } as FlyoverCall);
+          } catch (e) {
+            console.error(`Error registering flyover ${flyoverCallPayload.functionType} call: ${e}`);
+          }
+        }
+      })();
     });
   },
   [constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER]: ({ state }, providerId: number) => {
