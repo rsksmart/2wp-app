@@ -2,45 +2,25 @@
     <v-dialog v-model="showWarningMessage" width="870" persistent>
       <v-card class="container dialog">
         <v-row class="mx-0 mt-7 mb-2 d-flex justify-center">
-          <h2 class="bg-purple px-2">Option Update</h2>
+          <h2 class="bg-purple px-2">Review conditions</h2>
         </v-row>
-        <v-col cols="12" align-self="center" class="pt-0">
-          <v-row class="ma-0 d-flex justify-center">
-            <v-img :src="require('@/assets/warning.svg')" height="64" contain />
-          </v-row>
+        <v-col cols="12" align-self="center" class="pt-0 mt-3">
           <v-col offset="1" cols="10">
-            <p class="justify-center">
-              Some options have been updated. Please review the changes before continuing.
-            </p>
-            <v-table density="compact">
-                <thead>
-                <tr>
-                    <th class="text-left">
-                    Field
-                    </th>
-                    <th class="text-left">
-                    Old Value
-                    </th>
-                    <th class="text-left">
-                    New Value
-                    </th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr
-                v-for="(field, idx) in differences" :key="`diff-${idx}`"
-                >
-                    <td>{{ field.key }}</td>
-                    <td>{{ field.oldValue }}</td>
-                    <td>{{ field.newValue }}</td>
-                </tr>
-                </tbody>
-            </v-table>
+            <v-row>
+              <p class="justify-center">
+              Some values have changed, please review them before accepting.
+              </p>
+            </v-row>
+            <v-row>
+              <p class="justify-center">
+              Please note that the values are quotations and may undergo market changes.
+              </p>
+            </v-row>
           </v-col>
           <v-row class="mx-0 mb-8 mt-3" justify="space-around">
             <v-col class="d-flex justify-center">
               <v-btn-rsk @click="send">
-                <span>Continue</span>
+                <span>ok</span>
               </v-btn-rsk>
             </v-col>
           </v-row>
@@ -52,15 +32,10 @@
 <script lang="ts">
 import { defineComponent, toRef } from 'vue';
 import { mdiAlertOutline } from '@mdi/js';
-import { ObjectDifference } from '@/common/types';
 
 export default defineComponent({
   name: 'QuoteDiffDialog',
   props: {
-    differences: {
-      type: Array<ObjectDifference>,
-      required: true,
-    },
     showDialog: {
       type: Boolean,
       required: true,
