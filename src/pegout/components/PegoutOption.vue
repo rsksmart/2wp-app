@@ -73,23 +73,25 @@
     </div>
 
     <div class="d-flex flex-column">
-      <span>Gas</span>
-      <span class="text-bw-400">
+      <span >Gas</span>
+      <span :class="{ 'font-weight-bold': hasChanged('gasFee')}" class="text-bw-400">
         {{ quote.quote.gasFee.toRBTCTrimmedString() }}
         {{ environmentContext.getRbtcTicker() }}
       </span>
-      <span class="text-bw-400">USD {{ toUSD(quote.quote.gasFee.toRBTCString()) }}</span>
+      <span class="text-bw-400" :class="{ 'font-weight-bold': hasChanged('gasFee')}">
+        USD {{ toUSD(quote.quote.gasFee.toRBTCString()) }}
+      </span>
     </div>
 
     <div class="d-flex flex-column">
       <span>
         {{ isFlyover ? 'Provider fee' : 'Estimated BTC network fee' }}
       </span>
-      <span class="text-bw-400">
+      <span class="text-bw-400" :class="{ 'font-weight-bold': hasChanged('productFeeAmount')}">
         {{ quote.quote.callFee.plus(quote.quote.productFeeAmount).toRBTCTrimmedString() }}
         {{ environmentContext.getBtcTicker() }}
       </span>
-      <span class="text-bw-400">
+      <span class="text-bw-400" :class="{ 'font-weight-bold': hasChanged('productFeeAmount')}">
         USD {{ toUSD(quote.quote.callFee.plus(quote.quote.productFeeAmount).toRBTCString()) }}
       </span>
     </div>
@@ -121,7 +123,9 @@ import {
 import { mdiSendOutline, mdiInformationOutline } from '@mdi/js';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { useAction, useState, useStateAttribute } from '@/common/store/helper';
-import { SessionState, SatoshiBig, QuotePegOut2WP } from '@/common/types';
+import {
+  SessionState, SatoshiBig, QuotePegOut2WP, ObjectDifference,
+} from '@/common/types';
 import * as constants from '@/common/store/constants';
 import { blockConfirmationsToTimeString, validateAddress } from '@/common/utils';
 
@@ -139,6 +143,10 @@ export default defineComponent({
     selectedOption: {
       type: Boolean,
       default: false,
+    },
+    quoteDifferences: {
+      type: Array<ObjectDifference>,
+      required: true,
     },
   },
   setup(props, context) {
@@ -217,6 +225,19 @@ export default defineComponent({
       context.emit('change-selected-option', props.quote.quoteHash);
     }
 
+    function hasChanged(key: string): boolean {
+      let changed = false;
+      if (!isFlyover.value) {
+        return false;
+      }
+      props.quoteDifferences.forEach((diff) => {
+        if (diff.key === key) {
+          changed = true;
+        }
+      });
+      return changed;
+    }
+
     return {
       mdiSendOutline,
       environmentContext,
@@ -234,6 +255,7 @@ export default defineComponent({
       showAddressWarning,
       mdiInformationOutline,
       selectOption,
+      hasChanged,
     };
   },
 });
