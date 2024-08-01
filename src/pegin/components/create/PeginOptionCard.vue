@@ -60,7 +60,7 @@ import {
 import * as constants from '@/common/store/constants';
 import { mdiInformationOutline } from '@mdi/js';
 import { useGetter, useState, useStateAttribute } from '@/common/store/helper';
-import { truncateString } from '@/common/utils';
+import { blockConfirmationsToTimeString, truncateString } from '@/common/utils';
 import RskAddressInput from '@/pegin/components/create/RskAddressInput.vue';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { PegInTxState, QuotePegIn2WP, SatoshiBig } from '@/common/types';
@@ -116,7 +116,7 @@ export default defineComponent({
         title: 'Faster Option',
         subtitleColor: 'orange',
         link: 'https://dev.rootstock.io/guides/flyover/',
-        estimatedTime: () => '15 minutes',
+        estimatedTime: () => blockConfirmationsToTimeString(quote.value?.confirmations ?? 0, 'btc'),
         amountToTransfer: () => quote.value?.value
           .plus(quoteFee.value).plus(selectedFee.value) ?? new SatoshiBig('0', 'btc'),
         providerFee: () => quoteFee.value,

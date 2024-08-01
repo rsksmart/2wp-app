@@ -176,7 +176,7 @@ export default defineComponent({
           btcRefundAddress: '',
           callFee: new WeiBig(0, 'wei'),
           depositAddr: '', // Must be derived
-          depositConfirmations: 198, // to match 33 hours with 10 minutes per block
+          depositConfirmations: 0,
           depositDateLimit: 0,
           expireBlocks: 0,
           expireDate: 0,
@@ -195,7 +195,7 @@ export default defineComponent({
         quoteHash: '',
       });
 
-      quoteList.sort((q1, q2) => q2.quote.depositConfirmations - q1.quote.depositConfirmations);
+      quoteList.sort((q1, q2) => q1.quote.depositConfirmations - q2.quote.depositConfirmations);
 
       return quoteList;
     });
