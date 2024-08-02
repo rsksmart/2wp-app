@@ -253,8 +253,10 @@ export default defineComponent({
     }
 
     function getLPName(): string {
-      return flyoverPegoutState.value.liquidityProviders
-        .find((lp) => lp.provider === selectedQuote.value.quote.liquidityProviderRskAddress)?.name ?? '';
+      const address = selectedQuote.value.quote.liquidityProviderRskAddress.toLowerCase();
+      const provider = flyoverPegoutState.value.liquidityProviders
+        .find((lp) => lp.provider.toLowerCase() === address);
+      return provider?.name ?? '';
     }
 
     function getProviderFee(): string {
