@@ -126,9 +126,8 @@ export default defineComponent({
     });
 
     function getLPName(): string {
-      const provider = liquidityProviders.value.find(
-        (lp) => lp.provider === selectedQuote.value.quote.lpRSKAddr,
-      );
+      const address = selectedQuote.value.quote.lpRSKAddr.toLowerCase();
+      const provider = liquidityProviders.value.find((lp) => lp.provider.toLowerCase() === address);
       return provider?.name ?? '';
     }
 
