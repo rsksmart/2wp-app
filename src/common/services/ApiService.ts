@@ -235,7 +235,7 @@ export default class ApiService {
     return new Promise<boolean>((resolve, reject) => {
       axios.post(`${ApiService.baseURL}/register-flyover-call`, payload)
         .then((response) => resolve(response.data))
-        .catch(() => reject(new Error('Unable to get feature flags')));
+        .catch(() => reject(new Error('Unable to register flyover call')));
     });
   }
 }
