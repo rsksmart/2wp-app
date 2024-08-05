@@ -13,7 +13,7 @@
       </v-col>
     </v-row>
     <div class="d-flex flex-column ga-2 py-4">
-      <rsk-address-input/>
+      <rsk-address-input :option-type="optionType"/>
     </div>
     <span class="text-h4">Features</span>
     <div class="d-flex flex-column">
