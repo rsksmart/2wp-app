@@ -32,8 +32,6 @@
 <script lang="ts">
 import { defineComponent, toRef } from 'vue';
 import { mdiAlertOutline } from '@mdi/js';
-import * as constants from '@/common/store/constants';
-import { useAction } from '@/common/store/helper';
 
 export default defineComponent({
   name: 'QuoteDiffDialog',
@@ -46,11 +44,8 @@ export default defineComponent({
   setup(props, { emit }) {
     const showWarningMessage = toRef(props, 'showDialog');
 
-    const clearDifferences = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_CLEAR_QUOTE_DIFFERENCES);
-
     const send = () => {
       showWarningMessage.value = false;
-      clearDifferences();
       emit('continue');
     };
 

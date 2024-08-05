@@ -135,6 +135,7 @@ export default defineComponent({
     const loadingQuotes = ref(false);
     const showStep = ref(false);
     const isWalletAuthorizedToSign = ref(true);
+    const diffShown = ref(false);
 
     const pegOutTxState = useState<PegOutTxState>('pegOutTx');
     const flyoverPegoutState = useState<FlyoverPegoutState>('flyoverPegout');
@@ -208,7 +209,7 @@ export default defineComponent({
       return '';
     });
 
-    const showQuoteDiff = computed(() => quoteDifferences.value.length > 0);
+    const showQuoteDiff = computed(() => quoteDifferences.value.length > 0 && !diffShown.value);
 
     const validAmountToReceive = computed((): boolean => estimatedBtcToReceive.value.gt(0));
 
@@ -354,6 +355,7 @@ export default defineComponent({
     function continueHandler() {
       setSelectedQuoteHash('');
       selectedOption.value = undefined;
+      diffShown.value = true;
     }
 
     return {
