@@ -211,7 +211,6 @@ export default defineComponent({
       ];
     });
     function copyToClipboard(value: string) {
-      console.log('copyToClipboard', value);
       navigator.clipboard.writeText(value);
     }
 
