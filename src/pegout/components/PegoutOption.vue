@@ -74,11 +74,11 @@
 
     <div class="d-flex flex-column">
       <span >Gas</span>
-      <span :class="{ 'font-weight-bold': hasChanged('gasFee')}" class="text-bw-400">
+      <span :class="{ 'font-weight-bold': hasChanged(['gasFee'])}" class="text-bw-400">
         {{ quote.quote.gasFee.toRBTCTrimmedString() }}
         {{ environmentContext.getRbtcTicker() }}
       </span>
-      <span class="text-bw-400" :class="{ 'font-weight-bold': hasChanged('gasFee')}">
+      <span class="text-bw-400" :class="{ 'font-weight-bold': hasChanged(['gasFee'])}">
         USD {{ toUSD(quote.quote.gasFee.toRBTCString()) }}
       </span>
     </div>
@@ -87,21 +87,27 @@
       <span>
         {{ isFlyover ? 'Provider fee' : 'Estimated BTC network fee' }}
       </span>
-      <span class="text-bw-400" :class="{ 'font-weight-bold': hasChanged('productFeeAmount')}">
+      <span class="text-bw-400"
+            :class="{ 'font-weight-bold': hasChanged(['productFeeAmount', 'callFee'])}">
         {{ quote.quote.callFee.plus(quote.quote.productFeeAmount).toRBTCTrimmedString() }}
         {{ environmentContext.getBtcTicker() }}
       </span>
-      <span class="text-bw-400" :class="{ 'font-weight-bold': hasChanged('productFeeAmount')}">
+      <span class="text-bw-400"
+            :class="{ 'font-weight-bold': hasChanged(['productFeeAmount', 'callFee'])}">
         USD {{ toUSD(quote.quote.callFee.plus(quote.quote.productFeeAmount).toRBTCString()) }}
       </span>
     </div>
 
     <div class="d-flex flex-column">
       <span>Amount to send</span>
-      <span class="text-bw-400">
+      <span class="text-bw-400"
+      :class="{ 'font-weight-bold': hasChanged(['gasFee', 'productFeeAmount', 'callFee'])}">
         {{ amountToSend }} {{ environmentContext.getBtcTicker() }}
       </span>
-      <span class="text-bw-400">USD {{ toUSD(amountToSend) }}</span>
+      <span class="text-bw-400"
+      :class="{ 'font-weight-bold': hasChanged(['gasFee', 'productFeeAmount', 'callFee'])}">
+        USD {{ toUSD(amountToSend) }}
+      </span>
     </div>
 
     <div class="d-flex flex-column">
@@ -225,13 +231,13 @@ export default defineComponent({
       context.emit('change-selected-option', props.quote.quoteHash);
     }
 
-    function hasChanged(key: string): boolean {
+    function hasChanged(keys: string[]): boolean {
       let changed = false;
       if (!isFlyover.value) {
         return false;
       }
       props.quoteDifferences.forEach((diff) => {
-        if (diff.key === key) {
+        if (keys.includes(diff.key)) {
           changed = true;
         }
       });
