@@ -11,7 +11,7 @@
       placeholder="Select the address"
       :persistent-placeholder="false"
       :items="addressItems"
-      @update:model-value="checkStep"
+      @keydown="onKeyDown"
       type="text"
       >
   </v-combobox>
@@ -45,7 +45,13 @@ interface AddressItem {
 
 export default defineComponent({
   name: 'RskAddressInput',
-  setup(_, context) {
+  props: {
+    optionType: {
+      type: String,
+      required: true,
+    },
+  },
+  setup(props, context) {
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const focus = ref(false);
     const useWeb3Wallet = ref(false);
@@ -59,8 +65,6 @@ export default defineComponent({
     const account = useStateAttribute<string>('web3Session', 'account');
     const setRskAddress = useAction('pegInTx', constants.PEGIN_TX_ADD_RSK_ADDRESS);
     const setRskAddressForFlyover = useAction('flyoverPegin', constants.FLYOVER_PEGIN_ADD_ROOTSTOCK_ADDRESS);
-    const peginType = useStateAttribute<string>('pegInTx', 'peginType');
-    const isFlyover = computed(() => peginType.value === constants.peginType.FLYOVER);
 
     const web3Address = computed(() => account.value ?? '');
 
@@ -77,7 +81,16 @@ export default defineComponent({
       },
     ];
 
-    const selectedAddress = ref<string | AddressItem>();
+    const selectedAddress = ref<string | AddressItem>(addressItems[0]);
+
+    function onKeyDown(evt: KeyboardEvent) {
+      if (selectedAddress.value
+          && typeof selectedAddress.value === 'object'
+          && selectedAddress.value.id === 0
+      ) {
+        evt.preventDefault();
+      }
+    }
 
     const computedRskAddress = computed<string>((): string => {
       let address = '';
@@ -92,17 +105,18 @@ export default defineComponent({
       return address;
     });
 
-    const setRskRecipientAddress = computed(
-      () => (isFlyover.value ? setRskAddressForFlyover : setRskAddress),
-    );
-    const isConnectedWallet = computed<boolean>(() => typeof selectedAddress.value === 'object' && selectedAddress.value.id === 1);
+    const setRskRecipientAddress = props.optionType === constants.peginType.FLYOVER
+      ? setRskAddressForFlyover
+      : setRskAddress;
+
+    const isCustomInputSelected = computed<boolean>(() => typeof selectedAddress.value === 'object' && selectedAddress.value.id === 1);
 
     watch(selectedAddress, (newValue) => {
       const value = newValue as AddressItem;
       if (!value) return;
-      if (isConnectedWallet.value) {
+      if (isCustomInputSelected.value) {
         selectedAddress.value = '';
-        setRskRecipientAddress.value('');
+        setRskRecipientAddress('');
       }
     });
 
@@ -126,13 +140,13 @@ export default defineComponent({
     function checkStep() {
       if (computedRskAddress.value === '') {
         state.value.send('unset');
-        setRskRecipientAddress.value('');
+        setRskRecipientAddress('');
       } else if (!isValidPegInAddress.value) {
-        setRskRecipientAddress.value('');
+        setRskRecipientAddress('');
         state.value.send('invalid');
       } else {
         state.value.send('valid');
-        setRskRecipientAddress.value(computedRskAddress.value);
+        setRskRecipientAddress(computedRskAddress.value);
       }
       context.emit('state', state);
     }
@@ -143,9 +157,10 @@ export default defineComponent({
       if (!validateAddress()
       || (!isValidPegInAddress.value)
       || (!isValidRskAddress.value || !isValidCheckSum.value)) message = errorMessage;
-      checkStep();
       return message;
     });
+
+    watch(selectedAddress, checkStep, { immediate: true });
 
     return {
       environmentContext,
@@ -164,7 +179,7 @@ export default defineComponent({
       selectedAddress,
       computedRskAddress,
       state,
-      isConnectedWallet,
+      onKeyDown,
     };
   },
 });
