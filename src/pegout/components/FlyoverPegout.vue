@@ -59,13 +59,17 @@
       v-model="sendingPegout"
       class="align-center justify-center"
     >
-    <div class="d-flex flex-column align-center ga-2">
+    <div class="d-flex flex-column align-center ga-2 rounded-circle bg-blur">
       <v-progress-circular
-        :size="250"
+        :size="300"
         :width="18"
         color="warning"
         indeterminate
-        />
+        >
+        <span class="pa-10 text-center text-balance">
+          Your transaction is being processed and will be sent to the network.
+        </span>
+      </v-progress-circular>
       <p v-if="isLedgerConnected" class="text-warning">
         See your Ledger device to confirm your transaction.
       </p>

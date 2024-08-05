@@ -124,6 +124,22 @@ export default defineComponent({
     const setPeginType = useAction('pegInTx', constants.PEGIN_TX_ADD_PEGIN_TYPE);
     const selectedQuoteHash = useStateAttribute<string>('flyoverPegin', 'selectedQuoteHash');
     const flyoverService = useStateAttribute<FlyoverService>('flyoverPegin', 'flyoverService');
+    const selectedFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
+    const selectedAccountBalance = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SELECTED_BALANCE);
+
+    const enoughAmountFlyover = computed(() => {
+      const quote = selectedQuote.value?.quote;
+      if (!quote) {
+        return false;
+      }
+      const fullAmount: SatoshiBig = quote?.value
+        .plus(quote.productFeeAmount)
+        .plus(quote.callFee)
+        .plus(new SatoshiBig(quote.gasFee.toRBTCString(), 'btc'))
+        .plus(selectedFee.value);
+
+      return selectedAccountBalance.value?.gte(fullAmount);
+    });
 
     const isReadyToCreate = computed((): boolean => {
       if (selected.value === constants.peginType.POWPEG) {
@@ -134,10 +150,14 @@ export default defineComponent({
         && enoughBalanceSelectedFee.value;
       }
 
-      // TODO: check valid amount?
-      return !!flyoverPeginState.value.selectedQuoteHash
-        && !!flyoverPeginState.value.rootstockRecipientAddress
-        && flyoverPeginState.value.rootstockRecipientAddress !== '0x';
+      if (selected.value === constants.peginType.FLYOVER) {
+        return enoughAmountFlyover.value
+          && !!flyoverPeginState.value.selectedQuoteHash
+          && !!flyoverPeginState.value.rootstockRecipientAddress
+          && flyoverPeginState.value.rootstockRecipientAddress !== '0x';
+      }
+
+      return false;
     });
 
     const peginQuotes = computed(() => {
