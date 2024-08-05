@@ -12,15 +12,21 @@
       <div v-for="({title, value, ticker, link}) in btcSide" :key="title"
         class="d-flex flex-column ga-1">
         <span>{{ title }}</span>
-        <div class="d-flex align-center justify-space-between bg-surface py-2 px-4
-          rounded-lg border">
+        <div class="d-flex align-center bg-surface py-2 px-4 rounded-lg border">
           <span class="text-h4">{{ value?.length > 18 ? truncateString(value) : value }}</span>
+          <v-spacer />
           <v-chip v-if="ticker" :prepend-icon="mdiBitcoin" class="btc-icon">
             {{ environmentContext.getBtcTicker() }}
           </v-chip>
-          <v-btn v-else-if="link" height="32" :disabled="value === '-'"
-            variant="plain" :href="link" target="_blank" density="compact" :icon="mdiOpenInNew">
-          </v-btn>
+          <template v-else>
+              <v-btn v-if="value != '-'" height="32" width="32" :disabled="value === '-'"
+                     variant="plain" @click="copyToClipboard(value)" density="compact"
+                     :icon="mdiContentCopy">
+              </v-btn>
+            <v-btn v-if="link" height="32" width="32" :disabled="value === '-'" variant="plain"
+                   :href="link" target="_blank" density="compact" :icon="mdiOpenInNew" >
+            </v-btn>
+          </template>
         </div>
       </div>
     </v-col>
@@ -33,18 +39,25 @@
       <div v-for="({title, value, ticker, link}) in rskSide" :key="title"
         class="d-flex flex-column ga-1">
         <span>{{ title }}</span>
-        <div class="d-flex align-center justify-space-between bg-surface py-2 px-4
+        <div class="d-flex align-center bg-surface py-2 px-4
           rounded-lg border">
           <span class="text-h4">{{ value?.length > 18 ? truncateString(value) : value }}</span>
+          <v-spacer />
           <v-chip v-if="ticker" class="pl-2 pr-3">
                 <v-avatar class="mr-2 rbtc-icon">
                   <v-img :src="require('@/assets/exchange/rbtc.png')" />
                 </v-avatar>
               {{ environmentContext.getRbtcTicker() }}
           </v-chip>
-          <v-btn v-else-if="link" height="32" :disabled="value === '-'"
-            variant="plain" :href="link" target="_blank" density="compact" :icon="mdiOpenInNew">
-          </v-btn>
+          <template v-else>
+            <v-btn v-if="value != '-'" height="32" width="32" :disabled="value === '-'"
+                   variant="plain" @click="copyToClipboard(value)" density="compact"
+                   :icon="mdiContentCopy">
+            </v-btn>
+            <v-btn v-if="link" height="32" width="32" :disabled="value === '-'"
+              variant="plain" :href="link" target="_blank" density="compact" :icon="mdiOpenInNew">
+            </v-btn>
+          </template>
         </div>
       </div>
     </v-col>
@@ -54,7 +67,7 @@
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
 import {
-  mdiBitcoin, mdiArrowRight, mdiArrowLeft, mdiOpenInNew,
+  mdiBitcoin, mdiArrowRight, mdiArrowLeft, mdiOpenInNew, mdiContentCopy,
 } from '@mdi/js';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { TxStatus, TxStatusType } from '@/common/types';
@@ -197,6 +210,10 @@ export default defineComponent({
         },
       ];
     });
+    function copyToClipboard(value: string) {
+      console.log('copyToClipboard', value);
+      navigator.clipboard.writeText(value);
+    }
 
     return {
       mdiBitcoin,
@@ -208,6 +225,8 @@ export default defineComponent({
       columnOrder,
       mdiOpenInNew,
       truncateString,
+      mdiContentCopy,
+      copyToClipboard,
     };
   },
 });
