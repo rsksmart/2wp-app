@@ -7,7 +7,9 @@
         <div class="d-flex text-h3 ga-1 flex-wrap">
           <span v-for="(word, i) in option.title.split(' ')" :key="i"
             :class='`pa-2 bg-${option.subtitleColor}`'>
-            {{ word }}
+            <a :href="option.link" target="_blank" rel="noopener">
+              {{ word }}
+            </a>
           </span>
         </div>
       </v-col>
@@ -115,7 +117,7 @@ export default defineComponent({
       FLYOVER: {
         title: 'Faster Option',
         subtitleColor: 'orange',
-        link: 'https://dev.rootstock.io/guides/flyover/',
+        link: 'https://dev.rootstock.io/concepts/rif-suite/#meet-the-suite',
         estimatedTime: () => blockConfirmationsToTimeString(quote.value?.confirmations ?? 0, 'btc'),
         amountToTransfer: () => quote.value?.value
           .plus(quoteFee.value).plus(selectedFee.value) ?? new SatoshiBig('0', 'btc'),
