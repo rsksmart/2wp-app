@@ -233,6 +233,10 @@ export default defineComponent({
       flyoverEnabled.value = feature?.value === 'enabled';
     });
 
+    if (flyoverEnabled.value && peginQuotes.value.length > 0) {
+      showOptions.value = true;
+    }
+
     return {
       pegInFormState,
       showWarningMessage,
