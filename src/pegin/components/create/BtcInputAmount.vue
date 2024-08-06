@@ -256,12 +256,12 @@ export default defineComponent({
         return bitcoinAmount.value;
       },
       set(amount: string) {
-        clearTimeout(timeOutId.value);
+        window.clearTimeout(timeOutId.value);
         bitcoinAmount.value = amount;
         const amountInSats = new SatoshiBig(amount, 'btc');
         if (isValidAmount(amountInSats)) {
           setBtcAmount(amountInSats);
-          timeOutId.value = setTimeout(getOptionsData, 500) as unknown as number;
+          timeOutId.value = window.setTimeout(getOptionsData, 500);
         }
       },
     });
