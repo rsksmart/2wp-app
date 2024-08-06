@@ -65,6 +65,10 @@ export default defineComponent({
     const account = useStateAttribute<string>('web3Session', 'account');
     const setRskAddress = useAction('pegInTx', constants.PEGIN_TX_ADD_RSK_ADDRESS);
     const setRskAddressForFlyover = useAction('flyoverPegin', constants.FLYOVER_PEGIN_ADD_ROOTSTOCK_ADDRESS);
+    const peginType = useStateAttribute<string>('pegInTx', 'peginType');
+    const stateNativeRskAddress = useStateAttribute<string>('pegInTx', 'rskAddressSelected');
+    const stateFlyoverRskAddress = useStateAttribute<string>('flyoverPegin', 'rootstockRecipientAddress');
+    const isFlyover = computed(() => peginType.value === constants.peginType.FLYOVER);
 
     const web3Address = computed(() => account.value ?? '');
 
@@ -110,6 +114,10 @@ export default defineComponent({
       : setRskAddress;
 
     const isCustomInputSelected = computed<boolean>(() => typeof selectedAddress.value === 'object' && selectedAddress.value.id === 1);
+
+    const storeRskAddress = computed(
+      () => (isFlyover.value ? stateFlyoverRskAddress.value : stateNativeRskAddress.value),
+    );
 
     watch(selectedAddress, (newValue) => {
       const value = newValue as AddressItem;
@@ -161,6 +169,13 @@ export default defineComponent({
     });
 
     watch(selectedAddress, checkStep, { immediate: true });
+    if (storeRskAddress.value) {
+      selectedAddress.value = {
+        title: storeRskAddress.value,
+        value: storeRskAddress.value,
+        id: 2,
+      };
+    }
 
     return {
       environmentContext,
