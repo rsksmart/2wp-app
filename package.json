@@ -12,6 +12,7 @@
     "scanner": "npx sonar-scanner"
   },
   "dependencies": {
+    "@babel/plugin-transform-private-methods": "^7.24.7",
     "@leather.io/rpc": "^2.0.2",
     "@ledgerhq/devices": "6.27.1",
     "@ledgerhq/hw-app-btc": "6.27.1",
@@ -21,9 +22,9 @@
     "@mdi/js": "^6.9.96",
     "@rsksmart/bridges-core-sdk": "^0.3.3",
     "@rsksmart/flyover-sdk": "^1.5.1",
-    "@rsksmart/rlogin": "^1.5.3-beta.1",
-    "@rsksmart/rlogin-ledger-provider": "^1.0.3",
-    "@rsksmart/rlogin-trezor-provider": "^1.0.3",
+    "@rsksmart/rlogin": "^1.6.1",
+    "@rsksmart/rlogin-ledger-provider": "^1.0.4",
+    "@rsksmart/rlogin-trezor-provider": "^1.0.4",
     "@rsksmart/rsk-precompiled-abis": "^6.0.0-ARROWHEAD",
     "@rsksmart/rsk-utils": "^1.1.0",
     "@stacks/connect": "^7.7.1",
