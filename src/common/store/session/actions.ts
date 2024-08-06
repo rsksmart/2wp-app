@@ -21,9 +21,44 @@ import { ethers, providers } from 'ethers';
 import { markRaw } from 'vue';
 import { toUtf8Bytes } from 'ethers/lib/utils';
 
+const rpcUrls = {};
+const supportedChains = Object.keys(rpcUrls).map(Number);
+const customLedgerProviderOptions = ledgerProviderOptions;
+customLedgerProviderOptions.connector = async (ProviderPackage, options) => {
+  const ledgerOptions = options;
+  ledgerOptions.messageHashed = true;
+  const provider = new ProviderPackage(ledgerOptions);
+  await provider.connect();
+  return provider;
+};
+const rLoginSetup = new RLogin({
+  cacheProvider: true,
+  defaultTheme: 'dark',
+  providerOptions: {
+    walletconnect: {
+      package: WalletConnectProvider,
+      options: {
+        rpc: rpcUrls,
+      },
+    },
+    'custom-ledger': customLedgerProviderOptions,
+    'custom-trezor': {
+      ...trezorProviderOptions,
+      options: {
+        dPath: "m/44'/37310'/0'/0/0",
+        manifestEmail: EnvironmentAccessorService
+          .getEnvironmentVariables().vueAppManifestEmail,
+        manifestAppUrl: EnvironmentAccessorService
+          .getEnvironmentVariables().vueAppManifestAppUrl,
+      },
+    },
+  },
+  rpcUrls,
+  supportedChains,
+});
+
 export const actions: ActionTree<SessionState, RootState> = {
   [constants.SESSION_CONNECT_WEB3]: ({ commit, state, dispatch }): Promise<void> => {
-    const rpcUrls = {};
     const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
     if (network === constants.BTC_NETWORK_MAINNET) {
       Object
@@ -42,40 +77,7 @@ export const actions: ActionTree<SessionState, RootState> = {
           enumerable: true,
         });
     }
-    const supportedChains = Object.keys(rpcUrls).map(Number);
-    const customLedgerProviderOptions = ledgerProviderOptions;
-    customLedgerProviderOptions.connector = async (ProviderPackage, options) => {
-      const ledgerOptions = options;
-      ledgerOptions.messageHashed = true;
-      const provider = new ProviderPackage(ledgerOptions);
-      await provider.connect();
-      return provider;
-    };
-    const rLogin = state.rLoginInstance === undefined ? new RLogin({
-      cacheProvider: false,
-      defaultTheme: 'dark',
-      providerOptions: {
-        walletconnect: {
-          package: WalletConnectProvider,
-          options: {
-            rpc: rpcUrls,
-          },
-        },
-        'custom-ledger': customLedgerProviderOptions,
-        'custom-trezor': {
-          ...trezorProviderOptions,
-          options: {
-            dPath: "m/44'/37310'/0'/0/0",
-            manifestEmail: EnvironmentAccessorService
-              .getEnvironmentVariables().vueAppManifestEmail,
-            manifestAppUrl: EnvironmentAccessorService
-              .getEnvironmentVariables().vueAppManifestAppUrl,
-          },
-        },
-      },
-      rpcUrls,
-      supportedChains,
-    }) : state.rLoginInstance;
+    const rLogin = state.rLoginInstance === undefined ? rLoginSetup : state.rLoginInstance;
     return new Promise<void>((resolve, reject) => {
       rLogin.connect()
         .then((rLoginResponse) => {
@@ -97,11 +99,12 @@ export const actions: ActionTree<SessionState, RootState> = {
         });
     });
   },
-  [constants.WEB3_SESSION_GET_ACCOUNT]: async ({ state, commit }) => {
+  [constants.WEB3_SESSION_GET_ACCOUNT]: async ({ state, commit, dispatch }) => {
     const { ethersProvider } = state;
     if (ethersProvider) {
       const accounts = await ethersProvider.listAccounts();
       commit(constants.SESSION_SET_ACCOUNT, accounts[0]);
+      dispatch(constants.WEB3_SESSION_ADD_BALANCE);
     }
   },
   [constants.WEB3_SESSION_ADD_BALANCE]: async ({ commit, state }) => {
@@ -185,5 +188,18 @@ export const actions: ActionTree<SessionState, RootState> = {
           commit(constants.SESSION_SET_API_VERSION, apiVersion);
         });
     }
+  },
+  [constants.SESSION_CONNECT_WEB3_FROM_CACHE]: async ({ commit, dispatch }) => {
+    const rLogin = rLoginSetup;
+    rLogin.connectTo(rLogin.cachedProvider)
+      .then((rLoginResponse) => {
+        const provider = new providers.Web3Provider(rLoginResponse.provider);
+        commit(constants.SESSION_IS_ENABLED, true);
+        commit(constants.SESSION_SET_RLOGIN, rLoginResponse);
+        commit(constants.SESSION_SET_RLOGIN_INSTANCE, rLogin);
+        commit(constants.SESSION_SET_WEB3_INSTANCE, markRaw(provider));
+        return dispatch(constants.WEB3_SESSION_GET_ACCOUNT);
+      })
+      .catch(() => dispatch(constants.WEB3_SESSION_CLEAR_ACCOUNT));
   },
 };
