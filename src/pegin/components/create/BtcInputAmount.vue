@@ -101,6 +101,7 @@ export default defineComponent({
     const amountStyle = ref('');
     const bitcoinAmount = ref('');
     const stepState = ref<'unused' | 'done' | 'error'>('unused');
+    const timeOutId = ref(0);
 
     const calculatedFees = useStateAttribute<FeeAmountData>('pegInTx', 'calculatedFees');
     const selectedFee = useStateAttribute<MiningSpeedFee>('pegInTx', 'selectedFee');
@@ -245,17 +246,22 @@ export default defineComponent({
           && amount.lte(maxValue);
     };
 
+    function getOptionsData() {
+      calculateTxFee();
+      context.emit('get-pegin-quotes');
+    }
+
     const bitcoinAmountModel = computed({
       get() {
         return bitcoinAmount.value;
       },
       set(amount: string) {
+        clearTimeout(timeOutId.value);
         bitcoinAmount.value = amount;
         const amountInSats = new SatoshiBig(amount, 'btc');
         if (isValidAmount(amountInSats)) {
           setBtcAmount(amountInSats);
-          calculateTxFee();
-          context.emit('get-pegin-quotes');
+          timeOutId.value = setTimeout(getOptionsData, 500) as unknown as number;
         }
       },
     });
@@ -312,7 +318,7 @@ export default defineComponent({
 
     const isInitialValue = amountToTransfer.value.toBTCString() === '0.00000000';
     if (!isInitialValue) {
-      bitcoinAmount.value = amountToTransfer.value.toBTCString();
+      bitcoinAmount.value = amountToTransfer.value.toBTCTrimmedString();
     }
 
     return {

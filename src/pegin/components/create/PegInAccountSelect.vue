@@ -90,6 +90,7 @@ export default defineComponent({
     const bitcoinWallet = useStateAttribute<BtcWallet>('pegInTx', 'bitcoinWallet');
     const balances = useStateAttribute<AccountBalance>('pegInTx', 'balances');
     const loadingBalance = useStateAttribute<boolean>('pegInTx', 'loadingBalance');
+    const stateSelectedAccount = useStateAttribute<BtcAccount>('pegInTx', 'selectedAccount');
     const selectAccount = useAction('pegInTx', constants.PEGIN_TX_SELECT_ACCOUNT_TYPE);
     const calculateTxFee = useAction('pegInTx', constants.PEGIN_TX_CALCULATE_TX_FEE);
 
@@ -100,8 +101,6 @@ export default defineComponent({
     }
 
     watch(selectedAccountType, accountChanged);
-
-    accountChanged(constants.BITCOIN_NATIVE_SEGWIT_ADDRESS);
 
     const balancesPerAccountType = computed(() => ([
       {
@@ -137,6 +136,15 @@ export default defineComponent({
       return { color: selected?.appendColor, text: selected?.appendText };
     });
 
+    if (onlyNativeSegwit.value) {
+      selectedAccountType.value = constants.BITCOIN_NATIVE_SEGWIT_ADDRESS;
+      selectAccount(constants.BITCOIN_NATIVE_SEGWIT_ADDRESS);
+      calculateTxFee();
+    }
+
+    if (stateSelectedAccount.value) {
+      selectedAccountType.value = stateSelectedAccount.value;
+    }
     const tooltipText = 'Listed amounts represent the balance using addresses from your first account including change.';
 
     return {

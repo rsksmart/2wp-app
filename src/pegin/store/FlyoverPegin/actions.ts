@@ -55,4 +55,7 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
   [constants.FLYOVER_PEGIN_ADD_SELECTED_QUOTE]: ({ commit }, quoteHash: string) => {
     commit(constants.FLYOVER_PEGIN_SET_SELECTED_QUOTE, quoteHash);
   },
+  [constants.FLYOVER_PEGIN_CLEAR_QUOTES]: ({ commit }) => {
+    commit(constants.FLYOVER_PEGIN_SET_QUOTES, {});
+  },
 };
