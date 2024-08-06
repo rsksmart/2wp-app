@@ -206,7 +206,7 @@ export default defineComponent({
         return {
           title: 'Faster Option',
           subtitleBgColor: 'orange',
-          link: 'https://dev.rootstock.io/guides/flyover/',
+          link: 'https://dev.rootstock.io/concepts/rif-suite/#meet-the-suite',
         };
       }
       return {
