@@ -11,6 +11,7 @@ import {
   TxStatusType,
   Feature,
   TxInfo,
+  FlyoverCall,
 } from '@/common/types';
 import { areValidOutputs, isValidInput } from '@/common/utils';
 import { BridgeService } from '@/common/services/BridgeService';
@@ -227,6 +228,14 @@ export default class ApiService {
       axios.get(`${ApiService.baseURL}/features`)
         .then((response) => resolve(response.data))
         .catch(() => reject(new Error('Unable to get feature flags')));
+    });
+  }
+
+  static registerFlyoverCall(payload: FlyoverCall): Promise<boolean> {
+    return new Promise<boolean>((resolve, reject) => {
+      axios.post(`${ApiService.baseURL}/register-flyover-call`, payload)
+        .then((response) => resolve(response.data))
+        .catch(() => reject(new Error('Unable to register flyover call')));
     });
   }
 }
