@@ -48,8 +48,4 @@ if (localStorage.getItem('RLOGIN_CACHED_PROVIDER')) {
   await store.dispatch(`web3Session/${constants.SESSION_CONNECT_WEB3_FROM_CACHE}`);
 }
 
-if (window.ethereum) {
-  window.ethereum.on('accountsChanged', await store.dispatch(`web3Session/${constants.WEB3_SESSION_GET_ACCOUNT}`));
-}
-
 export default app;
