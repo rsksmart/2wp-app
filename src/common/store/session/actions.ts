@@ -78,6 +78,8 @@ export const actions: ActionTree<SessionState, RootState> = {
         });
     }
     const rLogin = state.rLoginInstance === undefined ? rLoginSetup : state.rLoginInstance;
+    // eslint-disable-next-line no-return-await
+    rLogin.on('accountsChanged', async () => await dispatch(constants.WEB3_SESSION_GET_ACCOUNT));
     return new Promise<void>((resolve, reject) => {
       rLogin.connect()
         .then((rLoginResponse) => {
