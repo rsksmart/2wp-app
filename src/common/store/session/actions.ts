@@ -78,8 +78,6 @@ export const actions: ActionTree<SessionState, RootState> = {
         });
     }
     const rLogin = state.rLoginInstance === undefined ? rLoginSetup : state.rLoginInstance;
-    // eslint-disable-next-line no-return-await
-    rLogin.on('accountsChanged', async () => await dispatch(constants.WEB3_SESSION_GET_ACCOUNT));
     return new Promise<void>((resolve, reject) => {
       rLogin.connect()
         .then((rLoginResponse) => {
@@ -89,10 +87,12 @@ export const actions: ActionTree<SessionState, RootState> = {
           commit(constants.SESSION_SET_RLOGIN_INSTANCE, rLogin);
           commit(constants.SESSION_SET_WEB3_INSTANCE, markRaw(provider));
           return provider.listAccounts();
-        }).then((accounts) => {
+        })
+        .then((accounts) => {
           commit(constants.SESSION_SET_ACCOUNT, accounts[0]);
           return dispatch(constants.WEB3_SESSION_ADD_BALANCE);
         })
+        .then(() => dispatch(constants.SESSION_SETUP_EVENTS))
         .then(resolve)
         .catch((e) => {
           commit(constants.SESSION_IS_ENABLED, false);
@@ -202,6 +202,13 @@ export const actions: ActionTree<SessionState, RootState> = {
         commit(constants.SESSION_SET_WEB3_INSTANCE, markRaw(provider));
         return dispatch(constants.WEB3_SESSION_GET_ACCOUNT);
       })
+      .then(() => dispatch(constants.SESSION_SETUP_EVENTS))
       .catch(() => dispatch(constants.WEB3_SESSION_CLEAR_ACCOUNT));
+  },
+  [constants.SESSION_SETUP_EVENTS]: ({ state, dispatch }) => {
+    const { rLoginInstance } = state;
+    rLoginInstance?.on('accountsChanged', () => {
+      dispatch(constants.WEB3_SESSION_GET_ACCOUNT);
+    });
   },
 };
