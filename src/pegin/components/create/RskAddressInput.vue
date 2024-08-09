@@ -13,6 +13,7 @@
       :items="addressItems"
       @keydown="onKeyDown"
       type="text"
+      @update:model-value="checkStep"
       >
   </v-combobox>
   </v-row>
@@ -72,10 +73,10 @@ export default defineComponent({
 
     const web3Address = computed(() => account.value ?? '');
 
-    const addressItems: AddressItem[] = [
+    const addressItems = computed<AddressItem[]>(() => [
       {
-        title: `Connected wallet (${getChunkedValue(account.value, 9)})`,
-        value: account.value,
+        title: `Connected wallet (${getChunkedValue(web3Address.value, 9)})`,
+        value: web3Address.value,
         id: 0,
       },
       {
@@ -83,9 +84,9 @@ export default defineComponent({
         value: '',
         id: 1,
       },
-    ];
+    ]);
 
-    const selectedAddress = ref<string | AddressItem>(addressItems[0]);
+    const selectedAddress = ref<string | AddressItem>();
 
     function onKeyDown(evt: KeyboardEvent) {
       if (selectedAddress.value
@@ -168,7 +169,10 @@ export default defineComponent({
       return message;
     });
 
-    watch(selectedAddress, checkStep, { immediate: true });
+    watch(web3Address, () => {
+      selectedAddress.value = undefined;
+    });
+
     if (storeRskAddress.value) {
       selectedAddress.value = {
         title: storeRskAddress.value,
