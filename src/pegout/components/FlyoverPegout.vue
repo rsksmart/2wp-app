@@ -92,7 +92,7 @@
 
 <script lang="ts">
 import {
-  computed, defineComponent, ref,
+  computed, defineComponent, ref, watch,
 } from 'vue';
 import * as constants from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
@@ -102,7 +102,6 @@ import QuoteDiffDialog from '@/pegout/components/QuoteDiffDialog.vue';
 import {
   useAction, useGetter, useState, useStateAttribute,
 } from '@/common/store/helper';
-import { SessionState } from '@/common/types/session';
 import { mdiArrowLeft, mdiArrowRight } from '@mdi/js';
 import {
   FlyoverPegoutState, ObjectDifference, PegOutTxState, QuotePegOut2WP,
@@ -143,11 +142,13 @@ export default defineComponent({
 
     const pegOutTxState = useState<PegOutTxState>('pegOutTx');
     const flyoverPegoutState = useState<FlyoverPegoutState>('flyoverPegout');
-    const session = useState<SessionState>('web3Session');
+    const account = useStateAttribute<string>('web3Session', 'account');
     const sendTx = useAction('pegOutTx', constants.PEGOUT_TX_SEND);
     const sendFlyoverTx = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ACCEPT_AND_SEND_QUOTE);
     const initFlyoverTx = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_INIT);
+    const initPegoutTx = useAction('pegOutTx', constants.PEGOUT_TX_INIT);
     const clearFlyoverState = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_CLEAR_STATE);
+    const clearPegoutTx = useAction('pegOutTx', constants.PEGOUT_TX_CLEAR);
     const getPegoutQuotes = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_GET_QUOTES);
     const quotes = useStateAttribute<Record<number, QuotePegOut2WP[]>>('flyoverPegout', 'quotes');
     const quoteDifferences = useStateAttribute<Array<ObjectDifference>>('flyoverPegout', 'differences');
@@ -187,7 +188,7 @@ export default defineComponent({
           nonce: 0n,
           penaltyFee: new WeiBig(0, 'wei'),
           productFeeAmount: new WeiBig(pegOutTxState.value.btcEstimatedFee.toBTCString(), 'rbtc'),
-          rskRefundAddress: session.value.account ?? '',
+          rskRefundAddress: account.value ?? '',
           transferConfirmations: 0,
           transferTime: 0,
           value: pegOutTxState.value.amountToTransfer,
@@ -218,7 +219,7 @@ export default defineComponent({
     const validAmountToReceive = computed((): boolean => estimatedBtcToReceive.value.gt(0));
 
     const isReadyToCreate = computed((): boolean => isEnoughBalance.value
-        && !!session.value.account
+        && !!account.value
         && validAmountToReceive.value
         && selectedOption.value !== undefined);
 
@@ -279,7 +280,7 @@ export default defineComponent({
       fee: Number(getProviderFee()),
       provider: getLPName(),
       details: {
-        senderAddress: session.value.account,
+        senderAddress: account.value,
         recipientAddress: flyoverPegoutState.value.btcRecipientAddress,
         blocksToCompleteTransaction: selectedQuote.value.quote.depositConfirmations,
       },
@@ -319,7 +320,10 @@ export default defineComponent({
 
     function clearState() {
       clearFlyoverState();
+      clearPegoutTx();
       initFlyoverTx();
+      initPegoutTx();
+      selectedOption.value = '';
       showStep.value = false;
     }
 
@@ -330,7 +334,7 @@ export default defineComponent({
 
     function getQuotes() {
       loadingQuotes.value = true;
-      getPegoutQuotes(session.value.account)
+      getPegoutQuotes(account.value)
         .catch(handlePegoutError)
         .finally(() => {
           loadingQuotes.value = false;
@@ -363,6 +367,8 @@ export default defineComponent({
       selectedOption.value = undefined;
       diffShown.value = true;
     }
+
+    watch(account, clearState);
 
     return {
       environmentContext,

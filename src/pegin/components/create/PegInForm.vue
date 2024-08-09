@@ -67,7 +67,7 @@
 
 <script lang="ts">
 import {
-  computed, ref, defineComponent, onBeforeMount,
+  computed, ref, defineComponent, onBeforeMount, watch,
 } from 'vue';
 import { mdiArrowLeft, mdiArrowRight, mdiSendOutline } from '@mdi/js';
 import PegInAccountSelect from '@/pegin/components/create/PegInAccountSelect.vue';
@@ -80,7 +80,7 @@ import EnvironmentContextProviderService from '@/common/providers/EnvironmentCon
 import { TxStatusType } from '@/common/types/store';
 import { TxSummaryOrientation } from '@/common/types/Status';
 import {
-  Feature, FeatureNames, FlyoverPeginState, QuotePegIn2WP, SatoshiBig, SessionState,
+  Feature, FeatureNames, FlyoverPeginState, QuotePegIn2WP, SatoshiBig,
 } from '@/common/types';
 import {
   useAction, useGetter, useState, useStateAttribute,
@@ -120,7 +120,6 @@ export default defineComponent({
     const getPeginQuotes = useAction('flyoverPegin', constants.FLYOVER_PEGIN_GET_QUOTES);
     const setSelectedQuote = useAction('flyoverPegin', constants.FLYOVER_PEGIN_ADD_SELECTED_QUOTE);
     const clearQuotes = useAction('flyoverPegin', constants.FLYOVER_PEGIN_CLEAR_QUOTES);
-    const session = useState<SessionState>('web3Session');
     const quotes = useStateAttribute<Record<number, QuotePegIn2WP[]>>('flyoverPegin', 'quotes');
     const setPeginType = useAction('pegInTx', constants.PEGIN_TX_ADD_PEGIN_TYPE);
     const selectedQuoteHash = useStateAttribute<string>('flyoverPegin', 'selectedQuoteHash');
@@ -221,7 +220,7 @@ export default defineComponent({
     async function getQuotes() {
       loadingQuotes.value = true;
       getPeginQuotes({
-        rootstockRecipientAddress: session.value.account,
+        rootstockRecipientAddress: account.value,
         bitcoinRefundAddress: refundAddress.value,
       })
         .then(() => {
@@ -234,6 +233,8 @@ export default defineComponent({
       const feature = flyoverFeature.value(FeatureNames.FLYOVER_PEG_IN);
       flyoverEnabled.value = feature?.value === 'enabled';
     });
+
+    watch(account, getQuotes);
 
     if (flyoverEnabled.value && peginQuotes.value.length > 0) {
       showOptions.value = true;

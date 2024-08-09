@@ -86,7 +86,7 @@ export default defineComponent({
       },
     ]);
 
-    const selectedAddress = ref<string | AddressItem>();
+    const selectedAddress = ref<string | AddressItem>(addressItems.value[0]);
 
     function onKeyDown(evt: KeyboardEvent) {
       if (selectedAddress.value
@@ -170,7 +170,8 @@ export default defineComponent({
     });
 
     watch(web3Address, () => {
-      selectedAddress.value = undefined;
+      [selectedAddress.value] = addressItems.value;
+      checkStep();
     });
 
     if (storeRskAddress.value) {
@@ -180,6 +181,7 @@ export default defineComponent({
         id: 2,
       };
     }
+    checkStep();
 
     return {
       environmentContext,
