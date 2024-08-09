@@ -112,6 +112,7 @@ export default defineComponent({
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
     const getRbtcGasFee = useGetter<Promise<WeiBig>>('web3Session', constants.SESSION_GET_RBTC_GAS_FEE);
     const pegoutConfiguration = useStateAttribute<PegoutConfiguration>('pegOutTx', 'pegoutConfiguration');
+    const account = useStateAttribute<string>('web3Session', 'account');
     const minStrVal = computed(() => pegoutConfiguration.value.minValue.toRBTCString().slice(0, 5));
     const maxStrVal = computed(() => pegoutConfiguration.value.maxValue.toRBTCString().slice(0, 5));
     const isComposing = ref(false);
@@ -132,7 +133,7 @@ export default defineComponent({
       set(amount: string) {
         rbtcAmount.value = amount;
         const weiBigAmount = new WeiBig(amount, 'rbtc');
-        if (isValidAmount(weiBigAmount)) {
+        if (isValidAmount(weiBigAmount) && weiBigAmount.gt('0')) {
           setRbtcAmount(weiBigAmount);
           addAmount(weiBigAmount)
             .then(() => calculateFee());
@@ -221,6 +222,13 @@ export default defineComponent({
         rbtcAmountModel.value = maxValue.toRBTCTrimmedString();
       }
     }
+
+    function clearInput() {
+      rbtcAmountModel.value = '';
+      stepState.value = 'unset';
+    }
+
+    watch(account, clearInput);
 
     return {
       amountStyle,
