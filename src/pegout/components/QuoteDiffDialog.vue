@@ -8,12 +8,12 @@
           <v-col offset="1" cols="10">
             <v-row>
               <p class="justify-center">
-              Some values have changed, please review them before accepting.
+                Some values may have changed slightly. Please review before proceeding.
               </p>
             </v-row>
             <v-row>
               <p class="justify-center">
-              Please note that the values are quotations and may undergo market changes.
+                Please note that these values are estimates based on current market values.
               </p>
             </v-row>
           </v-col>
