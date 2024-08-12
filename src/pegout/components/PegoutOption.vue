@@ -33,7 +33,7 @@
           <template #prepend>
             <v-icon size="small" :icon="mdiInformationOutline" />
           </template>
-          Invalid address. Currently only Legacy (P2PKH) and Segwit (P2SH) addresses are supported.
+          Invalid address. Please note that native segwit is not supported at this time.
         </v-alert>
       </div>
       <div v-else>
