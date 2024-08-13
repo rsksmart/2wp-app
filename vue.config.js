@@ -5,6 +5,46 @@ const { defineConfig } = require('@vue/cli-service');
 const { VuetifyPlugin } = require('webpack-plugin-vuetify');
 
 module.exports = defineConfig({
+  pwa: {
+    name: '2-Way Peg App',
+    themeColor: '#FF9800',
+    iconPaths: {
+      favicon32: 'img/icons/favicon-32x32.png',
+      favicon16: 'img/icons/favicon-16x16.png',
+    },
+    manifestOptions: {
+      id: '2wp-app',
+      short_name: '2WP App',
+      description: 'Bridging Bitcoin and Rootstock',
+      start_url: '/',
+      icons: [
+        {
+          purpose: 'any maskable',
+          sizes: '1024x1024',
+          src: 'img/icons/maskable_icon.png',
+          type: 'image/png',
+        },
+        {
+          purpose: 'maskable',
+          sizes: '192x192',
+          src: 'img/icons/maskable_icon_x192.png',
+          type: 'image/png',
+        },
+        {
+          purpose: 'maskable',
+          sizes: '384x384',
+          src: 'img/icons/maskable_icon_x384.png',
+          type: 'image/png',
+        },
+        {
+          purpose: 'maskable',
+          sizes: '512x512',
+          src: 'img/icons/maskable_icon_x512.png',
+          type: 'image/png',
+        },
+      ],
+    },
+  },
   transpileDependencies: true,
   configureWebpack: {
     resolve: {
