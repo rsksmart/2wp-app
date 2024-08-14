@@ -11,6 +11,7 @@ import * as constants from '@/common/store/constants';
 import { ApiService } from '@/common/services';
 import { BridgeService } from '@/common/services/BridgeService';
 import { getEstimatedFee } from '@/common/utils';
+import { set } from '@/db';
 
 export const actions: ActionTree<TxStatus, RootState> = {
   [constants.STATUS_CLEAR]: ({ commit }) => {
@@ -25,6 +26,7 @@ export const actions: ActionTree<TxStatus, RootState> = {
         .then(([status]) => {
           commit(constants.STATUS_SET_TX_DETAILS, status.txDetails);
           commit(constants.STATUS_SET_TX_TYPE, status.type);
+          set({ txId, status: status.txDetails?.status ?? 'UNKNOWN' });
           const nextActions = [];
           if (status.type === TxStatusType.FLYOVER_PEGIN
           || status.type === TxStatusType.FLYOVER_PEGOUT) {
