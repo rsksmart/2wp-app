@@ -10,6 +10,7 @@ import * as constants from '@/common/store/constants';
 import { ApiService } from '@/common/services';
 import { BridgeService } from '@/common/services/BridgeService';
 import { getEstimatedFee } from '@/common/utils';
+import { set } from '@/db';
 
 export const actions: ActionTree<TxStatus, RootState> = {
   [constants.STATUS_CLEAR]: ({ commit }) => {
@@ -23,6 +24,7 @@ export const actions: ActionTree<TxStatus, RootState> = {
       .then(([status]) => {
         commit(constants.STATUS_SET_TX_DETAILS, status.txDetails);
         commit(constants.STATUS_SET_TX_TYPE, status.type);
+        set({ txId, status: status.txDetails?.status ?? 'UNKNOWN' });
         return dispatch(constants.STATUS_GET_ESTIMATED_RELEASE_TIME_IN_MINUTES);
       })
       .catch(() => {
