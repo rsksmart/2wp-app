@@ -34,6 +34,7 @@ module.exports = {
     'vuejs-accessibility/mouse-events-have-key-events': 'off',
     'import/extensions': 'off',
     'global-require': 'off',
+    'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
   },
   overrides: [
     {
