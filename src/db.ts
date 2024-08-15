@@ -28,7 +28,10 @@ export async function get(key: string) {
 }
 
 export async function getMany(count = 10) {
-  return (await dbPromise).getAll(DB_STORE_NAME, null, count);
+  const db = await dbPromise;
+  const indexed = await db.getAllFromIndex(DB_STORE_NAME, 'by-last-updated');
+  const byDescOrder = indexed.splice(-count).reverse();
+  return byDescOrder;
 }
 
 export async function set(val: { txId: string; status: string; }) {

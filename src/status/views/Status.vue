@@ -26,6 +26,33 @@
       <status-progress-bar v-if="txWithErrorType" :isFlyover="isFlyover"
                 :txWithErrorType="txWithErrorType" :txWithError="txWithError" />
     </v-row>
+    <v-row class="mx-6" v-if="lastTxs?.length">
+      <v-col class="pa-0">
+        <span class="d-inline-block mb-1">Last transactions</span>
+        <v-table density="compact">
+          <thead class="bg-bw-500">
+            <tr>
+              <th class="w-66">Transaction ID</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="tx in lastTxs" :key="tx.txId" class="text-left">
+              <td class="d-flex align-center justify-space-between">
+                <a :href="getExplorerUrl(tx.txId)" target="_blank"
+                class="pa-0">
+                  {{ tx.txId }}
+                </a>
+                <v-btn :icon="mdiOpenInNew" variant="flat" size="xs"
+                  :href="getExplorerUrl(tx.txId)" target="_blank">
+                </v-btn>
+              </td>
+              <td>{{ tx.status }}</td>
+            </tr>
+          </tbody>
+        </v-table>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -34,7 +61,7 @@ import {
   computed, ref, watch, defineComponent, onUnmounted,
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { mdiMagnify } from '@mdi/js';
+import { mdiMagnify, mdiOpenInNew } from '@mdi/js';
 import TxPegout from '@/common/components/status/TxPegout.vue';
 import TxPegin from '@/common/components/status/TxPegin.vue';
 import {
@@ -48,6 +75,8 @@ import {
 } from '@/common/store/helper';
 import StatusProgressBar from '@/common/components/status/StatusProgressBar.vue';
 import { PegStatus } from '@/common/store/constants';
+import { getBtcTxExplorerUrl, getRskTxExplorerUrl } from '@/common/utils';
+import { getMany } from '@/db';
 
 export default defineComponent({
   name: 'StatusSearch',
@@ -179,9 +208,25 @@ export default defineComponent({
       router.replace({ name: 'Home' });
     }
 
+    function getExplorerUrl(id: string) {
+      let url = '';
+      if (id.startsWith('0x')) {
+        url = getRskTxExplorerUrl(id);
+      } else {
+        url = getBtcTxExplorerUrl(id);
+      }
+      return url;
+    }
+
+    const lastTxs = ref();
+    async function getLastTxs() {
+      lastTxs.value = await getMany();
+    }
+
     watch(route, onUrlChange, { immediate: true, deep: true });
 
     clearStatus();
+    getLastTxs();
 
     onUnmounted(clean);
 
@@ -204,6 +249,9 @@ export default defineComponent({
       rules,
       txWithErrorType,
       txWithError,
+      lastTxs,
+      mdiOpenInNew,
+      getExplorerUrl,
     };
   },
 });
