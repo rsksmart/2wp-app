@@ -3,6 +3,7 @@ import {
   AcceptedPegoutQuote, Flyover,
   LiquidityProvider, PegoutQuote, Quote,
   AcceptedQuote,
+  FlyoverUtils,
 } from '@rsksmart/flyover-sdk';
 import * as constants from '@/common/store/constants';
 import {
@@ -441,6 +442,61 @@ export default class FlyoverService {
             ));
           });
       }
+    });
+  }
+
+  public getAvailableLiquidity(): Promise<{peginLiquidity: WeiBig, pegoutLiquidity: SatoshiBig}> {
+    return new Promise((resolve, reject) => {
+      this.flyover?.getAvailableLiquidity()
+        .then(({ peginLiquidityAmount, pegoutLiquidityAmount }) => {
+          const peginLiquidity = new WeiBig(peginLiquidityAmount, 'wei');
+          const pegoutLiquidity = new SatoshiBig(pegoutLiquidityAmount, 'satoshi');
+          resolve({ peginLiquidity, pegoutLiquidity });
+        })
+        .catch((error) => {
+          reject(new ServiceError(
+            'FlyoverService',
+            'getAvailableLiquidity',
+            'There was an error getting the available liquidity from the Flyover server',
+            error.message,
+          ));
+        });
+    });
+  }
+
+  public getPeginStatus(quoteHash: string) {
+    return new Promise<string>((resolve, reject) => {
+      this.flyover?.getPeginStatus(quoteHash)
+        .then((detailedStatus) => {
+          const status = FlyoverUtils.getSimpleQuoteStatus(detailedStatus.status.state);
+          resolve(status);
+        })
+        .catch((error) => {
+          reject(new ServiceError(
+            'FlyoverService',
+            'getPeginStatus',
+            'There was an error getting the status of the peg-in transaction from the Flyover server',
+            error.message,
+          ));
+        });
+    });
+  }
+
+  public getPegoutStatus(quoteHash: string) {
+    return new Promise<string>((resolve, reject) => {
+      this.flyover?.getPegoutStatus(quoteHash)
+        .then((detailedStatus) => {
+          const status = FlyoverUtils.getSimpleQuoteStatus(detailedStatus.status.state);
+          resolve(status);
+        })
+        .catch((error) => {
+          reject(new ServiceError(
+            'FlyoverService',
+            'getPegoutStatus',
+            'There was an error getting the status of the peg-out transaction from the Flyover server',
+            error.message,
+          ));
+        });
     });
   }
 }
