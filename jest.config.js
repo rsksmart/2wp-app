@@ -13,4 +13,5 @@ module.exports = {
   coverageProvider: 'v8',
   transformIgnorePatterns: ['node_modules/(?!axios)/'],
   setupFilesAfterEnv: ['<rootDir>/setup-jest.js'],
+  silent: true,
 };
