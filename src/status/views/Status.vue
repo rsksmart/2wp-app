@@ -151,12 +151,13 @@ export default defineComponent({
     }
 
     function getPegStatus() {
-      if (route.path !== `/status/txId/${txId.value}`) {
+      if (!isValidTxId.value) clean();
+      else if (route.path !== `/status/txId/${txId.value}`) {
         router.push({
           name: 'Status',
           params: { txId: txId.value },
         });
-      } else if (txId.value !== '') {
+      } else if (txId.value !== '' && isValidTxId.value) {
         clean();
         loading.value = true;
         setTxStatus(txId.value)
