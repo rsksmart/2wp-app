@@ -19,10 +19,10 @@
             {{ environmentContext.getBtcTicker() }}
           </v-chip>
           <template v-else>
-              <v-btn v-if="value != '-'" height="32" width="32" :disabled="value === '-'"
-                     variant="plain" @click="copyToClipboard(value)" density="compact"
-                     :icon="mdiContentCopy">
-              </v-btn>
+            <v-btn height="32" width="32" :disabled="value === '-'"
+                   variant="plain" @click="copyToClipboard(value)" density="compact"
+                   :icon="mdiContentCopy">
+            </v-btn>
             <v-btn v-if="link" height="32" width="32" :disabled="value === '-'" variant="plain"
                    :href="link" target="_blank" density="compact" :icon="mdiOpenInNew" >
             </v-btn>
@@ -50,9 +50,8 @@
               {{ environmentContext.getRbtcTicker() }}
           </v-chip>
           <template v-else>
-            <v-btn v-if="value != '-'" height="32" width="32" :disabled="value === '-'"
-                   variant="plain" @click="copyToClipboard(value)" density="compact"
-                   :icon="mdiContentCopy">
+            <v-btn height="32" width="32" :disabled="value === '-'" variant="plain"
+                   @click="copyToClipboard(value)" density="compact" :icon="mdiContentCopy">
             </v-btn>
             <v-btn v-if="link" height="32" width="32" :disabled="value === '-'"
               variant="plain" :href="link" target="_blank" density="compact" :icon="mdiOpenInNew">
