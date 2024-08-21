@@ -44,8 +44,4 @@ app.use(vuetify);
 app.use(store);
 app.mount('#app');
 
-if (localStorage.getItem('RLOGIN_CACHED_PROVIDER')) {
-  await store.dispatch(`web3Session/${constants.SESSION_CONNECT_WEB3_FROM_CACHE}`);
-}
-
 export default app;
