@@ -133,20 +133,6 @@ export const actions: ActionTree<SessionState, RootState> = {
         });
     }
   },
-  [constants.SESSION_CONNECT_WEB3_FROM_CACHE]: async ({ commit, dispatch }) => {
-    const rLogin = getRloginInstance();
-    rLogin.connectTo(rLogin.cachedProvider)
-      .then((rLoginResponse) => {
-        const provider = new providers.Web3Provider(rLoginResponse.provider);
-        commit(constants.SESSION_IS_ENABLED, true);
-        commit(constants.SESSION_SET_RLOGIN, rLoginResponse);
-        commit(constants.SESSION_SET_RLOGIN_INSTANCE, rLogin);
-        commit(constants.SESSION_SET_WEB3_INSTANCE, markRaw(provider));
-        return dispatch(constants.WEB3_SESSION_GET_ACCOUNT);
-      })
-      .then(() => dispatch(constants.SESSION_SETUP_EVENTS))
-      .catch(() => dispatch(constants.WEB3_SESSION_CLEAR_ACCOUNT));
-  },
   [constants.SESSION_SETUP_EVENTS]: ({ state, dispatch }) => {
     const { rLoginInstance } = state;
     rLoginInstance?.on('accountsChanged', () => {
