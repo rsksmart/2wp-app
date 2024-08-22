@@ -23,7 +23,7 @@
       <a href="#" rel="noopener" @click="showDialogPolicy">Privacy Policy</a>
     </div>
     <div class="d-flex ga-2">
-      <v-btn variant="plain" href="https://twitter.com/rootstock_io" target="_blank"
+      <v-btn variant="plain" href="https://x.com/rootstock_io" target="_blank"
              density="compact" :icon="mdiTwitter">
       </v-btn>
       <v-btn variant="plain" href="https://github.com/rsksmart/2wp-app" target="_blank"
