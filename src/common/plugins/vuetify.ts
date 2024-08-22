@@ -53,9 +53,9 @@ export const vuetify = createVuetify({
         colors: {
           ...ROOTSTOCK_COLORS,
           background: '#000',
-          surface: '#252525',
-          'theme-primary': '#9E76FF',
-          alert: '#FF9100',
+          surface: ROOTSTOCK_COLORS['bw-800'],
+          'theme-primary': ROOTSTOCK_COLORS.purple,
+          alert: ROOTSTOCK_COLORS.orange,
         },
         variables: {
           'theme-on-purple': '#000',
@@ -66,10 +66,10 @@ export const vuetify = createVuetify({
       light: {
         colors: {
           ...ROOTSTOCK_COLORS,
-          background: '#FAF9F5',
-          surface: '#FAF9F5',
-          'theme-primary': '#FF9100',
-          alert: '#9E76FF',
+          background: ROOTSTOCK_COLORS['off-white'],
+          surface: ROOTSTOCK_COLORS['off-white'],
+          'theme-primary': ROOTSTOCK_COLORS.orange,
+          alert: ROOTSTOCK_COLORS.purple,
         },
         variables: {
           'theme-on-purple': '#000',
