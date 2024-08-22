@@ -1,5 +1,11 @@
 .v-card--variant-outlined {
   border: 2px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  &.v-theme--light {
+    background: rgba(var(--v-theme-bw-500), var(--v-hover-opacity));
+    &.selected {
+      background: rgba(var(--v-theme-surface));
+    }
+  }
   &.selected {
     border-color: rgba(var(--v-border-color), 1);
   }
