@@ -126,7 +126,7 @@
           </v-container>
         </v-card>
       </v-col>
-      <v-col cols="3" v-if="walletName !== constants.WALLET_NAMES.TREZOR.formal_name">
+      <v-col cols="3" v-if="hasChange">
         <v-card variant="outlined" color="bw-400" height="100%">
           <v-container>
             <v-row justify="start" class="mt-2 mb-6 px-3">
@@ -491,6 +491,8 @@ export default defineComponent({
       return change.gt(0);
     });
 
+    const hasChange = computed(() => pegInTxState.value.normalizedTx.outputs.length > changeIdx);
+
     return {
       environmentContext,
       changeAmountString,
@@ -513,6 +515,7 @@ export default defineComponent({
       mdiOpenInNew,
       copyToClipboard,
       getBtcAddressExplorerUrl,
+      hasChange,
     };
   },
 });
