@@ -17,7 +17,8 @@
       >
   </v-combobox>
   </v-row>
-  <v-row class="my-0" v-if="state.matches(['invalid'])">
+  <v-row class="my-0"
+    v-if="state.matches(['invalid']) || (state.matches(['valid']) && !isValidRskAddress)">
     <v-col align-self="start" class="pa-0">
       <v-alert :text="validAddressMessage" class="pa-2"
           type="warning" color="alert">
@@ -153,6 +154,10 @@ export default defineComponent({
       } else if (!isValidPegInAddress.value) {
         setRskRecipientAddress('');
         state.value.send('invalid');
+      } else if (!isValidRskAddress.value) {
+        const address = rskUtils.toChecksumAddress(computedRskAddress.value, CHAIN_ID);
+        setRskRecipientAddress(address);
+        state.value.send('valid');
       } else {
         state.value.send('valid');
         setRskRecipientAddress(computedRskAddress.value);
@@ -162,10 +167,11 @@ export default defineComponent({
 
     const validAddressMessage = computed(() => {
       let message = '';
-      const errorMessage = 'Please double check your RSK address before you continue';
-      if (!validateAddress()
-      || (!isValidPegInAddress.value)
-      || (!isValidRskAddress.value || !isValidCheckSum.value)) message = errorMessage;
+      if (!validateAddress() || !isValidPegInAddress.value) {
+        message = 'Invalid address format';
+      } else if (!isValidRskAddress.value || !isValidCheckSum.value) {
+        message = 'Please double check your RSK address before you continue';
+      }
       return message;
     });
 
