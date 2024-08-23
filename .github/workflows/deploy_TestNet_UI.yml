@@ -38,7 +38,7 @@ jobs:
           VUE_APP_CLARITY_ID=${{ secrets.TESTNET_VUE_APP_CLARITY_ID }}
           VUE_APP_COIN='test'
           VUE_APP_MANIFEST_EMAIL='user@rsk.co'
-          VUE_APP_MANIFEST_APP_URL='https://app.2wp.testnet.rootstock.io'
+          VUE_APP_MANIFEST_APP_URL='https://powpeg.testnet.rootstock.io'
           VUE_APP_API_BASE_URL='https://api.2wp.testnet.rootstock.io'
           VUE_APP_RSK_NODE_HOST='https://public-node.testnet.rsk.co'
           VUE_APP_RSK_EXPLORER='https://explorer.testnet.rootstock.io/'

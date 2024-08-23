@@ -1,10 +1,10 @@
-# 2WP-APP Security Process
+# PowPeg app Security Process
 
 We're committed to conduct our security process in a professional and civil manner. Public shaming, under-reporting or misrepresentation of vulnerabilities will not be tolerated.
 
 ## Responsible Disclosure
 
-For all security related issues, 2WP-APP has to main points of contact. Reach us at <security@rootstocklabs.com> or refer to our [Bug Bounty Program.](https://www.rootstocklabs.com/bounty-program/) **Do not open up a GitHub issue if the bug is a security vulnerability.**
+For all security related issues, PowPeg app has to main points of contact. Reach us at <security@rootstocklabs.com> or refer to our [Bug Bounty Program.](https://www.rootstocklabs.com/bounty-program/) **Do not open up a GitHub issue if the bug is a security vulnerability.**
 
 **Ensure the bug was not already reported** by searching on Github under [Issues](https://github.com/rsksmart/2wp-app/issues).
 

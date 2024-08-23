@@ -1,4 +1,4 @@
-# [2wp-app] Environment Variables
+# [PowPeg app] Environment Variables
 This table was created to guide and centralize the **environment variables** necessary for correct execution.
 The value of these variables are used in **environment-variables.ts** file.
 
