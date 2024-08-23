@@ -364,3 +364,13 @@ export function truncateString(str: string) {
   if (!str) return '';
   return `${str.slice(0, 6)}...${str.slice(-4)}`;
 }
+
+export function truncateStringToSize(str: string, size: number) {
+  if (!str) return '';
+  if (str.length <= size) return str;
+  return `${str.slice(0, size / 2)}...${str.slice(-size / 2)}`;
+}
+
+export function copyToClipboard(value: string) {
+  navigator.clipboard.writeText(value);
+}

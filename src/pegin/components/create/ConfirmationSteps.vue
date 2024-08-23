@@ -1,11 +1,23 @@
 <template>
   <v-container>
     <v-row>
-      <p>Confirm Transaction on your {{ walletName }} Wallet</p>
+      <p class="text-h6">Confirm Transaction on your {{ walletName }} Wallet</p>
     </v-row>
-    <v-row v-if="hdWallet">
-      <v-col cols="3" class="pl-0">
-        <v-card variant="outlined" color="bw-400">
+    <v-row class="mt-6 text-bw-400">
+      Make sure the amount, address and transaction fee displayed on the {{ walletName }} wallet
+      are correct.
+    </v-row>
+    <v-row class="text-bw-400">
+      To prevent malware attacks, double check the address with the recipient.
+    </v-row>
+    <v-row class="text-bw-400">
+      Press&nbsp;
+      <p class="text-high-emphasis">Send &nbsp;</p>
+      when you finish.
+    </v-row>
+    <v-row v-if="hdWallet" class="d-flex justify-center">
+      <v-col cols="3" class="pl-0" v-if="!flyover">
+        <v-card variant="outlined" color="bw-400" height="100%">
           <v-container>
             <v-row justify="start" class="mt-2 mb-6 px-3">
               <v-img :src="require('@/assets/exchange/steps/0.svg')"
@@ -45,30 +57,16 @@
                             :model-value="amountTransferOpReturn" />
             </v-row>
             <v-row no-gutters>
-              <v-textarea hide-details auto-grow readonly
+              <v-textarea hide-details readonly no-resize
                           class="text-bw-400"
-                          variant="outlined" density="compact" rows="1"
+                          variant="outlined" density="compact" rows="2"
                           :model-value="opReturnData" />
-            </v-row>
-            <v-row no-gutters>
-              <v-text-field readonly hide-details class="mt-2 white"
-                            bg-color="rgba(243, 139, 1, 0.4)" base-color="orange"
-                            variant="outlined"
-                            density="compact"
-                            :model-value="`Press Confirm on ${walletName}`">
-                <template v-slot:prepend-inner>
-                  <v-icon color="white">
-                    {{ mdiInformation }}
-                  </v-icon>
-                </template>
-
-              </v-text-field>
             </v-row>
           </v-container>
         </v-card>
       </v-col>
       <v-col cols="3">
-        <v-card variant="outlined" color="bw-400">
+        <v-card variant="outlined" color="bw-400" height="100%">
           <v-container>
             <v-row justify="start" class="mt-2 mb-6 px-3">
               <v-img :src="require('@/assets/exchange/steps/1.svg')"
@@ -95,11 +93,29 @@
               </span>
             </v-row>
             <v-row no-gutters>
-              <v-text-field readonly hide-details
-                            class="text-bw-400"
-                            variant="outlined"
-                            density="compact"
-                            :model-value="rskFederationAddress" />
+              <v-textarea hide-details auto-grow readonly
+                          class="text-bw-400"
+                          variant="outlined" density="compact" rows="1"
+                          :model-value="providerRecipientAddress"
+                          >
+                <template v-slot:append-inner>
+                  <v-col>
+                    <v-row>
+                      <v-btn height="32" width="32" :disabled="value === '-'"
+                        variant="plain"
+                        @click="copyToClipboard(providerRecipientAddress)" density="compact"
+                        :icon="mdiContentCopy">
+                      </v-btn>
+                    </v-row>
+                    <v-row>
+                      <v-btn height="32" width="32" :disabled="value === '-'" variant="plain"
+                          :href="getBtcAddressExplorerUrl(providerRecipientAddress)"
+                          target="_blank" density="compact" :icon="mdiOpenInNew" >
+                    </v-btn>
+                    </v-row>
+                  </v-col>
+                </template>
+              </v-textarea>
             </v-row>
             <v-row no-gutters>
               <v-text-field readonly hide-details class="my-2 text-bw-400"
@@ -107,30 +123,11 @@
                             density="compact"
                             :model-value="amountTransferString" />
             </v-row>
-            <v-row no-gutters>
-              <v-textarea hide-details no-resize auto-grow readonly
-                          class="text-bw-400"
-                          variant="outlined" density="compact" rows="1"
-                          model-value="" />
-            </v-row>
-            <v-row no-gutters>
-              <v-text-field readonly hide-details class="mt-2 white"
-                            bg-color="rgba(9, 243, 198, 0.4)" base-color="teal"
-                            variant="outlined"
-                            density="compact"
-                            :model-value="`Press Confirm on ${walletName}`">
-                <template v-slot:prepend-inner>
-                  <v-icon color="white">
-                    {{ mdiInformation }}
-                  </v-icon>
-                </template>
-              </v-text-field>
-            </v-row>
           </v-container>
         </v-card>
       </v-col>
-      <v-col cols="3">
-        <v-card variant="outlined" color="bw-400">
+      <v-col cols="3" v-if="walletName !== constants.WALLET_NAMES.TREZOR.formal_name">
+        <v-card variant="outlined" color="bw-400" height="100%">
           <v-container>
             <v-row justify="start" class="mt-2 mb-6 px-3">
               <v-img :src="require('@/assets/exchange/steps/2.svg')"
@@ -157,11 +154,29 @@
               </span>
             </v-row>
             <v-row no-gutters>
-              <v-text-field readonly hide-details
-                            class="text-bw-400"
-                            variant="outlined"
-                            density="compact"
-                            :model-value="changeAddress" />
+              <v-textarea hide-details auto-grow readonly
+                          class="text-bw-400"
+                          variant="outlined" density="compact" rows="1"
+                          :model-value="changeAddress"
+                          >
+                <template v-slot:append-inner>
+                  <v-col>
+                    <v-row>
+                      <v-btn height="32" width="32" :disabled="value === '-'"
+                        variant="plain"
+                        @click="copyToClipboard(changeAddress)" density="compact"
+                        :icon="mdiContentCopy">
+                      </v-btn>
+                    </v-row>
+                    <v-row>
+                      <v-btn height="32" width="32" :disabled="value === '-'" variant="plain"
+                          :href="getBtcAddressExplorerUrl(changeAddress)"
+                          target="_blank" density="compact" :icon="mdiOpenInNew" >
+                    </v-btn>
+                    </v-row>
+                  </v-col>
+                </template>
+              </v-textarea>
             </v-row>
             <v-row no-gutters>
               <v-text-field readonly hide-details class="my-2 text-bw-400"
@@ -169,30 +184,11 @@
                             density="compact"
                             :model-value="changeAmountString" />
             </v-row>
-            <v-row no-gutters>
-              <v-textarea hide-details no-resize auto-grow readonly
-                          class="text-bw-400"
-                          variant="outlined" density="compact" rows="1"
-                          model-value="" />
-            </v-row>
-            <v-row no-gutters>
-              <v-text-field readonly hide-details class="mt-2 white"
-                            bg-color="rgba(116, 189, 1, 0.4)" base-color="green"
-                            variant="outlined"
-                            density="compact"
-                            :model-value="`Press Confirm on ${walletName}`">
-                <template v-slot:prepend-inner>
-                  <v-icon color="white">
-                    {{ mdiInformation }}
-                  </v-icon>
-                </template>
-              </v-text-field>
-            </v-row>
           </v-container>
         </v-card>
       </v-col>
       <v-col cols="3" class="pr-0">
-        <v-card variant="outlined" color="bw-400">
+        <v-card variant="outlined" color="bw-400" height="100%">
           <v-container>
             <v-row justify="start" class="mt-2 mb-6 px-3">
               <v-img :src="require('@/assets/exchange/steps/3.svg')"
@@ -219,36 +215,10 @@
               </span>
             </v-row>
             <v-row no-gutters>
-              <v-text-field readonly hide-details
-                            class="text-bw-400"
-                            variant="outlined"
-                            density="compact"
-                            model-value="" />
-            </v-row>
-            <v-row no-gutters>
-              <v-text-field readonly hide-details class="my-2 text-bw-400"
+              <v-text-field readonly hide-details class="text-bw-400"
                             variant="outlined"
                             density="compact"
                             :model-value="feeString" />
-            </v-row>
-            <v-row no-gutters>
-              <v-textarea hide-details no-resize auto-grow readonly
-                          class="text-bw-400"
-                          variant="outlined" density="compact" rows="1"
-                          model-value="" />
-            </v-row>
-            <v-row no-gutters>
-              <v-text-field readonly hide-details class="mt-2 white"
-                            bg-color="rgba(243, 108, 215, 0.4)" base-color="pink"
-                            variant="outlined"
-                            density="compact"
-                            :model-value="`Press Confirm on ${walletName}`">
-                <template v-slot:prepend-inner>
-                  <v-icon color="white">
-                    {{ mdiInformation }}
-                  </v-icon>
-                </template>
-              </v-text-field>
             </v-row>
           </v-container>
         </v-card>
@@ -409,7 +379,7 @@
                       bg-color="rgba(116, 189, 1, 0.4)" base-color="green"
                       variant="outlined"
                       density="compact"
-                      :model-value="`Press Confirm on ${walletName}`">
+                      :model-value="`Confirm on ${walletName}`">
           <template v-slot:prepend-inner>
             <v-icon color="white">
               {{ mdiInformation }}
@@ -419,6 +389,20 @@
         </v-text-field>
       </v-row>
     </v-row>
+    <v-row no-gutters>
+        <v-text-field readonly hide-details class="mt-2 white"
+                      bg-color="rgba(116, 189, 1, 0.4)" base-color="green"
+                      variant="outlined"
+                      density="compact"
+                      :model-value="`Confirm on ${walletName}`">
+          <template v-slot:prepend-inner>
+            <v-icon color="white">
+              {{ mdiInformation }}
+            </v-icon>
+          </template>
+
+        </v-text-field>
+      </v-row>
     <v-row justify="end">
       <slot />
     </v-row>
@@ -432,8 +416,9 @@ import EnvironmentContextProviderService from '@/common/providers/EnvironmentCon
 import { PegInTxState } from '@/common/types/pegInTx';
 import { QuotePegIn2WP } from '@/common/types';
 import * as constants from '@/common/store/constants';
+import { truncateStringToSize, copyToClipboard, getBtcAddressExplorerUrl } from '@/common/utils';
 import { useGetter, useState } from '@/common/store/helper';
-import { mdiInformation } from '@mdi/js';
+import { mdiInformation, mdiOpenInNew, mdiContentCopy } from '@mdi/js';
 
 export default defineComponent({
   name: 'ConfirmationSteps',
@@ -466,9 +451,17 @@ export default defineComponent({
       .normalizedTx.outputs[1]?.address?.trim()
       ?? `${environmentContext.getBtcText()} Powpeg address not found`);
 
+    const providerRecipientAddress = computed(() => {
+      if (flyover.value) {
+        const [providerOutput] = pegInTxState.value.normalizedTx.outputs;
+        return providerOutput?.address ?? '';
+      }
+      return rskFederationAddress.value;
+    });
     const opReturnData = computed((): string => {
       const [opReturnOutput] = pegInTxState.value.normalizedTx.outputs;
-      return opReturnOutput?.op_return_data ?? '';
+      const zeroX = walletName.value === constants.WALLET_NAMES.LEDGER.formal_name ? '0x' : '';
+      return `${zeroX}${truncateStringToSize(opReturnOutput?.op_return_data ?? '', 40)}`;
     });
 
     const changeAddress = computed((): string => {
@@ -514,6 +507,12 @@ export default defineComponent({
       existChange,
       flyover,
       amountTransferOpReturn,
+      providerRecipientAddress,
+      constants,
+      mdiContentCopy,
+      mdiOpenInNew,
+      copyToClipboard,
+      getBtcAddressExplorerUrl,
     };
   },
 });

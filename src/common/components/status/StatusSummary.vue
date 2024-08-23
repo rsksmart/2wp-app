@@ -76,6 +76,7 @@ import {
   getRskAddressExplorerUrl,
   getRskTxExplorerUrl,
   truncateString,
+  copyToClipboard,
 } from '@/common/utils';
 import { useState } from '@/common/store/helper';
 
@@ -211,9 +212,6 @@ export default defineComponent({
         },
       ];
     });
-    function copyToClipboard(value: string) {
-      navigator.clipboard.writeText(value);
-    }
 
     return {
       mdiBitcoin,
