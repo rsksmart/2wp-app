@@ -42,7 +42,7 @@
               <v-text-field readonly hide-details class="my-2 text-bw-400"
                             variant="outlined"
                             density="compact"
-                            model-value="Amount: 0 RBTC" />
+                            :model-value="amountTransferOpReturn" />
             </v-row>
             <v-row no-gutters>
               <v-textarea hide-details auto-grow readonly
@@ -488,6 +488,8 @@ export default defineComponent({
 
     const amountPlusFeeString = computed(() => `Amount: ${amountToTransfer.value.plus(safeFee.value).toBTCTrimmedString()}  ${environmentContext.getBtcTicker()}`);
 
+    const amountTransferOpReturn = computed(() => `Amount: 0 ${environmentContext.getBtcTicker()}`);
+
     const feeString = computed(() => `Fee: ${safeFee
       .value.toBTCTrimmedString()}  ${environmentContext.getBtcTicker()}`);
 
@@ -511,6 +513,7 @@ export default defineComponent({
       amountPlusFeeString,
       existChange,
       flyover,
+      amountTransferOpReturn,
     };
   },
 });
