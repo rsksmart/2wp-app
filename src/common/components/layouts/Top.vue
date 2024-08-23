@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts">
-import { useAction, useStateAttribute } from '@/common/store/helper';
+import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import { useRoute, useRouter } from 'vue-router';
 import { useTheme } from 'vuetify';
 import { mdiContentCopy, mdiLinkOff } from '@mdi/js';
@@ -56,7 +56,7 @@ export default {
       return vuetifyTheme.global.current.value.dark ? require('@/assets/logo-rootstock-white.svg') : require('@/assets/logo-rootstock-black.svg');
     }
 
-    const account = useStateAttribute<string>('web3Session', 'account');
+    const account = useGetter<string>('web3Session', constants.SESSION_GET_CHECKSUMMED_ACCOUNT);
     const truncatedAccount = computed(() => truncateString(account.value));
 
     const balance = useStateAttribute<WeiBig>('web3Session', 'balance');

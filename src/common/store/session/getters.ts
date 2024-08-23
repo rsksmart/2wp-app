@@ -3,6 +3,8 @@ import * as constants from '@/common/store/constants';
 import { SessionState } from '@/common/types/session';
 import { RootState } from '@/common/types/store';
 import { Feature, FeatureNames, WeiBig } from '@/common/types';
+import * as rskUtils from '@rsksmart/rsk-utils';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
 export const getters: GetterTree<SessionState, RootState> = {
   [constants.SESSION_IN_TX_FLOW]: (state): boolean => state.txType !== undefined,
@@ -29,5 +31,13 @@ export const getters: GetterTree<SessionState, RootState> = {
     const gasPrice = Number(await ethersProvider?.getGasPrice());
     const calculatedFee = new WeiBig(gasPrice * Number(gas), 'wei');
     return calculatedFee;
+  },
+  [constants.SESSION_GET_CHECKSUMMED_ACCOUNT]: (state): string => {
+    if (state.account) {
+      const CHAIN_ID = EnvironmentAccessorService
+        .getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_MAINNET ? 30 : 31;
+      return rskUtils.toChecksumAddress(state.account, CHAIN_ID);
+    }
+    return '';
   },
 };

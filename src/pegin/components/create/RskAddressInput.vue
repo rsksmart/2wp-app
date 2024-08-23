@@ -35,7 +35,7 @@ import {
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import * as constants from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { useAction, useStateAttribute } from '@/common/store/helper';
+import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import { Machine, getChunkedValue } from '@/common/utils';
 
 interface AddressItem {
@@ -63,7 +63,7 @@ export default defineComponent({
     const rskAddressSelected = ref('');
     const state = ref(new Machine<'unset' | 'valid' | 'invalid'>('unset'));
 
-    const account = useStateAttribute<string>('web3Session', 'account');
+    const account = useGetter<string>('web3Session', constants.SESSION_GET_CHECKSUMMED_ACCOUNT);
     const setRskAddress = useAction('pegInTx', constants.PEGIN_TX_ADD_RSK_ADDRESS);
     const setRskAddressForFlyover = useAction('flyoverPegin', constants.FLYOVER_PEGIN_ADD_ROOTSTOCK_ADDRESS);
     const peginType = useStateAttribute<string>('pegInTx', 'peginType');
