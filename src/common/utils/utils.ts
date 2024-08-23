@@ -272,7 +272,7 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
     case TxStatusType.INVALID_DATA:
       activeMessageStyle = 'statusRejected';
       error = true;
-      errorMessage = 'The hash does not match any 2wp operation.';
+      errorMessage = 'The hash does not match any PowPeg operation.';
       break;
     case TxStatusType.UNSET_STATUS:
       activeMessageStyle = 'statusProgress';
