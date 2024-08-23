@@ -37,7 +37,7 @@ export default defineComponent({
     txWithError: Boolean,
   },
   setup(props) {
-    const typeSummary = TxStatusType.PEGOUT;
+    const typeSummary = props.isFlyover ? TxStatusType.FLYOVER_PEGOUT : TxStatusType.PEGOUT;
 
     const txDetails = useStateAttribute<PegoutStatusDataModel | FlyoverStatusModel>('status', 'txDetails');
     const pegOutEstimatedFee = useStateAttribute<SatoshiBig>('status', 'pegOutEstimatedFee');

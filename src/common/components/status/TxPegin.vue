@@ -81,7 +81,7 @@ export default defineComponent({
       rbtc: borderColor.gray,
     });
 
-    const typeSummary = TxStatusType.PEGIN;
+    const typeSummary = props.isFlyover ? TxStatusType.FLYOVER_PEGIN : TxStatusType.PEGIN;
     const orientationSummary = TxSummaryOrientation.HORIZONTAL;
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 

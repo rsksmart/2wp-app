@@ -106,7 +106,7 @@ export default defineComponent({
     const status = useState<TxStatus>('status');
 
     const btcSide = computed(() => {
-      if (props.type === TxStatusType.PEGOUT) {
+      if (props.type === TxStatusType.PEGOUT || props.type === TxStatusType.FLYOVER_PEGOUT) {
         const fee = props.details.fee === 0 ? props.details.estimatedFee : props.details.fee;
         return [
           {
@@ -127,7 +127,7 @@ export default defineComponent({
             ticker: true,
           },
           {
-            title: 'You will receive',
+            title: 'You receive',
             value: props.txWithError ? '-' : props.details.amountReceivedString,
             ticker: true,
           },
@@ -145,12 +145,13 @@ export default defineComponent({
           link: getBtcTxExplorerUrl(props.details.txId),
         }] : []),
         {
-          title: 'Fee',
+          title: props.details && props.type === TxStatusType.FLYOVER_PEGIN
+            ? 'Fee (includes provider and network fees)' : 'Fee',
           value: props.details.fee,
           ticker: true,
         },
         {
-          title: 'You will send',
+          title: 'You send',
           value: props.details.total,
           ticker: true,
         },
@@ -158,7 +159,7 @@ export default defineComponent({
     });
 
     const rskSide = computed(() => {
-      if (props.type === TxStatusType.PEGOUT) {
+      if (props.type === TxStatusType.PEGOUT || props.type === TxStatusType.FLYOVER_PEGOUT) {
         const gasFee = props.details.gas?.gt(0) ? props.details.gas.toRBTCTrimmedString() : '-';
         return [
           {
@@ -172,14 +173,15 @@ export default defineComponent({
             link: getRskTxExplorerUrl(props.details.txId),
           },
           {
-            title: 'Fee',
+            title: props.type === TxStatusType.FLYOVER_PEGOUT
+              ? 'Fee (includes provider and network fees)' : 'Fee',
             value: status.value.type === TxStatusType.FLYOVER_PEGOUT
               ? props.details.fee
               : gasFee,
             ticker: true,
           },
           {
-            title: 'You will send',
+            title: 'You send',
             value: props.details.amountFromString,
             ticker: true,
           }];
@@ -199,11 +201,11 @@ export default defineComponent({
         }] : []),
         {
           title: 'Fee',
-          value: props.txWithError ? '-' : '0',
+          value: '-',
           ticker: true,
         },
         {
-          title: 'You will receive',
+          title: 'You receive',
           value: props.details.amountReceivedString && !props.txWithError
             ? props.details.amountReceivedString : '-',
           ticker: true,
