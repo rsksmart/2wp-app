@@ -75,7 +75,6 @@ export default defineComponent({
   },
   setup(props, context) {
     const rawTx = ref('');
-    const typeSummary = TxStatusType.PEGIN;
     const orientationSummary = TxSummaryOrientation.HORIZONTAL;
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const pegInTxState = useState<PegInTxState>('pegInTx');
@@ -90,6 +89,7 @@ export default defineComponent({
     const peginType = useStateAttribute<string>('pegInTx', 'peginType');
 
     const isFlyover = computed(() => peginType.value === constants.peginType.FLYOVER);
+    const typeSummary = isFlyover.value ? TxStatusType.FLYOVER_PEGIN : TxStatusType.PEGIN;
 
     const changeAmountComputed = computed((): string => {
       const changeAmount = new SatoshiBig(pegInTxState.value.normalizedTx.outputs[2]?.amount ?? 0, 'satoshi');
