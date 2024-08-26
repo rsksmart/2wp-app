@@ -16,7 +16,7 @@
                     @keyup.enter="getPegStatus" />
     </v-row>
     <v-row no-gutters v-if="showStatus && showTimeLeft" justify="center">
-      <p>Estimated time: {{ releaseTimeText }}</p>
+      <span class="text-bw-400 text-body-1">Estimated time: {{ releaseTimeText }}</span>
     </v-row>
     <v-row no-gutters>
       <tx-pegin v-if="isPegIn" :txId="txId" :isFlyover="isFlyover"
@@ -76,9 +76,7 @@ export default defineComponent({
     const releaseTimeText = useGetter<string>('status', constants.STATUS_GET_RELEASE_TIME_TEXT);
     const txDetails = useStateAttribute<PegoutStatusDataModel|PeginStatus>('status', 'txDetails');
 
-    const showStatus = computed(() => !loading.value
-        && !activeMessage.value.error
-        && !!activeMessage.value.statusMessage);
+    const showStatus = computed(() => !loading.value);
 
     const isRejected = computed(() => status.value.txDetails?.status === 'REJECTED');
 
@@ -97,7 +95,8 @@ export default defineComponent({
     const showTimeLeft = computed((): boolean => {
       const details = txDetails.value as PegoutStatusDataModel;
       return status.value.type === TxStatusType.PEGOUT
-          && (details.status === PegoutStatus.WAITING_FOR_CONFIRMATION
+          && (details.status === PegoutStatus.PENDING
+          || details.status === PegoutStatus.WAITING_FOR_CONFIRMATION
           || details.status === PegoutStatus.RECEIVED
           || details.status === PegoutStatus.WAITING_FOR_SIGNATURE);
     });

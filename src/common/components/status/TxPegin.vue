@@ -1,5 +1,15 @@
 <template>
   <v-container>
+    <template v-if="showConfirmations">
+      <v-row class="justify-space-around">
+        <span class="text-center text-bw-400 text-body-2">
+          {{ btcConfirmations }} / {{ btcConfirmationsRequired }}
+        </span>
+      </v-row>
+      <v-row class="justify-space-around">
+        <span class="text-center text-bw-400 text-body-2">Confirmations</span>
+      </v-row>
+    </template>
     <v-row>
       <status-progress-bar :isFlyover="isFlyover" :txWithErrorType="txWithErrorType"
                            :txWithError="txWithError" />
@@ -30,6 +40,7 @@ import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import StatusProgressBar from '@/common/components/status/StatusProgressBar.vue';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import StatusSummary from '@/common/components/status/StatusSummary.vue';
+import { PegStatus } from '@/common/store/constants';
 
 export default defineComponent({
   name: 'TxPegin',
@@ -138,6 +149,9 @@ export default defineComponent({
     const summary = computed(() => (props.isFlyover
       ? flyoverPeginSummary.value
       : txPeginSummary.value));
+
+    const showConfirmations = computed(() => !props.isFlyover
+      && txDetails.value.status === PegStatus.WAITING_CONFIRMATIONS);
 
     function refreshPercentage() {
       if ('btc' in txDetails.value) {
@@ -267,6 +281,7 @@ export default defineComponent({
       isRejected,
       mdiInformation,
       isMainnet,
+      showConfirmations,
     };
   },
 });
