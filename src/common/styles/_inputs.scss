@@ -42,3 +42,7 @@ input[type=number].v-field__input, .v-select__selection, .amount-input input[typ
 .input-error .v-field {
   border-color: rgba(var(--v-theme-warning));
 }
+
+.confirmation-step .v-field__input {
+  font-size: 14px;
+}
