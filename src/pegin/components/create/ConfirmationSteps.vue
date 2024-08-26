@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="confirmation-step">
     <v-row>
       <p class="text-h6">Confirm Transaction on your {{ walletName }} Wallet</p>
     </v-row>
@@ -101,16 +101,16 @@
                 <template v-slot:append-inner>
                   <v-col>
                     <v-row>
-                      <v-btn height="32" width="32" :disabled="value === '-'"
+                      <v-btn height="32" width="32"
                         variant="plain"
                         @click="copyToClipboard(providerRecipientAddress)" density="compact"
                         :icon="mdiContentCopy">
                       </v-btn>
                     </v-row>
                     <v-row>
-                      <v-btn height="32" width="32" :disabled="value === '-'" variant="plain"
-                          :href="getBtcAddressExplorerUrl(providerRecipientAddress)"
-                          target="_blank" density="compact" :icon="mdiOpenInNew" >
+                      <v-btn height="32" width="32" variant="plain"
+                          @click="openAddressInExplorer(providerRecipientAddress)"
+                          density="compact" :icon="mdiOpenInNew" >
                     </v-btn>
                     </v-row>
                   </v-col>
@@ -162,16 +162,16 @@
                 <template v-slot:append-inner>
                   <v-col>
                     <v-row>
-                      <v-btn height="32" width="32" :disabled="value === '-'"
+                      <v-btn height="32" width="32"
                         variant="plain"
                         @click="copyToClipboard(changeAddress)" density="compact"
                         :icon="mdiContentCopy">
                       </v-btn>
                     </v-row>
                     <v-row>
-                      <v-btn height="32" width="32" :disabled="value === '-'" variant="plain"
-                          :href="getBtcAddressExplorerUrl(changeAddress)"
-                          target="_blank" density="compact" :icon="mdiOpenInNew" >
+                      <v-btn height="32" width="32" variant="plain"
+                          @click="openAddressInExplorer(changeAddress)"
+                          density="compact" :icon="mdiOpenInNew" >
                     </v-btn>
                     </v-row>
                   </v-col>
@@ -493,6 +493,11 @@ export default defineComponent({
 
     const hasChange = computed(() => pegInTxState.value.normalizedTx.outputs.length > changeIdx);
 
+    function openAddressInExplorer(address: string) {
+      const url = getBtcAddressExplorerUrl(address);
+      window.open(url, '_blank');
+    }
+
     return {
       environmentContext,
       changeAmountString,
@@ -516,6 +521,7 @@ export default defineComponent({
       copyToClipboard,
       getBtcAddressExplorerUrl,
       hasChange,
+      openAddressInExplorer,
     };
   },
 });
