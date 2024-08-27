@@ -3,6 +3,7 @@ import { ApiService } from '@/common/services';
 import * as constants from '@/common/store/constants';
 import { FeeSelection } from '@/pegin/types/services';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import { ServiceError } from '@/common/utils';
 
 export default class TxFeeService {
   public static getTxFee(
@@ -39,7 +40,9 @@ export default class TxFeeService {
             selectedUtxoList,
           });
         })
-        .catch(reject);
+        .catch(() => {
+          reject(new ServiceError('TxFeeService', 'getTxFee', 'Something went wrong. Please check your network connection and try again.', 'Unable to get estimated fee from API'));
+        });
     });
   }
 

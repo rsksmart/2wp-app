@@ -94,7 +94,7 @@ import { FeeAmountData } from '@/common/types';
 
 export default defineComponent({
   name: 'BtcInputAmount',
-  emits: ['get-pegin-quotes', 'stepState'],
+  emits: ['get-pegin-quotes', 'stepState', 'pegin-error'],
   setup(props, context) {
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const focus = ref(false);
@@ -246,9 +246,13 @@ export default defineComponent({
           && amount.lte(maxValue);
     };
 
-    function getOptionsData() {
-      calculateTxFee();
-      context.emit('get-pegin-quotes');
+    async function getOptionsData() {
+      try {
+        await calculateTxFee();
+        context.emit('get-pegin-quotes');
+      } catch (e) {
+        context.emit('pegin-error', e);
+      }
     }
 
     const bitcoinAmountModel = computed({
@@ -288,7 +292,9 @@ export default defineComponent({
           fillMaxValueAvailable();
           bitcoinAmountModel.value = bitcoinAmount.value;
         })
-        .catch(console.error);
+        .catch((e) => {
+          context.emit('pegin-error', e);
+        });
     }
 
     function watchBitcoinAmount() {
