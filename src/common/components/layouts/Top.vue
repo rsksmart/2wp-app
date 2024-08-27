@@ -4,7 +4,7 @@
       <v-img inline width="160" alt="Rootstock logo" class="cursor-pointer"
              :src="getLogoSrc()" @click="goHome">
       </v-img>
-      <h1 class="text-purple text-h6">2 Way Peg</h1>
+      <h1 class="text-purple text-h5">PowPeg</h1>
     </div>
     <div class="d-flex align-center ga-5">
       <div class="d-flex align-center ga-2" v-if="truncatedAccount && accountBalance">
