@@ -10,13 +10,13 @@
     <v-row class="text-bw-400">
       To prevent malware attacks, double check the address with the recipient.
     </v-row>
-    <v-row class="text-bw-400">
+    <v-row v-if="hdWallet" class="text-bw-400">
       Press&nbsp;
       <p class="text-high-emphasis">Send &nbsp;</p>
       when you finish.
     </v-row>
-    <v-row v-if="hdWallet" class="d-flex justify-center">
-      <v-col cols="3" class="pl-0" v-if="!flyover">
+    <v-row v-if="hdWallet" class="d-flex justify-center ma-0 mt-3">
+      <v-col cols="3" class="px-1" v-if="!flyover">
         <v-card variant="outlined" color="bw-400" height="100%">
           <v-container>
             <v-row justify="start" class="mt-2 mb-6 px-3">
@@ -65,7 +65,7 @@
           </v-container>
         </v-card>
       </v-col>
-      <v-col cols="3">
+      <v-col cols="3" class="px-1">
         <v-card variant="outlined" color="bw-400" height="100%">
           <v-container>
             <v-row justify="start" class="mt-2 mb-6 px-3">
@@ -126,7 +126,7 @@
           </v-container>
         </v-card>
       </v-col>
-      <v-col cols="3" v-if="hasChange">
+      <v-col cols="3" class="px-1" v-if="hasChange">
         <v-card variant="outlined" color="bw-400" height="100%">
           <v-container>
             <v-row justify="start" class="mt-2 mb-6 px-3">
@@ -187,7 +187,7 @@
           </v-container>
         </v-card>
       </v-col>
-      <v-col cols="3" class="pr-0">
+      <v-col cols="3" class="px-1">
         <v-card variant="outlined" color="bw-400" height="100%">
           <v-container>
             <v-row justify="start" class="mt-2 mb-6 px-3">
@@ -389,20 +389,21 @@
         </v-text-field>
       </v-row>
     </v-row>
-    <v-row no-gutters>
+    <v-row v-if="hdWallet" no-gutters class="d-flex justify-center px-1">
+      <v-col :cols="flyover ? 9 : 12">
         <v-text-field readonly hide-details class="mt-2 white"
-                      bg-color="rgba(116, 189, 1, 0.4)" base-color="green"
-                      variant="outlined"
-                      density="compact"
-                      :model-value="`Confirm on ${walletName}`">
-          <template v-slot:prepend-inner>
-            <v-icon color="white">
-              {{ mdiInformation }}
-            </v-icon>
-          </template>
-
-        </v-text-field>
-      </v-row>
+                    bg-color="rgba(116, 189, 1, 0.4)" base-color="green"
+                    variant="outlined"
+                    density="compact"
+                    :model-value="`Confirm on ${walletName}`">
+        <template v-slot:prepend-inner>
+          <v-icon color="white">
+            {{ mdiInformation }}
+          </v-icon>
+        </template>
+      </v-text-field>
+      </v-col>
+    </v-row>
     <v-row justify="end">
       <slot />
     </v-row>
