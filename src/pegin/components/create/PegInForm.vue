@@ -13,7 +13,7 @@
         <peg-in-account-select />
       </v-col>
     </v-row>
-    <btc-input-amount @getPeginQuotes="getQuotes"/>
+    <btc-input-amount @getPeginQuotes="getQuotes" @peginError="handleError"/>
     <btc-fee-select/>
     <v-row v-if="showOptions && !loadingQuotes">
       <v-col class="mr-3">
@@ -63,6 +63,13 @@
         />
       </v-row>
   </v-container>
+  <template v-if="showErrorDialog">
+      <full-tx-error-dialog
+      :showTxErrorDialog="showErrorDialog"
+      :error="txError"
+      @closeErrorDialog="showErrorDialog = false"
+      />
+    </template>
 </template>
 
 <script lang="ts">
@@ -75,7 +82,7 @@ import BtcInputAmount from '@/pegin/components/create/BtcInputAmount.vue';
 import PeginOptionCard from '@/pegin/components/create/PeginOptionCard.vue';
 import { PegInTxState } from '@/common/types/pegInTx';
 import * as constants from '@/common/store/constants';
-import { Machine } from '@/common/utils';
+import { Machine, ServiceError } from '@/common/utils';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { TxStatusType } from '@/common/types/store';
 import { TxSummaryOrientation } from '@/common/types/Status';
@@ -89,6 +96,7 @@ import AddressWarningDialog from '@/common/components/exchange/AddressWarningDia
 import BtcFeeSelect from '@/pegin/components/create/BtcFeeSelect.vue';
 import { BridgeService } from '@/common/services/BridgeService';
 import { FlyoverService } from '@/common/services';
+import FullTxErrorDialog from '@/common/components/exchange/FullTxErrorDialog.vue';
 
 export default defineComponent({
   name: 'PegInForm',
@@ -98,6 +106,7 @@ export default defineComponent({
     PeginOptionCard,
     AddressWarningDialog,
     BtcFeeSelect,
+    FullTxErrorDialog,
   },
   setup(_, context) {
     const pegInFormState = ref<Machine<'loading' | 'goingHome' | 'fill'>>(new Machine('fill'));
@@ -110,6 +119,8 @@ export default defineComponent({
     const loadingQuotes = ref(false);
     const selected = ref<constants.peginType>();
     const selectedQuote = ref<QuotePegIn2WP>();
+    const showErrorDialog = ref(false);
+    const txError = ref<ServiceError>(new ServiceError('', '', '', ''));
 
     const account = useStateAttribute<string>('web3Session', 'account');
     const flyoverFeature = useGetter<(name: FeatureNames) => Feature>('web3Session', constants.SESSION_GET_FEATURE);
@@ -179,6 +190,13 @@ export default defineComponent({
       context.emit('back');
     }
 
+    function handleError(error: Error) {
+      if (error instanceof ServiceError) {
+        txError.value = error;
+        showErrorDialog.value = true;
+      }
+    }
+
     async function createTx() {
       showWarningMessage.value = false;
       pegInFormState.value.send('loading');
@@ -194,20 +212,22 @@ export default defineComponent({
           peginType: constants.peginType.POWPEG,
         });
       } else {
-        const acceptedQuote = await flyoverService.value.acceptPeginQuote(selectedQuoteHash.value);
-        context.emit('createTx', {
-          amountToTransferInSatoshi: selectedQuote.value?.quote.value
-            .plus(selectedQuote.value?.quote.productFeeAmount)
-            .plus(selectedQuote.value?.quote.callFee)
-            .plus(new SatoshiBig(selectedQuote.value?.quote.gasFee.toRBTCString(), 'btc')),
-          refundAddress: '',
-          recipient: '',
-          feeLevel: pegInTxState.value.selectedFee,
-          accountType: pegInTxState.value.selectedAccount,
-          btcRecipient: acceptedQuote.bitcoinDepositAddressHash,
-          peginType: constants.peginType.FLYOVER,
-        });
+        flyoverService.value.acceptPeginQuote(selectedQuoteHash.value).then((acceptedQuote) => {
+          context.emit('createTx', {
+            amountToTransferInSatoshi: selectedQuote.value?.quote.value
+              .plus(selectedQuote.value?.quote.productFeeAmount)
+              .plus(selectedQuote.value?.quote.callFee)
+              .plus(new SatoshiBig(selectedQuote.value?.quote.gasFee.toRBTCString(), 'btc')),
+            refundAddress: '',
+            recipient: '',
+            feeLevel: pegInTxState.value.selectedFee,
+            accountType: pegInTxState.value.selectedAccount,
+            btcRecipient: acceptedQuote.bitcoinDepositAddressHash,
+            peginType: constants.peginType.FLYOVER,
+          });
+        }).catch(handleError);
       }
+      pegInFormState.value.send('fill');
     }
 
     async function changeSelectedOption(selectedType: constants.peginType, quote?: QuotePegIn2WP) {
@@ -261,6 +281,9 @@ export default defineComponent({
       getQuotes,
       peginQuotes,
       peginType: constants.peginType,
+      showErrorDialog,
+      txError,
+      handleError,
     };
   },
 });
