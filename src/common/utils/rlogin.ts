@@ -35,7 +35,7 @@ export function getRloginInstance(): RLogin {
   }
   const supportedChains = Object.keys(rpcUrls).map(Number);
   const rLoginSetup = new RLogin({
-    cacheProvider: true,
+    cacheProvider: false,
     defaultTheme: 'dark',
     providerOptions: {
       walletconnect: {
