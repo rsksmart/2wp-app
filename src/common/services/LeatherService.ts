@@ -25,6 +25,7 @@ export default class LeatherService extends WalletService {
     this.btcProvider = window.LeatherProvider;
     const appConfig = new AppConfig();
     this.userSession = new UserSession({ appConfig });
+    this.userSession.signUserOut();
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -72,26 +73,27 @@ export default class LeatherService extends WalletService {
     });
   }
 
-  // eslint-disable-next-line class-methods-use-this
   reconnect(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       try {
-        showConnect({
-          userSession: this.userSession,
-          appDetails: {
-            name: 'App Name',
-            icon: `${window.location.origin}/favicon.ico`,
+        showConnect(
+          {
+            userSession: this.userSession,
+            appDetails: {
+              name: 'Powpeg App',
+              icon: `${window.location.origin}/favicon.ico`,
+            },
+            onFinish: () => {
+              this.btcProvider = window.LeatherProvider;
+              resolve();
+            },
+            onCancel: () => {
+              console.log('User closed the modal');
+              reject(new Error('User closed the modal'));
+            },
           },
-          onFinish: () => {
-            this.btcProvider = window.LeatherProvider;
-            resolve();
-          },
-          onCancel: () => {
-            console.log('User closed the modal');
-            reject(new Error('User closed the modal'));
-          },
-        });
-        // resolve();
+          this.btcProvider,
+        );
       } catch (e) {
         reject();
       }
