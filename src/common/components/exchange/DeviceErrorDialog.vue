@@ -17,9 +17,6 @@
             :href='installationLink' target="_blank">
             <span>{{messageInstallationToUser}}</span>
           </v-btn-rsk>
-          <v-btn-rsk v-if="!errorType" @click="closeErrorDialog">
-            <span>Close</span>
-          </v-btn-rsk>
         </div>
       </div>
     </v-card>
