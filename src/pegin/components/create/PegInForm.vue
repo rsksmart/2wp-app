@@ -79,7 +79,8 @@
 
 <script lang="ts">
 import {
-  computed, ref, defineComponent, onBeforeMount, watch, onMounted,
+  computed, ref, defineComponent, onBeforeMount, watch,
+  toRaw, onMounted,
 } from 'vue';
 import { mdiArrowLeft, mdiArrowRight, mdiSendOutline } from '@mdi/js';
 import PegInAccountSelect from '@/pegin/components/create/PegInAccountSelect.vue';
@@ -262,7 +263,7 @@ export default defineComponent({
     onBeforeMount(() => {
       window.onRecaptchaSuccess = createTx;
       const feature = flyoverFeature.value(FeatureNames.FLYOVER_PEG_IN);
-      flyoverEnabled.value = feature?.value === 'enabled';
+      flyoverEnabled.value = toRaw(feature).enabled;
     });
 
     onMounted(() => {

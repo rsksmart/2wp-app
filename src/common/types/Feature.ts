@@ -5,6 +5,7 @@ export enum FeatureNames {
 }
 export interface Feature {
   name: FeatureNames;
-  value: string;
+  value?: string;
   version: number;
+  enabled: boolean;
 }

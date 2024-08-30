@@ -8,7 +8,9 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, onBeforeMount } from 'vue';
+import {
+  ref, defineComponent, onBeforeMount, toRaw,
+} from 'vue';
 import * as constants from '@/common/store/constants';
 import PegOutForm from '@/pegout/components/PegOutForm.vue';
 import FlyoverPegout from '@/pegout/components/FlyoverPegout.vue';
@@ -45,7 +47,7 @@ export default defineComponent({
 
     onBeforeMount(() => {
       const feature = flyoverFeature.value(FeatureNames.FLYOVER_PEG_OUT);
-      if (feature?.value === 'enabled') {
+      if (toRaw(feature).enabled) {
         initFlyover();
         flyoverEnabled.value = true;
       }

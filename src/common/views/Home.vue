@@ -98,7 +98,7 @@
 </template>
 
 <script lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, toRaw } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import * as constants from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
@@ -133,7 +133,7 @@ export default {
     const getFeature = useGetter<(name: FeatureNames) => Feature>('web3Session', constants.SESSION_GET_FEATURE);
     const termsAndConditionsEnabled = computed(() => {
       const feature = getFeature.value(FeatureNames.TERMS_AND_CONDITIONS);
-      return feature?.value;
+      return toRaw(feature)?.enabled;
     });
 
     async function selectConversion(txType: NonNullable<TransactionType>) {
