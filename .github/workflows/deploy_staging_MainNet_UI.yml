@@ -48,6 +48,7 @@ jobs:
           VUE_APP_PEGOUT_MAX_AMOUNT_ALLOWED_IN_RBTC=10
           VUE_APP_PEGIN_MIN_AMOUNT_ALLOWED_IN_BTC=0.005
           VUE_APP_PEGIN_MAX_AMOUNT_ALLOWED_IN_BTC=10
+          VUE_APP_LBC_ADDRESS='0xab6EC97835287cCD785A149805c1bb3578f9B452'
           npm run-script build
 
       - name: Configure AWS credentials
