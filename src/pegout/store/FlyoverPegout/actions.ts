@@ -13,8 +13,7 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
   },
   [constants.FLYOVER_PEGOUT_GET_PROVIDERS]: async ({ state, commit }) => {
     state.flyoverService.getProviders()
-      .then((providers) => commit(constants.FLYOVER_PEGOUT_SET_PROVIDERS, providers))
-      .catch((e) => console.log(e));
+      .then((providers) => commit(constants.FLYOVER_PEGOUT_SET_PROVIDERS, providers));
   },
   [constants.FLYOVER_PEGOUT_ADD_AMOUNT]: ({ commit }, amount: WeiBig) => {
     commit(constants.FLYOVER_PEGOUT_SET_AMOUNT, amount);

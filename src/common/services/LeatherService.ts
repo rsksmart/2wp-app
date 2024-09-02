@@ -88,7 +88,6 @@ export default class LeatherService extends WalletService {
               resolve();
             },
             onCancel: () => {
-              console.log('User closed the modal');
               reject(new Error('User closed the modal'));
             },
           },

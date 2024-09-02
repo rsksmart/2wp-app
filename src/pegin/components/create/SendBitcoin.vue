@@ -169,7 +169,6 @@ export default defineComponent({
           } else if (stringError.includes('No device selected')) {
             deviceError.value = 'There are no device selected, please check your wallet connection, unlock your device and try again.';
           } else {
-            console.error(e);
             deviceError.value = 'Something went wrong with the wallet, please check your wallet connection, unlock your device and try again.';
           }
           if (e instanceof TrezorError) {

@@ -235,8 +235,7 @@ export default defineComponent({
       calculateTxFee()
         .then(() => {
           checkStep();
-        })
-        .catch(console.error);
+        });
     }
 
     const isValidAmount = (amount: SatoshiBig) => {
