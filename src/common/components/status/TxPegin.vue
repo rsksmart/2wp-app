@@ -190,16 +190,12 @@ export default defineComponent({
     }
 
     function setMessage() {
-      try {
-        let msg: TxStatusMessage | string = '';
-        if (txDetails.value) {
-          const type = props.isFlyover ? TxStatusType.FLYOVER_PEGIN : TxStatusType.PEGIN;
-          msg = setStatusMessage(type, txDetails.value.status);
-        }
-        context.emit('setMessage', msg);
-      } catch (e) {
-        console.log(e);
+      let msg: TxStatusMessage | string = '';
+      if (txDetails.value) {
+        const type = props.isFlyover ? TxStatusType.FLYOVER_PEGIN : TxStatusType.PEGIN;
+        msg = setStatusMessage(type, txDetails.value.status);
       }
+      context.emit('setMessage', msg);
     }
 
     function setProgressColor() {
