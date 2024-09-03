@@ -30,6 +30,8 @@ export default class FlyoverService {
 
   public siteKey = '';
 
+  private token = '';
+
   constructor(providerUrl?: string) {
     this.providerUrl = providerUrl;
     const appNetwork = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
@@ -74,16 +76,14 @@ export default class FlyoverService {
   // eslint-disable-next-line class-methods-use-this
   private tokenResolver(): Promise<string> {
     return new Promise((resolve, reject) => {
-      window.grecaptcha.ready(() => {
-        console.log('ready');
-        console.log(this.siteKey);
-        window.grecaptcha.execute(this.siteKey, { action: 'submit' })
-          .then((token: string) => {
-            console.log('Token:', token);
-            resolve(token);
-          })
-          .catch(reject);
-      });
+      const token = window.grecaptcha.getResponse();
+      if (token) resolve(token);
+      reject(new ServiceError(
+        'FlyoverService',
+        'tokenResolver',
+        'There is no token available',
+        'Token not found',
+      ));
     });
   }
 

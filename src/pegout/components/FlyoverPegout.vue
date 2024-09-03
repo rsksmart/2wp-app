@@ -40,7 +40,7 @@
     <v-row justify="end">
         <v-col cols="auto">
             <v-btn-rsk v-if="!pegOutFormState.matches(['loading'])"
-            @click="send(selectedOption)"
+            @click="executeRecaptcha"
             :disabled="!isReadyToCreate
               || !isFlyoverReady
               || pegOutFormState.matches(['goingHome'])"
@@ -87,12 +87,17 @@
     </template>
     <quote-diff-dialog :show-dialog="showQuoteDiff"
       :differences="quoteDifferences" @continue="continueHandler"/>
+    <div id="recaptcha" class="g-recaptcha"
+        :data-sitekey="flyoverService.siteKey"
+        data-callback="onRecaptchaSuccess"
+        data-action="submit"
+        data-size="invisible"></div>
   </v-container>
 </template>
 
 <script lang="ts">
 import {
-  computed, defineComponent, ref, watch,
+  computed, defineComponent, onBeforeMount, ref, watch,
 } from 'vue';
 import * as constants from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
@@ -107,9 +112,12 @@ import {
   FlyoverPegoutState, ObjectDifference, PegOutTxState, QuotePegOut2WP,
   SatoshiBig, TxStatusType, WeiBig,
 } from '@/common/types';
-import { Machine, ServiceError, validateAddress } from '@/common/utils';
+import {
+  appendRecaptcha, Machine, ServiceError, validateAddress,
+} from '@/common/utils';
 import router from '@/common/router';
 import ApiService from '@/common/services/ApiService';
+import { FlyoverService } from '@/common/services';
 import FullTxErrorDialog from '@/common/components/exchange/FullTxErrorDialog.vue';
 import PegoutOption from './PegoutOption.vue';
 
@@ -142,6 +150,7 @@ export default defineComponent({
 
     const pegOutTxState = useState<PegOutTxState>('pegOutTx');
     const flyoverPegoutState = useState<FlyoverPegoutState>('flyoverPegout');
+    const flyoverService = useStateAttribute<FlyoverService>('flyoverPegout', 'flyoverService');
     const account = useStateAttribute<string>('web3Session', 'account');
     const sendTx = useAction('pegOutTx', constants.PEGOUT_TX_SEND);
     const sendFlyoverTx = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ACCEPT_AND_SEND_QUOTE);
@@ -150,6 +159,7 @@ export default defineComponent({
     const clearFlyoverState = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_CLEAR_STATE);
     const clearPegoutTx = useAction('pegOutTx', constants.PEGOUT_TX_CLEAR);
     const getPegoutQuotes = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_GET_QUOTES);
+    const getFlyoverProviders = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_GET_PROVIDERS);
     const quotes = useStateAttribute<Record<number, QuotePegOut2WP[]>>('flyoverPegout', 'quotes');
     const quoteDifferences = useStateAttribute<Array<ObjectDifference>>('flyoverPegout', 'differences');
     const selectedQuote = useGetter<QuotePegOut2WP>('flyoverPegout', constants.FLYOVER_PEGOUT_GET_SELECTED_QUOTE);
@@ -296,7 +306,9 @@ export default defineComponent({
       rskGas: Number(pegOutTxState.value.calculatedFee.toRBTCTrimmedString()),
     }));
 
-    async function send(quoteHash: string) {
+    async function send() {
+      console.log('Sending pegout');
+      const quoteHash = selectedOption.value;
       const type = quoteHash
         ? TxStatusType.FLYOVER_PEGOUT.toLowerCase()
         : TxStatusType.PEGOUT.toLowerCase();
@@ -310,6 +322,7 @@ export default defineComponent({
         ApiService.registerTx(quoteHash ? registerFlyover.value : registerPegout.value);
         changePage(type);
       } catch (e) {
+        console.log(e);
         if (e instanceof ServiceError) {
           handlePegoutError(e);
         }
@@ -347,6 +360,14 @@ export default defineComponent({
       selectedOption.value = quoteHash;
     }
 
+    function executeRecaptcha() {
+      if (!window.grecaptcha.getResponse()) {
+        window.grecaptcha.execute();
+      } else {
+        send();
+      }
+    }
+
     if (!props.flyoverEnabled) {
       showStep.value = true;
     }
@@ -367,6 +388,17 @@ export default defineComponent({
       selectedOption.value = undefined;
       diffShown.value = true;
     }
+
+    onBeforeMount(() => {
+      window.onRecaptchaSuccess = send;
+      console.log('FlyoverPegout mounted');
+      initFlyoverTx()
+        .then(() => getFlyoverProviders())
+        .then(() => {
+          appendRecaptcha(flyoverService.value.siteKey);
+        })
+        .catch(console.error);
+    });
 
     watch(account, clearState);
 
@@ -396,6 +428,8 @@ export default defineComponent({
       amountToReceive,
       isFlyoverReady,
       continueHandler,
+      flyoverService,
+      executeRecaptcha,
     };
   },
 });

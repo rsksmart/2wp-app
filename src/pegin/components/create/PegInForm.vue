@@ -44,7 +44,7 @@
       <v-row justify="end">
         <v-col cols="auto">
             <v-btn-rsk v-if="!pegInFormState.matches(['loading'])"
-            @click="createTx"
+            @click="callRecaptcha"
             :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])"
             >
             <template #append>
@@ -64,7 +64,7 @@
       </v-row>
       <div id="recaptcha" class="g-recaptcha"
           :data-sitekey="flyoverService.siteKey"
-          :data-callback="createTx"
+          data-callback="onRecaptchaSuccess"
           data-action="submit"
           data-size="invisible"></div>
   </v-container>
@@ -87,7 +87,7 @@ import BtcInputAmount from '@/pegin/components/create/BtcInputAmount.vue';
 import PeginOptionCard from '@/pegin/components/create/PeginOptionCard.vue';
 import { PegInTxState } from '@/common/types/pegInTx';
 import * as constants from '@/common/store/constants';
-import { Machine, ServiceError } from '@/common/utils';
+import { appendRecaptcha, Machine, ServiceError } from '@/common/utils';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { TxStatusType } from '@/common/types/store';
 import { TxSummaryOrientation } from '@/common/types/Status';
@@ -217,20 +217,21 @@ export default defineComponent({
           peginType: constants.peginType.POWPEG,
         });
       } else {
-        flyoverService.value.acceptPeginQuote(selectedQuoteHash.value).then((acceptedQuote) => {
-          context.emit('createTx', {
-            amountToTransferInSatoshi: selectedQuote.value?.quote.value
-              .plus(selectedQuote.value?.quote.productFeeAmount)
-              .plus(selectedQuote.value?.quote.callFee)
-              .plus(new SatoshiBig(selectedQuote.value?.quote.gasFee.toRBTCString(), 'btc')),
-            refundAddress: '',
-            recipient: '',
-            feeLevel: pegInTxState.value.selectedFee,
-            accountType: pegInTxState.value.selectedAccount,
-            btcRecipient: acceptedQuote.bitcoinDepositAddressHash,
-            peginType: constants.peginType.FLYOVER,
-          });
-        }).catch(handleError);
+        flyoverService.value.acceptPeginQuote(selectedQuoteHash.value)
+          .then((acceptedQuote) => {
+            context.emit('createTx', {
+              amountToTransferInSatoshi: selectedQuote.value?.quote.value
+                .plus(selectedQuote.value?.quote.productFeeAmount)
+                .plus(selectedQuote.value?.quote.callFee)
+                .plus(new SatoshiBig(selectedQuote.value?.quote.gasFee.toRBTCString(), 'btc')),
+              refundAddress: '',
+              recipient: '',
+              feeLevel: pegInTxState.value.selectedFee,
+              accountType: pegInTxState.value.selectedAccount,
+              btcRecipient: acceptedQuote.bitcoinDepositAddressHash,
+              peginType: constants.peginType.FLYOVER,
+            });
+          }).catch(handleError);
       }
       pegInFormState.value.send('fill');
     }
@@ -254,22 +255,18 @@ export default defineComponent({
         });
     }
 
-    function appendRecaptcha(): void {
-      const scriptTag = document.createElement('script');
-      scriptTag.type = 'text/javascript';
-      scriptTag.async = true;
-      scriptTag.defer = true;
-      scriptTag.src = `https://www.google.com/recaptcha/api.js?render=${flyoverService.value.siteKey}`;
-      document.head.appendChild(scriptTag);
+    function callRecaptcha() {
+      window.grecaptcha.execute();
     }
 
     onBeforeMount(() => {
+      window.onRecaptchaSuccess = createTx;
       const feature = flyoverFeature.value(FeatureNames.FLYOVER_PEG_IN);
       flyoverEnabled.value = feature?.value === 'enabled';
     });
 
     onMounted(() => {
-      appendRecaptcha();
+      appendRecaptcha(flyoverService.value.siteKey);
     });
 
     watch(account, getQuotes);
@@ -303,6 +300,7 @@ export default defineComponent({
       txError,
       handleError,
       flyoverService,
+      callRecaptcha,
     };
   },
 });
