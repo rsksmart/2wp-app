@@ -8,8 +8,8 @@ import { compareObjects, promiseWithTimeout } from '@/common/utils';
 
 export const actions: ActionTree<FlyoverPegoutState, RootState> = {
   [constants.FLYOVER_PEGOUT_INIT]: async ({ state, dispatch }) => {
-    state.flyoverService.initialize()
-      .then(() => dispatch(constants.FLYOVER_PEGOUT_GET_PROVIDERS));
+    dispatch(constants.FLYOVER_PEGOUT_GET_PROVIDERS)
+      .then(() => state.flyoverService.initialize());
   },
   [constants.FLYOVER_PEGOUT_GET_PROVIDERS]: async ({ state, commit }) => {
     state.flyoverService.getProviders()
