@@ -7,14 +7,20 @@ import { BridgeService } from '@/common/services/BridgeService';
 import { compareObjects, promiseWithTimeout } from '@/common/utils';
 
 export const actions: ActionTree<FlyoverPegoutState, RootState> = {
-  [constants.FLYOVER_PEGOUT_INIT]: async ({ state, dispatch }) => {
-    dispatch(constants.FLYOVER_PEGOUT_GET_PROVIDERS)
-      .then(() => state.flyoverService.initialize());
+  [constants.FLYOVER_PEGOUT_INIT]: ({ state }) => {
+    console.log('Initializing flyover service');
+    return state.flyoverService.initialize();
   },
-  [constants.FLYOVER_PEGOUT_GET_PROVIDERS]: async ({ state, commit }) => {
+  [constants.FLYOVER_PEGOUT_GET_PROVIDERS]:
+  ({ state, commit }) => new Promise<void>((resolve, reject) => {
+    console.log('Getting providers');
     state.flyoverService.getProviders()
-      .then((providers) => commit(constants.FLYOVER_PEGOUT_SET_PROVIDERS, providers));
-  },
+      .then((providers) => {
+        commit(constants.FLYOVER_PEGOUT_SET_PROVIDERS, providers);
+        resolve();
+      })
+      .catch(reject);
+  }),
   [constants.FLYOVER_PEGOUT_ADD_AMOUNT]: ({ commit }, amount: WeiBig) => {
     commit(constants.FLYOVER_PEGOUT_SET_AMOUNT, amount);
   },
