@@ -374,3 +374,20 @@ export function truncateStringToSize(str: string, size: number) {
 export function copyToClipboard(value: string) {
   navigator.clipboard.writeText(value);
 }
+
+export function appendRecaptcha(siteKey: string): void {
+  const scriptTag = document.createElement('script');
+  scriptTag.type = 'text/javascript';
+  scriptTag.async = true;
+  scriptTag.defer = true;
+  scriptTag.src = `https://www.google.com/recaptcha/api.js?render=${siteKey}`;
+  document.head.appendChild(scriptTag);
+  const captchaDiv = document.createElement('div');
+  captchaDiv.id = 'recaptcha';
+  captchaDiv.className = 'g-recaptcha';
+  captchaDiv.setAttribute('data-sitekey', siteKey);
+  captchaDiv.setAttribute('data-callback', 'onRecaptchaSuccess');
+  captchaDiv.setAttribute('data-action', 'submit');
+  captchaDiv.setAttribute('data-size', 'invisible');
+  document.body.appendChild(captchaDiv);
+}
