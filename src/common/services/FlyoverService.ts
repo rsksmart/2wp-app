@@ -28,6 +28,8 @@ export default class FlyoverService {
 
   private peginQuotes: Quote[] = [];
 
+  public siteKey = '';
+
   constructor(providerUrl?: string) {
     this.providerUrl = providerUrl;
     const appNetwork = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
@@ -53,7 +55,7 @@ export default class FlyoverService {
           this.flyover = new Flyover({
             network: this.flyovernetwork,
             rskConnection: connection,
-            captchaTokenResolver: this.tokenResolver,
+            captchaTokenResolver: this.tokenResolver.bind(this),
             disableChecksum: true,
           });
           resolve();
@@ -71,8 +73,18 @@ export default class FlyoverService {
 
   // eslint-disable-next-line class-methods-use-this
   private tokenResolver(): Promise<string> {
-    // TODO: Implement captcha token resolver
-    return Promise.resolve('testToken');
+    return new Promise((resolve, reject) => {
+      window.grecaptcha.ready(() => {
+        console.log('ready');
+        console.log(this.siteKey);
+        window.grecaptcha.execute(this.siteKey, { action: 'submit' })
+          .then((token: string) => {
+            console.log('Token:', token);
+            resolve(token);
+          })
+          .catch(reject);
+      });
+    });
   }
 
   public getProviders(): Promise<LiquidityProvider2WP[]> {
@@ -96,6 +108,7 @@ export default class FlyoverService {
                 minTransactionValue: new WeiBig(provider.pegout.minTransactionValue, 'wei'),
               },
             }));
+          this.siteKey = liquidityProviders[0].siteKey;
           resolve(providers2wp);
         })
         .catch((error: Error) => {

@@ -62,6 +62,11 @@
                                 @cancel="showWarningMessage = false"
         />
       </v-row>
+      <div id="recaptcha" class="g-recaptcha"
+          :data-sitekey="flyoverService.siteKey"
+          :data-callback="createTx"
+          data-action="submit"
+          data-size="invisible"></div>
   </v-container>
   <template v-if="showErrorDialog">
       <full-tx-error-dialog
@@ -74,7 +79,7 @@
 
 <script lang="ts">
 import {
-  computed, ref, defineComponent, onBeforeMount, watch,
+  computed, ref, defineComponent, onBeforeMount, watch, onMounted,
 } from 'vue';
 import { mdiArrowLeft, mdiArrowRight, mdiSendOutline } from '@mdi/js';
 import PegInAccountSelect from '@/pegin/components/create/PegInAccountSelect.vue';
@@ -249,9 +254,22 @@ export default defineComponent({
         });
     }
 
+    function appendRecaptcha(): void {
+      const scriptTag = document.createElement('script');
+      scriptTag.type = 'text/javascript';
+      scriptTag.async = true;
+      scriptTag.defer = true;
+      scriptTag.src = `https://www.google.com/recaptcha/api.js?render=${flyoverService.value.siteKey}`;
+      document.head.appendChild(scriptTag);
+    }
+
     onBeforeMount(() => {
       const feature = flyoverFeature.value(FeatureNames.FLYOVER_PEG_IN);
       flyoverEnabled.value = feature?.value === 'enabled';
+    });
+
+    onMounted(() => {
+      appendRecaptcha();
     });
 
     watch(account, getQuotes);
@@ -284,6 +302,7 @@ export default defineComponent({
       showErrorDialog,
       txError,
       handleError,
+      flyoverService,
     };
   },
 });
