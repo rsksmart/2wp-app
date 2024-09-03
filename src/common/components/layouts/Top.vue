@@ -7,21 +7,7 @@
       <h1 class="text-purple text-h5">PowPeg</h1>
     </div>
     <div class="d-flex align-center ga-5">
-      <div class="d-flex align-center ga-2" v-if="truncatedAccount && accountBalance">
-        <v-btn variant="text" size="small" density="compact" rounded="full" :icon="mdiContentCopy"
-          @click="copyFullAccountAddress"
-        />
-        <span>
-          {{ truncatedAccount }} | {{ accountBalance }}
-          <v-tooltip
-            activator="parent"
-            location="bottom"
-          >{{ balance.toRBTCTrimmedString() }} {{ environmentContext.getRbtcTicker() }}
-          </v-tooltip>
-        </span>
-        <v-btn variant="flat" size="x-small" color="theme-primary" rounded="full" :icon="mdiLinkOff"
-          @click="disconnectWallet" />
-      </div>
+      <w3m-button />
       <label for="theme" class="theme-switch">
         <input id="theme" type="checkbox" v-model="themeLight">
         <span class="slider"></span>

@@ -23,6 +23,17 @@ import * as constants from '@/common/store/constants';
 import { useAction } from '@/common/store/helper';
 import { vuetifyNonce } from '@/common/plugins/vuetify';
 import { isMobileDevice } from '@/common/utils';
+import { createWeb3Modal } from '@web3modal/wagmi/vue';
+import { reconnect } from '@wagmi/core';
+import { config, projectId } from '../wagmiConfig';
+
+reconnect(config);
+
+createWeb3Modal({
+  wagmiConfig: config,
+  projectId,
+  allWallets: 'SHOW',
+});
 
 export default {
   name: 'App',
