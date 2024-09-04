@@ -3,16 +3,21 @@
     @click="selectOption"
     :class="selectedOption && 'selected'"
     class="d-flex flex-column ga-4 pa-8 fill-height">
+    <v-row no-gutters class="my-2">
+      <div class='text-h3'>
+        <span :class='`pa-1 bg-${header.subtitleBgColor}`'>
+          {{ header.title }}
+        </span>
+      </div>
+    </v-row>
     <v-row no-gutters>
-      <v-col cols="3">
-        <div class="d-flex text-h3 ga-1 flex-wrap">
-          <span v-for="(word, i) in header.title.split(' ')" :key="i"
-            :class="`pa-2 bg-${header.subtitleBgColor}`">
-            <a :href="header.link" target="_blank" rel="noopener">
-              {{ word }}
-            </a>
-          </span>
-        </div>
+      <v-col cols="auto">
+        <span class="text-right"> {{ header.label }}</span>
+      </v-col>
+      <v-col cols="auto" class="pl-2">
+        <v-btn @click="openLink(header.link)" icon density="compact" size="small" variant="plain">
+            <v-icon :icon="mdiOpenInNew"></v-icon>
+        </v-btn>
       </v-col>
     </v-row>
     <div class="d-flex flex-column ga-2 py-4">
@@ -126,7 +131,7 @@
 import {
   computed, defineComponent, PropType, ref,
 } from 'vue';
-import { mdiSendOutline, mdiInformationOutline } from '@mdi/js';
+import { mdiSendOutline, mdiInformationOutline, mdiOpenInNew } from '@mdi/js';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { useAction, useState, useStateAttribute } from '@/common/store/helper';
 import {
@@ -204,13 +209,15 @@ export default defineComponent({
     const header = computed(() => {
       if (isFlyover.value) {
         return {
-          title: 'Faster Option',
+          title: 'Fast Mode',
+          label: 'Powered by PowPeg + Flyover',
           subtitleBgColor: 'orange',
           link: 'https://dev.rootstock.io/concepts/rif-suite/#meet-the-suite',
         };
       }
       return {
-        title: 'Native Powpeg',
+        title: 'Native Mode',
+        label: 'Powered by PowPeg',
         subtitleBgColor: 'purple',
         link: 'https://dev.rootstock.io/rsk/architecture/powpeg/',
       };
@@ -252,6 +259,10 @@ export default defineComponent({
       return changed;
     }
 
+    function openLink(link: string) {
+      window.open(link, '_blank');
+    }
+
     return {
       mdiSendOutline,
       environmentContext,
@@ -271,6 +282,8 @@ export default defineComponent({
       selectOption,
       hasChanged,
       estimatedTimeToReceive,
+      mdiOpenInNew,
+      openLink,
     };
   },
 });
