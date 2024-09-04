@@ -2,16 +2,21 @@
   <v-card :ripple="false" @click="selectOption" rounded="lg" flat variant="outlined"
     :class="selected && 'selected'"
     class="d-flex flex-column ga-4 pa-8 fill-height">
+    <v-row no-gutters class="my-2">
+      <div class='text-h3'>
+        <span :class='`pa-1 bg-${option.subtitleColor}`'>
+          {{ option.title }}
+        </span>
+      </div>
+    </v-row>
     <v-row no-gutters>
-      <v-col cols="3">
-        <div class="d-flex text-h3 ga-1 flex-wrap">
-          <span v-for="(word, i) in option.title.split(' ')" :key="i"
-            :class='`pa-2 bg-${option.subtitleColor}`'>
-            <a :href="option.link" target="_blank" rel="noopener">
-              {{ word }}
-            </a>
-          </span>
-        </div>
+      <v-col cols="auto">
+        <span class="text-right"> {{ option.label }}</span>
+      </v-col>
+      <v-col cols="auto" class="pl-2">
+        <v-btn @click="openLink(option.link)" icon density="compact" size="small" variant="plain">
+            <v-icon :icon="mdiOpenInNew"></v-icon>
+        </v-btn>
       </v-col>
     </v-row>
     <div class="d-flex flex-column ga-2 py-4">
@@ -60,7 +65,7 @@ import {
   computed, defineComponent,
 } from 'vue';
 import * as constants from '@/common/store/constants';
-import { mdiInformationOutline } from '@mdi/js';
+import { mdiInformationOutline, mdiOpenInNew } from '@mdi/js';
 import { useGetter, useState, useStateAttribute } from '@/common/store/helper';
 import { blockConfirmationsToTimeString, truncateString } from '@/common/utils';
 import RskAddressInput from '@/pegin/components/create/RskAddressInput.vue';
@@ -105,7 +110,8 @@ export default defineComponent({
 
     const PeginOptions = {
       POWPEG: {
-        title: 'Native Powpeg',
+        title: 'Native Mode',
+        label: 'Powered by PowPeg',
         subtitleColor: 'purple',
         link: 'https://dev.rootstock.io/rsk/architecture/powpeg/',
         estimatedTime: () => '17 hours',
@@ -115,7 +121,8 @@ export default defineComponent({
         valueToReceive: () => pegInTxState.value.amountToTransfer,
       },
       FLYOVER: {
-        title: 'Faster Option',
+        title: 'Fast Mode',
+        label: 'Powered by PowPeg + Flyover',
         subtitleColor: 'orange',
         link: 'https://dev.rootstock.io/concepts/rif-suite/#meet-the-suite',
         estimatedTime: () => blockConfirmationsToTimeString(quote.value?.confirmations ?? 0, 'btc'),
@@ -135,6 +142,10 @@ export default defineComponent({
       return value.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
     }
 
+    function openLink(link: string) {
+      window.open(link, '_blank');
+    }
+
     return {
       constants,
       mdiInformationOutline,
@@ -144,6 +155,8 @@ export default defineComponent({
       environmentContext,
       selectedFee,
       toUSD,
+      mdiOpenInNew,
+      openLink,
     };
   },
 });
