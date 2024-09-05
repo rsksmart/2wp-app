@@ -27,7 +27,6 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      console.log('init flyover pegin');
       initFlyover();
     });
 

@@ -46,7 +46,6 @@ export default defineComponent({
     onBeforeMount(() => {
       const feature = flyoverFeature.value(FeatureNames.FLYOVER_PEG_OUT);
       if (feature?.value === 'enabled') {
-        console.log('init flyover pegout');
         initFlyover();
         flyoverEnabled.value = true;
       }

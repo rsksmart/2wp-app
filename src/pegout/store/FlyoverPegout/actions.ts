@@ -7,13 +7,9 @@ import { BridgeService } from '@/common/services/BridgeService';
 import { compareObjects, promiseWithTimeout } from '@/common/utils';
 
 export const actions: ActionTree<FlyoverPegoutState, RootState> = {
-  [constants.FLYOVER_PEGOUT_INIT]: ({ state }) => {
-    console.log('Initializing flyover service');
-    return state.flyoverService.initialize();
-  },
+  [constants.FLYOVER_PEGOUT_INIT]: ({ state }) => state.flyoverService.initialize(),
   [constants.FLYOVER_PEGOUT_GET_PROVIDERS]:
   ({ state, commit }) => new Promise<void>((resolve, reject) => {
-    console.log('Getting providers');
     state.flyoverService.getProviders()
       .then((providers) => {
         commit(constants.FLYOVER_PEGOUT_SET_PROVIDERS, providers);
@@ -71,14 +67,19 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
   [constants.FLYOVER_PEGOUT_ACCEPT_AND_SEND_QUOTE]:
     ({
       state, getters, dispatch, commit,
-    }, quoteHash: string) => new Promise((resolve, reject) => {
+    }, quoteHash: string) => new Promise<void>((resolve, reject) => {
       const providerId = getters[constants.FLYOVER_PEGOUT_GET_PROVIDER_ID](quoteHash);
       if (providerId === -1) {
         reject(new Error('No provider found for quote'));
       }
       dispatch(constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER, providerId)
         .then(() => dispatch(constants.FLYOVER_PEGOUT_GET_FINAL_QUOTE, { providerId, quoteHash }))
-        .then(() => state.flyoverService.acceptAndSendPegoutQuote(state.selectedQuoteHash))
+        .then(() => {
+          if (state.differences.length > 0) {
+            reject(new Error('Quote differences found: cannot accept quote'));
+          }
+          return state.flyoverService.acceptAndSendPegoutQuote(state.selectedQuoteHash);
+        })
         .then((txHash) => commit(constants.FLYOVER_PEGOUT_SET_TX_HASH, txHash))
         .then(resolve)
         .catch(reject);
@@ -119,12 +120,11 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
           );
           if (differences.length === 0) {
             commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, quote2wp.quoteHash);
-            resolve();
           } else {
             commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCES, differences);
           }
         });
-        reject(new Error('Previous quote values not found'));
+        resolve();
       })
       .catch(reject);
   }),
