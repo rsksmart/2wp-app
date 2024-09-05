@@ -1,7 +1,7 @@
 <template>
   <div class="mr-2">
     <span class="d-inline-block font-weight-bold my-3">
-      Account Type
+      Wallet Balance
     </span>
 
     <div v-if="onlyNativeSegwit" class="d-flex justify-space-between align-center flex-grow-1
