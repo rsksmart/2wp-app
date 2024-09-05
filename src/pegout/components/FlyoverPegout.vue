@@ -322,7 +322,6 @@ export default defineComponent({
         ApiService.registerTx(quoteHash ? registerFlyover.value : registerPegout.value);
         changePage(type);
       } catch (e) {
-        console.log(e);
         if (e instanceof ServiceError) {
           handlePegoutError(e);
         }
@@ -391,7 +390,6 @@ export default defineComponent({
 
     onBeforeMount(() => {
       window.onRecaptchaSuccess = send;
-      console.log('FlyoverPegout mounted');
       initFlyoverTx()
         .then(() => getFlyoverProviders())
         .then(() => {
