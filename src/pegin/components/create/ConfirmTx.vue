@@ -171,6 +171,7 @@ export default defineComponent({
         recipientAddress: recipientAddress.value,
         blocksToCompleteTransaction: selectedQuote.value.quote.confirmations,
       },
+      quoteHash: selectedQuote.value.quoteHash,
     }));
 
     const nativeProps = computed(() => ({

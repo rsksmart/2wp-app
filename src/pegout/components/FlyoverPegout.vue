@@ -110,7 +110,7 @@ import {
 import { mdiArrowLeft, mdiArrowRight } from '@mdi/js';
 import {
   FlyoverPegoutState, ObjectDifference, PegOutTxState, QuotePegOut2WP,
-  SatoshiBig, TxStatusType, WeiBig,
+  SatoshiBig, TxInfo, TxStatusType, WeiBig,
 } from '@/common/types';
 import {
   appendRecaptcha, Machine, ServiceError, validateAddress,
@@ -280,7 +280,7 @@ export default defineComponent({
         .toRBTCTrimmedString();
     }
 
-    const registerFlyover = computed(() => ({
+    const registerFlyover = computed<TxInfo>(() => ({
       sessionId: '',
       txHash: flyoverPegoutState.value.txHash as string,
       type: TxStatusType.PEGOUT.toLowerCase(),
@@ -294,6 +294,7 @@ export default defineComponent({
         recipientAddress: flyoverPegoutState.value.btcRecipientAddress,
         blocksToCompleteTransaction: selectedQuote.value.quote.depositConfirmations,
       },
+      quoteHash: selectedQuote.value.quoteHash,
     }));
 
     const registerPegout = computed(() => ({
