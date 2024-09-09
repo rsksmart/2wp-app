@@ -16,14 +16,14 @@
     <btc-input-amount @getPeginQuotes="getQuotes" @peginError="handleError"/>
     <btc-fee-select/>
     <v-row v-if="showOptions && !loadingQuotes">
-      <v-col class="mr-3">
+      <v-col cols="6" class="mr-3">
         <pegin-option-card
           :option-type="peginType.POWPEG"
           @selected-option="changeSelectedOption"
           :selected="selected === peginType.POWPEG"
         />
       </v-col>
-      <v-col v-for="(quote, index) in peginQuotes" :key="index">
+      <v-col cols="6" v-for="(quote, index) in peginQuotes" :key="index">
         <pegin-option-card
           :option-type="peginType.FLYOVER"
           @selected-option="changeSelectedOption"
