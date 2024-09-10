@@ -1,7 +1,7 @@
 <template>
 <v-col class="pl-0">
   <span>Destination Address</span>
-  <v-row class="my-2">
+  <v-row class="my-2 ml-0">
     <v-combobox
       variant="solo" flat rounded="lg" hide-details
       hide-selected
