@@ -23,7 +23,7 @@
           :selected="selected === peginType.POWPEG"
         />
       </v-col>
-      <v-col cols="6" v-for="(quote, index) in peginQuotes" :key="index">
+      <v-col v-for="(quote, index) in peginQuotes" :key="index">
         <pegin-option-card
           :option-type="peginType.FLYOVER"
           @selected-option="changeSelectedOption"
