@@ -101,7 +101,8 @@ export default defineComponent({
   setup(props) {
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const columnOrder = computed(
-      () => (props.type === TxStatusType.PEGOUT ? { btc: 12, rsk: 1 } : { btc: 1, rsk: 12 }),
+      () => (props.type === TxStatusType.PEGOUT || props.type === TxStatusType.FLYOVER_PEGOUT
+        ? { btc: 12, rsk: 1 } : { btc: 1, rsk: 12 }),
     );
     const status = useState<TxStatus>('status');
 
