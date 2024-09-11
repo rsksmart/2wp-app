@@ -31,7 +31,7 @@
           rounded="lg"
           variant="solo"
           :class="showAddressWarning && 'input-error'"
-          :placeholder="`Paste your ${environmentContext.getBtcTicker()} address`"
+          :placeholder="btcAddressPlaceholder"
           @update:model-value="updateStore"/>
         <v-alert v-show="showAddressWarning"
           variant="text" type="warning" density="compact" class="text-body-1 px-0" prominent>
@@ -223,6 +223,8 @@ export default defineComponent({
       };
     });
 
+    const btcAddressPlaceholder = `Paste your (Legacy or Segwit) ${environmentContext.getBtcTicker()} address`;
+
     const isValidBtcAddress = computed(() => {
       const { valid, addressType } = validateAddress(btcAddress.value);
       return valid && (addressType === constants.BITCOIN_LEGACY_ADDRESS
@@ -284,6 +286,7 @@ export default defineComponent({
       estimatedTimeToReceive,
       mdiOpenInNew,
       openLink,
+      btcAddressPlaceholder,
     };
   },
 });
