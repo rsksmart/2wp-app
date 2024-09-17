@@ -375,7 +375,15 @@ export function copyToClipboard(value: string) {
   navigator.clipboard.writeText(value);
 }
 
+export function isValidSiteKey(siteKey: string): boolean {
+  const siteKeyPattern = /^[A-Za-z0-9_-]+$/;
+  return siteKeyPattern.test(siteKey);
+}
+
 export function appendRecaptcha(siteKey: string): void {
+  if (!isValidSiteKey(siteKey)) {
+    return;
+  }
   const scriptTag = document.createElement('script');
   scriptTag.type = 'text/javascript';
   scriptTag.async = true;

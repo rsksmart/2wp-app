@@ -11,7 +11,7 @@ import {
 } from '@/common/types';
 import { providers } from 'ethers';
 import { EnvironmentAccessorService } from './enviroment-accessor.service';
-import { ServiceError } from '../utils';
+import { isValidSiteKey, ServiceError } from '../utils';
 
 export default class FlyoverService {
   flyover?: Flyover;
@@ -108,7 +108,8 @@ export default class FlyoverService {
                 minTransactionValue: new WeiBig(provider.pegout.minTransactionValue, 'wei'),
               },
             }));
-          this.siteKey = liquidityProviders[0].siteKey;
+          const providerKey = liquidityProviders[0].siteKey;
+          if (isValidSiteKey(providerKey)) this.siteKey = liquidityProviders[0].siteKey;
           resolve(providers2wp);
         })
         .catch((error: Error) => {
