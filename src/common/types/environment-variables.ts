@@ -29,6 +29,10 @@ export class EnvironmentVariables {
 
   public debugMode: boolean;
 
+  public chainId: number;
+
+  public safeTxServiceUrl: string;
+
   public minFeeSatPerByte: {
     fast: number;
     average: number;
@@ -99,5 +103,8 @@ export class EnvironmentVariables {
       || defaultValues.peginMinValue;
     this.peginMaxAmountAllowedInBtc = Number(process.env.VUE_APP_PEGIN_MAX_AMOUNT_ALLOWED_IN_BTC)
       || defaultValues.peginMaxValue;
+    this.chainId = this.vueAppCoin === 'main' ? 30 : 31;
+    this.safeTxServiceUrl = process.env.VUE_APP_SAFE_TX_SERVICE_URL
+      || defaultValues.safeTxServiceUrl;
   }
 }

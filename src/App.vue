@@ -6,6 +6,9 @@
       <div class="bg-background flex-grow-1">
         <router-view @update:showDialog="showTermsDialog" />
       </div>
+      <v-btn @click="startSafe" >
+        START SAFE
+      </v-btn>
       <terms-dialog v-model:showDialog="showTermsAndConditions" />
       <footer-rsk class="flex-grow-0" @update:showDialog="showTermsDialog" />
     </div>
@@ -23,6 +26,8 @@ import * as constants from '@/common/store/constants';
 import { useAction } from '@/common/store/helper';
 import { vuetifyNonce } from '@/common/plugins/vuetify';
 import { isMobileDevice } from '@/common/utils';
+import { GnosisSafeService } from '@/common/services';
+import { WeiBig } from '@/common/types';
 
 export default {
   name: 'App',
@@ -46,7 +51,7 @@ export default {
       script-src 'self' 'nonce-${vuetifyNonce}' 'unsafe-eval';
       script-src-elem 'self' 'unsafe-inline' https://script.hotjar.com https://www.clarity.ms/s/* https://static.hotjar.com https://*.hotjar.com https://*.hotjar.io https://api.coingecko.com/ https://*.clarity.ms https://www.clarity.ms/ https://www.gstatic.com/ https://www.google.com/recaptcha/;
       img-src data: https:;
-      connect-src 'self' 'unsafe-inline' https://www.clarity.ms/s/0.7.16/clarity.js wss://* https://*.hotjar.com https://*.hotjar.io https://www.clarity.ms/s/* wss://*.hotjar.com ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://lps.testnet.flyover.rif.technology https://lps.flyover.rif.technology https://api.coingecko.com https://*.clarity.ms https://www.clarity.ms/* ;
+      connect-src 'self' 'unsafe-inline' https://www.clarity.ms/s/0.7.16/clarity.js wss://* https://*.hotjar.com https://*.hotjar.io https://www.clarity.ms/s/* wss://*.hotjar.com ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} ${envVariables.safeTxServiceUrl}/* https://lps.testnet.flyover.rif.technology https://lps.flyover.rif.technology https://api.coingecko.com https://*.clarity.ms https://www.clarity.ms/* ;
       object-src 'none';
       frame-src https://connect.trezor.io https://www.google.com/;
       worker-src 'none';
@@ -92,6 +97,32 @@ export default {
       showTermsAndConditions.value = show;
     }
 
+    function startSafe() {
+      const service = new GnosisSafeService();
+      service.getSafeAccounts('0xAFf12FA1C482BeAb1D70C68Fe0FC5825447a9818')
+        .then(([account]) => {
+          console.log('safe account', account);
+          return service.getSafeInfo(account);
+        })
+        .then((safeInfo) => {
+          console.log('safe info', safeInfo);
+          return service.init('0xAFf12FA1C482BeAb1D70C68Fe0FC5825447a9818', safeInfo.address);
+        })
+        .then(() => {
+          console.log('safe inited');
+          return service.proposeTx(
+            new WeiBig('500', 'wei'),
+            '0xa44B9656Ba4163d0c8217467f649Ca97C75Dc6c7',
+            '0xCe5e94671746EC6080E440a851C94529a603Ad8D',
+            '0xAFf12FA1C482BeAb1D70C68Fe0FC5825447a9818',
+          );
+        })
+        .then(() => {
+          console.log('tx created');
+        })
+        .catch(console.error);
+    }
+
     onBeforeMount(() => {
       getFeatures();
       getBtcPrice();
@@ -104,6 +135,7 @@ export default {
       showTermsDialog,
       showTermsAndConditions,
       isMobileDevice,
+      startSafe,
     };
   },
 };
