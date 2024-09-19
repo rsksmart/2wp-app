@@ -6,10 +6,9 @@
       </v-col>
       <v-col class="px-0">
         <div class="progress-bar"
-             :id="`indicator-${timeLineData[0][1]}${txWithError?'-error':''}`"></div>
+          :id="`indicator-${timeLineData[0][1]}${txFailed?'-error':''}`"></div>
       </v-col>
-      <template v-if="!isFlyover">
-        <v-col cols="auto" :class="[txWithError ? 'pt-0' : 'pt-2', 'px-1']">
+        <v-col cols="auto" :class="[txFailed ? 'pt-0' : 'pt-2', 'px-1']">
           <v-img :src="imgStep1" :width="initialImgSize" :height="initialImgSize" contain/>
         </v-col>
         <v-col class="px-0">
@@ -27,7 +26,6 @@
         <v-col class="px-0">
           <div class="progress-bar" :id="`indicator-${timeLineData[3][1]}`"></div>
         </v-col>
-      </template>
       <v-col cols="auto" class="pt-0 pr-0">
         <v-img class="d-flex flex-0-0" :src="finalStepImage" width="32" height="32" contain/>
       </v-col>
@@ -37,7 +35,6 @@
         <p class="text-left text-bw-400">{{ timeLineData[0][0] }}</p>
       </v-col>
       <v-spacer />
-      <template v-if="!isFlyover">
         <v-col class="pa-0 pl-6">
           <p class="text-center text-bw-400">{{ timeLineData[1][0] }}</p>
         </v-col>
@@ -50,7 +47,6 @@
           <p class="text-center text-bw-400">{{ timeLineData[3][0] }}</p>
         </v-col>
         <v-spacer />
-      </template>
       <v-col cols="1" class="pa-0 pr-4">
         <p class="text-right text-bw-400">{{ timeLineData[4][0] }}</p>
       </v-col>
@@ -73,6 +69,7 @@ import {
   TxStatusType,
 } from '@/common/types';
 import { PegStatus, FlyoverStatus } from '@/common/store/constants';
+import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 
 export default defineComponent({
   name: 'StatusProgressBar',
@@ -83,6 +80,11 @@ export default defineComponent({
   },
   setup(props) {
     const status = useState<TxStatus>('status');
+    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+    const btcTicker = environmentContext.getBtcTicker();
+    const rbtcTicker = environmentContext.getRbtcTicker();
+    const txFailed = computed(() => props.txWithError
+      || status.value.flyoverStatus === FlyoverStatus.FAILED);
     const txDetails = useStateAttribute<PegoutStatusDataModel|PeginStatus|FlyoverStatusModel>('status', 'txDetails');
     const isPegOut = computed((): boolean => status.value.type === TxStatusType.PEGOUT
       || status.value.type === TxStatusType.FLYOVER_PEGOUT);
@@ -99,8 +101,8 @@ export default defineComponent({
       }
       return require('@/assets/status/rbtc.svg');
     });
-    const initialImgSize = computed(() => (props.txWithError ? 32 : 12));
-    const barColor = computed(() => (props.txWithError ? 'red' : 'green'));
+    const initialImgSize = computed(() => (txFailed.value ? 32 : 12));
+    const barColor = computed(() => (txFailed.value ? 'red' : 'green'));
     const timeLineData = computed(() => {
       let labelOne = 'Transaction Broadcasted';
       let labelTwo = 'Transaction Confirmed';
@@ -116,7 +118,38 @@ export default defineComponent({
       } else if (isPegOut.value) {
         labelThree = 'Sent to Bitcoin';
         if (props.isFlyover) {
-          zero = txDetails.value.status === FlyoverStatus.COMPLETED ? 100 : 50;
+          labelOne = `Send ${rbtcTicker} to Liquidity Provider`;
+          labelTwo = `Liquidity Provider received ${rbtcTicker}`;
+          labelThree = `Liquidity Provider send ${btcTicker}`;
+          switch (status.value.flyoverStatus) {
+            case FlyoverStatus.PENDING:
+              zero = 100;
+              first = 100;
+              second = 70;
+              break;
+            case FlyoverStatus.SUCCESS:
+              zero = 100;
+              first = 100;
+              second = 100;
+              third = 100;
+              break;
+            case FlyoverStatus.FAILED:
+              zero = 100;
+              labelOne = 'Error occurred';
+              labelTwo = '';
+              labelThree = '';
+              break;
+            default:
+              zero = 0;
+              first = 0;
+              second = 0;
+              third = 0;
+              fourth = 0;
+              labelOne = '';
+              labelTwo = '';
+              labelThree = '';
+              break;
+          }
         } else {
           switch (txDetails.value.status as PegoutStatus) {
             case PegoutStatus.PENDING:
@@ -166,7 +199,38 @@ export default defineComponent({
           }
         }
       } else if (props.isFlyover) {
-        zero = txDetails.value.status === FlyoverStatus.COMPLETED ? 100 : 50;
+        labelOne = `Send ${btcTicker} to Liquidity Provider`;
+        labelTwo = `Liquidity Provider received ${btcTicker}`;
+        labelThree = `Liquidity Provider send ${rbtcTicker}`;
+        switch (status.value.flyoverStatus) {
+          case FlyoverStatus.PENDING:
+            zero = 100;
+            first = 100;
+            second = 70;
+            break;
+          case FlyoverStatus.SUCCESS:
+            zero = 100;
+            first = 100;
+            second = 100;
+            third = 100;
+            break;
+          case FlyoverStatus.FAILED:
+            zero = 100;
+            labelOne = 'Error occurred';
+            labelTwo = '';
+            labelThree = '';
+            break;
+          default:
+            zero = 0;
+            first = 0;
+            second = 0;
+            third = 0;
+            fourth = 0;
+            labelOne = '';
+            labelTwo = '';
+            labelThree = '';
+            break;
+        }
       } else {
         const txDetailsPegIn = txDetails.value as PeginStatus;
         const btc = txDetailsPegIn.btc as BtcPeginStatus;
@@ -240,7 +304,7 @@ export default defineComponent({
       };
     });
     const imgStep1 = computed(() => {
-      if (props.txWithError) return require('@/assets/status/ellipse_error.svg');
+      if (txFailed.value) return require('@/assets/status/ellipse_error.svg');
       if (timeLineData.value[0][1] === 100) return require('@/assets/status/ellipse.svg');
       return require('@/assets/status/ellipse_empty.svg');
     });
@@ -266,6 +330,7 @@ export default defineComponent({
       imgStep3,
       initialImgSize,
       barColor,
+      txFailed,
     };
   },
 });

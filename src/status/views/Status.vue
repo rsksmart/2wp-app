@@ -18,13 +18,23 @@
     <v-row no-gutters v-if="showStatus && showTimeLeft" justify="center">
       <span class="text-bw-400 text-body-1">Estimated time: {{ releaseTimeText }}</span>
     </v-row>
-    <v-row no-gutters>
+    <v-row no-gutters v-if="showStatus">
       <tx-pegin v-if="isPegIn" :txId="txId" :isFlyover="isFlyover"
                 :txWithErrorType="txWithErrorType" :txWithError="txWithError" />
       <tx-pegout v-if="isPegOut" :txId="txId" :isFlyover="isFlyover"
                 :txWithErrorType="txWithErrorType" :txWithError="txWithError" />
       <status-progress-bar v-if="txWithErrorType" :isFlyover="isFlyover"
                 :txWithErrorType="txWithErrorType" :txWithError="txWithError" />
+    </v-row>
+    <v-row v-else>
+    <v-progress-circular
+        class="ma-auto"
+        :size="250"
+        :width="18"
+        color="warning"
+        indeterminate>
+        Searching...
+      </v-progress-circular>
     </v-row>
   </v-container>
 </template>

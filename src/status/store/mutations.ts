@@ -26,4 +26,7 @@ export const mutations: MutationTree<TxStatus> = {
     (state: TxStatus, releaseTime: Duration) => {
       state.estimatedReleaseTimeInMinutes = releaseTime;
     },
+  [constants.STATUS_SET_FLYOVER_STATUS]: (state, status) => {
+    state.flyoverStatus = status;
+  },
 };
