@@ -194,7 +194,7 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
           activeMessageStyle = 'statusProgress';
           isRejected = false;
           break;
-        case constants.FlyoverStatus.COMPLETED:
+        case constants.FlyoverStatus.SUCCESS:
           statusMessage = 'Your transaction was successfully processed!';
           activeMessageStyle = 'statusSuccess';
           isRejected = false;
@@ -209,7 +209,7 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
           activeMessageStyle = 'statusProgress';
           isRejected = false;
           break;
-        case constants.FlyoverStatus.COMPLETED:
+        case constants.FlyoverStatus.SUCCESS:
           statusMessage = 'Your transaction was successfully processed!';
           activeMessageStyle = 'statusSuccess';
           isRejected = false;
