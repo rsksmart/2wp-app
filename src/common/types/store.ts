@@ -3,13 +3,19 @@ import { PegStatus } from '@/common/store/constants';
 import SatoshiBig from '@/common/types/SatoshiBig';
 import { PegInTxState } from '@/common/types/pegInTx';
 import { SessionState } from '@/common/types/session';
-import { PegOutTxState } from './pegOutTx';
+import { PegOutTxState } from '@/common/types/pegOutTx';
+import { FlyoverPeginState } from '@/common/types/FlyoverPegin';
+import { FlyoverPegoutState } from '@/common/types/FlyoverPegout';
+import { StatusState } from '@/common/types/Status';
 
 export interface RootState {
   pegInTx?: PegInTxState,
   web3Session?: SessionState,
   pegOutTx?: PegOutTxState,
   version: string;
+  status?: StatusState;
+  flyoverPegin?: FlyoverPeginState;
+  flyoverPegout?: FlyoverPegoutState;
 }
 
 export interface BtcPeginStatus {
@@ -79,6 +85,7 @@ export interface FlyoverStatusModel {
   status: string;
   senderAddress: string;
   recipientAddress: string;
+  quoteHash: string;
 }
 
 export enum TxStatusType {
@@ -96,4 +103,5 @@ export interface TxStatus {
   type: TxStatusType;
   pegOutEstimatedFee: SatoshiBig;
   estimatedReleaseTimeInMinutes: Duration;
+  flyoverStatus?: string;
 }
