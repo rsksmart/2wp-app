@@ -17,6 +17,9 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       case constants.WALLET_NAMES.LEATHER.long_name: {
         return constants.WALLET_NAMES.LEATHER.formal_name;
       }
+      case constants.WALLET_NAMES.XVERSE.long_name: {
+        return constants.WALLET_NAMES.XVERSE.formal_name;
+      }
       default: {
         return 'wallet';
       }
@@ -167,6 +170,9 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       case constants.WALLET_NAMES.LEATHER.long_name:
         isHdWallet = false;
         break;
+      case constants.WALLET_NAMES.XVERSE.long_name:
+        isHdWallet = false;
+        break;
       default:
         isHdWallet = false;
         break;
@@ -183,6 +189,9 @@ export const getters: GetterTree<PegInTxState, RootState> = {
         isSfWallet = false;
         break;
       case constants.WALLET_NAMES.LEATHER.long_name:
+        isSfWallet = true;
+        break;
+      case constants.WALLET_NAMES.XVERSE.long_name:
         isSfWallet = true;
         break;
       default:
