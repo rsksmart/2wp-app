@@ -3,6 +3,7 @@ export const WALLET_NAMES = {
   TREZOR: { formal_name: 'Trezor', short_name: 'trezor', long_name: 'WALLET_TREZOR' },
   METAMASK: { formal_name: 'Metamask', short_name: 'metamask', long_name: 'WALLET_METAMASK' },
   LEATHER: { formal_name: 'Leather', short_name: 'leather', long_name: 'WALLET_LEATHER' },
+  XVERSE: { formal_name: 'XVerse', short_name: 'xverse', long_name: 'WALLET_XVERSE' },
 } as const;
 
 export const OPERATION_TYPE = 'OPERATION_TYPE';
