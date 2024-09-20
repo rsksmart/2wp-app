@@ -109,6 +109,7 @@ export interface PsbtExtendedInput {
     value: number;
     script: Buffer;
   };
+  redeemScript?: Buffer;
 }
 
 export interface NormalizedSummary {
@@ -139,4 +140,9 @@ export interface ObjectDifference {
 export enum AppLocale {
   LOCALE_EN = 'en',
   LOCALE_ES = 'es',
+}
+
+export interface XverseTx extends Tx {
+  base64UnsignedPsbt: string;
+  inputs: Array<{idx: number; address: string}>;
 }
