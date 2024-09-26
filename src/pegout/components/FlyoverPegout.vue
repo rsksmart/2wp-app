@@ -136,8 +136,7 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props, context) {
-    const nextPage = 'Confirmation';
+  setup(props) {
     const showTxErrorDialog = ref(false);
     const txError = ref<ServiceError>(new ServiceError('', '', '', ''));
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
@@ -264,7 +263,6 @@ export default defineComponent({
             : pegOutTxState.value.txHash,
         },
       });
-      context.emit('changePage', nextPage);
     }
 
     function getLPName(): string {

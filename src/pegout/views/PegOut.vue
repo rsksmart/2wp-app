@@ -15,13 +15,11 @@ import FlyoverPegout from '@/pegout/components/FlyoverPegout.vue';
 import { Machine } from '@/common/utils';
 import { useAction, useGetter } from '@/common/store/helper';
 import { Feature, FeatureNames } from '@/common/types';
-import Confirmation from '../components/Confirmation.vue';
 
 export default defineComponent({
   name: 'PegOut',
   components: {
     PegOutForm,
-    Confirmation,
     FlyoverPegout,
   },
   setup() {
