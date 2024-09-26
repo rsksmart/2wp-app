@@ -223,7 +223,7 @@ export default defineComponent({
               amountToTransferInSatoshi: selectedQuote.value?.quote.value
                 .plus(selectedQuote.value?.quote.productFeeAmount)
                 .plus(selectedQuote.value?.quote.callFee)
-                .plus(new SatoshiBig(selectedQuote.value?.quote.gasFee.toRBTCString(), 'btc')),
+                .plus(SatoshiBig.fromWeiBig(selectedQuote.value?.quote.gasFee)),
               refundAddress: '',
               recipient: '',
               feeLevel: pegInTxState.value.selectedFee,

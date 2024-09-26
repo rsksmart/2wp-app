@@ -1,4 +1,5 @@
 import Big, { BigSource } from 'big.js';
+import WeiBig from './WeiBig';
 
 const numberRegex = /^[0-9]*(\.[0-9]*)?$/;
 
@@ -25,6 +26,11 @@ export default class SatoshiBig extends Big {
         super(safeBig);
         break;
     }
+  }
+
+  public static fromWeiBig(weiBig: WeiBig): SatoshiBig {
+    const safeSatBig = new Big(weiBig.toRBTCString());
+    return new SatoshiBig(safeSatBig.mul(100_000_000).toFixed(0, Big.roundUp), 'satoshi');
   }
 
   plus(amount: SatoshiBig) {
