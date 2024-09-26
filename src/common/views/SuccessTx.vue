@@ -51,7 +51,9 @@ import { defineComponent, computed, PropType } from 'vue';
 import { useAction, useGetter, useState } from '@/common/store/helper';
 import * as constants from '@/common/store/constants';
 import { useRouter } from 'vue-router';
-import { PegInTxState, SatoshiBig, TxStatusType } from '@/common/types';
+import {
+  PegInTxState, PegOutTxState, SatoshiBig, TxStatusType,
+} from '@/common/types';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 
 export default defineComponent({
@@ -70,12 +72,23 @@ export default defineComponent({
     const clearStatus = useAction('status', constants.STATUS_CLEAR);
     const router = useRouter();
     const pegInTxState = useState<PegInTxState>('pegInTx');
+    const pegOutTxState = useState<PegOutTxState>('pegOutTx');
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
 
-    const amount = computed(() => (props.type === (TxStatusType.PEGIN).toLowerCase()
-      ? pegInTxState.value.amountToTransfer.toBTCTrimmedString()
-      : estimatedBtcToReceive.value.toBTCTrimmedString()));
+    const amount = computed(() => {
+      switch (props.type.toUpperCase()) {
+        case TxStatusType.PEGIN || TxStatusType.FLYOVER_PEGIN:
+          return pegInTxState.value.amountToTransfer.toBTCTrimmedString();
+        case TxStatusType.PEGOUT:
+          return estimatedBtcToReceive.value.toBTCTrimmedString();
+        case TxStatusType.FLYOVER_PEGOUT:
+          return pegOutTxState.value.amountToTransfer.toRBTCTrimmedString();
+        default:
+          return '';
+      }
+    });
+
     const symbol = computed(() => (props.type === (TxStatusType.PEGIN).toLowerCase()
       ? environmentContext.getRbtcTicker()
       : environmentContext.getBtcTicker()));
