@@ -1,5 +1,6 @@
 import Big from 'big.js';
 import SatoshiBig from '@/common/types/SatoshiBig';
+import { WeiBig } from '@/common/types';
 
 describe('SatoshiBig', () => {
   it('should be a valid instance passing string, integer and big values', () => {
@@ -56,5 +57,32 @@ describe('SatoshiBig', () => {
     const sb1: SatoshiBig = new SatoshiBig(0, 'satoshi');
     expect(sb1.toBTCString()).toEqual('0.00000000');
     expect(sb1.toBTCStringNotZeroPadded()).toEqual('0');
+  });
+  
+  it('should return an instance of SatoshiBig from a WeiBig instance rounded up', () => {
+    const weiToTest = new WeiBig('5301364444000000', 'wei');
+    const weiToTest2 = new WeiBig('8101341211956000', 'wei');
+    const weiToTest3 = new WeiBig('9101347211956000', 'wei');
+    const weiToTest4 = new WeiBig('5301360444000000', 'wei');
+    const weiToTest5 = new WeiBig('530136', 'wei');
+    const weiToTest6 = new WeiBig('5301360000000001', 'wei');
+    const sb1:SatoshiBig = SatoshiBig.fromWeiBig(weiToTest);
+    const sb2:SatoshiBig = SatoshiBig.fromWeiBig(weiToTest2);
+    const sb3:SatoshiBig = SatoshiBig.fromWeiBig(weiToTest3);
+    const sb4:SatoshiBig = SatoshiBig.fromWeiBig(weiToTest4);
+    const sb5:SatoshiBig = SatoshiBig.fromWeiBig(weiToTest5);
+    const sb6:SatoshiBig = SatoshiBig.fromWeiBig(weiToTest6);
+    expect(sb1).toBeInstanceOf(SatoshiBig);
+    expect(sb1.toSatoshiString()).toEqual('530137');
+    expect(sb2).toBeInstanceOf(SatoshiBig);
+    expect(sb2.toSatoshiString()).toEqual('810135');
+    expect(sb3).toBeInstanceOf(SatoshiBig);
+    expect(sb3.toSatoshiString()).toEqual('910135');
+    expect(sb4).toBeInstanceOf(SatoshiBig);
+    expect(sb4.toSatoshiString()).toEqual('530137');
+    expect(sb5).toBeInstanceOf(SatoshiBig);
+    expect(sb5.toSatoshiString()).toEqual('1');
+    expect(sb6).toBeInstanceOf(SatoshiBig);
+    expect(sb6.toSatoshiString()).toEqual('530137');
   });
 });

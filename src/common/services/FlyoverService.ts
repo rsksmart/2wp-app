@@ -338,11 +338,11 @@ export default class FlyoverService {
               quote: {
                 ...quote,
                 timeForDepositInSeconds: quote.timeForDeposit,
-                callFee: new SatoshiBig(new WeiBig(quote.callFee ?? 0, 'wei').toRBTCString(), 'btc'),
+                callFee: SatoshiBig.fromWeiBig(new WeiBig(quote.callFee ?? 0, 'wei')),
                 gasFee: new WeiBig(quote.gasFee ?? 0, 'wei'),
                 penaltyFee: new WeiBig(quote.penaltyFee ?? 0, 'wei'),
-                productFeeAmount: new SatoshiBig(new WeiBig(quote.productFeeAmount ?? 0, 'wei').toRBTCString(), 'btc'),
-                value: new SatoshiBig(new WeiBig(quote.value ?? 0, 'wei').toRBTCString(), 'btc'),
+                productFeeAmount: SatoshiBig.fromWeiBig(new WeiBig(quote.productFeeAmount ?? 0, 'wei')),
+                value: SatoshiBig.fromWeiBig(new WeiBig(quote.value ?? 0, 'wei')),
               },
               quoteHash,
             }));
