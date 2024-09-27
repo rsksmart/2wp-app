@@ -151,7 +151,7 @@ export default defineComponent({
       const fullAmount: SatoshiBig = quote?.value
         .plus(quote.productFeeAmount)
         .plus(quote.callFee)
-        .plus(new SatoshiBig(quote.gasFee.toRBTCString(), 'btc'))
+        .plus(SatoshiBig.fromWeiBig(quote.gasFee))
         .plus(selectedFee.value);
 
       return selectedAccountBalance.value?.gte(fullAmount);
