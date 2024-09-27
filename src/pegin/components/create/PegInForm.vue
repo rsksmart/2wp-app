@@ -219,6 +219,10 @@ export default defineComponent({
       } else {
         flyoverService.value.acceptPeginQuote(selectedQuoteHash.value)
           .then((acceptedQuote) => {
+            console.log('amountToTransferInSatoshi', selectedQuote.value?.quote.value
+              .plus(selectedQuote.value?.quote.productFeeAmount)
+              .plus(selectedQuote.value?.quote.callFee)
+              .plus(SatoshiBig.fromWeiBig(selectedQuote.value?.quote.gasFee)).toSatoshiString());
             context.emit('createTx', {
               amountToTransferInSatoshi: selectedQuote.value?.quote.value
                 .plus(selectedQuote.value?.quote.productFeeAmount)
