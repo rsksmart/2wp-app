@@ -105,7 +105,7 @@ export default defineComponent({
       if (!quote.value) return new SatoshiBig('0', 'btc');
       return quote.value.productFeeAmount
         .plus(quote.value.callFee)
-        .plus(new SatoshiBig(quote.value.gasFee.toRBTCString(), 'btc'));
+        .plus(SatoshiBig.fromWeiBig(quote.value.gasFee));
     });
 
     const PeginOptions = {

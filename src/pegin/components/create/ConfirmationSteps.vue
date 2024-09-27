@@ -441,7 +441,7 @@ export default defineComponent({
     function getProviderFee(): SatoshiBig {
       return selectedQuote.value.quote.productFeeAmount
         .plus(selectedQuote.value.quote.callFee)
-        .plus(new SatoshiBig(selectedQuote.value.quote.gasFee.toRBTCString(), 'btc'));
+        .plus(SatoshiBig.fromWeiBig(selectedQuote.value.quote.gasFee));
     }
 
     const amountToTransfer = computed(() => (flyover.value
