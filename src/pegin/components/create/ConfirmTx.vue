@@ -131,11 +131,10 @@ export default defineComponent({
       return provider?.name ?? '';
     }
 
-    function getProviderFee(): string {
+    function getProviderFee(): SatoshiBig {
       return selectedQuote.value.quote.productFeeAmount
         .plus(selectedQuote.value.quote.callFee)
-        .plus(new SatoshiBig(selectedQuote.value.quote.gasFee.toRBTCString(), 'btc'))
-        .toBTCTrimmedString();
+        .plus(SatoshiBig.fromWeiBig(selectedQuote.value.quote.gasFee));
     }
 
     const txPeginSummary = computed((): NormalizedSummary => ({
@@ -147,13 +146,14 @@ export default defineComponent({
       senderAddress: pegInTxState.value.normalizedTx.inputs[0].address,
     }));
 
-    const flyoverTotalFee = computed(() => new SatoshiBig(getProviderFee(), 'btc').plus(safeFee.value).toBTCTrimmedString());
+    const flyoverTotalFee = computed(() => getProviderFee()
+      .plus(safeFee.value));
 
     const flyoverPeginSummary = computed((): NormalizedSummary => ({
       amountFromString: selectedQuote.value.quote.value.toBTCTrimmedString(),
       amountReceivedString: selectedQuote.value.quote.value.toBTCTrimmedString(),
       fee: Number(flyoverTotalFee.value),
-      total: selectedQuote.value.quote.value.plus(new SatoshiBig(flyoverTotalFee.value, 'btc')).toBTCTrimmedString(),
+      total: selectedQuote.value.quote.value.plus(flyoverTotalFee.value).toBTCTrimmedString(),
       recipientAddress: recipientAddress.value,
       senderAddress: pegInTxState.value.normalizedTx.inputs[0].address,
     }));
@@ -164,7 +164,7 @@ export default defineComponent({
 
     const flyoverProps = computed(() => ({
       value: Number(selectedQuote.value.quote.value.toBTCTrimmedString()),
-      fee: Number(flyoverTotalFee.value),
+      fee: Number(flyoverTotalFee.value.toBTCTrimmedString()),
       provider: getLPName(),
       details: {
         senderAddress: pegInTxState.value.normalizedTx.inputs[0].address,
