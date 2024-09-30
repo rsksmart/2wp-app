@@ -66,6 +66,7 @@ export interface PegoutStatusDataModel {
   btcRawTransaction: string;
   fees: number;
   estimatedFee: SatoshiBig;
+  btcTxId: string;
 }
 
 export interface FlyoverStatusModel {
