@@ -32,7 +32,7 @@ export const actions: ActionTree<TxStatus, RootState> = {
   },
   [constants.STATUS_GET_ESTIMATED_FEE]: async ({ commit }) => {
     try {
-      const estimatedFee = await getEstimatedFee();
+      const estimatedFee = await getEstimatedFee(true);
       commit(constants.STATUS_SET_BTC_ESTIMATED_FEE, new SatoshiBig(estimatedFee, 'satoshi'));
     } catch (e) {
       commit(constants.STATUS_SET_BTC_ESTIMATED_FEE, new SatoshiBig(0, 'satoshi'));

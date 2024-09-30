@@ -10,11 +10,7 @@
         </v-row>
         <v-row no-gutters>
           <div class="pt-4">
-            <span>
-              You will receive {{ amount }} {{ symbol }} on your address
-              <br>
-            </span>
-            <template>within the next 5-10 minutes.</template>
+            <span>{{ willReceiveText }}</span>
           </div>
         </v-row>
       </v-col>
@@ -76,22 +72,18 @@ export default defineComponent({
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
 
-    const amount = computed(() => {
+    const willReceiveText = computed(() => {
       switch (props.type.toUpperCase()) {
         case TxStatusType.PEGIN || TxStatusType.FLYOVER_PEGIN:
-          return pegInTxState.value.amountToTransfer.toBTCTrimmedString();
+          return `You will receive ${pegInTxState.value.amountToTransfer.toBTCTrimmedString()} ${environmentContext.getRbtcTicker()}`;
         case TxStatusType.PEGOUT:
-          return estimatedBtcToReceive.value.toBTCTrimmedString();
+          return `You will receive approximately ${estimatedBtcToReceive.value.toBTCTrimmedString()} ${environmentContext.getBtcTicker()}`;
         case TxStatusType.FLYOVER_PEGOUT:
-          return pegOutTxState.value.amountToTransfer.toRBTCTrimmedString();
+          return `You will receive ${pegOutTxState.value.amountToTransfer.toRBTCTrimmedString()} ${environmentContext.getBtcTicker()}`;
         default:
           return '';
       }
     });
-
-    const symbol = computed(() => (props.type === (TxStatusType.PEGIN).toLowerCase()
-      ? environmentContext.getRbtcTicker()
-      : environmentContext.getBtcTicker()));
 
     function goHome() {
       clearStatus();
@@ -108,8 +100,7 @@ export default defineComponent({
 
     return {
       mdiContentCopy,
-      amount,
-      symbol,
+      willReceiveText,
       pegInTxState,
       copyToClipboard,
       goHome,
