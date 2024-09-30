@@ -125,6 +125,7 @@ export interface NormalizedSummary {
   federationAddress?: string;
   total?: string;
   status?: PegStatus | PegoutStatus;
+  btcTxId?: string;
 }
 
 export type AddressType = 'BITCOIN_LEGACY_ADDRESS' | 'BITCOIN_SEGWIT_ADDRESS' | 'BITCOIN_NATIVE_SEGWIT_ADDRESS' |
