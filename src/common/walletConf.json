@@ -35,6 +35,16 @@
             "btnClass": "btn-leather",
             "kind": "Software Wallet",
             "installation": "https://leather.io/install-extension"
+        },
+        {
+            "name": "Exodus",
+            "icon": "wallet-icons/exodus-black.svg",
+            "iconWhite": "wallet-icons/exodus-white.svg",
+            "constant": "WALLET_EXODUS",
+            "pegin": true,
+            "pegout": false,
+            "hover": false,
+            "btnClass": "btn-exodus"
         }
     ]
 }

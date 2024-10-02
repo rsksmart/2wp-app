@@ -1,5 +1,6 @@
 import Vue, { VNode } from 'vue';
 import { LeatherProvider } from '@leather.io/rpc';
+import { BitcoinProvider } from '@/common/types';
 
 declare global {
   namespace JSX {
@@ -27,5 +28,6 @@ declare global {
       getResponse: () => string,
     },
     onRecaptchaSuccess: () => Promise<void>,
+    BitcoinProvider: BitcoinProvider,
   }
 }

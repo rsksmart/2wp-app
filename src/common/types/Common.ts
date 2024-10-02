@@ -140,3 +140,7 @@ export enum AppLocale {
   LOCALE_EN = 'en',
   LOCALE_ES = 'es',
 }
+export interface ExodusTx extends Tx {
+  base64UnsignedPsbt: string;
+  inputs: Array<{idx: number; address: string}>;
+}

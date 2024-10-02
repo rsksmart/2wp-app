@@ -2,7 +2,6 @@ import * as bitcoin from 'bitcoinjs-lib';
 import {
   BtcAccount,
   WalletAddress,
-  Step,
   SignedTx,
 } from '@/common/types';
 import { WalletService } from '@/common/services/index';
@@ -37,32 +36,6 @@ export default class LeatherService extends WalletService {
   public availableAccounts(): BtcAccount[] {
     return [
       constants.BITCOIN_NATIVE_SEGWIT_ADDRESS,
-    ];
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  confirmationSteps(): Step[] {
-    return [
-      {
-        title: 'Transaction information',
-        subtitle: '',
-        outputsToshow: {
-          opReturn: {
-            value: false,
-            amount: true,
-          },
-          change: {
-            address: false,
-            amount: true,
-          },
-          federation: {
-            address: true,
-            amount: true,
-          },
-        },
-        fee: true,
-        fullAmount: false,
-      },
     ];
   }
 
