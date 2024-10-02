@@ -5,6 +5,7 @@ import * as constants from '@/common/store/constants';
 import {
   ApiService, LedgerService,
   TrezorService, LeatherService,
+  ExodusService,
 } from '@/common/services';
 import SatoshiBig from '@/common/types/SatoshiBig';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
@@ -44,6 +45,9 @@ export const actions: ActionTree<PegInTxState, RootState> = {
         break;
       case constants.WALLET_NAMES.LEATHER.long_name:
         commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new LeatherService());
+        break;
+      case constants.WALLET_NAMES.EXODUS.long_name:
+        commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new ExodusService());
         break;
       default:
         commit(constants.PEGIN_TX_SET_WALLET_SERVICE, undefined);

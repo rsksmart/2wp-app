@@ -1,5 +1,5 @@
 import {
-  BtcAccount, SignedTx, Step, Tx, WalletAddress,
+  BtcAccount, SignedTx, Tx, WalletAddress,
 } from '@/common/types';
 import { WalletService } from '@/common/services';
 import * as constants from '@/common/store/constants';
@@ -35,11 +35,6 @@ export default class MockedWallet extends WalletService {
       constants.BITCOIN_SEGWIT_ADDRESS,
       constants.BITCOIN_NATIVE_SEGWIT_ADDRESS,
     ];
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  confirmationSteps(): Step[] {
-    return [];
   }
 
   setAddresses(walletAddresses: WalletAddress[]): void {
