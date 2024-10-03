@@ -47,6 +47,18 @@
             "btnClass": "btn-xverse",
             "kind": "Software Wallet",
             "installation": "https://www.xverse.app/download"
+        },
+        {
+            "name": "Enkrypt",
+            "icon": "wallet-icons/enkrypt-black.svg",
+            "iconWhite": "wallet-icons/enkrypt-white.svg",
+            "constant": "WALLET_ENKRYPT",
+            "pegin": true,
+            "pegout": false,
+            "hover": false,
+            "btnClass": "btn-enkrypt",
+            "kind": "Software Wallet",
+            "installation": "https://www.enkrypt.com/"
         }
     ]
 }

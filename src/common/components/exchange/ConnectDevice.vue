@@ -118,6 +118,10 @@ export default defineComponent({
         // eslint-disable-next-line global-require, import/no-dynamic-require
         return require('@/assets/exchange/leather/connect_leather.png');
       }
+      if (bitcoinWallet.value === constants.WALLET_NAMES.ENKRYPT.long_name) {
+        // eslint-disable-next-line global-require, import/no-dynamic-require
+        return require('@/assets/exchange/enkrypt/connect_enkrypt.png');
+      }
       // eslint-disable-next-line global-require, import/no-dynamic-require
       return require('@/assets/exchange/wallet.png');
     });

@@ -92,6 +92,9 @@ export default {
         case constants.WALLET_NAMES.XVERSE.long_name:
           wallet = constants.WALLET_NAMES.XVERSE.short_name;
           break;
+        case constants.WALLET_NAMES.ENKRYPT.long_name:
+          wallet = constants.WALLET_NAMES.ENKRYPT.short_name;
+          break;
         default:
           wallet = '';
           break;
