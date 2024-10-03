@@ -13,6 +13,7 @@
     "scanner": "npx sonar-scanner"
   },
   "dependencies": {
+    "@enkryptcom/types": "^0.0.5",
     "@leather.io/rpc": "^2.0.2",
     "@ledgerhq/devices": "6.27.1",
     "@ledgerhq/hw-app-btc": "6.27.1",
