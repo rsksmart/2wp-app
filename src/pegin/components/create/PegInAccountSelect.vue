@@ -126,6 +126,7 @@ export default defineComponent({
     const onlyNativeSegwit = computed(() => {
       const wallets = [
         constants.WALLET_NAMES.LEATHER.long_name,
+        constants.WALLET_NAMES.ENKRYPT.long_name,
       ];
       return wallets.some((wallet) => wallet === bitcoinWallet.value);
     });

@@ -306,7 +306,6 @@ export default defineComponent({
     }));
 
     async function send() {
-      console.log('Sending pegout');
       const quoteHash = selectedOption.value;
       const type = quoteHash
         ? TxStatusType.FLYOVER_PEGOUT.toLowerCase()
