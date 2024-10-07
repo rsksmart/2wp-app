@@ -6,15 +6,15 @@ const { VuetifyPlugin } = require('webpack-plugin-vuetify');
 
 module.exports = defineConfig({
   pwa: {
-    name: '2-Way Peg App',
+    name: 'PowPeg',
     themeColor: '#FF9800',
     iconPaths: {
       favicon32: 'img/icons/favicon-32x32.png',
       favicon16: 'img/icons/favicon-16x16.png',
     },
     manifestOptions: {
-      id: '2wp-app',
-      short_name: '2WP App',
+      id: 'powpeg',
+      short_name: 'PowPeg',
       description: 'Bridging Bitcoin and Rootstock',
       start_url: '/',
       icons: [
