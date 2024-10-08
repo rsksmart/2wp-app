@@ -67,7 +67,10 @@ export const getters: GetterTree<PegInTxState, RootState> = {
     const coin = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
     if (currentView && currentView === 'Status') {
       address = state.statusInfo.refundAddress;
-    } else if (localGetters[constants.WALLET_NAME] === constants.WALLET_NAMES.LEATHER.formal_name) {
+    } else if (localGetters[constants.WALLET_NAME] === constants.WALLET_NAMES.LEATHER.formal_name
+      || localGetters[constants.WALLET_NAME] === constants.WALLET_NAMES.XVERSE.formal_name
+      || localGetters[constants.WALLET_NAME] === constants.WALLET_NAMES.ENKRYPT.formal_name
+    ) {
       address = coin === 'main'
         ? constants.VALID_ADDRESS_UNUSED_BY_FLYOVER.mainnet
         : constants.VALID_ADDRESS_UNUSED_BY_FLYOVER.testnet;
