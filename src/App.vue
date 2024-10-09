@@ -49,7 +49,7 @@ export default {
       connect-src 'self' 'unsafe-inline' https://www.clarity.ms/s/0.7.16/clarity.js wss://* https://*.hotjar.com https://*.hotjar.io https://www.clarity.ms/s/* wss://*.hotjar.com ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://lps.testnet.flyover.rif.technology https://lps.flyover.rif.technology https://api.coingecko.com https://*.clarity.ms https://www.clarity.ms/* ;
       object-src 'none';
       frame-src https://connect.trezor.io https://www.google.com/;
-      worker-src 'none';
+      worker-src 'self';
       `;
       return response;
     });
