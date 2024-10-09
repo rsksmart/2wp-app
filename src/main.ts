@@ -8,6 +8,7 @@ import router from './common/router';
 import store from './common/store';
 import { vuetify } from './common/plugins/vuetify';
 import '@/common/styles/main.scss';
+import './registerServiceWorker';
 
 // These environment variables were been set at service/component layer instead of been
 // globally set up. We should consider removing them

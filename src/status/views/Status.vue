@@ -188,6 +188,11 @@ export default defineComponent({
       loading.value = false;
     }
 
+    const lastTxs = ref();
+    async function getLastTxs() {
+      lastTxs.value = await getMany();
+    }
+
     function getPegStatus() {
       if (!isValidTxId.value) clean();
       else if (route.path !== `/status/txId/${txId.value}`) {
@@ -199,6 +204,7 @@ export default defineComponent({
         clean();
         loading.value = true;
         setTxStatus(txId.value)
+          .then(getLastTxs)
           .then(() => {
             loading.value = false;
           });
@@ -226,11 +232,6 @@ export default defineComponent({
         url = getBtcTxExplorerUrl(id);
       }
       return url;
-    }
-
-    const lastTxs = ref();
-    async function getLastTxs() {
-      lastTxs.value = await getMany();
     }
 
     watch(route, onUrlChange, { immediate: true, deep: true });

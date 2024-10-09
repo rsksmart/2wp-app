@@ -1,6 +1,6 @@
 import { openDB, DBSchema } from 'idb';
 
-interface TwoWayPegDB extends DBSchema {
+interface PowPegDB extends DBSchema {
   transactions: {
     key: string;
     value: {
@@ -12,11 +12,11 @@ interface TwoWayPegDB extends DBSchema {
   };
 }
 
-const DB_NAME = '2wp-app';
+const DB_NAME = 'powpeg';
 const DB_VERSION = 1;
 const DB_STORE_NAME = 'transactions';
 
-const dbPromise = openDB<TwoWayPegDB>(DB_NAME, DB_VERSION, {
+const dbPromise = openDB<PowPegDB>(DB_NAME, DB_VERSION, {
   upgrade(upgradedDB) {
     const store = upgradedDB.createObjectStore(DB_STORE_NAME, { keyPath: 'txId' });
     store.createIndex('by-last-updated', 'lastUpdated');

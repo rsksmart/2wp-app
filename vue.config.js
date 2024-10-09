@@ -44,6 +44,11 @@ module.exports = defineConfig({
         },
       ],
     },
+    workboxPluginMode: 'InjectManifest',
+    workboxOptions: {
+      swSrc: './src/service-worker.ts',
+      swDest: 'service-worker.js',
+    },
   },
   transpileDependencies: true,
   configureWebpack: {

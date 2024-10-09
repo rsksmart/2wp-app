@@ -4,11 +4,19 @@ import { register } from 'register-service-worker';
 
 if (process.env.NODE_ENV === 'production') {
   register(`${process.env.BASE_URL}service-worker.js`, {
-    ready() {
-      console.log(
-        'App is being served from cache by a service worker.\n'
-        + 'For more details, visit https://goo.gl/AFskqB',
-      );
+    ready(registration) {
+      if ('periodicSync' in registration) {
+        navigator.permissions.query({ name: 'periodic-background-sync' as PermissionName })
+          .then((permission) => {
+            if (permission.state === 'granted') {
+              // @ts-expect-error not periodicsync ts support
+              registration.periodicSync.register('update-txs', { minInterval: 1000 * 60 * 60 }); // 1 hour
+            }
+          })
+          .catch((error) => {
+            console.error('Periodic Sync registration failed', error);
+          });
+      }
     },
     registered() {
       console.log('Service worker has been registered.');
