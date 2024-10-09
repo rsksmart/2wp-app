@@ -28,6 +28,7 @@ export const actions: ActionTree<SessionState, RootState> = {
           commit(constants.SESSION_SET_RLOGIN, rLoginResponse);
           commit(constants.SESSION_SET_RLOGIN_INSTANCE, rLogin);
           commit(constants.SESSION_SET_WEB3_INSTANCE, markRaw(provider));
+          provider.on('block', () => dispatch(constants.WEB3_SESSION_ADD_BALANCE));
           return provider.listAccounts();
         })
         .then((accounts) => {
