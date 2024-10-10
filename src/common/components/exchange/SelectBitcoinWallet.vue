@@ -42,15 +42,16 @@
 </template>
 
 <script lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import * as constants from '@/common/store/constants';
 import { BtcWallet } from '@/common/types/pegInTx';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { useAction, useStateAttribute } from '@/common/store/helper';
+import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import walletConf from '@/common/walletConf.json';
 import { mdiArrowLeft } from '@mdi/js';
 import { useTheme } from 'vuetify';
+import { Feature, FeatureNames } from '@/common/types';
 
 export default {
   name: 'SelectBitcoinWallet',
@@ -60,8 +61,13 @@ export default {
     const router = useRouter();
     const storeConstants = constants;
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+    const getFeature = useGetter<(name: FeatureNames) => Feature>('web3Session', constants.SESSION_GET_FEATURE);
 
-    const wallets = ref(walletConf.wallets);
+    const wallets = computed(() => walletConf.wallets.filter((wallet) => {
+      const walletName = wallet.constant as BtcWallet;
+      const flag = getFeature.value(FeatureNames[walletName]);
+      return flag?.value === 'enabled';
+    }));
 
     const bitcoinWallet = useStateAttribute<BtcWallet>('pegInTx', 'bitcoinWallet');
     const addBitcoinWallet = useAction('pegInTx', constants.PEGIN_TX_ADD_BITCOIN_WALLET);
