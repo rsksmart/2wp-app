@@ -7,7 +7,7 @@ import {
 } from '@rsksmart/flyover-sdk';
 import * as constants from '@/common/store/constants';
 import {
-  LiquidityProvider2WP, QuotePegIn2WP, QuotePegOut2WP,
+  LiquidityProvider2WP, PeginQuote, QuotePegOut2WP,
   SatoshiBig, WeiBig,
 } from '@/common/types';
 import { providers } from 'ethers';
@@ -317,8 +317,8 @@ export default class FlyoverService {
     rootstockRecipientAddress: string,
     bitcoinRefundAddress: string,
     valueToTransfer: SatoshiBig,
-  ):Promise<Array<QuotePegIn2WP>> {
-    return new Promise<Array<QuotePegIn2WP>>((resolve, reject) => {
+  ):Promise<Array<PeginQuote>> {
+    return new Promise<Array<PeginQuote>>((resolve, reject) => {
       this.flyover?.getQuotes({
         rskRefundAddress: rootstockRecipientAddress,
         bitcoinRefundAddress,
@@ -335,18 +335,7 @@ export default class FlyoverService {
               bitcoinRefundAddress,
               valueToTransfer,
             }))
-            .map(({ quote, quoteHash }: Quote) => ({
-              quote: {
-                ...quote,
-                timeForDepositInSeconds: quote.timeForDeposit,
-                callFee: SatoshiBig.fromWeiBig(new WeiBig(quote.callFee ?? 0, 'wei')),
-                gasFee: new WeiBig(quote.gasFee ?? 0, 'wei'),
-                penaltyFee: new WeiBig(quote.penaltyFee ?? 0, 'wei'),
-                productFeeAmount: SatoshiBig.fromWeiBig(new WeiBig(quote.productFeeAmount ?? 0, 'wei')),
-                value: SatoshiBig.fromWeiBig(new WeiBig(quote.value ?? 0, 'wei')),
-              },
-              quoteHash,
-            }));
+            .map((quoteFromServer: Quote) => new PeginQuote(quoteFromServer));
           resolve(peginQuotes);
         })
         .catch((error: Error) => {

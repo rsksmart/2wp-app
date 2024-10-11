@@ -92,7 +92,7 @@ import EnvironmentContextProviderService from '@/common/providers/EnvironmentCon
 import { TxStatusType } from '@/common/types/store';
 import { TxSummaryOrientation } from '@/common/types/Status';
 import {
-  Feature, FeatureNames, FlyoverPeginState, QuotePegIn2WP, SatoshiBig,
+  Feature, FeatureNames, FlyoverPeginState, PeginQuote, QuotePegIn2WP, SatoshiBig,
 } from '@/common/types';
 import {
   useAction, useGetter, useState, useStateAttribute,
@@ -123,7 +123,7 @@ export default defineComponent({
     const showOptions = ref(false);
     const loadingQuotes = ref(false);
     const selected = ref<constants.peginType>();
-    const selectedQuote = ref<QuotePegIn2WP>();
+    const selectedQuote = ref<PeginQuote>();
     const showErrorDialog = ref(false);
     const txError = ref<ServiceError>(new ServiceError('', '', '', ''));
 
@@ -144,16 +144,11 @@ export default defineComponent({
     const selectedAccountBalance = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SELECTED_BALANCE);
 
     const enoughAmountFlyover = computed(() => {
-      const quote = selectedQuote.value?.quote;
-      if (!quote) {
+      if (!selectedQuote.value) {
         return false;
       }
-      const fullAmount: SatoshiBig = quote?.value
-        .plus(quote.productFeeAmount)
-        .plus(quote.callFee)
-        .plus(SatoshiBig.fromWeiBig(quote.gasFee))
+      const fullAmount: SatoshiBig = selectedQuote.value.totalValueToTransfer
         .plus(selectedFee.value);
-
       return selectedAccountBalance.value?.gte(fullAmount);
     });
 
@@ -220,10 +215,7 @@ export default defineComponent({
         flyoverService.value.acceptPeginQuote(selectedQuoteHash.value)
           .then((acceptedQuote) => {
             context.emit('createTx', {
-              amountToTransferInSatoshi: selectedQuote.value?.quote.value
-                .plus(selectedQuote.value?.quote.productFeeAmount)
-                .plus(selectedQuote.value?.quote.callFee)
-                .plus(SatoshiBig.fromWeiBig(selectedQuote.value?.quote.gasFee)),
+              amountToTransferInSatoshi: selectedQuote.value?.totalValueToTransfer,
               refundAddress: '',
               recipient: '',
               feeLevel: pegInTxState.value.selectedFee,
@@ -236,7 +228,7 @@ export default defineComponent({
       pegInFormState.value.send('fill');
     }
 
-    async function changeSelectedOption(selectedType: constants.peginType, quote?: QuotePegIn2WP) {
+    async function changeSelectedOption(selectedType: constants.peginType, quote?: PeginQuote) {
       selected.value = selectedType;
       await setPeginType(selected.value);
       selectedQuote.value = quote;
