@@ -1,6 +1,6 @@
 import { LiquidityProviderBase } from '@rsksmart/flyover-sdk';
-import WeiBig from './WeiBig';
-import SatoshiBig from './SatoshiBig';
+import WeiBig from '../WeiBig';
+import SatoshiBig from '../SatoshiBig';
 
 interface PeginProviderDetail {
     fee: SatoshiBig;

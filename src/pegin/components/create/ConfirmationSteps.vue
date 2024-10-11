@@ -415,7 +415,7 @@ import { computed, defineComponent } from 'vue';
 import SatoshiBig from '@/common/types/SatoshiBig';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { PegInTxState } from '@/common/types/pegInTx';
-import { QuotePegIn2WP } from '@/common/types';
+import { PeginQuote } from '@/common/types';
 import * as constants from '@/common/store/constants';
 import { truncateStringToSize, copyToClipboard, getBtcAddressExplorerUrl } from '@/common/utils';
 import { useGetter, useState } from '@/common/store/helper';
@@ -434,18 +434,12 @@ export default defineComponent({
     const pegInTxState = useState<PegInTxState>('pegInTx');
     const safeFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
     const walletName = useGetter<string>('pegInTx', constants.WALLET_NAME);
-    const selectedQuote = useGetter<QuotePegIn2WP>('flyoverPegin', constants.FLYOVER_PEGIN_GET_SELECTED_QUOTE);
+    const selectedQuote = useGetter<PeginQuote>('flyoverPegin', constants.FLYOVER_PEGIN_GET_SELECTED_QUOTE);
     const flyover = computed(() => pegInTxState.value.peginType === constants.peginType.FLYOVER);
     const changeIdx = flyover.value ? 1 : 2;
 
-    function getProviderFee(): SatoshiBig {
-      return selectedQuote.value.quote.productFeeAmount
-        .plus(selectedQuote.value.quote.callFee)
-        .plus(SatoshiBig.fromWeiBig(selectedQuote.value.quote.gasFee));
-    }
-
     const amountToTransfer = computed(() => (flyover.value
-      ? selectedQuote.value.quote.value.plus(getProviderFee())
+      ? selectedQuote.value.quote.value.plus(selectedQuote.value.providerFee)
       : pegInTxState.value.amountToTransfer));
 
     const rskFederationAddress = computed(():string => pegInTxState.value
