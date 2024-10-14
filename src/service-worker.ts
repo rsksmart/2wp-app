@@ -1,5 +1,5 @@
 import { precacheAndRoute } from 'workbox-precaching';
-import { openDB, DBSchema } from 'idb';
+import { getMany, set } from './db';
 
 // workaround to access service worker global scope via self
 declare const self: ServiceWorkerGlobalScope;
@@ -7,45 +7,12 @@ declare const self: ServiceWorkerGlobalScope;
 // eslint-disable-next-line no-underscore-dangle
 precacheAndRoute(self.__WB_MANIFEST);
 
-interface PowPegDB extends DBSchema {
-  transactions: {
-    key: string;
-    value: {
-      txId: string;
-      status: string;
-      lastUpdated: number;
-    };
-    indexes: { 'by-last-updated': number };
-  };
-}
-
-const DB_NAME = 'powpeg';
-const DB_VERSION = 1;
-const DB_STORE_NAME = 'transactions';
-
-const dbPromise = openDB<PowPegDB>(DB_NAME, DB_VERSION, {
-  upgrade(upgradedDB) {
-    const store = upgradedDB.createObjectStore(DB_STORE_NAME, { keyPath: 'txId' });
-    store.createIndex('by-last-updated', 'lastUpdated');
-  },
-});
-
-async function getMany(count = 10) {
-  const db = await dbPromise;
-  const indexed = await db.getAllFromIndex(DB_STORE_NAME, 'by-last-updated');
-  const byDescOrder = indexed.splice(-count).reverse();
-  return byDescOrder;
-}
-
-async function set(val: { txId: string; status: string; }) {
-  return (await dbPromise).put(
-    DB_STORE_NAME,
-    {
-      txId: val.txId,
-      status: val.status,
-      lastUpdated: Date.now(),
-    },
-  );
+async function updateView() {
+  self.clients.matchAll().then((clients) => {
+    clients.forEach((client) => {
+      client.postMessage('update-view');
+    });
+  });
 }
 
 async function getUpdatedStatuses() {
@@ -75,6 +42,7 @@ async function getUpdatedStatuses() {
   }));
   // store updated txs in db
   await Promise.all(updatedTxsToStore.map((tx) => set(tx)));
+  await updateView();
 }
 
 self.addEventListener('periodicsync', (event) => {

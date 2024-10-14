@@ -239,6 +239,12 @@ export default defineComponent({
     clearStatus();
     getLastTxs();
 
+    navigator.serviceWorker.addEventListener('message', async (evt) => {
+      if (evt.data === 'update-view') {
+        await getLastTxs();
+      }
+    });
+
     onUnmounted(clean);
 
     return {
