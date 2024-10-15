@@ -75,5 +75,4 @@ describe('PeginQuote', () => {
     const expectedTotalTxAmount = peginQuote.valueToTransfer.plus(btcNetworkFee);
     expect(peginQuote.getTotalTxAmount(btcNetworkFee).toString()).toEqual(expectedTotalTxAmount.toString());
   });
-
 });

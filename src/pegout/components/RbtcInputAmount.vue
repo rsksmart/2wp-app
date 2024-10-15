@@ -1,79 +1,76 @@
 <template>
-    <v-row no-gutters>
-    <v-col>
-      <span class="d-inline-block font-weight-bold my-3">
-        I will send
-      </span>
-    </v-col>
-    <v-col>
-      <span class="d-inline-block font-weight-bold my-3 ml-6">
-        I will receive
-      </span>
-    </v-col>
-  </v-row>
-  <v-row no-gutters align="center">
-    <v-col>
-      <v-text-field
-        hide-details
-        hide-spin-buttons
-        flat
-        variant="solo"
-        density="comfortable"
-        rounded="lg"
-        :class="stepState === 'error' && 'input-error'"
-        class="text-h4 amount-input"
-        v-model="rbtcAmountModel"
-        type="text"
-        :readonly="isComposing"
-        @compositionstart="isComposing = true"
-        @wheel.prevent
-        @keydown="blockLetterKeyDown"
-        @focus="focus = true"
-        @blur="focus = false"
-        >
-          <template #prepend-inner>
-            <v-chip class="pl-2 pr-3">
-                <v-avatar class="mr-2 rbtc-icon">
-                  <v-img :src="require('@/assets/exchange/rbtc.png')" />
-                </v-avatar>
-              {{ environmentContext.getRbtcTicker() }}
+  <v-row no-gutters>
+  <v-col>
+    <span class="d-inline-block font-weight-bold my-3">
+      I will send
+    </span>
+  </v-col>
+  <v-col>
+    <span class="d-inline-block font-weight-bold my-3 ml-6">
+      I will receive
+    </span>
+  </v-col>
+</v-row>
+<v-row no-gutters align="center">
+  <v-col>
+    <v-text-field
+      hide-details
+      hide-spin-buttons
+      flat
+      variant="solo"
+      density="comfortable"
+      rounded="lg"
+      :class="stepState === 'error' && 'input-error'"
+      class="text-h4 amount-input"
+      v-model="rbtcAmountModel"
+      type="text"
+      :readonly="isComposing"
+      @compositionstart="isComposing = true"
+      @wheel.prevent
+      @keydown="blockLetterKeyDown"
+      @focus="focus = true"
+      @blur="focus = false"
+      >
+        <template #prepend-inner>
+          <v-chip class="pl-2 pr-3">
+              <v-avatar class="mr-2 rbtc-icon">
+                <v-img :src="require('@/assets/exchange/rbtc.png')" />
+              </v-avatar>
+            {{ environmentContext.getRbtcTicker() }}
+          </v-chip>
+        </template>
+        <template #append-inner>
+          <div class="d-flex px-2 ga-1">
+            <v-chip variant="outlined" density="compact" @click="setMin">
+              {{ minStrVal }} MIN
             </v-chip>
-          </template>
-          <template #append-inner>
-            <div class="d-flex px-2 ga-1">
-              <v-chip variant="outlined" density="compact" @click="setMin">
-                {{ minStrVal }} MIN
-              </v-chip>
-              <v-chip variant="outlined" density="compact" @click="setMax">
-                {{ maxStrVal }} MAX
-              </v-chip>
-            </div>
-          </template>
-      </v-text-field>
-    </v-col>
-    <v-icon class="mx-2" :icon="mdiArrowRight" color="bw-600" />
-    <v-col>
-      <div class="d-flex justify-space-between align-center flex-grow-1
-        bg-surface pa-3 rounded-lg border">
-      <div class="d-flex ga-2 align-center">
-        <v-chip :prepend-icon="mdiBitcoin" class="btc-icon">
-          {{ environmentContext.getBtcTicker() }}
-        </v-chip>
-        <span class="text-h4">
-          {{ stepState === 'valid' ? willReceive : '' }}
-        </span>
-      </div>
+          </div>
+        </template>
+    </v-text-field>
+  </v-col>
+  <v-icon class="mx-2" :icon="mdiArrowRight" color="bw-600" />
+  <v-col>
+    <div class="d-flex justify-space-between align-center flex-grow-1
+      bg-surface pa-3 rounded-lg border">
+    <div class="d-flex ga-2 align-center">
+      <v-chip :prepend-icon="mdiBitcoin" class="btc-icon">
+        {{ environmentContext.getBtcTicker() }}
+      </v-chip>
+      <span class="text-h4">
+        {{ stepState === 'valid' ? willReceive : '' }}
+      </span>
     </div>
-    </v-col>
-  </v-row>
-  <v-row class="my-0" v-if="stepState === 'error'">
-    <v-col cols="6" align-self="start">
-      <v-alert :text="amountErrorMessage" class="pa-2 mr-2"
-          type="warning" color="orange">
-        </v-alert>
-    </v-col>
-  </v-row>
-  </template>
+  </div>
+  </v-col>
+</v-row>
+<v-row class="my-0" v-if="stepState === 'error'">
+  <v-col cols="6" align-self="start">
+    <v-alert :text="amountErrorMessage" class="pa-2 mr-2"
+        type="warning" color="orange">
+      </v-alert>
+  </v-col>
+</v-row>
+</template>
 
 <script lang="ts">
 import {
@@ -110,20 +107,17 @@ export default defineComponent({
     const addAmount = useAction('pegOutTx', constants.PEGOUT_TX_ADD_AMOUNT);
     const calculateFee = useAction('pegOutTx', constants.PEGOUT_TX_CALCULATE_FEE);
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
-    const getRbtcGasFee = useGetter<Promise<WeiBig>>('web3Session', constants.SESSION_GET_RBTC_GAS_FEE);
     const pegoutConfiguration = useStateAttribute<PegoutConfiguration>('pegOutTx', 'pegoutConfiguration');
     const account = useStateAttribute<string>('web3Session', 'account');
     const minStrVal = computed(() => pegoutConfiguration.value.minValue.toRBTCString().slice(0, 5));
-    const maxStrVal = computed(() => pegoutConfiguration.value.maxValue.toRBTCString().slice(0, 5));
     const isComposing = ref(false);
 
     const isValidAmount = (amount: WeiBig) => {
-      const { minValue, maxValue } = pegoutConfiguration.value;
+      const { minValue } = pegoutConfiguration.value;
       const { balance } = web3SessionState.value;
       return isRBTCAmountValidRegex(amount.toRBTCString())
-          && amount.gte(minValue)
-          && amount.lte(balance)
-          && amount.lte(maxValue);
+        && amount.gte(minValue)
+        && amount.lte(balance);
     };
 
     const rbtcAmountModel = computed({
@@ -145,7 +139,7 @@ export default defineComponent({
     const safeAmount = computed((): WeiBig => new WeiBig(rbtcAmount.value ?? '0', 'rbtc'));
 
     const amountErrorMessage = computed(() => {
-      const { minValue, maxValue } = pegoutConfiguration.value;
+      const { minValue } = pegoutConfiguration.value;
       const { balance } = web3SessionState.value;
       if (rbtcAmount.value.toString() === '') {
         return 'Please, enter an amount';
@@ -165,19 +159,15 @@ export default defineComponent({
       if (safeAmount.value.lt(minValue)) {
         return `This value is below the minimum allowed value of ${minValue.toRBTCTrimmedString()} ${environmentContext.getRbtcTicker()}`;
       }
-      if (safeAmount.value.gt(maxValue)) {
-        return `This value is above the maximum allowed value of  ${maxValue.toRBTCTrimmedString()} ${environmentContext.getRbtcTicker()}`;
-      }
       return '';
     });
 
     const insufficientAmount = computed(() => {
-      const { minValue, maxValue } = pegoutConfiguration.value;
+      const { minValue } = pegoutConfiguration.value;
       const { balance } = web3SessionState.value;
       return safeAmount.value.lte('0')
-          || safeAmount.value.gt(balance)
-          || safeAmount.value.lt(minValue)
-          || safeAmount.value.gt(maxValue);
+        || safeAmount.value.gt(balance)
+        || safeAmount.value.lt(minValue);
     });
 
     function blockLetterKeyDown(e: KeyboardEvent) {
@@ -212,17 +202,6 @@ export default defineComponent({
       }
     }
 
-    async function setMax() {
-      const { maxValue } = pegoutConfiguration.value;
-      const { balance } = web3SessionState.value;
-      const minFee = await getRbtcGasFee.value;
-      if (balance.lt(maxValue)) {
-        rbtcAmountModel.value = balance.minus(minFee).toRBTCTrimmedString();
-      } else {
-        rbtcAmountModel.value = maxValue.toRBTCTrimmedString();
-      }
-    }
-
     function clearInput() {
       rbtcAmountModel.value = '';
       stepState.value = 'unset';
@@ -242,11 +221,9 @@ export default defineComponent({
       mdiInformationOutline,
       mdiBitcoin,
       setMin,
-      setMax,
       estimatedBtcToReceive,
       rbtcAmountModel,
       minStrVal,
-      maxStrVal,
       isComposing,
     };
   },

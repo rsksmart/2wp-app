@@ -27,7 +27,6 @@ export interface RequestBalance {
 
 export interface PeginConfiguration {
   minValue: number; // SatoshiBN
-  maxValue: number; // SatoshiBN
   federationAddress: string;
   feePerKb?: number; // SatoshiBN
   sessionId: string;
