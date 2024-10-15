@@ -64,8 +64,8 @@ export default {
     const getFeature = useGetter<(name: FeatureNames) => Feature>('web3Session', constants.SESSION_GET_FEATURE);
 
     const wallets = computed(() => walletConf.wallets.filter((wallet) => {
-      const walletName = wallet.constant as BtcWallet;
-      const flag = getFeature.value(FeatureNames[walletName]);
+      const walletConfJsonConstant = wallet.constant as BtcWallet;
+      const flag = getFeature.value(FeatureNames[walletConfJsonConstant]);
       return flag?.value === 'enabled';
     }));
 
