@@ -110,7 +110,7 @@ import {
 import { mdiArrowLeft, mdiArrowRight } from '@mdi/js';
 import {
   FlyoverPegoutState, ObjectDifference, PegOutTxState, QuotePegOut2WP,
-  SatoshiBig, TxStatusType, WeiBig,
+  SatoshiBig, TxInfo, TxStatusType, WeiBig,
 } from '@/common/types';
 import {
   appendRecaptcha, Machine, ServiceError, validateAddress,
@@ -136,8 +136,7 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props, context) {
-    const nextPage = 'Confirmation';
+  setup(props) {
     const showTxErrorDialog = ref(false);
     const txError = ref<ServiceError>(new ServiceError('', '', '', ''));
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
@@ -264,7 +263,6 @@ export default defineComponent({
             : pegOutTxState.value.txHash,
         },
       });
-      context.emit('changePage', nextPage);
     }
 
     function getLPName(): string {
@@ -280,7 +278,7 @@ export default defineComponent({
         .toRBTCTrimmedString();
     }
 
-    const registerFlyover = computed(() => ({
+    const registerFlyover = computed<TxInfo>(() => ({
       sessionId: '',
       txHash: flyoverPegoutState.value.txHash as string,
       type: TxStatusType.PEGOUT.toLowerCase(),
@@ -294,6 +292,7 @@ export default defineComponent({
         recipientAddress: flyoverPegoutState.value.btcRecipientAddress,
         blocksToCompleteTransaction: selectedQuote.value.quote.depositConfirmations,
       },
+      quoteHash: selectedQuote.value.quoteHash,
     }));
 
     const registerPegout = computed(() => ({
@@ -307,7 +306,6 @@ export default defineComponent({
     }));
 
     async function send() {
-      console.log('Sending pegout');
       const quoteHash = selectedOption.value;
       const type = quoteHash
         ? TxStatusType.FLYOVER_PEGOUT.toLowerCase()

@@ -10,4 +10,5 @@ export interface TxInfo {
   btcEstimatedFee?: number;
   provider?: string;
   details?: Record<string, unknown>;
+  quoteHash?: string;
 }
