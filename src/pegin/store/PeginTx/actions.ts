@@ -173,10 +173,7 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_START_ASKING_FOR_BALANCE]: ({ state }): Promise<void> => {
     if (state.walletService) {
       return state.walletService
-        .startAskingForBalance(
-          state.peginConfiguration.sessionId,
-          state.peginConfiguration.maxValue,
-        );
+        .startAskingForBalance();
     }
     return Promise.reject(new Error('Wallet service is not set'));
   },

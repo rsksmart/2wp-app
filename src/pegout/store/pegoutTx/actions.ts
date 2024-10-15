@@ -48,8 +48,6 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
     commit(constants.PEGOUT_TX_SET_PEGOUT_CONFIGURATION, {
       minValue:
         new WeiBig(EnvironmentAccessorService.getEnvironmentVariables().pegoutMinValue, 'rbtc'),
-      maxValue:
-        new WeiBig(EnvironmentAccessorService.getEnvironmentVariables().pegoutMaxValue, 'rbtc'),
       bridgeContractAddress: constants.BRIDGE_CONTRACT_ADDRESS,
     });
   },

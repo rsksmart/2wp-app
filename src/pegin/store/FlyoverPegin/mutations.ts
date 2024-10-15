@@ -20,4 +20,13 @@ export const mutations: MutationTree<FlyoverPeginState> = {
   [constants.FLYOVER_PEGIN_SET_SELECTED_QUOTE]: (state, quoteHash: string) => {
     state.selectedQuoteHash = quoteHash;
   },
+  [constants.FLYOVER_PEGIN_PROVIDERS_SET_AVAILABLE_LIQUIDITY]: (state, payload) => {
+    const { providerId, peginLiquidity } = payload;
+    const providers = state.liquidityProviders;
+    providers.forEach((provider, idx) => {
+      if (provider.id === providerId) {
+        state.liquidityProviders[idx].pegin.availableLiquidity = peginLiquidity;
+      }
+    });
+  },
 };
