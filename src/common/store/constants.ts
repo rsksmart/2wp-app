@@ -3,6 +3,8 @@ export const WALLET_NAMES = {
   TREZOR: { formal_name: 'Trezor', short_name: 'trezor', long_name: 'WALLET_TREZOR' },
   METAMASK: { formal_name: 'Metamask', short_name: 'metamask', long_name: 'WALLET_METAMASK' },
   LEATHER: { formal_name: 'Leather', short_name: 'leather', long_name: 'WALLET_LEATHER' },
+  XVERSE: { formal_name: 'XVerse', short_name: 'xverse', long_name: 'WALLET_XVERSE' },
+  ENKRYPT: { formal_name: 'Enkrypt', short_name: 'enkrypt', long_name: 'WALLET_ENKRYPT' },
 } as const;
 
 export const OPERATION_TYPE = 'OPERATION_TYPE';
@@ -261,6 +263,7 @@ export const STATUS_CLEAR = 'STATUS_CLEAR';
 export const PEGOUT_TX_ADD_BITCOIN_PRICE = 'PEGOUT_TX_ADD_BITCOIN_PRICE';
 export const STATUS_GET_ESTIMATED_FEE = 'STATUS_GET_ESTIMATED_FEE';
 export const STATUS_GET_ESTIMATED_RELEASE_TIME_IN_MINUTES = 'STATUS_GET_ESTIMATED_RELEASE_TIME_IN_MINUTES';
+export const STATUS_GET_FLYOVER_STATUS = 'STATUS_GET_FLYOVER_STATUS';
 
 // Status mutations
 export const STATUS_SET_TX_DETAILS = 'STATUS_SET_TX_DETAILS';
@@ -268,6 +271,7 @@ export const STATUS_SET_TX_TYPE = 'STATUS_SET_TX_TYPE';
 export const STATUS_SET_CLEAR = 'STATUS_SET_CLEAR';
 export const STATUS_SET_BTC_ESTIMATED_FEE = 'STATUS_SET_BTC_ESTIMATED_FEE';
 export const STATUS_SET_ESTIMATED_RELEASE_TIME_IN_MINUTES = 'STATUS_SET_ESTIMATED_RELEASE_TIME_IN_MINUTES';
+export const STATUS_SET_FLYOVER_STATUS = 'STATUS_SET_FLYOVER_STATUS';
 
 // Status getters
 export const STATUS_IS_REJECTED = 'STATUS_IS_REJECTED';
@@ -290,7 +294,8 @@ export enum PegStatus {
 
 export enum FlyoverStatus {
   PENDING = 'PENDING',
-  COMPLETED = 'COMPLETED',
+  SUCCESS = 'SUCCESS',
+  FAILED = 'FAILED',
 }
 
 export const LEDGER_STATUS_CODES = {

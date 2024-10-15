@@ -1,5 +1,6 @@
 import Vue, { VNode } from 'vue';
 import { LeatherProvider } from '@leather.io/rpc';
+import EnkryptWindow from '@enkryptcom/types';
 
 declare global {
   namespace JSX {
@@ -21,11 +22,15 @@ declare global {
   interface Window {
     ethereum: Ethereum,
     LeatherProvider?: LeatherProvider,
+    enkrypt?: EnkryptWindow,
     grecaptcha: {
       ready: (cb: () => void) => void,
       execute: () => Promise<string>,
       getResponse: () => string,
     },
     onRecaptchaSuccess: () => Promise<void>,
+  }
+  interface EnkryptProvider {
+    getAccounts(): Promise<string[]>;
   }
 }

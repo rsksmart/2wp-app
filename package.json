@@ -1,6 +1,6 @@
 {
   "name": "PowPeg",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -8,10 +8,12 @@
     "build": "vue-cli-service build",
     "test": "vue-cli-service test:unit --env=./tests/jsdom-env.js --coverageReporters=lcov --collect-coverage",
     "test:unit": "vue-cli-service test:unit --env=./tests/jsdom-env.js --coverageReporters=lcov --collect-coverage",
+    "test:unit-logs": "vue-cli-service test:unit --env=./tests/jsdom-env.js --coverageReporters=lcov --silent=false --collect-coverage",
     "lint": "vue-cli-service lint",
     "scanner": "npx sonar-scanner"
   },
   "dependencies": {
+    "@enkryptcom/types": "^0.0.5",
     "@leather.io/rpc": "^2.0.2",
     "@ledgerhq/devices": "6.27.1",
     "@ledgerhq/hw-app-btc": "6.27.1",
@@ -51,6 +53,7 @@
     "moment": "^2.29.4",
     "os-browserify": "^0.3.0",
     "process": "^0.11.10",
+    "sats-connect": "2.3.x",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
     "text-encoding": "^0.7.0",

@@ -73,7 +73,7 @@ export function getRskAddressExplorerUrl(address: string) {
   return `${getRskBaseExplorerUrl()}/address/${address}`;
 }
 
-export function getEstimatedFee(): Promise<SatoshiBig> {
+export function getEstimatedFee(pegoutAlreadyRequested = false): Promise<SatoshiBig> {
   return new Promise<SatoshiBig>((resolve, reject) => {
     const bridgeService = new BridgeService();
     Promise.all([
@@ -81,6 +81,11 @@ export function getEstimatedFee(): Promise<SatoshiBig> {
       bridgeService.getQueuedPegoutsCount(),
     ])
       .then(([nextPegoutCost, pegoutQueueCount]) => {
+        if (pegoutAlreadyRequested && pegoutQueueCount !== 0n) {
+          const currentEstimatedFee = nextPegoutCost / pegoutQueueCount;
+          resolve(new SatoshiBig(currentEstimatedFee, 'satoshi'));
+          return;
+        }
         const estimatedFee = nextPegoutCost / (pegoutQueueCount + 1n);
         resolve(new SatoshiBig(estimatedFee, 'satoshi'));
       })
@@ -194,7 +199,7 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
           activeMessageStyle = 'statusProgress';
           isRejected = false;
           break;
-        case constants.FlyoverStatus.COMPLETED:
+        case constants.FlyoverStatus.SUCCESS:
           statusMessage = 'Your transaction was successfully processed!';
           activeMessageStyle = 'statusSuccess';
           isRejected = false;
@@ -209,7 +214,7 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
           activeMessageStyle = 'statusProgress';
           isRejected = false;
           break;
-        case constants.FlyoverStatus.COMPLETED:
+        case constants.FlyoverStatus.SUCCESS:
           statusMessage = 'Your transaction was successfully processed!';
           activeMessageStyle = 'statusSuccess';
           isRejected = false;
