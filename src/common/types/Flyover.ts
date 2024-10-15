@@ -7,6 +7,7 @@ interface PeginProviderDetail {
     maxTransactionValue: SatoshiBig;
     minTransactionValue: SatoshiBig;
     requiredConfirmations: number;
+    availableLiquidity?: SatoshiBig;
 }
 interface PegoutProviderDetail {
     fee: WeiBig;
