@@ -42,7 +42,10 @@ async function getUpdatedStatuses() {
   }));
   // store updated txs in db
   await Promise.all(updatedTxsToStore.map((tx) => set(tx)));
-  await updateView();
+
+  if (updatedTxsToStore.length > 0) {
+    await updateView();
+  }
 }
 
 self.addEventListener('periodicsync', (event) => {

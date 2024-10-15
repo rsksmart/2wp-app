@@ -62,10 +62,13 @@
         </v-btn>
         <div class="d-flex justify-center gc-2 align-baseline flex-wrap">
           <span>Already made a transaction?</span>
-          <v-btn variant="text" color="orange" density="compact" class="pa-0 text-body-1"
+          <v-badge inline :model-value="unreadNotifications > 0" color="orange"
+            :content="unreadNotifications">
+            <v-btn variant="text" color="orange" density="compact" class="pa-0 pr-1 text-body-1"
             @click="toStatusSearch">
             Transaction Status
           </v-btn>
+        </v-badge>
         </div>
         <div class="d-flex justify-center gc-2 align-baseline flex-wrap">
           <span class="text-center">To learn about the various RBTC access methods, visit</span>
@@ -183,6 +186,33 @@ export default {
       if (route.path !== '/status') router.push('/status');
     }
 
+    const unreadNotifications = ref(0);
+
+    function showNotification() {
+      Notification.requestPermission()
+        .then((permission) => {
+          if (permission === 'granted') {
+            const notification = new Notification('PowPeg', {
+              body: 'New transaction status available',
+            });
+            notification.onshow = () => {
+              unreadNotifications.value += 1;
+              navigator.setAppBadge(unreadNotifications.value);
+            };
+            notification.onclose = () => {
+              unreadNotifications.value -= 1;
+              navigator.setAppBadge(unreadNotifications.value);
+            };
+          }
+        });
+    }
+
+    navigator.serviceWorker.addEventListener('message', (evt) => {
+      if (evt.data === 'update-view') {
+        showNotification();
+      }
+    });
+
     getBtcPrice();
     clearPegin();
     clearPegOut();
@@ -190,6 +220,7 @@ export default {
     addPeg();
 
     return {
+      unreadNotifications,
       environmentContext,
       isAllowedBrowser,
       toStatusSearch,

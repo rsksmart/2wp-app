@@ -42,8 +42,8 @@
         <v-table density="compact">
           <thead class="bg-bw-500">
             <tr>
-              <th class="w-66">Transaction ID</th>
-              <th>Status</th>
+              <th class="w-66" scope="col">Transaction ID</th>
+              <th scope="col">Status</th>
             </tr>
           </thead>
           <tbody>

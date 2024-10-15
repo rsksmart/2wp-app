@@ -17,6 +17,11 @@ if (process.env.NODE_ENV === 'production') {
             console.error('Periodic Sync registration failed', error);
           });
       }
+      Notification.requestPermission().then((permission) => {
+        if (permission === 'granted') {
+          console.log('Notification permission granted.');
+        }
+      });
     },
     registered() {
       console.log('Service worker has been registered.');
