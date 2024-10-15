@@ -61,6 +61,7 @@ export default defineComponent({
       const status = txDetails.value as PegoutStatusDataModel;
       const valueRequested = new SatoshiBig(status.valueRequestedInSatoshis, 'satoshi').toBTCTrimmedString();
       const amountSent = new WeiBig(valueRequested, 'rbtc').plus(calculatedGasFee.value).toRBTCTrimmedString();
+      const btcTxId = status.status === PegoutStatus.RELEASE_BTC ? status.btcTxId : '';
       return {
         amountFromString: amountSent,
         amountReceivedString: amountToBeReceived.value,
@@ -71,6 +72,7 @@ export default defineComponent({
         txId: status.rskTxHash ? status.rskTxHash : props.txId,
         estimatedFee: Number(pegOutEstimatedFee.value.toBTCTrimmedString()),
         status: status.status,
+        btcTxId,
       };
     });
 

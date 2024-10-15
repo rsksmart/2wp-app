@@ -2,6 +2,7 @@ import { ActionTree } from 'vuex';
 import Web3 from 'web3';
 import moment from 'moment';
 import {
+  FlyoverStatusModel,
   PegoutStatusDataModel,
   RootState, SatoshiBig, TxStatus, TxStatusType,
 } from '@/common/types';
@@ -15,24 +16,36 @@ export const actions: ActionTree<TxStatus, RootState> = {
   [constants.STATUS_CLEAR]: ({ commit }) => {
     commit(constants.STATUS_SET_CLEAR);
   },
-  [constants.STATUS_GET_TX_STATUS]: ({ commit, dispatch }, txId: string) => {
-    Promise.all([
-      ApiService.getTxStatus(txId),
-      dispatch(constants.STATUS_GET_ESTIMATED_FEE),
-    ])
-      .then(([status]) => {
-        commit(constants.STATUS_SET_TX_DETAILS, status.txDetails);
-        commit(constants.STATUS_SET_TX_TYPE, status.type);
-        return dispatch(constants.STATUS_GET_ESTIMATED_RELEASE_TIME_IN_MINUTES);
-      })
-      .catch(() => {
-        commit(constants.STATUS_SET_TX_DETAILS, undefined);
-        commit(constants.STATUS_SET_TX_TYPE, TxStatusType.UNEXPECTED_ERROR);
-      });
-  },
+  [constants.STATUS_GET_TX_STATUS]:
+    ({ commit, dispatch }, txId: string) => new Promise((resolve, reject) => {
+      Promise.all([
+        ApiService.getTxStatus(txId),
+        dispatch(constants.STATUS_GET_ESTIMATED_FEE),
+      ])
+        .then(([status]) => {
+          commit(constants.STATUS_SET_TX_DETAILS, status.txDetails);
+          commit(constants.STATUS_SET_TX_TYPE, status.type);
+          const nextActions = [];
+          if (status.type === TxStatusType.FLYOVER_PEGIN
+          || status.type === TxStatusType.FLYOVER_PEGOUT) {
+            nextActions.push(dispatch(
+              constants.STATUS_GET_FLYOVER_STATUS,
+              (status.txDetails as FlyoverStatusModel).quoteHash,
+            ));
+          }
+          nextActions.push(dispatch(constants.STATUS_GET_ESTIMATED_RELEASE_TIME_IN_MINUTES));
+          return Promise.all(nextActions);
+        })
+        .then(resolve)
+        .catch(() => {
+          commit(constants.STATUS_SET_TX_DETAILS, undefined);
+          commit(constants.STATUS_SET_TX_TYPE, TxStatusType.UNEXPECTED_ERROR);
+          reject();
+        });
+    }),
   [constants.STATUS_GET_ESTIMATED_FEE]: async ({ commit }) => {
     try {
-      const estimatedFee = await getEstimatedFee();
+      const estimatedFee = await getEstimatedFee(true);
       commit(constants.STATUS_SET_BTC_ESTIMATED_FEE, new SatoshiBig(estimatedFee, 'satoshi'));
     } catch (e) {
       commit(constants.STATUS_SET_BTC_ESTIMATED_FEE, new SatoshiBig(0, 'satoshi'));
@@ -64,4 +77,28 @@ export const actions: ActionTree<TxStatus, RootState> = {
       }
       resolve();
     }),
+  [constants.STATUS_GET_FLYOVER_STATUS]: async ({
+    state, commit, dispatch, rootState,
+  }, quoteHash) => {
+    let status;
+    try {
+      if (state.type === TxStatusType.FLYOVER_PEGIN) {
+        const flyoverService = rootState.flyoverPegin?.flyoverService;
+        await dispatch(`flyoverPegin/${constants.FLYOVER_PEGIN_INIT}`, null, { root: true });
+        flyoverService?.useLiquidityProvider(1);
+        status = await flyoverService?.getPeginStatus(quoteHash);
+      }
+      if (state.type === TxStatusType.FLYOVER_PEGOUT) {
+        const flyoverService = rootState.flyoverPegout?.flyoverService;
+        await dispatch(`flyoverPegout/${constants.FLYOVER_PEGOUT_INIT}`, null, { root: true });
+        await dispatch(`flyoverPegout/${constants.FLYOVER_PEGOUT_GET_PROVIDERS}`, null, { root: true });
+        flyoverService?.useLiquidityProvider(1);
+        status = await rootState.flyoverPegout?.flyoverService.getPegoutStatus(quoteHash);
+      }
+    } catch (e) {
+      status = 'NOT_FOUND';
+    } finally {
+      commit(constants.STATUS_SET_FLYOVER_STATUS, status);
+    }
+  },
 };

@@ -1,7 +1,7 @@
 import * as constants from '@/common/store/constants';
 import SatoshiBig from '@/common/types/SatoshiBig';
 import {
-  Purpose, SignedTx, WalletCount, Step,
+  Purpose, SignedTx, WalletCount,
 } from '@/common/types/Wallets';
 import {
   AccountBalance, AddressStatus, AppNetwork, BtcAccount, Tx, UtxoListPerAccount, WalletAddress,
@@ -90,8 +90,6 @@ export default abstract class WalletService {
   abstract name(): Record<'formal_name' | 'short_name' | 'long_name', string>;
 
   abstract availableAccounts(): Array<BtcAccount>;
-
-  abstract confirmationSteps(): Array<Step>;
 
   get isLoadingBalances(): boolean {
     return this.loadingBalances;

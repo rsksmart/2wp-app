@@ -10,11 +10,7 @@
         </v-row>
         <v-row no-gutters>
           <div class="pt-4">
-            <span>
-              You will receive {{ amount }} {{ symbol }} on your address
-              <br>
-            </span>
-            <template>within the next 5-10 minutes.</template>
+            <span>{{ willReceiveText }}</span>
           </div>
         </v-row>
       </v-col>
@@ -51,7 +47,9 @@ import { defineComponent, computed, PropType } from 'vue';
 import { useAction, useGetter, useState } from '@/common/store/helper';
 import * as constants from '@/common/store/constants';
 import { useRouter } from 'vue-router';
-import { PegInTxState, SatoshiBig, TxStatusType } from '@/common/types';
+import {
+  PegInTxState, PegOutTxState, SatoshiBig, TxStatusType,
+} from '@/common/types';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 
 export default defineComponent({
@@ -70,15 +68,22 @@ export default defineComponent({
     const clearStatus = useAction('status', constants.STATUS_CLEAR);
     const router = useRouter();
     const pegInTxState = useState<PegInTxState>('pegInTx');
+    const pegOutTxState = useState<PegOutTxState>('pegOutTx');
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
 
-    const amount = computed(() => (props.type === (TxStatusType.PEGIN).toLowerCase()
-      ? pegInTxState.value.amountToTransfer.toBTCTrimmedString()
-      : estimatedBtcToReceive.value.toBTCTrimmedString()));
-    const symbol = computed(() => (props.type === (TxStatusType.PEGIN).toLowerCase()
-      ? environmentContext.getRbtcTicker()
-      : environmentContext.getBtcTicker()));
+    const willReceiveText = computed(() => {
+      switch (props.type.toUpperCase()) {
+        case TxStatusType.PEGIN || TxStatusType.FLYOVER_PEGIN:
+          return `You will receive ${pegInTxState.value.amountToTransfer.toBTCTrimmedString()} ${environmentContext.getRbtcTicker()}`;
+        case TxStatusType.PEGOUT:
+          return `You will receive approximately ${estimatedBtcToReceive.value.toBTCTrimmedString()} ${environmentContext.getBtcTicker()}`;
+        case TxStatusType.FLYOVER_PEGOUT:
+          return `You will receive ${pegOutTxState.value.amountToTransfer.toRBTCTrimmedString()} ${environmentContext.getBtcTicker()}`;
+        default:
+          return '';
+      }
+    });
 
     function goHome() {
       clearStatus();
@@ -95,8 +100,7 @@ export default defineComponent({
 
     return {
       mdiContentCopy,
-      amount,
-      symbol,
+      willReceiveText,
       pegInTxState,
       copyToClipboard,
       goHome,
