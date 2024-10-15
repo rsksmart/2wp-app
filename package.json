@@ -23,7 +23,7 @@
     "@mdi/js": "^6.9.96",
     "@rsksmart/bridges-core-sdk": "^0.3.3",
     "@rsksmart/flyover-sdk": "^1.5.1",
-    "@rsksmart/rlogin": "^1.6.1",
+    "@rsksmart/rlogin": "^1.5.3-beta.1",
     "@rsksmart/rlogin-ledger-provider": "^1.0.3",
     "@rsksmart/rlogin-trezor-provider": "^1.0.3",
     "@rsksmart/rsk-precompiled-abis": "^6.0.0-ARROWHEAD",
