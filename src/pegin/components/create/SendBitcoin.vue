@@ -50,7 +50,9 @@ import ConnectDevice from '@/common/components/exchange/ConnectDevice.vue';
 import TxErrorDialog from '@/common/components/exchange/TxErrorDialog.vue';
 import { TrezorError } from '@/common/types/exception/TrezorError';
 import LeatherTxBuilder from '@/pegin/middleware/TxBuilder/LeatherTxBuilder';
+import EnkryptTxBuilder from '@/pegin/middleware/TxBuilder/EnkryptTxBuilder';
 import PeginTxService from '@/pegin/services/PeginTxService';
+import XverseTxBuilder from '@/pegin/middleware/TxBuilder/XverseTxBuilder';
 
 export default defineComponent({
   name: 'SendBitcoin',
@@ -192,6 +194,14 @@ export default defineComponent({
         case constants.WALLET_NAMES.LEATHER.long_name:
           txBuilder.value = new LeatherTxBuilder();
           currentWallet.value = constants.WALLET_NAMES.LEATHER.short_name;
+          break;
+        case constants.WALLET_NAMES.XVERSE.long_name:
+          txBuilder.value = new XverseTxBuilder();
+          currentWallet.value = constants.WALLET_NAMES.XVERSE.short_name;
+          break;
+        case constants.WALLET_NAMES.ENKRYPT.long_name:
+          txBuilder.value = new EnkryptTxBuilder();
+          currentWallet.value = constants.WALLET_NAMES.ENKRYPT.short_name;
           break;
         default:
           txBuilder.value = new TrezorTxBuilder();

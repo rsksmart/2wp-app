@@ -16,7 +16,7 @@
           <v-tooltip
             activator="parent"
             location="bottom"
-          >{{ balance.toRBTCTrimmedString() }} {{ environmentContext.getRbtcTicker() }}
+          >{{ balance.toRBTCString() }} {{ environmentContext.getRbtcTicker() }}
           </v-tooltip>
         </span>
         <v-btn variant="flat" size="x-small" color="theme-primary" rounded="full" :icon="mdiLinkOff"
@@ -63,7 +63,7 @@ export default {
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
     const accountBalance = computed(() => {
-      const amount = balance.value.toRBTCTrimmedString().slice(0, 7);
+      const amount = balance.value.toRBTCString().slice(0, 7);
       return `${amount} ${environmentContext.getRbtcTicker()}`;
     });
 

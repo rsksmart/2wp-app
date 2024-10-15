@@ -17,6 +17,12 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       case constants.WALLET_NAMES.LEATHER.long_name: {
         return constants.WALLET_NAMES.LEATHER.formal_name;
       }
+      case constants.WALLET_NAMES.XVERSE.long_name: {
+        return constants.WALLET_NAMES.XVERSE.formal_name;
+      }
+      case constants.WALLET_NAMES.ENKRYPT.long_name: {
+        return constants.WALLET_NAMES.ENKRYPT.formal_name;
+      }
       default: {
         return 'wallet';
       }
@@ -61,7 +67,10 @@ export const getters: GetterTree<PegInTxState, RootState> = {
     const coin = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
     if (currentView && currentView === 'Status') {
       address = state.statusInfo.refundAddress;
-    } else if (localGetters[constants.WALLET_NAME] === constants.WALLET_NAMES.LEATHER.formal_name) {
+    } else if (localGetters[constants.WALLET_NAME] === constants.WALLET_NAMES.LEATHER.formal_name
+      || localGetters[constants.WALLET_NAME] === constants.WALLET_NAMES.XVERSE.formal_name
+      || localGetters[constants.WALLET_NAME] === constants.WALLET_NAMES.ENKRYPT.formal_name
+    ) {
       address = coin === 'main'
         ? constants.VALID_ADDRESS_UNUSED_BY_FLYOVER.mainnet
         : constants.VALID_ADDRESS_UNUSED_BY_FLYOVER.testnet;
@@ -167,6 +176,9 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       case constants.WALLET_NAMES.LEATHER.long_name:
         isHdWallet = false;
         break;
+      case constants.WALLET_NAMES.XVERSE.long_name:
+        isHdWallet = false;
+        break;
       default:
         isHdWallet = false;
         break;
@@ -183,6 +195,12 @@ export const getters: GetterTree<PegInTxState, RootState> = {
         isSfWallet = false;
         break;
       case constants.WALLET_NAMES.LEATHER.long_name:
+        isSfWallet = true;
+        break;
+      case constants.WALLET_NAMES.XVERSE.long_name:
+        isSfWallet = true;
+        break;
+      case constants.WALLET_NAMES.ENKRYPT.long_name:
         isSfWallet = true;
         break;
       default:
