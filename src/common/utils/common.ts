@@ -15,7 +15,6 @@ export const getChunkedValue = (value: string, maxLength: number) => (value.leng
 export const getClearPeginTxState = (): PegInTxState => ({
   peginConfiguration: {
     minValue: 0,
-    maxValue: 0,
     federationAddress: '',
     sessionId: '',
   },
@@ -73,7 +72,6 @@ export const getClearPegoutTxState = (): PegOutTxState => ({
   amountToTransfer: new WeiBig(0, 'wei'),
   pegoutConfiguration: {
     minValue: new WeiBig(0, 'wei'),
-    maxValue: new WeiBig(0, 'wei'),
     bridgeContractAddress: '',
   },
   validAmount: false,

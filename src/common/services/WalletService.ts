@@ -185,7 +185,7 @@ export default abstract class WalletService {
     return (this.subscribers.length > 0);
   }
 
-  public async startAskingForBalance(sessionId: string, maxAmountPegin: number): Promise<void> {
+  public async startAskingForBalance(): Promise<void> {
     this.balanceAccumulated = {
       legacy: new SatoshiBig(0, 'satoshi'),
       segwit: new SatoshiBig(0, 'satoshi'),
@@ -208,13 +208,6 @@ export default abstract class WalletService {
       while (this.hasSubscribers() && !this.areEnoughUnusedAddresses()) {
         // eslint-disable-next-line no-await-in-loop
         await this.askForBalance();
-        const maxAmountPeginCompare = new SatoshiBig(maxAmountPegin, 'satoshi');
-        if (this.balanceAccumulated.legacy.gte(maxAmountPeginCompare)
-          && this.balanceAccumulated.segwit.gte(maxAmountPeginCompare)
-          && this.balanceAccumulated.nativeSegwit.gte(maxAmountPeginCompare)
-        ) {
-          break;
-        }
         this.setAddressesToFetch();
         const maxIndexReached = Math.max(
           this.addressesToFetch.legacy.lastIndex,
