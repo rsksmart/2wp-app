@@ -61,6 +61,19 @@ describe('PeginQuote', () => {
   it('should calculate totalValueToTransfer correctly', () => {
     const expectedTotalValueToTransfer = SatoshiBig.fromWeiBig(new WeiBig(quoteValues.value, 'wei'))
       .plus(peginQuote.providerFee);
-    expect(peginQuote.totalValueToTransfer.toString()).toEqual(expectedTotalValueToTransfer.toString());
+    expect(peginQuote.valueToTransfer.toString()).toEqual(expectedTotalValueToTransfer.toString());
   });
+
+  it('should calculate totalQuoteFee correctly', () => {
+    const btcNetworkFee = new SatoshiBig(100000000, 'satoshi');
+    const expectedTotalQuoteFee = peginQuote.providerFee.plus(btcNetworkFee);
+    expect(peginQuote.getTotalQuoteFee(btcNetworkFee).toString()).toEqual(expectedTotalQuoteFee.toString());
+  });
+
+  it('should calculate totalTxAmount correctly', () => {
+    const btcNetworkFee = new SatoshiBig(100000000, 'satoshi');
+    const expectedTotalTxAmount = peginQuote.valueToTransfer.plus(btcNetworkFee);
+    expect(peginQuote.getTotalTxAmount(btcNetworkFee).toString()).toEqual(expectedTotalTxAmount.toString());
+  });
+
 });

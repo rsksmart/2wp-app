@@ -141,14 +141,14 @@ export default defineComponent({
       senderAddress: pegInTxState.value.normalizedTx.inputs[0].address,
     }));
 
-    const flyoverTotalFee = computed(() => selectedQuote.value.providerFee
-      .plus(safeFee.value));
+    // const flyoverTotalFee = computed(() => selectedQuote.value.providerFee
+    //   .plus(safeFee.value));
 
     const flyoverPeginSummary = computed((): NormalizedSummary => ({
       amountFromString: selectedQuote.value.quote.value.toBTCTrimmedString(),
       amountReceivedString: selectedQuote.value.quote.value.toBTCTrimmedString(),
-      fee: Number(flyoverTotalFee.value.toBTCTrimmedString()),
-      total: selectedQuote.value.quote.value.plus(flyoverTotalFee.value).toBTCTrimmedString(),
+      fee: Number(selectedQuote.value.getTotalQuoteFee(safeFee.value).toBTCTrimmedString()),
+      total: selectedQuote.value.getTotalTxAmount(safeFee.value).toBTCTrimmedString(),
       recipientAddress: recipientAddress.value,
       senderAddress: pegInTxState.value.normalizedTx.inputs[0].address,
     }));
@@ -159,7 +159,7 @@ export default defineComponent({
 
     const flyoverProps = computed(() => ({
       value: Number(selectedQuote.value.quote.value.toBTCTrimmedString()),
-      fee: Number(flyoverTotalFee.value.toBTCTrimmedString()),
+      fee: Number(selectedQuote.value.getTotalQuoteFee(safeFee.value).toBTCTrimmedString()),
       provider: getLPName(),
       details: {
         senderAddress: pegInTxState.value.normalizedTx.inputs[0].address,
