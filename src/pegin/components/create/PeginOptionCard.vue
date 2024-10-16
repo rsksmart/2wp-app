@@ -124,8 +124,8 @@ export default defineComponent({
         subtitleColor: 'orange',
         link: 'https://dev.rootstock.io/concepts/rif-suite/#meet-the-suite',
         estimatedTime: () => blockConfirmationsToTimeString(computedQuote.value?.quote.confirmations ?? 0, 'btc'),
-        amountToTransfer: () => computedQuote.value?.totalValueToTransfer
-          .plus(selectedFee.value) ?? new SatoshiBig('0', 'btc'),
+        amountToTransfer: () => computedQuote.value?.getTotalTxAmount(selectedFee.value)
+          ?? new SatoshiBig('0', 'btc'),
         providerFee: () => quoteFee.value,
         valueToReceive: () => computedQuote.value?.quote.value ?? new SatoshiBig('0', 'btc'),
       },
