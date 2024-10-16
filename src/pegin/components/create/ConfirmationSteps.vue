@@ -439,7 +439,7 @@ export default defineComponent({
     const changeIdx = flyover.value ? 1 : 2;
 
     const amountToTransfer = computed(() => (flyover.value
-      ? selectedQuote.value.quote.value.plus(selectedQuote.value.providerFee)
+      ? selectedQuote.value.valueToTransfer
       : pegInTxState.value.amountToTransfer));
 
     const rskFederationAddress = computed(():string => pegInTxState.value

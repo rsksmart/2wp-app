@@ -147,8 +147,7 @@ export default defineComponent({
       if (!selectedQuote.value) {
         return false;
       }
-      const fullAmount: SatoshiBig = selectedQuote.value.totalValueToTransfer
-        .plus(selectedFee.value);
+      const fullAmount: SatoshiBig = selectedQuote.value.getTotalTxAmount(selectedFee.value);
       return selectedAccountBalance.value?.gte(fullAmount);
     });
 
@@ -215,7 +214,7 @@ export default defineComponent({
         flyoverService.value.acceptPeginQuote(selectedQuoteHash.value)
           .then((acceptedQuote) => {
             context.emit('createTx', {
-              amountToTransferInSatoshi: selectedQuote.value?.totalValueToTransfer,
+              amountToTransferInSatoshi: selectedQuote.value?.valueToTransfer,
               refundAddress: '',
               recipient: '',
               feeLevel: pegInTxState.value.selectedFee,

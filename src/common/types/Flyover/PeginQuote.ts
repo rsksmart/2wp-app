@@ -21,7 +21,7 @@ export default class PeginQuote implements QuotePegIn2WP {
       this.quoteHash = quoteHash;
     }
 
-    get totalValueToTransfer(): SatoshiBig {
+    get valueToTransfer(): SatoshiBig {
       return this.quote.value
         .plus(this.providerFee);
     }
@@ -30,5 +30,15 @@ export default class PeginQuote implements QuotePegIn2WP {
       return this.quote.productFeeAmount
         .plus(this.quote.callFee)
         .plus(SatoshiBig.fromWeiBig(this.quote.gasFee));
+    }
+
+    getTotalQuoteFee(btcNetworkFee: SatoshiBig): SatoshiBig {
+      return this.providerFee
+        .plus(btcNetworkFee);
+    }
+
+    getTotalTxAmount(btcNetworkFee: SatoshiBig): SatoshiBig {
+      return this.valueToTransfer
+        .plus(btcNetworkFee);
     }
 }
