@@ -1,8 +1,10 @@
 import {
   FlyoverPeginState, QuotePegIn2WP, RootState, SatoshiBig,
+  FlyoverCall, TxStatusType,
 } from '@/common/types';
 import { ActionTree } from 'vuex';
 import * as constants from '@/common/store/constants';
+import { ApiService } from '@/common/services';
 
 export const actions: ActionTree<FlyoverPeginState, RootState> = {
   [constants.FLYOVER_PEGIN_INIT]: ({ state, dispatch }) => new Promise((resolve, reject) => {
@@ -12,9 +14,27 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
       .catch(reject);
   }),
   [constants.FLYOVER_PEGIN_GET_PROVIDERS]: ({ state, commit }) => new Promise((resolve, reject) => {
-    state.flyoverService.getProviders()
-      .then((providers) => resolve(commit(constants.FLYOVER_PEGIN_SET_PROVIDERS, providers)))
-      .catch(reject);
+    let result = constants.FlyoverCallResult.ERROR;
+    const flyoverCallPayload = {
+      operationType: TxStatusType.FLYOVER_PEGIN,
+      functionType: constants.FlyoverCallFunction.LPS,
+    };
+
+    (async () => {
+      try {
+        const providers = await state.flyoverService.getProviders();
+        result = constants.FlyoverCallResult.SUCCESS;
+        resolve(commit(constants.FLYOVER_PEGIN_SET_PROVIDERS, providers));
+      } catch (e) {
+        reject();
+      } finally {
+        try {
+          await ApiService.registerFlyoverCall({ ...flyoverCallPayload, result } as FlyoverCall);
+        } catch (e) {
+          console.error(`Error registering flyover ${flyoverCallPayload.functionType} call: ${e}`);
+        }
+      }
+    })();
   }),
   [constants.FLYOVER_PEGIN_ADD_AMOUNT]: ({ commit }, amount: SatoshiBig) => {
     commit(constants.FLYOVER_PEGIN_SET_AMOUNT, amount);
@@ -40,17 +60,34 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
       ));
     });
     let quotesByProvider: Record<number, QuotePegIn2WP[]> = {};
-    Promise.allSettled(quotePromises)
-      .then((responses) => responses.forEach((response, index) => {
-        if (response.status === 'fulfilled') {
-          quotesByProvider = {
-            ...quotesByProvider,
-            [state.liquidityProviders[index].id]: response.value,
-          };
+    let result = constants.FlyoverCallResult.ERROR;
+    const flyoverCallPayload = {
+      operationType: TxStatusType.FLYOVER_PEGIN,
+      functionType: constants.FlyoverCallFunction.QUOTE,
+    };
+    (async () => {
+      try {
+        const responses = await Promise.allSettled(quotePromises);
+        responses.forEach((response, index) => {
+          if (response.status === constants.FULFILLED) {
+            quotesByProvider = {
+              ...quotesByProvider,
+              [state.liquidityProviders[index].id]: response.value,
+            };
+          }
+        });
+        result = constants.FlyoverCallResult.SUCCESS;
+        resolve(commit(constants.FLYOVER_PEGIN_SET_QUOTES, quotesByProvider));
+      } catch (e) {
+        reject(e);
+      } finally {
+        try {
+          await ApiService.registerFlyoverCall({ ...flyoverCallPayload, result } as FlyoverCall);
+        } catch (e) {
+          console.error(`Error registering flyover ${flyoverCallPayload.functionType} call: ${e}`);
         }
-      }))
-      .then(() => resolve(commit(constants.FLYOVER_PEGIN_SET_QUOTES, quotesByProvider)))
-      .catch(reject);
+      }
+    })();
   }),
   [constants.FLYOVER_PEGIN_ADD_SELECTED_QUOTE]: ({ commit }, quoteHash: string) => {
     commit(constants.FLYOVER_PEGIN_SET_SELECTED_QUOTE, quoteHash);

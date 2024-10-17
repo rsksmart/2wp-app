@@ -1,7 +1,7 @@
 import SatoshiBig from '@/common/types/SatoshiBig';
 import { Utxo } from '@/common/types/pegInTx';
-import { PegoutStatus } from '@/common/types/store';
-import { PegStatus } from '@/common/store/constants';
+import { PegoutStatus, TxStatusType } from '@/common/types/store';
+import { FlyoverCallFunction, FlyoverCallResult, PegStatus } from '@/common/store/constants';
 import WeiBig from './WeiBig';
 
 export interface Tx {
@@ -146,4 +146,10 @@ export enum AppLocale {
 export interface XverseTx extends Tx {
   base64UnsignedPsbt: string;
   inputs: Array<{idx: number; address: string}>;
+}
+
+export interface FlyoverCall {
+  operationType?: TxStatusType.FLYOVER_PEGIN | TxStatusType.FLYOVER_PEGOUT,
+  functionType: FlyoverCallFunction.LPS | FlyoverCallFunction.QUOTE,
+  result: FlyoverCallResult.ERROR | FlyoverCallResult.SUCCESS,
 }
