@@ -13,8 +13,6 @@ export const OPERATION_AMOUNT = 'OPERATION_AMOUNT';
 export const DERIVE_BTC_ADDRESS_DOCUMENTATION_URL = 'https://dev.rootstock.io/guides/two-way-peg-app/pegout/deriving-electrum/';
 export const RLOGIN_METAMASK_WALLET = 'MetaMask';
 
-export const TOTAL_RBTC_STOCK = 21000000;
-
 // devices
 export const IS_TREZOR_CONNECTED = 'IS_TREZOR_CONNECTED';
 
