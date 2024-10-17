@@ -4,8 +4,8 @@ import SatoshiBig from '@/common/types/SatoshiBig';
 import { PegInTxState } from '@/common/types/pegInTx';
 import { SessionState } from '@/common/types/session';
 import { PegOutTxState } from '@/common/types/pegOutTx';
-import { FlyoverPeginState } from '@/common/types/FlyoverPegin';
-import { FlyoverPegoutState } from '@/common/types/FlyoverPegout';
+import { FlyoverPeginState } from '@/common/types/Flyover/FlyoverPegin';
+import { FlyoverPegoutState } from '@/common/types/Flyover/FlyoverPegout';
 import { StatusState } from '@/common/types/Status';
 
 export interface RootState {

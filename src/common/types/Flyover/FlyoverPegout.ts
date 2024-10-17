@@ -1,8 +1,7 @@
-import { ObjectDifference } from '@/common/types';
-import { FlyoverService } from '../services';
-import { LiquidityProvider2WP, QuotePegOut2WP } from './Flyover';
-import SatoshiBig from './SatoshiBig';
-import WeiBig from './WeiBig';
+import { LiquidityProvider2WP, ObjectDifference, QuotePegOut2WP } from '@/common/types';
+import { FlyoverService } from '../../services';
+import SatoshiBig from '../SatoshiBig';
+import WeiBig from '../WeiBig';
 
 export interface FlyoverPegoutState {
     differences: Array<ObjectDifference>;
