@@ -85,8 +85,6 @@
       @closeErrorDialog="showTxErrorDialog = false"
       />
     </template>
-    <quote-diff-dialog :show-dialog="showQuoteDiff"
-      :differences="quoteDifferences" @continue="continueHandler"/>
     <div id="recaptcha" class="g-recaptcha"
         :data-sitekey="flyoverService.siteKey"
         data-callback="onRecaptchaSuccess"
@@ -103,7 +101,6 @@ import * as constants from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import FlyoverRbtcInputAmount from '@/pegout/components/FlyoverRbtcInputAmount.vue';
 import AddressDialog from '@/pegout/components/AddressDialog.vue';
-import QuoteDiffDialog from '@/pegout/components/QuoteDiffDialog.vue';
 import {
   useAction, useGetter, useState, useStateAttribute,
 } from '@/common/store/helper';
@@ -128,7 +125,6 @@ export default defineComponent({
     AddressDialog,
     PegoutOption,
     FullTxErrorDialog,
-    QuoteDiffDialog,
   },
   props: {
     flyoverEnabled: {
@@ -222,8 +218,6 @@ export default defineComponent({
       }
       return '';
     });
-
-    const showQuoteDiff = computed(() => quoteDifferences.value.length > 0 && !diffShown.value);
 
     const validAmountToReceive = computed((): boolean => estimatedBtcToReceive.value.gt(0));
 
@@ -416,7 +410,6 @@ export default defineComponent({
       sendingPegout,
       showStep,
       quoteDifferences,
-      showQuoteDiff,
       mdiArrowLeft,
       selectedOption,
       changeSelectedOption,
