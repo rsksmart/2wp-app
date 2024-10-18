@@ -13,13 +13,7 @@ async function checkAcceptedTerms(
   next: NavigationGuardNext,
 ) {
   const store = useStore();
-  if (store.state.web3Session.acceptedTerms === undefined) {
-    await store.dispatch(`web3Session/${constants.SESSION_ADD_TERMS_AND_CONDITIONS_ENABLED}`);
-  }
-  if (
-    !store.state.web3Session.termsAndConditionsEnabled
-    || (store.state.web3Session.termsAndConditionsEnabled && store.state.web3Session.acceptedTerms)
-  ) {
+  if (store.state.web3Session.acceptedTerms) {
     next();
   } else {
     next({ name: 'Home' });
@@ -93,13 +87,6 @@ const routes: Readonly<RouteRecordRaw[]> = [
     beforeEnter: checkAcceptedTerms,
   },
   {
-    path: '/pegin/:wallet/success/:txId',
-    name: 'Success',
-    component:
-      () => import(/* webpackChunkName: "pegin-success" */ '../../pegin/views/Success.vue'),
-    beforeEnter: [checkFromRoute],
-  },
-  {
     path: '/:type/success/tx/:txId',
     name: 'SuccessTx',
     component: () => import(/* webpackChunkName: "tx-success" */ '../views/SuccessTx.vue'),
@@ -116,14 +103,6 @@ const history = createWebHistory(EnvironmentAccessorService.getEnvironmentVariab
 const router = createRouter({
   history,
   routes,
-});
-
-router.beforeResolve((to, from, next) => {
-  const store = useStore();
-  store.dispatch(`view/${constants.VIEW_ADD_CURRENT_VIEW}`, to.name);
-  const inTxFlow = store.getters[`web3Session/${constants.SESSION_IN_TX_FLOW}`];
-  if (to.name === 'Create' && !inTxFlow) next({ name: 'Home' });
-  else next();
 });
 
 export default router;

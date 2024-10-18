@@ -61,13 +61,10 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       return address;
     },
   [constants.PEGIN_TX_GET_REFUND_ADDRESS]:
-  (state: PegInTxState, localGetters, rootState?:RootState, rootGetters?) => {
+  (state: PegInTxState, localGetters) => {
     let address = '';
-    const currentView = rootGetters[constants.VIEW_GET_CURRENT_VIEW];
     const coin = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
-    if (currentView && currentView === 'Status') {
-      address = state.statusInfo.refundAddress;
-    } else if (localGetters[constants.WALLET_NAME] === constants.WALLET_NAMES.LEATHER.formal_name
+    if (localGetters[constants.WALLET_NAME] === constants.WALLET_NAMES.LEATHER.formal_name
       || localGetters[constants.WALLET_NAME] === constants.WALLET_NAMES.XVERSE.formal_name
       || localGetters[constants.WALLET_NAME] === constants.WALLET_NAMES.ENKRYPT.formal_name
     ) {
@@ -115,25 +112,20 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       return publicKey;
     },
   [constants.PEGIN_TX_GET_SAFE_TX_FEE]:
-    (state: PegInTxState, localGetters?, rootState?: RootState, rootGetters?)
+    (state: PegInTxState)
       : SatoshiBig => {
       let fee: SatoshiBig;
       if (!state.normalizedTx.inputs.length) {
-        const currentView = rootGetters[`view/${constants.VIEW_GET_CURRENT_VIEW}`];
-        if (currentView && currentView === 'Status') {
-          fee = state.statusInfo.safeFee;
-        } else {
-          switch (state.selectedFee) {
-            case constants.BITCOIN_SLOW_FEE_LEVEL:
-              fee = state.calculatedFees.slow.amount;
-              break;
-            case constants.BITCOIN_FAST_FEE_LEVEL:
-              fee = state.calculatedFees.fast.amount;
-              break;
-            default:
-              fee = state.calculatedFees.average.amount;
-              break;
-          }
+        switch (state.selectedFee) {
+          case constants.BITCOIN_SLOW_FEE_LEVEL:
+            fee = state.calculatedFees.slow.amount;
+            break;
+          case constants.BITCOIN_FAST_FEE_LEVEL:
+            fee = state.calculatedFees.fast.amount;
+            break;
+          default:
+            fee = state.calculatedFees.average.amount;
+            break;
         }
       } else {
         const inputsAmonut = state.normalizedTx.inputs
