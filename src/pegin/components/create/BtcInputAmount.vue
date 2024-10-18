@@ -41,9 +41,6 @@
               <v-chip variant="outlined" density="compact" @click="setMin">
                 {{ boundaries.minValue.toBTCString().slice(0,5) }} MIN
               </v-chip>
-              <v-chip variant="outlined" density="compact" @click="setMax">
-                {{ boundaries.maxValue.toBTCString().slice(0,5) }} MAX
-              </v-chip>
             </div>
           </template>
         </v-text-field>
@@ -143,16 +140,14 @@ export default defineComponent({
 
     const boundaries = computed(() => {
       const minValue: SatoshiBig = new SatoshiBig(peginConfiguration.value.minValue, 'btc');
-      const maxValue: SatoshiBig = new SatoshiBig(peginConfiguration.value.maxValue, 'btc');
       return {
         minValue,
-        maxValue,
       };
     });
 
     const amountErrorMessage = computed(() => { // mayor rework
       const feePlusAmount: SatoshiBig = safeAmount.value.plus(safeTxFee.value);
-      const { minValue, maxValue } = boundaries.value;
+      const { minValue } = boundaries.value;
       if (selectedAccountBalance.value.eq('0') && !isValidAmountToTransfer.value) {
         return 'Selected account has no balance';
       }
@@ -180,19 +175,15 @@ export default defineComponent({
       if (!enoughBalanceSelectedFee) {
         return 'The selected fee does not satisfy the minimum required by the network';
       }
-      if (safeAmount.value.gt(maxValue)) {
-        return `The maximum accepted value is ${maxValue.toBTCTrimmedString()} ${environmentContext.getBtcTicker()}`;
-      }
       return 'Invalid format';
     });
 
     const insufficientAmount = computed(() => {
       const feePlusAmount: SatoshiBig = safeAmount.value.plus(safeTxFee.value);
-      const { minValue, maxValue } = boundaries.value;
+      const { minValue } = boundaries.value;
       if (safeAmount.value.lte('0')
         || feePlusAmount.gt(selectedAccountBalance.value)
-        || safeAmount.value.lt(minValue)
-        || safeAmount.value.gt(maxValue)) {
+        || safeAmount.value.lt(minValue)) {
         return true;
       }
       if (safeAmount.value.gt('0') && feePlusAmount.lte(selectedAccountBalance.value)) {
@@ -239,10 +230,9 @@ export default defineComponent({
     }
 
     const isValidAmount = (amount: SatoshiBig) => {
-      const { minValue, maxValue } = boundaries.value;
+      const { minValue } = boundaries.value;
       return isBTCAmountValidRegex(amount.toBTCString())
-          && amount.gte(minValue)
-          && amount.lte(maxValue);
+          && amount.gte(minValue);
     };
 
     async function getOptionsData() {
@@ -269,31 +259,9 @@ export default defineComponent({
       },
     });
 
-    function fillMaxValueAvailable() {
-      const maxAvailable = selectedAccountBalance.value
-        .cmp(boundaries.value.maxValue.plus(safeTxFee.value)) === -1
-        ? selectedAccountBalance.value : boundaries.value.maxValue;
-      const tempValue = maxAvailable.minus(safeTxFee.value);
-      bitcoinAmount.value = tempValue.toBTCTrimmedString();
-      setBtcAmount(tempValue);
-      setIsValidAmount(selectedAccountBalance.value.gt('0'));
-    }
-
     function setMin() {
       const min = new SatoshiBig(peginConfiguration.value.minValue, 'btc');
       bitcoinAmountModel.value = min.toBTCTrimmedString();
-    }
-
-    async function setMax() {
-      fillMaxValueAvailable();
-      calculateTxFee()
-        .then(() => {
-          fillMaxValueAvailable();
-          bitcoinAmountModel.value = bitcoinAmount.value;
-        })
-        .catch((e) => {
-          context.emit('pegin-error', e);
-        });
     }
 
     function watchBitcoinAmount() {
@@ -337,7 +305,6 @@ export default defineComponent({
       rbtcAmount,
       amountErrorMessage,
       mdiArrowRight,
-      setMax,
       setMin,
       mdiBitcoin,
       boundaries,

@@ -25,8 +25,7 @@ export const getters: GetterTree<PegOutTxState, RootState> = {
           .plus(moduleGetters[constants.PEGOUT_TX_GET_SAFE_TX_FEE]);
         if (state.amountToTransfer.lte('0')
         || feePlusAmount.gt(balance)
-        || state.amountToTransfer.lt(state.pegoutConfiguration.minValue)
-        || state.amountToTransfer.gt(state.pegoutConfiguration.maxValue)) {
+        || state.amountToTransfer.lt(state.pegoutConfiguration.minValue)) {
           return false;
         }
         if (state.amountToTransfer.gt('0') && feePlusAmount.lte(balance)) {

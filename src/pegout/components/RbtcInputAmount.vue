@@ -134,7 +134,7 @@ export default defineComponent({
 
     const amountErrorMessage = computed(() => {
       const feePlusAmount: WeiBig = safeAmount.value.plus(safeTxFee.value);
-      const { minValue, maxValue } = pegOutTxState.value.pegoutConfiguration;
+      const { minValue } = pegOutTxState.value.pegoutConfiguration;
       const { balance } = web3SessionState.value;
       if (rbtcAmount.value.toString() === '') {
         return 'Please, enter an amount';
@@ -157,9 +157,6 @@ export default defineComponent({
       if (safeAmount.value.lt(minValue)) {
         return `The minimum accepted value is ${minValue.toRBTCTrimmedString()} ${environmentContext.getRbtcTicker()}`;
       }
-      if (safeAmount.value.gt(maxValue)) {
-        return `The maximum accepted value is ${maxValue.toRBTCTrimmedString()} ${environmentContext.getRbtcTicker()}`;
-      }
       return '';
     });
 
@@ -169,8 +166,7 @@ export default defineComponent({
       const { balance } = web3SessionState.value;
       if (safeAmount.value.lte('0')
         || feePlusAmount.gt(balance)
-        || safeAmount.value.lt(pegoutConfiguration.minValue)
-        || safeAmount.value.gt(pegoutConfiguration.maxValue)) {
+        || safeAmount.value.lt(pegoutConfiguration.minValue)) {
         return true;
       }
       if (safeAmount.value.gt('0') && feePlusAmount.lte(balance)) {
