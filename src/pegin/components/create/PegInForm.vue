@@ -113,6 +113,7 @@ export default defineComponent({
     BtcFeeSelect,
     FullTxErrorDialog,
   },
+  emits: ['back', 'createTx'],
   setup(_, context) {
     const pegInFormState = ref<Machine<'loading' | 'goingHome' | 'fill'>>(new Machine('fill'));
     const showWarningMessage = ref(false);

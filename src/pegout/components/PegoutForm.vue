@@ -10,7 +10,7 @@
     </v-row>
     <v-row>
       <v-col>
-        <flyover-rbtc-input-amount
+        <rbtc-input-amount
           @getQuotes="getQuotes"
           :willReceive="amountToReceive" />
       </v-col>
@@ -101,7 +101,7 @@ import {
 } from 'vue';
 import * as constants from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import FlyoverRbtcInputAmount from '@/pegout/components/FlyoverRbtcInputAmount.vue';
+import RbtcInputAmount from '@/pegout/components/RbtcInputAmount.vue';
 import AddressDialog from '@/pegout/components/AddressDialog.vue';
 import QuoteDiffDialog from '@/pegout/components/QuoteDiffDialog.vue';
 import {
@@ -122,9 +122,9 @@ import FullTxErrorDialog from '@/common/components/exchange/FullTxErrorDialog.vu
 import PegoutOption from './PegoutOption.vue';
 
 export default defineComponent({
-  name: 'FlyoverPegout',
+  name: 'PegoutForm',
   components: {
-    FlyoverRbtcInputAmount,
+    RbtcInputAmount,
     AddressDialog,
     PegoutOption,
     FullTxErrorDialog,

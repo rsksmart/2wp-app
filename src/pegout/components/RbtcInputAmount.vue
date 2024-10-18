@@ -91,7 +91,7 @@ import {
 } from '@/common/store/helper';
 
 export default defineComponent({
-  name: 'FlyoverRbtcInputAmount',
+  name: 'RbtcInputAmount',
   emits: ['get-quotes'],
   props: {
     willReceive: {

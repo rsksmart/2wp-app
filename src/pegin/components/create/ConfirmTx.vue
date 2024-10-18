@@ -64,6 +64,7 @@ export default defineComponent({
     StatusSummary,
     ConfirmationSteps,
   },
+  emits: ['successConfirmation', 'toPegInForm'],
   props: {
     confirmTxState: {
       type: Object as PropType<Machine < 'idle' | 'loading' | 'error' | 'confirming' | 'goingHome' >>,
