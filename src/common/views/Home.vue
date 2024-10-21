@@ -101,7 +101,9 @@
 </template>
 
 <script lang="ts">
-import { computed, ref } from 'vue';
+import {
+  computed, inject, ref,
+} from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import * as constants from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
@@ -109,6 +111,7 @@ import { isAllowedCurrentBrowser } from '@/common/utils';
 import { Feature, FeatureNames, TransactionType } from '@/common/types';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import { mdiCloseCircleOutline } from '@mdi/js';
+import { UnreadNotification, unreadNotificationsKey } from '@/common/providers/UnreadNotifications';
 
 export default {
   name: 'HomeView',
@@ -186,32 +189,7 @@ export default {
       if (route.path !== '/status') router.push('/status');
     }
 
-    const unreadNotifications = ref(0);
-
-    function showNotification() {
-      Notification.requestPermission()
-        .then((permission) => {
-          if (permission === 'granted') {
-            const notification = new Notification('PowPeg', {
-              body: 'New transaction status available',
-            });
-            notification.onshow = () => {
-              unreadNotifications.value += 1;
-              navigator.setAppBadge(unreadNotifications.value);
-            };
-            notification.onclose = () => {
-              unreadNotifications.value -= 1;
-              navigator.setAppBadge(unreadNotifications.value);
-            };
-          }
-        });
-    }
-
-    navigator.serviceWorker.addEventListener('message', (evt) => {
-      if (evt.data === 'update-view') {
-        showNotification();
-      }
-    });
+    const { counter } = inject(unreadNotificationsKey) as UnreadNotification;
 
     getBtcPrice();
     clearPegin();
@@ -220,7 +198,7 @@ export default {
     addPeg();
 
     return {
-      unreadNotifications,
+      unreadNotifications: counter,
       environmentContext,
       isAllowedBrowser,
       toStatusSearch,

@@ -49,10 +49,9 @@
           <tbody>
             <tr v-for="tx in lastTxs" :key="tx.txId" class="text-left">
               <td class="d-flex align-center justify-space-between">
-                <a :href="getExplorerUrl(tx.txId)" target="_blank"
-                class="pa-0">
+                <v-btn variant="text" @click="searchTx(tx.txId)" size="xs" class="pa-0">
                   {{ tx.txId }}
-                </a>
+                </v-btn>
                 <v-btn :icon="mdiOpenInNew" variant="flat" size="xs"
                   :href="getExplorerUrl(tx.txId)" target="_blank">
                 </v-btn>
@@ -211,6 +210,11 @@ export default defineComponent({
       }
     }
 
+    function searchTx(id: string) {
+      txId.value = id;
+      getPegStatus();
+    }
+
     function onUrlChange() {
       if (props.txIdProp) {
         txId.value = props.txIdProp ?? '';
@@ -269,6 +273,7 @@ export default defineComponent({
       lastTxs,
       mdiOpenInNew,
       getExplorerUrl,
+      searchTx,
     };
   },
 });

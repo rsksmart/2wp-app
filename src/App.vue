@@ -13,7 +13,9 @@
 </template>
 
 <script lang="ts">
-import { computed, onBeforeMount, ref } from 'vue';
+import {
+  computed, onBeforeMount, onBeforeUnmount, provide, ref,
+} from 'vue';
 import Top from '@/common/components/layouts/Top.vue';
 import FooterRsk from '@/common/components/layouts/Footer.vue';
 import Mobile from '@/common/views/Mobile.vue';
@@ -23,6 +25,8 @@ import * as constants from '@/common/store/constants';
 import { useAction } from '@/common/store/helper';
 import { vuetifyNonce } from '@/common/plugins/vuetify';
 import { isMobileDevice } from '@/common/utils';
+import { unreadNotificationsKey } from '@/common/providers/UnreadNotifications';
+import { useRouter } from 'vue-router';
 
 export default {
   name: 'App',
@@ -91,6 +95,58 @@ export default {
     function showTermsDialog(show: boolean) {
       showTermsAndConditions.value = show;
     }
+
+    const unreadNotifications = ref(0);
+
+    function updateUnreadNotifications(value: number) {
+      unreadNotifications.value = value;
+      navigator.setAppBadge(unreadNotifications.value);
+    }
+
+    provide(
+      unreadNotificationsKey,
+      {
+        counter: unreadNotifications,
+        updateCounter: updateUnreadNotifications,
+      },
+    );
+
+    const router = useRouter();
+
+    function showNotification() {
+      Notification.requestPermission()
+        .then((permission) => {
+          if (permission === 'granted') {
+            const notification = new Notification('PowPeg', {
+              body: 'New transaction status available',
+            });
+            notification.onshow = () => {
+              updateUnreadNotifications(unreadNotifications.value + 1);
+            };
+            notification.onclose = () => {
+              updateUnreadNotifications(unreadNotifications.value - 1);
+            };
+            notification.onclick = () => {
+              notification.close();
+              router.push('/status');
+            };
+          }
+        });
+    }
+
+    function handleUpdateViewEvt(evt: MessageEvent) {
+      if (evt.data === 'update-view') {
+        showNotification();
+      }
+    }
+
+    onBeforeMount(() => {
+      navigator.serviceWorker.addEventListener('message', handleUpdateViewEvt);
+    });
+
+    onBeforeUnmount(() => {
+      navigator.serviceWorker.removeEventListener('message', handleUpdateViewEvt);
+    });
 
     onBeforeMount(() => {
       getFeatures();
