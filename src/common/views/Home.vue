@@ -62,10 +62,13 @@
         </v-btn>
         <div class="d-flex justify-center gc-2 align-baseline flex-wrap">
           <span>Already made a transaction?</span>
-          <v-btn variant="text" color="orange" density="compact" class="pa-0 text-body-1"
+          <v-badge inline :model-value="unreadNotifications > 0" color="orange"
+            :content="unreadNotifications">
+            <v-btn variant="text" color="orange" density="compact" class="pa-0 pr-1 text-body-1"
             @click="toStatusSearch">
             Transaction Status
           </v-btn>
+        </v-badge>
         </div>
         <div class="d-flex justify-center gc-2 align-baseline flex-wrap">
           <span class="text-center">To learn about the various RBTC access methods, visit</span>
@@ -98,7 +101,9 @@
 </template>
 
 <script lang="ts">
-import { computed, ref } from 'vue';
+import {
+  computed, inject, ref,
+} from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import * as constants from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
@@ -106,6 +111,7 @@ import { isAllowedCurrentBrowser } from '@/common/utils';
 import { Feature, FeatureNames, TransactionType } from '@/common/types';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import { mdiCloseCircleOutline } from '@mdi/js';
+import { UnreadNotification, unreadNotificationsKey } from '@/common/providers/UnreadNotifications';
 
 export default {
   name: 'HomeView',
@@ -183,6 +189,8 @@ export default {
       if (route.path !== '/status') router.push('/status');
     }
 
+    const { counter } = inject(unreadNotificationsKey) as UnreadNotification;
+
     getBtcPrice();
     clearPegin();
     clearPegOut();
@@ -190,6 +198,7 @@ export default {
     addPeg();
 
     return {
+      unreadNotifications: counter,
       environmentContext,
       isAllowedBrowser,
       toStatusSearch,

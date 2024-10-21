@@ -36,6 +36,32 @@
         Searching...
       </v-progress-circular>
     </v-row>
+    <v-row class="mx-6" v-if="lastTxs?.length">
+      <v-col class="pa-0">
+        <span class="d-inline-block mb-1">Last transactions</span>
+        <v-table density="compact">
+          <thead class="bg-bw-500">
+            <tr>
+              <th class="w-66" scope="col">Transaction ID</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="tx in lastTxs" :key="tx.txId" class="text-left">
+              <td class="d-flex align-center justify-space-between">
+                <v-btn variant="text" @click="searchTx(tx.txId)" size="xs" class="pa-0">
+                  {{ tx.txId }}
+                </v-btn>
+                <v-btn :icon="mdiOpenInNew" variant="flat" size="xs"
+                  :href="getExplorerUrl(tx.txId)" target="_blank">
+                </v-btn>
+              </td>
+              <td>{{ tx.status }}</td>
+            </tr>
+          </tbody>
+        </v-table>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -44,7 +70,7 @@ import {
   computed, ref, watch, defineComponent, onUnmounted,
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { mdiMagnify } from '@mdi/js';
+import { mdiMagnify, mdiOpenInNew } from '@mdi/js';
 import TxPegout from '@/common/components/status/TxPegout.vue';
 import TxPegin from '@/common/components/status/TxPegin.vue';
 import {
@@ -58,6 +84,8 @@ import {
 } from '@/common/store/helper';
 import StatusProgressBar from '@/common/components/status/StatusProgressBar.vue';
 import { PegStatus } from '@/common/store/constants';
+import { getBtcTxExplorerUrl, getRskTxExplorerUrl } from '@/common/utils';
+import { getMany } from '@/db';
 
 export default defineComponent({
   name: 'StatusSearch',
@@ -159,6 +187,11 @@ export default defineComponent({
       loading.value = false;
     }
 
+    const lastTxs = ref();
+    async function getLastTxs() {
+      lastTxs.value = await getMany();
+    }
+
     function getPegStatus() {
       if (!isValidTxId.value) clean();
       else if (route.path !== `/status/txId/${txId.value}`) {
@@ -170,10 +203,16 @@ export default defineComponent({
         clean();
         loading.value = true;
         setTxStatus(txId.value)
+          .then(getLastTxs)
           .then(() => {
             loading.value = false;
           });
       }
+    }
+
+    function searchTx(id: string) {
+      txId.value = id;
+      getPegStatus();
     }
 
     function onUrlChange() {
@@ -189,9 +228,26 @@ export default defineComponent({
       router.replace({ name: 'Home' });
     }
 
+    function getExplorerUrl(id: string) {
+      let url = '';
+      if (id.startsWith('0x')) {
+        url = getRskTxExplorerUrl(id);
+      } else {
+        url = getBtcTxExplorerUrl(id);
+      }
+      return url;
+    }
+
     watch(route, onUrlChange, { immediate: true, deep: true });
 
     clearStatus();
+    getLastTxs();
+
+    navigator.serviceWorker.addEventListener('message', async (evt) => {
+      if (evt.data === 'update-view') {
+        await getLastTxs();
+      }
+    });
 
     onUnmounted(clean);
 
@@ -214,6 +270,10 @@ export default defineComponent({
       rules,
       txWithErrorType,
       txWithError,
+      lastTxs,
+      mdiOpenInNew,
+      getExplorerUrl,
+      searchTx,
     };
   },
 });
