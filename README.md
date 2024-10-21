@@ -62,3 +62,5 @@ To report a vulnerability, please use the [vulnerability reporting guideline](./
 ## Adding your own wallet for pegin
 
 To know how to add your own wallet in the pegin page, visit [how to add new wallet, step by step](./WALLET.md) for details on how to do it.
+
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/rsksmart/2wp-app/badge)](https://scorecard.dev/viewer/?uri=github.com/rsksmart/2wp-app)
