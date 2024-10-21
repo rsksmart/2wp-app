@@ -9,7 +9,8 @@ on:
     - cron: "59 4 * * 1"
 
 permissions:
-  contents: read
+  contents: read-all
+
 jobs:
   analyze:
     name: Analyze

@@ -5,6 +5,9 @@ on:
     branches:
       - 'release-candidate'
 
+# Declare default permissions as read only.
+permissions: read-all
+
 jobs:
   checkout-and-build:
     runs-on: ubuntu-latest
