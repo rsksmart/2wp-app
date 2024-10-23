@@ -14,9 +14,7 @@ The value of these variables are used in **environment-variables.ts** file.
 |VUE_APP_WALLET_ADDRESSES_HARD_STOP          | `100`                                        | Maximum number of addresses derived from wallet                                                           |
 |VUE_APP_WALLET_ADDRESS_PER_CALL             | `5`                                          | Number of addresses obtained per derivation call                                                          |
 |VUE_APP_PEGOUT_MIN_AMOUNT_ALLOWED_IN_RBTC    | `0.004`                                      | 0,004 Minimum allowed value for a PEGOUT transaction                                                      |
-|VUE_APP_PEGOUT_MAX_AMOUNT_ALLOWED_IN_RBTC   | `10`                                         | 10 Maximum allowed value for a PEGOUT transaction                                                         |
 |VUE_APP_PEGIN_MIN_AMOUNT_ALLOWED_IN_BTC     | `0.005`                                      | Minimum allowed value for a PEGIN transaction                                                             |
-|VUE_APP_PEGIN_MAX_AMOUNT_ALLOWED_IN_BTC     | `10`                                         | Maximum allowed value for a PEGIN transaction                                                             |
 |VUE_APP_BURN_DUST_VALUE   | `30000`                                      | Max value to burn in the tx fee                                                                           |
 |VUE_APP_MIN_FEE_SAT_PER_BYTE_FAST    | `8`                                          | Min fee rate (sats/byte) required to broadcast the transaction                                            |
 |VUE_APP_MIN_FEE_SAT_PER_BYTE_AVG   | `4`                                          | Min fee rate (sats/byte) required to broadcast the transaction                                            |
@@ -38,7 +36,6 @@ VUE_APP_RSK_EXPLORER=https://explorer.testnet.rootstock.io/
 VUE_APP_WALLET_ADDRESSES_HARD_STOP=100
 VUE_APP_WALLET_ADDRESS_PER_CALL=5
 VUE_APP_PEGOUT_MIN_AMOUNT_ALLOWED_IN_RBTC=0.005
-VUE_APP_PEGOUT_MAX_AMOUNT_ALLOWED_IN_RBTC=10
 VUE_APP_BURN_DUST_VALUE=30000
 VUE_APP_MIN_FEE_SAT_PER_BYTE_FAST=8
 VUE_APP_MIN_FEE_SAT_PER_BYTE_AVG=4

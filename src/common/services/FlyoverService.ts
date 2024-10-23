@@ -33,6 +33,8 @@ export default class FlyoverService {
 
   private token = '';
 
+  private liquidityProviderIdUsed = -1;
+
   constructor(providerUrl?: string) {
     this.providerUrl = providerUrl;
     const appNetwork = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
@@ -128,6 +130,7 @@ export default class FlyoverService {
     const provider = this.liquidityProviders.find((p: LiquidityProvider) => p.id === providerId);
     if (provider) {
       this.flyover?.useLiquidityProvider(provider);
+      this.liquidityProviderIdUsed = providerId;
     }
   }
 
@@ -434,13 +437,17 @@ export default class FlyoverService {
     });
   }
 
-  public getAvailableLiquidity(): Promise<{peginLiquidity: WeiBig, pegoutLiquidity: SatoshiBig}> {
+  public getAvailableLiquidity(): Promise<{
+    providerId: number,
+    peginLiquidity: WeiBig,
+    pegoutLiquidity: SatoshiBig,
+  }> {
     return new Promise((resolve, reject) => {
       this.flyover?.getAvailableLiquidity()
         .then(({ peginLiquidityAmount, pegoutLiquidityAmount }) => {
           const peginLiquidity = new WeiBig(peginLiquidityAmount, 'wei');
           const pegoutLiquidity = new SatoshiBig(pegoutLiquidityAmount, 'satoshi');
-          resolve({ peginLiquidity, pegoutLiquidity });
+          resolve({ providerId: this.liquidityProviderIdUsed, peginLiquidity, pegoutLiquidity });
         })
         .catch((error) => {
           reject(new ServiceError(
