@@ -74,7 +74,7 @@
     "@types/markdown-it": "^14.1.1",
     "@types/node": "^20.4.7",
     "@types/sinon": "^10.0.2",
-    "@types/w3c-web-usb": "^1.0.4",
+    "@types/w3c-web-usb": "^1.0.10",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
     "@vue/cli-plugin-babel": "~5.0.0",
