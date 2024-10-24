@@ -138,7 +138,7 @@ export default {
 
     async function selectConversion(txType: NonNullable<TransactionType>) {
       addPeg(txType);
-      if (!rskAccount.value) {
+      if (txType === constants.PEG_OUT_TRANSACTION_TYPE && !rskAccount.value) {
         try {
           await connectWeb3();
         } catch (e) {

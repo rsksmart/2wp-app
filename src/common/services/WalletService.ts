@@ -294,9 +294,9 @@ export default abstract class WalletService {
 
   protected async setAccountsXpub(accountIdx: number): Promise<void> {
     this.extendedPubKeys = {
-      p2pkh: await this.getXpub(constants.BITCOIN_LEGACY_ADDRESS, accountIdx),
-      p2sh: await this.getXpub(constants.BITCOIN_SEGWIT_ADDRESS, accountIdx),
-      p2wpkh: await this.getXpub(constants.BITCOIN_NATIVE_SEGWIT_ADDRESS, accountIdx),
+      p2pkh: await this.getXpub(BtcAccount.BITCOIN_LEGACY_ADDRESS, accountIdx),
+      p2sh: await this.getXpub(BtcAccount.BITCOIN_SEGWIT_ADDRESS, accountIdx),
+      p2wpkh: await this.getXpub(BtcAccount.BITCOIN_NATIVE_SEGWIT_ADDRESS, accountIdx),
     };
   }
 

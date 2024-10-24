@@ -63,7 +63,7 @@ const routes: Readonly<RouteRecordRaw[]> = [
     path: '/pegin',
     name: 'PegIn',
     component: () => import(/* webpackChunkName: "pegin" */ '../../pegin/views/PegIn.vue'),
-    beforeEnter: [checkAcceptedTerms, checkRSKConnection],
+    beforeEnter: [checkAcceptedTerms],
   },
   {
     path: '/pegout',
