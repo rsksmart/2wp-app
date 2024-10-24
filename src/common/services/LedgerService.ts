@@ -22,9 +22,9 @@ export default class LedgerService extends WalletService {
   // eslint-disable-next-line class-methods-use-this
   public availableAccounts(): BtcAccount[] {
     return [
-      constants.BITCOIN_LEGACY_ADDRESS,
-      constants.BITCOIN_SEGWIT_ADDRESS,
-      constants.BITCOIN_NATIVE_SEGWIT_ADDRESS,
+      BtcAccount.BITCOIN_LEGACY_ADDRESS,
+      BtcAccount.BITCOIN_SEGWIT_ADDRESS,
+      BtcAccount.BITCOIN_NATIVE_SEGWIT_ADDRESS,
     ];
   }
 
@@ -113,14 +113,14 @@ export default class LedgerService extends WalletService {
     let addressList: Array<WalletAddress> = [];
     const { legacy, segwit, nativeSegwit } = this.addressesToFetch;
     addressList = addressList.concat(
-      this.getDerivedAddresses(legacy.count, legacy.lastIndex, constants.BITCOIN_LEGACY_ADDRESS),
+      this.getDerivedAddresses(legacy.count, legacy.lastIndex, BtcAccount.BITCOIN_LEGACY_ADDRESS),
     ).concat(
-      this.getDerivedAddresses(segwit.count, segwit.lastIndex, constants.BITCOIN_SEGWIT_ADDRESS),
+      this.getDerivedAddresses(segwit.count, segwit.lastIndex, BtcAccount.BITCOIN_SEGWIT_ADDRESS),
     ).concat(
       this.getDerivedAddresses(
         nativeSegwit.count,
         nativeSegwit.lastIndex,
-        constants.BITCOIN_NATIVE_SEGWIT_ADDRESS,
+        BtcAccount.BITCOIN_NATIVE_SEGWIT_ADDRESS,
       ),
     );
     return addressList;

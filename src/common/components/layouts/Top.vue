@@ -7,7 +7,10 @@
       <h1 class="text-purple text-h5">PowPeg</h1>
     </div>
     <div class="d-flex align-center ga-5">
-      <div class="d-flex align-center ga-2" v-if="truncatedAccount && accountBalance">
+      <div class="d-flex align-center ga-2" v-if="isPeginSelected">
+        <peg-in-account-select />
+      </div>
+      <div class="d-flex align-center ga-2" v-else-if="truncatedAccount && accountBalance">
         <v-btn variant="text" size="small" density="compact" rounded="full" :icon="mdiContentCopy"
           @click="copyFullAccountAddress"
         />
@@ -34,7 +37,10 @@
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import { useRoute, useRouter } from 'vue-router';
 import { useTheme } from 'vuetify';
-import { mdiContentCopy, mdiLinkOff } from '@mdi/js';
+import {
+  mdiContentCopy, mdiLinkOff,
+} from '@mdi/js';
+import PegInAccountSelect from '@/pegin/components/create/PegInAccountSelect.vue';
 import * as constants from '@/common/store/constants';
 import { computed, ref, watch } from 'vue';
 import { truncateString } from '@/common/utils';
@@ -43,18 +49,14 @@ import EnvironmentContextProviderService from '@/common/providers/EnvironmentCon
 
 export default {
   name: 'TopBar',
+  components: {
+    PegInAccountSelect,
+  },
   setup() {
     const router = useRouter();
     const route = useRoute();
     const themeLight = ref(false);
     const vuetifyTheme = useTheme();
-    function goHome() {
-      if (route.name !== 'Home') router.push({ name: 'Home' });
-    }
-
-    function getLogoSrc() {
-      return vuetifyTheme.global.current.value.dark ? require('@/assets/logo-rootstock-white.svg') : require('@/assets/logo-rootstock-black.svg');
-    }
 
     const account = useGetter<string>('web3Session', constants.SESSION_GET_CHECKSUMMED_ACCOUNT);
     const truncatedAccount = computed(() => truncateString(account.value));
@@ -68,6 +70,7 @@ export default {
     });
 
     const clearSession = useAction('web3Session', constants.WEB3_SESSION_CLEAR_ACCOUNT);
+
     function disconnectWallet() {
       clearSession();
       router.push({ name: 'Home' });
@@ -75,6 +78,14 @@ export default {
 
     function copyFullAccountAddress() {
       navigator.clipboard.writeText(account.value);
+    }
+
+    function goHome() {
+      if (route.name !== 'Home') router.push({ name: 'Home' });
+    }
+
+    function getLogoSrc() {
+      return vuetifyTheme.global.current.value.dark ? require('@/assets/logo-rootstock-white.svg') : require('@/assets/logo-rootstock-black.svg');
     }
 
     watch(themeLight, (enabledLight) => {
@@ -93,6 +104,7 @@ export default {
       accountBalance,
       balance,
       environmentContext,
+      isPeginSelected: computed(() => route.name === 'Create'),
     };
   },
 };
