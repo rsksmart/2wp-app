@@ -58,7 +58,7 @@ describe('SatoshiBig', () => {
     expect(sb1.toBTCString()).toEqual('0.00000000');
     expect(sb1.toBTCStringNotZeroPadded()).toEqual('0');
   });
-  
+
   it('should return an instance of SatoshiBig from a WeiBig instance rounded up', () => {
     const weiToTest = new WeiBig('5301364444000000', 'wei');
     const weiToTest2 = new WeiBig('8101341211956000', 'wei');
