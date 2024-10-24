@@ -110,7 +110,7 @@ export default class XverseService extends WalletService {
       }
 
       availableAccounts(): BtcAccount[] {
-        return [constants.BITCOIN_SEGWIT_ADDRESS];
+        return [BtcAccount.BITCOIN_SEGWIT_ADDRESS];
       }
 
       name(): Record<'formal_name' | 'short_name' | 'long_name', string> {

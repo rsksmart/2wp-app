@@ -8,11 +8,6 @@
         Go Back
       </v-btn>
     </v-row>
-    <v-row>
-      <v-col cols="6">
-        <peg-in-account-select />
-      </v-col>
-    </v-row>
     <btc-input-amount @getPeginQuotes="getQuotes" @peginError="handleError"/>
     <btc-fee-select/>
     <v-row v-if="showOptions && !loadingQuotes">
@@ -82,7 +77,6 @@ import {
   computed, ref, defineComponent, onBeforeMount, watch, onMounted,
 } from 'vue';
 import { mdiArrowLeft, mdiArrowRight, mdiSendOutline } from '@mdi/js';
-import PegInAccountSelect from '@/pegin/components/create/PegInAccountSelect.vue';
 import BtcInputAmount from '@/pegin/components/create/BtcInputAmount.vue';
 import PeginOptionCard from '@/pegin/components/create/PeginOptionCard.vue';
 import { PegInTxState } from '@/common/types/pegInTx';
@@ -106,7 +100,6 @@ import FullTxErrorDialog from '@/common/components/exchange/FullTxErrorDialog.vu
 export default defineComponent({
   name: 'PegInForm',
   components: {
-    PegInAccountSelect,
     BtcInputAmount,
     PeginOptionCard,
     AddressWarningDialog,

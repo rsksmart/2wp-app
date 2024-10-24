@@ -35,7 +35,7 @@ export default class LeatherService extends WalletService {
   // eslint-disable-next-line class-methods-use-this
   public availableAccounts(): BtcAccount[] {
     return [
-      constants.BITCOIN_NATIVE_SEGWIT_ADDRESS,
+      BtcAccount.BITCOIN_NATIVE_SEGWIT_ADDRESS,
     ];
   }
 

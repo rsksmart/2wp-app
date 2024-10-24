@@ -3,6 +3,7 @@ import sinon from 'sinon';
 import * as constants from '@/common/store/constants';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { EnkryptService, WalletService } from '@/common/services';
+import { BtcAccount } from '@/common/types';
 
 function setEnvironment() {
   const defaultEnvironmentVariables = {
@@ -53,7 +54,7 @@ describe('Enkrypt Service: ', () => {
     });
   });
   it('should return an error when getXpub is called', () => {
-    enkryptService.getXpub(constants.BITCOIN_NATIVE_SEGWIT_ADDRESS, 0).catch((e) => {
+    enkryptService.getXpub(BtcAccount.BITCOIN_NATIVE_SEGWIT_ADDRESS, 0).catch((e) => {
       expect(e).toBeInstanceOf(Error);
     });
   });
