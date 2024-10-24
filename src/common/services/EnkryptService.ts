@@ -36,7 +36,7 @@ export default class EnkryptService extends WalletService {
   }
 
   availableAccounts(): BtcAccount[] {
-    return [constants.BITCOIN_NATIVE_SEGWIT_ADDRESS];
+    return [BtcAccount.BITCOIN_NATIVE_SEGWIT_ADDRESS];
   }
 
   isConnected(): Promise<boolean> {

@@ -31,9 +31,9 @@ export default class MockedWallet extends WalletService {
   // eslint-disable-next-line class-methods-use-this
   public availableAccounts(): BtcAccount[] {
     return [
-      constants.BITCOIN_LEGACY_ADDRESS,
-      constants.BITCOIN_SEGWIT_ADDRESS,
-      constants.BITCOIN_NATIVE_SEGWIT_ADDRESS,
+      BtcAccount.BITCOIN_LEGACY_ADDRESS,
+      BtcAccount.BITCOIN_SEGWIT_ADDRESS,
+      BtcAccount.BITCOIN_NATIVE_SEGWIT_ADDRESS,
     ];
   }
 

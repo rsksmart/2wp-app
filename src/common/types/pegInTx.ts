@@ -3,9 +3,11 @@ import SatoshiBig from '@/common/types/SatoshiBig';
 import { WalletService } from '@/common/services';
 import * as constants from '@/common/store/constants';
 
-export type BtcAccount = 'BITCOIN_LEGACY_ADDRESS' |
-  'BITCOIN_SEGWIT_ADDRESS' |
-  'BITCOIN_NATIVE_SEGWIT_ADDRESS';
+export enum BtcAccount {
+  BITCOIN_LEGACY_ADDRESS = 'BITCOIN_LEGACY_ADDRESS',
+  BITCOIN_SEGWIT_ADDRESS = 'BITCOIN_SEGWIT_ADDRESS',
+  BITCOIN_NATIVE_SEGWIT_ADDRESS = 'BITCOIN_NATIVE_SEGWIT_ADDRESS'
+}
 
 export type BtcWallet = 'WALLET_LEDGER' | 'WALLET_TREZOR' | 'WALLET_LEATHER' | 'WALLET_XVERSE' | 'WALLET_ENKRYPT';
 
