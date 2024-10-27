@@ -7,9 +7,7 @@
       <h1 class="text-purple text-h5">PowPeg</h1>
     </div>
     <div class="d-flex align-center ga-5">
-      <div class="d-flex align-center ga-2" v-if="isPeginSelected">
-        <peg-in-account-select />
-      </div>
+      <peg-in-account-select v-if="isPeginSelected"/>
       <div class="d-flex align-center ga-2" v-else-if="truncatedAccount && accountBalance">
         <v-btn variant="text" size="small" density="compact" rounded="full" :icon="mdiContentCopy"
           @click="copyFullAccountAddress"
