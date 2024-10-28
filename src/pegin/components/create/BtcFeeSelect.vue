@@ -1,6 +1,6 @@
 <template>
-  <v-row class="align-start mx-0">
-    <v-col class="px-0 py-6">
+  <v-row no-gutters>
+    <v-col class="pa-0">
       <span class="d-inline-block font-weight-bold">
         Select transaction fee
       </span>

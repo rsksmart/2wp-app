@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="pt-0">
     <template v-if="!walletDataReady">
       <connect-device @continueToForm="startAskingForBalance"
                       :sendBitcoinState="sendBitcoinState"
@@ -92,7 +92,6 @@ export default defineComponent({
     const startAskingForBalanceStore = useAction('pegInTx', constants.PEGIN_TX_START_ASKING_FOR_BALANCE);
     const stopAskingForBalance = useAction('pegInTx', constants.PEGIN_TX_STOP_ASKING_FOR_BALANCE);
     const addNormalizedTx = useAction('pegInTx', constants.PEGIN_TX_ADD_NORMALIZED_TX);
-    const clearAccount = useAction('web3Session', constants.WEB3_SESSION_CLEAR_ACCOUNT);
     const clearStore = useAction('pegInTx', constants.PEGIN_TX_CLEAR_STATE);
     const init = useAction('pegInTx', constants.PEGIN_TX_INIT);
     const setBtcWallet = useAction('pegInTx', constants.PEGIN_TX_ADD_BITCOIN_WALLET);
@@ -219,7 +218,6 @@ export default defineComponent({
       txId.value = '';
       txError.value = '';
       setTxBuilder();
-      await clearAccount();
       await stopAskingForBalance();
     }
 

@@ -14,7 +14,9 @@ import {
   PeginConfiguration, PegInTxState, WalletAddress,
   BtcAccount, BtcWallet, MiningSpeedFee, UtxoListPerAccount, Utxo,
 } from '@/common/types';
-import { getCookie, setCookie } from '@/common/utils';
+import {
+  getClearPeginTxState, getCookie, isBTCAmountValidRegex, setCookie,
+} from '@/common/utils';
 import PeginConfigurationService from '@/pegin/services/peginConfigurationService';
 import TxFeeService from '../../services/TxFeeService';
 
@@ -93,9 +95,18 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_SELECT_ACCOUNT_TYPE]: ({ commit }, accountType: BtcAccount): void => {
     commit(constants.PEGIN_TX_SET_ACCOUNT_TYPE, accountType);
   },
-  [constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER]: ({ commit }, amount: SatoshiBig): void => {
-    commit(constants.PEGIN_TX_SET_AMOUNT_TO_TRANSFER, amount);
-  },
+  [constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER]:
+    ({ commit, dispatch, state }, amount: SatoshiBig): void => {
+      commit(constants.PEGIN_TX_SET_AMOUNT_TO_TRANSFER, amount);
+      const minValue = new SatoshiBig(state.peginConfiguration.minValue, 'btc');
+      const isValidAmount = isBTCAmountValidRegex(amount.toBTCString()) && amount.gte(minValue);
+      if (isValidAmount) {
+        dispatch(constants.PEGIN_TX_CALCULATE_TX_FEE);
+      }
+      if (amount.eq(0)) {
+        commit(constants.PEGIN_TX_SET_CALCULATED_TX_FEE, getClearPeginTxState().calculatedFees);
+      }
+    },
   [constants.PEGIN_TX_CALCULATE_TX_FEE]: ({ commit, state, getters }):
     Promise<void> => new Promise<void>((resolve, reject) => {
       if (!state.selectedAccount) {
