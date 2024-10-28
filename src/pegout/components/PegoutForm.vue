@@ -135,7 +135,7 @@ import {
 } from '@/common/store/helper';
 import { mdiArrowLeft, mdiArrowRight } from '@mdi/js';
 import {
-  FlyoverPegoutState, PegOutTxState, QuotePegOut2WP,
+  FlyoverPegoutState, PegoutQuoteDbModel, PegOutTxState, QuotePegOut2WP,
   SatoshiBig, TxInfo, TxStatusType, WeiBig,
 } from '@/common/types';
 import {
@@ -319,22 +319,47 @@ export default defineComponent({
         .toRBTCTrimmedString();
     }
 
-    const registerFlyover = computed<TxInfo>(() => ({
-      sessionId: '',
-      txHash: flyoverPegoutState.value.txHash as string,
-      type: TxStatusType.PEGOUT.toLowerCase(),
-      value: Number(flyoverPegoutState.value.amountToTransfer.toRBTCTrimmedString()),
-      wallet: currentWallet.value ? currentWallet.value.formal_name : '',
-      rskGas: Number(selectedQuote.value.quote.gasFee.toRBTCTrimmedString()),
-      fee: Number(getProviderFee()),
-      provider: getLPName(),
-      details: {
-        senderAddress: account.value,
-        recipientAddress: flyoverPegoutState.value.btcRecipientAddress,
-        blocksToCompleteTransaction: selectedQuote.value.quote.depositConfirmations,
-      },
-      quoteHash: selectedQuote.value.quoteHash,
-    }));
+    const registerFlyover = computed<TxInfo>(() => {
+      const pegoutQuote = selectedQuote.value.quote;
+      const dbQuote: PegoutQuoteDbModel = {
+        agreementTimestamp: pegoutQuote.agreementTimestamp,
+        btcRefundAddress: pegoutQuote.btcRefundAddress,
+        callFeeOnWei: pegoutQuote.callFee.toWeiBigInt(),
+        depositAddr: pegoutQuote.depositAddr,
+        depositConfirmations: pegoutQuote.depositConfirmations,
+        depositDateLimit: pegoutQuote.depositDateLimit,
+        expireBlocks: pegoutQuote.expireBlocks,
+        expireDate: pegoutQuote.expireDate,
+        gasFeeOnWei: pegoutQuote.gasFee.toWeiBigInt(),
+        lbcAddress: pegoutQuote.lbcAddress,
+        liquidityProviderRskAddress: pegoutQuote.liquidityProviderRskAddress,
+        lpBtcAddress: pegoutQuote.lpBtcAddr,
+        nonce: pegoutQuote.nonce,
+        penaltyFeeOnWei: pegoutQuote.penaltyFee.toWeiBigInt(),
+        productFeeAmountOnWei: pegoutQuote.productFeeAmount.toWeiBigInt(),
+        rskRefundAddress: pegoutQuote.rskRefundAddress,
+        transferConfirmations: pegoutQuote.transferConfirmations,
+        transferTime: pegoutQuote.transferTime,
+        valueOnWei: pegoutQuote.value.toWeiBigInt(),
+      };
+      return {
+        sessionId: '',
+        txHash: flyoverPegoutState.value.txHash as string,
+        type: TxStatusType.PEGOUT.toLowerCase(),
+        value: Number(flyoverPegoutState.value.amountToTransfer.toRBTCTrimmedString()),
+        wallet: currentWallet.value ? currentWallet.value.formal_name : '',
+        rskGas: Number(selectedQuote.value.quote.gasFee.toRBTCTrimmedString()),
+        fee: Number(getProviderFee()),
+        provider: getLPName(),
+        details: {
+          senderAddress: account.value,
+          recipientAddress: flyoverPegoutState.value.btcRecipientAddress,
+          blocksToCompleteTransaction: selectedQuote.value.quote.depositConfirmations,
+        },
+        quote: dbQuote,
+        quoteHash: selectedQuote.value.quoteHash,
+      };
+    });
 
     const registerPegout = computed(() => ({
       sessionId: '',
