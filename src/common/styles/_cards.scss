@@ -10,3 +10,15 @@
     border-color: rgba(var(--v-border-color), 1);
   }
 }
+
+.not-available {
+  position: relative;
+  .not-available-text {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(var(--v-theme-background), 0.5);
+  backdrop-filter: blur(4px);
+  opacity: 1;
+  z-index: 1;
+  }
+}
