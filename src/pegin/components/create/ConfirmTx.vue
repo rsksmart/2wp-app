@@ -34,6 +34,7 @@ import { useState, useGetter, useStateAttribute } from '@/common/store/helper';
 import {
   LiquidityProvider2WP,
   PeginQuote,
+  PeginQuoteDbModel,
   PegInTxState, SatoshiBig, TxStatusType,
 } from '@/common/types';
 import { mdiInformation, mdiArrowLeft, mdiArrowRight } from '@mdi/js';
@@ -73,17 +74,44 @@ export default defineComponent({
       const provider = liquidityProviders.value.find((lp) => lp.provider.toLowerCase() === address);
       return provider?.name ?? '';
     }
-    const flyoverProps = computed(() => ({
-      value: Number(selectedQuote.value.quote.value.toBTCTrimmedString()),
-      fee: Number(selectedQuote.value.getTotalQuoteFee(safeFee.value).toBTCTrimmedString()),
-      provider: getLPName(),
-      details: {
-        senderAddress: pegInTxState.value.normalizedTx.inputs[0].address,
-        recipientAddress: recipientAddress.value,
-        blocksToCompleteTransaction: selectedQuote.value.quote.confirmations,
-      },
-      quoteHash: selectedQuote.value.quoteHash,
-    }));
+
+    const flyoverProps = computed(() => {
+      const peginQuote = selectedQuote.value.quote;
+      const dbQuote: PeginQuoteDbModel = {
+        callFeeOnSatoshi: peginQuote.callFee.toSatoshiBigInt(),
+        callOnRegister: peginQuote.callOnRegister,
+        confirmations: peginQuote.confirmations,
+        contractAddr: peginQuote.contractAddr,
+        data: peginQuote.data,
+        fedBTCAddr: peginQuote.fedBTCAddr,
+        gasLimit: peginQuote.gasLimit,
+        lpCallTime: peginQuote.lpCallTime,
+        productFeeAmountOnSatoshi: peginQuote.productFeeAmount.toSatoshiBigInt(),
+        timeForDepositInSeconds: peginQuote.timeForDepositInSeconds,
+        valueOnSatoshi: peginQuote.value.toSatoshiBigInt(),
+        agreementTimestamp: peginQuote.agreementTimestamp,
+        gasFeeOnWei: peginQuote.gasFee.toWeiBigInt(),
+        nonce: peginQuote.nonce,
+        penaltyFeeOnWei: peginQuote.penaltyFee.toWeiBigInt(),
+        btcRefundAddress: peginQuote.btcRefundAddr,
+        lbcAddress: peginQuote.lbcAddr,
+        lpBtcAddress: peginQuote.lpBTCAddr,
+        rskRefundAddress: peginQuote.rskRefundAddr,
+        liquidityProviderRskAddress: peginQuote.lpRSKAddr,
+      };
+      return {
+        value: Number(selectedQuote.value.quote.value.toBTCTrimmedString()),
+        fee: Number(selectedQuote.value.getTotalQuoteFee(safeFee.value).toBTCTrimmedString()),
+        provider: getLPName(),
+        details: {
+          senderAddress: pegInTxState.value.normalizedTx.inputs[0].address,
+          recipientAddress: recipientAddress.value,
+          blocksToCompleteTransaction: selectedQuote.value.quote.confirmations,
+        },
+        quote: dbQuote,
+        quoteHash: selectedQuote.value.quoteHash,
+      };
+    });
 
     const nativeProps = computed(() => ({
       value: Number(pegInTxState.value.amountToTransfer.toBTCTrimmedString()),
