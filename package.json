@@ -16,7 +16,7 @@
     "@ledgerhq/devices": "6.27.1",
     "@ledgerhq/hw-app-btc": "6.27.1",
     "@ledgerhq/hw-transport": "6.27.1",
-    "@ledgerhq/hw-transport-webusb": "6.27.1",
+    "@ledgerhq/hw-transport-webusb": "6.29.4",
     "@mdi/font": "^7.2.96",
     "@mdi/js": "^6.9.96",
     "@rsksmart/bridges-core-sdk": "^0.3.3",
