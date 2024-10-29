@@ -10,11 +10,6 @@
     <v-row class="text-bw-400">
       To prevent malware attacks, double check the address with the recipient.
     </v-row>
-    <v-row v-if="hdWallet" class="text-bw-400">
-      Press&nbsp;
-      <p class="text-high-emphasis">Send &nbsp;</p>
-      when you finish.
-    </v-row>
     <v-row v-if="hdWallet" class="d-flex justify-center ma-0 mt-3">
       <v-col cols="3" class="px-1" v-if="!flyover">
         <v-card variant="outlined" color="bw-400" height="100%">
@@ -249,7 +244,7 @@
               </v-col>
             </v-row>
 
-            <v-row no-gutters class="mb-3">
+            <v-row no-gutters>
               <span class="text-h4">
                 See on {{ walletName }}
               </span>
@@ -275,7 +270,7 @@
                             :model-value="opReturnData" />
               </v-row>
               </div>
-              <v-row no-gutters class="mb-2 mt-4">
+              <v-row no-gutters class="mb-2">
                 <span>
                   {{ flyover ? 'Provider' : 'Federation' }}
                 </span>
@@ -341,7 +336,7 @@
                 </v-col>
               </v-row>
               <v-row no-gutters>
-                <span class="text-h6">
+                <span class="text-h4">
                   See on {{ walletName }}
                 </span>
               </v-row>
