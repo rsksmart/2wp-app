@@ -8,7 +8,7 @@
       </v-btn>
     </v-row>
     <v-row class="mx-0">
-      <v-col v-for="wallet in wallets" :key="wallet.name" class="d-flex justify-center" >
+      <v-col cols="auto" v-for="wallet in wallets" :key="wallet.name" class="d-flex justify-start" >
         <v-btn-square @click="setBitcoinWallet(wallet.constant as BtcWallet)"
           @mouseover="wallet.hover = true" @mouseleave="wallet.hover = false">
           <v-container>
