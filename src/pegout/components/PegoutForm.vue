@@ -15,19 +15,47 @@
           :willReceive="amountToReceive" />
       </v-col>
     </v-row>
-    <v-row v-if="showStep && !loadingQuotes">
+    <template v-if="showStep && !loadingQuotes">
+      <v-row>
+        <span class="text-bold ma-4 mb-2
+        ">Select Mode</span>
+      </v-row>
+      <v-row>
+        <v-col cols="6" v-if="pegoutQuotes.length === 0" >
+        <pegout-option class="mr-2" flyover-not-available
+          :option-type="pegoutType.FLYOVER">
+        <template v-slot>
+          <h4>
+            <span class="text-orange">Fast Mode</span> is unavailable at this time.
+          </h4>
+        </template>
+        </pegout-option>
+      </v-col>
       <v-col cols="6" v-for="(quote, index) in pegoutQuotes" :key="index" >
         <pegout-option
-        :class="index === 0 ? 'mr-2' : 'ml-2'"
-        :quote="quote"
-        :isWalletAuthorizedToSign="isWalletAuthorizedToSign"
-        @openAddressDialog="showAddressDialog = true"
-        @changeSelectedOption="changeSelectedOption"
-        :selectedOption="selectedOption === quote.quoteHash"
-        :quote-differences="quoteDifferences"
-        />
+          :option-type="pegoutType.FLYOVER"
+          :class="index === 0 ? 'mr-2' : 'ml-2'"
+          :quote="quote"
+          :isWalletAuthorizedToSign="isWalletAuthorizedToSign"
+          @openAddressDialog="showAddressDialog = true"
+          @changeSelectedOption="changeSelectedOption"
+          :selectedOption="selectedOption === quote.quoteHash"
+          :quote-differences="quoteDifferences"
+          />
       </v-col>
-    </v-row>
+      <v-col cols="6">
+        <pegout-option class="ml-2"
+          :option-type="pegoutType.POWPEG"
+          :quote="nativeQuote"
+          :isWalletAuthorizedToSign="isWalletAuthorizedToSign"
+          @openAddressDialog="showAddressDialog = true"
+          @changeSelectedOption="changeSelectedOption"
+          :selectedOption="selectedOption === ''"
+          :quote-differences="quoteDifferences"
+          />
+      </v-col>
+      </v-row>
+    </template>
     <v-row v-else-if="loadingQuotes" class="pt-4 justify-center">
       <v-progress-circular
         :size="250"
@@ -41,8 +69,7 @@
         <v-col cols="auto">
             <v-btn-rsk v-if="!pegOutFormState.matches(['loading'])"
             @click="executeRecaptcha"
-            :disabled="!isReadyToCreate
-              || !isFlyoverReady
+            :disabled="!isValid
               || pegOutFormState.matches(['goingHome'])"
             >
             <template #append>
@@ -151,6 +178,7 @@ export default defineComponent({
     const flyoverPegoutState = useState<FlyoverPegoutState>('flyoverPegout');
     const flyoverService = useStateAttribute<FlyoverService>('flyoverPegout', 'flyoverService');
     const account = useStateAttribute<string>('web3Session', 'account');
+    const balance = useStateAttribute<WeiBig>('web3Session', 'balance');
     const sendTx = useAction('pegOutTx', constants.PEGOUT_TX_SEND);
     const sendFlyoverTx = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ACCEPT_AND_SEND_QUOTE);
     const initFlyoverTx = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_INIT);
@@ -161,6 +189,7 @@ export default defineComponent({
     const getFlyoverProviders = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_GET_PROVIDERS);
     const quotes = useStateAttribute<Record<number, QuotePegOut2WP[]>>('flyoverPegout', 'quotes');
     const quoteDifferences = useStateAttribute<Array<ObjectDifference>>('flyoverPegout', 'differences');
+    const isFlyoverResponding = useStateAttribute<boolean>('flyoverPegout', 'isResponding');
     const selectedQuote = useGetter<QuotePegOut2WP>('flyoverPegout', constants.FLYOVER_PEGOUT_GET_SELECTED_QUOTE);
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
     const isEnoughBalance = useGetter<boolean>('pegOutTx', constants.PEGOUT_TX_IS_ENOUGH_BALANCE);
@@ -179,33 +208,6 @@ export default defineComponent({
           quoteList.push(quote);
         });
       });
-
-      quoteList.push({
-        quote: {
-          agreementTimestamp: 0,
-          btcRefundAddress: '',
-          callFee: new WeiBig(0, 'wei'),
-          depositAddr: '', // Must be derived
-          depositConfirmations: 0,
-          depositDateLimit: 0,
-          expireBlocks: 0,
-          expireDate: 0,
-          gasFee: pegOutTxState.value.calculatedFee,
-          lbcAddress: '',
-          liquidityProviderRskAddress: '',
-          lpBtcAddr: '',
-          nonce: 0n,
-          penaltyFee: new WeiBig(0, 'wei'),
-          productFeeAmount: new WeiBig(pegOutTxState.value.btcEstimatedFee.toBTCString(), 'rbtc'),
-          rskRefundAddress: account.value ?? '',
-          transferConfirmations: 0,
-          transferTime: 0,
-          value: pegOutTxState.value.amountToTransfer,
-        },
-        quoteHash: '',
-      });
-
-      quoteList.sort((q1, q2) => q1.quote.depositConfirmations - q2.quote.depositConfirmations);
 
       return quoteList;
     });
@@ -233,13 +235,18 @@ export default defineComponent({
         && selectedOption.value !== undefined);
 
     const isFlyoverReady = computed(() => {
-      if (selectedOption.value) {
+      if (selectedOption.value && selectedQuote.value) {
         const { btcRecipientAddress } = flyoverPegoutState.value;
         const { bridgeContractAddress } = pegOutTxState.value.pegoutConfiguration;
         const { valid, addressType } = validateAddress(btcRecipientAddress);
         const allowedAdressType = (addressType === constants.BITCOIN_LEGACY_ADDRESS
           || addressType === constants.BITCOIN_SEGWIT_ADDRESS);
-        return valid
+        const amountPlusFees = selectedQuote.value.quote.value
+          .plus(selectedQuote.value.quote.gasFee)
+          .plus(selectedQuote.value.quote.productFeeAmount)
+          .plus(selectedQuote.value.quote.callFee);
+        const enoughBalance = balance.value.gt(amountPlusFees);
+        return valid && enoughBalance
           && btcRecipientAddress !== bridgeContractAddress
           && allowedAdressType;
       }
@@ -247,6 +254,36 @@ export default defineComponent({
     });
 
     const sendingPegout = computed(():boolean => pegOutFormState.value.matches(['loading']));
+
+    const nativeQuote = computed(() => ({
+      quote: {
+        agreementTimestamp: 0,
+        btcRefundAddress: '',
+        callFee: new WeiBig(0, 'wei'),
+        depositAddr: '', // Must be derived
+        depositConfirmations: 0,
+        depositDateLimit: 0,
+        expireBlocks: 0,
+        expireDate: 0,
+        gasFee: pegOutTxState.value.calculatedFee,
+        lbcAddress: '',
+        liquidityProviderRskAddress: '',
+        lpBtcAddr: '',
+        nonce: 0n,
+        penaltyFee: new WeiBig(0, 'wei'),
+        productFeeAmount: new WeiBig(pegOutTxState.value.btcEstimatedFee.toBTCString(), 'rbtc'),
+        rskRefundAddress: account.value ?? '',
+        transferConfirmations: 0,
+        transferTime: 0,
+        value: pegOutTxState.value.amountToTransfer,
+      },
+      quoteHash: '',
+    }));
+
+    const isValid = computed(() => {
+      if (selectedOption.value === '') return isReadyToCreate.value;
+      return isFlyoverReady.value;
+    });
 
     function handlePegoutError(error: ServiceError) {
       txError.value = error;
@@ -426,6 +463,10 @@ export default defineComponent({
       continueHandler,
       flyoverService,
       executeRecaptcha,
+      nativeQuote,
+      isFlyoverResponding,
+      pegoutType: constants.pegoutType,
+      isValid,
     };
   },
 });

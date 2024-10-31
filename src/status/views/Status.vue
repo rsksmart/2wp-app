@@ -23,7 +23,7 @@
                 :txWithErrorType="txWithErrorType" :txWithError="txWithError" />
       <tx-pegout v-if="isPegOut" :txId="txId" :isFlyover="isFlyover"
                 :txWithErrorType="txWithErrorType" :txWithError="txWithError" />
-      <status-progress-bar v-if="txWithErrorType" :isFlyover="isFlyover"
+      <status-progress-bar class="mt-4" v-if="txWithErrorType" :isFlyover="isFlyover"
                 :txWithErrorType="txWithErrorType" :txWithError="txWithError" />
     </v-row>
     <v-row v-else>

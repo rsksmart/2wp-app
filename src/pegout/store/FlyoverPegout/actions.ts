@@ -23,8 +23,10 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
       const providers: LiquidityProvider2WP[] = await state.flyoverService.getProviders();
       commit(constants.FLYOVER_PEGOUT_SET_PROVIDERS, providers);
       result = constants.FlyoverCallResult.SUCCESS;
+      commit(constants.FLYOVER_PEGOUT_SET_RESPONDING, true);
     } catch (e) {
       console.error(`Error getting flyover providers: ${e}`);
+      commit(constants.FLYOVER_PEGOUT_SET_RESPONDING, false);
     } finally {
       try {
         await ApiService.registerFlyoverCall({ ...flyoverCallPayload, result } as FlyoverCall);
@@ -79,8 +81,10 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
           });
           result = constants.FlyoverCallResult.SUCCESS;
           commit(constants.FLYOVER_PEGOUT_SET_QUOTES, quotesByProvider);
+          commit(constants.FLYOVER_PEGOUT_SET_RESPONDING, true);
           resolve();
         } catch (e) {
+          commit(constants.FLYOVER_PEGOUT_SET_RESPONDING, false);
           reject();
         } finally {
           try {

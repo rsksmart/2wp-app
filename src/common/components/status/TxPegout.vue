@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-row>
+    <v-row class="mb-4">
       <status-progress-bar :isFlyover="isFlyover" :txWithErrorType="txWithErrorType"
                            :txWithError="txWithError"/>
     </v-row>

@@ -1,8 +1,8 @@
 <template>
-  <v-row>
-    <h2 class="mt-4 mb-2 w-100 text-center">Summary</h2>
+  <v-row class="ml-2">
+    <span class="mt-4 mb-2 w-100 text-left">Summary</span>
   </v-row>
-  <v-row class="rounded-lg py-8 px-4 border-md">
+  <v-row class="rounded-lg py-8 px-4 border-md ml-2">
     <v-col :order="columnOrder.btc" cols="6" class="d-flex flex-column ga-4">
       <div class="pb-4">
         <h3 class="text-h3 pa-1 pb-2 bg-orange d-inline-block">
@@ -10,9 +10,9 @@
         </h3>
       </div>
       <div v-for="({title, value, ticker, link}) in btcSide" :key="title"
-        class="d-flex flex-column ga-1">
+        class="d-flex flex-column ga-1 custom-input">
         <span>{{ title }}</span>
-        <div class="d-flex align-center bg-surface py-2 px-4 rounded-lg border">
+        <div class="d-flex align-center py-2 px-4 rounded-lg border-md">
           <span class="text-h4">{{ value?.length > 18 ? truncateString(value) : value }}</span>
           <v-spacer />
           <v-chip v-if="ticker" :prepend-icon="mdiBitcoin" class="btc-icon">
@@ -37,10 +37,9 @@
         </h3>
       </div>
       <div v-for="({title, value, ticker, link}) in rskSide" :key="title"
-        class="d-flex flex-column ga-1">
+        class="d-flex flex-column ga-1 custom-input">
         <span>{{ title }}</span>
-        <div class="d-flex align-center bg-surface py-2 px-4
-          rounded-lg border">
+        <div class="d-flex align-center py-2 px-4 rounded-lg border-md">
           <span class="text-h4">{{ value?.length > 18 ? truncateString(value) : value }}</span>
           <v-spacer />
           <v-chip v-if="ticker" class="pl-2 pr-3">
@@ -111,6 +110,16 @@ export default defineComponent({
         const fee = props.details.fee === 0 ? props.details.estimatedFee : props.details.fee;
         return [
           {
+            title: 'You receive',
+            value: props.txWithError ? '-' : props.details.amountReceivedString,
+            ticker: true,
+          },
+          {
+            title: props.details.fee === 0 ? 'Estimated Fee' : 'Fee',
+            value: status.value.type === TxStatusType.FLYOVER_PEGOUT || props.txWithError ? '-' : fee,
+            ticker: true,
+          },
+          {
             title: 'Recipient Address',
             value: props.details.recipientAddress && !props.txWithError
               ? props.details.recipientAddress : '-',
@@ -122,19 +131,20 @@ export default defineComponent({
               ? props.details.btcTxId : '-',
             link: getBtcTxExplorerUrl(props.details.btcTxId),
           },
-          {
-            title: props.details.fee === 0 ? 'Estimated Fee' : 'Fee',
-            value: status.value.type === TxStatusType.FLYOVER_PEGOUT || props.txWithError ? '-' : fee,
-            ticker: true,
-          },
-          {
-            title: 'You receive',
-            value: props.txWithError ? '-' : props.details.amountReceivedString,
-            ticker: true,
-          },
         ];
       }
       return [
+        {
+          title: 'You send',
+          value: props.details.total,
+          ticker: true,
+        },
+        {
+          title: props.details && props.type === TxStatusType.FLYOVER_PEGIN
+            ? 'Fee (includes provider and network fees)' : 'Fee',
+          value: props.details.fee,
+          ticker: true,
+        },
         {
           title: 'Sender Address',
           value: props.details.senderAddress || '-',
@@ -145,17 +155,6 @@ export default defineComponent({
           value: props.details.txId || '-',
           link: getBtcTxExplorerUrl(props.details.txId),
         }] : []),
-        {
-          title: props.details && props.type === TxStatusType.FLYOVER_PEGIN
-            ? 'Fee (includes provider and network fees)' : 'Fee',
-          value: props.details.fee,
-          ticker: true,
-        },
-        {
-          title: 'You send',
-          value: props.details.total,
-          ticker: true,
-        },
       ];
     });
 
@@ -164,14 +163,9 @@ export default defineComponent({
         const gasFee = props.details.gas?.gt(0) ? props.details.gas.toRBTCTrimmedString() : '-';
         return [
           {
-            title: 'Sender Address',
-            value: props.details.senderAddress || '-',
-            link: getRskAddressExplorerUrl(props.details.senderAddress),
-          },
-          {
-            title: 'Transaction ID',
-            value: props.details.txId || '-',
-            link: getRskTxExplorerUrl(props.details.txId),
+            title: 'You send',
+            value: props.details.amountFromString,
+            ticker: true,
           },
           {
             title: props.type === TxStatusType.FLYOVER_PEGOUT
@@ -182,12 +176,28 @@ export default defineComponent({
             ticker: true,
           },
           {
-            title: 'You send',
-            value: props.details.amountFromString,
-            ticker: true,
+            title: 'Sender Address',
+            value: props.details.senderAddress || '-',
+            link: getRskAddressExplorerUrl(props.details.senderAddress),
+          },
+          {
+            title: 'Transaction ID',
+            value: props.details.txId || '-',
+            link: getRskTxExplorerUrl(props.details.txId),
           }];
       }
       return [
+        {
+          title: 'You receive',
+          value: props.details.amountReceivedString && !props.txWithError
+            ? props.details.amountReceivedString : '-',
+          ticker: true,
+        },
+        {
+          title: 'Fee',
+          value: '-',
+          ticker: true,
+        },
         {
           title: 'Recipient Address',
           value: props.details.recipientAddress && !props.txWithError
@@ -200,17 +210,6 @@ export default defineComponent({
             ? props.details.rskTxId : '-',
           link: getRskTxExplorerUrl(props.details.rskTxId),
         }] : []),
-        {
-          title: 'Fee',
-          value: '-',
-          ticker: true,
-        },
-        {
-          title: 'You receive',
-          value: props.details.amountReceivedString && !props.txWithError
-            ? props.details.amountReceivedString : '-',
-          ticker: true,
-        },
       ];
     });
 
@@ -237,5 +236,10 @@ export default defineComponent({
 }
 .v-col.order-1 {
   padding-right: 20px;
+}
+.custom-input {
+  .border-md {
+    border-color: rgb(var(--v-theme-bw-500)) !important;
+  }
 }
 </style>

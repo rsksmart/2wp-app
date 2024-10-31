@@ -1,8 +1,12 @@
 <template>
   <v-card :ripple="false" rounded="lg" flat variant="outlined"
-    @click="selectOption"
-    :class="selectedOption && 'selected'"
-    class="d-flex flex-column ga-4 pa-8 fill-height">
+    @click="selectOption" height="450px" :disabled="flyoverNotAvailable"
+    :class="{ 'selected': selectedOption, 'not-available': flyoverNotAvailable }"
+    class="d-flex flex-column ga-4 pa-8">
+    <div v-if="flyoverNotAvailable"
+      class="not-available-text d-flex align-center justify-center pa-8 text-center">
+      <slot />
+    </div>
     <v-row no-gutters class="my-2">
       <div class='text-h3'>
         <span :class='`pa-1 bg-${header.subtitleBgColor}`'>
@@ -10,7 +14,7 @@
         </span>
       </div>
     </v-row>
-    <v-row no-gutters>
+    <v-row  no-gutters>
       <v-col cols="auto">
         <span class="text-right"> {{ header.label }}</span>
       </v-col>
@@ -19,9 +23,54 @@
             <v-icon :icon="mdiOpenInNew"></v-icon>
         </v-btn>
       </v-col>
+      <v-spacer />
+      <v-col class="d-flex justify-end ml-0" :style='`color: ${header.color}`'>
+        <v-tooltip :text="tooltipText" location="top" max-width="200">
+        <template v-slot:activator="{ props }">
+            <div v-bind="props" class="d-flex align-center ga-1">
+              <v-icon :icon="mdiClockTimeThreeOutline" />
+              <span :class='`ml-2 ${header.subtitleBgColor}`'>
+                {{ estimatedTimeToReceive }}
+              </span>
+            </div>
+        </template>
+      </v-tooltip>
+      </v-col>
     </v-row>
-    <div class="d-flex flex-column ga-2 py-4">
-      <span>Destination Address</span>
+    <v-divider thickness="1" :style='`color: ${header.color}; opacity: 1;`' />
+    <v-row>
+      <v-col>
+        <div class="d-flex flex-column">
+          <span>
+            {{ isFlyover ? 'Value to receive' : 'Estimated value to receive' }}
+          </span>
+          <span class="text-bw-400">
+            {{ estimatedValueToReceive }}
+            {{ environmentContext.getBtcTicker() }}
+          </span>
+          <span class="text-bw-400" :class="{ 'font-weight-bold': hasChanged(['gasFee'])}">
+            USD {{ toUSD(estimatedValueToReceive) }}
+          </span>
+        </div>
+      </v-col>
+      <v-col>
+        <div class="d-flex flex-column">
+          <span>
+            {{ isFlyover ? 'Total Fee (Network & Provider)' : 'Total Fee (Network)' }}
+          </span>
+          <span class="text-bw-400"
+                :class="{ 'font-weight-bold': hasChanged(['productFeeAmount', 'callFee'])}">
+            {{ totalFee }}
+            {{ environmentContext.getBtcTicker() }}
+          </span>
+          <span class="text-bw-400" :class="{ 'font-weight-bold': hasChanged(['gasFee'])}">
+            USD {{ toUSD(totalFee) }}
+          </span>
+        </div>
+      </v-col>
+    </v-row>
+    <div class="ga-2 pt-4">
+      <div class="mb-4">Destination Bitcoin Address</div>
       <div v-if="isFlyover">
         <v-text-field
           v-model="btcAddress"
@@ -32,97 +81,47 @@
           variant="solo"
           :class="showAddressWarning && 'input-error'"
           :placeholder="btcAddressPlaceholder"
-          @update:model-value="updateStore"/>
+          @update:model-value="updateStore"
+          class="pb-0"/>
         <v-alert v-show="showAddressWarning"
-          variant="text" type="warning" density="compact" class="text-body-1 px-0" prominent>
+          variant="text" type="warning" density="compact"
+          class="text-body-1 px-0 pt-1 mb-0" prominent>
           <template #prepend>
             <v-icon size="small" :icon="mdiInformationOutline" />
           </template>
           Invalid address. Please note that native segwit is not supported at this time.
         </v-alert>
       </div>
-      <div v-else>
-        <div class="d-flex align-center justify-space-between
-          bg-surface py-2 px-4 rounded-lg border">
-          <p class="text-bw-400">
-            {{ session.btcDerivedAddress || 'Address needs to be generated' }}
-          </p>
-          <v-chip v-if="isWalletAuthorizedToSign && !session.btcDerivedAddress" variant="outlined"
-            @click="$emit('openAddressDialog')">
+      <template v-else>
+        <v-text-field
+          :v-model="session.btcDerivedAddress || 'Address needs to be generated'"
+          flat
+          hide-details
+          density="compact"
+          rounded="lg"
+          variant="solo"
+          :placeholder="session.btcDerivedAddress || 'Address needs to be generated'">
+          <template v-slot:append-inner>
+            <v-chip v-if="isWalletAuthorizedToSign && !session.btcDerivedAddress"
+            variant="outlined" @click="$emit('openAddressDialog')">
             Generate
           </v-chip>
-        </div>
+          </template>
+        </v-text-field>
         <v-alert
-          variant="text" type="warning" density="compact" class="text-body-1 px-0" prominent>
+          variant="text" type="warning" density="compact" class="text-body-1 px-0 pt-1" prominent>
           <template #prepend>
             <v-icon size="small" :icon="mdiInformationOutline" />
           </template>
-          <p>Follow
-            <span>
-              <a :href=constants.DERIVE_BTC_ADDRESS_DOCUMENTATION_URL
-                class="d-inline a" target='_blank'>this documentation</a>
-            </span>
-            to get the destination address.
-          </p>
+          <span>Follow
+            <a :href=constants.DERIVE_BTC_ADDRESS_DOCUMENTATION_URL
+              class="d-inline a" target='_blank'>
+              this steps
+            </a>
+            to view and access your {{ environmentContext.getBtcTicker() }} funds.
+          </span>
         </v-alert>
-      </div>
-    </div>
-    <v-spacer class="fill-height" />
-    <span class="text-h4">Features</span>
-
-    <div class="d-flex flex-column">
-      <span>Estimated Time to Receive</span>
-      <span class="text-bw-400">
-        {{ estimatedTimeToReceive }}
-      </span>
-    </div>
-
-    <div class="d-flex flex-column">
-      <span >Gas</span>
-      <span :class="{ 'font-weight-bold': hasChanged(['gasFee'])}" class="text-bw-400">
-        {{ quote.quote.gasFee.toRBTCTrimmedString() }}
-        {{ environmentContext.getRbtcTicker() }}
-      </span>
-      <span class="text-bw-400" :class="{ 'font-weight-bold': hasChanged(['gasFee'])}">
-        USD {{ toUSD(quote.quote.gasFee.toRBTCString()) }}
-      </span>
-    </div>
-
-    <div class="d-flex flex-column">
-      <span>
-        {{ isFlyover ? 'Provider fee' : 'Estimated BTC network fee' }}
-      </span>
-      <span class="text-bw-400"
-            :class="{ 'font-weight-bold': hasChanged(['productFeeAmount', 'callFee'])}">
-        {{ quote.quote.callFee.plus(quote.quote.productFeeAmount).toRBTCTrimmedString() }}
-        {{ environmentContext.getBtcTicker() }}
-      </span>
-      <span class="text-bw-400"
-            :class="{ 'font-weight-bold': hasChanged(['productFeeAmount', 'callFee'])}">
-        USD {{ toUSD(quote.quote.callFee.plus(quote.quote.productFeeAmount).toRBTCString()) }}
-      </span>
-    </div>
-
-    <div class="d-flex flex-column">
-      <span>Amount to send</span>
-      <span class="text-bw-400"
-      :class="{ 'font-weight-bold': hasChanged(['gasFee', 'productFeeAmount', 'callFee'])}">
-        {{ amountToSend }} {{ environmentContext.getBtcTicker() }}
-      </span>
-      <span class="text-bw-400"
-      :class="{ 'font-weight-bold': hasChanged(['gasFee', 'productFeeAmount', 'callFee'])}">
-        USD {{ toUSD(amountToSend) }}
-      </span>
-    </div>
-
-    <div class="d-flex flex-column">
-      <span>
-        {{ isFlyover ? 'Value to receive' : 'Estimated value to receive' }}
-      </span>
-      <span class="text-bw-400">
-        {{ estimatedValueToReceive }} {{ environmentContext.getBtcTicker() }}
-      </span>
-      <span class="text-bw-400">USD {{ toUSD(estimatedValueToReceive) }}</span>
+      </template>
     </div>
   </v-card>
 </template>
@@ -131,7 +130,12 @@
 import {
   computed, defineComponent, PropType, ref,
 } from 'vue';
-import { mdiSendOutline, mdiInformationOutline, mdiOpenInNew } from '@mdi/js';
+import {
+  mdiSendOutline,
+  mdiInformationOutline,
+  mdiOpenInNew,
+  mdiClockTimeThreeOutline,
+} from '@mdi/js';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { useAction, useState, useStateAttribute } from '@/common/store/helper';
 import {
@@ -143,13 +147,21 @@ import { blockConfirmationsToTimeString, validateAddress } from '@/common/utils'
 export default defineComponent({
   name: 'PegoutOption',
   props: {
+    optionType: {
+      type: String as PropType<constants.pegoutType>,
+      required: true,
+    },
+    flyoverNotAvailable: {
+      type: Boolean,
+      required: false,
+    },
     quote: {
       type: Object as PropType<QuotePegOut2WP>,
-      required: true,
+      required: false,
     },
     isWalletAuthorizedToSign: {
       type: Boolean,
-      required: true,
+      required: false,
     },
     selectedOption: {
       type: Boolean,
@@ -157,7 +169,7 @@ export default defineComponent({
     },
     quoteDifferences: {
       type: Array<ObjectDifference>,
-      required: true,
+      required: false,
     },
   },
   setup(props, context) {
@@ -167,43 +179,36 @@ export default defineComponent({
     const setBtcAddress = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ADD_BTC_ADDRESS);
     const fixedUSDDecimals = 2;
     const btcAddress = ref('');
-    const isFlyover = computed(() => props.quote.quoteHash.length > 0);
-
-    const amountToSend = computed(() => {
-      if (isFlyover.value) {
-        return new SatoshiBig(props.quote.quote.value
-          .plus(props.quote.quote.productFeeAmount)
-          .plus(props.quote.quote.gasFee)
-          .plus(props.quote.quote.callFee)
-          .toRBTCTrimmedString(), 'btc')
-          .toBTCTrimmedString();
-      }
-
-      return new SatoshiBig(props.quote.quote.value
-        .toRBTCTrimmedString(), 'btc')
-        .toBTCTrimmedString();
-    });
+    const isFlyover = computed(() => props.optionType === constants.pegoutType.FLYOVER);
+    const tooltipText = 'Time is approximate and may vary due to block confirmation times and network congestion.';
 
     const estimatedValueToReceive = computed(() => {
-      if (isFlyover.value) {
+      if (props.quote) {
+        if (isFlyover.value) {
+          return new SatoshiBig(props.quote.quote.value
+            .toRBTCTrimmedString(), 'btc')
+            .toBTCTrimmedString();
+        }
+
+        // TODO: SHOW THE AMOUNT WITHOUT FEES AFTER TESTNET GAS GOES DOWN
         return new SatoshiBig(props.quote.quote.value
+          // .minus(props.quote.quote.gasFee)
+          // .minus(props.quote.quote.productFeeAmount)
           .toRBTCTrimmedString(), 'btc')
           .toBTCTrimmedString();
       }
-
-      return new SatoshiBig(props.quote.quote.value
-        .minus(props.quote.quote.productFeeAmount)
-        .minus(props.quote.quote.gasFee)
-        .toRBTCTrimmedString(), 'btc')
-        .toBTCTrimmedString();
+      return '';
     });
 
     const estimatedTimeToReceive = computed(() => {
-      const { depositConfirmations } = props.quote.quote;
-      if (depositConfirmations === 0) {
-        return '33 hours';
+      if (props.quote) {
+        const { depositConfirmations } = props.quote.quote;
+        if (depositConfirmations === 0) {
+          return '34 hours';
+        }
+        return blockConfirmationsToTimeString(depositConfirmations);
       }
-      return blockConfirmationsToTimeString(depositConfirmations);
+      return '';
     });
 
     const header = computed(() => {
@@ -213,6 +218,7 @@ export default defineComponent({
           label: 'Powered by PowPeg + Flyover',
           subtitleBgColor: 'orange',
           link: 'https://dev.rootstock.io/concepts/rif-suite/#meet-the-suite',
+          color: '#FF9100',
         };
       }
       return {
@@ -220,7 +226,24 @@ export default defineComponent({
         label: 'Powered by PowPeg',
         subtitleBgColor: 'purple',
         link: 'https://dev.rootstock.io/rsk/architecture/powpeg/',
+        color: '#9E75FF',
       };
+    });
+
+    const totalFee = computed(() => {
+      if (props.quote) {
+        let fee;
+        if (isFlyover.value) {
+          fee = props.quote.quote.callFee
+            .plus(props.quote.quote.gasFee)
+            .plus(props.quote.quote.productFeeAmount);
+        } else {
+          fee = props.quote.quote.gasFee
+            .plus(props.quote.quote.productFeeAmount);
+        }
+        return fee.toRBTCTrimmedString();
+      }
+      return '';
     });
 
     const btcAddressPlaceholder = `Paste your (Legacy or Segwit) ${environmentContext.getBtcTicker()} address`;
@@ -245,7 +268,7 @@ export default defineComponent({
     }
 
     function selectOption() {
-      context.emit('change-selected-option', props.quote.quoteHash);
+      context.emit('change-selected-option', props.quote ? props.quote.quoteHash : '');
     }
 
     function hasChanged(keys: string[]): boolean {
@@ -253,7 +276,7 @@ export default defineComponent({
       if (!isFlyover.value) {
         return false;
       }
-      props.quoteDifferences.forEach((diff) => {
+      props.quoteDifferences?.forEach((diff) => {
         if (keys.includes(diff.key)) {
           changed = true;
         }
@@ -272,7 +295,6 @@ export default defineComponent({
       constants,
       toUSD,
       blockConfirmationsToTimeString,
-      amountToSend,
       estimatedValueToReceive,
       isFlyover,
       header,
@@ -287,6 +309,9 @@ export default defineComponent({
       mdiOpenInNew,
       openLink,
       btcAddressPlaceholder,
+      mdiClockTimeThreeOutline,
+      totalFee,
+      tooltipText,
     };
   },
 });
