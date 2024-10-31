@@ -17,7 +17,7 @@ import { isValidSiteKey, ServiceError } from '../utils';
 export default class FlyoverService {
   flyover?: Flyover;
 
-  flyovernetwork: Network;
+  flyoverNetwork: Network;
 
   private lbcAddress = EnvironmentAccessorService.getEnvironmentVariables().lbcAddress;
 
@@ -40,13 +40,13 @@ export default class FlyoverService {
     const appNetwork = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
     switch (appNetwork) {
       case constants.BTC_NETWORK_MAINNET:
-        this.flyovernetwork = 'Mainnet';
+        this.flyoverNetwork = 'Mainnet';
         break;
       case constants.BTC_NETWORK_TESTNET:
-        this.flyovernetwork = 'Testnet';
+        this.flyoverNetwork = 'Testnet';
         break;
       default:
-        this.flyovernetwork = 'Regtest';
+        this.flyoverNetwork = 'Regtest';
         break;
     }
   }
@@ -58,7 +58,7 @@ export default class FlyoverService {
       BlockchainConnection.createUsingStandard(provider)
         .then((connection: BlockchainConnection) => {
           this.flyover = new Flyover({
-            network: this.flyovernetwork,
+            network: this.flyoverNetwork,
             rskConnection: connection,
             captchaTokenResolver: this.tokenResolver.bind(this),
             disableChecksum: true,

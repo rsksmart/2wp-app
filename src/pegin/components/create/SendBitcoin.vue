@@ -38,7 +38,8 @@ import PegInForm from '@/pegin/components/create/PegInForm.vue';
 import ConfirmTx from '@/pegin/components/create/ConfirmTx.vue';
 import * as constants from '@/common/store/constants';
 import {
-  SendBitcoinState, SatoshiBig, BtcWallet, Utxo, TxStatusType,
+  SendBitcoinState, SatoshiBig, BtcWallet, Utxo,
+  TxStatusType,
 } from '@/common/types';
 import { Machine, getClearPeginTxState } from '@/common/utils';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
@@ -98,6 +99,7 @@ export default defineComponent({
     const getChangeAddress = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_CHANGE_ADDRESS);
     const selectedUtxoList = useGetter<Utxo[]>('pegInTx', constants.PEGIN_TX_GET_SELECTED_UTXO_LIST);
     const selectedFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
+    const type = useStateAttribute<string>('pegInTx', 'peginType');
 
     async function toConfirmTx({
       amountToTransferInSatoshi,
@@ -144,7 +146,12 @@ export default defineComponent({
       } else if (txHash) {
         router.push({
           name: 'SuccessTx',
-          params: { txId: txHash, type: (TxStatusType.PEGIN).toLowerCase() },
+          params: {
+            txId: txHash,
+            type: type.value === constants.peginType.FLYOVER
+              ? TxStatusType.FLYOVER_PEGIN
+              : TxStatusType.PEGIN,
+          },
         });
       }
     }

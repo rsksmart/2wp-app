@@ -66,7 +66,7 @@ export default {
     const wallets = computed(() => walletConf.wallets.filter((wallet) => {
       const walletConfJsonConstant = wallet.constant as BtcWallet;
       const flag = getFeature.value(FeatureNames[walletConfJsonConstant]);
-      return flag?.value === 'enabled';
+      return flag?.value === constants.ENABLED;
     }));
 
     const bitcoinWallet = useStateAttribute<BtcWallet>('pegInTx', 'bitcoinWallet');

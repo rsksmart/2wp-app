@@ -5,12 +5,15 @@
         <v-row no-gutters>
           <div class="text-h1 mb-2 pa-4 bg-teal">You are</div>
         </v-row>
-        <v-row no-gutters>
+        <v-row no-gutters class="mb-8">
           <div class="text-h1 pa-4 bg-yellow">Done!</div>
         </v-row>
         <v-row no-gutters>
-          <div class="pt-4">
-            <span>{{ willReceiveText }}</span>
+          <div>
+            <span>{{ amountToReceive }}</span><br>
+            on your address
+            <span v-if="estimatedTime">within the next</span><br>
+            <span>{{ estimatedTime }}</span>
           </div>
         </v-row>
       </v-col>
@@ -18,7 +21,7 @@
         <v-row no-gutters>
           <p class="text-subtitle-1">Transaction ID</p>
         </v-row>
-        <v-row no-gutters class="mb-4">
+        <v-row no-gutters class="mb-8">
           <v-text-field
             density="comfortable"
             variant="outlined"
@@ -30,7 +33,7 @@
             </template>
           </v-text-field>
         </v-row>
-        <v-row no-gutters class="my-4">
+        <v-row no-gutters class="my-4 mt-8">
           <v-btn-rsk block @click="toTxStatus">See Transaction</v-btn-rsk>
         </v-row>
         <v-row no-gutters>
@@ -48,9 +51,10 @@ import { useAction, useGetter, useState } from '@/common/store/helper';
 import * as constants from '@/common/store/constants';
 import { useRouter } from 'vue-router';
 import {
-  PegInTxState, PegOutTxState, SatoshiBig, TxStatusType,
+  PegInTxState, PegOutTxState, SatoshiBig, TxStatusType, PeginQuote, QuotePegOut2WP,
 } from '@/common/types';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
+import { blockConfirmationsToTimeString } from '@/common/utils';
 
 export default defineComponent({
   name: 'SuccessTx',
@@ -71,15 +75,46 @@ export default defineComponent({
     const pegOutTxState = useState<PegOutTxState>('pegOutTx');
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
+    const peginSelectedQuote = useGetter<PeginQuote>('flyoverPegin', constants.FLYOVER_PEGIN_GET_SELECTED_QUOTE);
+    const pegoutSelectedQuote = useGetter<QuotePegOut2WP>('flyoverPegout', constants.FLYOVER_PEGOUT_GET_SELECTED_QUOTE);
 
-    const willReceiveText = computed(() => {
+    const amountToReceive = computed(() => {
+      let amountText;
       switch (props.type.toUpperCase()) {
-        case TxStatusType.PEGIN || TxStatusType.FLYOVER_PEGIN:
-          return `You will receive ${pegInTxState.value.amountToTransfer.toBTCTrimmedString()} ${environmentContext.getRbtcTicker()}`;
+        case TxStatusType.PEGIN:
+          amountText = `${pegInTxState.value.amountToTransfer.toBTCTrimmedString()}
+            ${environmentContext.getBtcTicker()}`;
+          break;
         case TxStatusType.PEGOUT:
-          return `You will receive approximately ${estimatedBtcToReceive.value.toBTCTrimmedString()} ${environmentContext.getBtcTicker()}`;
+          amountText = `${estimatedBtcToReceive.value.toBTCTrimmedString()}
+            ${environmentContext.getBtcTicker()}`;
+          break;
+        case TxStatusType.FLYOVER_PEGIN:
+          amountText = `${pegOutTxState.value.amountToTransfer.toRBTCTrimmedString()}
+            ${environmentContext.getBtcTicker()}`;
+          break;
         case TxStatusType.FLYOVER_PEGOUT:
-          return `You will receive ${pegOutTxState.value.amountToTransfer.toRBTCTrimmedString()} ${environmentContext.getBtcTicker()}`;
+          amountText = `${pegOutTxState.value.amountToTransfer.toRBTCTrimmedString()}
+            ${environmentContext.getBtcTicker()}`;
+          break;
+        default:
+          amountText = '';
+      }
+      return `You will receive ${amountText}`;
+    });
+
+    const estimatedTime = computed(() => {
+      switch (props.type.toUpperCase()) {
+        case TxStatusType.PEGIN:
+          return '17 hours';
+        case TxStatusType.PEGOUT:
+          return '34 hours';
+        case TxStatusType.FLYOVER_PEGIN:
+          return `${blockConfirmationsToTimeString(peginSelectedQuote
+            .value.quote.confirmations ?? 0, 'btc')}`;
+        case TxStatusType.FLYOVER_PEGOUT:
+          return `${blockConfirmationsToTimeString(pegoutSelectedQuote
+            .value.quote.depositConfirmations ?? 0, 'btc')}`;
         default:
           return '';
       }
@@ -100,7 +135,8 @@ export default defineComponent({
 
     return {
       mdiContentCopy,
-      willReceiveText,
+      amountToReceive,
+      estimatedTime,
       pegInTxState,
       copyToClipboard,
       goHome,

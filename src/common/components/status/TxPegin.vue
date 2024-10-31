@@ -10,7 +10,7 @@
         <span class="text-center text-bw-400 text-body-2">Confirmations</span>
       </v-row>
     </template>
-    <v-row>
+    <v-row class="mb-4">
       <status-progress-bar :isFlyover="isFlyover" :txWithErrorType="txWithErrorType"
                            :txWithError="txWithError" />
     </v-row>

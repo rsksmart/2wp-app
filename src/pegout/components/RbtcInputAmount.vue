@@ -1,18 +1,10 @@
 <template>
   <v-row no-gutters>
-  <v-col>
     <span class="d-inline-block font-weight-bold my-3">
-      I will send
+      Amount to send
     </span>
-  </v-col>
-  <v-col>
-    <span class="d-inline-block font-weight-bold my-3 ml-6">
-      I will receive
-    </span>
-  </v-col>
-</v-row>
-<v-row no-gutters align="center">
-  <v-col>
+  </v-row>
+  <v-row no-gutters align="center">
     <v-text-field
       hide-details
       hide-spin-buttons
@@ -47,29 +39,14 @@
           </div>
         </template>
     </v-text-field>
-  </v-col>
-  <v-icon class="mx-2" :icon="mdiArrowRight" color="bw-600" />
-  <v-col>
-    <div class="d-flex justify-space-between align-center flex-grow-1
-      bg-surface pa-3 rounded-lg border">
-    <div class="d-flex ga-2 align-center">
-      <v-chip :prepend-icon="mdiBitcoin" class="btc-icon">
-        {{ environmentContext.getBtcTicker() }}
-      </v-chip>
-      <span class="text-h4">
-        {{ stepState === 'valid' ? willReceive : '' }}
-      </span>
-    </div>
-  </div>
-  </v-col>
-</v-row>
-<v-row class="my-0" v-if="stepState === 'error'">
-  <v-col cols="6" align-self="start">
-    <v-alert :text="amountErrorMessage" class="pa-2 mr-2"
-        type="warning" color="orange">
-      </v-alert>
-  </v-col>
-</v-row>
+  </v-row>
+  <v-row class="my-0" v-if="stepState === 'error'">
+    <v-col cols="6" align-self="start">
+      <v-alert :text="amountErrorMessage" class="pa-2 mr-2"
+          type="warning" color="orange">
+        </v-alert>
+    </v-col>
+  </v-row>
 </template>
 
 <script lang="ts">
