@@ -10,35 +10,42 @@ import { ApiService } from '@/common/services';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
 export const actions: ActionTree<FlyoverPegoutState, RootState> = {
-  [constants.FLYOVER_PEGOUT_INIT]: async ({ state, dispatch }) => {
+  [constants.FLYOVER_PEGOUT_INIT]: async ({ state, dispatch }) => new Promise((resolve, reject) => {
     state.flyoverService.initialize()
-      .then(() => dispatch(constants.FLYOVER_PEGOUT_GET_PROVIDERS));
-  },
-  [constants.FLYOVER_PEGOUT_GET_PROVIDERS]: async ({ state, commit }) => {
+      .then(() => dispatch(constants.FLYOVER_PEGOUT_GET_PROVIDERS))
+      .then(resolve)
+      .catch(reject);
+  }),
+  [constants.FLYOVER_PEGOUT_GET_PROVIDERS]: async ({
+    state,
+    commit,
+  }) => new Promise((resolve, reject) => {
     let result = constants.FlyoverCallResult.ERROR;
     const flyoverCallPayload = {
       operationType: TxStatusType.FLYOVER_PEGOUT,
       functionType: constants.FlyoverCallFunction.LPS,
     };
-    try {
-      const providers: LiquidityProvider2WP[] = await promiseWithTimeout(
-        state.flyoverService.getProviders(),
-        EnvironmentAccessorService.getEnvironmentVariables().flyoverGetProvidersTimeout,
-      );
-      commit(constants.FLYOVER_PEGOUT_SET_PROVIDERS, providers);
-      result = constants.FlyoverCallResult.SUCCESS;
-      commit(constants.FLYOVER_PEGOUT_SET_RESPONDING, true);
-    } catch (e) {
-      console.error(`Error getting flyover providers: ${e}`);
-      commit(constants.FLYOVER_PEGOUT_SET_RESPONDING, false);
-    } finally {
+    (async () => {
       try {
-        await ApiService.registerFlyoverCall({ ...flyoverCallPayload, result } as FlyoverCall);
+        const providers: LiquidityProvider2WP[] = await promiseWithTimeout(
+          state.flyoverService.getProviders(),
+          EnvironmentAccessorService.getEnvironmentVariables().flyoverGetProvidersTimeout,
+        );
+        result = constants.FlyoverCallResult.SUCCESS;
+        commit(constants.FLYOVER_PEGOUT_SET_RESPONDING, true);
+        resolve(commit(constants.FLYOVER_PEGOUT_SET_PROVIDERS, providers));
       } catch (e) {
-        console.error(`Error registering flyover ${flyoverCallPayload.functionType} call: ${e}`);
+        commit(constants.FLYOVER_PEGOUT_SET_RESPONDING, false);
+        reject();
+      } finally {
+        try {
+          await ApiService.registerFlyoverCall({ ...flyoverCallPayload, result } as FlyoverCall);
+        } catch (e) {
+          console.error(`Error registering flyover ${flyoverCallPayload.functionType} call: ${e}`);
+        }
       }
-    }
-  },
+    })();
+  }),
   [constants.FLYOVER_PEGOUT_ADD_AMOUNT]: ({ commit }, amount: WeiBig) => {
     commit(constants.FLYOVER_PEGOUT_SET_AMOUNT, amount);
   },
