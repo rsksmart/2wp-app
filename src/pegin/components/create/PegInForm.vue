@@ -51,7 +51,7 @@
       </v-progress-circular>
     </v-row>
     <v-btn-rsk v-if="!pegInFormState.matches(['loading'])"
-      @click="callRecaptcha"
+      @click="sendTx"
       :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])"
       class="align-self-end text-body-1"
       >
@@ -90,7 +90,7 @@ import {
 } from '@/common/utils';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import {
-  Feature, FeatureNames, FlyoverPeginState, PeginQuote, QuotePegIn2WP, SatoshiBig,
+  FlyoverPeginState, PeginQuote, QuotePegIn2WP, SatoshiBig,
 } from '@/common/types';
 import {
   useAction, useGetter, useState, useStateAttribute,
@@ -103,6 +103,12 @@ import RskDestinationAddress from '@/pegin/components/create/RskDestinationAddre
 
 export default defineComponent({
   name: 'PegInForm',
+  props: {
+    isFlyoverAvailable: {
+      type: Boolean,
+      required: true,
+    },
+  },
   components: {
     BtcInput,
     RskDestinationAddress,
@@ -111,17 +117,15 @@ export default defineComponent({
     FullTxErrorDialog,
   },
   emits: ['back', 'createTx'],
-  setup(_, context) {
+  setup(props, context) {
     const pegInFormState = ref<Machine<'loading' | 'goingHome' | 'fill'>>(new Machine('fill'));
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-    const flyoverEnabled = ref(true);
     const loadingQuotes = ref(false);
     const selected = ref<constants.peginType>();
     const selectedQuote = ref<PeginQuote>();
     const showErrorDialog = ref(false);
     const txError = ref<ServiceError>(new ServiceError('', '', '', ''));
     const account = useStateAttribute<string>('web3Session', 'account');
-    const flyoverFeature = useGetter<(name: FeatureNames) => Feature>('web3Session', constants.SESSION_GET_FEATURE);
     const pegInTxState = useState<PegInTxState>('pegInTx');
     const flyoverPeginState = useState<FlyoverPeginState>('flyoverPegin');
     const refundAddress = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_REFUND_ADDRESS);
@@ -147,7 +151,7 @@ export default defineComponent({
     });
 
     const peginQuotes = computed(() => {
-      if (!flyoverEnabled.value) {
+      if (!props.isFlyoverAvailable) {
         return [];
       }
       const quoteList: QuotePegIn2WP[] = [];
@@ -272,18 +276,24 @@ export default defineComponent({
       return false;
     });
 
-    function callRecaptcha() {
-      window.grecaptcha.execute();
+    function sendTx() {
+      if (props.isFlyoverAvailable && selected.value === constants.peginType.FLYOVER) {
+        window.grecaptcha.execute();
+      } else {
+        createTx();
+      }
     }
 
     onBeforeMount(() => {
-      window.onRecaptchaSuccess = createTx;
-      const feature = flyoverFeature.value(FeatureNames.FLYOVER_PEG_IN);
-      flyoverEnabled.value = feature?.value === 'enabled';
+      if (props.isFlyoverAvailable) {
+        window.onRecaptchaSuccess = createTx;
+      }
     });
 
     onMounted(() => {
-      appendRecaptcha(flyoverService.value.siteKey);
+      if (props.isFlyoverAvailable) {
+        appendRecaptcha(flyoverService.value.siteKey);
+      }
     });
 
     return {
@@ -298,7 +308,6 @@ export default defineComponent({
       mdiArrowRight,
       changeSelectedOption,
       selected,
-      flyoverEnabled,
       showOptions,
       loadingQuotes,
       getQuotes,
@@ -308,11 +317,11 @@ export default defineComponent({
       txError,
       handleError,
       flyoverService,
-      callRecaptcha,
       checkValidAmount,
       checkValidAddress,
       validAmount,
       validAddress,
+      sendTx,
     };
   },
 });

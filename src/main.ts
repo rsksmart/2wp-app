@@ -30,6 +30,7 @@ const defaultEnvironmentVariables = {
     slow: 12,
   },
   burnDustValue: 2000,
+  flyoverGetProvidersTimeout: 5000,
 };
 
 EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);

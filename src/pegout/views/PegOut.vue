@@ -25,9 +25,14 @@ export default defineComponent({
 
     onBeforeMount(() => {
       const feature = flyoverFeature.value(FeatureNames.FLYOVER_PEG_OUT);
-      if (feature?.value === 'enabled') {
-        initFlyover();
-        flyoverEnabled.value = true;
+      if (feature?.value === constants.ENABLED) {
+        initFlyover()
+          .then(() => {
+            flyoverEnabled.value = true;
+          })
+          .catch(() => {
+            flyoverEnabled.value = false;
+          });
       }
     });
 

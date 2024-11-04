@@ -45,6 +45,8 @@ export class EnvironmentVariables {
 
   public peginMinAmountAllowedInBtc: number;
 
+  public flyoverGetProvidersTimeout: number;
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(defaultValues: any = {}) {
     this.vueAppCoin = process.env.VUE_APP_COIN || defaultValues.vueAppCoin;
@@ -87,5 +89,7 @@ export class EnvironmentVariables {
     this.debugMode = process.env.VUE_APP_DEBUG_MODE === 'true' || defaultValues.debugMode;
     this.peginMinAmountAllowedInBtc = Number(process.env.VUE_APP_PEGIN_MIN_AMOUNT_ALLOWED_IN_BTC)
       || defaultValues.peginMinValue;
+    this.flyoverGetProvidersTimeout = Number(process.env.VUE_APP_FLYOVER_GET_PROVIDERS_TIMEOUT)
+      || defaultValues.flyoverGetProvidersTimeout;
   }
 }
