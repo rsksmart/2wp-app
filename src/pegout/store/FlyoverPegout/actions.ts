@@ -7,6 +7,7 @@ import * as constants from '@/common/store/constants';
 import { BridgeService } from '@/common/services/BridgeService';
 import { compareObjects, promiseWithTimeout } from '@/common/utils';
 import { ApiService } from '@/common/services';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
 export const actions: ActionTree<FlyoverPegoutState, RootState> = {
   [constants.FLYOVER_PEGOUT_INIT]: async ({ state, dispatch }) => {
@@ -20,7 +21,10 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
       functionType: constants.FlyoverCallFunction.LPS,
     };
     try {
-      const providers: LiquidityProvider2WP[] = await state.flyoverService.getProviders();
+      const providers: LiquidityProvider2WP[] = await promiseWithTimeout(
+        state.flyoverService.getProviders(),
+        EnvironmentAccessorService.getEnvironmentVariables().flyoverGetProvidersTimeout,
+      );
       commit(constants.FLYOVER_PEGOUT_SET_PROVIDERS, providers);
       result = constants.FlyoverCallResult.SUCCESS;
       commit(constants.FLYOVER_PEGOUT_SET_RESPONDING, true);

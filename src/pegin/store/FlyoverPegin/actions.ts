@@ -5,6 +5,8 @@ import {
 import { ActionTree } from 'vuex';
 import * as constants from '@/common/store/constants';
 import { ApiService } from '@/common/services';
+import { promiseWithTimeout } from '@/common/utils';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
 export const actions: ActionTree<FlyoverPeginState, RootState> = {
   [constants.FLYOVER_PEGIN_INIT]: ({ state, dispatch }) => new Promise((resolve, reject) => {
@@ -22,7 +24,10 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
 
     (async () => {
       try {
-        const providers = await state.flyoverService.getProviders();
+        const providers = await promiseWithTimeout(
+          state.flyoverService.getProviders(),
+          EnvironmentAccessorService.getEnvironmentVariables().flyoverGetProvidersTimeout,
+        );
         result = constants.FlyoverCallResult.SUCCESS;
         resolve(commit(constants.FLYOVER_PEGIN_SET_PROVIDERS, providers));
       } catch (e) {

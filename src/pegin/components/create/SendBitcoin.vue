@@ -12,7 +12,9 @@
                  :txBuilder="txBuilder"
                  :txId="txId" @back="back"
                  @toPegInForm="toPegInForm"
-                 :confirmTxState="confirmTxState"/>
+                 :confirmTxState="confirmTxState"
+                 :isFlyoverAvailable="isFlyoverAvailable"
+                 />
     </template>
     <template v-if="showErrorDialog">
       <device-error-dialog :showErrorDialog="showErrorDialog"
@@ -57,6 +59,12 @@ import XverseTxBuilder from '@/pegin/middleware/TxBuilder/XverseTxBuilder';
 
 export default defineComponent({
   name: 'SendBitcoin',
+  props: {
+    isFlyoverAvailable: {
+      type: Boolean,
+      required: true,
+    },
+  },
   components: {
     PegInForm,
     ConfirmTx,

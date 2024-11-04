@@ -17,7 +17,7 @@
     </v-row>
     <template v-if="showStep && !loadingQuotes">
       <v-row>
-        <span class="text-bold ma-4 mb-2
+        <span class="font-weight-bold ma-4 mb-2
         ">Select Mode</span>
       </v-row>
       <v-row>
@@ -186,7 +186,6 @@ export default defineComponent({
     const clearFlyoverState = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_CLEAR_STATE);
     const clearPegoutTx = useAction('pegOutTx', constants.PEGOUT_TX_CLEAR);
     const getPegoutQuotes = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_GET_QUOTES);
-    const getFlyoverProviders = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_GET_PROVIDERS);
     const quotes = useStateAttribute<Record<number, QuotePegOut2WP[]>>('flyoverPegout', 'quotes');
     const quoteDifferences = useStateAttribute<Array<ObjectDifference>>('flyoverPegout', 'differences');
     const isFlyoverResponding = useStateAttribute<boolean>('flyoverPegout', 'isResponding');
@@ -424,14 +423,14 @@ export default defineComponent({
     }
 
     onBeforeMount(() => {
-      window.onRecaptchaSuccess = send;
-      initFlyoverTx()
-        .then(() => getFlyoverProviders())
-        .then(() => {
-          appendRecaptcha(flyoverService.value.siteKey);
-        })
-        .catch(console.error);
+      if (props.flyoverEnabled) {
+        window.onRecaptchaSuccess = send;
+      }
     });
+
+    if (props.flyoverEnabled) {
+      appendRecaptcha(flyoverService.value.siteKey);
+    }
 
     watch(account, clearState);
 

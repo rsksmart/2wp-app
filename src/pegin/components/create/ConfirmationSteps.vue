@@ -250,7 +250,7 @@
               </span>
             </v-row>
             <v-col class="pl-4">
-              <div v-if="!flyover">
+              <div v-if="!flyover" class="mb-4">
                 <v-row no-gutters class="mb-2">
                 <span>
                   OP Return
