@@ -372,3 +372,9 @@ export enum FlyoverCallFunction {
   LPS = 'getLps',
   QUOTE = 'getQuote',
 }
+
+export enum RejectedPegoutReasons {
+  LOW_AMOUNT = 'LOW_AMOUNT',
+  CALLER_CONTRACT = 'CALLER_CONTRACT',
+  FEE_ABOVE_VALUE = 'FEE_ABOVE_VALUE',
+}

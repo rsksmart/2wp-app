@@ -1,5 +1,5 @@
 import { Duration } from 'moment/moment';
-import { PegStatus } from '@/common/store/constants';
+import { PegStatus, RejectedPegoutReasons } from '@/common/store/constants';
 import SatoshiBig from '@/common/types/SatoshiBig';
 import { PegInTxState } from '@/common/types/pegInTx';
 import { SessionState } from '@/common/types/session';
@@ -73,6 +73,7 @@ export interface PegoutStatusDataModel {
   fees: number;
   estimatedFee: SatoshiBig;
   btcTxId: string;
+  reason?: RejectedPegoutReasons;
 }
 
 export interface FlyoverStatusModel {

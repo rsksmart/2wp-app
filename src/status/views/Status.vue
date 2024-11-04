@@ -18,6 +18,9 @@
     <v-row no-gutters v-if="showStatus && showTimeLeft" justify="center">
       <span class="text-bw-400 text-body-1">Estimated time: {{ releaseTimeText }}</span>
     </v-row>
+    <v-row no-gutters v-if="showStatus && isRejected" justify="center">
+      <p class="w-75 text-center text-body-1">{{ rejectionMsg }}</p>
+    </v-row>
     <v-row no-gutters v-if="showStatus">
       <tx-pegin v-if="isPegIn" :txId="txId" :isFlyover="isFlyover"
                 :txWithErrorType="txWithErrorType" :txWithError="txWithError" />
@@ -89,6 +92,21 @@ export default defineComponent({
     const showStatus = computed(() => !loading.value);
 
     const isRejected = computed(() => status.value.txDetails?.status === 'REJECTED');
+
+    const rejectionMsg = computed(() => {
+      const details = txDetails.value as PegoutStatusDataModel;
+      const { LOW_AMOUNT, CALLER_CONTRACT, FEE_ABOVE_VALUE } = constants.RejectedPegoutReasons;
+      switch (details.reason) {
+        case LOW_AMOUNT:
+          return 'The transaction was rejected because the amount is less than the minimum required.';
+        case CALLER_CONTRACT:
+          return 'The transaction was rejected because the sender is a contract.';
+        case FEE_ABOVE_VALUE:
+          return 'Due to high network fees, your transaction is cancelled. Please try again later when network fees are lower or you can bridge higher amounts.';
+        default:
+          return '';
+      }
+    });
 
     const isPegIn = computed((): boolean => status.value.type === TxStatusType.PEGIN
       || status.value.type === TxStatusType.FLYOVER_PEGIN);
@@ -214,6 +232,7 @@ export default defineComponent({
       rules,
       txWithErrorType,
       txWithError,
+      rejectionMsg,
     };
   },
 });
