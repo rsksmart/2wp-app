@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import FlyoverService from '@/common/services/FlyoverService';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { SatoshiBig, WeiBig } from '@/common/types';
@@ -110,7 +111,7 @@ describe('FlyoverService', () => {
     });
 
     it('should throw an error if initialization fails', async () => {
-      jest.spyOn(flyoverService, 'initialize').mockRejectedValueOnce(new Error('Initialization failed'));
+      vi.spyOn(flyoverService, 'initialize').mockRejectedValueOnce(new Error('Initialization failed'));
       await expect(flyoverService.initialize()).rejects.toThrow('Initialization failed');
     });
   });
@@ -146,7 +147,7 @@ describe('FlyoverService', () => {
       const valueToTransfer = new WeiBig('0.005', 'rbtc');
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const spyisValidPegoutQuote = jest.spyOn(FlyoverService.prototype as any, 'isValidPegoutQuote');
+      const spyisValidPegoutQuote = vi.spyOn(FlyoverService.prototype as any, 'isValidPegoutQuote');
 
       const quotes = await flyoverService.getPegoutQuotes(
         rskRefundAddress,
@@ -195,7 +196,7 @@ describe('FlyoverService', () => {
       const valueToTransfer = new SatoshiBig('0.005', 'btc');
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const spyisValidQuote = jest.spyOn(FlyoverService.prototype as any, 'isValidPeginQuote');
+      const spyisValidQuote = vi.spyOn(FlyoverService.prototype as any, 'isValidPeginQuote');
 
       const quotes = await flyoverService.getPeginQuotes(
         rskRefundAddress,
@@ -309,8 +310,8 @@ describe('FlyoverService', () => {
     it('should throw an error if the accepted quote is not found', () => {
       const quoteHash = 'invalidHash';
 
-      const spyAcceptPegoutQuote = jest.spyOn(FlyoverService.prototype as any, 'acceptPegoutQuote');
-      const spyDepositPegout = jest.spyOn(flyoverService.flyover as Flyover, 'depositPegout');
+      const spyAcceptPegoutQuote = vi.spyOn(FlyoverService.prototype as any, 'acceptPegoutQuote');
+      const spyDepositPegout = vi.spyOn(flyoverService.flyover as Flyover, 'depositPegout');
 
       expect(flyoverService.acceptAndSendPegoutQuote(quoteHash))
         .rejects.toThrow('There was an error accepting the option from the Flyover server');
@@ -332,9 +333,9 @@ describe('FlyoverService', () => {
         valueToTransfer,
       );
 
-      const spyAcceptPegoutQuote = jest.spyOn(FlyoverService.prototype as any, 'acceptPegoutQuote');
-      const spyIsValidAcceptedQuote = jest.spyOn(FlyoverService.prototype as any, 'isValidAcceptedQuote');
-      const spyDepositPegout = jest.spyOn(flyoverService.flyover as Flyover, 'depositPegout');
+      const spyAcceptPegoutQuote = vi.spyOn(FlyoverService.prototype as any, 'acceptPegoutQuote');
+      const spyIsValidAcceptedQuote = vi.spyOn(FlyoverService.prototype as any, 'isValidAcceptedQuote');
+      const spyDepositPegout = vi.spyOn(flyoverService.flyover as Flyover, 'depositPegout');
 
       const { quoteHash } = quotes[0];
       const acceptedQuote = await flyoverService.acceptAndSendPegoutQuote(quoteHash);

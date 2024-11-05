@@ -1,3 +1,5 @@
+// @vitest-environment happy-dom
+import { vi } from 'vitest';
 import sinon from 'sinon';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import Transport from '@ledgerhq/hw-transport';
@@ -18,7 +20,7 @@ const initEnvironment = () => {
 describe('Ledger Service: ', () => {
   beforeEach(initEnvironment);
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
     sinon.restore();
   });
   it('should create a LedgerService instance', () => {
@@ -28,7 +30,7 @@ describe('Ledger Service: ', () => {
   });
   it('should get the number of requested addresses based on env variables set', () => {
     const ledgerService = new LedgerService();
-    jest.spyOn(ledgerService, 'getXpub')
+    vi.spyOn(ledgerService, 'getXpub')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .mockImplementation((accountType: BtcAccount, accountNumber: number) => {
         let xpub = '';

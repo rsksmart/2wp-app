@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { vi } from 'vitest';
 import sinon from 'sinon';
 import * as constants from '@/common/store/constants';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
@@ -20,10 +21,10 @@ describe('Enkrypt Service: ', () => {
   beforeEach(() => {
     setEnvironment();
     mockBitcoinProvider = {
-      switchNetwork: jest.fn(),
-      getAccounts: jest.fn().mockResolvedValue(['testAddress']),
-      isConnected: jest.fn().mockResolvedValue(true),
-      signPsbt: jest.fn().mockResolvedValue('70736274ff0100960200000001617bfa33c63e4d6c1dff9f90b116371b298a8f08084802a85bb5db956e8c96a60000000000ffffffff0300000000000000001b6a1952534b5401cd3fb9fdd6035e3da5a997efe5b3d895cbc39ed120a107000000000017a9143b004aa2b568c97f80ccccc5130226d0e98bd588872246010000000000160014dfc8d4318aea9a5a945be8e2eba3cafb94fe2569000000000001011fc027090000000000160014dfc8d4318aea9a5a945be8e2eba3cafb94fe2569220203ad6e44f7982ddcd5626539da854a1337b85be787248d42f9d7a638991464494d47304402205d735b7c295fd0d200c2824b504dc71dd54a45f9e2c43a782b3f67e8b759f48402207937eabfd56d9d177e3dd187ebd3e219eb7c44758f9a05cddd46d35d01e712be0100000000'),
+      switchNetwork: vi.fn(),
+      getAccounts: vi.fn().mockResolvedValue(['testAddress']),
+      isConnected: vi.fn().mockResolvedValue(true),
+      signPsbt: vi.fn().mockResolvedValue('70736274ff0100960200000001617bfa33c63e4d6c1dff9f90b116371b298a8f08084802a85bb5db956e8c96a60000000000ffffffff0300000000000000001b6a1952534b5401cd3fb9fdd6035e3da5a997efe5b3d895cbc39ed120a107000000000017a9143b004aa2b568c97f80ccccc5130226d0e98bd588872246010000000000160014dfc8d4318aea9a5a945be8e2eba3cafb94fe2569000000000001011fc027090000000000160014dfc8d4318aea9a5a945be8e2eba3cafb94fe2569220203ad6e44f7982ddcd5626539da854a1337b85be787248d42f9d7a638991464494d47304402205d735b7c295fd0d200c2824b504dc71dd54a45f9e2c43a782b3f67e8b759f48402207937eabfd56d9d177e3dd187ebd3e219eb7c44758f9a05cddd46d35d01e712be0100000000'),
     };
     (window as any).enkrypt = {
       providers: {
@@ -33,7 +34,7 @@ describe('Enkrypt Service: ', () => {
     enkryptService = new EnkryptService();
   });
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
     sinon.restore();
   });
   it('should create a EnkryptService instance', () => {
