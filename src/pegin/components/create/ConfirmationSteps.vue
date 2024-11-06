@@ -286,7 +286,7 @@
                 <v-textarea hide-details auto-grow readonly
                             class="text-bw-400"
                             variant="outlined" density="compact" rows="1"
-                            :model-value="rskFederationAddress" />
+                            :model-value="providerRecipientAddress" />
               </v-row>
               <div v-if="existChange" >
                 <v-row no-gutters class="mb-2 mt-4">
