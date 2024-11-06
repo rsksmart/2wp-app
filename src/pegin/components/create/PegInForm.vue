@@ -116,7 +116,7 @@ export default defineComponent({
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const flyoverEnabled = ref(true);
     const loadingQuotes = ref(false);
-    const selected = ref<constants.peginType>();
+    const selected = ref<constants.peginType | null>(null);
     const selectedQuote = ref<PeginQuote>();
     const showErrorDialog = ref(false);
     const txError = ref<ServiceError>(new ServiceError('', '', '', ''));
@@ -202,7 +202,10 @@ export default defineComponent({
       pegInFormState.value.send('fill');
     }
 
-    async function changeSelectedOption(selectedType: constants.peginType, quote?: PeginQuote) {
+    async function changeSelectedOption(
+      selectedType: constants.peginType | null,
+      quote?: PeginQuote,
+    ) {
       selected.value = selectedType;
       await setPeginType(selected.value);
       selectedQuote.value = quote;
@@ -212,7 +215,7 @@ export default defineComponent({
     async function getQuotes() {
       loadingQuotes.value = true;
       getPeginQuotes({
-        rootstockRecipientAddress: account.value,
+        rootstockRecipientAddress: flyoverPeginState.value.rootstockRecipientAddress,
         bitcoinRefundAddress: refundAddress.value,
       })
         .finally(() => {
@@ -228,17 +231,17 @@ export default defineComponent({
     const showOptions = computed(() => !loadingQuotes.value
     && !loadingFee.value && validAddress.value && validAmount.value);
 
-    function checkValidAddress(isValid: boolean, amountInformed: string) {
+    function checkValidAddress(isValid: boolean, addressInformed: string) {
       validAddress.value = isValid;
-      if (isValid && amountInformed !== amount.value) {
-        amount.value = amountInformed;
+      if (isValid && addressInformed !== address.value) {
+        address.value = addressInformed;
       }
     }
 
-    function checkValidAmount(isValid: boolean, addressInformed: string) {
+    function checkValidAmount(isValid: boolean, amountInformed: string) {
       validAmount.value = isValid;
-      if (isValid && addressInformed !== address.value) {
-        address.value = addressInformed;
+      if (isValid && amountInformed !== amount.value) {
+        amount.value = amountInformed;
       }
     }
 
@@ -246,6 +249,7 @@ export default defineComponent({
       if (!validAmount.value || !validAddress.value) {
         return;
       }
+      await changeSelectedOption(null);
       await getQuotes();
     });
 
