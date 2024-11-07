@@ -31,13 +31,10 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
         result = constants.FlyoverCallResult.SUCCESS;
         resolve(commit(constants.FLYOVER_PEGIN_SET_PROVIDERS, providers));
       } catch (e) {
-        reject();
+        reject(new Error('Error getting liquidity providers'));
       } finally {
-        try {
-          await ApiService.registerFlyoverCall({ ...flyoverCallPayload, result } as FlyoverCall);
-        } catch (e) {
-          console.error(`Error registering flyover ${flyoverCallPayload.functionType} call: ${e}`);
-        }
+        ApiService.registerFlyoverCall({ ...flyoverCallPayload, result } as FlyoverCall)
+          .catch(() => null);
       }
     })();
   }),
@@ -84,13 +81,10 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
         result = constants.FlyoverCallResult.SUCCESS;
         resolve(commit(constants.FLYOVER_PEGIN_SET_QUOTES, quotesByProvider));
       } catch (e) {
-        reject(e);
+        reject(new Error('Error getting quotes'));
       } finally {
-        try {
-          await ApiService.registerFlyoverCall({ ...flyoverCallPayload, result } as FlyoverCall);
-        } catch (e) {
-          console.error(`Error registering flyover ${flyoverCallPayload.functionType} call: ${e}`);
-        }
+        ApiService.registerFlyoverCall({ ...flyoverCallPayload, result } as FlyoverCall)
+          .catch(() => null);
       }
     })();
   }),
