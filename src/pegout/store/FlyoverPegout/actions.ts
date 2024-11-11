@@ -5,7 +5,7 @@ import {
 import { ActionTree } from 'vuex';
 import * as constants from '@/common/store/constants';
 import { BridgeService } from '@/common/services/BridgeService';
-import { compareObjects, promiseWithTimeout } from '@/common/utils';
+import { promiseWithTimeout } from '@/common/utils';
 import { ApiService } from '@/common/services';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
@@ -117,8 +117,9 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
       dispatch(constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER, providerId)
         .then(() => dispatch(constants.FLYOVER_PEGOUT_GET_FINAL_QUOTE, { providerId, quoteHash }))
         .then(() => {
-          if (state.differences.length > 0) {
-            reject(new Error('Quote differences found: cannot accept quote'));
+          if (state.difference > EnvironmentAccessorService.getEnvironmentVariables()
+            .flyoverPegoutDiffPercentage) {
+            return Promise.reject(new Error('Quote differences found: cannot accept quote'));
           }
           return state.flyoverService.acceptAndSendPegoutQuote(state.selectedQuoteHash);
         })
@@ -156,14 +157,27 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
             productFeeAmount: quote2wp.quote.productFeeAmount,
             value: quote2wp.quote.value,
           };
-          const differences = compareObjects(
-            reducedCurrentQuote as unknown as { [key: string]: unknown },
-            reducedNewQuote as unknown as { [key: string]: unknown },
-          );
-          if (differences.length === 0) {
+          const zeroWei = new WeiBig(0, 'wei');
+          const currentQuoteTotalFee = (reducedCurrentQuote.callFee ?? zeroWei)
+            .plus(reducedCurrentQuote.gasFee ?? zeroWei)
+            .plus(reducedCurrentQuote.penaltyFee ?? zeroWei)
+            .plus(reducedCurrentQuote.productFeeAmount ?? zeroWei)
+            .plus(reducedCurrentQuote.value ?? zeroWei);
+          const newQuoteTotalFee = (reducedNewQuote.callFee ?? zeroWei)
+            .plus(reducedNewQuote.gasFee ?? zeroWei)
+            .plus(reducedNewQuote.penaltyFee ?? zeroWei)
+            .plus(reducedNewQuote.productFeeAmount ?? zeroWei)
+            .plus(reducedNewQuote.value ?? zeroWei);
+          const largest = newQuoteTotalFee
+            .gt(currentQuoteTotalFee) ? newQuoteTotalFee : currentQuoteTotalFee;
+          const minor = newQuoteTotalFee
+            .gt(currentQuoteTotalFee) ? currentQuoteTotalFee : newQuoteTotalFee;
+          const difference = ((largest.minus(minor)).mul('100')).div(largest.toRBTCString());
+          if (+difference.toRBTCString() <= EnvironmentAccessorService.getEnvironmentVariables()
+            .flyoverPegoutDiffPercentage) {
             commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, quote2wp.quoteHash);
           } else {
-            commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCES, differences);
+            commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE, +difference.toRBTCString());
           }
         });
         resolve();
@@ -177,6 +191,6 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
     commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, quoteHash);
   },
   [constants.FLYOVER_PEGOUT_CLEAR_QUOTE_DIFFERENCES]: ({ commit }) => {
-    commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCES, []);
+    commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE, 0);
   },
 };

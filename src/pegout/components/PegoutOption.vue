@@ -48,7 +48,7 @@
             {{ estimatedValueToReceive }}
             {{ environmentContext.getBtcTicker() }}
           </span>
-          <span class="text-bw-400" :class="{ 'font-weight-bold': hasChanged(['gasFee'])}">
+          <span class="text-bw-400" :class="{ 'font-weight-bold': hasChanged()}">
             USD {{ toUSD(estimatedValueToReceive) }}
           </span>
         </div>
@@ -59,11 +59,11 @@
             {{ isFlyover ? 'Total Fee (Network & Provider)' : 'Total Fee (Network)' }}
           </span>
           <span class="text-bw-400"
-                :class="{ 'font-weight-bold': hasChanged(['productFeeAmount', 'callFee'])}">
+                :class="{ 'font-weight-bold': hasChanged()}">
             {{ totalFee }}
             {{ environmentContext.getBtcTicker() }}
           </span>
-          <span class="text-bw-400" :class="{ 'font-weight-bold': hasChanged(['gasFee'])}">
+          <span class="text-bw-400" :class="{ 'font-weight-bold': hasChanged()}">
             USD {{ toUSD(totalFee) }}
           </span>
         </div>
@@ -139,10 +139,11 @@ import {
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { useAction, useState, useStateAttribute } from '@/common/store/helper';
 import {
-  SessionState, SatoshiBig, QuotePegOut2WP, ObjectDifference,
+  SessionState, SatoshiBig, QuotePegOut2WP,
 } from '@/common/types';
 import * as constants from '@/common/store/constants';
 import { blockConfirmationsToTimeString, validateAddress } from '@/common/utils';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
 export default defineComponent({
   name: 'PegoutOption',
@@ -167,8 +168,8 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
-    quoteDifferences: {
-      type: Array<ObjectDifference>,
+    quoteDifference: {
+      type: Number,
       required: false,
     },
   },
@@ -181,6 +182,8 @@ export default defineComponent({
     const btcAddress = ref('');
     const isFlyover = computed(() => props.optionType === constants.pegoutType.FLYOVER);
     const tooltipText = 'Time is approximate and may vary due to block confirmation times and network congestion.';
+    const quoteDiffPercentage = EnvironmentAccessorService.getEnvironmentVariables()
+      .flyoverPegoutDiffPercentage;
 
     const estimatedValueToReceive = computed(() => {
       if (props.quote) {
@@ -271,17 +274,11 @@ export default defineComponent({
       context.emit('change-selected-option', props.quote ? props.quote.quoteHash : '');
     }
 
-    function hasChanged(keys: string[]): boolean {
-      let changed = false;
+    function hasChanged(): boolean {
       if (!isFlyover.value) {
         return false;
       }
-      props.quoteDifferences?.forEach((diff) => {
-        if (keys.includes(diff.key)) {
-          changed = true;
-        }
-      });
-      return changed;
+      return (props.quoteDifference ?? 0) > quoteDiffPercentage;
     }
 
     function openLink(link: string) {

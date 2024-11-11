@@ -12,7 +12,7 @@
       <v-col>
         <rbtc-input-amount
           @getQuotes="getQuotes"
-          :willReceive="amountToReceive" />
+          :clear="clearAmount" />
       </v-col>
     </v-row>
     <template v-if="showStep && !loadingQuotes">
@@ -40,7 +40,7 @@
           @openAddressDialog="showAddressDialog = true"
           @changeSelectedOption="changeSelectedOption"
           :selectedOption="selectedOption === quote.quoteHash"
-          :quote-differences="quoteDifferences"
+          :quote-difference="quoteDifference"
           />
       </v-col>
       <v-col cols="6">
@@ -51,7 +51,7 @@
           @openAddressDialog="showAddressDialog = true"
           @changeSelectedOption="changeSelectedOption"
           :selectedOption="selectedOption === ''"
-          :quote-differences="quoteDifferences"
+          :quote-differences="quoteDifference"
           />
       </v-col>
       </v-row>
@@ -87,33 +87,32 @@
       v-model="sendingPegout"
       class="align-center justify-center"
     >
-    <div class="d-flex flex-column align-center ga-2 rounded-circle bg-blur">
-      <v-progress-circular
-        :size="300"
-        :width="18"
-        color="warning"
-        indeterminate
-        >
-        <span class="pa-10 text-center text-balance">
-          Your transaction is being processed and will be sent to the network.
-        </span>
-      </v-progress-circular>
-      <p v-if="isLedgerConnected" class="text-warning">
-        See your Ledger device to confirm your transaction.
-      </p>
-    </div>
-
+      <div class="d-flex flex-column align-center ga-2 rounded-circle bg-blur">
+        <v-progress-circular
+          :size="300"
+          :width="18"
+          color="warning"
+          indeterminate
+          >
+          <span class="pa-10 text-center text-balance">
+            Your transaction is being processed and will be sent to the network.
+          </span>
+        </v-progress-circular>
+        <p v-if="isLedgerConnected" class="text-warning">
+          See your Ledger device to confirm your transaction.
+        </p>
+      </div>
     </v-overlay>
     <!-- Send tx error message -->
     <template v-if="showTxErrorDialog">
       <full-tx-error-dialog
       :showTxErrorDialog="showTxErrorDialog"
       :error="txError"
-      @closeErrorDialog="showTxErrorDialog = false"
+      @closeErrorDialog="clearForError"
       />
     </template>
     <quote-diff-dialog :show-dialog="showQuoteDiff"
-      :differences="quoteDifferences" @continue="continueHandler"/>
+      :differences="quoteDifference" @continue="continueHandler"/>
     <div id="recaptcha" class="g-recaptcha"
         :data-sitekey="flyoverService.siteKey"
         data-callback="onRecaptchaSuccess"
@@ -136,7 +135,7 @@ import {
 } from '@/common/store/helper';
 import { mdiArrowLeft, mdiArrowRight } from '@mdi/js';
 import {
-  FlyoverPegoutState, ObjectDifference, PegOutTxState, QuotePegOut2WP,
+  FlyoverPegoutState, PegOutTxState, QuotePegOut2WP,
   SatoshiBig, TxInfo, TxStatusType, WeiBig,
 } from '@/common/types';
 import {
@@ -146,6 +145,7 @@ import router from '@/common/router';
 import ApiService from '@/common/services/ApiService';
 import { FlyoverService } from '@/common/services';
 import FullTxErrorDialog from '@/common/components/exchange/FullTxErrorDialog.vue';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import PegoutOption from './PegoutOption.vue';
 
 export default defineComponent({
@@ -173,6 +173,7 @@ export default defineComponent({
     const showStep = ref(false);
     const isWalletAuthorizedToSign = ref(true);
     const diffShown = ref(false);
+    const clearAmount = ref(false);
 
     const pegOutTxState = useState<PegOutTxState>('pegOutTx');
     const flyoverPegoutState = useState<FlyoverPegoutState>('flyoverPegout');
@@ -187,7 +188,7 @@ export default defineComponent({
     const clearPegoutTx = useAction('pegOutTx', constants.PEGOUT_TX_CLEAR);
     const getPegoutQuotes = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_GET_QUOTES);
     const quotes = useStateAttribute<Record<number, QuotePegOut2WP[]>>('flyoverPegout', 'quotes');
-    const quoteDifferences = useStateAttribute<Array<ObjectDifference>>('flyoverPegout', 'differences');
+    const quoteDifference = useStateAttribute<number>('flyoverPegout', 'difference');
     const selectedQuote = useGetter<QuotePegOut2WP>('flyoverPegout', constants.FLYOVER_PEGOUT_GET_SELECTED_QUOTE);
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
     const isEnoughBalance = useGetter<boolean>('pegOutTx', constants.PEGOUT_TX_IS_ENOUGH_BALANCE);
@@ -195,8 +196,9 @@ export default defineComponent({
     const isTrezorConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_TREZOR_CONNECTED);
     const isMetamaskConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_METAMASK_CONNECTED);
     const setSelectedQuoteHash = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE_HASH);
-    const getSelectedQuote = useGetter<QuotePegOut2WP>('flyoverPegout', constants.FLYOVER_PEGOUT_GET_SELECTED_QUOTE);
     const selectedOption = ref<string | undefined>('');
+    const quoteDiffPercentage = EnvironmentAccessorService.getEnvironmentVariables()
+      .flyoverPegoutDiffPercentage;
 
     const pegoutQuotes = computed(() => {
       const quoteList: QuotePegOut2WP[] = [];
@@ -223,7 +225,8 @@ export default defineComponent({
       return '';
     });
 
-    const showQuoteDiff = computed(() => quoteDifferences.value.length > 0 && !diffShown.value);
+    const showQuoteDiff = computed(() => quoteDifference.value > quoteDiffPercentage
+      && diffShown.value);
 
     const validAmountToReceive = computed((): boolean => estimatedBtcToReceive.value.gt(0));
 
@@ -343,22 +346,23 @@ export default defineComponent({
     }));
 
     async function send() {
+      clearAmount.value = false;
       const quoteHash = selectedOption.value;
       const type = quoteHash
         ? TxStatusType.FLYOVER_PEGOUT.toLowerCase()
         : TxStatusType.PEGOUT.toLowerCase();
       pegOutFormState.value.send('loading');
       try {
-        if (quoteHash) {
-          await sendFlyoverTx(quoteHash);
-        } else {
-          await sendTx();
-        }
+        if (quoteHash) await sendFlyoverTx(quoteHash);
+        else await sendTx();
         ApiService.registerTx(quoteHash ? registerFlyover.value : registerPegout.value);
         changePage(type);
       } catch (e) {
         if (e instanceof ServiceError) {
           handlePegoutError(e);
+        }
+        if ((e as Error).toString().includes('Quote differences')) {
+          diffShown.value = true;
         }
       } finally {
         pegOutFormState.value.send('fill');
@@ -372,6 +376,11 @@ export default defineComponent({
       initPegoutTx();
       selectedOption.value = '';
       showStep.value = false;
+      diffShown.value = false;
+      showTxErrorDialog.value = false;
+      showAddressDialog.value = false;
+      loadingQuotes.value = false;
+      isWalletAuthorizedToSign.value = true;
     }
 
     function back():void {
@@ -402,21 +411,20 @@ export default defineComponent({
       }
     }
 
-    const amountToReceive = computed(() => {
-      let finalAmount = '';
-      if (selectedOption.value) {
-        finalAmount = getSelectedQuote.value?.quote.value.toRBTCTrimmedString();
-      } else {
-        finalAmount = new WeiBig(estimatedBtcToReceive.value.toBTCString(), 'rbtc')
-          .minus(pegOutTxState.value.calculatedFee).toRBTCTrimmedString();
-      }
-      return new SatoshiBig(finalAmount, 'btc').toBTCTrimmedString();
-    });
+    if (!props.flyoverEnabled) {
+      showStep.value = true;
+    }
 
     function continueHandler() {
       setSelectedQuoteHash('');
       selectedOption.value = undefined;
-      diffShown.value = true;
+      diffShown.value = false;
+    }
+
+    function clearForError() {
+      showTxErrorDialog.value = false;
+      clearAmount.value = true;
+      showStep.value = false;
     }
 
     onBeforeMount(() => {
@@ -448,13 +456,12 @@ export default defineComponent({
       loadingQuotes,
       sendingPegout,
       showStep,
-      quoteDifferences,
+      quoteDifference,
       showQuoteDiff,
       mdiArrowLeft,
       selectedOption,
       changeSelectedOption,
       mdiArrowRight,
-      amountToReceive,
       isFlyoverReady,
       continueHandler,
       flyoverService,
@@ -463,6 +470,8 @@ export default defineComponent({
       pegoutType: constants.pegoutType,
       isValid,
       flyoverResponded,
+      clearForError,
+      clearAmount,
     };
   },
 });

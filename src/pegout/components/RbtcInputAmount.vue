@@ -68,12 +68,12 @@ export default defineComponent({
   name: 'RbtcInputAmount',
   emits: ['get-quotes'],
   props: {
-    willReceive: {
-      type: String,
-      required: true,
+    clear: {
+      type: Boolean,
+      required: false,
     },
   },
-  setup(_, context) {
+  setup(props, context) {
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const focus = ref(false);
     const rbtcAmount = ref('');
@@ -147,6 +147,8 @@ export default defineComponent({
         || safeAmount.value.lt(minValue);
     });
 
+    const clearProp = computed(() => props.clear);
+
     function blockLetterKeyDown(e: KeyboardEvent) {
       const allowedKeys = ['Backspace', 'Delete', 'Home', 'End', 'ArrowRight', 'ArrowLeft'];
       if (allowedKeys.includes(e.key)) return;
@@ -185,6 +187,7 @@ export default defineComponent({
     }
 
     watch(account, clearInput);
+    watch(clearProp, clearInput);
 
     return {
       amountStyle,
