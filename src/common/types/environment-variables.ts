@@ -47,6 +47,8 @@ export class EnvironmentVariables {
 
   public flyoverGetProvidersTimeout: number;
 
+  public flyoverPegoutDiffPercentage: number;
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(defaultValues: any = {}) {
     this.vueAppCoin = process.env.VUE_APP_COIN || defaultValues.vueAppCoin;
@@ -91,5 +93,7 @@ export class EnvironmentVariables {
       || defaultValues.peginMinValue;
     this.flyoverGetProvidersTimeout = Number(process.env.VUE_APP_FLYOVER_GET_PROVIDERS_TIMEOUT)
       || defaultValues.flyoverGetProvidersTimeout;
+    this.flyoverPegoutDiffPercentage = Number(process.env
+      .VUE_APP_FLYOVER_PEGOUT_QUOTE_DIFF_PERCENTAGE) || defaultValues.flyoverPegoutDiffPercentage;
   }
 }
