@@ -14,5 +14,4 @@ export interface FlyoverPegoutState {
     flyoverService: FlyoverService;
     txHash?: string;
     selectedQuoteHash: string;
-    isResponding: boolean;
 }
