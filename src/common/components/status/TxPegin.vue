@@ -2,12 +2,12 @@
   <v-container>
     <template v-if="showConfirmations">
       <v-row class="justify-space-around">
-        <span class="text-center text-bw-400 text-body-2">
+        <span class="text-center text-body-2">
           {{ btcConfirmations }} / {{ btcConfirmationsRequired }}
         </span>
       </v-row>
       <v-row class="justify-space-around">
-        <span class="text-center text-bw-400 text-body-2">Confirmations</span>
+        <span class="text-center text-body-2">Confirmations</span>
       </v-row>
     </template>
     <v-row class="mb-4">

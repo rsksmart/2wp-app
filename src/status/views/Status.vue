@@ -16,7 +16,7 @@
                     @keyup.enter="getPegStatus" />
     </v-row>
     <v-row no-gutters v-if="showStatus && showTimeLeft" justify="center">
-      <span class="text-bw-400 text-body-1">Estimated time: {{ releaseTimeText }}</span>
+      <span class="text-body-1">Estimated time: {{ releaseTimeText }}</span>
     </v-row>
     <v-row no-gutters v-if="showStatus">
       <tx-pegin v-if="isPegIn" :txId="txId" :isFlyover="isFlyover"

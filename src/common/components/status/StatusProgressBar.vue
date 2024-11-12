@@ -32,23 +32,23 @@
     </v-row>
     <v-row>
       <v-col cols="1" class="pa-0 pl-8">
-        <p class="text-left text-bw-400">{{ timeLineData[0][0] }}</p>
+        <p :class='`text-left ${textClass}`'>{{ timeLineData[0][0] }}</p>
       </v-col>
       <v-spacer />
         <v-col class="pa-0 pl-6">
-          <p class="text-center text-bw-400">{{ timeLineData[1][0] }}</p>
+          <p :class='`text-center ${textClass}`'>{{ timeLineData[1][0] }}</p>
         </v-col>
         <v-spacer />
         <v-col class="pa-0">
-          <p class="text-center text-bw-400">{{ timeLineData[2][0] }}</p>
+          <p :class='`text-center ${textClass}`'>{{ timeLineData[2][0] }}</p>
         </v-col>
         <v-spacer />
         <v-col class="pa-0 pr-4">
-          <p class="text-center text-bw-400">{{ timeLineData[3][0] }}</p>
+          <p :class='`text-center ${textClass}`'>{{ timeLineData[3][0] }}</p>
         </v-col>
         <v-spacer />
       <v-col cols="1" class="pa-0 pr-4">
-        <p class="text-right text-bw-400">{{ timeLineData[4][0] }}</p>
+        <p :class='`text-right ${textClass}`'>{{ timeLineData[4][0] }}</p>
       </v-col>
     </v-row>
   </v-container>
@@ -70,6 +70,7 @@ import {
 } from '@/common/types';
 import { PegStatus, FlyoverStatus } from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
+import { useTheme } from 'vuetify';
 
 export default defineComponent({
   name: 'StatusProgressBar',
@@ -320,6 +321,10 @@ export default defineComponent({
       }
       return require('@/assets/status/ellipse_empty.svg');
     });
+    const textClass = computed(() => {
+      const { global: { current } } = useTheme();
+      return current.value.dark ? 'text-bw-400' : '';
+    });
     return {
       isPegOut,
       initialStepImage,
@@ -331,6 +336,7 @@ export default defineComponent({
       initialImgSize,
       barColor,
       txFailed,
+      textClass,
     };
   },
 });
