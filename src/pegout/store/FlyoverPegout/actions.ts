@@ -32,10 +32,8 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
           EnvironmentAccessorService.getEnvironmentVariables().flyoverGetProvidersTimeout,
         );
         result = constants.FlyoverCallResult.SUCCESS;
-        commit(constants.FLYOVER_PEGOUT_SET_RESPONDING, true);
         resolve(commit(constants.FLYOVER_PEGOUT_SET_PROVIDERS, providers));
       } catch (e) {
-        commit(constants.FLYOVER_PEGOUT_SET_RESPONDING, false);
         reject();
       } finally {
         try {
@@ -92,10 +90,8 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
           });
           result = constants.FlyoverCallResult.SUCCESS;
           commit(constants.FLYOVER_PEGOUT_SET_QUOTES, quotesByProvider);
-          commit(constants.FLYOVER_PEGOUT_SET_RESPONDING, true);
           resolve();
         } catch (e) {
-          commit(constants.FLYOVER_PEGOUT_SET_RESPONDING, false);
           reject();
         } finally {
           try {

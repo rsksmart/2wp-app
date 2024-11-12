@@ -69,9 +69,11 @@
           </v-btn>
         </div>
         <div class="d-flex justify-start align-baseline flex-wrap ml-6">
-          <span class="text-body-1">To learn about the various RBTC access methods, visit </span>
-          <v-btn variant="text" color="orange" density="compact" class="pa-0 text-body-1 mr-2"
-             href="https://rootstock.io/rbtc/" target="_blank">
+          <span class="text-body-1 mr-2 mt-4">
+            To learn about the various RBTC access methods, visit
+          </span>
+          <v-btn variant="text" color="orange" density="compact" class="pa-0 text-body-1"
+            href="https://rootstock.io/rbtc/" target="_blank">
               RBTC Webpage
           </v-btn>
         </div>

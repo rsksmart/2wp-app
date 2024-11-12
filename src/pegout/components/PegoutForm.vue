@@ -21,7 +21,7 @@
         ">Select Mode</span>
       </v-row>
       <v-row>
-        <v-col cols="6" v-if="pegoutQuotes.length === 0" >
+        <v-col cols="6" v-if="!flyoverResponded" >
         <pegout-option class="mr-2" flyover-not-available
           :option-type="pegoutType.FLYOVER">
         <template v-slot>
@@ -188,7 +188,6 @@ export default defineComponent({
     const getPegoutQuotes = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_GET_QUOTES);
     const quotes = useStateAttribute<Record<number, QuotePegOut2WP[]>>('flyoverPegout', 'quotes');
     const quoteDifferences = useStateAttribute<Array<ObjectDifference>>('flyoverPegout', 'differences');
-    const isFlyoverResponding = useStateAttribute<boolean>('flyoverPegout', 'isResponding');
     const selectedQuote = useGetter<QuotePegOut2WP>('flyoverPegout', constants.FLYOVER_PEGOUT_GET_SELECTED_QUOTE);
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
     const isEnoughBalance = useGetter<boolean>('pegOutTx', constants.PEGOUT_TX_IS_ENOUGH_BALANCE);
@@ -283,6 +282,8 @@ export default defineComponent({
       if (selectedOption.value === '') return isReadyToCreate.value;
       return isFlyoverReady.value;
     });
+
+    const flyoverResponded = computed(() => pegoutQuotes.value.length > 0 || props.flyoverEnabled);
 
     function handlePegoutError(error: ServiceError) {
       txError.value = error;
@@ -401,10 +402,6 @@ export default defineComponent({
       }
     }
 
-    if (!props.flyoverEnabled) {
-      showStep.value = true;
-    }
-
     const amountToReceive = computed(() => {
       let finalAmount = '';
       if (selectedOption.value) {
@@ -463,9 +460,9 @@ export default defineComponent({
       flyoverService,
       executeRecaptcha,
       nativeQuote,
-      isFlyoverResponding,
       pegoutType: constants.pegoutType,
       isValid,
+      flyoverResponded,
     };
   },
 });
