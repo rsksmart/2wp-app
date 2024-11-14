@@ -35,7 +35,8 @@
         </template>
     </v-text-field>
     <div>
-      <v-alert v-if="!isValidAmount && isInputFilled" :text="amountErrorMessage"
+      <v-alert v-if="(!isValidAmount || isZeroValue)
+      && isInputFilled  && hasFeeLoaded" :text="amountErrorMessage"
         density="compact" type="warning" color="orange"/>
     </div>
   </v-col>
@@ -146,6 +147,10 @@ export default defineComponent({
       },
     });
 
+    const isZeroValue = computed(() => safeAmount.value.lte('0'));
+
+    const hasFeeLoaded = computed(() => (selectedAccountBalance.value.gt('0') ? safeTxFee.value.gt('0') : true));
+
     function setMin() {
       const { minValue } = boundaries.value;
       bitcoinAmountModel.value = minValue.toBTCTrimmedString();
@@ -162,6 +167,9 @@ export default defineComponent({
       isInputFilled,
       amountErrorMessage,
       setMin,
+      insufficientAmount,
+      isZeroValue,
+      hasFeeLoaded,
     };
   },
 });
