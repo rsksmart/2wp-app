@@ -19,7 +19,7 @@
       <span class="text-bw-400 text-body-1">Estimated time: {{ releaseTimeText }}</span>
     </v-row>
     <v-row no-gutters v-if="showStatus && isRejected" justify="center">
-      <p class="w-75 text-center text-body-1">{{ rejectionMsg }}</p>
+      <p class="w-75 text-center text-body-1 mb-4">{{ rejectionMsg }}</p>
     </v-row>
     <v-row no-gutters v-if="showStatus">
       <tx-pegin v-if="isPegIn" :txId="txId" :isFlyover="isFlyover"
