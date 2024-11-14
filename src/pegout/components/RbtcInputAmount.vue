@@ -147,8 +147,6 @@ export default defineComponent({
         || safeAmount.value.lt(minValue);
     });
 
-    const clearProp = computed(() => props.clear);
-
     function blockLetterKeyDown(e: KeyboardEvent) {
       const allowedKeys = ['Backspace', 'Delete', 'Home', 'End', 'ArrowRight', 'ArrowLeft'];
       if (allowedKeys.includes(e.key)) return;
@@ -187,7 +185,9 @@ export default defineComponent({
     }
 
     watch(account, clearInput);
-    watch(clearProp, clearInput);
+    watch(() => props.clear, (flag) => {
+      if (flag) clearInput();
+    });
 
     return {
       amountStyle,

@@ -173,11 +173,14 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
           const minor = newQuoteTotalFee
             .gt(currentQuoteTotalFee) ? currentQuoteTotalFee : newQuoteTotalFee;
           const difference = ((largest.minus(minor)).mul('100')).div(largest.toRBTCString());
-          if (+difference.toRBTCString() <= EnvironmentAccessorService.getEnvironmentVariables()
-            .flyoverPegoutDiffPercentage) {
+          if (Number(difference.toRBTCString()) <= EnvironmentAccessorService
+            .getEnvironmentVariables().flyoverPegoutDiffPercentage) {
             commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, quote2wp.quoteHash);
           } else {
-            commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE, +difference.toRBTCString());
+            commit(
+              constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE,
+              Number(difference.toRBTCString()),
+            );
           }
         });
         resolve();

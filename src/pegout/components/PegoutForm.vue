@@ -123,7 +123,7 @@
 
 <script lang="ts">
 import {
-  computed, defineComponent, onBeforeMount, ref, watch,
+  computed, defineComponent, onBeforeMount, onMounted, ref, watch,
 } from 'vue';
 import * as constants from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
@@ -196,7 +196,8 @@ export default defineComponent({
     const isTrezorConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_TREZOR_CONNECTED);
     const isMetamaskConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_METAMASK_CONNECTED);
     const setSelectedQuoteHash = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE_HASH);
-    const selectedOption = ref<string | undefined>('');
+    const selectedQuoteHash = useStateAttribute<string>('flyoverPegout', 'selectedQuoteHash');
+    const selectedOption = ref<string>('');
     const quoteDiffPercentage = EnvironmentAccessorService.getEnvironmentVariables()
       .flyoverPegoutDiffPercentage;
 
@@ -233,7 +234,7 @@ export default defineComponent({
     const isReadyToCreate = computed((): boolean => isEnoughBalance.value
         && !!account.value
         && validAmountToReceive.value
-        && selectedOption.value !== undefined);
+        && selectedOption.value === '');
 
     const isFlyoverReady = computed(() => {
       if (selectedOption.value && selectedQuote.value) {
@@ -282,7 +283,7 @@ export default defineComponent({
     }));
 
     const isValid = computed(() => {
-      if (selectedOption.value === '') return isReadyToCreate.value;
+      if (selectedQuote.value === undefined) return isReadyToCreate.value;
       return isFlyoverReady.value;
     });
 
@@ -347,7 +348,7 @@ export default defineComponent({
 
     async function send() {
       clearAmount.value = false;
-      const quoteHash = selectedOption.value;
+      const quoteHash = selectedQuoteHash.value || '';
       const type = quoteHash
         ? TxStatusType.FLYOVER_PEGOUT.toLowerCase()
         : TxStatusType.PEGOUT.toLowerCase();
@@ -404,7 +405,7 @@ export default defineComponent({
     }
 
     function executeRecaptcha() {
-      if (!window.grecaptcha.getResponse()) {
+      if (selectedQuoteHash.value) {
         window.grecaptcha.execute();
       } else {
         send();
@@ -417,7 +418,7 @@ export default defineComponent({
 
     function continueHandler() {
       setSelectedQuoteHash('');
-      selectedOption.value = undefined;
+      selectedOption.value = '';
       diffShown.value = false;
     }
 
@@ -433,9 +434,11 @@ export default defineComponent({
       }
     });
 
-    if (props.flyoverEnabled) {
-      appendRecaptcha(flyoverService.value.siteKey);
-    }
+    onMounted(() => {
+      if (props.flyoverEnabled) {
+        appendRecaptcha(flyoverService.value.siteKey);
+      }
+    });
 
     watch(account, clearState);
 
