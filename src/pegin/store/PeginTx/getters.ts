@@ -114,7 +114,7 @@ export const getters: GetterTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_GET_SAFE_TX_FEE]:
     (state: PegInTxState)
       : SatoshiBig => {
-      let fee: SatoshiBig;
+      let fee: SatoshiBig = new SatoshiBig('0', 'satoshi');
       if (!state.normalizedTx.inputs.length) {
         switch (state.selectedFee) {
           case constants.BITCOIN_SLOW_FEE_LEVEL:

@@ -10,7 +10,7 @@
       variant="solo"
       density="comfortable"
       rounded="lg"
-      :class="(!isValidAmount && isInputFilled) && 'input-error'"
+      :class="showWarningMessage && 'input-error'"
       class="text-h4 flex-grow-0 amount-input"
       v-model="bitcoinAmountModel"
       type="text"
@@ -35,8 +35,7 @@
         </template>
     </v-text-field>
     <div>
-      <v-alert v-if="(!isValidAmount || isZeroValue)
-      && isInputFilled  && hasFeeLoaded" :text="amountErrorMessage"
+      <v-alert v-show="showWarningMessage" :text="amountErrorMessage"
         density="compact" type="warning" color="orange"/>
     </div>
   </v-col>
@@ -129,9 +128,30 @@ export default defineComponent({
     const isValidAmount = computed(() => !insufficientAmount.value
       && isBTCAmountValidRegex(bitcoinAmount.value));
 
+    const isZeroValue = computed(() => safeAmount.value.lte('0'));
+
+    const hasFeeLoaded = computed(() => {
+      const { minValue } = boundaries.value;
+      if (selectedAccountBalance.value.gt('0')) {
+        if (safeAmount.value.lte(minValue)) {
+          return true;
+        }
+        return safeTxFee.value.gt('0');
+      }
+      return true;
+    });
+
+    const showWarningMessage = ref(false);
+
+    function updateShowWarning() {
+      showWarningMessage.value = (!isValidAmount.value || isZeroValue.value)
+      && isInputFilled.value && hasFeeLoaded.value;
+    }
+
     function emitIsValidAmount() {
       const amount = new SatoshiBig(Number(bitcoinAmount.value), 'btc');
       setBtcAmount(amount);
+      updateShowWarning();
       context.emit('validAmount', isValidAmount.value, bitcoinAmount.value);
     }
 
@@ -146,10 +166,6 @@ export default defineComponent({
         timeOutId.value = window.setTimeout(emitIsValidAmount, 300);
       },
     });
-
-    const isZeroValue = computed(() => safeAmount.value.lte('0'));
-
-    const hasFeeLoaded = computed(() => (selectedAccountBalance.value.gt('0') ? safeTxFee.value.gt('0') : true));
 
     function setMin() {
       const { minValue } = boundaries.value;
@@ -170,6 +186,8 @@ export default defineComponent({
       insufficientAmount,
       isZeroValue,
       hasFeeLoaded,
+      showWarningMessage,
+      safeTxFee,
     };
   },
 });
