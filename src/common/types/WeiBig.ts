@@ -79,4 +79,8 @@ export default class WeiBig extends Big {
   toWeiBigInt(): bigint {
     return BigInt(this.toFixed(0));
   }
+
+  toWeiNumber(): number {
+    return Number(this.toFixed(0));
+  }
 }

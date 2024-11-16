@@ -215,8 +215,8 @@ export default class ApiService {
 
   static registerTx(txInfo: TxInfo): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      const { sessionId, txHash, type } = txInfo;
-      if (sessionId == null || txHash == null || type == null) resolve();
+      const { txHash, type } = txInfo;
+      if (txHash == null || type == null) resolve();
       axios.post(`${ApiService.baseURL}/register`, txInfo)
         .then(() => resolve())
         .catch(reject);

@@ -324,26 +324,25 @@ export default defineComponent({
       const dbQuote: PegoutQuoteDbModel = {
         agreementTimestamp: pegoutQuote.agreementTimestamp,
         btcRefundAddress: pegoutQuote.btcRefundAddress,
-        callFeeOnWei: pegoutQuote.callFee.toWeiBigInt(),
+        callFeeOnWei: pegoutQuote.callFee.toWeiNumber(),
         depositAddr: pegoutQuote.depositAddr,
         depositConfirmations: pegoutQuote.depositConfirmations,
         depositDateLimit: pegoutQuote.depositDateLimit,
         expireBlocks: pegoutQuote.expireBlocks,
         expireDate: pegoutQuote.expireDate,
-        gasFeeOnWei: pegoutQuote.gasFee.toWeiBigInt(),
+        gasFeeOnWei: pegoutQuote.gasFee.toWeiNumber(),
         lbcAddress: pegoutQuote.lbcAddress,
         liquidityProviderRskAddress: pegoutQuote.liquidityProviderRskAddress,
         lpBtcAddress: pegoutQuote.lpBtcAddr,
-        nonce: pegoutQuote.nonce,
-        penaltyFeeOnWei: pegoutQuote.penaltyFee.toWeiBigInt(),
-        productFeeAmountOnWei: pegoutQuote.productFeeAmount.toWeiBigInt(),
+        nonce: Number(pegoutQuote.nonce),
+        penaltyFeeOnWei: pegoutQuote.penaltyFee.toWeiNumber(),
+        productFeeAmountOnWei: pegoutQuote.productFeeAmount.toWeiNumber(),
         rskRefundAddress: pegoutQuote.rskRefundAddress,
         transferConfirmations: pegoutQuote.transferConfirmations,
         transferTime: pegoutQuote.transferTime,
-        valueOnWei: pegoutQuote.value.toWeiBigInt(),
+        valueOnWei: pegoutQuote.value.toWeiNumber(),
       };
       return {
-        sessionId: '',
         txHash: flyoverPegoutState.value.txHash as string,
         type: TxStatusType.PEGOUT.toLowerCase(),
         value: Number(flyoverPegoutState.value.amountToTransfer.toRBTCTrimmedString()),
@@ -362,7 +361,6 @@ export default defineComponent({
     });
 
     const registerPegout = computed(() => ({
-      sessionId: '',
       txHash: pegOutTxState.value.txHash as string,
       type: TxStatusType.PEGOUT.toLowerCase(),
       value: Number(pegOutTxState.value.amountToTransfer.toRBTCTrimmedString()),
