@@ -61,7 +61,6 @@ export default defineComponent({
     const walletService = useGetter<WalletService>('pegInTx', constants.PEGIN_TX_GET_WALLET_SERVICE);
     const selectedAccountType = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_SELECTED_ACCOUNT_TYPE);
     const safeFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
-    const sessionId = useStateAttribute<string>('pegInTx', 'sessionId');
     const isHdWallet = useGetter<boolean>('pegInTx', constants.PEGIN_TX_IS_HD_WALLET);
     const selectedQuote = useGetter<PeginQuote>('flyoverPegin', constants.FLYOVER_PEGIN_GET_SELECTED_QUOTE);
     const liquidityProviders = useStateAttribute<LiquidityProvider2WP[]>('flyoverPegin', 'liquidityProviders');
@@ -78,7 +77,7 @@ export default defineComponent({
     const flyoverProps = computed(() => {
       const peginQuote = selectedQuote.value.quote;
       const dbQuote: PeginQuoteDbModel = {
-        callFeeOnSatoshi: peginQuote.callFee.toSatoshiBigInt(),
+        callFeeOnSatoshi: peginQuote.callFee.toSatoshiNumber(),
         callOnRegister: peginQuote.callOnRegister,
         confirmations: peginQuote.confirmations,
         contractAddr: peginQuote.contractAddr,
@@ -86,13 +85,13 @@ export default defineComponent({
         fedBTCAddr: peginQuote.fedBTCAddr,
         gasLimit: peginQuote.gasLimit,
         lpCallTime: peginQuote.lpCallTime,
-        productFeeAmountOnSatoshi: peginQuote.productFeeAmount.toSatoshiBigInt(),
+        productFeeAmountOnSatoshi: peginQuote.productFeeAmount.toSatoshiNumber(),
         timeForDepositInSeconds: peginQuote.timeForDepositInSeconds,
-        valueOnSatoshi: peginQuote.value.toSatoshiBigInt(),
+        valueOnSatoshi: peginQuote.value.toSatoshiNumber(),
         agreementTimestamp: peginQuote.agreementTimestamp,
-        gasFeeOnWei: peginQuote.gasFee.toWeiBigInt(),
-        nonce: peginQuote.nonce,
-        penaltyFeeOnWei: peginQuote.penaltyFee.toWeiBigInt(),
+        gasFeeOnWei: peginQuote.gasFee.toWeiNumber(),
+        nonce: Number(peginQuote.nonce),
+        penaltyFeeOnWei: peginQuote.penaltyFee.toWeiNumber(),
         btcRefundAddress: peginQuote.btcRefundAddr,
         lbcAddress: peginQuote.lbcAddr,
         lpBtcAddress: peginQuote.lpBTCAddr,
@@ -131,7 +130,6 @@ export default defineComponent({
           .broadcast(signedTx))
         .then((id) => {
           ApiService.registerTx({
-            sessionId: sessionId.value,
             txHash: id,
             type: TxStatusType.PEGIN.toLowerCase(),
             wallet: walletService.value.name().short_name,
