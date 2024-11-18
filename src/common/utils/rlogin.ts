@@ -3,7 +3,6 @@ import { EnvironmentAccessorService } from '@/common/services/enviroment-accesso
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import { trezorProviderOptions } from '@rsksmart/rlogin-trezor-provider';
 import { ledgerProviderOptions } from '@rsksmart/rlogin-ledger-provider';
-import * as constants from '@/common/store/constants';
 
 export function getRloginInstance(): RLogin {
   const rpcUrls = {};
@@ -15,24 +14,14 @@ export function getRloginInstance(): RLogin {
     await provider.connect();
     return provider;
   };
-  const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
-  if (network === constants.BTC_NETWORK_MAINNET) {
-    Object
-      .defineProperty(rpcUrls, constants.SUPPORTED_NETWORKS.RSK_MAINNET.chainId, {
-        value: constants.SUPPORTED_NETWORKS.RSK_MAINNET.rpcUrl,
-        writable: false,
-        configurable: true,
-        enumerable: true,
-      });
-  } else {
-    Object
-      .defineProperty(rpcUrls, constants.SUPPORTED_NETWORKS.RSK_TESTNET.chainId, {
-        value: constants.SUPPORTED_NETWORKS.RSK_TESTNET.rpcUrl,
-        writable: false,
-        configurable: true,
-        enumerable: true,
-      });
-  }
+  const { vueAppRskNodeHost, chainId } = EnvironmentAccessorService.getEnvironmentVariables();
+  Object
+    .defineProperty(rpcUrls, chainId, {
+      value: vueAppRskNodeHost,
+      writable: false,
+      configurable: true,
+      enumerable: true,
+    });
   const supportedChains = Object.keys(rpcUrls).map(Number);
   const rLoginSetup = new RLogin({
     cacheProvider: false,

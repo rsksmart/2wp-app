@@ -10,7 +10,7 @@ import {
   LiquidityProvider2WP, PeginQuote, QuotePegOut2WP,
   SatoshiBig, WeiBig,
 } from '@/common/types';
-import { providers } from 'ethers';
+import { Web3 } from 'web3';
 import { EnvironmentAccessorService } from './enviroment-accessor.service';
 import { isValidSiteKey, ServiceError } from '../utils';
 
@@ -36,7 +36,8 @@ export default class FlyoverService {
   private liquidityProviderIdUsed = -1;
 
   constructor(providerUrl?: string) {
-    this.providerUrl = providerUrl;
+    this.providerUrl = providerUrl
+    ?? EnvironmentAccessorService.getEnvironmentVariables().vueAppRskNodeHost;
     const appNetwork = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
     switch (appNetwork) {
       case constants.BTC_NETWORK_MAINNET:
@@ -53,8 +54,12 @@ export default class FlyoverService {
 
   initialize(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
+      console.log('providerUrl on flyover service', this.providerUrl);
+      const web3Provider = new Web3.providers.HttpProvider(this.providerUrl ?? '');
+      const fullyCompatibleProvider = web3Provider.asEIP1193Provider();
       const provider = this.providerUrl
-        ? new providers.JsonRpcProvider(this.providerUrl) : window.ethereum;
+        ? fullyCompatibleProvider : window.ethereum;
+
       BlockchainConnection.createUsingStandard(provider)
         .then((connection: BlockchainConnection) => {
           this.flyover = new Flyover({
