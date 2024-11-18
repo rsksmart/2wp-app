@@ -1,4 +1,5 @@
 import { AppNetwork } from '@/common/types';
+import * as constants from '@/common/store/constants';
 
 export class EnvironmentVariables {
   public vueAppCoin: AppNetwork;
@@ -95,5 +96,11 @@ export class EnvironmentVariables {
       || defaultValues.flyoverGetProvidersTimeout;
     this.flyoverPegoutDiffPercentage = Number(process.env
       .VUE_APP_FLYOVER_PEGOUT_QUOTE_DIFF_PERCENTAGE) || defaultValues.flyoverPegoutDiffPercentage;
+  }
+
+  public get chainId(): number {
+    return this.vueAppCoin === constants.BTC_NETWORK_MAINNET
+      ? constants.SUPPORTED_NETWORKS.RSK_MAINNET.chainId
+      : constants.SUPPORTED_NETWORKS.RSK_TESTNET.chainId;
   }
 }
