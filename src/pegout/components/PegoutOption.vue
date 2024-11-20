@@ -1,20 +1,20 @@
 <template>
   <v-card :ripple="false" rounded="lg" flat variant="outlined"
-    @click="selectOption" height="450px" :disabled="flyoverNotAvailable"
+    @click="selectOption" height="400px" :disabled="flyoverNotAvailable"
     :class="{ 'selected': selectedOption, 'not-available': flyoverNotAvailable }"
-    class="d-flex flex-column ga-4 pa-8">
+    class="pa-8">
     <div v-if="flyoverNotAvailable"
       class="not-available-text d-flex align-center justify-center pa-8 text-center">
       <slot />
     </div>
-    <v-row no-gutters class="my-2">
+    <v-row no-gutters class="mb-5 py-2">
       <div class='text-h3'>
         <span :class='`pa-1 bg-${header.subtitleBgColor}`'>
           {{ header.title }}
         </span>
       </div>
     </v-row>
-    <v-row  no-gutters>
+    <v-row no-gutters class="mb-5">
       <v-col cols="auto">
         <span class="text-right"> {{ header.label }}</span>
       </v-col>
@@ -37,11 +37,11 @@
       </v-tooltip>
       </v-col>
     </v-row>
-    <v-divider thickness="1" :style='`color: ${header.color}; opacity: 1;`' />
-    <v-row>
+    <v-divider class="mb-5" thickness="1" :style='`color: ${header.color}; opacity: 1;`' />
+    <v-row no-gutters class="mb-5">
       <v-col>
         <div class="d-flex flex-column">
-          <span>
+          <span :class='`text-${header.subtitleBgColor}`'>
             {{ isFlyover ? 'Value to receive' : 'Estimated value to receive' }}
           </span>
           <span class="text-bw-400">
@@ -69,7 +69,7 @@
         </div>
       </v-col>
     </v-row>
-    <div class="ga-2 pt-4">
+    <div class="ga-2">
       <div class="mb-4">Destination Bitcoin Address</div>
       <div v-if="isFlyover">
         <v-text-field
