@@ -1,6 +1,6 @@
 <template>
-  <v-row >
-    <v-col cols="7" class="d-flex align-center justify-end">
+  <v-row no-gutters align="center">
+    <v-col class="d-flex align-center ga-1">
       <v-btn v-if="singleAccountType" variant="text" size="small"
         density="compact" rounded="full" :icon="mdiContentCopy"
             @click="copyFullAccountAddress"
@@ -14,29 +14,21 @@
         >{{ selectedAccountBalance.toBTCString() }} {{ environmentContext.getBtcTicker() }}
         </v-tooltip>
       </span>
+      <v-chip v-if="singleAccountType" class="mx-1"
+        variant="flat" :color="selectedAccountTypeBadge.color" density="compact">
+        {{ selectedAccountTypeBadge.text }}
+      </v-chip>
     </v-col>
-    <v-col cols="5" class="pa-0 d-flex align-center">
-      <div v-if="singleAccountType" class="d-flex align-center justify-end ga-4">
-        <v-btn
-              v-bind="props"
-              variant="plain"
-              class="h-100"
-            >
-              <template #default>
-                <v-chip v-show="selectedAccountType"
-                  variant="flat" :color="selectedAccountTypeBadge.color" density="compact">
-                  {{ selectedAccountTypeBadge.text }}
-                </v-chip>
-              </template>
-            </v-btn>
-      </div>
-      <div v-else class="d-flex align-center justify-end h-100 w-100 pa-0">
-        <v-menu location="bottom" no-click-animation="true">
+    <v-col v-if="!singleAccountType">
+      <div>
+        <v-menu location="bottom end" no-click-animation="true"
+        :disabled="loadingBalance || !atPeginForm">
           <template v-slot:activator="{ props }">
             <v-btn
+              class="opacity-100"
               v-bind="props"
               variant="plain"
-              class="h-100"
+              size="small"
             >
               <template #default>
                 <v-chip v-show="selectedAccountType"
@@ -70,23 +62,23 @@
             </v-list-item>
           </v-list>
         </v-menu>
-        <div v-if="loadingBalance" class="d-flex align-center ga-2">
-          <v-progress-circular size="small" indeterminate color="bw-500"/>
-        </div>
       </div>
     </v-col>
+    <v-progress-circular v-if="loadingBalance" size="small" indeterminate color="bw-500"/>
   </v-row>
 </template>
 
 <script lang="ts">
 import {
-  ref, defineComponent, computed,
+  ref, defineComponent, computed, watch,
 } from 'vue';
 import { mdiBitcoin, mdiContentCopy, mdiChevronDown } from '@mdi/js';
 import * as constants from '@/common/store/constants';
 import { BtcAccount, WalletAddress } from '@/common/types/pegInTx';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
+import {
+  useAction, useGetter, useStateAttribute,
+} from '@/common/store/helper';
 import { AccountBalance, BtcWallet, SatoshiBig } from '@/common/types';
 import { WalletService } from '@/common/services';
 import { truncateString } from '@/common/utils';
@@ -105,6 +97,8 @@ export default defineComponent({
     const selectAccount = useAction('pegInTx', constants.PEGIN_TX_SELECT_ACCOUNT_TYPE);
     const calculateTxFee = useAction('pegInTx', constants.PEGIN_TX_CALCULATE_TX_FEE);
     const selectedAccountBalance = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SELECTED_BALANCE);
+    const peginCurrentView = useStateAttribute<string>('pegInTx', 'currentView');
+    const atPeginForm = computed(() => peginCurrentView.value === 'PegInForm');
 
     function accountChanged(account: BtcAccount) {
       selectedAccountType.value = account;
@@ -167,6 +161,13 @@ export default defineComponent({
       const [firstAccount] = walletService.value.availableAccounts();
       selectedAccountType.value = firstAccount;
     }
+
+    watch(loadingBalance, () => {
+      if (!loadingBalance.value) {
+        balancesPerAccountType.value.sort((a, b) => Number(b.title) - Number(a.title));
+      }
+    });
+
     selectAccount(selectedAccountType.value);
     calculateTxFee();
 
@@ -194,6 +195,7 @@ export default defineComponent({
       mdiChevronDown,
       walletInfo,
       copyFullAccountAddress,
+      atPeginForm,
     };
   },
 });

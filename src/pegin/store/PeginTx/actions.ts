@@ -206,4 +206,7 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_ADD_PEGIN_TYPE]: ({ commit }, peginType: constants.peginType): void => {
     commit(constants.PEGIN_TX_SET_PEGIN_TYPE, peginType);
   },
+  [constants.PEGIN_TX_SET_CURRENT_VIEW]: ({ commit }, view: string): void => {
+    commit(constants.PEGIN_TX_SET_VIEW, view);
+  },
 };

@@ -7,7 +7,7 @@
       <h1 class="text-purple text-h5">PowPeg</h1>
     </div>
     <div class="d-flex align-center ga-5">
-      <peg-in-account-select v-if="isPeginSelected"/>
+      <peg-in-account-select v-if="isPeginSelected && walletDataReady"/>
       <div class="d-flex align-center ga-2" v-else-if="truncatedAccount && accountBalance">
         <v-btn variant="text" size="small" density="compact" rounded="full" :icon="mdiContentCopy"
           @click="copyFullAccountAddress"
@@ -62,6 +62,8 @@ export default {
     const balance = useStateAttribute<WeiBig>('web3Session', 'balance');
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
+    const walletDataReady = useStateAttribute<boolean>('pegInTx', 'walletDataReady');
+
     const accountBalance = computed(() => {
       const amount = balance.value.toRBTCString().slice(0, 7);
       return `${amount} ${environmentContext.getRbtcTicker()}`;
@@ -103,6 +105,7 @@ export default {
       balance,
       environmentContext,
       isPeginSelected: computed(() => route.name === 'Create'),
+      walletDataReady,
     };
   },
 };
