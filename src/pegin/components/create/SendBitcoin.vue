@@ -34,7 +34,7 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent } from 'vue';
+import { ref, defineComponent, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import PegInForm from '@/pegin/components/create/PegInForm.vue';
 import ConfirmTx from '@/pegin/components/create/ConfirmTx.vue';
@@ -104,6 +104,7 @@ export default defineComponent({
     const clearStore = useAction('pegInTx', constants.PEGIN_TX_CLEAR_STATE);
     const init = useAction('pegInTx', constants.PEGIN_TX_INIT);
     const setBtcWallet = useAction('pegInTx', constants.PEGIN_TX_ADD_BITCOIN_WALLET);
+    const setCurrenView = useAction('pegInTx', constants.PEGIN_TX_SET_CURRENT_VIEW);
     const getChangeAddress = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_CHANGE_ADDRESS);
     const selectedUtxoList = useGetter<Utxo[]>('pegInTx', constants.PEGIN_TX_GET_SELECTED_UTXO_LIST);
     const selectedFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
@@ -254,6 +255,10 @@ export default defineComponent({
       init()
         .then(() => setBtcWallet(wallet));
     }
+
+    watch(currentComponent, () => {
+      setCurrenView(currentComponent.value);
+    }, { immediate: true });
 
     setTxBuilder();
 
