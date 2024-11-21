@@ -66,6 +66,7 @@ export default defineComponent({
     const liquidityProviders = useStateAttribute<LiquidityProvider2WP[]>('flyoverPegin', 'liquidityProviders');
     const recipientAddress = useStateAttribute<string>('flyoverPegin', 'rootstockRecipientAddress');
     const peginType = useStateAttribute<string>('pegInTx', 'peginType');
+    const acceptedQuoteSignature = useStateAttribute<string>('flyoverPegin', 'acceptedQuoteSignature');
     const isFlyover = computed(() => peginType.value === constants.peginType.FLYOVER);
 
     function getLPName(): string {
@@ -109,6 +110,7 @@ export default defineComponent({
         },
         quote: dbQuote,
         quoteHash: selectedQuote.value.quoteHash,
+        acceptedQuoteSignature: acceptedQuoteSignature.value,
       };
     });
 

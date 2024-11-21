@@ -14,4 +14,5 @@ export interface FlyoverPeginState {
     flyoverService: FlyoverService;
     txHash?: string;
     selectedQuoteHash: string;
+    acceptedQuoteSignature: string;
 }

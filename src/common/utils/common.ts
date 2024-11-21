@@ -119,6 +119,7 @@ export const getClearFlyoverPeginState = (): FlyoverPeginState => ({
   quotes: {},
   flyoverService: markRaw(new FlyoverService()),
   selectedQuoteHash: '',
+  acceptedQuoteSignature: '',
 });
 
 export const compareObjects = (

@@ -17,10 +17,10 @@ export function useGetters(module: string, getters: string[]) {
   return Object.fromEntries(keyPair);
 }
 
-export function useAction(module: string, action: string) {
+export function useAction<T>(module: string, action: string) {
   const store = useStore();
   // eslint-disable-next-line
-  return async (param?: any): Promise<void> => store.dispatch(`${module}/${action}`, param);
+  return async (param?: any): Promise<T> => store.dispatch(`${module}/${action}`, param);
 }
 
 export function useGetter<T>(module: string, getter: string): ComputedRef<T> {

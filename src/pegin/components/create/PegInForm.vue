@@ -100,6 +100,7 @@ import { BridgeService } from '@/common/services/BridgeService';
 import { FlyoverService } from '@/common/services';
 import FullTxErrorDialog from '@/common/components/exchange/FullTxErrorDialog.vue';
 import RskDestinationAddress from '@/pegin/components/create/RskDestinationAddress.vue';
+import { AcceptedQuote } from '@rsksmart/flyover-sdk';
 
 export default defineComponent({
   name: 'PegInForm',
@@ -134,9 +135,9 @@ export default defineComponent({
     const getPeginQuotes = useAction('flyoverPegin', constants.FLYOVER_PEGIN_GET_QUOTES);
     const setSelectedQuote = useAction('flyoverPegin', constants.FLYOVER_PEGIN_ADD_SELECTED_QUOTE);
     const clearQuotes = useAction('flyoverPegin', constants.FLYOVER_PEGIN_CLEAR_QUOTES);
+    const acceptQuote = useAction<AcceptedQuote>('flyoverPegin', constants.FLYOVER_PEGIN_ACCEPT_QUOTE);
     const quotes = useStateAttribute<Record<number, QuotePegIn2WP[]>>('flyoverPegin', 'quotes');
     const setPeginType = useAction('pegInTx', constants.PEGIN_TX_ADD_PEGIN_TYPE);
-    const selectedQuoteHash = useStateAttribute<string>('flyoverPegin', 'selectedQuoteHash');
     const flyoverService = useStateAttribute<FlyoverService>('flyoverPegin', 'flyoverService');
     const selectedFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
     const selectedAccountBalance = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SELECTED_BALANCE);
@@ -190,7 +191,7 @@ export default defineComponent({
           peginType: constants.peginType.POWPEG,
         });
       } else {
-        flyoverService.value.acceptPeginQuote(selectedQuoteHash.value)
+        acceptQuote()
           .then((acceptedQuote) => {
             context.emit('createTx', {
               amountToTransferInSatoshi: selectedQuote.value?.valueToTransfer,

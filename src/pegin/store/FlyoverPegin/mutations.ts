@@ -29,4 +29,7 @@ export const mutations: MutationTree<FlyoverPeginState> = {
       }
     });
   },
+  [constants.FLYOVER_PEGIN_SET_ACCEPTED_QUOTE_SIGNATURE]: (state, quoteSignature: string) => {
+    state.acceptedQuoteSignature = quoteSignature;
+  },
 };
