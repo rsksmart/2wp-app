@@ -146,6 +146,7 @@ import ApiService from '@/common/services/ApiService';
 import { FlyoverService } from '@/common/services';
 import FullTxErrorDialog from '@/common/components/exchange/FullTxErrorDialog.vue';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import { providers } from 'ethers';
 import PegoutOption from './PegoutOption.vue';
 
 export default defineComponent({
@@ -187,6 +188,7 @@ export default defineComponent({
     const clearFlyoverState = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_CLEAR_STATE);
     const clearPegoutTx = useAction('pegOutTx', constants.PEGOUT_TX_CLEAR);
     const getPegoutQuotes = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_GET_QUOTES);
+    const ethersProvider = useStateAttribute<providers.Web3Provider>('web3Session', 'ethersProvider');
     const quotes = useStateAttribute<Record<number, QuotePegOut2WP[]>>('flyoverPegout', 'quotes');
     const quoteDifference = useStateAttribute<number>('flyoverPegout', 'difference');
     const selectedQuote = useGetter<QuotePegOut2WP>('flyoverPegout', constants.FLYOVER_PEGOUT_GET_SELECTED_QUOTE);
@@ -396,7 +398,7 @@ export default defineComponent({
     function clearState() {
       clearFlyoverState();
       clearPegoutTx();
-      initFlyoverTx();
+      initFlyoverTx(ethersProvider.value);
       initPegoutTx();
       selectedOption.value = '';
       showStep.value = false;

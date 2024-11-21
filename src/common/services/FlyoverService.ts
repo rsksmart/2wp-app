@@ -1,4 +1,4 @@
-import { BlockchainConnection, BlockchainReadOnlyConnection, Network } from '@rsksmart/bridges-core-sdk';
+import { BlockchainConnection, Network } from '@rsksmart/bridges-core-sdk';
 import {
   AcceptedPegoutQuote, Flyover,
   LiquidityProvider, PegoutQuote, Quote,
@@ -10,6 +10,7 @@ import {
   LiquidityProvider2WP, PeginQuote, QuotePegOut2WP,
   SatoshiBig, WeiBig,
 } from '@/common/types';
+import { Wallet, providers } from 'ethers';
 import { EnvironmentAccessorService } from './enviroment-accessor.service';
 import { isValidSiteKey, ServiceError } from '../utils';
 
@@ -51,14 +52,19 @@ export default class FlyoverService {
     }
   }
 
-  initialize(): Promise<void> {
+  initialize(web3Provider?: providers.ExternalProvider): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      BlockchainReadOnlyConnection.createUsingRpc(this.providerUrl)
+      const connectionPromise = web3Provider
+        ? BlockchainConnection.createUsingStandard(web3Provider)
+        : BlockchainConnection.createUsingPassphrase(
+          Wallet.createRandom().mnemonic.phrase,
+          this.providerUrl,
+        );
+      connectionPromise
         .then((connection) => {
-          console.log(connection);
           this.flyover = new Flyover({
             network: this.flyoverNetwork,
-            rskConnection: connection as unknown as BlockchainConnection,
+            rskConnection: connection as BlockchainConnection,
             captchaTokenResolver: this.tokenResolver.bind(this),
             disableChecksum: true,
           });

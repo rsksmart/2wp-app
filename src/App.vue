@@ -14,7 +14,7 @@
 
 <script lang="ts">
 import {
-  computed, onBeforeMount, onMounted, ref,
+  computed, onBeforeMount, ref,
 } from 'vue';
 import Top from '@/common/components/layouts/Top.vue';
 import FooterRsk from '@/common/components/layouts/Footer.vue';
@@ -39,7 +39,6 @@ export default {
     let hotjarScriptTag: HTMLScriptElement;
     const getFeatures = useAction('web3Session', constants.SESSION_ADD_FEATURES);
     const getBtcPrice = useAction('pegInTx', constants.PEGIN_TX_ADD_BITCOIN_PRICE);
-    const initFlyover = useAction('flyoverPegin', constants.FLYOVER_PEGIN_INIT);
     const showTermsAndConditions = ref(false);
     const contentSecurityPolicy = computed((): string => {
       const envVariables = EnvironmentAccessorService.getEnvironmentVariables();
@@ -98,17 +97,6 @@ export default {
     onBeforeMount(() => {
       getFeatures();
       getBtcPrice();
-    });
-
-    onMounted(() => {
-      console.log('App mounted trying to init flyover');
-      initFlyover()
-        .then(() => {
-          console.log('flyover init success');
-        })
-        .catch((error) => {
-          console.error('flyover init error', error);
-        });
     });
 
     appendHotjar();
