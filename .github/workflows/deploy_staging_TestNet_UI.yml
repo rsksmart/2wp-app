@@ -53,7 +53,7 @@ jobs:
           VUE_APP_AVERAGE_MINING_BLOCK=3
           VUE_APP_SLOW_MINING_BLOCK=5
           VUE_APP_LBC_ADDRESS='0xc2A630c053D12D63d32b025082f6Ba268db18300'
-          VUE_APP_FLYOVER_PEGOUT_QUOTE_DIFF_PERCENTAGE=5
+          VUE_APP_FLYOVER_PEGOUT_QUOTE_DIFF_PERCENTAGE=20
           npm run-script build
 
       - name: Configure AWS credentials
