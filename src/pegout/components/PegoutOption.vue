@@ -94,17 +94,17 @@
       </div>
       <template v-else>
         <v-text-field
-          :v-model="session.btcDerivedAddress || 'Address needs to be generated'"
+          :v-model="session.btcDerivedAddress || 'Derived Bitcoin Address'"
           flat
           hide-details
           density="compact"
           rounded="lg"
           variant="solo"
-          :placeholder="session.btcDerivedAddress || 'Address needs to be generated'">
+          :placeholder="session.btcDerivedAddress || 'Derived Bitcoin Address'">
           <template v-slot:append-inner>
             <v-chip v-if="isWalletAuthorizedToSign && !session.btcDerivedAddress"
             variant="outlined" @click="$emit('openAddressDialog')">
-            Generate
+            Derive
           </v-chip>
           </template>
         </v-text-field>
