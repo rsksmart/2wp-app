@@ -50,4 +50,5 @@ export interface TxInfo {
   details?: Record<string, unknown>;
   quote?: PeginQuoteDbModel | PegoutQuoteDbModel;
   quoteHash?: string;
+  acceptedQuoteSignature?: string;
 }

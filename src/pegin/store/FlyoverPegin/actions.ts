@@ -120,4 +120,12 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
         }))
         .catch(reject);
     }),
+  [constants.FLYOVER_PEGIN_ACCEPT_QUOTE]: ({ commit, state }) => new Promise((resolve, reject) => {
+    state.flyoverService.acceptPeginQuote(state.selectedQuoteHash)
+      .then((acceptedQuote) => {
+        commit(constants.FLYOVER_PEGIN_SET_ACCEPTED_QUOTE_SIGNATURE, acceptedQuote.signature);
+        resolve(acceptedQuote);
+      })
+      .catch(reject);
+  }),
 };
