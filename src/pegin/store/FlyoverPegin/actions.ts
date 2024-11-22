@@ -10,7 +10,6 @@ import { EnvironmentAccessorService } from '@/common/services/enviroment-accesso
 
 export const actions: ActionTree<FlyoverPeginState, RootState> = {
   [constants.FLYOVER_PEGIN_INIT]: ({ state, dispatch }) => new Promise((resolve, reject) => {
-    console.log('FlyoverPegin inti flyover');
     state.flyoverService.initialize()
       .then(() => dispatch(constants.FLYOVER_PEGIN_GET_PROVIDERS))
       .then(resolve)
