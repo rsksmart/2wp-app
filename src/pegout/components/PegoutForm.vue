@@ -294,7 +294,16 @@ export default defineComponent({
       showTxErrorDialog.value = true;
     }
 
+    const valueToReceive = computed<WeiBig>(() => {
+      const quoteHash = selectedQuoteHash.value || '';
+      if (quoteHash) {
+        return flyoverPegoutState.value.amountToTransfer;
+      }
+      return pegOutTxState.value.amountToTransfer;
+    });
+
     function changePage(type: string) {
+      console.log(' amount', valueToReceive.value.toWeiString());
       router.push({
         name: 'SuccessTx',
         params: {
@@ -302,6 +311,7 @@ export default defineComponent({
           txId: type === TxStatusType.FLYOVER_PEGOUT.toLowerCase()
             ? flyoverPegoutState.value.txHash
             : pegOutTxState.value.txHash,
+          amount: valueToReceive.value.toWeiString(),
         },
       });
     }
