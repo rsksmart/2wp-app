@@ -1,10 +1,10 @@
 <template>
   <v-container>
     <v-row class="mb-4">
-      <status-progress-bar :isFlyover="isFlyover" :txWithErrorType="txWithErrorType"
+      <status-progress-bar :isFlyover="isFlyover" :txNotFound="txNotFound"
                            :txWithError="txWithError"/>
     </v-row>
-      <status-summary :details="summary" :type="typeSummary" :txWithErrorType="txWithErrorType"
+      <status-summary :details="summary" :type="typeSummary" :txNotFound="txNotFound"
                       :txWithError="txWithError" />
   </v-container>
 </template>
@@ -33,7 +33,7 @@ export default defineComponent({
   props: {
     txId: String,
     isFlyover: Boolean,
-    txWithErrorType: Boolean,
+    txNotFound: Boolean,
     txWithError: Boolean,
   },
   setup(props) {
