@@ -66,7 +66,7 @@ import {
 
 export default defineComponent({
   name: 'RbtcInputAmount',
-  emits: ['get-quotes'],
+  emits: ['valid-amount'],
   props: {
     clear: {
       type: Boolean,
@@ -97,19 +97,23 @@ export default defineComponent({
         && amount.lte(balance);
     };
 
+    function emitGetQuotes() {
+      const weiBigAmount = new WeiBig(rbtcAmount.value, 'rbtc');
+      setRbtcAmount(weiBigAmount);
+      addAmount(weiBigAmount)
+        .then(() => calculateFee());
+      context.emit('valid-amount', isValidAmount(weiBigAmount), rbtcAmount.value);
+    }
+
+    const timeOutId = ref(0);
     const rbtcAmountModel = computed({
       get() {
         return rbtcAmount.value;
       },
       set(amount: string) {
+        window.clearTimeout(timeOutId.value);
         rbtcAmount.value = amount;
-        const weiBigAmount = new WeiBig(amount, 'rbtc');
-        if (isValidAmount(weiBigAmount) && weiBigAmount.gt('0')) {
-          setRbtcAmount(weiBigAmount);
-          addAmount(weiBigAmount)
-            .then(() => calculateFee());
-          context.emit('get-quotes');
-        }
+        timeOutId.value = window.setTimeout(emitGetQuotes, 300);
       },
     });
 
