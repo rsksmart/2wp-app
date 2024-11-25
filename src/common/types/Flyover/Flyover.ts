@@ -7,18 +7,20 @@ interface PeginProviderDetail {
     maxTransactionValue: SatoshiBig;
     minTransactionValue: SatoshiBig;
     requiredConfirmations: number;
-    availableLiquidity?: SatoshiBig;
+    availableLiquidity?: WeiBig;
 }
 interface PegoutProviderDetail {
     fee: WeiBig;
     maxTransactionValue: WeiBig;
     minTransactionValue: WeiBig;
     requiredConfirmations: number;
+    availableLiquidity?: SatoshiBig;
 }
 interface ProviderDetailResponse2WP {
     pegin: PeginProviderDetail;
     pegout: PegoutProviderDetail;
     siteKey: string;
+    liquidityCheckEnabled: boolean;
 }
 
 export type LiquidityProvider2WP = LiquidityProviderBase & ProviderDetailResponse2WP;
