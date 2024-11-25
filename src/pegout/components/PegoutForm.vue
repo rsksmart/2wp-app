@@ -283,8 +283,8 @@ export default defineComponent({
     }));
 
     const isValid = computed(() => {
-      if (selectedQuote.value === undefined) return isReadyToCreate.value;
-      return isFlyoverReady.value;
+      if (selectedQuote.value === undefined) return !loadingQuotes.value && isReadyToCreate.value;
+      return !loadingQuotes.value && isFlyoverReady.value;
     });
 
     const flyoverResponded = computed(() => pegoutQuotes.value.length > 0 || props.flyoverEnabled);
