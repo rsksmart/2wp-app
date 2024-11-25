@@ -6,9 +6,10 @@
       </v-col>
       <v-col class="px-0">
         <div class="progress-bar"
-          :id="`indicator-${timeLineData[0][1]}${txFailed?'-error':''}`"></div>
+          :id="`indicator-${timeLineData[0][1]}${txFailed?'-error':txNotFound?'-warning':''}`">
+        </div>
       </v-col>
-        <v-col cols="auto" :class="[txFailed ? 'pt-0' : 'pt-2', 'px-1']">
+        <v-col cols="auto" :class="[txFailed || txNotFound ? 'pt-0' : 'pt-2', 'px-1']">
           <v-img :src="imgStep1" :width="initialImgSize" :height="initialImgSize" contain/>
         </v-col>
         <v-col class="px-0">
@@ -76,7 +77,7 @@ export default defineComponent({
   name: 'StatusProgressBar',
   props: {
     isFlyover: Boolean,
-    txWithErrorType: Boolean,
+    txNotFound: Boolean,
     txWithError: Boolean,
   },
   setup(props) {
@@ -102,8 +103,7 @@ export default defineComponent({
       }
       return require('@/assets/status/rbtc.svg');
     });
-    const initialImgSize = computed(() => (txFailed.value ? 32 : 12));
-    const barColor = computed(() => (txFailed.value ? 'red' : 'green'));
+    const initialImgSize = computed(() => (txFailed.value || props.txNotFound ? 32 : 12));
     const timeLineData = computed(() => {
       let labelOne = 'Transaction Broadcasted';
       let labelTwo = 'Transaction Confirmed';
@@ -113,9 +113,9 @@ export default defineComponent({
       let second = 0;
       let third = 0;
       let fourth = 0;
-      if (props.txWithErrorType) {
+      if (props.txNotFound) {
         zero = 100;
-        labelOne = 'Error occurred';
+        labelOne = '';
       } else if (isPegOut.value) {
         labelThree = 'Sent to Bitcoin';
         if (props.isFlyover) {
@@ -306,6 +306,7 @@ export default defineComponent({
     });
     const imgStep1 = computed(() => {
       if (txFailed.value) return require('@/assets/status/ellipse_error.svg');
+      if (props.txNotFound) return require('@/assets/warning.svg');
       if (timeLineData.value[0][1] === 100) return require('@/assets/status/ellipse.svg');
       return require('@/assets/status/ellipse_empty.svg');
     });
@@ -334,7 +335,6 @@ export default defineComponent({
       imgStep2,
       imgStep3,
       initialImgSize,
-      barColor,
       txFailed,
       textClass,
     };
@@ -361,6 +361,9 @@ export default defineComponent({
 }
 #indicator-100-error {
   background-color: red !important;
+}
+#indicator-100-warning {
+  background-color: orange !important;
 }
 #indicator-0 {
   background-color: rgba(58, 58, 58, 0.5)  !important;

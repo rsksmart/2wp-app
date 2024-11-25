@@ -23,11 +23,11 @@
     </v-row>
     <v-row no-gutters v-if="showStatus">
       <tx-pegin v-if="isPegIn" :txId="txId" :isFlyover="isFlyover"
-                :txWithErrorType="txWithErrorType" :txWithError="txWithError" />
+                :txNotFound="txNotFound" :txWithError="txWithError" />
       <tx-pegout v-if="isPegOut" :txId="txId" :isFlyover="isFlyover"
-                :txWithErrorType="txWithErrorType" :txWithError="txWithError" />
-      <status-progress-bar class="mt-4" v-if="txWithErrorType" :isFlyover="isFlyover"
-                :txWithErrorType="txWithErrorType" :txWithError="txWithError" />
+                :txNotFound="txNotFound" :txWithError="txWithError" />
+      <status-progress-bar class="mt-4" v-if="txNotFound" :isFlyover="isFlyover"
+                :txNotFound="txNotFound" :txWithError="txWithError" />
     </v-row>
     <v-row v-else>
     <v-progress-circular
@@ -91,11 +91,15 @@ export default defineComponent({
 
     const showStatus = computed(() => !loading.value);
 
-    const isRejected = computed(() => status.value.txDetails?.status === 'REJECTED');
+    const txNotFound = computed((): boolean => status.value.type === TxStatusType.INVALID_DATA
+    || status.value.type === TxStatusType.UNEXPECTED_ERROR);
+
+    const isRejected = computed(() => status.value.txDetails?.status === 'REJECTED' || txNotFound.value);
 
     const rejectionMsg = computed(() => {
       const details = txDetails.value as PegoutStatusDataModel;
       const { LOW_AMOUNT, CALLER_CONTRACT, FEE_ABOVE_VALUE } = constants.RejectedPegoutReasons;
+      if (txNotFound.value) return 'Your transaction is not processed yet, try again in a few minutes';
       switch (details.reason) {
         case LOW_AMOUNT:
           return 'The transaction was rejected because the amount is less than the minimum required.';
@@ -117,9 +121,6 @@ export default defineComponent({
     const isFlyover = computed((): boolean => status.value.type === TxStatusType.FLYOVER_PEGOUT
       || status.value.type === TxStatusType.FLYOVER_PEGIN);
 
-    const txWithErrorType = computed((): boolean => status.value.type === TxStatusType.INVALID_DATA
-      || status.value.type === TxStatusType.UNEXPECTED_ERROR);
-
     const showTimeLeft = computed((): boolean => {
       const details = txDetails.value as PegoutStatusDataModel;
       return status.value.type === TxStatusType.PEGOUT
@@ -130,7 +131,7 @@ export default defineComponent({
     });
 
     const txWithError = computed(() => {
-      if (txWithErrorType.value) return true;
+      if (txNotFound.value) return false;
       const { status: errorStatus } = txDetails.value;
       return errorStatus as PegStatus === PegStatus.REJECTED_REFUND
         || errorStatus as PegStatus === PegStatus.REJECTED_NO_REFUND
@@ -230,7 +231,7 @@ export default defineComponent({
       back,
       mdiMagnify,
       rules,
-      txWithErrorType,
+      txNotFound,
       txWithError,
       rejectionMsg,
     };
