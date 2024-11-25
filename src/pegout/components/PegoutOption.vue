@@ -95,7 +95,7 @@
       <template v-else>
         <v-text-field
           :v-model="session.btcDerivedAddress || 'Derived Bitcoin Address'"
-          flat
+          flat readonly
           hide-details
           density="compact"
           rounded="lg"
