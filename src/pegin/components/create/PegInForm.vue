@@ -90,7 +90,7 @@ import {
 } from '@/common/utils';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import {
-  FlyoverPeginState, PeginQuote, QuotePegIn2WP, SatoshiBig,
+  FlyoverPeginState, LiquidityProvider2WP, PeginQuote, QuotePegIn2WP, SatoshiBig, WeiBig,
 } from '@/common/types';
 import {
   useAction, useGetter, useState, useStateAttribute,
@@ -136,6 +136,8 @@ export default defineComponent({
     const setSelectedQuote = useAction('flyoverPegin', constants.FLYOVER_PEGIN_ADD_SELECTED_QUOTE);
     const clearQuotes = useAction('flyoverPegin', constants.FLYOVER_PEGIN_CLEAR_QUOTES);
     const acceptQuote = useAction<AcceptedQuote>('flyoverPegin', constants.FLYOVER_PEGIN_ACCEPT_QUOTE);
+    const getAvailableLiquidity = useAction('flyoverPegin', constants.FLYOVER_PEGIN_GET_AVAILABLE_LIQUIDITY);
+    const liquidityProviders = useStateAttribute<LiquidityProvider2WP[]>('flyoverPegin', 'liquidityProviders');
     const quotes = useStateAttribute<Record<number, QuotePegIn2WP[]>>('flyoverPegin', 'quotes');
     const setPeginType = useAction('pegInTx', constants.PEGIN_TX_ADD_PEGIN_TYPE);
     const flyoverService = useStateAttribute<FlyoverService>('flyoverPegin', 'flyoverService');
@@ -228,6 +230,13 @@ export default defineComponent({
         });
     }
 
+    function enoughLiquidityForThisAmount(amount: WeiBig) {
+      return liquidityProviders.value.some((provider) => {
+        const { liquidityCheckEnabled, pegin: { availableLiquidity } } = provider;
+        return liquidityCheckEnabled && availableLiquidity?.gt(amount);
+      });
+    }
+
     const validAmount = ref(false);
     const amount = ref();
     const validAddress = ref(Boolean(account.value));
@@ -252,6 +261,10 @@ export default defineComponent({
 
     watch([amount, validAmount, address, validAddress], async () => {
       if (!validAmount.value || !validAddress.value) {
+        return;
+      }
+      if (!enoughLiquidityForThisAmount(new WeiBig(amount.value, 'rbtc'))) {
+        await clearQuotes();
         return;
       }
       await changeSelectedOption(null);
@@ -300,6 +313,8 @@ export default defineComponent({
         appendRecaptcha(flyoverService.value.siteKey);
       }
     });
+
+    getAvailableLiquidity();
 
     return {
       pegInFormState,
