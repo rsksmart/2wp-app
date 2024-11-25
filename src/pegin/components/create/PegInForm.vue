@@ -314,7 +314,9 @@ export default defineComponent({
       }
     });
 
-    getAvailableLiquidity();
+    if (props.isFlyoverAvailable) {
+      getAvailableLiquidity();
+    }
 
     return {
       pegInFormState,
