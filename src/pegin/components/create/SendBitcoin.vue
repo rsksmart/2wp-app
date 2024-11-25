@@ -34,7 +34,10 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, watch } from 'vue';
+import {
+  ref, defineComponent,
+  watch, computed,
+} from 'vue';
 import { useRouter } from 'vue-router';
 import PegInForm from '@/pegin/components/create/PegInForm.vue';
 import ConfirmTx from '@/pegin/components/create/ConfirmTx.vue';
@@ -42,6 +45,7 @@ import * as constants from '@/common/store/constants';
 import {
   SendBitcoinState, SatoshiBig, BtcWallet, Utxo,
   TxStatusType,
+  PeginQuote,
 } from '@/common/types';
 import { Machine, getClearPeginTxState } from '@/common/utils';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
@@ -102,13 +106,23 @@ export default defineComponent({
     const stopAskingForBalance = useAction('pegInTx', constants.PEGIN_TX_STOP_ASKING_FOR_BALANCE);
     const addNormalizedTx = useAction('pegInTx', constants.PEGIN_TX_ADD_NORMALIZED_TX);
     const clearStore = useAction('pegInTx', constants.PEGIN_TX_CLEAR_STATE);
+    const clearSessionState = useAction('web3Session', constants.WEB3_SESSION_CLEAR_ACCOUNT);
     const init = useAction('pegInTx', constants.PEGIN_TX_INIT);
     const setBtcWallet = useAction('pegInTx', constants.PEGIN_TX_ADD_BITCOIN_WALLET);
     const setCurrenView = useAction('pegInTx', constants.PEGIN_TX_SET_CURRENT_VIEW);
     const getChangeAddress = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_CHANGE_ADDRESS);
     const selectedUtxoList = useGetter<Utxo[]>('pegInTx', constants.PEGIN_TX_GET_SELECTED_UTXO_LIST);
     const selectedFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
+    const selectedFlyoverQuote = useGetter<PeginQuote>('flyoverPegin', constants.FLYOVER_PEGIN_GET_SELECTED_QUOTE);
     const type = useStateAttribute<string>('pegInTx', 'peginType');
+    const amountToTransfer = useStateAttribute<SatoshiBig>('pegInTx', 'amountToTransfer');
+
+    const valueToReceive = computed<SatoshiBig>(() => {
+      if (type.value === constants.peginType.FLYOVER) {
+        return selectedFlyoverQuote.value.quote.value;
+      }
+      return amountToTransfer.value;
+    });
 
     async function toConfirmTx({
       amountToTransferInSatoshi,
@@ -147,6 +161,11 @@ export default defineComponent({
       addNormalizedTx(getClearPeginTxState().normalizedTx);
     }
 
+    function clearWallets() {
+      clearStore();
+      clearSessionState();
+    }
+
     function toTrackingId([error, txHash]: string[]) {
       if (error !== '') {
         txError.value = error;
@@ -160,9 +179,11 @@ export default defineComponent({
             type: type.value === constants.peginType.FLYOVER
               ? TxStatusType.FLYOVER_PEGIN
               : TxStatusType.PEGIN,
+            amount: valueToReceive.value.toSatoshiString(),
           },
         });
       }
+      clearWallets();
     }
 
     function closeErrorDialog() {

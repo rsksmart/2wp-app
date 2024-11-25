@@ -93,6 +93,7 @@ const routes: Readonly<RouteRecordRaw[]> = [
     props: (route) => ({
       type: route.params.type,
       txId: route.params.txId,
+      amount: route.params.amount,
     }),
     beforeEnter: [checkFromRoute],
   },

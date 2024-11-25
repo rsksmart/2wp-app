@@ -51,7 +51,8 @@ import { useAction, useGetter, useState } from '@/common/store/helper';
 import * as constants from '@/common/store/constants';
 import { useRouter } from 'vue-router';
 import {
-  PegInTxState, PegOutTxState, SatoshiBig, TxStatusType, PeginQuote, QuotePegOut2WP,
+  PegInTxState, SatoshiBig, TxStatusType, PeginQuote, QuotePegOut2WP,
+  WeiBig,
 } from '@/common/types';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { blockConfirmationsToTimeString } from '@/common/utils';
@@ -67,34 +68,31 @@ export default defineComponent({
       type: String,
       required: true,
     },
+    amount: {
+      type: String,
+      required: true,
+    },
   },
   setup(props) {
     const clearStatus = useAction('status', constants.STATUS_CLEAR);
     const router = useRouter();
     const pegInTxState = useState<PegInTxState>('pegInTx');
-    const pegOutTxState = useState<PegOutTxState>('pegOutTx');
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-    const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
     const peginSelectedQuote = useGetter<PeginQuote>('flyoverPegin', constants.FLYOVER_PEGIN_GET_SELECTED_QUOTE);
     const pegoutSelectedQuote = useGetter<QuotePegOut2WP>('flyoverPegout', constants.FLYOVER_PEGOUT_GET_SELECTED_QUOTE);
 
     const amountToReceive = computed(() => {
       let amountText;
+      let amount: SatoshiBig | WeiBig;
       switch (props.type.toUpperCase()) {
         case TxStatusType.PEGIN:
-          amountText = `${pegInTxState.value.amountToTransfer.toBTCTrimmedString()}
+          amount = new SatoshiBig(props.amount, 'satoshi');
+          amountText = `${amount.toBTCTrimmedString()}
             ${environmentContext.getBtcTicker()}`;
           break;
         case TxStatusType.PEGOUT:
-          amountText = `${estimatedBtcToReceive.value.toBTCTrimmedString()}
-            ${environmentContext.getBtcTicker()}`;
-          break;
-        case TxStatusType.FLYOVER_PEGIN:
-          amountText = `${pegOutTxState.value.amountToTransfer.toRBTCTrimmedString()}
-            ${environmentContext.getBtcTicker()}`;
-          break;
-        case TxStatusType.FLYOVER_PEGOUT:
-          amountText = `${pegOutTxState.value.amountToTransfer.toRBTCTrimmedString()}
+          amount = new WeiBig(props.amount, 'wei');
+          amountText = `${amount.toRBTCString()}
             ${environmentContext.getBtcTicker()}`;
           break;
         default:
