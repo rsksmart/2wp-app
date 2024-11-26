@@ -142,7 +142,6 @@ export default class FlyoverService {
   ): Promise<QuotePegOut2WP[]> {
     return new Promise<QuotePegOut2WP[]>((resolve, reject) => {
       this.flyover?.getPegoutQuotes({
-        bitcoinRefundAddress: btcRefundAddress,
         rskRefundAddress,
         to: btcRecipientAddress,
         valueToTransfer: valueToTransfer.toWeiBigInt(),
@@ -324,7 +323,6 @@ export default class FlyoverService {
     return new Promise<Array<PeginQuote>>((resolve, reject) => {
       this.flyover?.getQuotes({
         rskRefundAddress: rootstockRecipientAddress,
-        bitcoinRefundAddress,
         // TODO: this should be fixed in the SDK: valueToTransfer is in BTC
         valueToTransfer: new WeiBig(valueToTransfer.toBTCString(), 'rbtc').toWeiBigInt(),
         callContractArguments: '',
@@ -335,7 +333,6 @@ export default class FlyoverService {
           const peginQuotes = quotes
             .filter((quote: Quote) => this.isValidPeginQuote(quote, {
               rootstockRecipientAddress,
-              bitcoinRefundAddress,
               valueToTransfer,
             }))
             .map((quoteFromServer: Quote) => new PeginQuote(quoteFromServer));
@@ -356,7 +353,6 @@ export default class FlyoverService {
     { quote }: Quote,
     quoteRequest: {
       rootstockRecipientAddress: string;
-        bitcoinRefundAddress: string;
         valueToTransfer: SatoshiBig;
       },
   ): boolean {
@@ -368,8 +364,7 @@ export default class FlyoverService {
     }
 
     if (
-      quoteRequest.bitcoinRefundAddress !== quote.btcRefundAddr
-      || quoteRequest.rootstockRecipientAddress !== quote.rskRefundAddr
+      quoteRequest.rootstockRecipientAddress !== quote.rskRefundAddr
       || new WeiBig(quoteRequest.valueToTransfer.toBTCString(), 'rbtc').toWeiBigInt() !== BigInt(quote.value)
     ) {
       return false;
