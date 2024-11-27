@@ -113,8 +113,7 @@ export default {
     }
 
     function setBitcoinWallet(wallet: BtcWallet): void {
-      addBitcoinWallet(wallet);
-      toSendBitcoin();
+      addBitcoinWallet(wallet).then(toSendBitcoin);
     }
 
     return {

@@ -66,6 +66,7 @@ export const getClearPeginTxState = (): PegInTxState => ({
     safeFee: new SatoshiBig(0, 'btc'),
   },
   peginType: constants.peginType.POWPEG,
+  walletService: undefined,
 });
 
 export const getClearPegoutTxState = (): PegOutTxState => ({

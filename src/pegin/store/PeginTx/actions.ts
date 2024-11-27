@@ -38,25 +38,30 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   },
   [constants.PEGIN_TX_ADD_BITCOIN_WALLET]: ({ commit, state }, bitcoinWallet: BtcWallet) => {
     commit(constants.PEGIN_TX_SET_BITCOIN_WALLET, bitcoinWallet);
-    switch (bitcoinWallet) {
-      case constants.WALLET_NAMES.TREZOR.long_name:
-        commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new TrezorService());
-        break;
-      case constants.WALLET_NAMES.LEDGER.long_name:
-        commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new LedgerService());
-        break;
-      case constants.WALLET_NAMES.LEATHER.long_name:
-        commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new LeatherService());
-        break;
-      case constants.WALLET_NAMES.XVERSE.long_name:
-        commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new XverseService());
-        break;
-      case constants.WALLET_NAMES.ENKRYPT.long_name:
-        commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new EnkryptService());
-        break;
-      default:
-        commit(constants.PEGIN_TX_SET_WALLET_SERVICE, undefined);
-        break;
+    try {
+      switch (bitcoinWallet) {
+        case constants.WALLET_NAMES.TREZOR.long_name:
+          commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new TrezorService());
+          break;
+        case constants.WALLET_NAMES.LEDGER.long_name:
+          commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new LedgerService());
+          break;
+        case constants.WALLET_NAMES.LEATHER.long_name:
+          commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new LeatherService());
+          break;
+        case constants.WALLET_NAMES.XVERSE.long_name:
+          commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new XverseService());
+          break;
+        case constants.WALLET_NAMES.ENKRYPT.long_name:
+          commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new EnkryptService());
+          break;
+        default:
+          commit(constants.PEGIN_TX_SET_WALLET_SERVICE, undefined);
+          break;
+      }
+    } catch (e) {
+      commit(constants.PEGIN_TX_SET_WALLET_SERVICE, undefined);
+      return;
     }
     commit(
       constants.PEGIN_TX_WALLET_SERVICE_SUBSCRIBE,
