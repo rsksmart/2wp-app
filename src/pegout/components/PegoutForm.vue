@@ -255,7 +255,8 @@ export default defineComponent({
         const { bridgeContractAddress } = pegOutTxState.value.pegoutConfiguration;
         const { valid, addressType } = validateAddress(btcRecipientAddress);
         const allowedAdressType = (addressType === constants.BITCOIN_LEGACY_ADDRESS
-          || addressType === constants.BITCOIN_SEGWIT_ADDRESS);
+          || addressType === constants.BITCOIN_SEGWIT_ADDRESS
+          || addressType === constants.BITCOIN_NATIVE_SEGWIT_ADDRESS);
         const amountPlusFees = selectedQuote.value.quote.value
           .plus(selectedQuote.value.quote.gasFee)
           .plus(selectedQuote.value.quote.productFeeAmount)
