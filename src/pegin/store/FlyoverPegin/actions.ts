@@ -50,14 +50,13 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
   [constants.FLYOVER_PEGIN_GET_QUOTES]:
   (
     { state, commit, dispatch },
-    { rootstockRecipientAddress, bitcoinRefundAddress },
+    { rootstockRecipientAddress },
   ) => new Promise((resolve, reject) => {
     const quotePromises: Promise<QuotePegIn2WP[]>[] = [];
     state.liquidityProviders.forEach((provider) => {
       dispatch(constants.FLYOVER_PEGIN_USE_LIQUIDITY_PROVIDER, provider.id);
       quotePromises.push(state.flyoverService.getPeginQuotes(
         rootstockRecipientAddress,
-        bitcoinRefundAddress,
         state.amountToTransfer,
       ));
     });

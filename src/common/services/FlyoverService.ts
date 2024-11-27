@@ -58,7 +58,8 @@ export default class FlyoverService {
       BlockchainConnection.createUsingStandard(provider)
         .then((connection: BlockchainConnection) => {
           this.flyover = new Flyover({
-            network: this.flyoverNetwork,
+            network: 'Development',
+            // network: this.flyoverNetwork,
             rskConnection: connection,
             captchaTokenResolver: this.tokenResolver.bind(this),
             disableChecksum: true,
@@ -317,7 +318,6 @@ export default class FlyoverService {
 
   public getPeginQuotes(
     rootstockRecipientAddress: string,
-    bitcoinRefundAddress: string,
     valueToTransfer: SatoshiBig,
   ):Promise<Array<PeginQuote>> {
     return new Promise<Array<PeginQuote>>((resolve, reject) => {
@@ -362,7 +362,6 @@ export default class FlyoverService {
     ) {
       return false;
     }
-
     if (
       quoteRequest.rootstockRecipientAddress !== quote.rskRefundAddr
       || new WeiBig(quoteRequest.valueToTransfer.toBTCString(), 'rbtc').toWeiBigInt() !== BigInt(quote.value)

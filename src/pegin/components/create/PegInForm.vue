@@ -220,7 +220,6 @@ export default defineComponent({
       loadingQuotes.value = true;
       getPeginQuotes({
         rootstockRecipientAddress: flyoverPeginState.value.rootstockRecipientAddress,
-        bitcoinRefundAddress: refundAddress.value,
       })
         .finally(() => {
           loadingQuotes.value = false;
