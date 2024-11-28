@@ -200,6 +200,8 @@ export default defineComponent({
     const selectedOption = ref<string>('');
     const quoteDiffPercentage = EnvironmentAccessorService.getEnvironmentVariables()
       .flyoverPegoutDiffPercentage;
+    const clearStore = useAction('pegInTx', constants.PEGOUT_TX_CLEAR_STATE);
+    const clearSessionState = useAction('web3Session', constants.WEB3_SESSION_CLEAR_ACCOUNT);
 
     const pegoutQuotes = computed(() => {
       const quoteList: QuotePegOut2WP[] = [];
@@ -257,30 +259,36 @@ export default defineComponent({
 
     const sendingPegout = computed(():boolean => pegOutFormState.value.matches(['loading']));
 
-    const nativeQuote = computed(() => ({
-      quote: {
-        agreementTimestamp: 0,
-        btcRefundAddress: '',
-        callFee: new WeiBig(0, 'wei'),
-        depositAddr: '', // Must be derived
-        depositConfirmations: 0,
-        depositDateLimit: 0,
-        expireBlocks: 0,
-        expireDate: 0,
-        gasFee: pegOutTxState.value.calculatedFee,
-        lbcAddress: '',
-        liquidityProviderRskAddress: '',
-        lpBtcAddr: '',
-        nonce: 0n,
-        penaltyFee: new WeiBig(0, 'wei'),
-        productFeeAmount: new WeiBig(pegOutTxState.value.btcEstimatedFee.toBTCString(), 'rbtc'),
-        rskRefundAddress: account.value ?? '',
-        transferConfirmations: 0,
-        transferTime: 0,
-        value: pegOutTxState.value.amountToTransfer,
-      },
-      quoteHash: '',
-    }));
+    const nativeQuote = computed(() => {
+      const btcFee = new WeiBig(pegOutTxState.value.btcEstimatedFee.toBTCString(), 'rbtc');
+      const estimatedValueToReceive = pegOutTxState.value.amountToTransfer
+        .minus(pegOutTxState.value.calculatedFee)
+        .minus(btcFee);
+      return {
+        quote: {
+          agreementTimestamp: 0,
+          btcRefundAddress: '',
+          callFee: new WeiBig(0, 'wei'),
+          depositAddr: '', // Must be derived
+          depositConfirmations: 0,
+          depositDateLimit: 0,
+          expireBlocks: 0,
+          expireDate: 0,
+          gasFee: pegOutTxState.value.calculatedFee,
+          lbcAddress: '',
+          liquidityProviderRskAddress: '',
+          lpBtcAddr: '',
+          nonce: 0n,
+          penaltyFee: new WeiBig(0, 'wei'),
+          productFeeAmount: btcFee,
+          rskRefundAddress: account.value ?? '',
+          transferConfirmations: 0,
+          transferTime: 0,
+          value: estimatedValueToReceive,
+        },
+        quoteHash: '',
+      };
+    });
 
     const isValid = computed(() => {
       if (selectedQuote.value === undefined) return !loadingQuotes.value && isReadyToCreate.value;
@@ -299,11 +307,15 @@ export default defineComponent({
       if (quoteHash) {
         return flyoverPegoutState.value.amountToTransfer;
       }
-      return pegOutTxState.value.amountToTransfer;
+      return nativeQuote.value.quote.value;
     });
 
+    function clearWallets() {
+      clearStore();
+      clearSessionState();
+    }
+
     function changePage(type: string) {
-      console.log(' amount', valueToReceive.value.toWeiString());
       router.push({
         name: 'SuccessTx',
         params: {
@@ -311,9 +323,12 @@ export default defineComponent({
           txId: type === TxStatusType.FLYOVER_PEGOUT.toLowerCase()
             ? flyoverPegoutState.value.txHash
             : pegOutTxState.value.txHash,
-          amount: valueToReceive.value.toWeiString(),
+          amount: SatoshiBig.fromWeiBig(valueToReceive.value).toSatoshiString(),
+          confirmations: type === TxStatusType.FLYOVER_PEGOUT.toLowerCase()
+            ? selectedQuote.value.quote.depositConfirmations : 0,
         },
       });
+      clearWallets();
     }
 
     function getLPName(): string {

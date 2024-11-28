@@ -87,13 +87,14 @@ const routes: Readonly<RouteRecordRaw[]> = [
     beforeEnter: checkAcceptedTerms,
   },
   {
-    path: '/:type/success/tx/:txId',
+    path: '/:type/success/tx/:txId/:amount/:confirmations',
     name: 'SuccessTx',
     component: () => import(/* webpackChunkName: "tx-success" */ '../views/SuccessTx.vue'),
     props: (route) => ({
       type: route.params.type,
       txId: route.params.txId,
       amount: route.params.amount,
+      confirmations: route.params.confirmations,
     }),
     beforeEnter: [checkFromRoute],
   },
