@@ -187,16 +187,7 @@ export default defineComponent({
 
     const estimatedValueToReceive = computed(() => {
       if (props.quote) {
-        if (isFlyover.value) {
-          return new SatoshiBig(props.quote.quote.value
-            .toRBTCTrimmedString(), 'btc')
-            .toBTCTrimmedString();
-        }
-
-        // TODO: SHOW THE AMOUNT WITHOUT FEES AFTER TESTNET GAS GOES DOWN
-        return new SatoshiBig(props.quote.quote.value
-          // .minus(props.quote.quote.gasFee)
-          // .minus(props.quote.quote.productFeeAmount)
+        return new SatoshiBig((props.quote.quote.value)
           .toRBTCTrimmedString(), 'btc')
           .toBTCTrimmedString();
       }

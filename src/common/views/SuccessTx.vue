@@ -47,13 +47,10 @@
 <script lang="ts">
 import { mdiContentCopy } from '@mdi/js';
 import { defineComponent, computed, PropType } from 'vue';
-import { useAction, useGetter, useState } from '@/common/store/helper';
+import { useAction, useState } from '@/common/store/helper';
 import * as constants from '@/common/store/constants';
 import { useRouter } from 'vue-router';
-import {
-  PegInTxState, SatoshiBig, TxStatusType, PeginQuote, QuotePegOut2WP,
-  WeiBig,
-} from '@/common/types';
+import { PegInTxState, SatoshiBig, TxStatusType } from '@/common/types';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { blockConfirmationsToTimeString } from '@/common/utils';
 
@@ -72,32 +69,21 @@ export default defineComponent({
       type: String,
       required: true,
     },
+    confirmations: {
+      type: Number,
+      required: true,
+    },
   },
   setup(props) {
     const clearStatus = useAction('status', constants.STATUS_CLEAR);
     const router = useRouter();
     const pegInTxState = useState<PegInTxState>('pegInTx');
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-    const peginSelectedQuote = useGetter<PeginQuote>('flyoverPegin', constants.FLYOVER_PEGIN_GET_SELECTED_QUOTE);
-    const pegoutSelectedQuote = useGetter<QuotePegOut2WP>('flyoverPegout', constants.FLYOVER_PEGOUT_GET_SELECTED_QUOTE);
 
     const amountToReceive = computed(() => {
-      let amountText;
-      let amount: SatoshiBig | WeiBig;
-      switch (props.type.toUpperCase()) {
-        case TxStatusType.PEGIN:
-          amount = new SatoshiBig(props.amount, 'satoshi');
-          amountText = `${amount.toBTCTrimmedString()}
-            ${environmentContext.getBtcTicker()}`;
-          break;
-        case TxStatusType.PEGOUT:
-          amount = new WeiBig(props.amount, 'wei');
-          amountText = `${amount.toRBTCString()}
-            ${environmentContext.getBtcTicker()}`;
-          break;
-        default:
-          amountText = '';
-      }
+      const amount = new SatoshiBig(props.amount, 'satoshi');
+      const amountText = `${amount.toBTCTrimmedString()}
+        ${environmentContext.getBtcTicker()}`;
       return `You will receive ${amountText}`;
     });
 
@@ -108,11 +94,9 @@ export default defineComponent({
         case TxStatusType.PEGOUT:
           return '34 hours';
         case TxStatusType.FLYOVER_PEGIN:
-          return `${blockConfirmationsToTimeString(peginSelectedQuote
-            .value.quote.confirmations ?? 0, 'btc')}`;
+          return `${blockConfirmationsToTimeString(props.confirmations ?? 0, 'btc')}`;
         case TxStatusType.FLYOVER_PEGOUT:
-          return `${blockConfirmationsToTimeString(pegoutSelectedQuote
-            .value.quote.depositConfirmations ?? 0, 'btc')}`;
+          return `${blockConfirmationsToTimeString(props.confirmations ?? 0, 'rsk')}`;
         default:
           return '';
       }

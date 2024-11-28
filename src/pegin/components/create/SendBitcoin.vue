@@ -180,6 +180,8 @@ export default defineComponent({
               ? TxStatusType.FLYOVER_PEGIN
               : TxStatusType.PEGIN,
             amount: valueToReceive.value.toSatoshiString(),
+            confirmations: type.value === constants.peginType.FLYOVER
+              ? selectedFlyoverQuote.value.quote.confirmations : 0,
           },
         });
       }
