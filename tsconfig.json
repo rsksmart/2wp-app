@@ -19,8 +19,8 @@
     ],
     "types": [
       "webpack-env",
-      "jest",
-      "vuetify"
+      "vuetify",
+      "vitest/globals"
     ],
     "paths": {
       "@/*": [

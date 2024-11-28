@@ -34,16 +34,6 @@ module.exports = {
     'vuejs-accessibility/mouse-events-have-key-events': 'off',
     'import/extensions': 'off',
     'global-require': 'off',
+    'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
   },
-  overrides: [
-    {
-      files: [
-        '**/__tests__/*.{j,t}s?(x)',
-        '**/tests/unit/**/*.spec.{j,t}s?(x)',
-      ],
-      env: {
-        jest: true,
-      },
-    },
-  ],
 };
