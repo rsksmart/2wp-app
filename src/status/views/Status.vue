@@ -99,7 +99,7 @@ export default defineComponent({
     const rejectionMsg = computed(() => {
       const details = txDetails.value as PegoutStatusDataModel;
       const { LOW_AMOUNT, CALLER_CONTRACT, FEE_ABOVE_VALUE } = constants.RejectedPegoutReasons;
-      if (txNotFound.value) return 'Your transaction is not processed yet, try again in a few minutes';
+      if (txNotFound.value) return 'Your transaction is not processed yet, search again in a few minutes';
       switch (details.reason) {
         case LOW_AMOUNT:
           return 'The transaction was rejected because the amount is less than the minimum required.';
