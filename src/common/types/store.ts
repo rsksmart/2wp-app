@@ -97,6 +97,7 @@ export enum TxStatusType {
   INVALID_DATA = 'INVALID_DATA',
   UNEXPECTED_ERROR = 'UNEXPECTED_ERROR',
   UNSET_STATUS = 'UNSET_STATUS',
+  NOT_FOUND = 'NOT_FOUND',
 }
 
 export interface TxStatus {
