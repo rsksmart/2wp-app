@@ -17,14 +17,20 @@
     <div v-if="showOptions" class="d-flex flex-column ga-2">
       <span class="font-weight-bold">Select mode</span>
       <v-row no-gutters class="ga-4 ga-lg-8">
-        <v-col v-if="peginQuotes.length === 0">
+        <v-col v-if="!flyoverIsEnabled">
           <pegin-option-card :option-type="peginType.FLYOVER" flyover-not-available>
             <template v-slot>
-              <h4><span class="text-orange">Fast Mode</span> is unavailable at this time.</h4>
+              <h4 v-if="countdown === recaptchanNewTokenTime">
+                <span class="text-orange">Fast Mode</span> is unavailable at this time.
+              </h4>
+              <h4 v-else>
+                Fast mode will be <br> available in
+                <span class="text-orange">{{ countdown }} seconds.</span>
+              </h4>
             </template>
           </pegin-option-card>
         </v-col>
-        <v-col v-for="(quote, index) in peginQuotes" :key="index">
+        <v-col v-else v-for="(quote, index) in peginQuotes" :key="index">
           <pegin-option-card
             :option-type="peginType.FLYOVER"
             @selected-option="changeSelectedOption"
@@ -144,6 +150,8 @@ export default defineComponent({
     const selectedFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
     const selectedAccountBalance = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SELECTED_BALANCE);
     const loadingFee = useStateAttribute<boolean>('pegInTx', 'loadingFee');
+    const startCountdown = useAction('web3Session', constants.SESSION_COUNTDOWN_GRECAPTCHA_TIME);
+    const countdown = useStateAttribute<number>('web3Session', 'grecaptchaCountdown');
 
     const enoughAmountFlyover = computed(() => {
       if (!selectedQuote.value) {
@@ -165,6 +173,9 @@ export default defineComponent({
       });
       return quoteList;
     });
+
+    const flyoverIsEnabled = computed(() => props.isFlyoverAvailable
+      && countdown.value === constants.RECAPTCHA_NEW_TOKEN_TIME);
 
     function back() {
       pegInFormState.value.send('loading');
@@ -193,6 +204,7 @@ export default defineComponent({
           peginType: constants.peginType.POWPEG,
         });
       } else {
+        startCountdown();
         acceptQuote()
           .then((acceptedQuote) => {
             context.emit('createTx', {
@@ -288,7 +300,8 @@ export default defineComponent({
         return enoughAmountFlyover.value
           && !!flyoverPeginState.value.selectedQuoteHash
           && !!flyoverPeginState.value.rootstockRecipientAddress
-          && flyoverPeginState.value.rootstockRecipientAddress !== '0x';
+          && flyoverPeginState.value.rootstockRecipientAddress !== '0x'
+          && countdown.value === constants.RECAPTCHA_NEW_TOKEN_TIME;
       }
 
       return false;
@@ -344,6 +357,9 @@ export default defineComponent({
       validAmount,
       validAddress,
       sendTx,
+      flyoverIsEnabled,
+      countdown,
+      recaptchanNewTokenTime: constants.RECAPTCHA_NEW_TOKEN_TIME,
     };
   },
 });

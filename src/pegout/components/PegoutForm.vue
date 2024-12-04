@@ -21,39 +21,43 @@
         ">Select Mode</span>
       </v-row>
       <v-row>
-        <v-col cols="6" v-if="!flyoverResponded" >
-        <pegout-option class="mr-2" flyover-not-available
-          :option-type="pegoutType.FLYOVER">
-        <template v-slot>
-          <h4>
-            <span class="text-orange">Fast Mode</span> is unavailable at this time.
-          </h4>
-        </template>
-        </pegout-option>
-      </v-col>
-      <v-col cols="6" v-for="(quote, index) in pegoutQuotes" :key="index" >
-        <pegout-option
-          :option-type="pegoutType.FLYOVER"
-          :class="index === 0 ? 'mr-2' : 'ml-2'"
-          :quote="quote"
-          :isWalletAuthorizedToSign="isWalletAuthorizedToSign"
-          @openAddressDialog="showAddressDialog = true"
-          @changeSelectedOption="changeSelectedOption"
-          :selectedOption="selectedOption === quote.quoteHash"
-          :quote-difference="quoteDifference"
-          />
-      </v-col>
-      <v-col cols="6">
-        <pegout-option class="ml-2"
-          :option-type="pegoutType.POWPEG"
-          :quote="nativeQuote"
-          :isWalletAuthorizedToSign="isWalletAuthorizedToSign"
-          @openAddressDialog="showAddressDialog = true"
-          @changeSelectedOption="changeSelectedOption"
-          :selectedOption="selectedOption === ''"
-          :quote-differences="quoteDifference"
-          />
-      </v-col>
+        <v-col cols="6" v-if="!flyoverIsEnabled" >
+          <pegout-option class="mr-2" flyover-not-available
+            :option-type="pegoutType.FLYOVER">
+            <template v-slot>
+              <h4 v-if="countdown === recaptchanNewTokenTime">
+                <span class="text-orange">Fast Mode</span> is unavailable at this time.
+              </h4>
+              <h4 v-else>
+                Fast mode will be <br> available in
+                <span class="text-orange">{{ countdown }} seconds.</span>
+              </h4>
+            </template>
+          </pegout-option>
+        </v-col>
+        <v-col cols="6" v-else v-for="(quote, index) in pegoutQuotes" :key="index" >
+          <pegout-option
+            :option-type="pegoutType.FLYOVER"
+            :class="index === 0 ? 'mr-2' : 'ml-2'"
+            :quote="quote"
+            :isWalletAuthorizedToSign="isWalletAuthorizedToSign"
+            @openAddressDialog="showAddressDialog = true"
+            @changeSelectedOption="changeSelectedOption"
+            :selectedOption="selectedOption === quote.quoteHash"
+            :quote-difference="quoteDifference"
+            />
+        </v-col>
+        <v-col cols="6">
+          <pegout-option class="ml-2"
+            :option-type="pegoutType.POWPEG"
+            :quote="nativeQuote"
+            :isWalletAuthorizedToSign="isWalletAuthorizedToSign"
+            @openAddressDialog="showAddressDialog = true"
+            @changeSelectedOption="changeSelectedOption"
+            :selectedOption="selectedOption === ''"
+            :quote-differences="quoteDifference"
+            />
+        </v-col>
       </v-row>
     </template>
     <v-row v-else-if="loadingQuotes" class="pt-4 justify-center">
@@ -207,6 +211,8 @@ export default defineComponent({
     const clearQuotes = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_CLEAR_QUOTES);
     const amountToTransfer = useStateAttribute<WeiBig>('flyoverPegout', 'amountToTransfer');
     const liquidityProviders = useStateAttribute<LiquidityProvider2WP[]>('flyoverPegout', 'liquidityProviders');
+    const startCountdown = useAction('web3Session', constants.SESSION_COUNTDOWN_GRECAPTCHA_TIME);
+    const countdown = useStateAttribute<number>('web3Session', 'grecaptchaCountdown');
 
     const pegoutQuotes = computed(() => {
       const quoteList: QuotePegOut2WP[] = [];
@@ -297,10 +303,12 @@ export default defineComponent({
 
     const isValid = computed(() => {
       if (selectedQuote.value === undefined) return !loadingQuotes.value && isReadyToCreate.value;
-      return !loadingQuotes.value && isFlyoverReady.value;
+      return !loadingQuotes.value && isFlyoverReady.value
+        && countdown.value === constants.RECAPTCHA_NEW_TOKEN_TIME;
     });
 
-    const flyoverResponded = computed(() => pegoutQuotes.value.length > 0 && props.flyoverEnabled);
+    const flyoverIsEnabled = computed(() => pegoutQuotes.value.length > 0
+      && props.flyoverEnabled && countdown.value === constants.RECAPTCHA_NEW_TOKEN_TIME);
 
     function handlePegoutError(error: ServiceError) {
       txError.value = error;
@@ -407,8 +415,10 @@ export default defineComponent({
         : TxStatusType.PEGOUT.toLowerCase();
       pegOutFormState.value.send('loading');
       try {
-        if (quoteHash) await sendFlyoverTx(quoteHash);
-        else await sendTx();
+        if (quoteHash) {
+          startCountdown();
+          await sendFlyoverTx(quoteHash);
+        } else await sendTx();
         ApiService.registerTx(quoteHash ? registerFlyover.value : registerPegout.value);
         changePage(type);
       } catch (e) {
@@ -553,10 +563,12 @@ export default defineComponent({
       nativeQuote,
       pegoutType: constants.pegoutType,
       isValid,
-      flyoverResponded,
+      flyoverIsEnabled,
       clearForError,
       clearAmount,
       checkValidAmount,
+      countdown,
+      recaptchanNewTokenTime: constants.RECAPTCHA_NEW_TOKEN_TIME,
     };
   },
 });
