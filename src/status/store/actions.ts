@@ -96,7 +96,7 @@ export const actions: ActionTree<TxStatus, RootState> = {
         status = await rootState.flyoverPegout?.flyoverService.getPegoutStatus(quoteHash);
       }
     } catch (e) {
-      status = 'NOT_FOUND';
+      status = TxStatusType.NOT_FOUND;
     } finally {
       commit(constants.STATUS_SET_FLYOVER_STATUS, status);
     }
