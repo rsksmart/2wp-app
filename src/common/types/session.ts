@@ -22,4 +22,6 @@ export interface SessionState {
   acceptedTerms?: boolean;
   features: Array<Feature>;
   apiVersion: string;
+  grecaptchaCountdown: number;
+  grecaptchaIntervalId: number | undefined;
 }

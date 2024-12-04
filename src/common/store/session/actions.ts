@@ -140,4 +140,21 @@ export const actions: ActionTree<SessionState, RootState> = {
       dispatch(constants.WEB3_SESSION_GET_ACCOUNT);
     });
   },
+  [constants.SESSION_COUNTDOWN_GRECAPTCHA_TIME]: ({ state, commit, dispatch }) => {
+    const intervalId = setInterval(() => {
+      if (state.grecaptchaCountdown > 0) {
+        commit(constants.SESSION_SET_DECREMENT_GRECAPTCHA_COUNTDOWN);
+      } else {
+        dispatch(constants.SESSION_CLEAR_GRECAPTCHA_INTERVAL);
+      }
+    }, 1000);
+    commit(constants.SESSION_SET_GRECAPTCHA_INTERVAL, intervalId);
+  },
+  [constants.SESSION_CLEAR_GRECAPTCHA_INTERVAL]: ({ state, commit }) => {
+    const { grecaptchaIntervalId } = state;
+    if (grecaptchaIntervalId) {
+      clearInterval(grecaptchaIntervalId);
+      commit(constants.SESSION_RESET_GRECAPTCHA_COUNTDOWN);
+    }
+  },
 };
