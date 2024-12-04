@@ -8,10 +8,14 @@ import { BridgeService } from '@/common/services/BridgeService';
 import { promiseWithTimeout } from '@/common/utils';
 import { ApiService } from '@/common/services';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import { providers } from 'ethers';
 
 export const actions: ActionTree<FlyoverPegoutState, RootState> = {
-  [constants.FLYOVER_PEGOUT_INIT]: async ({ state, dispatch }) => new Promise((resolve, reject) => {
-    state.flyoverService.initialize()
+  [constants.FLYOVER_PEGOUT_INIT]: async (
+    { state, dispatch },
+    provider: providers.Web3Provider,
+  ) => new Promise((resolve, reject) => {
+    state.flyoverService.initialize(provider.provider)
       .then(() => dispatch(constants.FLYOVER_PEGOUT_GET_PROVIDERS))
       .then(resolve)
       .catch(reject);
@@ -27,12 +31,12 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
     };
     (async () => {
       try {
-        const providers: LiquidityProvider2WP[] = await promiseWithTimeout(
+        const liquidityProviders: LiquidityProvider2WP[] = await promiseWithTimeout(
           state.flyoverService.getProviders(),
           EnvironmentAccessorService.getEnvironmentVariables().flyoverGetProvidersTimeout,
         );
         result = constants.FlyoverCallResult.SUCCESS;
-        resolve(commit(constants.FLYOVER_PEGOUT_SET_PROVIDERS, providers));
+        resolve(commit(constants.FLYOVER_PEGOUT_SET_PROVIDERS, liquidityProviders));
       } catch (e) {
         reject(new Error('Error getting providers'));
       } finally {
