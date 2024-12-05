@@ -26,7 +26,7 @@
                 :txNotFound="txNotFound" :txWithError="txWithError" />
       <tx-pegout v-if="isPegOut" :txId="txId" :isFlyover="isFlyover"
                 :txNotFound="txNotFound" :txWithError="txWithError" />
-      <status-progress-bar class="mt-4" v-if="txNotFound" :isFlyover="isFlyover"
+      <status-progress-bar v-if="invalidData || unexpectedError" class="mt-4" :isFlyover="isFlyover"
                 :txNotFound="txNotFound" :txWithError="txWithError" />
     </v-row>
     <v-row v-else>
@@ -91,8 +91,17 @@ export default defineComponent({
 
     const showStatus = computed(() => !loading.value);
 
-    const txNotFound = computed((): boolean => status.value.type === TxStatusType.INVALID_DATA
-    || status.value.type === TxStatusType.UNEXPECTED_ERROR);
+    const invalidData = computed(() => status.value.type === TxStatusType.INVALID_DATA);
+    const unexpectedError = computed(() => status.value.type === TxStatusType.UNEXPECTED_ERROR);
+
+    const isFlyover = computed((): boolean => status.value.type === TxStatusType.FLYOVER_PEGOUT
+      || status.value.type === TxStatusType.FLYOVER_PEGIN);
+    const quoteNotFound = computed(() => isFlyover.value
+      && status.value.flyoverStatus === TxStatusType.NOT_FOUND);
+
+    const txNotFound = computed((): boolean => invalidData.value
+      || unexpectedError.value
+      || quoteNotFound.value);
 
     const isRejected = computed(() => status.value.txDetails?.status === 'REJECTED' || txNotFound.value);
 
@@ -117,9 +126,6 @@ export default defineComponent({
 
     const isPegOut = computed((): boolean => status.value.type === TxStatusType.PEGOUT
       || status.value.type === TxStatusType.FLYOVER_PEGOUT);
-
-    const isFlyover = computed((): boolean => status.value.type === TxStatusType.FLYOVER_PEGOUT
-      || status.value.type === TxStatusType.FLYOVER_PEGIN);
 
     const showTimeLeft = computed((): boolean => {
       const details = txDetails.value as PegoutStatusDataModel;
@@ -234,6 +240,8 @@ export default defineComponent({
       txNotFound,
       txWithError,
       rejectionMsg,
+      invalidData,
+      unexpectedError,
     };
   },
 });
