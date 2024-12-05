@@ -108,7 +108,7 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
       });
       Promise.allSettled(providersPromises)
         .then((responses) => responses.forEach((response) => {
-          if (response.status === 'fulfilled') {
+          if (response.status === constants.FULFILLED) {
             if (response.value instanceof Object) {
               const { providerId, peginLiquidity } = response.value;
               commit(
@@ -118,6 +118,7 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
             }
           }
         }))
+        .then(resolve)
         .catch(reject);
     }),
   [constants.FLYOVER_PEGIN_ACCEPT_QUOTE]: ({ commit, state }) => new Promise((resolve, reject) => {

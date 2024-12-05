@@ -11,11 +11,11 @@
     <v-row>
       <v-col>
         <rbtc-input-amount
-          @getQuotes="getQuotes"
+          @valid-amount="checkValidAmount"
           :clear="clearAmount" />
       </v-col>
     </v-row>
-    <template v-if="showStep && !loadingQuotes">
+    <template v-if="showStep">
       <v-row>
         <span class="font-weight-bold ma-4 mb-2
         ">Select Mode</span>
@@ -135,7 +135,7 @@ import {
 } from '@/common/store/helper';
 import { mdiArrowLeft, mdiArrowRight } from '@mdi/js';
 import {
-  FlyoverPegoutState, PegoutQuoteDbModel, PegOutTxState, QuotePegOut2WP,
+  FlyoverPegoutState, LiquidityProvider2WP, PegoutQuoteDbModel, PegOutTxState, QuotePegOut2WP,
   SatoshiBig, TxInfo, TxStatusType, WeiBig,
 } from '@/common/types';
 import {
@@ -171,7 +171,6 @@ export default defineComponent({
     const pegOutFormState = ref<Machine<'loading' | 'goingHome' | 'fill'>>(new Machine('fill'));
     const showAddressDialog = ref(false);
     const loadingQuotes = ref(false);
-    const showStep = ref(false);
     const isWalletAuthorizedToSign = ref(true);
     const diffShown = ref(false);
     const clearAmount = ref(false);
@@ -204,6 +203,10 @@ export default defineComponent({
       .flyoverPegoutDiffPercentage;
     const clearStore = useAction('pegInTx', constants.PEGOUT_TX_CLEAR_STATE);
     const clearSessionState = useAction('web3Session', constants.WEB3_SESSION_CLEAR_ACCOUNT);
+    const getAvailableLiquidity = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_GET_AVAILABLE_LIQUIDITY);
+    const clearQuotes = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_CLEAR_QUOTES);
+    const amountToTransfer = useStateAttribute<WeiBig>('flyoverPegout', 'amountToTransfer');
+    const liquidityProviders = useStateAttribute<LiquidityProvider2WP[]>('flyoverPegout', 'liquidityProviders');
 
     const pegoutQuotes = computed(() => {
       const quoteList: QuotePegOut2WP[] = [];
@@ -297,7 +300,7 @@ export default defineComponent({
       return !loadingQuotes.value && isFlyoverReady.value;
     });
 
-    const flyoverResponded = computed(() => pegoutQuotes.value.length > 0 || props.flyoverEnabled);
+    const flyoverResponded = computed(() => pegoutQuotes.value.length > 0 && props.flyoverEnabled);
 
     function handlePegoutError(error: ServiceError) {
       txError.value = error;
@@ -426,7 +429,6 @@ export default defineComponent({
       initFlyoverTx(ethersProvider.value);
       initPegoutTx();
       selectedOption.value = '';
-      showStep.value = false;
       diffShown.value = false;
       showTxErrorDialog.value = false;
       showAddressDialog.value = false;
@@ -439,15 +441,46 @@ export default defineComponent({
       router.push({ name: 'Home' });
     }
 
+    function enoughLiquidityForThisAmount(amount: SatoshiBig) {
+      return liquidityProviders.value.some((provider) => {
+        const { liquidityCheckEnabled, pegout: { availableLiquidity } } = provider;
+        return liquidityCheckEnabled && availableLiquidity?.gt(amount);
+      });
+    }
+
     function getQuotes() {
       loadingQuotes.value = true;
       getPegoutQuotes(account.value)
-        .catch(handlePegoutError)
+        .catch((e) => {
+          handlePegoutError(e);
+          clearQuotes();
+        })
         .finally(() => {
           loadingQuotes.value = false;
-          showStep.value = true;
         });
     }
+
+    const validAmount = ref(false);
+    const amount = ref();
+
+    function checkValidAmount(isValidAmount: boolean, amountInformed: string) {
+      validAmount.value = isValidAmount;
+      if (isValidAmount && amountInformed !== amount.value) {
+        amount.value = amountInformed;
+      }
+    }
+
+    watch([amount, validAmount], async () => {
+      if (!validAmount.value) return;
+      if (!enoughLiquidityForThisAmount(SatoshiBig.fromWeiBig(amountToTransfer.value))) {
+        await clearQuotes();
+        return;
+      }
+      getQuotes();
+    });
+
+    const showStep = computed(() => (!loadingQuotes.value && validAmount.value)
+      || !props.flyoverEnabled);
 
     function changeSelectedOption(quoteHash: string) {
       setSelectedQuoteHash(quoteHash);
@@ -462,10 +495,6 @@ export default defineComponent({
       }
     }
 
-    if (!props.flyoverEnabled) {
-      showStep.value = true;
-    }
-
     function continueHandler() {
       setSelectedQuoteHash('');
       selectedOption.value = '';
@@ -475,7 +504,6 @@ export default defineComponent({
     function clearForError() {
       showTxErrorDialog.value = false;
       clearAmount.value = true;
-      showStep.value = false;
     }
 
     onBeforeMount(() => {
@@ -491,6 +519,10 @@ export default defineComponent({
     });
 
     watch(account, clearState);
+
+    if (props.flyoverEnabled) {
+      getAvailableLiquidity();
+    }
 
     return {
       environmentContext,
@@ -525,6 +557,7 @@ export default defineComponent({
       flyoverResponded,
       clearForError,
       clearAmount,
+      checkValidAmount,
     };
   },
 });
