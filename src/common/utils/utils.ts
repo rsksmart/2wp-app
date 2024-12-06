@@ -121,9 +121,12 @@ export function isMobileDevice() {
   return platform === 'mobile';
 }
 
+export function getBrowserName() {
+  return Bowser.getParser(window.navigator.userAgent).getBrowserName();
+}
+
 export function isAllowedCurrentBrowser() {
-  const browser = Bowser.getParser(window.navigator.userAgent);
-  return browser.getBrowserName() === 'Chrome' || window.navigator.brave;
+  return getBrowserName() === 'Chrome' || window.navigator.brave;
 }
 
 export function isBTCAmountValidRegex(bitcoinAmount: string) {
