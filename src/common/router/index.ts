@@ -84,7 +84,7 @@ const routes: Readonly<RouteRecordRaw[]> = [
     path: '/pegin/:wallet/create',
     name: 'Create',
     component: () => import(/* webpackChunkName: "pegin-create" */ '../../pegin/views/Create.vue'),
-    beforeEnter: checkAcceptedTerms,
+    beforeEnter: [checkAcceptedTerms, checkFromRoute],
   },
   {
     path: '/:type/success/tx/:txId/:amount/:confirmations',
