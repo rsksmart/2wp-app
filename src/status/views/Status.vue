@@ -93,6 +93,7 @@ export default defineComponent({
 
     const invalidData = computed(() => status.value.type === TxStatusType.INVALID_DATA);
     const unexpectedError = computed(() => status.value.type === TxStatusType.UNEXPECTED_ERROR);
+    const blockBookError = computed(() => status.value.type === TxStatusType.BLOCKBOOK_FAILED);
 
     const isFlyover = computed((): boolean => status.value.type === TxStatusType.FLYOVER_PEGOUT
       || status.value.type === TxStatusType.FLYOVER_PEGIN);
@@ -101,14 +102,21 @@ export default defineComponent({
 
     const txNotFound = computed((): boolean => invalidData.value
       || unexpectedError.value
-      || quoteNotFound.value);
+      || quoteNotFound.value
+      || blockBookError.value);
 
     const isRejected = computed(() => status.value.txDetails?.status === 'REJECTED' || txNotFound.value);
 
     const rejectionMsg = computed(() => {
       const details = txDetails.value as PegoutStatusDataModel;
       const { LOW_AMOUNT, CALLER_CONTRACT, FEE_ABOVE_VALUE } = constants.RejectedPegoutReasons;
-      if (txNotFound.value) return 'Your transaction is not processed yet, search again in a few minutes';
+      if (txNotFound.value) {
+        if (blockBookError.value) {
+          return 'We are experiencing technical issues and therefore were unable to retrieve and'
+            + ' display the transaction status. Please try again later.';
+        }
+        return 'Your transaction is not processed yet, search again in a few minutes';
+      }
       switch (details.reason) {
         case LOW_AMOUNT:
           return 'The transaction was rejected because the amount is less than the minimum required.';
