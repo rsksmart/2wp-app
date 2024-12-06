@@ -9,8 +9,18 @@ export enum FeatureNames {
   WALLET_TREZOR = 'wallet_trezor',
   WALLET_LEDGER = 'wallet_ledger',
 }
+
+export enum Browser {
+  CHROME = 'Chrome',
+  FIREFOX = 'Firefox',
+  SAFARI = 'Safari',
+  EDGE = 'Edge',
+  BRAVE = 'Brave',
+  OPERA = 'Opera',
+}
 export interface Feature {
   name: FeatureNames;
   value: string;
   version: number;
+  supportedBrowsers: Browser[];
 }
