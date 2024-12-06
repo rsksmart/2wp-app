@@ -101,11 +101,15 @@
           rounded="lg"
           variant="solo"
           :placeholder="session.btcDerivedAddress || 'Derived Bitcoin Address'">
-          <template v-slot:append-inner>
-            <v-chip v-if="isWalletAuthorizedToSign && !session.btcDerivedAddress"
-            variant="outlined" @click="$emit('openAddressDialog')">
-            Derive
-          </v-chip>
+          <template v-slot:append-inner
+            v-if="isWalletAuthorizedToSign && !session.btcDerivedAddress">
+            <v-chip variant="outlined" @click="$emit('openAddressDialog')">
+                Derive
+            </v-chip>
+          </template>
+          <template v-slot:append-inner v-else>
+            <v-icon size="x-small"
+              :icon="mdiContentCopy" @click="copyToClipboard" />
           </template>
         </v-text-field>
         <v-alert
@@ -135,6 +139,7 @@ import {
   mdiInformationOutline,
   mdiOpenInNew,
   mdiClockTimeThreeOutline,
+  mdiContentCopy,
 } from '@mdi/js';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { useAction, useState, useStateAttribute } from '@/common/store/helper';
@@ -276,6 +281,10 @@ export default defineComponent({
       window.open(link, '_blank');
     }
 
+    function copyToClipboard() {
+      navigator.clipboard.writeText(session.value.btcDerivedAddress || '');
+    }
+
     return {
       mdiSendOutline,
       environmentContext,
@@ -300,6 +309,8 @@ export default defineComponent({
       mdiClockTimeThreeOutline,
       totalFee,
       tooltipText,
+      mdiContentCopy,
+      copyToClipboard,
     };
   },
 });
