@@ -16,6 +16,7 @@ export const getters: GetterTree<TxStatus, RootState> = {
         || state.txDetails.status === constants.PegStatus.ERROR_BELOW_MIN
         || state.txDetails.status === constants.PegStatus.REJECTED_NO_REFUND
         || state.txDetails.status === constants.PegStatus.REJECTED_REFUND
+        || state.type === TxStatusType.BLOCKBOOK_FAILED
         || state.type === TxStatusType.UNEXPECTED_ERROR;
     }
     return isRejected;
