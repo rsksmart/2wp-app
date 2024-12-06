@@ -98,6 +98,7 @@ export enum TxStatusType {
   UNEXPECTED_ERROR = 'UNEXPECTED_ERROR',
   UNSET_STATUS = 'UNSET_STATUS',
   NOT_FOUND = 'NOT_FOUND',
+  BLOCKBOOK_FAILED = 'BLOCKBOOK_FAILED',
 }
 
 export interface TxStatus {

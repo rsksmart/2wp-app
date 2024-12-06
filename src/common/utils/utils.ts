@@ -287,6 +287,11 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
       error = true;
       errorMessage = 'The input transaction is not valid, please check it and try again';
       break;
+    case TxStatusType.BLOCKBOOK_FAILED:
+      activeMessageStyle = 'statusRejected';
+      error = true;
+      errorMessage = 'Blockbook service is not responding';
+      break;
     default:
       error = true;
       errorMessage = 'The input transaction is not valid, please check it and try again';
