@@ -18,9 +18,19 @@ export enum Browser {
   BRAVE = 'Brave',
   OPERA = 'Opera',
 }
+
+export interface SupportedBrowsers {
+  chrome: boolean;
+  firefox: boolean;
+  safari: boolean;
+  edge: boolean;
+  brave: boolean;
+  chromium: boolean;
+  opera: boolean;
+}
 export interface Feature {
   name: FeatureNames;
   value: string;
   version: number;
-  supportedBrowsers: Browser[];
+  supportedBrowsers: SupportedBrowsers;
 }
