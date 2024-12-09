@@ -10,6 +10,7 @@ import {
   RequestBalance,
   PegoutStatus,
   SatoshiBig,
+  Browser,
 } from '@/common/types';
 import { BridgeService } from '@/common/services/BridgeService';
 import moment from 'moment';
@@ -126,7 +127,7 @@ export function getBrowserName() {
 }
 
 export function isAllowedCurrentBrowser() {
-  return getBrowserName() === 'Chrome' || window.navigator.brave;
+  return getBrowserName() === Browser.CHROME || window.navigator.brave;
 }
 
 export function isBTCAmountValidRegex(bitcoinAmount: string) {
