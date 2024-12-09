@@ -51,7 +51,10 @@ import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import walletConf from '@/common/walletConf.json';
 import { mdiArrowLeft } from '@mdi/js';
 import { useTheme } from 'vuetify';
-import { Feature, FeatureNames } from '@/common/types';
+import {
+  Browser, Feature, FeatureNames, SupportedBrowsers,
+} from '@/common/types';
+import { getBrowserName } from '@/common/utils';
 
 export default {
   name: 'SelectBitcoinWallet',
@@ -62,11 +65,16 @@ export default {
     const storeConstants = constants;
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const getFeature = useGetter<(name: FeatureNames) => Feature>('web3Session', constants.SESSION_GET_FEATURE);
+    const currentBrowser = getBrowserName() as Browser;
 
     const wallets = computed(() => walletConf.wallets.filter((wallet) => {
       const walletConfJsonConstant = wallet.constant as BtcWallet;
       const flag = getFeature.value(FeatureNames[walletConfJsonConstant]);
-      return flag?.value === constants.ENABLED;
+      if (!flag) {
+        return false;
+      }
+      const browserFlag = Object.keys(flag).includes('supportedBrowsers') ? flag.supportedBrowsers[currentBrowser.toLowerCase() as keyof SupportedBrowsers] : false;
+      return (flag?.value === constants.ENABLED) && browserFlag;
     }));
 
     const bitcoinWallet = useStateAttribute<BtcWallet>('pegInTx', 'bitcoinWallet');
