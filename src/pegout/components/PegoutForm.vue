@@ -479,8 +479,7 @@ export default defineComponent({
       getQuotes();
     });
 
-    const showStep = computed(() => (!loadingQuotes.value && validAmount.value)
-      || !props.flyoverEnabled);
+    const showStep = computed(() => (!loadingQuotes.value && validAmount.value));
 
     function changeSelectedOption(quoteHash: string) {
       setSelectedQuoteHash(quoteHash);
