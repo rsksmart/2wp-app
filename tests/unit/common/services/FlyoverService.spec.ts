@@ -191,7 +191,6 @@ describe('FlyoverService', () => {
 
     it('should return an array of QuotePegIn2WP', async () => {
       const rskRefundAddress = '0xe9a84d226bb3008f09a46096b00dd6782be4d5f2';
-      const bitcoinRefundAddress = 'n2y5V6LYszsrsxkMdMypL98YQxtBoLCXdc';
       const valueToTransfer = new SatoshiBig('0.005', 'btc');
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -199,7 +198,6 @@ describe('FlyoverService', () => {
 
       const quotes = await flyoverService.getPeginQuotes(
         rskRefundAddress,
-        bitcoinRefundAddress,
         valueToTransfer,
       );
 
@@ -213,12 +211,10 @@ describe('FlyoverService', () => {
 
     it('should return only the valid quotes', async () => {
       const rskRefundAddress = '0xaFf12FA1c482BEab1D70C68fe0Fc5825447A9818';
-      const btcRefundAddress = 'n2y5V6LYszsrsxkMdMypL98YQxtBoLCXdc';
       const valueToTransfer = new SatoshiBig('0.005', 'btc');
 
       const quotes = await flyoverService.getPeginQuotes(
         rskRefundAddress,
-        btcRefundAddress,
         valueToTransfer,
       );
 
@@ -271,12 +267,10 @@ describe('FlyoverService', () => {
     });
     it('should accept the quote when found', async () => {
       const rskRefundAddress = '0xe9a84d226bb3008f09a46096b00dd6782be4d5f2';
-      const btcRefundAddress = 'n2y5V6LYszsrsxkMdMypL98YQxtBoLCXdc';
       const valueToTransfer = new SatoshiBig('0.005', 'btc');
 
       const quotes = await flyoverService.getPeginQuotes(
         rskRefundAddress,
-        btcRefundAddress,
         valueToTransfer,
       );
       const { quoteHash } = quotes[0];
