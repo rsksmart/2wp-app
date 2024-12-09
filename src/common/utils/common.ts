@@ -96,6 +96,8 @@ export const getClearSessionState = ():SessionState => (
     bitcoinPrice: 0,
     features: [],
     apiVersion: '',
+    grecaptchaCountdown: constants.RECAPTCHA_NEW_TOKEN_TIME,
+    grecaptchaIntervalId: undefined,
   }
 );
 
