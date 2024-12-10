@@ -22,12 +22,12 @@ jobs:
         run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@163217dfcd28294438ea1c1c149cfaf66eec283e # v4.2.1
         with:
           ref: ${{ steps.get_tag_name.outputs.VERSION }}
 
       - name: Setup NodeJS
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af #v4.1.0
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
@@ -57,7 +57,7 @@ jobs:
           npm run-script build
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
         with:
           role-to-assume: ${{ secrets.MAINNET_ROLE_ARN }}
           aws-region: us-east-1
