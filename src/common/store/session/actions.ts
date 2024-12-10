@@ -19,7 +19,8 @@ import { toUtf8Bytes } from 'ethers/lib/utils';
 
 export const actions: ActionTree<SessionState, RootState> = {
   [constants.SESSION_CONNECT_WEB3]: ({ commit, state, dispatch }): Promise<void> => {
-    const rLogin = state.rLoginInstance === undefined ? getRloginInstance() : state.rLoginInstance;
+    const rLogin = state.rLoginInstance === undefined
+      ? getRloginInstance(state.features) : state.rLoginInstance;
     return new Promise<void>((resolve, reject) => {
       rLogin.connect()
         .then((rLoginResponse) => {

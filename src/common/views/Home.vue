@@ -1,7 +1,7 @@
 <template>
   <v-container fluid class="home">
     <v-alert v-if="!isAllowedBrowser" variant="outlined" type="warning" prominent>
-      Only Chrome and Brave browsers are allowed
+      Only Chrome, Firefox and Brave browsers are allowed
     </v-alert>
     <v-row v-else no-gutters justify="space-around">
       <v-col lg="4" xl="3" xxl="2">
