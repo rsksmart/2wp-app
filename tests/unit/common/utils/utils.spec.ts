@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 import * as constants from '@/common/store/constants';
 import { deriveBatchAddresses, getAccountType } from '@/common/utils';
 import { Purpose, WalletAddress } from '@/common/types';

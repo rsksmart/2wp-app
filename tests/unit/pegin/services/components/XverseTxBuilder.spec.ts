@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import sinon from 'sinon';
 import { ApiService } from '@/common/services';
 import store from '@/common/store';
@@ -85,10 +84,15 @@ describe('XverseTxBuilder', () => {
 
       const result = await xverseTxBuilder.buildTx(normalizedTx);
 
-      expect(result).to.have.property('coin');
-      expect(result).to.have.property('inputs').that.is.an('array').with.lengthOf(1);
-      expect(result).to.have.property('outputs').that.is.an('array').with.lengthOf(1);
-      expect(result).to.have.property('base64UnsignedPsbt').that.is.a('string');
+      expect(result).toHaveProperty('coin');
+      expect(result).toHaveProperty('inputs');
+      expect(result.inputs).toEqual(expect.any(Array));
+      expect(result.inputs).toHaveLength(1);
+      expect(result).toHaveProperty('outputs');
+      expect(result.outputs).toEqual(expect.any(Array));
+      expect(result.outputs).toHaveLength(1);
+      expect(result).toHaveProperty('base64UnsignedPsbt');
+      expect(result.base64UnsignedPsbt).toEqual(expect.any(String));
     });
 
     it('should handle errors when building a transaction', async () => {
@@ -116,7 +120,8 @@ describe('XverseTxBuilder', () => {
       try {
         await xverseTxBuilder.buildTx(normalizedTx);
       } catch (error) {
-        expect(error).to.be.an('error').with.property('message', 'Test error');
+        expect(error).toBeInstanceOf(Error);
+        expect(error).toHaveProperty('message', 'Test error');
       }
     });
   });
@@ -152,11 +157,14 @@ describe('XverseTxBuilder', () => {
       // eslint-disable-next-line dot-notation
       const result = await xverseTxBuilder['getExtendedInputs'](normalizedInputs);
 
-      expect(result).to.be.an('array').with.lengthOf(1);
-      expect(result[0]).to.have.property('hash', 'c31556bf6a6b6c0a57387a88ad69a8cc7c159362d25d4870bffa3c005293375e');
-      expect(result[0]).to.have.property('index', 0);
-      expect(result[0]).to.have.property('witnessUtxo').that.is.an('object');
-      expect(result[0]).to.have.property('redeemScript').that.is.an.instanceOf(Buffer);
+      expect(result).toBeInstanceOf(Array);
+      expect(result).toHaveLength(1);
+      expect(result[0]).toHaveProperty('hash', 'c31556bf6a6b6c0a57387a88ad69a8cc7c159362d25d4870bffa3c005293375e');
+      expect(result[0]).toHaveProperty('index', 0);
+      expect(result[0]).toHaveProperty('witnessUtxo');
+      expect(result[0].witnessUtxo).toBeInstanceOf(Object);
+      expect(result[0]).toHaveProperty('redeemScript');
+      expect(result[0].redeemScript).toBeInstanceOf(Buffer);
     });
 
     it('should handle errors when getting extended inputs', async () => {
@@ -175,7 +183,8 @@ describe('XverseTxBuilder', () => {
         // eslint-disable-next-line dot-notation
         await xverseTxBuilder['getExtendedInputs'](normalizedInputs);
       } catch (error) {
-        expect(error).to.be.an('error').with.property('message', 'Tx not found');
+        expect(error).toBeInstanceOf(Error);
+        expect(error).toHaveProperty('message', 'Tx not found');
       }
     });
   });
