@@ -127,7 +127,7 @@ export function getBrowserName() {
 }
 
 export function isAllowedCurrentBrowser() {
-  return getBrowserName() === Browser.CHROME || window.navigator.brave;
+  return getBrowserName() === Browser.CHROME || window.navigator.brave || Browser.FIREFOX;
 }
 
 export function isBTCAmountValidRegex(bitcoinAmount: string) {
