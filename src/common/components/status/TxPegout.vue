@@ -4,7 +4,7 @@
       <status-progress-bar :isFlyover="isFlyover" :txNotFound="txNotFound"
                            :txWithError="txWithError"/>
     </v-row>
-      <status-summary :details="summary" :type="typeSummary" :txNotFound="txNotFound"
+      <status-summary :details="summary" :type="typeSummary"
                       :txWithError="txWithError" />
   </v-container>
 </template>
