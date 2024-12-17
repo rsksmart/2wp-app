@@ -90,8 +90,7 @@ export const actions: ActionTree<TxStatus, RootState> = {
       }
       if (state.type === TxStatusType.FLYOVER_PEGOUT) {
         const flyoverService = rootState.flyoverPegout?.flyoverService;
-        await dispatch(`flyoverPegout/${constants.FLYOVER_PEGOUT_INIT}`, null, { root: true });
-        await dispatch(`flyoverPegout/${constants.FLYOVER_PEGOUT_GET_PROVIDERS}`, null, { root: true });
+        await dispatch(`flyoverPegout/${constants.FLYOVER_PEGOUT_INIT}`, {}, { root: true });
         flyoverService?.useLiquidityProvider(1);
         status = await rootState.flyoverPegout?.flyoverService.getPegoutStatus(quoteHash);
       }
