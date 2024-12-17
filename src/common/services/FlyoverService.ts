@@ -63,9 +63,8 @@ export default class FlyoverService {
       connectionPromise
         .then((connection) => {
           this.flyover = new Flyover({
-            network: 'Development',
             rskConnection: connection as BlockchainConnection,
-            // network: this.flyoverNetwork,
+            network: this.flyoverNetwork,
             captchaTokenResolver: this.tokenResolver.bind(this),
             disableChecksum: true,
           });
