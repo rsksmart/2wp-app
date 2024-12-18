@@ -100,13 +100,13 @@ export default class LeatherService extends WalletService {
           const { hex } = response.result;
           const signedPsbt = bitcoin.Psbt.fromHex(hex)
             .finalizeAllInputs()
-            .extractTransaction()
+            .extractTransaction(true)
             .toHex();
           resolve({ signedTx: signedPsbt });
         })
         .catch((e: typeof RpcErrorResponse) => {
-          if (e.error.code) {
-            reject(new Error(e.error.message));
+          if (e) {
+            reject(new Error(e));
           } else {
             reject(e);
           }
