@@ -9,7 +9,6 @@ import * as constants from '@/common/store/constants';
 import { LeatherTx } from '@/pegin/middleware/TxBuilder/LeatherTxBuilder';
 import { AppConfig, UserSession, showConnect } from '@stacks/connect';
 import {
-  RpcErrorResponse,
   LeatherProvider,
   RpcResponse,
 } from '@leather.io/rpc';
@@ -104,13 +103,7 @@ export default class LeatherService extends WalletService {
             .toHex();
           resolve({ signedTx: signedPsbt });
         })
-        .catch((e: typeof RpcErrorResponse) => {
-          if (e) {
-            reject(new Error(e));
-          } else {
-            reject(e);
-          }
-        });
+        .catch(reject);
     });
   }
 
