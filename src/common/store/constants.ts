@@ -389,5 +389,3 @@ export enum RejectedPegoutReasons {
   CALLER_CONTRACT = 'CALLER_CONTRACT',
   FEE_ABOVE_VALUE = 'FEE_ABOVE_VALUE',
 }
-
-export const RECAPTCHA_NEW_TOKEN_TIME = 30;
