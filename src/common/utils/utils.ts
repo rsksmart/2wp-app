@@ -122,12 +122,12 @@ export function isMobileDevice() {
   return platform === 'mobile';
 }
 
-export function getBrowserName() {
-  return Bowser.getParser(window.navigator.userAgent).getBrowserName();
+export function getBrowserName(): Browser {
+  return Bowser.getParser(window.navigator.userAgent).getBrowserName() as Browser;
 }
 
 export function isAllowedCurrentBrowser() {
-  return [Browser.CHROME, window.navigator.brave, Browser.FIREFOX].includes(getBrowserName());
+  return [Browser.CHROME, Browser.FIREFOX].includes(getBrowserName());
 }
 
 export function isBTCAmountValidRegex(bitcoinAmount: string) {
