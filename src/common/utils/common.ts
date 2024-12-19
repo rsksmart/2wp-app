@@ -9,6 +9,7 @@ import {
 import { FlyoverService } from '@/common/services';
 import { markRaw } from 'vue';
 import * as constants from '@/common/store/constants';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
 export const getChunkedValue = (value: string, maxLength: number) => (value.length < maxLength ? value : `${value.substr(0, maxLength / 2)}...${value.substr(value.length - maxLength / 2, value.length)}`);
 
@@ -83,7 +84,7 @@ export const getClearPegoutTxState = (): PegOutTxState => ({
   selectedFee: BITCOIN_AVERAGE_FEE_LEVEL,
 });
 
-export const getClearSessionState = ():SessionState => (
+export const getClearSessionState = (): SessionState => (
   {
     account: undefined,
     ethersProvider: undefined,
@@ -96,7 +97,8 @@ export const getClearSessionState = ():SessionState => (
     bitcoinPrice: 0,
     features: [],
     apiVersion: '',
-    grecaptchaCountdown: constants.RECAPTCHA_NEW_TOKEN_TIME,
+    grecaptchaCountdown: EnvironmentAccessorService.getEnvironmentVariables().grecaptchaTime
+        ?? constants.RECAPTCHA_NEW_TOKEN_TIME,
     grecaptchaIntervalId: undefined,
   }
 );
