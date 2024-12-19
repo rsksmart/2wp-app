@@ -32,6 +32,7 @@ const defaultEnvironmentVariables = {
   burnDustValue: 2000,
   flyoverGetProvidersTimeout: 5000,
   flyoverPegoutDiffPercentage: 2,
+  grecaptchaTime: constants.RECAPTCHA_NEW_TOKEN_TIME,
 };
 
 EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);

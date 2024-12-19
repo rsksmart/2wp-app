@@ -50,6 +50,8 @@ export class EnvironmentVariables {
 
   public flyoverPegoutDiffPercentage: number;
 
+  public grecaptchaTime: number;
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(defaultValues: any = {}) {
     this.vueAppCoin = process.env.VUE_APP_COIN || defaultValues.vueAppCoin;
@@ -96,6 +98,8 @@ export class EnvironmentVariables {
       || defaultValues.flyoverGetProvidersTimeout;
     this.flyoverPegoutDiffPercentage = Number(process.env
       .VUE_APP_FLYOVER_PEGOUT_QUOTE_DIFF_PERCENTAGE) || defaultValues.flyoverPegoutDiffPercentage;
+    this.grecaptchaTime = Number(process.env.VUE_APP_RECAPTCHA_NEW_TOKEN_TIME)
+      || defaultValues.grecaptchaTime;
   }
 
   public get chainId(): number {

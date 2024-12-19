@@ -107,6 +107,7 @@ import { FlyoverService } from '@/common/services';
 import FullTxErrorDialog from '@/common/components/exchange/FullTxErrorDialog.vue';
 import RskDestinationAddress from '@/pegin/components/create/RskDestinationAddress.vue';
 import { AcceptedQuote } from '@rsksmart/flyover-sdk';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
 export default defineComponent({
   name: 'PegInForm',
@@ -152,6 +153,8 @@ export default defineComponent({
     const loadingFee = useStateAttribute<boolean>('pegInTx', 'loadingFee');
     const startCountdown = useAction('web3Session', constants.SESSION_COUNTDOWN_GRECAPTCHA_TIME);
     const countdown = useStateAttribute<number>('web3Session', 'grecaptchaCountdown');
+    const recaptchanNewTokenTime = EnvironmentAccessorService.getEnvironmentVariables()
+      .grecaptchaTime;
 
     const enoughAmountFlyover = computed(() => {
       if (!selectedQuote.value) {
@@ -160,6 +163,8 @@ export default defineComponent({
       const fullAmount: SatoshiBig = selectedQuote.value.getTotalTxAmount(selectedFee.value);
       return selectedAccountBalance.value?.gte(fullAmount);
     });
+
+    const sendingPegin = computed(():boolean => pegInFormState.value.matches(['loading']));
 
     const peginQuotes = computed(() => {
       if (!props.isFlyoverAvailable) {
@@ -174,8 +179,13 @@ export default defineComponent({
       return quoteList;
     });
 
-    const flyoverIsEnabled = computed(() => props.isFlyoverAvailable
-      && countdown.value === constants.RECAPTCHA_NEW_TOKEN_TIME);
+    const flyoverIsEnabled = computed(() => {
+      if (props.isFlyoverAvailable) {
+        if (sendingPegin.value) return true;
+        return countdown.value === recaptchanNewTokenTime;
+      }
+      return false;
+    });
 
     function back() {
       pegInFormState.value.send('loading');
@@ -300,7 +310,7 @@ export default defineComponent({
           && !!flyoverPeginState.value.selectedQuoteHash
           && !!flyoverPeginState.value.rootstockRecipientAddress
           && flyoverPeginState.value.rootstockRecipientAddress !== '0x'
-          && countdown.value === constants.RECAPTCHA_NEW_TOKEN_TIME;
+          && countdown.value === recaptchanNewTokenTime;
       }
 
       return false;
@@ -358,7 +368,7 @@ export default defineComponent({
       sendTx,
       flyoverIsEnabled,
       countdown,
-      recaptchanNewTokenTime: constants.RECAPTCHA_NEW_TOKEN_TIME,
+      recaptchanNewTokenTime,
     };
   },
 });
