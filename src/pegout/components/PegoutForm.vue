@@ -213,6 +213,8 @@ export default defineComponent({
     const liquidityProviders = useStateAttribute<LiquidityProvider2WP[]>('flyoverPegout', 'liquidityProviders');
     const startCountdown = useAction('web3Session', constants.SESSION_COUNTDOWN_GRECAPTCHA_TIME);
     const countdown = useStateAttribute<number>('web3Session', 'grecaptchaCountdown');
+    const recaptchanNewTokenTime = EnvironmentAccessorService.getEnvironmentVariables()
+      .grecaptchaTime;
 
     const pegoutQuotes = computed(() => {
       const quoteList: QuotePegOut2WP[] = [];
@@ -305,11 +307,16 @@ export default defineComponent({
     const isValid = computed(() => {
       if (selectedQuote.value === undefined) return !loadingQuotes.value && isReadyToCreate.value;
       return !loadingQuotes.value && isFlyoverReady.value
-        && countdown.value === constants.RECAPTCHA_NEW_TOKEN_TIME;
+        && countdown.value === recaptchanNewTokenTime;
+    });
+
+    const showCountdown = computed(() => {
+      if (sendingPegout.value) return true;
+      return countdown.value === recaptchanNewTokenTime;
     });
 
     const flyoverIsEnabled = computed(() => pegoutQuotes.value.length > 0
-      && props.flyoverEnabled && countdown.value === constants.RECAPTCHA_NEW_TOKEN_TIME);
+      && props.flyoverEnabled && showCountdown.value);
 
     function handlePegoutError(error: ServiceError) {
       txError.value = error;
@@ -569,7 +576,7 @@ export default defineComponent({
       clearAmount,
       checkValidAmount,
       countdown,
-      recaptchanNewTokenTime: constants.RECAPTCHA_NEW_TOKEN_TIME,
+      recaptchanNewTokenTime,
     };
   },
 });
