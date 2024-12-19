@@ -1,7 +1,7 @@
 <template>
   <v-container fluid class="home">
     <v-alert v-if="!isAllowedBrowser" variant="outlined" type="warning" prominent>
-      Only Chrome and Brave browsers are allowed
+      Only Chrome, Firefox and Brave browsers are allowed
     </v-alert>
     <v-row v-else no-gutters justify="space-around">
       <v-col lg="4" xl="3" xxl="2">
@@ -12,25 +12,25 @@
           <span class="mx-1 my-2 pa-4 bg-green">Rootstock</span>
         </div>
       </v-col>
-      <v-col lg="4" xl="3" xxl="2" class="d-flex flex-column ga-6">
+      <v-col lg="4" xl="3" xxl="2" class="d-flex flex-column">
         <template v-if="termsAndConditionsEnabled">
-          <v-row class="d-flex justify-center">
+          <v-row class="d-flex justify-center mb-6">
             <label for="termscheck" class="pa-0 d-flex align-center mx-3">
               {{ '' }}
               <input id="termscheck" type="checkbox"
                      :checked="areTermsAccepted" @click="setTermsAccepted">
             </label>
             <span>I acknowledge and accept
-              <a href="#" rel="noopener" @key-press="toggleCheck" class="px-1 text-bw-500"
+              <a href="#" rel="noopener" @key-press="toggleCheck" class="px-1 text-orange"
                  @click.prevent="$emit('update:showDialog', true)">
-                terms and conditions
+                Terms and conditions
               </a>
             </span>
           </v-row>
         </template>
         <v-btn @click="selectConversion(constants.PEG_IN_TRANSACTION_TYPE)"
           :disabled="!isAllowedBrowser || (!areTermsAccepted && !!termsAndConditionsEnabled)"
-          class="border-box d-block pa-6 rounded-lg h-auto">
+          class="border-box d-block pa-6 rounded-lg h-auto mb-6">
           <v-row no-gutters align="center" justify="space-between">
             <v-col cols="4">
               <div class="d-flex text-h3 ga-1 flex-wrap">
@@ -46,7 +46,7 @@
         </v-btn>
         <v-btn @click="selectConversion(constants.PEG_OUT_TRANSACTION_TYPE)"
           :disabled="!areTermsAccepted && !!termsAndConditionsEnabled"
-          class="border-box d-block pa-6 rounded-lg h-auto">
+          class="border-box d-block pa-6 rounded-lg h-auto mb-6">
           <v-row no-gutters align="center" justify="space-between">
             <v-col cols="4">
               <div class="d-flex text-h3 ga-1 flex-wrap">
@@ -60,19 +60,21 @@
             </v-col>
           </v-row>
         </v-btn>
-        <div class="d-flex justify-center gc-2 align-baseline flex-wrap">
-          <span>Already made a transaction?</span>
-          <v-btn variant="text" color="orange" density="compact" class="pa-0 text-body-1"
+        <div class="d-flex justify-start align-baseline flex-wrap ml-6">
+          <span class="text-body-1">Already made a transaction?</span>
+          <v-btn variant="text" color="orange" density="compact"
+            class="pa-0 text-body-1 ml-2"
             @click="toStatusSearch">
             Transaction Status
           </v-btn>
         </div>
-        <div class="d-flex justify-center gc-2 align-baseline flex-wrap">
-          <span class="text-center">To learn about the various RBTC access methods, visit</span>
-          <v-btn variant="text" color="orange" density="compact" class="pa-0 text-body-1"
-             href="https://rootstock.io/rbtc/" target="_blank">
-            RBTC Webpage
-          </v-btn>
+        <div class="d-flex justify-start align-baseline flex-wrap ml-6">
+          <span class="text-body-1 mr-2 mt-4">
+            To learn about the various RBTC access methods, visit
+            <a target='_blank' href="https://rootstock.io/rbtc/" class="pa-0 text-body-1 text-orange">
+              <span >RBTC Webpage</span>
+            </a>
+          </span>
         </div>
       </v-col>
     </v-row>
@@ -138,7 +140,7 @@ export default {
 
     async function selectConversion(txType: NonNullable<TransactionType>) {
       addPeg(txType);
-      if (!rskAccount.value) {
+      if (txType === constants.PEG_OUT_TRANSACTION_TYPE && !rskAccount.value) {
         try {
           await connectWeb3();
         } catch (e) {

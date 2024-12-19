@@ -1,23 +1,26 @@
 import { LiquidityProviderBase } from '@rsksmart/flyover-sdk';
-import WeiBig from './WeiBig';
-import SatoshiBig from './SatoshiBig';
+import WeiBig from '../WeiBig';
+import SatoshiBig from '../SatoshiBig';
 
 interface PeginProviderDetail {
     fee: SatoshiBig;
     maxTransactionValue: SatoshiBig;
     minTransactionValue: SatoshiBig;
     requiredConfirmations: number;
+    availableLiquidity?: WeiBig;
 }
 interface PegoutProviderDetail {
     fee: WeiBig;
     maxTransactionValue: WeiBig;
     minTransactionValue: WeiBig;
     requiredConfirmations: number;
+    availableLiquidity?: SatoshiBig;
 }
 interface ProviderDetailResponse2WP {
     pegin: PeginProviderDetail;
     pegout: PegoutProviderDetail;
     siteKey: string;
+    liquidityCheckEnabled: boolean;
 }
 
 export type LiquidityProvider2WP = LiquidityProviderBase & ProviderDetailResponse2WP;

@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="pt-0">
     <template v-if="!walletDataReady">
       <connect-device @continueToForm="startAskingForBalance"
                       :sendBitcoinState="sendBitcoinState"
@@ -12,7 +12,9 @@
                  :txBuilder="txBuilder"
                  :txId="txId" @back="back"
                  @toPegInForm="toPegInForm"
-                 :confirmTxState="confirmTxState"/>
+                 :confirmTxState="confirmTxState"
+                 :isFlyoverAvailable="isFlyoverAvailable"
+                 />
     </template>
     <template v-if="showErrorDialog">
       <device-error-dialog :showErrorDialog="showErrorDialog"
@@ -32,13 +34,18 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent } from 'vue';
+import {
+  ref, defineComponent,
+  watch, computed,
+} from 'vue';
 import { useRouter } from 'vue-router';
 import PegInForm from '@/pegin/components/create/PegInForm.vue';
 import ConfirmTx from '@/pegin/components/create/ConfirmTx.vue';
 import * as constants from '@/common/store/constants';
 import {
-  SendBitcoinState, SatoshiBig, BtcWallet, Utxo, TxStatusType,
+  SendBitcoinState, SatoshiBig, BtcWallet, Utxo,
+  TxStatusType,
+  PeginQuote,
 } from '@/common/types';
 import { Machine, getClearPeginTxState } from '@/common/utils';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
@@ -50,10 +57,18 @@ import ConnectDevice from '@/common/components/exchange/ConnectDevice.vue';
 import TxErrorDialog from '@/common/components/exchange/TxErrorDialog.vue';
 import { TrezorError } from '@/common/types/exception/TrezorError';
 import LeatherTxBuilder from '@/pegin/middleware/TxBuilder/LeatherTxBuilder';
+import EnkryptTxBuilder from '@/pegin/middleware/TxBuilder/EnkryptTxBuilder';
 import PeginTxService from '@/pegin/services/PeginTxService';
+import XverseTxBuilder from '@/pegin/middleware/TxBuilder/XverseTxBuilder';
 
 export default defineComponent({
   name: 'SendBitcoin',
+  props: {
+    isFlyoverAvailable: {
+      type: Boolean,
+      required: true,
+    },
+  },
   components: {
     PegInForm,
     ConfirmTx,
@@ -90,13 +105,24 @@ export default defineComponent({
     const startAskingForBalanceStore = useAction('pegInTx', constants.PEGIN_TX_START_ASKING_FOR_BALANCE);
     const stopAskingForBalance = useAction('pegInTx', constants.PEGIN_TX_STOP_ASKING_FOR_BALANCE);
     const addNormalizedTx = useAction('pegInTx', constants.PEGIN_TX_ADD_NORMALIZED_TX);
-    const clearAccount = useAction('web3Session', constants.WEB3_SESSION_CLEAR_ACCOUNT);
     const clearStore = useAction('pegInTx', constants.PEGIN_TX_CLEAR_STATE);
+    const clearSessionState = useAction('web3Session', constants.WEB3_SESSION_CLEAR_ACCOUNT);
     const init = useAction('pegInTx', constants.PEGIN_TX_INIT);
     const setBtcWallet = useAction('pegInTx', constants.PEGIN_TX_ADD_BITCOIN_WALLET);
+    const setCurrenView = useAction('pegInTx', constants.PEGIN_TX_SET_CURRENT_VIEW);
     const getChangeAddress = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_CHANGE_ADDRESS);
     const selectedUtxoList = useGetter<Utxo[]>('pegInTx', constants.PEGIN_TX_GET_SELECTED_UTXO_LIST);
     const selectedFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
+    const selectedFlyoverQuote = useGetter<PeginQuote>('flyoverPegin', constants.FLYOVER_PEGIN_GET_SELECTED_QUOTE);
+    const type = useStateAttribute<string>('pegInTx', 'peginType');
+    const amountToTransfer = useStateAttribute<SatoshiBig>('pegInTx', 'amountToTransfer');
+
+    const valueToReceive = computed<SatoshiBig>(() => {
+      if (type.value === constants.peginType.FLYOVER) {
+        return selectedFlyoverQuote.value.quote.value;
+      }
+      return amountToTransfer.value;
+    });
 
     async function toConfirmTx({
       amountToTransferInSatoshi,
@@ -135,6 +161,11 @@ export default defineComponent({
       addNormalizedTx(getClearPeginTxState().normalizedTx);
     }
 
+    function clearWallets() {
+      clearStore();
+      clearSessionState();
+    }
+
     function toTrackingId([error, txHash]: string[]) {
       if (error !== '') {
         txError.value = error;
@@ -143,9 +174,18 @@ export default defineComponent({
       } else if (txHash) {
         router.push({
           name: 'SuccessTx',
-          params: { txId: txHash, type: (TxStatusType.PEGIN).toLowerCase() },
+          params: {
+            txId: txHash,
+            type: type.value === constants.peginType.FLYOVER
+              ? TxStatusType.FLYOVER_PEGIN
+              : TxStatusType.PEGIN,
+            amount: valueToReceive.value.toSatoshiString(),
+            confirmations: type.value === constants.peginType.FLYOVER
+              ? selectedFlyoverQuote.value.quote.confirmations : 0,
+          },
         });
       }
+      clearWallets();
     }
 
     function closeErrorDialog() {
@@ -193,6 +233,14 @@ export default defineComponent({
           txBuilder.value = new LeatherTxBuilder();
           currentWallet.value = constants.WALLET_NAMES.LEATHER.short_name;
           break;
+        case constants.WALLET_NAMES.XVERSE.long_name:
+          txBuilder.value = new XverseTxBuilder();
+          currentWallet.value = constants.WALLET_NAMES.XVERSE.short_name;
+          break;
+        case constants.WALLET_NAMES.ENKRYPT.long_name:
+          txBuilder.value = new EnkryptTxBuilder();
+          currentWallet.value = constants.WALLET_NAMES.ENKRYPT.short_name;
+          break;
         default:
           txBuilder.value = new TrezorTxBuilder();
           break;
@@ -209,7 +257,6 @@ export default defineComponent({
       txId.value = '';
       txError.value = '';
       setTxBuilder();
-      await clearAccount();
       await stopAskingForBalance();
     }
 
@@ -231,6 +278,10 @@ export default defineComponent({
       init()
         .then(() => setBtcWallet(wallet));
     }
+
+    watch(currentComponent, () => {
+      setCurrenView(currentComponent.value);
+    }, { immediate: true });
 
     setTxBuilder();
 

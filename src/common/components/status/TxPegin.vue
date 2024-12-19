@@ -2,19 +2,19 @@
   <v-container>
     <template v-if="showConfirmations">
       <v-row class="justify-space-around">
-        <span class="text-center text-bw-400 text-body-2">
+        <span class="text-center text-body-2">
           {{ btcConfirmations }} / {{ btcConfirmationsRequired }}
         </span>
       </v-row>
       <v-row class="justify-space-around">
-        <span class="text-center text-bw-400 text-body-2">Confirmations</span>
+        <span class="text-center text-body-2">Confirmations</span>
       </v-row>
     </template>
-    <v-row>
-      <status-progress-bar :isFlyover="isFlyover" :txWithErrorType="txWithErrorType"
+    <v-row class="mb-4">
+      <status-progress-bar :isFlyover="isFlyover" :txNotFound="txNotFound"
                            :txWithError="txWithError" />
     </v-row>
-    <status-summary :details="summary" :type="typeSummary" :txWithErrorType="txWithErrorType"
+    <status-summary :details="summary" :type="typeSummary"
                     :txWithError="txWithError" />
   </v-container>
 </template>
@@ -51,7 +51,7 @@ export default defineComponent({
   props: {
     txId: String,
     isFlyover: Boolean,
-    txWithErrorType: Boolean,
+    txNotFound: Boolean,
     txWithError: Boolean,
   },
   setup(props, context) {

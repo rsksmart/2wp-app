@@ -29,7 +29,16 @@ export const mutations: MutationTree<FlyoverPegoutState> = {
   [constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE]: (state, quoteHash) => {
     state.selectedQuoteHash = quoteHash;
   },
-  [constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCES]: (state, differences) => {
-    state.differences = differences;
+  [constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE]: (state, difference) => {
+    state.difference = difference;
+  },
+  [constants.FLYOVER_PEGOUT_PROVIDERS_SET_AVAILABLE_LIQUIDITY]: (state, payload) => {
+    const { providerId, pegoutLiquidity } = payload;
+    const providers = state.liquidityProviders;
+    providers.forEach((provider, idx) => {
+      if (provider.id === providerId) {
+        state.liquidityProviders[idx].pegout.availableLiquidity = pegoutLiquidity;
+      }
+    });
   },
 };

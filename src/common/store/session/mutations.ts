@@ -57,4 +57,15 @@ export const mutations: MutationTree<SessionState> = {
   [constants.SESSION_SET_API_VERSION]: (state, apiVersion: string) => {
     state.apiVersion = apiVersion;
   },
+  [constants.SESSION_RESET_GRECAPTCHA_COUNTDOWN]: (state) => {
+    state.grecaptchaCountdown = constants.RECAPTCHA_NEW_TOKEN_TIME;
+  },
+  [constants.SESSION_SET_DECREMENT_GRECAPTCHA_COUNTDOWN]: (state) => {
+    if (state.grecaptchaCountdown > 0) {
+      state.grecaptchaCountdown -= 1;
+    }
+  },
+  [constants.SESSION_SET_GRECAPTCHA_INTERVAL]: (state, intervalId: number) => {
+    state.grecaptchaIntervalId = intervalId;
+  },
 };

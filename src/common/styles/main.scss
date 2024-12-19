@@ -26,3 +26,8 @@ a:hover {
     --v-avatar-height: 16px;
   }
 }
+
+.v-tooltip > .v-overlay__content {
+  background-color: rgb(var(--v-theme-bw-700));
+  color: white;
+}

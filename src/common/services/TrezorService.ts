@@ -6,7 +6,6 @@ import * as constants from '@/common/store/constants';
 import {
   GetAddress,
   SignedTx,
-  Step,
   TrezorTx, Tx,
 } from '@/common/types';
 import { WalletService } from '@/common/services/index';
@@ -58,95 +57,9 @@ export default class TrezorService extends WalletService {
   // eslint-disable-next-line class-methods-use-this
   public availableAccounts(): BtcAccount[] {
     return [
-      constants.BITCOIN_LEGACY_ADDRESS,
-      constants.BITCOIN_SEGWIT_ADDRESS,
-      constants.BITCOIN_NATIVE_SEGWIT_ADDRESS,
-    ];
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  confirmationSteps(): Step[] {
-    return [
-      {
-        title: 'Confirm transaction',
-        subtitle: 'Please check your Trezor device',
-        outputsToshow: {
-          opReturn: {
-            value: true,
-            amount: true,
-          },
-          change: {
-            address: false,
-            amount: false,
-          },
-          federation: {
-            address: false,
-            amount: false,
-          },
-        },
-        fee: false,
-        fullAmount: false,
-      },
-      {
-        title: 'Confirm funds transfer',
-        subtitle: 'Confirm sending',
-        outputsToshow: {
-          opReturn: {
-            value: false,
-            amount: false,
-          },
-          change: {
-            address: false,
-            amount: false,
-          },
-          federation: {
-            address: true,
-            amount: true,
-          },
-        },
-        fee: false,
-        fullAmount: false,
-      },
-      {
-        title: 'Confirm change address',
-        subtitle: 'Confirm sending',
-        outputsToshow: {
-          opReturn: {
-            value: false,
-            amount: false,
-          },
-          change: {
-            address: true,
-            amount: true,
-          },
-          federation: {
-            address: false,
-            amount: false,
-          },
-        },
-        fee: false,
-        fullAmount: false,
-      },
-      {
-        title: 'Confirm transaction fee',
-        subtitle: 'Really send',
-        outputsToshow: {
-          opReturn: {
-            value: false,
-            amount: false,
-          },
-          change: {
-            address: false,
-            amount: false,
-          },
-          federation: {
-            address: false,
-            amount: false,
-          },
-        },
-        fee: true,
-        fullAmount: true,
-      },
+      BtcAccount.BITCOIN_LEGACY_ADDRESS,
+      BtcAccount.BITCOIN_SEGWIT_ADDRESS,
+      BtcAccount.BITCOIN_NATIVE_SEGWIT_ADDRESS,
     ];
   }
 

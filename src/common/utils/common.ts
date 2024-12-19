@@ -15,7 +15,6 @@ export const getChunkedValue = (value: string, maxLength: number) => (value.leng
 export const getClearPeginTxState = (): PegInTxState => ({
   peginConfiguration: {
     minValue: 0,
-    maxValue: 0,
     federationAddress: '',
     sessionId: '',
   },
@@ -67,13 +66,13 @@ export const getClearPeginTxState = (): PegInTxState => ({
     safeFee: new SatoshiBig(0, 'btc'),
   },
   peginType: constants.peginType.POWPEG,
+  walletService: undefined,
 });
 
 export const getClearPegoutTxState = (): PegOutTxState => ({
   amountToTransfer: new WeiBig(0, 'wei'),
   pegoutConfiguration: {
     minValue: new WeiBig(0, 'wei'),
-    maxValue: new WeiBig(0, 'wei'),
     bridgeContractAddress: '',
   },
   validAmount: false,
@@ -97,6 +96,8 @@ export const getClearSessionState = ():SessionState => (
     bitcoinPrice: 0,
     features: [],
     apiVersion: '',
+    grecaptchaCountdown: constants.RECAPTCHA_NEW_TOKEN_TIME,
+    grecaptchaIntervalId: undefined,
   }
 );
 
@@ -109,7 +110,7 @@ export const getClearFlyoverPegoutState = (): FlyoverPegoutState => ({
   quotes: {},
   flyoverService: markRaw(new FlyoverService()),
   selectedQuoteHash: '',
-  differences: [],
+  difference: 0,
 });
 
 export const getClearFlyoverPeginState = (): FlyoverPeginState => ({
@@ -121,6 +122,7 @@ export const getClearFlyoverPeginState = (): FlyoverPeginState => ({
   quotes: {},
   flyoverService: markRaw(new FlyoverService()),
   selectedQuoteHash: '',
+  acceptedQuoteSignature: '',
 });
 
 export const compareObjects = (
