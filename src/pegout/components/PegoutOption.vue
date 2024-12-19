@@ -1,6 +1,6 @@
 <template>
   <v-card :ripple="false" rounded="lg" flat variant="outlined"
-    @click="selectOption" height="400px" :disabled="flyoverNotAvailable"
+    @click="selectOption" :disabled="flyoverNotAvailable"
     :class="{ 'selected': selectedOption, 'not-available': flyoverNotAvailable }"
     class="pa-8">
     <div v-if="flyoverNotAvailable"
