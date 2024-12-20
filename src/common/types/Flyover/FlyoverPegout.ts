@@ -3,8 +3,21 @@ import { FlyoverService } from '../../services';
 import SatoshiBig from '../SatoshiBig';
 import WeiBig from '../WeiBig';
 
+export interface ReducedQuote {
+    gasFee: WeiBig;
+    callFee: WeiBig;
+    productFeeAmount: WeiBig;
+    value: WeiBig;
+    quoteHash: string;
+}
+export interface ObjectDifference {
+    percentage: number;
+    previousQuote: ReducedQuote;
+    currentQuote: ReducedQuote;
+}
+
 export interface FlyoverPegoutState {
-    difference: number;
+    difference: ObjectDifference;
     amountToTransfer: WeiBig;
     validAmount: boolean;
     btcRecipientAddress: string;
