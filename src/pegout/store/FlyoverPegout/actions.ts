@@ -1,11 +1,12 @@
 import {
   FlyoverPegoutState, QuotePegOut2WP, RootState, WeiBig,
   FlyoverCall, LiquidityProvider2WP, TxStatusType, SatoshiBig,
+  ReducedQuote,
 } from '@/common/types';
 import { ActionTree } from 'vuex';
 import * as constants from '@/common/store/constants';
 import { BridgeService } from '@/common/services/BridgeService';
-import { promiseWithTimeout } from '@/common/utils';
+import { getClearObjectDifference, promiseWithTimeout } from '@/common/utils';
 import { ApiService } from '@/common/services';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { providers } from 'ethers';
@@ -115,12 +116,20 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
       dispatch(constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER, providerId)
         .then(() => dispatch(constants.FLYOVER_PEGOUT_GET_FINAL_QUOTE, { providerId, quoteHash }))
         .then(() => {
-          if (state.difference > EnvironmentAccessorService.getEnvironmentVariables()
+          if (state.difference.percentage > EnvironmentAccessorService.getEnvironmentVariables()
             .flyoverPegoutDiffPercentage) {
             return Promise.reject(new Error('Quote differences found: cannot accept quote'));
           }
           return state.flyoverService.acceptAndSendPegoutQuote(state.selectedQuoteHash);
         })
+        .then((txHash) => commit(constants.FLYOVER_PEGOUT_SET_TX_HASH, txHash))
+        .then(resolve)
+        .catch(reject);
+    }),
+  [constants.FLYOVER_PEGOUT_ACCEPT_AND_SEND_QUOTE_WITH_CHANGED_CONDITIONS]:
+    ({ state, commit }) => new Promise<void>((resolve, reject) => {
+      commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, state.difference.currentQuote.quoteHash);
+      state.flyoverService.acceptAndSendPegoutQuote(state.selectedQuoteHash)
         .then((txHash) => commit(constants.FLYOVER_PEGOUT_SET_TX_HASH, txHash))
         .then(resolve)
         .catch(reject);
@@ -143,41 +152,55 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
         const reducedCurrentQuote = {
           callFee: currentQuote?.quote.callFee,
           gasFee: currentQuote?.quote.gasFee,
-          penaltyFee: currentQuote?.quote.penaltyFee,
           productFeeAmount: currentQuote?.quote.productFeeAmount,
           value: currentQuote?.quote.value,
+          quoteHash: currentQuote?.quoteHash,
         };
         state.quotes[providerId].forEach((quote2wp) => {
           const reducedNewQuote = {
             callFee: quote2wp.quote.callFee,
             gasFee: quote2wp.quote.gasFee,
-            penaltyFee: quote2wp.quote.penaltyFee,
             productFeeAmount: quote2wp.quote.productFeeAmount,
             value: quote2wp.quote.value,
+            quoteHash: quote2wp.quoteHash,
           };
           const zeroWei = new WeiBig(0, 'wei');
-          const currentQuoteTotalFee = (reducedCurrentQuote.callFee ?? zeroWei)
+          const currentQuoteTotal = (reducedCurrentQuote.callFee ?? zeroWei)
             .plus(reducedCurrentQuote.gasFee ?? zeroWei)
-            .plus(reducedCurrentQuote.penaltyFee ?? zeroWei)
             .plus(reducedCurrentQuote.productFeeAmount ?? zeroWei)
             .plus(reducedCurrentQuote.value ?? zeroWei);
-          const newQuoteTotalFee = (reducedNewQuote.callFee ?? zeroWei)
+          const newQuoteTotal = (reducedNewQuote.callFee ?? zeroWei)
             .plus(reducedNewQuote.gasFee ?? zeroWei)
-            .plus(reducedNewQuote.penaltyFee ?? zeroWei)
             .plus(reducedNewQuote.productFeeAmount ?? zeroWei)
             .plus(reducedNewQuote.value ?? zeroWei);
-          const largest = newQuoteTotalFee
-            .gt(currentQuoteTotalFee) ? newQuoteTotalFee : currentQuoteTotalFee;
-          const minor = newQuoteTotalFee
-            .gt(currentQuoteTotalFee) ? currentQuoteTotalFee : newQuoteTotalFee;
-          const difference = ((largest.minus(minor)).mul('100')).div(largest.toRBTCString());
-          if (Number(difference.toRBTCString()) <= EnvironmentAccessorService
+          const largest = newQuoteTotal
+            .gt(currentQuoteTotal) ? newQuoteTotal : currentQuoteTotal;
+          const minor = newQuoteTotal
+            .gt(currentQuoteTotal) ? currentQuoteTotal : newQuoteTotal;
+          const percentageDifference = ((largest.minus(minor)).mul('100')).div(largest.toRBTCString());
+          if (Number(percentageDifference.toRBTCString()) <= EnvironmentAccessorService
             .getEnvironmentVariables().flyoverPegoutDiffPercentage) {
             commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, quote2wp.quoteHash);
           } else {
             commit(
               constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE,
-              Number(difference.toRBTCString()),
+              {
+                percentage: Number(percentageDifference.toRBTCString()),
+                previousQuote: {
+                  gasFee: reducedCurrentQuote.gasFee,
+                  callFee: reducedCurrentQuote.callFee,
+                  productFeeAmount: reducedCurrentQuote.productFeeAmount,
+                  value: reducedCurrentQuote.value,
+                  quoteHash: reducedCurrentQuote.quoteHash,
+                } as ReducedQuote,
+                currentQuote: {
+                  gasFee: reducedNewQuote.gasFee,
+                  callFee: reducedNewQuote.callFee,
+                  productFeeAmount: reducedNewQuote.productFeeAmount,
+                  value: reducedNewQuote.value,
+                  quoteHash: reducedNewQuote.quoteHash,
+                } as ReducedQuote,
+              },
             );
           }
         });
@@ -192,7 +215,7 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
     commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, quoteHash);
   },
   [constants.FLYOVER_PEGOUT_CLEAR_QUOTE_DIFFERENCES]: ({ commit }) => {
-    commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE, 0);
+    commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE, getClearObjectDifference());
   },
   [constants.FLYOVER_PEGOUT_GET_AVAILABLE_LIQUIDITY]:
   ({ state, dispatch, commit }) => new Promise((resolve, reject) => {

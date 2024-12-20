@@ -1,4 +1,4 @@
-import { FlyoverPegoutState } from '@/common/types';
+import { FlyoverPegoutState, ObjectDifference } from '@/common/types';
 import { MutationTree } from 'vuex';
 import * as constants from '@/common/store/constants';
 import { getClearFlyoverPegoutState } from '@/common/utils/common';
@@ -29,7 +29,7 @@ export const mutations: MutationTree<FlyoverPegoutState> = {
   [constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE]: (state, quoteHash) => {
     state.selectedQuoteHash = quoteHash;
   },
-  [constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE]: (state, difference) => {
+  [constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE]: (state, difference: ObjectDifference) => {
     state.difference = difference;
   },
   [constants.FLYOVER_PEGOUT_PROVIDERS_SET_AVAILABLE_LIQUIDITY]: (state, payload) => {

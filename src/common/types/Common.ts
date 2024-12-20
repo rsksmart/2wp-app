@@ -132,12 +132,6 @@ export interface NormalizedSummary {
 export type AddressType = 'BITCOIN_LEGACY_ADDRESS' | 'BITCOIN_SEGWIT_ADDRESS' | 'BITCOIN_NATIVE_SEGWIT_ADDRESS' |
  'BITCOIN_MULTISIGNATURE_ADDRESS' | 'BITCOIN_UNKNOWN_ADDRESS_TYPE';
 
-export interface ObjectDifference {
-  key: string;
-  oldValue: unknown;
-  newValue: unknown;
-}
-
 export enum AppLocale {
   LOCALE_EN = 'en',
   LOCALE_ES = 'es',
