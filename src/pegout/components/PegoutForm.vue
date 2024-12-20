@@ -116,7 +116,7 @@
       />
     </template>
     <quote-diff-dialog :show-dialog="showQuoteDiff"
-      :differences="quoteDifference" @continue="continueHandler"/>
+      :differences="quoteDifference" @continue="continueHandler" @cancel="clearForError" />
     <div id="recaptcha" class="g-recaptcha"
         :data-sitekey="flyoverService.siteKey"
         data-callback="onRecaptchaSuccess"
@@ -139,7 +139,8 @@ import {
 } from '@/common/store/helper';
 import { mdiArrowLeft, mdiArrowRight } from '@mdi/js';
 import {
-  FlyoverPegoutState, LiquidityProvider2WP, PegoutQuoteDbModel, PegOutTxState, QuotePegOut2WP,
+  FlyoverPegoutState, LiquidityProvider2WP, ObjectDifference,
+  PegoutQuoteDbModel, PegOutTxState, QuotePegOut2WP,
   SatoshiBig, TxInfo, TxStatusType, WeiBig,
 } from '@/common/types';
 import {
@@ -186,6 +187,7 @@ export default defineComponent({
     const balance = useStateAttribute<WeiBig>('web3Session', 'balance');
     const sendTx = useAction('pegOutTx', constants.PEGOUT_TX_SEND);
     const sendFlyoverTx = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ACCEPT_AND_SEND_QUOTE);
+    const sendFlyoverTxWithConditionChanged = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ACCEPT_AND_SEND_QUOTE_WITH_CHANGED_CONDITIONS);
     const initFlyoverTx = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_INIT);
     const initPegoutTx = useAction('pegOutTx', constants.PEGOUT_TX_INIT);
     const clearFlyoverState = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_CLEAR_STATE);
@@ -193,7 +195,7 @@ export default defineComponent({
     const getPegoutQuotes = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_GET_QUOTES);
     const ethersProvider = useStateAttribute<providers.Web3Provider>('web3Session', 'ethersProvider');
     const quotes = useStateAttribute<Record<number, QuotePegOut2WP[]>>('flyoverPegout', 'quotes');
-    const quoteDifference = useStateAttribute<number>('flyoverPegout', 'difference');
+    const quoteDifference = useStateAttribute<ObjectDifference>('flyoverPegout', 'difference');
     const selectedQuote = useGetter<QuotePegOut2WP>('flyoverPegout', constants.FLYOVER_PEGOUT_GET_SELECTED_QUOTE);
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
     const isEnoughBalance = useGetter<boolean>('pegOutTx', constants.PEGOUT_TX_IS_ENOUGH_BALANCE);
@@ -241,7 +243,7 @@ export default defineComponent({
       return '';
     });
 
-    const showQuoteDiff = computed(() => quoteDifference.value > quoteDiffPercentage
+    const showQuoteDiff = computed(() => quoteDifference.value.percentage > quoteDiffPercentage
       && diffShown.value);
 
     const validAmountToReceive = computed((): boolean => estimatedBtcToReceive.value.gt(0));
@@ -311,7 +313,7 @@ export default defineComponent({
     });
 
     const showCountdown = computed(() => {
-      if (sendingPegout.value) return true;
+      if (sendingPegout.value || diffShown.value) return true;
       return countdown.value === recaptchanNewTokenTime;
     });
 
@@ -512,13 +514,24 @@ export default defineComponent({
       }
     }
 
-    function continueHandler() {
-      setSelectedQuoteHash('');
-      selectedOption.value = '';
+    async function continueHandler() {
       diffShown.value = false;
+      pegOutFormState.value.send('loading');
+      try {
+        await sendFlyoverTxWithConditionChanged();
+        ApiService.registerTx(registerFlyover.value);
+        changePage(TxStatusType.FLYOVER_PEGOUT.toLowerCase());
+      } catch (e) {
+        if (e instanceof ServiceError) {
+          handlePegoutError(e);
+        }
+      } finally {
+        pegOutFormState.value.send('fill');
+      }
     }
 
     function clearForError() {
+      diffShown.value = false;
       showTxErrorDialog.value = false;
       clearAmount.value = true;
     }
