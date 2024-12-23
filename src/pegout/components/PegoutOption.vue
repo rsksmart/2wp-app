@@ -245,7 +245,7 @@ export default defineComponent({
       return '';
     });
 
-    const btcAddressPlaceholder = `Paste your (Legacy, Segwit or Bech32) ${environmentContext.getBtcTicker()} address`;
+    const btcAddressPlaceholder = `Paste your ${environmentContext.getBtcTicker()} address`;
 
     const isValidBtcAddress = computed(() => {
       const { valid, addressType } = validateAddress(btcAddress.value);
