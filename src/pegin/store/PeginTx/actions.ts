@@ -5,6 +5,7 @@ import * as constants from '@/common/store/constants';
 import {
   ApiService, LedgerService,
   TrezorService, LeatherService,
+  EnkryptService, XverseService,
 } from '@/common/services';
 import SatoshiBig from '@/common/types/SatoshiBig';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
@@ -13,7 +14,9 @@ import {
   PeginConfiguration, PegInTxState, WalletAddress,
   BtcAccount, BtcWallet, MiningSpeedFee, UtxoListPerAccount, Utxo,
 } from '@/common/types';
-import { getCookie, setCookie } from '@/common/utils';
+import {
+  getClearPeginTxState, getCookie, isBTCAmountValidRegex, setCookie,
+} from '@/common/utils';
 import PeginConfigurationService from '@/pegin/services/peginConfigurationService';
 import TxFeeService from '../../services/TxFeeService';
 
@@ -35,19 +38,30 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   },
   [constants.PEGIN_TX_ADD_BITCOIN_WALLET]: ({ commit, state }, bitcoinWallet: BtcWallet) => {
     commit(constants.PEGIN_TX_SET_BITCOIN_WALLET, bitcoinWallet);
-    switch (bitcoinWallet) {
-      case constants.WALLET_NAMES.TREZOR.long_name:
-        commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new TrezorService());
-        break;
-      case constants.WALLET_NAMES.LEDGER.long_name:
-        commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new LedgerService());
-        break;
-      case constants.WALLET_NAMES.LEATHER.long_name:
-        commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new LeatherService());
-        break;
-      default:
-        commit(constants.PEGIN_TX_SET_WALLET_SERVICE, undefined);
-        break;
+    try {
+      switch (bitcoinWallet) {
+        case constants.WALLET_NAMES.TREZOR.long_name:
+          commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new TrezorService());
+          break;
+        case constants.WALLET_NAMES.LEDGER.long_name:
+          commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new LedgerService());
+          break;
+        case constants.WALLET_NAMES.LEATHER.long_name:
+          commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new LeatherService());
+          break;
+        case constants.WALLET_NAMES.XVERSE.long_name:
+          commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new XverseService());
+          break;
+        case constants.WALLET_NAMES.ENKRYPT.long_name:
+          commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new EnkryptService());
+          break;
+        default:
+          commit(constants.PEGIN_TX_SET_WALLET_SERVICE, undefined);
+          break;
+      }
+    } catch (e) {
+      commit(constants.PEGIN_TX_SET_WALLET_SERVICE, undefined);
+      return;
     }
     commit(
       constants.PEGIN_TX_WALLET_SERVICE_SUBSCRIBE,
@@ -86,9 +100,18 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_SELECT_ACCOUNT_TYPE]: ({ commit }, accountType: BtcAccount): void => {
     commit(constants.PEGIN_TX_SET_ACCOUNT_TYPE, accountType);
   },
-  [constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER]: ({ commit }, amount: SatoshiBig): void => {
-    commit(constants.PEGIN_TX_SET_AMOUNT_TO_TRANSFER, amount);
-  },
+  [constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER]:
+    ({ commit, dispatch, state }, amount: SatoshiBig): void => {
+      commit(constants.PEGIN_TX_SET_AMOUNT_TO_TRANSFER, amount);
+      const minValue = new SatoshiBig(state.peginConfiguration.minValue, 'btc');
+      const isValidAmount = isBTCAmountValidRegex(amount.toBTCString()) && amount.gte(minValue);
+      if (isValidAmount) {
+        dispatch(constants.PEGIN_TX_CALCULATE_TX_FEE);
+      }
+      if (amount.eq(0)) {
+        commit(constants.PEGIN_TX_SET_CALCULATED_TX_FEE, getClearPeginTxState().calculatedFees);
+      }
+    },
   [constants.PEGIN_TX_CALCULATE_TX_FEE]: ({ commit, state, getters }):
     Promise<void> => new Promise<void>((resolve, reject) => {
       if (!state.selectedAccount) {
@@ -166,10 +189,7 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_START_ASKING_FOR_BALANCE]: ({ state }): Promise<void> => {
     if (state.walletService) {
       return state.walletService
-        .startAskingForBalance(
-          state.peginConfiguration.sessionId,
-          state.peginConfiguration.maxValue,
-        );
+        .startAskingForBalance();
     }
     return Promise.reject(new Error('Wallet service is not set'));
   },
@@ -190,5 +210,8 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   },
   [constants.PEGIN_TX_ADD_PEGIN_TYPE]: ({ commit }, peginType: constants.peginType): void => {
     commit(constants.PEGIN_TX_SET_PEGIN_TYPE, peginType);
+  },
+  [constants.PEGIN_TX_SET_CURRENT_VIEW]: ({ commit }, view: string): void => {
+    commit(constants.PEGIN_TX_SET_VIEW, view);
   },
 };

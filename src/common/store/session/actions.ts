@@ -19,7 +19,8 @@ import { toUtf8Bytes } from 'ethers/lib/utils';
 
 export const actions: ActionTree<SessionState, RootState> = {
   [constants.SESSION_CONNECT_WEB3]: ({ commit, state, dispatch }): Promise<void> => {
-    const rLogin = state.rLoginInstance === undefined ? getRloginInstance() : state.rLoginInstance;
+    const rLogin = state.rLoginInstance === undefined
+      ? getRloginInstance(state.features) : state.rLoginInstance;
     return new Promise<void>((resolve, reject) => {
       rLogin.connect()
         .then((rLoginResponse) => {
@@ -28,6 +29,7 @@ export const actions: ActionTree<SessionState, RootState> = {
           commit(constants.SESSION_SET_RLOGIN, rLoginResponse);
           commit(constants.SESSION_SET_RLOGIN_INSTANCE, rLogin);
           commit(constants.SESSION_SET_WEB3_INSTANCE, markRaw(provider));
+          provider.on('block', () => dispatch(constants.WEB3_SESSION_ADD_BALANCE));
           return provider.listAccounts();
         })
         .then((accounts) => {
@@ -138,5 +140,22 @@ export const actions: ActionTree<SessionState, RootState> = {
     rLoginInstance?.on('accountsChanged', () => {
       dispatch(constants.WEB3_SESSION_GET_ACCOUNT);
     });
+  },
+  [constants.SESSION_COUNTDOWN_GRECAPTCHA_TIME]: ({ state, commit, dispatch }) => {
+    const intervalId = setInterval(() => {
+      if (state.grecaptchaCountdown > 0) {
+        commit(constants.SESSION_SET_DECREMENT_GRECAPTCHA_COUNTDOWN);
+      } else {
+        dispatch(constants.SESSION_CLEAR_GRECAPTCHA_INTERVAL);
+      }
+    }, 1000);
+    commit(constants.SESSION_SET_GRECAPTCHA_INTERVAL, intervalId);
+  },
+  [constants.SESSION_CLEAR_GRECAPTCHA_INTERVAL]: ({ state, commit }) => {
+    const { grecaptchaIntervalId } = state;
+    if (grecaptchaIntervalId) {
+      clearInterval(grecaptchaIntervalId);
+      commit(constants.SESSION_RESET_GRECAPTCHA_COUNTDOWN);
+    }
   },
 };

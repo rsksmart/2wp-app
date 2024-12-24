@@ -18,9 +18,7 @@ const defaultEnvironmentVariables = {
   vueAppHotjarId: '',
   vueAppClarityId: '',
   peginMinValue: 0.005,
-  peginMaxValue: 10,
   pegoutMinValue: 0.005,
-  pegoutMaxValue: 10,
   minFeeSatPerByte: {
     fast: 8,
     average: 4,
@@ -32,6 +30,9 @@ const defaultEnvironmentVariables = {
     slow: 12,
   },
   burnDustValue: 2000,
+  flyoverGetProvidersTimeout: 5000,
+  flyoverPegoutDiffPercentage: 2,
+  grecaptchaTime: constants.RECAPTCHA_NEW_TOKEN_TIME,
 };
 
 EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);

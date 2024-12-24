@@ -1,5 +1,5 @@
 import {
-  FlyoverPeginState, LiquidityProvider2WP, QuotePegIn2WP, SatoshiBig,
+  FlyoverPeginState, LiquidityProvider2WP, PeginQuote, SatoshiBig,
 } from '@/common/types';
 import { MutationTree } from 'vuex';
 import * as constants from '@/common/store/constants';
@@ -14,10 +14,22 @@ export const mutations: MutationTree<FlyoverPeginState> = {
   [constants.FLYOVER_PEGIN_SET_PROVIDERS]: (state, providers: Array<LiquidityProvider2WP>) => {
     state.liquidityProviders = providers;
   },
-  [constants.FLYOVER_PEGIN_SET_QUOTES]: (state, quotes: Record<number, Array<QuotePegIn2WP>>) => {
+  [constants.FLYOVER_PEGIN_SET_QUOTES]: (state, quotes: Record<number, Array<PeginQuote>>) => {
     state.quotes = quotes;
   },
   [constants.FLYOVER_PEGIN_SET_SELECTED_QUOTE]: (state, quoteHash: string) => {
     state.selectedQuoteHash = quoteHash;
+  },
+  [constants.FLYOVER_PEGIN_PROVIDERS_SET_AVAILABLE_LIQUIDITY]: (state, payload) => {
+    const { providerId, peginLiquidity } = payload;
+    const providers = state.liquidityProviders;
+    providers.forEach((provider, idx) => {
+      if (provider.id === providerId) {
+        state.liquidityProviders[idx].pegin.availableLiquidity = peginLiquidity;
+      }
+    });
+  },
+  [constants.FLYOVER_PEGIN_SET_ACCEPTED_QUOTE_SIGNATURE]: (state, quoteSignature: string) => {
+    state.acceptedQuoteSignature = quoteSignature;
   },
 };

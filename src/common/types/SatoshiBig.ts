@@ -87,4 +87,8 @@ export default class SatoshiBig extends Big {
   toSatoshiBigInt(): bigint {
     return BigInt(this.toFixed(0));
   }
+
+  toSatoshiNumber(): number {
+    return Number(this.toFixed(0));
+  }
 }

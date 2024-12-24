@@ -10,6 +10,7 @@ import {
   RequestBalance,
   PegoutStatus,
   SatoshiBig,
+  Browser,
 } from '@/common/types';
 import { BridgeService } from '@/common/services/BridgeService';
 import moment from 'moment';
@@ -73,7 +74,7 @@ export function getRskAddressExplorerUrl(address: string) {
   return `${getRskBaseExplorerUrl()}/address/${address}`;
 }
 
-export function getEstimatedFee(): Promise<SatoshiBig> {
+export function getEstimatedFee(pegoutAlreadyRequested = false): Promise<SatoshiBig> {
   return new Promise<SatoshiBig>((resolve, reject) => {
     const bridgeService = new BridgeService();
     Promise.all([
@@ -81,6 +82,11 @@ export function getEstimatedFee(): Promise<SatoshiBig> {
       bridgeService.getQueuedPegoutsCount(),
     ])
       .then(([nextPegoutCost, pegoutQueueCount]) => {
+        if (pegoutAlreadyRequested && pegoutQueueCount !== 0n) {
+          const currentEstimatedFee = nextPegoutCost / pegoutQueueCount;
+          resolve(new SatoshiBig(currentEstimatedFee, 'satoshi'));
+          return;
+        }
         const estimatedFee = nextPegoutCost / (pegoutQueueCount + 1n);
         resolve(new SatoshiBig(estimatedFee, 'satoshi'));
       })
@@ -116,9 +122,12 @@ export function isMobileDevice() {
   return platform === 'mobile';
 }
 
+export function getBrowserName(): Browser {
+  return Bowser.getParser(window.navigator.userAgent).getBrowserName() as Browser;
+}
+
 export function isAllowedCurrentBrowser() {
-  const browser = Bowser.getParser(window.navigator.userAgent);
-  return browser.getBrowserName() === 'Chrome' || window.navigator.brave;
+  return [Browser.CHROME, Browser.FIREFOX].includes(getBrowserName());
 }
 
 export function isBTCAmountValidRegex(bitcoinAmount: string) {
@@ -194,7 +203,7 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
           activeMessageStyle = 'statusProgress';
           isRejected = false;
           break;
-        case constants.FlyoverStatus.COMPLETED:
+        case constants.FlyoverStatus.SUCCESS:
           statusMessage = 'Your transaction was successfully processed!';
           activeMessageStyle = 'statusSuccess';
           isRejected = false;
@@ -209,7 +218,7 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
           activeMessageStyle = 'statusProgress';
           isRejected = false;
           break;
-        case constants.FlyoverStatus.COMPLETED:
+        case constants.FlyoverStatus.SUCCESS:
           statusMessage = 'Your transaction was successfully processed!';
           activeMessageStyle = 'statusSuccess';
           isRejected = false;
@@ -281,6 +290,11 @@ export function setStatusMessage(txType: string, status: string): TxStatusMessag
       activeMessageStyle = 'statusRejected';
       error = true;
       errorMessage = 'The input transaction is not valid, please check it and try again';
+      break;
+    case TxStatusType.BLOCKBOOK_FAILED:
+      activeMessageStyle = 'statusRejected';
+      error = true;
+      errorMessage = 'Blockbook service is not responding';
       break;
     default:
       error = true;

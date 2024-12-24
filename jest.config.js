@@ -1,4 +1,8 @@
 module.exports = {
+  transform: {
+    '^.+\\.vue$': '@vue/vue3-jest',
+    '^.+\\.(mts|mjs|jsx|ts|tsx)$': 'ts-jest',
+  },
   preset: '@vue/cli-plugin-unit-jest/presets/typescript-and-babel',
   collectCoverage: true,
   collectCoverageFrom: ['src/(common|pegin)/(providers|services|utils)/*.ts'],
@@ -13,4 +17,5 @@ module.exports = {
   coverageProvider: 'v8',
   transformIgnorePatterns: ['node_modules/(?!axios)/'],
   setupFilesAfterEnv: ['<rootDir>/setup-jest.js'],
+  silent: true,
 };

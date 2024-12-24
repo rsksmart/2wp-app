@@ -4,18 +4,19 @@ import { BITCOIN_AVERAGE_FEE_LEVEL } from '@/common/store/constants';
 import {
   FlyoverPeginState,
   FlyoverPegoutState, ObjectDifference, PegOutTxState,
+  ReducedQuote,
   SessionState, WeiBig,
 } from '@/common/types';
 import { FlyoverService } from '@/common/services';
 import { markRaw } from 'vue';
 import * as constants from '@/common/store/constants';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
 export const getChunkedValue = (value: string, maxLength: number) => (value.length < maxLength ? value : `${value.substr(0, maxLength / 2)}...${value.substr(value.length - maxLength / 2, value.length)}`);
 
 export const getClearPeginTxState = (): PegInTxState => ({
   peginConfiguration: {
     minValue: 0,
-    maxValue: 0,
     federationAddress: '',
     sessionId: '',
   },
@@ -67,13 +68,13 @@ export const getClearPeginTxState = (): PegInTxState => ({
     safeFee: new SatoshiBig(0, 'btc'),
   },
   peginType: constants.peginType.POWPEG,
+  walletService: undefined,
 });
 
 export const getClearPegoutTxState = (): PegOutTxState => ({
   amountToTransfer: new WeiBig(0, 'wei'),
   pegoutConfiguration: {
     minValue: new WeiBig(0, 'wei'),
-    maxValue: new WeiBig(0, 'wei'),
     bridgeContractAddress: '',
   },
   validAmount: false,
@@ -84,7 +85,7 @@ export const getClearPegoutTxState = (): PegOutTxState => ({
   selectedFee: BITCOIN_AVERAGE_FEE_LEVEL,
 });
 
-export const getClearSessionState = ():SessionState => (
+export const getClearSessionState = (): SessionState => (
   {
     account: undefined,
     ethersProvider: undefined,
@@ -97,8 +98,25 @@ export const getClearSessionState = ():SessionState => (
     bitcoinPrice: 0,
     features: [],
     apiVersion: '',
+    grecaptchaCountdown: EnvironmentAccessorService.getEnvironmentVariables().grecaptchaTime
+        ?? constants.RECAPTCHA_NEW_TOKEN_TIME,
+    grecaptchaIntervalId: undefined,
   }
 );
+
+export const getClearReducedQuote = (): ReducedQuote => ({
+  gasFee: new WeiBig(0, 'wei'),
+  callFee: new WeiBig(0, 'wei'),
+  productFeeAmount: new WeiBig(0, 'wei'),
+  value: new WeiBig(0, 'wei'),
+  quoteHash: '',
+});
+
+export const getClearObjectDifference = (): ObjectDifference => ({
+  percentage: 0,
+  previousQuote: getClearReducedQuote(),
+  currentQuote: getClearReducedQuote(),
+});
 
 export const getClearFlyoverPegoutState = (): FlyoverPegoutState => ({
   amountToTransfer: new WeiBig(0, 'wei'),
@@ -109,7 +127,7 @@ export const getClearFlyoverPegoutState = (): FlyoverPegoutState => ({
   quotes: {},
   flyoverService: markRaw(new FlyoverService()),
   selectedQuoteHash: '',
-  differences: [],
+  difference: getClearObjectDifference(),
 });
 
 export const getClearFlyoverPeginState = (): FlyoverPeginState => ({
@@ -121,32 +139,5 @@ export const getClearFlyoverPeginState = (): FlyoverPeginState => ({
   quotes: {},
   flyoverService: markRaw(new FlyoverService()),
   selectedQuoteHash: '',
+  acceptedQuoteSignature: '',
 });
-
-export const compareObjects = (
-  obj1: { [key: string]: unknown },
-  obj2: { [key: string]: unknown },
-): Array<ObjectDifference> => {
-  if (Object.getPrototypeOf(obj1) !== Object.getPrototypeOf(obj2)) {
-    throw new Error('Objects has different prototype');
-  }
-  const differences: Array<ObjectDifference> = [];
-  Object.keys(obj1).forEach((key) => {
-    if (obj1[key] instanceof WeiBig && obj2[key] instanceof WeiBig) {
-      if (!(obj1[key] as WeiBig).eq(obj2[key] as WeiBig)) {
-        differences.push({
-          key,
-          oldValue: (obj1[key] as WeiBig).toRBTCString(),
-          newValue: (obj2[key] as WeiBig).toRBTCString(),
-        });
-      }
-    } else if (obj1[key] !== obj2[key]) {
-      differences.push({
-        key,
-        oldValue: obj1[key],
-        newValue: obj2[key],
-      });
-    }
-  });
-  return differences;
-};

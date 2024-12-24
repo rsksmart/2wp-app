@@ -1,64 +1,61 @@
 <template>
   <v-container fluid class="exchange container max-width">
-    <component :is="currentComponent"
-    :flyoverEnabled="flyoverEnabled"
-    :confirmTxState="confirmTxState"
-    @changePage="changePage"/>
+    <div v-if="loadingProviders"
+      class="d-flex justify-center"
+      style="position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);">
+        <v-progress-circular
+          :size="250"
+          :width="18"
+          color="warning"
+          indeterminate />
+    </div>
+    <pegout-form v-else :flyoverEnabled="flyoverEnabled" />
   </v-container>
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, onBeforeMount } from 'vue';
+import {
+  ref, defineComponent, onBeforeMount,
+} from 'vue';
 import * as constants from '@/common/store/constants';
-import PegOutForm from '@/pegout/components/PegOutForm.vue';
-import FlyoverPegout from '@/pegout/components/FlyoverPegout.vue';
-import { Machine } from '@/common/utils';
-import { useAction, useGetter } from '@/common/store/helper';
+import PegoutForm from '@/pegout/components/PegoutForm.vue';
+import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import { Feature, FeatureNames } from '@/common/types';
-import Confirmation from '../components/Confirmation.vue';
+import { providers } from 'ethers';
 
 export default defineComponent({
   name: 'PegOut',
   components: {
-    PegOutForm,
-    Confirmation,
-    FlyoverPegout,
+    PegoutForm,
   },
   setup() {
-    const currentComponent = ref('FlyoverPegout');
-    const confirmTxState = ref<Machine<
-      'idle'
-      | 'loading'
-      | 'error'
-      | 'goingHome'
-      > >(new Machine('idle'));
     const init = useAction('pegOutTx', constants.PEGOUT_TX_INIT);
     const initFlyover = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_INIT);
-    const getBalance = useAction('web3Session', constants.WEB3_SESSION_ADD_BALANCE);
     const flyoverFeature = useGetter<(name: FeatureNames) => Feature>('web3Session', constants.SESSION_GET_FEATURE);
+    const ethersProvider = useStateAttribute<providers.Web3Provider>('web3Session', 'ethersProvider');
     const flyoverEnabled = ref(false);
-
-    function changePage(componentName: string) {
-      currentComponent.value = componentName;
-      window.scrollTo(0, 0);
-    }
+    const loadingProviders = ref(true);
 
     onBeforeMount(() => {
       const feature = flyoverFeature.value(FeatureNames.FLYOVER_PEG_OUT);
-      if (feature?.value === 'enabled') {
-        initFlyover();
-        flyoverEnabled.value = true;
-      }
+      if (feature?.value === constants.ENABLED) {
+        initFlyover(ethersProvider.value)
+          .then(() => {
+            flyoverEnabled.value = true;
+            loadingProviders.value = false;
+          })
+          .catch(() => {
+            flyoverEnabled.value = false;
+            loadingProviders.value = false;
+          });
+      } else loadingProviders.value = false;
     });
 
     init();
-    getBalance();
 
     return {
-      currentComponent,
-      confirmTxState,
-      changePage,
       flyoverEnabled,
+      loadingProviders,
     };
   },
 });

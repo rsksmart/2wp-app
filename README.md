@@ -1,4 +1,5 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=rsksmart_2wp-app&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=rsksmart_2wp-app)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/9697/badge)](https://www.bestpractices.dev/projects/9697)
 
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/rsksmart/2wp-app/badge)](https://scorecard.dev/viewer/?uri=github.com/rsksmart/2wp-app)
 
