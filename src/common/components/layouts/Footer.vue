@@ -5,7 +5,9 @@
         <span>Built by</span>
         <v-img inline :src="getLogoSrc()" alt="RootstockLabs logo" width="100" />
       </div>
-      <p class="text-bw-500 pt-1">Copyright © 2024 RootstockLabs All rights reserved</p>
+      <p class="text-bw-500 pt-1">
+        Copyright © {{ currentYear }} RootstockLabs All rights reserved
+      </p>
     </div>
     <div class="d-flex ga-4">
       <a href="https://rootstocklabs.com/" target="_blank">
@@ -65,6 +67,7 @@ export default {
     const getApiVersion = useAction('web3Session', constants.SESSION_ADD_API_VERSION);
     const apiVersion = useStateAttribute<string>('web3Session', 'apiVersion');
     const showPolicyDialogRef = ref(false);
+    const currentYear = new Date().getFullYear();
 
     const urlApp = computed(() => `https://github.com/rsksmart/2wp-app/releases/tag/v${appVersion.value}`);
     const urlApi = computed(() => `https://github.com/rsksmart/2wp-api/releases/tag/v${apiVersion.value}`);
@@ -124,6 +127,7 @@ export default {
       closeDialogPolicy,
       showPolicyDialogRef,
       getLogoSrc,
+      currentYear,
     };
   },
 };
