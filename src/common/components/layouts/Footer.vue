@@ -5,7 +5,8 @@
         <span>Built by</span>
         <v-img inline :src="getLogoSrc()" alt="RootstockLabs logo" width="100" />
       </div>
-      <p class="text-bw-500 pt-1">Copyright © 2024 RootstockLabs All rights reserved</p>
+      <p class="text-bw-500 pt-1">Copyright © {{ new Date().getFullYear() }} RootstockLabs
+        All rights reserved</p>
     </div>
     <div class="d-flex ga-4">
       <a href="https://rootstocklabs.com/" target="_blank">
