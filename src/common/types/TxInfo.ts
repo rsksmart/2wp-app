@@ -1,8 +1,8 @@
 export interface BaseQuoteDbModel {
   agreementTimestamp: number;
-  gasFeeOnWei: number;
-  nonce: number;
-  penaltyFeeOnWei: number;
+  gasFeeOnWei: bigint;
+  nonce: bigint;
+  penaltyFeeOnWei: bigint;
   btcRefundAddress: string;
   lbcAddress: string;
   lpBtcAddress: string;
@@ -11,41 +11,41 @@ export interface BaseQuoteDbModel {
 }
 
 export interface PeginQuoteDbModel extends BaseQuoteDbModel {
-  callFeeOnSatoshi: number;
+  callFeeOnSatoshi: bigint;
   callOnRegister: boolean;
   confirmations: number;
   contractAddr: string;
   data: string;
   fedBTCAddr: string;
-  gasLimit: number;
+  gasLimit: bigint;
   lpCallTime: number;
-  productFeeAmountOnSatoshi: number;
+  productFeeAmountOnSatoshi: bigint;
   timeForDepositInSeconds: number;
-  valueOnSatoshi: number;
+  valueOnSatoshi: bigint;
 }
 
 export interface PegoutQuoteDbModel extends BaseQuoteDbModel {
-  callFeeOnWei: number;
+  callFeeOnWei: bigint;
   depositAddr: string;
   depositConfirmations: number;
   depositDateLimit: number;
   expireBlocks: number;
   expireDate: number;
-  productFeeAmountOnWei: number;
+  productFeeAmountOnWei: bigint;
   transferConfirmations: number;
   transferTime: number;
-  valueOnWei: number;
+  valueOnWei: bigint;
 }
 
 export interface TxInfo {
   txHash: string;
   type: string;
-  value: number;
+  value: bigint;
   wallet: string;
   addressType?: string;
-  fee?: number;
-  rskGas?: number;
-  btcEstimatedFee?: number;
+  fee?: bigint;
+  rskGas?: bigint;
+  btcEstimatedFee?: bigint;
   provider?: string;
   details?: Record<string, unknown>;
   quote?: PeginQuoteDbModel | PegoutQuoteDbModel;

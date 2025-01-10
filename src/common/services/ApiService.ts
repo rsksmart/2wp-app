@@ -13,7 +13,7 @@ import {
   TxInfo,
   FlyoverCall,
 } from '@/common/types';
-import { areValidOutputs, isValidInput } from '@/common/utils';
+import { areValidOutputs, isValidInput, toJsonWithoutBigInt } from '@/common/utils';
 import { BridgeService } from '@/common/services/BridgeService';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { ApiInformation } from '@/common/types/ApiInformation';
@@ -217,7 +217,12 @@ export default class ApiService {
     return new Promise<void>((resolve, reject) => {
       const { txHash, type } = txInfo;
       if (txHash == null || type == null) resolve();
-      axios.post(`${ApiService.baseURL}/register`, txInfo)
+      const txInfoWithoutBigInt = toJsonWithoutBigInt(txInfo);
+      axios.post(
+        `${ApiService.baseURL}/register`,
+        txInfoWithoutBigInt,
+        { headers: { 'Content-Type': 'application/json' } },
+      )
         .then(() => resolve())
         .catch(reject);
     });

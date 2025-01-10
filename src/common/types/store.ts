@@ -22,11 +22,11 @@ export interface BtcPeginStatus {
   txId: string;
   creationDate: Date;
   federationAddress: string;
-  amountTransferred: number;
+  amountTransferred: bigint;
   refundAddress: string;
   confirmations: number;
   requiredConfirmation: number;
-  fees: number;
+  fees: bigint;
   senderAddress: string;
 }
 
@@ -65,12 +65,12 @@ export interface PegoutStatusDataModel {
   rskTxHash: string;
   rskSenderAddress: string;
   btcRecipientAddress: string;
-  valueRequestedInSatoshis: number;
+  valueRequestedInSatoshis: bigint;
   valueInSatoshisToBeReceived: number;
-  feeInSatoshisToBePaid?: number;
+  feeInSatoshisToBePaid?: bigint;
   status: PegoutStatus;
   btcRawTransaction: string;
-  fees: number;
+  fees: bigint;
   estimatedFee: SatoshiBig;
   btcTxId: string;
   reason?: RejectedPegoutReasons;
@@ -80,8 +80,8 @@ export interface FlyoverStatusModel {
   txHash: string;
   type: string;
   date: Date;
-  amount: number;
-  fee: number;
+  amount: bigint;
+  fee: bigint;
   blockToBeFinished: number;
   status: string;
   senderAddress: string;

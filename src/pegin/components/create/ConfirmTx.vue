@@ -78,21 +78,21 @@ export default defineComponent({
     const flyoverProps = computed(() => {
       const peginQuote = selectedQuote.value.quote;
       const dbQuote: PeginQuoteDbModel = {
-        callFeeOnSatoshi: peginQuote.callFee.toSatoshiNumber(),
+        callFeeOnSatoshi: peginQuote.callFee.toSatoshiBigInt(),
         callOnRegister: peginQuote.callOnRegister,
         confirmations: peginQuote.confirmations,
         contractAddr: peginQuote.contractAddr,
         data: peginQuote.data,
         fedBTCAddr: peginQuote.fedBTCAddr,
-        gasLimit: peginQuote.gasLimit,
+        gasLimit: BigInt(peginQuote.gasLimit),
         lpCallTime: peginQuote.lpCallTime,
-        productFeeAmountOnSatoshi: peginQuote.productFeeAmount.toSatoshiNumber(),
+        productFeeAmountOnSatoshi: peginQuote.productFeeAmount.toSatoshiBigInt(),
         timeForDepositInSeconds: peginQuote.timeForDepositInSeconds,
-        valueOnSatoshi: peginQuote.value.toSatoshiNumber(),
+        valueOnSatoshi: peginQuote.value.toSatoshiBigInt(),
         agreementTimestamp: peginQuote.agreementTimestamp,
-        gasFeeOnWei: peginQuote.gasFee.toWeiNumber(),
-        nonce: Number(peginQuote.nonce),
-        penaltyFeeOnWei: peginQuote.penaltyFee.toWeiNumber(),
+        gasFeeOnWei: peginQuote.gasFee.toWeiBigInt(),
+        nonce: peginQuote.nonce,
+        penaltyFeeOnWei: peginQuote.penaltyFee.toWeiBigInt(),
         btcRefundAddress: peginQuote.btcRefundAddr,
         lbcAddress: peginQuote.lbcAddr,
         lpBtcAddress: peginQuote.lpBTCAddr,
@@ -100,8 +100,8 @@ export default defineComponent({
         liquidityProviderRskAddress: peginQuote.lpRSKAddr,
       };
       return {
-        value: Number(selectedQuote.value.quote.value.toBTCTrimmedString()),
-        fee: Number(selectedQuote.value.getTotalQuoteFee(safeFee.value).toBTCTrimmedString()),
+        value: selectedQuote.value.quote.value.toSatoshiBigInt(),
+        fee: selectedQuote.value.getTotalQuoteFee(safeFee.value).toSatoshiBigInt(),
         provider: getLPName(),
         details: {
           senderAddress: pegInTxState.value.normalizedTx.inputs[0].address,
@@ -115,8 +115,8 @@ export default defineComponent({
     });
 
     const nativeProps = computed(() => ({
-      value: Number(pegInTxState.value.amountToTransfer.toBTCTrimmedString()),
-      fee: Number(safeFee.value.toBTCTrimmedString()),
+      value: pegInTxState.value.amountToTransfer.toSatoshiBigInt(),
+      fee: safeFee.value.toSatoshiBigInt(),
     }));
 
     async function toTrackId() {

@@ -133,11 +133,11 @@ export default defineComponent({
 
     const flyoverPeginSummary = computed((): NormalizedSummary => {
       const status = txDetails.value as FlyoverStatusModel;
-      const total = new SatoshiBig(status.amount, 'btc')
-        .plus(new SatoshiBig(status.fee, 'btc'));
+      const total = new SatoshiBig(status.amount, 'satoshi')
+        .plus(new SatoshiBig(status.fee, 'satoshi'));
       return {
-        amountFromString: status.amount.toString(),
-        amountReceivedString: status.amount.toString(),
+        amountFromString: new SatoshiBig(status.amount, 'satoshi').toBTCTrimmedString(),
+        amountReceivedString: new SatoshiBig(status.amount, 'satoshi').toBTCTrimmedString(),
         total: total.toBTCTrimmedString(),
         fee: status.fee,
         recipientAddress: status.recipientAddress,
