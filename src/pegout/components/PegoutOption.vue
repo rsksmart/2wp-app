@@ -2,7 +2,7 @@
   <v-card :ripple="false" rounded="lg" flat variant="outlined"
     @click="selectOption" :disabled="flyoverNotAvailable"
     :class="{ 'selected': selectedOption, 'not-available': flyoverNotAvailable }"
-    class="pa-8">
+    class="pa-8 fill-height">
     <div v-if="flyoverNotAvailable"
       class="not-available-text d-flex align-center justify-center pa-8 text-center">
       <slot />
