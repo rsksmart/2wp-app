@@ -85,13 +85,15 @@ export const actions: ActionTree<TxStatus, RootState> = {
       if (state.type === TxStatusType.FLYOVER_PEGIN) {
         const flyoverService = rootState.flyoverPegin?.flyoverService;
         await dispatch(`flyoverPegin/${constants.FLYOVER_PEGIN_INIT}`, null, { root: true });
-        flyoverService?.useLiquidityProvider(2);
+        flyoverService?.useLiquidityProvider(EnvironmentAccessorService.getEnvironmentVariables()
+          .flyoverProviderId);
         status = await flyoverService?.getPeginStatus(quoteHash);
       }
       if (state.type === TxStatusType.FLYOVER_PEGOUT) {
         const flyoverService = rootState.flyoverPegout?.flyoverService;
         await dispatch(`flyoverPegout/${constants.FLYOVER_PEGOUT_INIT}`, {}, { root: true });
-        flyoverService?.useLiquidityProvider(2);
+        flyoverService?.useLiquidityProvider(EnvironmentAccessorService.getEnvironmentVariables()
+          .flyoverProviderId);
         status = await rootState.flyoverPegout?.flyoverService.getPegoutStatus(quoteHash);
       }
     } catch (e) {
