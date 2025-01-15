@@ -23,7 +23,13 @@ export default class XverseService extends WalletService {
         }
       }
 
-      getAccountAddresses(): Promise<WalletAddress[]> {
+      async getAccountAddresses(): Promise<WalletAddress[]> {
+        // @ts-expect-error method type not provided
+        const permissions = await Wallet.request('wallet_getCurrentPermissions', undefined);
+        if (permissions.status !== 'success') {
+          // @ts-expect-error method type not provided
+          await Wallet.request('wallet_requestPermissions', undefined);
+        }
         return new Promise<WalletAddress[]>((resolve, reject) => {
           const walletAddresses: WalletAddress[] = [];
           const payload = {
