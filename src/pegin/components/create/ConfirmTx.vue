@@ -79,7 +79,7 @@ export default defineComponent({
     const flyoverProps = computed(() => {
       const peginQuote = selectedQuote.value.quote;
       const dbQuote: PeginQuoteDbModel = {
-        callFeeOnSatoshi: peginQuote.callFee.toSatoshiNumber(),
+        callFeeOnSatoshi: peginQuote.callFee.toSatoshiNumberUnsafe(),
         callOnRegister: peginQuote.callOnRegister,
         confirmations: peginQuote.confirmations,
         contractAddr: peginQuote.contractAddr,
@@ -87,13 +87,13 @@ export default defineComponent({
         fedBTCAddr: peginQuote.fedBTCAddr,
         gasLimit: peginQuote.gasLimit,
         lpCallTime: peginQuote.lpCallTime,
-        productFeeAmountOnSatoshi: peginQuote.productFeeAmount.toSatoshiNumber(),
+        productFeeAmountOnSatoshi: peginQuote.productFeeAmount.toSatoshiNumberUnsafe(),
         timeForDepositInSeconds: peginQuote.timeForDepositInSeconds,
-        valueOnSatoshi: peginQuote.value.toSatoshiNumber(),
+        valueOnSatoshi: peginQuote.value.toSatoshiNumberUnsafe(),
         agreementTimestamp: peginQuote.agreementTimestamp,
-        gasFeeOnWei: peginQuote.gasFee.toWeiNumber(),
+        gasFeeOnWei: peginQuote.gasFee.toWeiNumberUnsafe(),
         nonce: Number(peginQuote.nonce),
-        penaltyFeeOnWei: peginQuote.penaltyFee.toWeiNumber(),
+        penaltyFeeOnWei: peginQuote.penaltyFee.toWeiNumberUnsafe(),
         btcRefundAddress: peginQuote.btcRefundAddr,
         lbcAddress: peginQuote.lbcAddr,
         lpBtcAddress: peginQuote.lpBTCAddr,

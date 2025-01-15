@@ -149,7 +149,7 @@ export default class FlyoverService {
       this.flyover?.getPegoutQuotes({
         rskRefundAddress,
         to: btcRecipientAddress,
-        valueToTransfer: valueToTransfer.toWeiBigInt(),
+        valueToTransfer: valueToTransfer.toWeiBigIntUnsafe(),
       })
         .then((quotes: PegoutQuote[]) => {
           this.pegoutQuotes = quotes;
@@ -328,7 +328,7 @@ export default class FlyoverService {
       this.flyover?.getQuotes({
         rskRefundAddress: rootstockRecipientAddress,
         // TODO: this should be fixed in the SDK: valueToTransfer is in BTC
-        valueToTransfer: new WeiBig(valueToTransfer.toBTCString(), 'rbtc').toWeiBigInt(),
+        valueToTransfer: new WeiBig(valueToTransfer.toBTCString(), 'rbtc').toWeiBigIntUnsafe(),
         callContractArguments: '',
         callEoaOrContractAddress: rootstockRecipientAddress,
       })
@@ -368,7 +368,7 @@ export default class FlyoverService {
     }
     if (
       quoteRequest.rootstockRecipientAddress !== quote.rskRefundAddr
-      || new WeiBig(quoteRequest.valueToTransfer.toBTCString(), 'rbtc').toWeiBigInt() !== BigInt(quote.value)
+      || new WeiBig(quoteRequest.valueToTransfer.toBTCString(), 'rbtc').toWeiBigIntUnsafe() !== BigInt(quote.value)
     ) {
       return false;
     }

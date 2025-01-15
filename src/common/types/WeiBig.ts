@@ -76,11 +76,11 @@ export default class WeiBig extends Big {
       .toString();
   }
 
-  toWeiBigInt(): bigint {
+  toWeiBigIntUnsafe(): bigint {
     return BigInt(this.toFixed(0));
   }
 
-  toWeiNumber(): number {
+  toWeiNumberUnsafe(): number {
     return Number(this.toFixed(0));
   }
 }
