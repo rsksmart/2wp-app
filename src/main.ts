@@ -34,6 +34,7 @@ const defaultEnvironmentVariables = {
   flyoverPegoutDiffPercentage: 2,
   flyoverProviderId: 2,
   grecaptchaTime: constants.RECAPTCHA_NEW_TOKEN_TIME,
+  cspConfiguration: 'https://testnet.lps.tekscapital.com https://staging.lps.tekscapital.com',
 };
 
 EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
