@@ -493,4 +493,29 @@ export default class FlyoverService {
         });
     });
   }
+
+  public validatePegin(quote: PeginQuote, signature: string, depositAddress: string, tx: string) {
+    return new Promise<string>((resolve, reject) => {
+      this.flyover?.validatePeginTransaction({
+        quoteInfo: {
+          quote: quote.originalQuote,
+          quoteHash: quote.quoteHash,
+        },
+        acceptInfo: {
+          signature,
+          bitcoinDepositAddressHash: depositAddress,
+        },
+        btcTx: tx,
+      })
+        .then(resolve)
+        .catch((error) => {
+          reject(new ServiceError(
+            'FlyoverService',
+            'validatePegin',
+            'There was an error validating the peg-in transaction, can not be completed.',
+            error.message,
+          ));
+        });
+    });
+  }
 }
