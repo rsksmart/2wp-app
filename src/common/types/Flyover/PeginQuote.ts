@@ -8,7 +8,10 @@ export default class PeginQuote implements QuotePegIn2WP {
 
     quoteHash: string;
 
+    originalQuote;
+
     constructor({ quote, quoteHash }: Quote) {
+      this.originalQuote = quote;
       this.quote = {
         ...quote,
         timeForDepositInSeconds: quote.timeForDeposit,

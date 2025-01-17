@@ -29,7 +29,7 @@ import {
 import { Machine } from '@/common/utils';
 import TxBuilder from '@/pegin/middleware/TxBuilder/TxBuilder';
 import * as constants from '@/common/store/constants';
-import { ApiService, WalletService } from '@/common/services';
+import { ApiService, FlyoverService, WalletService } from '@/common/services';
 import { useState, useGetter, useStateAttribute } from '@/common/store/helper';
 import {
   LiquidityProvider2WP,
@@ -67,6 +67,7 @@ export default defineComponent({
     const recipientAddress = useStateAttribute<string>('flyoverPegin', 'rootstockRecipientAddress');
     const peginType = useStateAttribute<string>('pegInTx', 'peginType');
     const acceptedQuoteSignature = useStateAttribute<string>('flyoverPegin', 'acceptedQuoteSignature');
+    const flyoverService = useStateAttribute<FlyoverService>('flyoverPegin', 'flyoverService');
     const isFlyover = computed(() => peginType.value === constants.peginType.FLYOVER);
 
     function getLPName(): string {
@@ -128,8 +129,17 @@ export default defineComponent({
           pegInTxState.value.selectedAccount,
         ))
         .then((tx) => walletService.value.sign(tx))
-        .then(({ signedTx }) => ApiService
-          .broadcast(signedTx))
+        .then(async ({ signedTx }) => {
+          if (isFlyover.value) {
+            await flyoverService.value.validatePegin(
+              selectedQuote.value,
+              acceptedQuoteSignature.value,
+              pegInTxState.value.normalizedTx.outputs[0].address as string,
+              signedTx,
+            );
+          }
+          return ApiService.broadcast(signedTx);
+        })
         .then((id) => {
           ApiService.registerTx({
             txHash: id,

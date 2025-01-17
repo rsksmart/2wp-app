@@ -184,8 +184,8 @@ export default defineComponent({
               ? selectedFlyoverQuote.value.quote.confirmations : 0,
           },
         });
+        clearWallets();
       }
-      clearWallets();
     }
 
     function closeErrorDialog() {
