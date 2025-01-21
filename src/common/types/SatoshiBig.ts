@@ -84,7 +84,7 @@ export default class SatoshiBig extends Big {
     return isRightZeroPadded ? '0' : btcString;
   }
 
-  toWeiNumberUnsafe(): bigint {
+  toSatoshiBigIntUnsafe(): bigint {
     return BigInt(this.toFixed(0));
   }
 
