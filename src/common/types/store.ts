@@ -1,15 +1,21 @@
 import { Duration } from 'moment/moment';
-import { PegStatus } from '@/common/store/constants';
+import { PegStatus, RejectedPegoutReasons } from '@/common/store/constants';
 import SatoshiBig from '@/common/types/SatoshiBig';
 import { PegInTxState } from '@/common/types/pegInTx';
 import { SessionState } from '@/common/types/session';
-import { PegOutTxState } from './pegOutTx';
+import { PegOutTxState } from '@/common/types/pegOutTx';
+import { FlyoverPeginState } from '@/common/types/Flyover/FlyoverPegin';
+import { FlyoverPegoutState } from '@/common/types/Flyover/FlyoverPegout';
+import { StatusState } from '@/common/types/Status';
 
 export interface RootState {
   pegInTx?: PegInTxState,
   web3Session?: SessionState,
   pegOutTx?: PegOutTxState,
   version: string;
+  status?: StatusState;
+  flyoverPegin?: FlyoverPeginState;
+  flyoverPegout?: FlyoverPegoutState;
 }
 
 export interface BtcPeginStatus {
@@ -66,6 +72,8 @@ export interface PegoutStatusDataModel {
   btcRawTransaction: string;
   fees: number;
   estimatedFee: SatoshiBig;
+  btcTxId: string;
+  reason?: RejectedPegoutReasons;
 }
 
 export interface FlyoverStatusModel {
@@ -78,6 +86,7 @@ export interface FlyoverStatusModel {
   status: string;
   senderAddress: string;
   recipientAddress: string;
+  quoteHash: string;
 }
 
 export enum TxStatusType {
@@ -88,6 +97,8 @@ export enum TxStatusType {
   INVALID_DATA = 'INVALID_DATA',
   UNEXPECTED_ERROR = 'UNEXPECTED_ERROR',
   UNSET_STATUS = 'UNSET_STATUS',
+  NOT_FOUND = 'NOT_FOUND',
+  BLOCKBOOK_FAILED = 'BLOCKBOOK_FAILED',
 }
 
 export interface TxStatus {
@@ -95,4 +106,5 @@ export interface TxStatus {
   type: TxStatusType;
   pegOutEstimatedFee: SatoshiBig;
   estimatedReleaseTimeInMinutes: Duration;
+  flyoverStatus?: string;
 }

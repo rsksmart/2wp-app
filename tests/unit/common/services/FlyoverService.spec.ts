@@ -1,9 +1,10 @@
 import FlyoverService from '@/common/services/FlyoverService';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { SatoshiBig, WeiBig } from '@/common/types';
-import { Flyover } from '@rsksmart/flyover-sdk';
+import { Flyover, FlyoverUtils } from '@rsksmart/flyover-sdk';
 import * as constants from '@/common/store/constants';
 import sinon from 'sinon';
+import { ServiceError } from '@/common/utils';
 
 describe('FlyoverService', () => {
   let flyoverService: FlyoverService;
@@ -128,8 +129,6 @@ describe('FlyoverService', () => {
       expect(provider).toHaveProperty('id');
       expect(provider).toHaveProperty('name');
     });
-
-    test.todo('should handle errors when fetching providers');
   });
 
   describe('getPegoutQuotes', () => {
@@ -192,7 +191,6 @@ describe('FlyoverService', () => {
 
     it('should return an array of QuotePegIn2WP', async () => {
       const rskRefundAddress = '0xe9a84d226bb3008f09a46096b00dd6782be4d5f2';
-      const bitcoinRefundAddress = 'n2y5V6LYszsrsxkMdMypL98YQxtBoLCXdc';
       const valueToTransfer = new SatoshiBig('0.005', 'btc');
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -200,7 +198,6 @@ describe('FlyoverService', () => {
 
       const quotes = await flyoverService.getPeginQuotes(
         rskRefundAddress,
-        bitcoinRefundAddress,
         valueToTransfer,
       );
 
@@ -214,12 +211,10 @@ describe('FlyoverService', () => {
 
     it('should return only the valid quotes', async () => {
       const rskRefundAddress = '0xaFf12FA1c482BEab1D70C68fe0Fc5825447A9818';
-      const btcRefundAddress = 'n2y5V6LYszsrsxkMdMypL98YQxtBoLCXdc';
       const valueToTransfer = new SatoshiBig('0.005', 'btc');
 
       const quotes = await flyoverService.getPeginQuotes(
         rskRefundAddress,
-        btcRefundAddress,
         valueToTransfer,
       );
 
@@ -272,12 +267,10 @@ describe('FlyoverService', () => {
     });
     it('should accept the quote when found', async () => {
       const rskRefundAddress = '0xe9a84d226bb3008f09a46096b00dd6782be4d5f2';
-      const btcRefundAddress = 'n2y5V6LYszsrsxkMdMypL98YQxtBoLCXdc';
       const valueToTransfer = new SatoshiBig('0.005', 'btc');
 
       const quotes = await flyoverService.getPeginQuotes(
         rskRefundAddress,
-        btcRefundAddress,
         valueToTransfer,
       );
       const { quoteHash } = quotes[0];
@@ -324,6 +317,7 @@ describe('FlyoverService', () => {
       const btcRefundAddress = 'n2y5V6LYszsrsxkMdMypL98YQxtBoLCXdc';
       const btcRecipientAddress = 'n2y5V6LYszsrsxkMdMypL98YQxtBoLCXdc';
       const valueToTransfer = new WeiBig('0.005', 'rbtc');
+      const expectedTotalAmount = 5255689215476000n;
 
       const quotes = await flyoverService.getPegoutQuotes(
         rskRefundAddress,
@@ -341,7 +335,28 @@ describe('FlyoverService', () => {
       expect(acceptedQuote).toBe('txHash');
       expect(spyAcceptPegoutQuote).toHaveBeenCalled();
       expect(spyIsValidAcceptedQuote).toHaveBeenCalled();
-      expect(spyDepositPegout).toHaveBeenCalledWith(flyoverService['pegoutQuotes'][0], 'signature', 5255689215476000n);
+      expect(spyDepositPegout).toHaveBeenCalledWith(flyoverService['pegoutQuotes'][0], 'signature', expectedTotalAmount);
+      expect(FlyoverUtils.getQuoteTotal(flyoverService['pegoutQuotes'][0])).toEqual(expectedTotalAmount);
+    });
+  });
+
+  describe('getAvailableLiquidity', () => {
+    it('should return the available liquidity', async () => {
+      const stubedInstance = sinon.createStubInstance(Flyover);
+      flyoverService.flyover = stubedInstance;
+      stubedInstance.getAvailableLiquidity.resolves({
+        peginLiquidityAmount: 1000000000000000000n,
+        pegoutLiquidityAmount: 1000000000000000000n,
+      });
+      const liquidity = await flyoverService.getAvailableLiquidity();
+      expect(liquidity.peginLiquidity).toBeInstanceOf(WeiBig);
+      expect(liquidity.pegoutLiquidity).toBeInstanceOf(SatoshiBig);
+    });
+    it('should throw an error if the available liquidity is not found', async () => {
+      const stubedInstance = sinon.createStubInstance(Flyover);
+      flyoverService.flyover = stubedInstance;
+      stubedInstance.getAvailableLiquidity.rejects();
+      await expect(flyoverService.getAvailableLiquidity()).rejects.toThrowError(ServiceError);
     });
   });
 });

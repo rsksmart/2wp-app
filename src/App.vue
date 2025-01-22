@@ -13,7 +13,9 @@
 </template>
 
 <script lang="ts">
-import { computed, onBeforeMount, ref } from 'vue';
+import {
+  computed, onBeforeMount, ref,
+} from 'vue';
 import Top from '@/common/components/layouts/Top.vue';
 import FooterRsk from '@/common/components/layouts/Footer.vue';
 import Mobile from '@/common/views/Mobile.vue';
@@ -46,7 +48,7 @@ export default {
       script-src 'self' 'nonce-${vuetifyNonce}' 'unsafe-eval';
       script-src-elem 'self' 'unsafe-inline' https://script.hotjar.com https://www.clarity.ms/s/* https://static.hotjar.com https://*.hotjar.com https://*.hotjar.io https://api.coingecko.com/ https://*.clarity.ms https://www.clarity.ms/ https://www.gstatic.com/ https://www.google.com/recaptcha/;
       img-src data: https:;
-      connect-src 'self' 'unsafe-inline' https://www.clarity.ms/s/0.7.16/clarity.js wss://* https://*.hotjar.com https://*.hotjar.io https://www.clarity.ms/s/* wss://*.hotjar.com ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} https://lps.testnet.flyover.rif.technology https://lps.flyover.rif.technology https://api.coingecko.com https://*.clarity.ms https://www.clarity.ms/* ;
+      connect-src 'self' 'unsafe-inline' https://www.clarity.ms/s/0.7.16/clarity.js wss://* https://*.hotjar.com https://*.hotjar.io https://www.clarity.ms/s/* wss://*.hotjar.com ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} ${envVariables.cspConfiguration} https://api.coingecko.com/ https://*.clarity.ms https://www.clarity.ms/* ;
       object-src 'none';
       frame-src https://connect.trezor.io https://www.google.com/;
       worker-src 'none';
@@ -96,6 +98,7 @@ export default {
       getFeatures();
       getBtcPrice();
     });
+
     appendHotjar();
     appendClarity();
     appendCSP();

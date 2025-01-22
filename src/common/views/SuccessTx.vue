@@ -5,16 +5,15 @@
         <v-row no-gutters>
           <div class="text-h1 mb-2 pa-4 bg-teal">You are</div>
         </v-row>
-        <v-row no-gutters>
+        <v-row no-gutters class="mb-8">
           <div class="text-h1 pa-4 bg-yellow">Done!</div>
         </v-row>
         <v-row no-gutters>
-          <div class="pt-4">
-            <span>
-              You will receive {{ amount }} {{ symbol }} on your address
-              <br>
-            </span>
-            <template>within the next 5-10 minutes.</template>
+          <div>
+            <span>{{ amountToReceive }}</span><br>
+            on your address
+            <span v-if="estimatedTime">within the next</span><br>
+            <span>{{ estimatedTime }}</span>
           </div>
         </v-row>
       </v-col>
@@ -22,7 +21,7 @@
         <v-row no-gutters>
           <p class="text-subtitle-1">Transaction ID</p>
         </v-row>
-        <v-row no-gutters class="mb-4">
+        <v-row no-gutters class="mb-8">
           <v-text-field
             density="comfortable"
             variant="outlined"
@@ -34,7 +33,7 @@
             </template>
           </v-text-field>
         </v-row>
-        <v-row no-gutters class="my-4">
+        <v-row no-gutters class="my-4 mt-8">
           <v-btn-rsk block @click="toTxStatus">See Transaction</v-btn-rsk>
         </v-row>
         <v-row no-gutters>
@@ -48,11 +47,12 @@
 <script lang="ts">
 import { mdiContentCopy } from '@mdi/js';
 import { defineComponent, computed, PropType } from 'vue';
-import { useAction, useGetter, useState } from '@/common/store/helper';
+import { useAction, useState } from '@/common/store/helper';
 import * as constants from '@/common/store/constants';
 import { useRouter } from 'vue-router';
 import { PegInTxState, SatoshiBig, TxStatusType } from '@/common/types';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
+import { blockConfirmationsToTimeString } from '@/common/utils';
 
 export default defineComponent({
   name: 'SuccessTx',
@@ -65,20 +65,42 @@ export default defineComponent({
       type: String,
       required: true,
     },
+    amount: {
+      type: String,
+      required: true,
+    },
+    confirmations: {
+      type: Number,
+      required: true,
+    },
   },
   setup(props) {
     const clearStatus = useAction('status', constants.STATUS_CLEAR);
     const router = useRouter();
     const pegInTxState = useState<PegInTxState>('pegInTx');
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-    const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
 
-    const amount = computed(() => (props.type === (TxStatusType.PEGIN).toLowerCase()
-      ? pegInTxState.value.amountToTransfer.toBTCTrimmedString()
-      : estimatedBtcToReceive.value.toBTCTrimmedString()));
-    const symbol = computed(() => (props.type === (TxStatusType.PEGIN).toLowerCase()
-      ? environmentContext.getRbtcTicker()
-      : environmentContext.getBtcTicker()));
+    const amountToReceive = computed(() => {
+      const amount = new SatoshiBig(props.amount, 'satoshi');
+      const amountText = `${amount.toBTCTrimmedString()}
+        ${environmentContext.getBtcTicker()}`;
+      return `You will receive ${amountText}`;
+    });
+
+    const estimatedTime = computed(() => {
+      switch (props.type.toUpperCase()) {
+        case TxStatusType.PEGIN:
+          return '17 hours';
+        case TxStatusType.PEGOUT:
+          return '34 hours';
+        case TxStatusType.FLYOVER_PEGIN:
+          return `${blockConfirmationsToTimeString(props.confirmations ?? 0, 'btc')}`;
+        case TxStatusType.FLYOVER_PEGOUT:
+          return `${blockConfirmationsToTimeString(props.confirmations ?? 0, 'rsk')}`;
+        default:
+          return '';
+      }
+    });
 
     function goHome() {
       clearStatus();
@@ -95,8 +117,8 @@ export default defineComponent({
 
     return {
       mdiContentCopy,
-      amount,
-      symbol,
+      amountToReceive,
+      estimatedTime,
       pegInTxState,
       copyToClipboard,
       goHome,

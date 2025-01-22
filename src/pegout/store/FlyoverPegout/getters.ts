@@ -28,7 +28,6 @@ export const getters: GetterTree<FlyoverPegoutState, RootState> = {
     if (state.liquidityProviders.length === 0) {
       return {
         minValue: new WeiBig(EnvironmentAccessorService.getEnvironmentVariables().pegoutMinValue, 'rbtc'),
-        maxValue: new WeiBig(EnvironmentAccessorService.getEnvironmentVariables().pegoutMaxValue, 'rbtc'),
       };
     }
     const { pegout } = state.liquidityProviders[0];

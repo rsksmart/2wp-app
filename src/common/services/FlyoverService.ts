@@ -3,20 +3,21 @@ import {
   AcceptedPegoutQuote, Flyover,
   LiquidityProvider, PegoutQuote, Quote,
   AcceptedQuote,
+  FlyoverUtils,
 } from '@rsksmart/flyover-sdk';
 import * as constants from '@/common/store/constants';
 import {
-  LiquidityProvider2WP, QuotePegIn2WP, QuotePegOut2WP,
+  LiquidityProvider2WP, PeginQuote, QuotePegOut2WP,
   SatoshiBig, WeiBig,
 } from '@/common/types';
-import { providers } from 'ethers';
+import { Wallet, providers } from 'ethers';
 import { EnvironmentAccessorService } from './enviroment-accessor.service';
 import { isValidSiteKey, ServiceError } from '../utils';
 
 export default class FlyoverService {
   flyover?: Flyover;
 
-  flyovernetwork: Network;
+  flyoverNetwork: Network;
 
   private lbcAddress = EnvironmentAccessorService.getEnvironmentVariables().lbcAddress;
 
@@ -24,7 +25,7 @@ export default class FlyoverService {
 
   private pegoutQuotes: PegoutQuote[] = [];
 
-  private providerUrl?: string;
+  private providerUrl: string;
 
   private peginQuotes: Quote[] = [];
 
@@ -32,31 +33,38 @@ export default class FlyoverService {
 
   private token = '';
 
+  private liquidityProviderIdUsed = -1;
+
   constructor(providerUrl?: string) {
-    this.providerUrl = providerUrl;
+    this.providerUrl = providerUrl
+    ?? EnvironmentAccessorService.getEnvironmentVariables().vueAppRskNodeHost;
     const appNetwork = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
     switch (appNetwork) {
       case constants.BTC_NETWORK_MAINNET:
-        this.flyovernetwork = 'Mainnet';
+        this.flyoverNetwork = 'Mainnet';
         break;
       case constants.BTC_NETWORK_TESTNET:
-        this.flyovernetwork = 'Testnet';
+        this.flyoverNetwork = 'Testnet';
         break;
       default:
-        this.flyovernetwork = 'Regtest';
+        this.flyoverNetwork = 'Regtest';
         break;
     }
   }
 
-  initialize(): Promise<void> {
+  initialize(web3Provider?: providers.ExternalProvider): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      const provider = this.providerUrl
-        ? new providers.JsonRpcProvider(this.providerUrl) : window.ethereum;
-      BlockchainConnection.createUsingStandard(provider)
-        .then((connection: BlockchainConnection) => {
+      const connectionPromise = web3Provider
+        ? BlockchainConnection.createUsingStandard(web3Provider)
+        : BlockchainConnection.createUsingPassphrase(
+          Wallet.createRandom().mnemonic.phrase,
+          this.providerUrl,
+        );
+      connectionPromise
+        .then((connection) => {
           this.flyover = new Flyover({
-            network: this.flyovernetwork,
-            rskConnection: connection,
+            rskConnection: connection as BlockchainConnection,
+            network: this.flyoverNetwork,
             captchaTokenResolver: this.tokenResolver.bind(this),
             disableChecksum: true,
           });
@@ -127,6 +135,7 @@ export default class FlyoverService {
     const provider = this.liquidityProviders.find((p: LiquidityProvider) => p.id === providerId);
     if (provider) {
       this.flyover?.useLiquidityProvider(provider);
+      this.liquidityProviderIdUsed = providerId;
     }
   }
 
@@ -138,7 +147,6 @@ export default class FlyoverService {
   ): Promise<QuotePegOut2WP[]> {
     return new Promise<QuotePegOut2WP[]>((resolve, reject) => {
       this.flyover?.getPegoutQuotes({
-        bitcoinRefundAddress: btcRefundAddress,
         rskRefundAddress,
         to: btcRecipientAddress,
         valueToTransfer: valueToTransfer.toWeiBigInt(),
@@ -314,13 +322,11 @@ export default class FlyoverService {
 
   public getPeginQuotes(
     rootstockRecipientAddress: string,
-    bitcoinRefundAddress: string,
     valueToTransfer: SatoshiBig,
-  ):Promise<Array<QuotePegIn2WP>> {
-    return new Promise<Array<QuotePegIn2WP>>((resolve, reject) => {
+  ):Promise<Array<PeginQuote>> {
+    return new Promise<Array<PeginQuote>>((resolve, reject) => {
       this.flyover?.getQuotes({
         rskRefundAddress: rootstockRecipientAddress,
-        bitcoinRefundAddress,
         // TODO: this should be fixed in the SDK: valueToTransfer is in BTC
         valueToTransfer: new WeiBig(valueToTransfer.toBTCString(), 'rbtc').toWeiBigInt(),
         callContractArguments: '',
@@ -331,21 +337,9 @@ export default class FlyoverService {
           const peginQuotes = quotes
             .filter((quote: Quote) => this.isValidPeginQuote(quote, {
               rootstockRecipientAddress,
-              bitcoinRefundAddress,
               valueToTransfer,
             }))
-            .map(({ quote, quoteHash }: Quote) => ({
-              quote: {
-                ...quote,
-                timeForDepositInSeconds: quote.timeForDeposit,
-                callFee: SatoshiBig.fromWeiBig(new WeiBig(quote.callFee ?? 0, 'wei')),
-                gasFee: new WeiBig(quote.gasFee ?? 0, 'wei'),
-                penaltyFee: new WeiBig(quote.penaltyFee ?? 0, 'wei'),
-                productFeeAmount: SatoshiBig.fromWeiBig(new WeiBig(quote.productFeeAmount ?? 0, 'wei')),
-                value: SatoshiBig.fromWeiBig(new WeiBig(quote.value ?? 0, 'wei')),
-              },
-              quoteHash,
-            }));
+            .map((quoteFromServer: Quote) => new PeginQuote(quoteFromServer));
           resolve(peginQuotes);
         })
         .catch((error: Error) => {
@@ -363,7 +357,6 @@ export default class FlyoverService {
     { quote }: Quote,
     quoteRequest: {
       rootstockRecipientAddress: string;
-        bitcoinRefundAddress: string;
         valueToTransfer: SatoshiBig;
       },
   ): boolean {
@@ -373,10 +366,8 @@ export default class FlyoverService {
     ) {
       return false;
     }
-
     if (
-      quoteRequest.bitcoinRefundAddress !== quote.btcRefundAddr
-      || quoteRequest.rootstockRecipientAddress !== quote.rskRefundAddr
+      quoteRequest.rootstockRecipientAddress !== quote.rskRefundAddr
       || new WeiBig(quoteRequest.valueToTransfer.toBTCString(), 'rbtc').toWeiBigInt() !== BigInt(quote.value)
     ) {
       return false;
@@ -441,6 +432,65 @@ export default class FlyoverService {
             ));
           });
       }
+    });
+  }
+
+  public getAvailableLiquidity(): Promise<{
+    providerId: number,
+    peginLiquidity: WeiBig,
+    pegoutLiquidity: SatoshiBig,
+  }> {
+    return new Promise((resolve, reject) => {
+      this.flyover?.getAvailableLiquidity()
+        .then(({ peginLiquidityAmount, pegoutLiquidityAmount }) => {
+          const peginLiquidity = new WeiBig(peginLiquidityAmount, 'wei');
+          const pegoutLiquidity = new SatoshiBig(pegoutLiquidityAmount, 'satoshi');
+          resolve({ providerId: this.liquidityProviderIdUsed, peginLiquidity, pegoutLiquidity });
+        })
+        .catch((error) => {
+          reject(new ServiceError(
+            'FlyoverService',
+            'getAvailableLiquidity',
+            'There was an error getting the available liquidity from the Flyover server',
+            error.message,
+          ));
+        });
+    });
+  }
+
+  public getPeginStatus(quoteHash: string) {
+    return new Promise<string>((resolve, reject) => {
+      this.flyover?.getPeginStatus(quoteHash)
+        .then((detailedStatus) => {
+          const status = FlyoverUtils.getSimpleQuoteStatus(detailedStatus.status.state);
+          resolve(status);
+        })
+        .catch((error) => {
+          reject(new ServiceError(
+            'FlyoverService',
+            'getPeginStatus',
+            'There was an error getting the status of the peg-in transaction from the Flyover server',
+            error.message,
+          ));
+        });
+    });
+  }
+
+  public getPegoutStatus(quoteHash: string) {
+    return new Promise<string>((resolve, reject) => {
+      this.flyover?.getPegoutStatus(quoteHash)
+        .then((detailedStatus) => {
+          const status = FlyoverUtils.getSimpleQuoteStatus(detailedStatus.status.state);
+          resolve(status);
+        })
+        .catch((error) => {
+          reject(new ServiceError(
+            'FlyoverService',
+            'getPegoutStatus',
+            'There was an error getting the status of the peg-out transaction from the Flyover server',
+            error.message,
+          ));
+        });
     });
   }
 }

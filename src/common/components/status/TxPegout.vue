@@ -1,10 +1,10 @@
 <template>
   <v-container>
-    <v-row>
-      <status-progress-bar :isFlyover="isFlyover" :txWithErrorType="txWithErrorType"
+    <v-row class="mb-4">
+      <status-progress-bar :isFlyover="isFlyover" :txNotFound="txNotFound"
                            :txWithError="txWithError"/>
     </v-row>
-      <status-summary :details="summary" :type="typeSummary" :txWithErrorType="txWithErrorType"
+      <status-summary :details="summary" :type="typeSummary"
                       :txWithError="txWithError" />
   </v-container>
 </template>
@@ -33,7 +33,7 @@ export default defineComponent({
   props: {
     txId: String,
     isFlyover: Boolean,
-    txWithErrorType: Boolean,
+    txNotFound: Boolean,
     txWithError: Boolean,
   },
   setup(props) {
@@ -61,6 +61,7 @@ export default defineComponent({
       const status = txDetails.value as PegoutStatusDataModel;
       const valueRequested = new SatoshiBig(status.valueRequestedInSatoshis, 'satoshi').toBTCTrimmedString();
       const amountSent = new WeiBig(valueRequested, 'rbtc').plus(calculatedGasFee.value).toRBTCTrimmedString();
+      const btcTxId = status.status === PegoutStatus.RELEASE_BTC ? status.btcTxId : '';
       return {
         amountFromString: amountSent,
         amountReceivedString: amountToBeReceived.value,
@@ -71,6 +72,7 @@ export default defineComponent({
         txId: status.rskTxHash ? status.rskTxHash : props.txId,
         estimatedFee: Number(pegOutEstimatedFee.value.toBTCTrimmedString()),
         status: status.status,
+        btcTxId,
       };
     });
 

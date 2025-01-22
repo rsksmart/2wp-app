@@ -16,15 +16,28 @@
                     @keyup.enter="getPegStatus" />
     </v-row>
     <v-row no-gutters v-if="showStatus && showTimeLeft" justify="center">
-      <span class="text-bw-400 text-body-1">Estimated time: {{ releaseTimeText }}</span>
+      <span class="text-body-1">Estimated time: {{ releaseTimeText }}</span>
     </v-row>
-    <v-row no-gutters>
+    <v-row no-gutters v-if="showStatus && isRejected" justify="center">
+      <p class="w-75 text-center text-body-1 mb-4">{{ rejectionMsg }}</p>
+    </v-row>
+    <v-row no-gutters v-if="showStatus">
       <tx-pegin v-if="isPegIn" :txId="txId" :isFlyover="isFlyover"
-                :txWithErrorType="txWithErrorType" :txWithError="txWithError" />
+                :txNotFound="txNotFound" :txWithError="txWithError" />
       <tx-pegout v-if="isPegOut" :txId="txId" :isFlyover="isFlyover"
-                :txWithErrorType="txWithErrorType" :txWithError="txWithError" />
-      <status-progress-bar v-if="txWithErrorType" :isFlyover="isFlyover"
-                :txWithErrorType="txWithErrorType" :txWithError="txWithError" />
+                :txNotFound="txNotFound" :txWithError="txWithError" />
+      <status-progress-bar v-if="invalidData || unexpectedError" class="mt-4" :isFlyover="isFlyover"
+                :txNotFound="txNotFound" :txWithError="txWithError" />
+    </v-row>
+    <v-row v-else>
+    <v-progress-circular
+        class="ma-auto"
+        :size="250"
+        :width="18"
+        color="warning"
+        indeterminate>
+        Searching...
+      </v-progress-circular>
     </v-row>
   </v-container>
 </template>
@@ -78,19 +91,49 @@ export default defineComponent({
 
     const showStatus = computed(() => !loading.value);
 
-    const isRejected = computed(() => status.value.txDetails?.status === 'REJECTED');
+    const invalidData = computed(() => status.value.type === TxStatusType.INVALID_DATA);
+    const unexpectedError = computed(() => status.value.type === TxStatusType.UNEXPECTED_ERROR);
+    const blockBookError = computed(() => status.value.type === TxStatusType.BLOCKBOOK_FAILED);
+
+    const isFlyover = computed((): boolean => status.value.type === TxStatusType.FLYOVER_PEGOUT
+      || status.value.type === TxStatusType.FLYOVER_PEGIN);
+    const quoteNotFound = computed(() => isFlyover.value
+      && status.value.flyoverStatus === TxStatusType.NOT_FOUND);
+
+    const txNotFound = computed((): boolean => invalidData.value
+      || unexpectedError.value
+      || quoteNotFound.value
+      || blockBookError.value);
+
+    const isRejected = computed(() => status.value.txDetails?.status === 'REJECTED' || txNotFound.value);
+
+    const rejectionMsg = computed(() => {
+      const details = txDetails.value as PegoutStatusDataModel;
+      const { LOW_AMOUNT, CALLER_CONTRACT, FEE_ABOVE_VALUE } = constants.RejectedPegoutReasons;
+      if (txNotFound.value) {
+        if (blockBookError.value) {
+          return 'We are experiencing technical issues and therefore were unable to retrieve and'
+            + ' display the transaction status. Please try again later.';
+        }
+        return 'Your transaction is not processed yet, search again in a few minutes';
+      }
+      switch (details.reason) {
+        case LOW_AMOUNT:
+          return 'The transaction was rejected because the amount is less than the minimum required.';
+        case CALLER_CONTRACT:
+          return 'The transaction was rejected because the sender is a contract.';
+        case FEE_ABOVE_VALUE:
+          return 'Due to high network fees, your transaction is cancelled. Please try again later when network fees are lower or you can bridge higher amounts.';
+        default:
+          return '';
+      }
+    });
 
     const isPegIn = computed((): boolean => status.value.type === TxStatusType.PEGIN
       || status.value.type === TxStatusType.FLYOVER_PEGIN);
 
     const isPegOut = computed((): boolean => status.value.type === TxStatusType.PEGOUT
       || status.value.type === TxStatusType.FLYOVER_PEGOUT);
-
-    const isFlyover = computed((): boolean => status.value.type === TxStatusType.FLYOVER_PEGOUT
-      || status.value.type === TxStatusType.FLYOVER_PEGIN);
-
-    const txWithErrorType = computed((): boolean => status.value.type === TxStatusType.INVALID_DATA
-      || status.value.type === TxStatusType.UNEXPECTED_ERROR);
 
     const showTimeLeft = computed((): boolean => {
       const details = txDetails.value as PegoutStatusDataModel;
@@ -102,7 +145,7 @@ export default defineComponent({
     });
 
     const txWithError = computed(() => {
-      if (txWithErrorType.value) return true;
+      if (txNotFound.value) return false;
       const { status: errorStatus } = txDetails.value;
       return errorStatus as PegStatus === PegStatus.REJECTED_REFUND
         || errorStatus as PegStatus === PegStatus.REJECTED_NO_REFUND
@@ -202,8 +245,11 @@ export default defineComponent({
       back,
       mdiMagnify,
       rules,
-      txWithErrorType,
+      txNotFound,
       txWithError,
+      rejectionMsg,
+      invalidData,
+      unexpectedError,
     };
   },
 });

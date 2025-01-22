@@ -1,4 +1,5 @@
 import { AppNetwork } from '@/common/types';
+import * as constants from '@/common/store/constants';
 
 export class EnvironmentVariables {
   public vueAppCoin: AppNetwork;
@@ -25,9 +26,23 @@ export class EnvironmentVariables {
 
   public pegoutMinValue: number;
 
-  public pegoutMaxValue: number;
-
   public debugMode: boolean;
+
+  public burnDustValue: number;
+
+  public lbcAddress: string;
+
+  public peginMinAmountAllowedInBtc: number;
+
+  public flyoverGetProvidersTimeout: number;
+
+  public flyoverPegoutDiffPercentage: number;
+
+  public grecaptchaTime: number;
+
+  public flyoverProviderId: number;
+
+  public cspConfiguration: string;
 
   public minFeeSatPerByte: {
     fast: number;
@@ -40,16 +55,6 @@ export class EnvironmentVariables {
     average: number;
     slow: number;
   };
-
-  public burnDustValue: number;
-
-  public maxAmountAllowedInSatoshis: number;
-
-  public lbcAddress: string;
-
-  public peginMinAmountAllowedInBtc: number;
-
-  public peginMaxAmountAllowedInBtc: number;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(defaultValues: any = {}) {
@@ -72,8 +77,6 @@ export class EnvironmentVariables {
     this.vueAppClarityId = process.env.VUE_APP_CLARITY_ID || defaultValues.vueAppClarityId;
     this.pegoutMinValue = process.env.VUE_APP_PEGOUT_MIN_AMOUNT_ALLOWED_IN_RBTC
       || defaultValues.pegoutMinValue;
-    this.pegoutMaxValue = process.env.VUE_APP_PEGOUT_MAX_AMOUNT_ALLOWED_IN_RBTC
-      || defaultValues.pegoutMaxValue;
     this.minFeeSatPerByte = {
       fast: process.env.VUE_APP_MIN_FEE_SAT_PER_BYTE_FAST
         || (defaultValues.minFeeSatPerByte ? defaultValues.minFeeSatPerByte.fast : 0),
@@ -91,13 +94,24 @@ export class EnvironmentVariables {
         || (defaultValues.miningSpeedBlock ? defaultValues.miningSpeedBlock.slow : 0),
     };
     this.burnDustValue = Number(process.env.VUE_APP_BURN_DUST_VALUE) || defaultValues.burnDustValue;
-    this.maxAmountAllowedInSatoshis = process.env.VUE_APP_MAX_AMOUNT_ALLOWED_IN_SATOSHI
-      || defaultValues.maxAmountAllowedInSatoshis;
     this.lbcAddress = process.env.VUE_APP_LBC_ADDRESS || defaultValues.lbcAddress;
     this.debugMode = process.env.VUE_APP_DEBUG_MODE === 'true' || defaultValues.debugMode;
     this.peginMinAmountAllowedInBtc = Number(process.env.VUE_APP_PEGIN_MIN_AMOUNT_ALLOWED_IN_BTC)
       || defaultValues.peginMinValue;
-    this.peginMaxAmountAllowedInBtc = Number(process.env.VUE_APP_PEGIN_MAX_AMOUNT_ALLOWED_IN_BTC)
-      || defaultValues.peginMaxValue;
+    this.flyoverGetProvidersTimeout = Number(process.env.VUE_APP_FLYOVER_GET_PROVIDERS_TIMEOUT)
+      || defaultValues.flyoverGetProvidersTimeout;
+    this.flyoverPegoutDiffPercentage = Number(process.env
+      .VUE_APP_FLYOVER_PEGOUT_QUOTE_DIFF_PERCENTAGE) || defaultValues.flyoverPegoutDiffPercentage;
+    this.grecaptchaTime = Number(process.env.VUE_APP_RECAPTCHA_NEW_TOKEN_TIME)
+      || defaultValues.grecaptchaTime;
+    this.flyoverProviderId = Number(process.env.VUE_APP_FLYOVER_PROVIDER_ID)
+      || defaultValues.flyoverProviderId;
+    this.cspConfiguration = process.env.VUE_APP_CSP || defaultValues.cspConfiguration;
+  }
+
+  public get chainId(): number {
+    return this.vueAppCoin === constants.BTC_NETWORK_MAINNET
+      ? constants.SUPPORTED_NETWORKS.RSK_MAINNET.chainId
+      : constants.SUPPORTED_NETWORKS.RSK_TESTNET.chainId;
   }
 }

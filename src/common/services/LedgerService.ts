@@ -4,7 +4,7 @@ import * as bitcoin from 'bitcoinjs-lib';
 import * as constants from '@/common/store/constants';
 import { BtcAccount, WalletAddress } from '@/common/types/pegInTx';
 import {
-  LedgerjsTransaction, LedgerSignedTx, LedgerTx, Step, Tx,
+  LedgerjsTransaction, LedgerSignedTx, LedgerTx, Tx,
 } from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { WalletService } from '@/common/services/index';
@@ -22,101 +22,15 @@ export default class LedgerService extends WalletService {
   // eslint-disable-next-line class-methods-use-this
   public availableAccounts(): BtcAccount[] {
     return [
-      constants.BITCOIN_LEGACY_ADDRESS,
-      constants.BITCOIN_SEGWIT_ADDRESS,
-      constants.BITCOIN_NATIVE_SEGWIT_ADDRESS,
+      BtcAccount.BITCOIN_LEGACY_ADDRESS,
+      BtcAccount.BITCOIN_SEGWIT_ADDRESS,
+      BtcAccount.BITCOIN_NATIVE_SEGWIT_ADDRESS,
     ];
   }
 
   // eslint-disable-next-line class-methods-use-this
   name() {
     return constants.WALLET_NAMES.LEDGER;
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  confirmationSteps(): Step[] {
-    return [
-      {
-        title: 'Confirm transaction',
-        subtitle: 'Please check your Ledger device',
-        outputsToshow: {
-          opReturn: {
-            value: true,
-            amount: true,
-          },
-          change: {
-            address: false,
-            amount: false,
-          },
-          federation: {
-            address: false,
-            amount: false,
-          },
-        },
-        fee: false,
-        fullAmount: false,
-      },
-      {
-        title: 'Confirm funds transfer',
-        subtitle: 'Confirm sending',
-        outputsToshow: {
-          opReturn: {
-            value: false,
-            amount: false,
-          },
-          change: {
-            address: false,
-            amount: false,
-          },
-          federation: {
-            address: true,
-            amount: true,
-          },
-        },
-        fee: false,
-        fullAmount: false,
-      },
-      {
-        title: 'Confirm change address',
-        subtitle: 'Confirm sending',
-        outputsToshow: {
-          opReturn: {
-            value: false,
-            amount: false,
-          },
-          change: {
-            address: true,
-            amount: true,
-          },
-          federation: {
-            address: false,
-            amount: false,
-          },
-        },
-        fee: false,
-        fullAmount: false,
-      },
-      {
-        title: 'Confirm transaction fee',
-        subtitle: 'Confirm transaction',
-        outputsToshow: {
-          opReturn: {
-            value: false,
-            amount: false,
-          },
-          change: {
-            address: false,
-            amount: false,
-          },
-          federation: {
-            address: false,
-            amount: false,
-          },
-        },
-        fee: true,
-        fullAmount: false,
-      },
-    ];
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -199,14 +113,14 @@ export default class LedgerService extends WalletService {
     let addressList: Array<WalletAddress> = [];
     const { legacy, segwit, nativeSegwit } = this.addressesToFetch;
     addressList = addressList.concat(
-      this.getDerivedAddresses(legacy.count, legacy.lastIndex, constants.BITCOIN_LEGACY_ADDRESS),
+      this.getDerivedAddresses(legacy.count, legacy.lastIndex, BtcAccount.BITCOIN_LEGACY_ADDRESS),
     ).concat(
-      this.getDerivedAddresses(segwit.count, segwit.lastIndex, constants.BITCOIN_SEGWIT_ADDRESS),
+      this.getDerivedAddresses(segwit.count, segwit.lastIndex, BtcAccount.BITCOIN_SEGWIT_ADDRESS),
     ).concat(
       this.getDerivedAddresses(
         nativeSegwit.count,
         nativeSegwit.lastIndex,
-        constants.BITCOIN_NATIVE_SEGWIT_ADDRESS,
+        BtcAccount.BITCOIN_NATIVE_SEGWIT_ADDRESS,
       ),
     );
     return addressList;

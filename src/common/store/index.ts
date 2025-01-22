@@ -6,7 +6,6 @@ import { flyoverPegin } from '@/pegin/store/FlyoverPegin';
 import { pegOutTx } from '@/pegout/store/pegoutTx';
 import { flyoverPegout } from '@/pegout/store/FlyoverPegout';
 import { web3Session } from './session';
-import { view } from './view';
 import pkg from '../../../package.json';
 
 const store: StoreOptions<RootState> = {
@@ -19,7 +18,6 @@ const store: StoreOptions<RootState> = {
   modules: {
     pegInTx,
     web3Session,
-    view,
     status,
     pegOutTx,
     flyoverPegout,

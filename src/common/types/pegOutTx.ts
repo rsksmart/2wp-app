@@ -4,7 +4,6 @@ import SatoshiBig from '@/common/types/SatoshiBig';
 
 export interface PegoutConfiguration {
   minValue: WeiBig;
-  maxValue: WeiBig;
   bridgeContractAddress: string;
 }
 

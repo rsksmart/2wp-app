@@ -2,7 +2,6 @@ import * as bitcoin from 'bitcoinjs-lib';
 import {
   BtcAccount,
   WalletAddress,
-  Step,
   SignedTx,
 } from '@/common/types';
 import { WalletService } from '@/common/services/index';
@@ -10,7 +9,6 @@ import * as constants from '@/common/store/constants';
 import { LeatherTx } from '@/pegin/middleware/TxBuilder/LeatherTxBuilder';
 import { AppConfig, UserSession, showConnect } from '@stacks/connect';
 import {
-  RpcErrorResponse,
   LeatherProvider,
   RpcResponse,
 } from '@leather.io/rpc';
@@ -36,33 +34,7 @@ export default class LeatherService extends WalletService {
   // eslint-disable-next-line class-methods-use-this
   public availableAccounts(): BtcAccount[] {
     return [
-      constants.BITCOIN_NATIVE_SEGWIT_ADDRESS,
-    ];
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  confirmationSteps(): Step[] {
-    return [
-      {
-        title: 'Transaction information',
-        subtitle: '',
-        outputsToshow: {
-          opReturn: {
-            value: false,
-            amount: true,
-          },
-          change: {
-            address: false,
-            amount: true,
-          },
-          federation: {
-            address: true,
-            amount: true,
-          },
-        },
-        fee: true,
-        fullAmount: false,
-      },
+      BtcAccount.BITCOIN_NATIVE_SEGWIT_ADDRESS,
     ];
   }
 
@@ -127,17 +99,11 @@ export default class LeatherService extends WalletService {
           const { hex } = response.result;
           const signedPsbt = bitcoin.Psbt.fromHex(hex)
             .finalizeAllInputs()
-            .extractTransaction()
+            .extractTransaction(true)
             .toHex();
           resolve({ signedTx: signedPsbt });
         })
-        .catch((e: typeof RpcErrorResponse) => {
-          if (e.error.code) {
-            reject(new Error(e.error.message));
-          } else {
-            reject(e);
-          }
-        });
+        .catch(reject);
     });
   }
 

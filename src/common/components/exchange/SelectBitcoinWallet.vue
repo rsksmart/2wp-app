@@ -8,7 +8,7 @@
       </v-btn>
     </v-row>
     <v-row class="mx-0">
-      <v-col v-for="wallet in wallets" :key="wallet.name" class="d-flex justify-center" >
+      <v-col cols="auto" v-for="wallet in wallets" :key="wallet.name" class="d-flex justify-start" >
         <v-btn-square @click="setBitcoinWallet(wallet.constant as BtcWallet)"
           @mouseover="wallet.hover = true" @mouseleave="wallet.hover = false">
           <v-container>
@@ -42,15 +42,19 @@
 </template>
 
 <script lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import * as constants from '@/common/store/constants';
 import { BtcWallet } from '@/common/types/pegInTx';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { useAction, useStateAttribute } from '@/common/store/helper';
+import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import walletConf from '@/common/walletConf.json';
 import { mdiArrowLeft } from '@mdi/js';
 import { useTheme } from 'vuetify';
+import {
+  Browser, Feature, FeatureNames, SupportedBrowsers,
+} from '@/common/types';
+import { getBrowserName } from '@/common/utils';
 
 export default {
   name: 'SelectBitcoinWallet',
@@ -60,8 +64,18 @@ export default {
     const router = useRouter();
     const storeConstants = constants;
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+    const getFeature = useGetter<(name: FeatureNames) => Feature>('web3Session', constants.SESSION_GET_FEATURE);
+    const currentBrowser = getBrowserName() as Browser;
 
-    const wallets = ref(walletConf.wallets);
+    const wallets = computed(() => walletConf.wallets.filter((wallet) => {
+      const walletConfJsonConstant = wallet.constant as BtcWallet;
+      const flag = getFeature.value(FeatureNames[walletConfJsonConstant]);
+      if (!flag) {
+        return false;
+      }
+      const browserFlag = Object.keys(flag).includes('supportedBrowsers') ? flag.supportedBrowsers[currentBrowser.toLowerCase() as keyof SupportedBrowsers] : false;
+      return (flag?.value === constants.ENABLED) && browserFlag;
+    }));
 
     const bitcoinWallet = useStateAttribute<BtcWallet>('pegInTx', 'bitcoinWallet');
     const addBitcoinWallet = useAction('pegInTx', constants.PEGIN_TX_ADD_BITCOIN_WALLET);
@@ -89,6 +103,12 @@ export default {
         case constants.WALLET_NAMES.LEATHER.long_name:
           wallet = constants.WALLET_NAMES.LEATHER.short_name;
           break;
+        case constants.WALLET_NAMES.XVERSE.long_name:
+          wallet = constants.WALLET_NAMES.XVERSE.short_name;
+          break;
+        case constants.WALLET_NAMES.ENKRYPT.long_name:
+          wallet = constants.WALLET_NAMES.ENKRYPT.short_name;
+          break;
         default:
           wallet = '';
           break;
@@ -101,8 +121,7 @@ export default {
     }
 
     function setBitcoinWallet(wallet: BtcWallet): void {
-      addBitcoinWallet(wallet);
-      toSendBitcoin();
+      addBitcoinWallet(wallet).then(toSendBitcoin);
     }
 
     return {

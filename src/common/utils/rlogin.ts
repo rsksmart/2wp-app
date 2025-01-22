@@ -4,8 +4,13 @@ import WalletConnectProvider from '@walletconnect/web3-provider';
 import { trezorProviderOptions } from '@rsksmart/rlogin-trezor-provider';
 import { ledgerProviderOptions } from '@rsksmart/rlogin-ledger-provider';
 import * as constants from '@/common/store/constants';
+import {
+  Browser, Feature, FeatureNames, SupportedBrowsers,
+} from '../types';
+import { getBrowserName } from './utils';
 
-export function getRloginInstance(): RLogin {
+export function getRloginInstance(features: Array<Feature>): RLogin {
+  const currentBrowser = getBrowserName() as Browser;
   const rpcUrls = {};
   const customLedgerProviderOptions = ledgerProviderOptions;
   customLedgerProviderOptions.connector = async (ProviderPackage, options) => {
@@ -15,28 +20,28 @@ export function getRloginInstance(): RLogin {
     await provider.connect();
     return provider;
   };
-  const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
-  if (network === constants.BTC_NETWORK_MAINNET) {
-    Object
-      .defineProperty(rpcUrls, constants.SUPPORTED_NETWORKS.RSK_MAINNET.chainId, {
-        value: constants.SUPPORTED_NETWORKS.RSK_MAINNET.rpcUrl,
-        writable: false,
-        configurable: true,
-        enumerable: true,
-      });
-  } else {
-    Object
-      .defineProperty(rpcUrls, constants.SUPPORTED_NETWORKS.RSK_TESTNET.chainId, {
-        value: constants.SUPPORTED_NETWORKS.RSK_TESTNET.rpcUrl,
-        writable: false,
-        configurable: true,
-        enumerable: true,
-      });
-  }
+  const customTrezorProviderOptions = {
+    ...trezorProviderOptions,
+    options: {
+      dPath: "m/44'/37310'/0'/0/0",
+      manifestEmail: EnvironmentAccessorService
+        .getEnvironmentVariables().vueAppManifestEmail,
+      manifestAppUrl: EnvironmentAccessorService
+        .getEnvironmentVariables().vueAppManifestAppUrl,
+    },
+  };
+  const { vueAppRskNodeHost, chainId } = EnvironmentAccessorService.getEnvironmentVariables();
+  Object
+    .defineProperty(rpcUrls, chainId, {
+      value: vueAppRskNodeHost,
+      writable: false,
+      configurable: true,
+      enumerable: true,
+    });
   const supportedChains = Object.keys(rpcUrls).map(Number);
-  const rLoginSetup = new RLogin({
+  const rLoginOptions = {
     cacheProvider: false,
-    defaultTheme: 'dark',
+    defaultTheme: 'dark' as 'dark' | 'light',
     providerOptions: {
       walletconnect: {
         package: WalletConnectProvider,
@@ -44,20 +49,22 @@ export function getRloginInstance(): RLogin {
           rpc: rpcUrls,
         },
       },
-      'custom-ledger': customLedgerProviderOptions,
-      'custom-trezor': {
-        ...trezorProviderOptions,
-        options: {
-          dPath: "m/44'/37310'/0'/0/0",
-          manifestEmail: EnvironmentAccessorService
-            .getEnvironmentVariables().vueAppManifestEmail,
-          manifestAppUrl: EnvironmentAccessorService
-            .getEnvironmentVariables().vueAppManifestAppUrl,
-        },
-      },
     },
     rpcUrls,
     supportedChains,
-  });
+  };
+  // const ledgerFeature = features.find((feature) => feature.name === FeatureNames.WALLET_LEDGER);
+  // if (ledgerFeature?.value === constants.ENABLED
+  //   && ledgerFeature.supportedBrowsers[currentBrowser.toLowerCase() as keyof SupportedBrowsers]) {
+  //   rLoginOptions.providerOptions['custom-ledger'] = customLedgerProviderOptions;
+  // }
+  const trezorFeature = features.find((feature) => feature.name === FeatureNames.WALLET_TREZOR);
+  if (trezorFeature?.value === constants.ENABLED
+    && trezorFeature.supportedBrowsers[currentBrowser.toLowerCase() as keyof SupportedBrowsers]) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    rLoginOptions.providerOptions['custom-trezor'] = customTrezorProviderOptions;
+  }
+  const rLoginSetup = new RLogin(rLoginOptions);
   return rLoginSetup;
 }

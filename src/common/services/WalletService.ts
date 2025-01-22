@@ -1,7 +1,7 @@
 import * as constants from '@/common/store/constants';
 import SatoshiBig from '@/common/types/SatoshiBig';
 import {
-  Purpose, SignedTx, WalletCount, Step,
+  Purpose, SignedTx, WalletCount,
 } from '@/common/types/Wallets';
 import {
   AccountBalance, AddressStatus, AppNetwork, BtcAccount, Tx, UtxoListPerAccount, WalletAddress,
@@ -90,8 +90,6 @@ export default abstract class WalletService {
   abstract name(): Record<'formal_name' | 'short_name' | 'long_name', string>;
 
   abstract availableAccounts(): Array<BtcAccount>;
-
-  abstract confirmationSteps(): Array<Step>;
 
   get isLoadingBalances(): boolean {
     return this.loadingBalances;
@@ -187,7 +185,7 @@ export default abstract class WalletService {
     return (this.subscribers.length > 0);
   }
 
-  public async startAskingForBalance(sessionId: string, maxAmountPegin: number): Promise<void> {
+  public async startAskingForBalance(): Promise<void> {
     this.balanceAccumulated = {
       legacy: new SatoshiBig(0, 'satoshi'),
       segwit: new SatoshiBig(0, 'satoshi'),
@@ -210,13 +208,6 @@ export default abstract class WalletService {
       while (this.hasSubscribers() && !this.areEnoughUnusedAddresses()) {
         // eslint-disable-next-line no-await-in-loop
         await this.askForBalance();
-        const maxAmountPeginCompare = new SatoshiBig(maxAmountPegin, 'satoshi');
-        if (this.balanceAccumulated.legacy.gte(maxAmountPeginCompare)
-          && this.balanceAccumulated.segwit.gte(maxAmountPeginCompare)
-          && this.balanceAccumulated.nativeSegwit.gte(maxAmountPeginCompare)
-        ) {
-          break;
-        }
         this.setAddressesToFetch();
         const maxIndexReached = Math.max(
           this.addressesToFetch.legacy.lastIndex,
@@ -303,9 +294,9 @@ export default abstract class WalletService {
 
   protected async setAccountsXpub(accountIdx: number): Promise<void> {
     this.extendedPubKeys = {
-      p2pkh: await this.getXpub(constants.BITCOIN_LEGACY_ADDRESS, accountIdx),
-      p2sh: await this.getXpub(constants.BITCOIN_SEGWIT_ADDRESS, accountIdx),
-      p2wpkh: await this.getXpub(constants.BITCOIN_NATIVE_SEGWIT_ADDRESS, accountIdx),
+      p2pkh: await this.getXpub(BtcAccount.BITCOIN_LEGACY_ADDRESS, accountIdx),
+      p2sh: await this.getXpub(BtcAccount.BITCOIN_SEGWIT_ADDRESS, accountIdx),
+      p2wpkh: await this.getXpub(BtcAccount.BITCOIN_NATIVE_SEGWIT_ADDRESS, accountIdx),
     };
   }
 

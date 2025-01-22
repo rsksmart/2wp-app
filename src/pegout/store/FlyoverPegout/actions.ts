@@ -1,21 +1,50 @@
 import {
   FlyoverPegoutState, QuotePegOut2WP, RootState, WeiBig,
+  FlyoverCall, LiquidityProvider2WP, TxStatusType, SatoshiBig,
+  ReducedQuote,
 } from '@/common/types';
 import { ActionTree } from 'vuex';
 import * as constants from '@/common/store/constants';
 import { BridgeService } from '@/common/services/BridgeService';
-import { compareObjects, promiseWithTimeout } from '@/common/utils';
+import { getClearObjectDifference, promiseWithTimeout } from '@/common/utils';
+import { ApiService } from '@/common/services';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import { providers } from 'ethers';
 
 export const actions: ActionTree<FlyoverPegoutState, RootState> = {
-  [constants.FLYOVER_PEGOUT_INIT]: ({ state }) => state.flyoverService.initialize(),
-  [constants.FLYOVER_PEGOUT_GET_PROVIDERS]:
-  ({ state, commit }) => new Promise<void>((resolve, reject) => {
-    state.flyoverService.getProviders()
-      .then((providers) => {
-        commit(constants.FLYOVER_PEGOUT_SET_PROVIDERS, providers);
-        resolve();
-      })
+  [constants.FLYOVER_PEGOUT_INIT]: async (
+    { state, dispatch },
+    provider: providers.Web3Provider,
+  ) => new Promise((resolve, reject) => {
+    state.flyoverService.initialize(provider.provider)
+      .then(() => dispatch(constants.FLYOVER_PEGOUT_GET_PROVIDERS))
+      .then(resolve)
       .catch(reject);
+  }),
+  [constants.FLYOVER_PEGOUT_GET_PROVIDERS]: async ({
+    state,
+    commit,
+  }) => new Promise((resolve, reject) => {
+    let result = constants.FlyoverCallResult.ERROR;
+    const flyoverCallPayload = {
+      operationType: TxStatusType.FLYOVER_PEGOUT,
+      functionType: constants.FlyoverCallFunction.LPS,
+    };
+    (async () => {
+      try {
+        const liquidityProviders: LiquidityProvider2WP[] = await promiseWithTimeout(
+          state.flyoverService.getProviders(),
+          EnvironmentAccessorService.getEnvironmentVariables().flyoverGetProvidersTimeout,
+        );
+        result = constants.FlyoverCallResult.SUCCESS;
+        resolve(commit(constants.FLYOVER_PEGOUT_SET_PROVIDERS, liquidityProviders));
+      } catch (e) {
+        reject(new Error('Error getting providers'));
+      } finally {
+        ApiService.registerFlyoverCall({ ...flyoverCallPayload, result } as FlyoverCall)
+          .catch(() => null);
+      }
+    })();
   }),
   [constants.FLYOVER_PEGOUT_ADD_AMOUNT]: ({ commit }, amount: WeiBig) => {
     commit(constants.FLYOVER_PEGOUT_SET_AMOUNT, amount);
@@ -45,20 +74,32 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
       const quotePromisesWithTimeout = quotePromises.map(
         (promise) => promiseWithTimeout(promise, MAX_RESPONSE_TIME_IN_MS),
       );
-      Promise.allSettled(quotePromisesWithTimeout)
-        .then((responses) => responses.forEach((response, index) => {
-          if (response.status === 'fulfilled') {
-            quotesByProvider = {
-              ...quotesByProvider,
-              [state.liquidityProviders[index].id]: response.value,
-            };
-          }
-        }))
-        .then(() => {
+      let result = constants.FlyoverCallResult.ERROR;
+      const flyoverCallPayload = {
+        operationType: TxStatusType.FLYOVER_PEGOUT,
+        functionType: constants.FlyoverCallFunction.QUOTE,
+      };
+      (async () => {
+        try {
+          const responses = await Promise.allSettled(quotePromisesWithTimeout);
+          responses.forEach((response, index) => {
+            if (response.status === constants.FULFILLED) {
+              quotesByProvider = {
+                ...quotesByProvider,
+                [state.liquidityProviders[index].id]: response.value,
+              };
+            }
+          });
+          result = constants.FlyoverCallResult.SUCCESS;
           commit(constants.FLYOVER_PEGOUT_SET_QUOTES, quotesByProvider);
           resolve();
-        })
-        .catch(reject);
+        } catch (e) {
+          reject(new Error('Error getting quotes'));
+        } finally {
+          ApiService.registerFlyoverCall({ ...flyoverCallPayload, result } as FlyoverCall)
+            .catch(() => null);
+        }
+      })();
     });
   },
   [constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER]: ({ state }, providerId: number) => {
@@ -75,11 +116,20 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
       dispatch(constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER, providerId)
         .then(() => dispatch(constants.FLYOVER_PEGOUT_GET_FINAL_QUOTE, { providerId, quoteHash }))
         .then(() => {
-          if (state.differences.length > 0) {
-            reject(new Error('Quote differences found: cannot accept quote'));
+          if (state.difference.percentage > EnvironmentAccessorService.getEnvironmentVariables()
+            .flyoverPegoutDiffPercentage) {
+            return Promise.reject(new Error('Quote differences found: cannot accept quote'));
           }
           return state.flyoverService.acceptAndSendPegoutQuote(state.selectedQuoteHash);
         })
+        .then((txHash) => commit(constants.FLYOVER_PEGOUT_SET_TX_HASH, txHash))
+        .then(resolve)
+        .catch(reject);
+    }),
+  [constants.FLYOVER_PEGOUT_ACCEPT_AND_SEND_QUOTE_WITH_CHANGED_CONDITIONS]:
+    ({ state, commit }) => new Promise<void>((resolve, reject) => {
+      commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, state.difference.currentQuote.quoteHash);
+      state.flyoverService.acceptAndSendPegoutQuote(state.selectedQuoteHash)
         .then((txHash) => commit(constants.FLYOVER_PEGOUT_SET_TX_HASH, txHash))
         .then(resolve)
         .catch(reject);
@@ -102,26 +152,56 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
         const reducedCurrentQuote = {
           callFee: currentQuote?.quote.callFee,
           gasFee: currentQuote?.quote.gasFee,
-          penaltyFee: currentQuote?.quote.penaltyFee,
           productFeeAmount: currentQuote?.quote.productFeeAmount,
           value: currentQuote?.quote.value,
+          quoteHash: currentQuote?.quoteHash,
         };
         state.quotes[providerId].forEach((quote2wp) => {
           const reducedNewQuote = {
             callFee: quote2wp.quote.callFee,
             gasFee: quote2wp.quote.gasFee,
-            penaltyFee: quote2wp.quote.penaltyFee,
             productFeeAmount: quote2wp.quote.productFeeAmount,
             value: quote2wp.quote.value,
+            quoteHash: quote2wp.quoteHash,
           };
-          const differences = compareObjects(
-            reducedCurrentQuote as unknown as { [key: string]: unknown },
-            reducedNewQuote as unknown as { [key: string]: unknown },
-          );
-          if (differences.length === 0) {
+          const zeroWei = new WeiBig(0, 'wei');
+          const currentQuoteTotal = (reducedCurrentQuote.callFee ?? zeroWei)
+            .plus(reducedCurrentQuote.gasFee ?? zeroWei)
+            .plus(reducedCurrentQuote.productFeeAmount ?? zeroWei)
+            .plus(reducedCurrentQuote.value ?? zeroWei);
+          const newQuoteTotal = (reducedNewQuote.callFee ?? zeroWei)
+            .plus(reducedNewQuote.gasFee ?? zeroWei)
+            .plus(reducedNewQuote.productFeeAmount ?? zeroWei)
+            .plus(reducedNewQuote.value ?? zeroWei);
+          const largest = newQuoteTotal
+            .gt(currentQuoteTotal) ? newQuoteTotal : currentQuoteTotal;
+          const minor = newQuoteTotal
+            .gt(currentQuoteTotal) ? currentQuoteTotal : newQuoteTotal;
+          const percentageDifference = ((largest.minus(minor)).mul('100')).div(largest.toRBTCString());
+          if (Number(percentageDifference.toRBTCString()) <= EnvironmentAccessorService
+            .getEnvironmentVariables().flyoverPegoutDiffPercentage) {
             commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, quote2wp.quoteHash);
           } else {
-            commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCES, differences);
+            commit(
+              constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE,
+              {
+                percentage: Number(percentageDifference.toRBTCString()),
+                previousQuote: {
+                  gasFee: reducedCurrentQuote.gasFee,
+                  callFee: reducedCurrentQuote.callFee,
+                  productFeeAmount: reducedCurrentQuote.productFeeAmount,
+                  value: reducedCurrentQuote.value,
+                  quoteHash: reducedCurrentQuote.quoteHash,
+                } as ReducedQuote,
+                currentQuote: {
+                  gasFee: reducedNewQuote.gasFee,
+                  callFee: reducedNewQuote.callFee,
+                  productFeeAmount: reducedNewQuote.productFeeAmount,
+                  value: reducedNewQuote.value,
+                  quoteHash: reducedNewQuote.quoteHash,
+                } as ReducedQuote,
+              },
+            );
           }
         });
         resolve();
@@ -135,6 +215,33 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
     commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, quoteHash);
   },
   [constants.FLYOVER_PEGOUT_CLEAR_QUOTE_DIFFERENCES]: ({ commit }) => {
-    commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCES, []);
+    commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE, getClearObjectDifference());
   },
+  [constants.FLYOVER_PEGOUT_GET_AVAILABLE_LIQUIDITY]:
+  ({ state, dispatch, commit }) => new Promise((resolve, reject) => {
+    const providersPromises:
+      Promise<number | {
+        providerId: number,
+        peginLiquidity: WeiBig,
+        pegoutLiquidity: SatoshiBig
+      }>[] = [];
+    state.liquidityProviders.forEach((provider) => {
+      dispatch(constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER, provider.id);
+      providersPromises.push(state.flyoverService.getAvailableLiquidity());
+    });
+    Promise.allSettled(providersPromises)
+      .then((responses) => responses.forEach((response) => {
+        if (response.status === constants.FULFILLED) {
+          if (response.value instanceof Object) {
+            const { providerId, pegoutLiquidity } = response.value;
+            commit(
+              constants.FLYOVER_PEGOUT_PROVIDERS_SET_AVAILABLE_LIQUIDITY,
+              { providerId, pegoutLiquidity },
+            );
+          }
+        }
+      }))
+      .then(resolve)
+      .catch(reject);
+  }),
 };

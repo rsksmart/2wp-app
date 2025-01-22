@@ -5,6 +5,7 @@ import { TransactionType, SessionState } from '@/common/types/session';
 import { getClearSessionState } from '@/common/utils';
 import { providers } from 'ethers';
 import i18n from '@/i18n';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
 export const mutations: MutationTree<SessionState> = {
   [constants.SESSION_SET_ACCOUNT]: (state, account: string) => {
@@ -56,5 +57,17 @@ export const mutations: MutationTree<SessionState> = {
   },
   [constants.SESSION_SET_API_VERSION]: (state, apiVersion: string) => {
     state.apiVersion = apiVersion;
+  },
+  [constants.SESSION_RESET_GRECAPTCHA_COUNTDOWN]: (state) => {
+    state.grecaptchaCountdown = EnvironmentAccessorService.getEnvironmentVariables()
+      .grecaptchaTime;
+  },
+  [constants.SESSION_SET_DECREMENT_GRECAPTCHA_COUNTDOWN]: (state) => {
+    if (state.grecaptchaCountdown > 0) {
+      state.grecaptchaCountdown -= 1;
+    }
+  },
+  [constants.SESSION_SET_GRECAPTCHA_INTERVAL]: (state, intervalId: number) => {
+    state.grecaptchaIntervalId = intervalId;
   },
 };
