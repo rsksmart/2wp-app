@@ -28,18 +28,6 @@ export class EnvironmentVariables {
 
   public debugMode: boolean;
 
-  public minFeeSatPerByte: {
-    fast: number;
-    average: number;
-    slow: number;
-  };
-
-  public miningSpeedBlock: {
-    fast: number;
-    average: number;
-    slow: number;
-  };
-
   public burnDustValue: number;
 
   public lbcAddress: string;
@@ -53,6 +41,20 @@ export class EnvironmentVariables {
   public grecaptchaTime: number;
 
   public flyoverProviderId: number;
+
+  public cspConfiguration: string;
+
+  public minFeeSatPerByte: {
+    fast: number;
+    average: number;
+    slow: number;
+  };
+
+  public miningSpeedBlock: {
+    fast: number;
+    average: number;
+    slow: number;
+  };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(defaultValues: any = {}) {
@@ -104,6 +106,7 @@ export class EnvironmentVariables {
       || defaultValues.grecaptchaTime;
     this.flyoverProviderId = Number(process.env.VUE_APP_FLYOVER_PROVIDER_ID)
       || defaultValues.flyoverProviderId;
+    this.cspConfiguration = process.env.VUE_APP_CSP || defaultValues.cspConfiguration;
   }
 
   public get chainId(): number {
