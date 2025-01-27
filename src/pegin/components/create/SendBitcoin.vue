@@ -7,14 +7,24 @@
       />
     </template>
     <template v-else>
-      <component :is="currentComponent"
-                 @createTx="toConfirmTx" @successConfirmation="toTrackingId"
-                 :txBuilder="txBuilder"
-                 :txId="txId" @back="back"
-                 @toPegInForm="toPegInForm"
-                 :confirmTxState="confirmTxState"
-                 :isFlyoverAvailable="isFlyoverAvailable"
-                 />
+      <div v-if="loadingProviders"
+        class="position-absolute top-0 right-0 bottom-0 left-0
+          d-flex justify-center align-center mt-n16"
+        >
+        <v-progress-circular
+          :size="250"
+          :width="18"
+          color="warning"
+          indeterminate />
+      </div>
+      <component v-else :is="currentComponent"
+                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
+                  :txBuilder="txBuilder"
+                  :txId="txId" @back="back"
+                  @toPegInForm="toPegInForm"
+                  :confirmTxState="confirmTxState"
+                  :isFlyoverAvailable="isFlyoverAvailable"
+                  />
     </template>
     <template v-if="showErrorDialog">
       <device-error-dialog :showErrorDialog="showErrorDialog"
@@ -36,7 +46,7 @@
 <script lang="ts">
 import {
   ref, defineComponent,
-  watch, computed,
+  watch, computed, onBeforeMount,
 } from 'vue';
 import { useRouter } from 'vue-router';
 import PegInForm from '@/pegin/components/create/PegInForm.vue';
@@ -46,6 +56,8 @@ import {
   SendBitcoinState, SatoshiBig, BtcWallet, Utxo,
   TxStatusType,
   PeginQuote,
+  FeatureNames,
+  Feature,
 } from '@/common/types';
 import { Machine, getClearPeginTxState } from '@/common/utils';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
@@ -63,12 +75,6 @@ import XverseTxBuilder from '@/pegin/middleware/TxBuilder/XverseTxBuilder';
 
 export default defineComponent({
   name: 'SendBitcoin',
-  props: {
-    isFlyoverAvailable: {
-      type: Boolean,
-      required: true,
-    },
-  },
   components: {
     PegInForm,
     ConfirmTx,
@@ -114,6 +120,10 @@ export default defineComponent({
     const selectedUtxoList = useGetter<Utxo[]>('pegInTx', constants.PEGIN_TX_GET_SELECTED_UTXO_LIST);
     const selectedFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
     const selectedFlyoverQuote = useGetter<PeginQuote>('flyoverPegin', constants.FLYOVER_PEGIN_GET_SELECTED_QUOTE);
+    const initFlyover = useAction('flyoverPegin', constants.FLYOVER_PEGIN_INIT);
+    const flyoverFeature = useGetter<(name: FeatureNames) => Feature>('web3Session', constants.SESSION_GET_FEATURE);
+    const isFlyoverAvailable = ref(false);
+    const loadingProviders = ref(true);
     const type = useStateAttribute<string>('pegInTx', 'peginType');
     const amountToTransfer = useStateAttribute<SatoshiBig>('pegInTx', 'amountToTransfer');
 
@@ -285,6 +295,18 @@ export default defineComponent({
 
     setTxBuilder();
 
+    onBeforeMount(() => {
+      const flag = flyoverFeature.value(FeatureNames.FLYOVER_PEG_IN);
+      if (flag.value === constants.ENABLED) {
+        initFlyover()
+          .then(() => { isFlyoverAvailable.value = true; })
+          .catch(() => { isFlyoverAvailable.value = false; })
+          .finally(() => { loadingProviders.value = false; });
+      } else {
+        loadingProviders.value = false;
+      }
+    });
+
     return {
       startAskingForBalance,
       sendBitcoinState,
@@ -310,6 +332,8 @@ export default defineComponent({
       closeTxErrorDialog,
       walletDataReady,
       showConnectDeviceDialog,
+      isFlyoverAvailable,
+      loadingProviders,
     };
   },
 });
