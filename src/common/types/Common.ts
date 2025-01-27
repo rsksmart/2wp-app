@@ -115,8 +115,8 @@ export interface PsbtExtendedInput {
 export interface NormalizedSummary {
   amountFromString: string;
   amountReceivedString: string;
-  fee?: number;
-  estimatedFee?: number;
+  fee?: bigint;
+  estimatedFee?: bigint;
   recipientAddress: string;
   senderAddress?: string;
   txId?: string;

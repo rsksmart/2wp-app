@@ -413,3 +413,11 @@ export function appendRecaptcha(siteKey: string): void {
   captchaDiv.setAttribute('data-size', 'invisible');
   document.body.appendChild(captchaDiv);
 }
+
+export function toJsonWithoutBigInt(data: object): string {
+  if (data !== undefined) {
+    return JSON.stringify(data, (_, v) => (typeof v === 'bigint' ? `${v}n` : v))
+      .replace(/"(-?\d+)n"/g, (_, a) => a);
+  }
+  return '';
+}

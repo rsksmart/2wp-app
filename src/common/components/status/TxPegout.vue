@@ -68,11 +68,11 @@ export default defineComponent({
         amountFromString: amountSent,
         amountReceivedString: amountToBeReceived.value,
         gas: calculatedGasFee.value,
-        fee: Number(new SatoshiBig(status.feeInSatoshisToBePaid ?? 0, 'satoshi').toBTCTrimmedString()),
+        fee: status.feeInSatoshisToBePaid ?? BigInt(0),
         recipientAddress: status.btcRecipientAddress,
         senderAddress: status.rskSenderAddress,
         txId: status.rskTxHash ? status.rskTxHash : props.txId,
-        estimatedFee: Number(pegOutEstimatedFee.value.toBTCTrimmedString()),
+        estimatedFee: pegOutEstimatedFee.value.toSatoshiBigIntUnsafe(),
         status: status.status,
         btcTxId,
       };
@@ -80,14 +80,13 @@ export default defineComponent({
 
     const flyoverPegoutSummary = computed((): NormalizedSummary => {
       const status = txDetails.value as FlyoverStatusModel;
-      const amount = new SatoshiBig(status.amount, 'btc');
-      const fee = new SatoshiBig(status.fee, 'btc');
-      const total = amount.plus(fee).toBTCTrimmedString();
-      const amountAsString = amount.toBTCTrimmedString();
+      const amount = new WeiBig(status.amount, 'wei');
+      const fee = new WeiBig(status.fee, 'wei');
+      const total = amount.plus(fee);
       return {
-        amountFromString: total,
-        amountReceivedString: amountAsString,
-        fee: Number(fee.toBTCTrimmedString()),
+        amountFromString: total.toRBTCTrimmedString(),
+        amountReceivedString: amount.toRBTCTrimmedString(),
+        fee: fee.toWeiBigIntUnsafe(),
         recipientAddress: status.recipientAddress,
         senderAddress: status.senderAddress,
         txId: status.txHash,

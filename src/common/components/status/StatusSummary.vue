@@ -68,7 +68,11 @@ import {
   mdiBitcoin, mdiArrowRight, mdiArrowLeft, mdiOpenInNew, mdiContentCopy,
 } from '@mdi/js';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { TxStatus, TxStatusType } from '@/common/types';
+import {
+  TxStatus, TxStatusType,
+  SatoshiBig,
+  WeiBig,
+} from '@/common/types';
 import {
   getBtcAddressExplorerUrl,
   getBtcTxExplorerUrl,
@@ -107,7 +111,8 @@ export default defineComponent({
 
     const btcSide = computed(() => {
       if (props.type === TxStatusType.PEGOUT || props.type === TxStatusType.FLYOVER_PEGOUT) {
-        const fee = props.details.fee === 0 ? props.details.estimatedFee : props.details.fee;
+        const fee = props.details.fee === BigInt(0)
+          ? props.details.estimatedFee : props.details.fee;
         return [
           {
             title: 'You receive',
@@ -142,7 +147,9 @@ export default defineComponent({
         {
           title: props.details && props.type === TxStatusType.FLYOVER_PEGIN
             ? 'Fee (includes provider and network fees)' : 'Fee',
-          value: props.details.fee,
+          value: props.type === TxStatusType.FLYOVER_PEGIN
+            ? new SatoshiBig(props.details.fee, 'satoshi').toBTCString()
+            : props.details.fee,
           ticker: true,
         },
         {
@@ -171,7 +178,7 @@ export default defineComponent({
             title: props.type === TxStatusType.FLYOVER_PEGOUT
               ? 'Fee (includes provider and network fees)' : 'Fee',
             value: status.value.type === TxStatusType.FLYOVER_PEGOUT
-              ? props.details.fee
+              ? new WeiBig(props.details.fee, 'wei').toRBTCTrimmedString()
               : gasFee,
             ticker: true,
           },

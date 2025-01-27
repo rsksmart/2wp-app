@@ -361,10 +361,9 @@ export default defineComponent({
       return provider?.name ?? '';
     }
 
-    function getProviderFee(): string {
+    function getProviderFee(): WeiBig {
       return selectedQuote.value.quote.productFeeAmount
-        .plus(selectedQuote.value.quote.callFee)
-        .toRBTCTrimmedString();
+        .plus(selectedQuote.value.quote.callFee);
     }
 
     const registerFlyover = computed<TxInfo>(() => {
@@ -372,31 +371,31 @@ export default defineComponent({
       const dbQuote: PegoutQuoteDbModel = {
         agreementTimestamp: pegoutQuote.agreementTimestamp,
         btcRefundAddress: pegoutQuote.btcRefundAddress,
-        callFeeOnWei: pegoutQuote.callFee.toWeiNumberUnsafe(),
+        callFeeOnWei: pegoutQuote.callFee.toWeiBigIntUnsafe(),
         depositAddr: pegoutQuote.depositAddr,
         depositConfirmations: pegoutQuote.depositConfirmations,
         depositDateLimit: pegoutQuote.depositDateLimit,
         expireBlocks: pegoutQuote.expireBlocks,
         expireDate: pegoutQuote.expireDate,
-        gasFeeOnWei: pegoutQuote.gasFee.toWeiNumberUnsafe(),
+        gasFeeOnWei: pegoutQuote.gasFee.toWeiBigIntUnsafe(),
         lbcAddress: pegoutQuote.lbcAddress,
         liquidityProviderRskAddress: pegoutQuote.liquidityProviderRskAddress,
         lpBtcAddress: pegoutQuote.lpBtcAddr,
-        nonce: Number(pegoutQuote.nonce),
-        penaltyFeeOnWei: pegoutQuote.penaltyFee.toWeiNumberUnsafe(),
-        productFeeAmountOnWei: pegoutQuote.productFeeAmount.toWeiNumberUnsafe(),
+        nonce: pegoutQuote.nonce,
+        penaltyFeeOnWei: pegoutQuote.penaltyFee.toWeiBigIntUnsafe(),
+        productFeeAmountOnWei: pegoutQuote.productFeeAmount.toWeiBigIntUnsafe(),
         rskRefundAddress: pegoutQuote.rskRefundAddress,
         transferConfirmations: pegoutQuote.transferConfirmations,
         transferTime: pegoutQuote.transferTime,
-        valueOnWei: pegoutQuote.value.toWeiNumberUnsafe(),
+        valueOnWei: pegoutQuote.value.toWeiBigIntUnsafe(),
       };
       return {
         txHash: flyoverPegoutState.value.txHash as string,
         type: TxStatusType.PEGOUT.toLowerCase(),
-        value: Number(flyoverPegoutState.value.amountToTransfer.toRBTCTrimmedString()),
+        value: flyoverPegoutState.value.amountToTransfer.toWeiBigIntUnsafe(),
         wallet: currentWallet.value ? currentWallet.value.formal_name : '',
-        rskGas: Number(selectedQuote.value.quote.gasFee.toRBTCTrimmedString()),
-        fee: Number(getProviderFee()),
+        rskGas: selectedQuote.value.quote.gasFee.toWeiBigIntUnsafe(),
+        fee: getProviderFee().toWeiBigIntUnsafe(),
         provider: getLPName(),
         details: {
           senderAddress: account.value,
@@ -411,10 +410,10 @@ export default defineComponent({
     const registerPegout = computed(() => ({
       txHash: pegOutTxState.value.txHash as string,
       type: TxStatusType.PEGOUT.toLowerCase(),
-      value: Number(pegOutTxState.value.amountToTransfer.toRBTCTrimmedString()),
+      value: pegOutTxState.value.amountToTransfer.toWeiBigIntUnsafe(),
       wallet: currentWallet.value ? currentWallet.value.formal_name : '',
-      btcEstimatedFee: Number(pegOutTxState.value.btcEstimatedFee.toBTCTrimmedString()),
-      rskGas: Number(pegOutTxState.value.calculatedFee.toRBTCTrimmedString()),
+      btcEstimatedFee: pegOutTxState.value.btcEstimatedFee.toSatoshiBigIntUnsafe(),
+      rskGas: pegOutTxState.value.calculatedFee.toWeiBigIntUnsafe(),
     }));
 
     async function send() {
