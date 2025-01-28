@@ -17,7 +17,7 @@
     <div v-if="showOptions" class="d-flex flex-column ga-2">
       <span class="font-weight-bold">Select mode</span>
       <v-row no-gutters class="ga-4 ga-lg-8">
-        <v-col v-if="!flyoverIsEnabled">
+        <v-col v-if="!flyoverIsEnabled || peginQuotes.length === 0">
           <pegin-option-card :option-type="peginType.FLYOVER" flyover-not-available>
             <template v-slot>
               <h4 v-if="countdown === recaptchanNewTokenTime">
