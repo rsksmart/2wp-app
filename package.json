@@ -73,7 +73,7 @@
     "@ledgerhq/hw-transport-mocker": "^6.28.5",
     "@mdi/font": "^7.2.96",
     "@types/big.js": "^6.2.0",
-    "@types/chai": "^5.0.0",
+    "@types/chai": "^5.0.1",
     "@types/jest": "^27.5.2",
     "@types/markdown-it": "^14.1.1",
     "@types/node": "^20.4.7",
