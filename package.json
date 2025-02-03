@@ -24,7 +24,7 @@
     "@rsksmart/bridges-core-sdk": "^0.4.1",
     "@rsksmart/flyover-sdk": "^1.6.2",
     "@rsksmart/rlogin": "^1.6.1",
-    "@rsksmart/rlogin-ledger-provider": "^1.0.4",
+    "@rsksmart/rlogin-ledger-provider": "https://gitpkg.vercel.app/rsksmart/rLogin-providers/packages/rlogin-ledger-provider?00ce8379ea0399193d01ebfcff15917e646dbe49",
     "@rsksmart/rlogin-trezor-provider": "^1.0.4",
     "@rsksmart/rsk-precompiled-abis": "^6.0.0-ARROWHEAD",
     "@rsksmart/rsk-utils": "^1.1.0",
