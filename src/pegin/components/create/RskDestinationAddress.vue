@@ -20,12 +20,16 @@
         </v-btn>
       </template>
     </v-text-field>
+    <v-alert v-show="isAmountFilled && !isInputFilled"
+      color="orange" density="compact" variant="text" class="px-0">
+      Please inform destination address
+    </v-alert>
     <v-alert v-show="!isValidInputAddress && isInputFilled" type="error"
       color="orange" density="compact">
       Not an address
     </v-alert>
     <v-alert v-show="notChecksummedAddressWarning" type="warning"
-      color="orange" density="compact" variant="outline">
+      color="orange" density="compact" variant="outlined">
       Not a checksummed address
     </v-alert>
   </v-col>
@@ -42,6 +46,12 @@ import { EnvironmentAccessorService } from '@/common/services/enviroment-accesso
 
 export default defineComponent({
   name: 'RskDestinationAddress',
+  props: {
+    isAmountFilled: {
+      type: Boolean,
+      required: true,
+    },
+  },
   setup(props, context) {
     const connectedAccount = useGetter<string>('web3Session', constants.SESSION_GET_CHECKSUMMED_ACCOUNT);
     const address = ref(connectedAccount.value);

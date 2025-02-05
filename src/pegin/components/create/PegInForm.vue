@@ -11,7 +11,7 @@
     </v-row>
     <v-row no-gutters class="ga-4 ga-lg-8">
       <btc-input @valid-amount="checkValidAmount" />
-      <rsk-destination-address @valid-address="checkValidAddress"/>
+      <rsk-destination-address @valid-address="checkValidAddress" :is-amount-filled="validAmount"/>
     </v-row>
     <btc-fee-select/>
     <div v-if="showOptions" class="d-flex flex-column ga-2">
