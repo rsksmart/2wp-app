@@ -37,16 +37,16 @@ export function getBtcBaseExplorerUrl() {
   let network = '';
   switch (EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin) {
     case constants.BTC_NETWORK_TESTNET:
-      network = 'btc-testnet';
+      network = '/testnet';
       break;
     case constants.BTC_NETWORK_MAINNET:
-      network = 'btc';
+      network = '';
       break;
     default:
-      network = 'btc-testnet';
+      network = '/testnet';
       break;
   }
-  return `https://live.blockcypher.com/${network}`;
+  return `https://mempool.space${network}`;
 }
 
 export function getBtcTxExplorerUrl(txId: string) {
