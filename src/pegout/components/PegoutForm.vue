@@ -404,6 +404,7 @@ export default defineComponent({
         },
         quote: dbQuote,
         quoteHash: selectedQuote.value.quoteHash,
+        acceptedQuoteSignature: flyoverPegoutState.value.acceptedQuoteSignature,
       };
     });
 
