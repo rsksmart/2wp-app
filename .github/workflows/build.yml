@@ -7,7 +7,7 @@ permissions: read-all
 
 jobs:
   checkout-and-build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@163217dfcd28294438ea1c1c149cfaf66eec283e # v4.2.1
