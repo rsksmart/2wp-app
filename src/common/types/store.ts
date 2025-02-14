@@ -106,5 +106,5 @@ export interface TxStatus {
   type: TxStatusType;
   pegOutEstimatedFee: SatoshiBig;
   estimatedReleaseTimeInMinutes: Duration;
-  flyoverStatus?: string;
+  flyoverStatus?: { status: string, txId: string };
 }

@@ -98,7 +98,7 @@ export default defineComponent({
     const isFlyover = computed((): boolean => status.value.type === TxStatusType.FLYOVER_PEGOUT
       || status.value.type === TxStatusType.FLYOVER_PEGIN);
     const quoteNotFound = computed(() => isFlyover.value
-      && status.value.flyoverStatus === TxStatusType.NOT_FOUND);
+      && status.value.flyoverStatus?.status === TxStatusType.NOT_FOUND);
 
     const txNotFound = computed((): boolean => invalidData.value
       || unexpectedError.value

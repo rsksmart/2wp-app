@@ -86,7 +86,7 @@ export default defineComponent({
     const btcTicker = environmentContext.getBtcTicker();
     const rbtcTicker = environmentContext.getRbtcTicker();
     const txFailed = computed(() => props.txWithError
-      || status.value.flyoverStatus === FlyoverStatus.FAILED);
+      || status.value.flyoverStatus?.status === FlyoverStatus.FAILED);
     const txDetails = useStateAttribute<PegoutStatusDataModel|PeginStatus|FlyoverStatusModel>('status', 'txDetails');
     const isPegOut = computed((): boolean => status.value.type === TxStatusType.PEGOUT
       || status.value.type === TxStatusType.FLYOVER_PEGOUT);
@@ -122,7 +122,7 @@ export default defineComponent({
           labelOne = `Send ${rbtcTicker} to Liquidity Provider`;
           labelTwo = `Liquidity Provider received ${rbtcTicker}`;
           labelThree = `Liquidity Provider send ${btcTicker}`;
-          switch (status.value.flyoverStatus) {
+          switch (status.value.flyoverStatus?.status) {
             case FlyoverStatus.PENDING:
               zero = 100;
               first = 100;
@@ -203,7 +203,7 @@ export default defineComponent({
         labelOne = `Send ${btcTicker} to Liquidity Provider`;
         labelTwo = `Liquidity Provider received ${btcTicker}`;
         labelThree = `Liquidity Provider send ${rbtcTicker}`;
-        switch (status.value.flyoverStatus) {
+        switch (status.value.flyoverStatus?.status) {
           case FlyoverStatus.PENDING:
             zero = 100;
             first = 100;
