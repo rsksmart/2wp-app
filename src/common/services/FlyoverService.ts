@@ -459,11 +459,11 @@ export default class FlyoverService {
   }
 
   public getPeginStatus(quoteHash: string) {
-    return new Promise<string>((resolve, reject) => {
+    return new Promise<{status: string, txId: string}>((resolve, reject) => {
       this.flyover?.getPeginStatus(quoteHash)
         .then((detailedStatus) => {
           const status = FlyoverUtils.getSimpleQuoteStatus(detailedStatus.status.state);
-          resolve(status);
+          resolve({ status, txId: detailedStatus.status.callForUserTxHash });
         })
         .catch((error) => {
           reject(new ServiceError(
@@ -477,11 +477,11 @@ export default class FlyoverService {
   }
 
   public getPegoutStatus(quoteHash: string) {
-    return new Promise<string>((resolve, reject) => {
+    return new Promise<{status: string, txId: string}>((resolve, reject) => {
       this.flyover?.getPegoutStatus(quoteHash)
         .then((detailedStatus) => {
           const status = FlyoverUtils.getSimpleQuoteStatus(detailedStatus.status.state);
-          resolve(status);
+          resolve({ status, txId: detailedStatus.status.lpBtcTxHash });
         })
         .catch((error) => {
           reject(new ServiceError(
