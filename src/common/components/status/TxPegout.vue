@@ -19,6 +19,7 @@ import {
   NormalizedSummary,
   FlyoverStatusModel,
   WeiBig,
+  TxStatus,
 } from '@/common/types';
 import StatusProgressBar from '@/common/components/status/StatusProgressBar.vue';
 import { useStateAttribute } from '@/common/store/helper';
@@ -40,6 +41,7 @@ export default defineComponent({
     const typeSummary = props.isFlyover ? TxStatusType.FLYOVER_PEGOUT : TxStatusType.PEGOUT;
 
     const txDetails = useStateAttribute<PegoutStatusDataModel | FlyoverStatusModel>('status', 'txDetails');
+    const flyoverStatus = useStateAttribute<TxStatus['flyoverStatus']>('status', 'flyoverStatus');
     const pegOutEstimatedFee = useStateAttribute<SatoshiBig>('status', 'pegOutEstimatedFee');
     const calculatedGasFee = useStateAttribute<WeiBig>('pegOutTx', 'calculatedFee');
 
@@ -89,6 +91,7 @@ export default defineComponent({
         recipientAddress: status.recipientAddress,
         senderAddress: status.senderAddress,
         txId: status.txHash,
+        btcTxId: flyoverStatus.value?.txId,
       };
     });
 

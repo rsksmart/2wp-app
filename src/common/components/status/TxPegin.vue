@@ -32,11 +32,14 @@ import {
   NormalizedSummary,
   TxStatusMessage,
   FlyoverStatusModel,
+  TxStatus,
 } from '@/common/types';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import * as constants from '@/common/store/constants';
 import { getTime, setStatusMessage } from '@/common/utils';
-import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
+import {
+  useAction, useGetter, useStateAttribute,
+} from '@/common/store/helper';
 import StatusProgressBar from '@/common/components/status/StatusProgressBar.vue';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import StatusSummary from '@/common/components/status/StatusSummary.vue';
@@ -97,6 +100,7 @@ export default defineComponent({
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
     const txDetails = useStateAttribute<PeginStatus | FlyoverStatusModel>('status', 'txDetails');
+    const flyoverStatus = useStateAttribute<TxStatus['flyoverStatus']>('status', 'flyoverStatus');
     const isRejected = useGetter<boolean>('status', constants.STATUS_IS_REJECTED);
     const setAmount = useAction('pegInTx', constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER);
     const peginInit = useAction('pegInTx', constants.PEGIN_TX_INIT);
@@ -122,7 +126,7 @@ export default defineComponent({
         amountReceivedString: status.btc.amountTransferred.toString(),
         fee: status.btc.fees,
         recipientAddress: status.rsk.recipientAddress,
-        txId: status.btc.txId,
+        btcTxId: status.btc.txId,
         refundAddress: status.btc.refundAddress,
         federationAddress: status.btc.federationAddress,
         total: total.toBTCTrimmedString(),
@@ -142,7 +146,8 @@ export default defineComponent({
         fee: status.fee,
         recipientAddress: status.recipientAddress,
         senderAddress: status.senderAddress,
-        txId: status.txHash,
+        txId: flyoverStatus.value?.txId,
+        btcTxId: status.txHash,
       };
     });
 

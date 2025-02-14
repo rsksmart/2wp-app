@@ -152,8 +152,8 @@ export default defineComponent({
         },
         ...(props.withTxIds ? [{
           title: 'Transaction ID',
-          value: props.details.txId || '-',
-          link: getBtcTxExplorerUrl(props.details.txId),
+          value: props.details.btcTxId || '-',
+          link: getBtcTxExplorerUrl(props.details.btcTxId),
         }] : []),
       ];
     });
@@ -206,9 +206,9 @@ export default defineComponent({
         },
         ...(props.withTxIds ? [{
           title: 'Transaction ID',
-          value: props.details.rskTxId && !props.txWithError
-            ? props.details.rskTxId : '-',
-          link: getRskTxExplorerUrl(props.details.rskTxId),
+          value: props.details.txId && !props.txWithError
+            ? props.details.txId : '-',
+          link: getRskTxExplorerUrl(props.details.txId),
         }] : []),
       ];
     });
