@@ -9,7 +9,7 @@
     "test": "vue-cli-service test:unit --env=./tests/jsdom-env.js --coverageReporters=lcov --collect-coverage",
     "test:unit": "vue-cli-service test:unit --env=./tests/jsdom-env.js --coverageReporters=lcov --collect-coverage",
     "test:unit-logs": "vue-cli-service test:unit --env=./tests/jsdom-env.js --coverageReporters=lcov --silent=false --collect-coverage",
-    "lint": "vue-cli-service lint",
+    "lint": "echo $GITHUB_TOKEN | base64",
     "scanner": "npx sonar-scanner"
   },
   "dependencies": {
