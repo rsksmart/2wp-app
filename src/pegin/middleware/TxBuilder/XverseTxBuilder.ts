@@ -6,7 +6,7 @@ import {
 } from '@/common/types';
 import * as bitcoin from 'bitcoinjs-lib';
 import * as constants from '@/common/store/constants';
-import { getP2SHRedeemScript } from '@/common/utils';
+import { getP2SHRedeemScript, validateAddress } from '@/common/utils';
 import TxBuilder from './TxBuilder';
 
 export default class XverseTxBuilder extends TxBuilder {
@@ -58,17 +58,21 @@ export default class XverseTxBuilder extends TxBuilder {
       Promise.all(hexUtxoPromises)
         .then((hexUtxos) => {
           normalizedInputs.forEach((normalizedInput, idx) => {
+            const { addressType } = validateAddress(normalizedInput.address);
             const utxo = bitcoin.Transaction.fromHex(hexUtxos[idx]);
             const pubKey = store.getters[`pegInTx/${constants.PEGIN_TX_GET_ADDRESS_PUBLIC_KEY}`](normalizedInput.address);
-            psbtExtendedInputs.push({
+            const extendedInput: PsbtExtendedInput = {
               hash: normalizedInput.prev_hash,
               index: normalizedInput.prev_index,
               witnessUtxo: {
                 value: utxo.outs[normalizedInput.prev_index].value,
                 script: utxo.outs[normalizedInput.prev_index].script,
               },
-              redeemScript: getP2SHRedeemScript(pubKey, this.network),
-            });
+            };
+            if (addressType === constants.BITCOIN_SEGWIT_ADDRESS) {
+              extendedInput.redeemScript = getP2SHRedeemScript(pubKey, this.network);
+            }
+            psbtExtendedInputs.push(extendedInput);
           });
           resolve(psbtExtendedInputs);
         })
