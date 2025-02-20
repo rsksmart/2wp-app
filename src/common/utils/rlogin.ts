@@ -53,11 +53,13 @@ export function getRloginInstance(features: Array<Feature>): RLogin {
     rpcUrls,
     supportedChains,
   };
-  // const ledgerFeature = features.find((feature) => feature.name === FeatureNames.WALLET_LEDGER);
-  // if (ledgerFeature?.value === constants.ENABLED
-  //   && ledgerFeature.supportedBrowsers[currentBrowser.toLowerCase() as keyof SupportedBrowsers]) {
-  //   rLoginOptions.providerOptions['custom-ledger'] = customLedgerProviderOptions;
-  // }
+  const ledgerFeature = features.find((feature) => feature.name === FeatureNames.WALLET_LEDGER);
+  if (ledgerFeature?.value === constants.ENABLED
+    && ledgerFeature.supportedBrowsers[currentBrowser.toLowerCase() as keyof SupportedBrowsers]) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    rLoginOptions.providerOptions['custom-ledger'] = customLedgerProviderOptions;
+  }
   const trezorFeature = features.find((feature) => feature.name === FeatureNames.WALLET_TREZOR);
   if (trezorFeature?.value === constants.ENABLED
     && trezorFeature.supportedBrowsers[currentBrowser.toLowerCase() as keyof SupportedBrowsers]) {
