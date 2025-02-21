@@ -2,7 +2,6 @@ import SatoshiBig from '@/common/types/SatoshiBig';
 import { Utxo } from '@/common/types/pegInTx';
 import { PegoutStatus, TxStatusType } from '@/common/types/store';
 import { FlyoverCallFunction, FlyoverCallResult, PegStatus } from '@/common/store/constants';
-import WeiBig from './WeiBig';
 
 export interface Tx {
   coin: string;
@@ -115,12 +114,12 @@ export interface PsbtExtendedInput {
 export interface NormalizedSummary {
   amountFromString: string;
   amountReceivedString: string;
-  fee?: bigint;
-  estimatedFee?: bigint;
+  fee?: string;
+  estimatedFee?: string;
   recipientAddress: string;
   senderAddress?: string;
   txId?: string;
-  gas?: WeiBig;
+  gas?: string;
   refundAddress?: string;
   selectedAccount?: string;
   federationAddress?: string;
