@@ -79,21 +79,21 @@ export default defineComponent({
     const flyoverProps = computed(() => {
       const peginQuote = selectedQuote.value.quote;
       const dbQuote: PeginQuoteDbModel = {
-        callFeeOnSatoshi: peginQuote.callFee.toSatoshiNumberUnsafe(),
+        callFeeOnSatoshi: peginQuote.callFee.toString(),
         callOnRegister: peginQuote.callOnRegister,
-        confirmations: peginQuote.confirmations,
-        contractAddr: peginQuote.contractAddr,
+        confirmations: peginQuote.confirmations.toString(),
+        contractAddr: peginQuote.contractAddr.toString(),
         data: peginQuote.data,
         fedBTCAddr: peginQuote.fedBTCAddr,
-        gasLimit: peginQuote.gasLimit,
-        lpCallTime: peginQuote.lpCallTime,
-        productFeeAmountOnSatoshi: peginQuote.productFeeAmount.toSatoshiNumberUnsafe(),
-        timeForDepositInSeconds: peginQuote.timeForDepositInSeconds,
-        valueOnSatoshi: peginQuote.value.toSatoshiNumberUnsafe(),
-        agreementTimestamp: peginQuote.agreementTimestamp,
-        gasFeeOnWei: peginQuote.gasFee.toWeiNumberUnsafe(),
-        nonce: Number(peginQuote.nonce),
-        penaltyFeeOnWei: peginQuote.penaltyFee.toWeiNumberUnsafe(),
+        gasLimit: peginQuote.gasLimit.toString(),
+        lpCallTime: peginQuote.lpCallTime.toString(),
+        productFeeAmountOnSatoshi: peginQuote.productFeeAmount.toString(),
+        timeForDepositInSeconds: peginQuote.timeForDepositInSeconds.toString(),
+        valueOnSatoshi: peginQuote.value.toString(),
+        agreementTimestamp: peginQuote.agreementTimestamp.toString(),
+        gasFeeOnWei: peginQuote.gasFee.toString(),
+        nonce: peginQuote.nonce.toString(),
+        penaltyFeeOnWei: peginQuote.penaltyFee.toString(),
         btcRefundAddress: peginQuote.btcRefundAddr,
         lbcAddress: peginQuote.lbcAddr,
         lpBtcAddress: peginQuote.lpBTCAddr,
@@ -101,13 +101,13 @@ export default defineComponent({
         liquidityProviderRskAddress: peginQuote.lpRSKAddr,
       };
       return {
-        value: Number(selectedQuote.value.quote.value.toBTCTrimmedString()),
-        fee: Number(selectedQuote.value.getTotalQuoteFee(safeFee.value).toBTCTrimmedString()),
+        value: selectedQuote.value.quote.value.toString(),
+        fee: selectedQuote.value.getTotalQuoteFee(safeFee.value).toString(),
         provider: getLPName(),
         details: {
           senderAddress: pegInTxState.value.normalizedTx.inputs[0].address,
           recipientAddress: recipientAddress.value,
-          blocksToCompleteTransaction: selectedQuote.value.quote.confirmations,
+          blocksToCompleteTransaction: selectedQuote.value.quote.confirmations.toString(),
         },
         quote: dbQuote,
         quoteHash: selectedQuote.value.quoteHash,
@@ -116,8 +116,8 @@ export default defineComponent({
     });
 
     const nativeProps = computed(() => ({
-      value: Number(pegInTxState.value.amountToTransfer.toBTCTrimmedString()),
-      fee: Number(safeFee.value.toBTCTrimmedString()),
+      value: pegInTxState.value.amountToTransfer.toString(),
+      fee: safeFee.value.toString(),
     }));
 
     async function toTrackId() {

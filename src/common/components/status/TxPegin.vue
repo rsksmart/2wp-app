@@ -36,7 +36,7 @@ import {
 } from '@/common/types';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import * as constants from '@/common/store/constants';
-import { getTime, setStatusMessage } from '@/common/utils';
+import { getTime, setStatusMessage, toSatoshiBigIntString } from '@/common/utils';
 import {
   useAction, useGetter, useStateAttribute,
 } from '@/common/store/helper';
@@ -60,9 +60,9 @@ export default defineComponent({
   setup(props, context) {
     const currentFee = ref(new SatoshiBig('0', 'btc'));
     const currentRefundAddress = ref('');
-    const btcConfirmationsRequired = ref(0);
+    const btcConfirmationsRequired = ref('0');
     const btcConfirmationsPercentage = ref(0);
-    const btcConfirmations = ref(0);
+    const btcConfirmations = ref('0');
     const rskConfirmationsPercentage = ref(0);
     const leftBtcTime = ref('');
 
@@ -137,11 +137,13 @@ export default defineComponent({
 
     const flyoverPeginSummary = computed((): NormalizedSummary => {
       const status = txDetails.value as FlyoverStatusModel;
-      const total = new SatoshiBig(status.amount, 'btc')
-        .plus(new SatoshiBig(status.fee, 'btc'));
+      const amount = toSatoshiBigIntString(status.amount);
+      const fee = toSatoshiBigIntString(status.fee);
+      const total = new SatoshiBig(amount, 'satoshi')
+        .plus(new SatoshiBig(fee, 'satoshi'));
       return {
-        amountFromString: status.amount.toString(),
-        amountReceivedString: status.amount.toString(),
+        amountFromString: status.amount,
+        amountReceivedString: status.amount,
         total: total.toBTCTrimmedString(),
         fee: status.fee,
         recipientAddress: status.recipientAddress,
@@ -158,16 +160,22 @@ export default defineComponent({
     const showConfirmations = computed(() => !props.isFlyover
       && txDetails.value.status === PegStatus.WAITING_CONFIRMATIONS);
 
+    const btcConfirmationsRequiredNumber = computed(() => Number(btcConfirmationsRequired.value));
+
+    const btcConfirmationsNumber = computed(() => Number(btcConfirmations.value));
+
     function refreshPercentage() {
       if ('btc' in txDetails.value) {
         const { btc } = txDetails.value;
-        btcConfirmationsRequired.value = btc.requiredConfirmation;
-        btcConfirmations.value = btc.confirmations ?? 0;
+        btcConfirmationsRequired.value = btc.requiredConfirmation.toString();
+        btcConfirmations.value = btc.confirmations.toString() ?? '0';
         btcConfirmations.value = btcConfirmations.value > btcConfirmationsRequired.value
           ? btcConfirmationsRequired.value : btcConfirmations.value;
-        leftBtcTime.value = getTime((btcConfirmationsRequired.value - btcConfirmations.value) * 10);
+        leftBtcTime.value = getTime(
+          (btcConfirmationsRequiredNumber.value - btcConfirmationsNumber.value) * 10,
+        );
         btcConfirmationsPercentage.value = btcConfirmations.value <= btcConfirmationsRequired.value
-          ? (btcConfirmations.value * 100) / btcConfirmationsRequired.value : 100;
+          ? (btcConfirmationsNumber.value * 100) / btcConfirmationsRequiredNumber.value : 100;
         if (txDetails.value.status === constants.PegStatus.CONFIRMED) {
           rskConfirmationsPercentage.value = 100;
         } else {

@@ -1,8 +1,8 @@
 export interface BaseQuoteDbModel {
-  agreementTimestamp: number;
-  gasFeeOnWei: number;
-  nonce: number;
-  penaltyFeeOnWei: number;
+  agreementTimestamp: string;
+  gasFeeOnWei: string;
+  nonce: string;
+  penaltyFeeOnWei: string;
   btcRefundAddress: string;
   lbcAddress: string;
   lpBtcAddress: string;
@@ -11,41 +11,41 @@ export interface BaseQuoteDbModel {
 }
 
 export interface PeginQuoteDbModel extends BaseQuoteDbModel {
-  callFeeOnSatoshi: number;
+  callFeeOnSatoshi: string;
   callOnRegister: boolean;
-  confirmations: number;
+  confirmations: string;
   contractAddr: string;
   data: string;
   fedBTCAddr: string;
-  gasLimit: number;
-  lpCallTime: number;
-  productFeeAmountOnSatoshi: number;
-  timeForDepositInSeconds: number;
-  valueOnSatoshi: number;
+  gasLimit: string;
+  lpCallTime: string;
+  productFeeAmountOnSatoshi: string;
+  timeForDepositInSeconds: string;
+  valueOnSatoshi: string;
 }
 
 export interface PegoutQuoteDbModel extends BaseQuoteDbModel {
-  callFeeOnWei: number;
+  callFeeOnWei: string;
   depositAddr: string;
-  depositConfirmations: number;
-  depositDateLimit: number;
-  expireBlocks: number;
-  expireDate: number;
-  productFeeAmountOnWei: number;
-  transferConfirmations: number;
-  transferTime: number;
-  valueOnWei: number;
+  depositConfirmations: string;
+  depositDateLimit: string;
+  expireBlocks: string;
+  expireDate: string;
+  productFeeAmountOnWei: string;
+  transferConfirmations: string;
+  transferTime: string;
+  valueOnWei: string;
 }
 
 export interface TxInfo {
   txHash: string;
   type: string;
-  value: number;
+  value: string;
   wallet: string;
   addressType?: string;
-  fee?: number;
-  rskGas?: number;
-  btcEstimatedFee?: number;
+  fee?: string;
+  rskGas?: string;
+  btcEstimatedFee?: string;
   provider?: string;
   details?: Record<string, unknown>;
   quote?: PeginQuoteDbModel | PegoutQuoteDbModel;

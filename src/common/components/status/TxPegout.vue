@@ -24,6 +24,7 @@ import {
 import StatusProgressBar from '@/common/components/status/StatusProgressBar.vue';
 import { useStateAttribute } from '@/common/store/helper';
 import StatusSummary from '@/common/components/status/StatusSummary.vue';
+import { bigNumberToSatoshiBigIntString, toWeiBigIntString } from '@/common/utils';
 
 export default defineComponent({
   name: 'TxPegout',
@@ -61,18 +62,19 @@ export default defineComponent({
 
     const txPegoutSummary = computed((): NormalizedSummary => {
       const status = txDetails.value as PegoutStatusDataModel;
-      const valueRequested = new SatoshiBig(status.valueRequestedInSatoshis, 'satoshi').toBTCTrimmedString();
-      const amountSent = new WeiBig(valueRequested, 'rbtc').plus(calculatedGasFee.value).toRBTCTrimmedString();
+      const valueRequested = bigNumberToSatoshiBigIntString(status.valueRequestedInSatoshis);
+      const amountSent = new WeiBig(valueRequested, 'rbtc')
+        .plus(calculatedGasFee.value).toRBTCTrimmedString();
       const btcTxId = status.status === PegoutStatus.RELEASE_BTC ? status.btcTxId : '';
       return {
         amountFromString: amountSent,
         amountReceivedString: amountToBeReceived.value,
-        gas: calculatedGasFee.value,
-        fee: Number(new SatoshiBig(status.feeInSatoshisToBePaid ?? 0, 'satoshi').toBTCTrimmedString()),
+        gas: calculatedGasFee.value.toString(),
+        fee: status.feeInSatoshisToBePaid ?? '0',
         recipientAddress: status.btcRecipientAddress,
         senderAddress: status.rskSenderAddress,
         txId: status.rskTxHash ? status.rskTxHash : props.txId,
-        estimatedFee: Number(pegOutEstimatedFee.value.toBTCTrimmedString()),
+        estimatedFee: pegOutEstimatedFee.value.toString(),
         status: status.status,
         btcTxId,
       };
@@ -80,14 +82,14 @@ export default defineComponent({
 
     const flyoverPegoutSummary = computed((): NormalizedSummary => {
       const status = txDetails.value as FlyoverStatusModel;
-      const amount = new SatoshiBig(status.amount, 'btc');
-      const fee = new SatoshiBig(status.fee, 'btc');
-      const total = amount.plus(fee).toBTCTrimmedString();
-      const amountAsString = amount.toBTCTrimmedString();
+      const amount = toWeiBigIntString(status.amount);
+      const fee = toWeiBigIntString(status.fee);
+      const total = new WeiBig(amount, 'wei')
+        .plus(new WeiBig(fee, 'wei'));
       return {
-        amountFromString: total,
-        amountReceivedString: amountAsString,
-        fee: Number(fee.toBTCTrimmedString()),
+        amountFromString: total.toRBTCTrimmedString(),
+        amountReceivedString: status.amount,
+        fee: status.fee,
         recipientAddress: status.recipientAddress,
         senderAddress: status.senderAddress,
         txId: status.txHash,

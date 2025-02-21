@@ -160,7 +160,7 @@ export default defineComponent({
 
     const rskSide = computed(() => {
       if (props.type === TxStatusType.PEGOUT || props.type === TxStatusType.FLYOVER_PEGOUT) {
-        const gasFee = props.details.gas?.gt(0) ? props.details.gas.toRBTCTrimmedString() : '-';
+        const gasFee = props.details.gas ? props.details.gas : '-';
         return [
           {
             title: 'You send',
