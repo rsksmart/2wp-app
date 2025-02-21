@@ -222,7 +222,7 @@ export default class ApiService {
         txInfo,
         { headers: { 'Content-Type': 'application/json' } },
       )
-        .then(() => resolve())
+        .then((response) => resolve(response.data))
         .catch(reject);
     });
   }
