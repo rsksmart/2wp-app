@@ -94,6 +94,8 @@ export default class LeatherService extends WalletService {
     return new Promise((resolve, reject) => {
       this.btcProvider?.request('signPsbt', {
         hex: tx.hex,
+        network: tx.coin === 'main' ? 'mainnet' : 'testnet',
+        broadcast: false,
       })
         .then((response: typeof RpcResponse) => {
           const { hex } = response.result;
