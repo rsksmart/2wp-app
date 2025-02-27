@@ -1,7 +1,6 @@
 import {
   FlyoverPegoutState, QuotePegOut2WP, RootState, WeiBig,
-  FlyoverCall, LiquidityProvider2WP, TxStatusType, SatoshiBig,
-  ReducedQuote,
+  SatoshiBig, ReducedQuote, LogEntryType, LogEntryOperation,
 } from '@/common/types';
 import { ActionTree } from 'vuex';
 import * as constants from '@/common/store/constants';
@@ -21,31 +20,31 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
       .then(resolve)
       .catch(reject);
   }),
-  [constants.FLYOVER_PEGOUT_GET_PROVIDERS]: async ({
-    state,
-    commit,
-  }) => new Promise((resolve, reject) => {
-    let result = constants.FlyoverCallResult.ERROR;
-    const flyoverCallPayload = {
-      operationType: TxStatusType.FLYOVER_PEGOUT,
-      functionType: constants.FlyoverCallFunction.LPS,
-    };
-    (async () => {
-      try {
-        const liquidityProviders: LiquidityProvider2WP[] = await promiseWithTimeout(
-          state.flyoverService.getProviders(),
-          EnvironmentAccessorService.getEnvironmentVariables().flyoverGetProvidersTimeout,
-        );
-        result = constants.FlyoverCallResult.SUCCESS;
-        resolve(commit(constants.FLYOVER_PEGOUT_SET_PROVIDERS, liquidityProviders));
-      } catch (e) {
-        reject(new Error('Error getting providers'));
-      } finally {
-        ApiService.registerFlyoverCall({ ...flyoverCallPayload, result } as FlyoverCall)
-          .catch(() => null);
-      }
-    })();
-  }),
+  [constants.FLYOVER_PEGOUT_GET_PROVIDERS]:
+    ({ state, commit }) => new Promise<void>((resolve, reject) => {
+      promiseWithTimeout(
+        state.flyoverService.getProviders(),
+        EnvironmentAccessorService.getEnvironmentVariables().flyoverGetProvidersTimeout,
+      )
+        .then((liquidityProviders) => {
+          commit(constants.FLYOVER_PEGOUT_SET_PROVIDERS, liquidityProviders);
+          ApiService.logToServer({
+            type: LogEntryType.Success,
+            operation: LogEntryOperation.PegoutFlyover,
+            location: constants.FLYOVER_PEGOUT_GET_PROVIDERS,
+          }).catch(() => undefined);
+          resolve();
+        })
+        .catch((error) => {
+          ApiService.logToServer({
+            type: LogEntryType.Error,
+            operation: LogEntryOperation.PegoutFlyover,
+            location: constants.FLYOVER_PEGOUT_GET_PROVIDERS,
+            error,
+          }).catch(() => undefined);
+          reject();
+        });
+    }),
   [constants.FLYOVER_PEGOUT_ADD_AMOUNT]: ({ commit }, amount: WeiBig) => {
     commit(constants.FLYOVER_PEGOUT_SET_AMOUNT, amount);
   },
@@ -58,7 +57,7 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
   ) => {
     const bridgeService = new BridgeService();
     const tempBtcAddress = await bridgeService.getFederationAddress();
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<void>((resolve) => {
       const quotePromises: Promise<QuotePegOut2WP[]>[] = [];
       state.liquidityProviders.forEach((provider) => {
         dispatch(constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER, provider.id);
@@ -74,14 +73,8 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
       const quotePromisesWithTimeout = quotePromises.map(
         (promise) => promiseWithTimeout(promise, MAX_RESPONSE_TIME_IN_MS),
       );
-      let result = constants.FlyoverCallResult.ERROR;
-      const flyoverCallPayload = {
-        operationType: TxStatusType.FLYOVER_PEGOUT,
-        functionType: constants.FlyoverCallFunction.QUOTE,
-      };
-      (async () => {
-        try {
-          const responses = await Promise.allSettled(quotePromisesWithTimeout);
+      Promise.allSettled(quotePromisesWithTimeout)
+        .then((responses) => {
           responses.forEach((response, index) => {
             if (response.status === constants.FULFILLED) {
               quotesByProvider = {
@@ -90,16 +83,21 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
               };
             }
           });
-          result = constants.FlyoverCallResult.SUCCESS;
+          return responses;
+        }).then((responses) => {
           commit(constants.FLYOVER_PEGOUT_SET_QUOTES, quotesByProvider);
+          responses.forEach((response) => {
+            ApiService.logToServer({
+              type: response.status === constants.FULFILLED
+                ? LogEntryType.Success
+                : LogEntryType.Error,
+              operation: LogEntryOperation.PegoutFlyover,
+              location: constants.FLYOVER_PEGOUT_GET_QUOTES,
+              ...(response.status === constants.FULFILLED ? {} : { error: response.reason }),
+            }).catch(() => undefined);
+          });
           resolve();
-        } catch (e) {
-          reject(new Error('Error getting quotes'));
-        } finally {
-          ApiService.registerFlyoverCall({ ...flyoverCallPayload, result } as FlyoverCall)
-            .catch(() => null);
-        }
-      })();
+        });
     });
   },
   [constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER]: ({ state }, providerId: number) => {
