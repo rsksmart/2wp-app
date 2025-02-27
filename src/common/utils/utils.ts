@@ -361,7 +361,7 @@ export function blockConfirmationsToTimeString(confirmations: number, chain: 'bt
   return moment.duration(confirmations * timeInSeconds, 'seconds').humanize(false, { h: 34 });
 }
 
-export function awaitTimeout(ms: number) {
+export function awaitTimeout(ms: number): Promise<never> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       reject(new Error('Request timed out'));
@@ -369,8 +369,7 @@ export function awaitTimeout(ms: number) {
   });
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function promiseWithTimeout(promise: Promise<any>, timeoutMs: number) {
+export function promiseWithTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
   return Promise.race([promise, awaitTimeout(timeoutMs)]);
 }
 

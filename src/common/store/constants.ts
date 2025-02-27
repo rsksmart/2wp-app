@@ -375,16 +375,6 @@ export const BTC_AVG_BLOCK_TIME_IN_SECONDS = 600;
 export const RSK_AVG_BLOCK_TIME_IN_SECONDS = 30;
 export const FULFILLED = 'fulfilled';
 
-export enum FlyoverCallResult {
-  SUCCESS = 'success',
-  ERROR = 'error',
-}
-
-export enum FlyoverCallFunction {
-  LPS = 'getLps',
-  QUOTE = 'getQuote',
-}
-
 export enum RejectedPegoutReasons {
   LOW_AMOUNT = 'LOW_AMOUNT',
   CALLER_CONTRACT = 'CALLER_CONTRACT',
