@@ -388,3 +388,8 @@ export enum RejectedPegoutReasons {
 }
 
 export const RECAPTCHA_NEW_TOKEN_TIME = 30;
+
+export enum Networks {
+  BITCOIN = 'BITCOIN',
+  ROOTSTOCK = 'ROOTSTOCK',
+}
