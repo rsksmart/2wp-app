@@ -78,6 +78,11 @@
         </div>
       </v-col>
     </v-row>
+    <v-row class="d-flex justify-center mt-6">
+      <v-btn @click="goQrView">
+        GO QR
+      </v-btn>
+    </v-row>
   </v-container>
   <web3-wallet-dialog v-model="showConnectModal"
     @cancel="connectError" @selected-wallet="selectWeb3WalletType" />

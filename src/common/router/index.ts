@@ -103,6 +103,16 @@ const routes: Readonly<RouteRecordRaw[]> = [
     }),
     beforeEnter: [checkFromRoute, checkForMobileDevice],
   },
+  {
+    path: '/sendQr/:network/:address',
+    name: 'QrView',
+    component: () => import(/* webpackChunkName: "qr-code" */ '../views/QrView.vue'),
+    props: (route) => ({
+      address: route.params.address,
+      network: route.params.network,
+    }),
+    // beforeEnter: [checkFromRoute],
+  },
 ];
 
 const history = createWebHistory(EnvironmentAccessorService.getEnvironmentVariables().baseUrl);
