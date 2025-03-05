@@ -20,7 +20,7 @@
         <p class="text-subtitle-2">Amount to send</p>
       </v-row>
       <v-row class="d-flex justify-center text-center my-2">
-        <p class="text-h4">{{ amount }} {{ networkTicker }}</p>
+        <p class="text-h4">{{ amountValue }} {{ networkTicker }}</p>
       </v-row>
       <v-row class="d-flex justify-center text-center my-2">
         <p class="text-body-1 text-bw-500">{{ amountUsd }} USD</p>
@@ -50,7 +50,7 @@
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { Networks } from '@/common/store/constants';
 import { useStateAttribute } from '@/common/store/helper';
-import { SatoshiBig } from '@/common/types';
+import { SatoshiBig, WeiBig } from '@/common/types';
 import {
   computed, defineComponent, PropType, ref,
 } from 'vue';
@@ -63,7 +63,10 @@ export default defineComponent({
       type: String as PropType<Networks>,
       required: true,
     },
-    amount: String,
+    amount: {
+      type: Object as PropType<SatoshiBig | WeiBig>,
+      required: true,
+    },
     address: String,
   },
   setup(props) {
@@ -87,9 +90,23 @@ export default defineComponent({
     ));
 
     const amountUsd = computed(() => {
-      const btcAmount = new SatoshiBig(props.amount || 0, 'btc');
-      if (!btcAmount || !bitcoinPrice.value) return VALUE_INCOMPLETE_MESSAGE;
+      if (!props.amount || !bitcoinPrice.value) return VALUE_INCOMPLETE_MESSAGE;
+      if (props.network === Networks.ROOTSTOCK) {
+        const rbtcAmount = props.amount as WeiBig;
+        return rbtcAmount.toUSDFromRBTCString(bitcoinPrice.value, fixedUSDDecimals);
+      }
+      const btcAmount = props.amount as SatoshiBig;
       return btcAmount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
+    });
+
+    const amountValue = computed(() => {
+      if (!props.amount) return VALUE_INCOMPLETE_MESSAGE;
+      if (props.network === Networks.ROOTSTOCK) {
+        const rbtcAmount = props.amount as WeiBig;
+        return rbtcAmount.toRBTCString();
+      }
+      const btcAmount = props.amount as SatoshiBig;
+      return btcAmount.toBTCString();
     });
 
     return {
@@ -97,6 +114,7 @@ export default defineComponent({
       networkNameTicker,
       networkTicker,
       amountUsd,
+      amountValue,
     };
   },
 });

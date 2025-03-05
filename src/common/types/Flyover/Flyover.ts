@@ -50,6 +50,7 @@ export interface PegoutQuoteDTO2WP {
 export interface QuotePegOut2WP {
     quote: PegoutQuoteDTO2WP;
     quoteHash: string;
+    lpsAddressQrCode: string;
 }
 
 export interface PeginQuoteDTO2WP {
