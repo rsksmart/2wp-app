@@ -90,14 +90,13 @@ const routes: Readonly<RouteRecordRaw[]> = [
     beforeEnter: [checkFromRoute],
   },
   {
-    path: '/sendQr/:network/:address',
+    path: '/sendQr/:network',
     name: 'QrView',
     component: () => import(/* webpackChunkName: "qr-code" */ '../views/QrView.vue'),
     props: (route) => ({
-      address: route.params.address,
       network: route.params.network,
     }),
-    // beforeEnter: [checkFromRoute],
+    beforeEnter: [checkFromRoute],
   },
 ];
 

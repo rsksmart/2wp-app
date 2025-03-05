@@ -1,4 +1,4 @@
-import { Quote } from '@rsksmart/flyover-sdk';
+import { Quote, QuoteDetail } from '@rsksmart/flyover-sdk';
 import { PeginQuoteDTO2WP, QuotePegIn2WP } from './Flyover';
 import SatoshiBig from '../SatoshiBig';
 import WeiBig from '../WeiBig';
@@ -8,9 +8,12 @@ export default class PeginQuote implements QuotePegIn2WP {
 
     quoteHash: string;
 
-    originalQuote;
+    originalQuote: QuoteDetail;
+
+    qrCode: string;
 
     constructor({ quote, quoteHash }: Quote) {
+      this.qrCode = '';
       this.originalQuote = quote;
       this.quote = {
         ...quote,
@@ -33,6 +36,14 @@ export default class PeginQuote implements QuotePegIn2WP {
       return this.quote.productFeeAmount
         .plus(this.quote.callFee)
         .plus(SatoshiBig.fromWeiBig(this.quote.gasFee));
+    }
+
+    get lpsAddressQrCode(): string {
+      return this.qrCode ?? '';
+    }
+
+    set lpsAddressQrCode(qrCode: string) {
+      this.qrCode = qrCode;
     }
 
     getTotalQuoteFee(btcNetworkFee: SatoshiBig): SatoshiBig {

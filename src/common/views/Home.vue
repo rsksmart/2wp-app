@@ -78,11 +78,6 @@
         </div>
       </v-col>
     </v-row>
-    <v-row class="d-flex justify-center mt-6">
-      <v-btn @click="goQrView">
-        GO QR
-      </v-btn>
-    </v-row>
   </v-container>
   <v-dialog v-model="show" width="500">
     <v-card class="d-flex pa-6" rounded="lg">
@@ -212,12 +207,6 @@ export default {
       constants,
       selectConversion,
       reconnect,
-      goQrView: () => {
-        router.push({
-          name: 'QrView',
-          params: { network: 'BITCOIN', address: '0xB69d88d37e8788F1e8F86FD26c710Eaa93dE3311' },
-        });
-      },
     };
   },
 };
