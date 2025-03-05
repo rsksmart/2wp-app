@@ -162,15 +162,26 @@ export default class FlyoverService {
               value: new WeiBig(pegoutQuote.quote.value ?? 0, 'wei'),
             },
             quoteHash: pegoutQuote.quoteHash,
+            lpsAddressQrCode: '',
           }));
           const valids = pegoutQuotes.filter((quote: QuotePegOut2WP) => this.isValidPegoutQuote({
             rskRefundAddress,
             btcRefundAddress,
             btcRecipientAddress,
             valueToTransfer,
-          }, quote));
-          resolve(valids);
+          }, quote))
+            .map(async (quote: QuotePegOut2WP) => {
+              const fullQuote = quote;
+              fullQuote.lpsAddressQrCode = await this.flyover?.generateQrCode(
+                quote.quote.liquidityProviderRskAddress,
+                quote.quote.value.toRBTCString(),
+                'rsk',
+              ) ?? '';
+              return fullQuote;
+            });
+          return Promise.all(valids);
         })
+        .then(resolve)
         .catch((error: Error) => {
           reject(new ServiceError(
             'FlyoverService',
@@ -338,9 +349,19 @@ export default class FlyoverService {
               rootstockRecipientAddress,
               valueToTransfer,
             }))
-            .map((quoteFromServer: Quote) => new PeginQuote(quoteFromServer));
-          resolve(peginQuotes);
+            .map(async (quoteFromServer: Quote) => {
+              const quote = new PeginQuote(quoteFromServer);
+              quote.qrCode = await this.flyover?.generateQrCode(
+                quoteFromServer.quote.lpBTCAddr,
+                quote.valueToTransfer.toBTCString(),
+                'bitcoin',
+              ) ?? '';
+              return quote;
+            });
+
+          return Promise.all(peginQuotes);
         })
+        .then(resolve)
         .catch((error: Error) => {
           reject(new ServiceError(
             'FlyoverService',
