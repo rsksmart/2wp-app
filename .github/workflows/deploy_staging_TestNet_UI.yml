@@ -57,6 +57,7 @@ jobs:
           VUE_APP_RECAPTCHA_NEW_TOKEN_TIME=30
           VUE_APP_FLYOVER_PROVIDER_ID=2
           VUE_APP_CSP=https://staging.lps.tekscapital.com
+          VUE_APP_API_RESPONSE_TIMEOUT=10000
           npm run-script build
 
       - name: Configure AWS credentials
