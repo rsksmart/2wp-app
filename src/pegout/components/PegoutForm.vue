@@ -69,20 +69,28 @@
         Searching Options...
       </v-progress-circular>
     </v-row>
-    <v-row justify="end">
-        <v-col cols="auto">
-            <v-btn-rsk v-if="!pegOutFormState.matches(['loading'])"
-            @click="executeRecaptcha"
-            :disabled="!isValid
-              || pegOutFormState.matches(['goingHome'])"
-            >
-            <template #append>
-              <v-icon :icon="mdiArrowRight" />
-            </template>
-            Send
-          </v-btn-rsk>
-        </v-col>
-      </v-row>
+    <v-row justify="end" v-if="!pegOutFormState.matches(['loading'])"
+          :disabled="!isValid
+            || pegOutFormState.matches(['goingHome'])">
+      <v-col cols="auto">
+        <v-btn-rsk
+          @click="sendTx(true)">
+          <template #append>
+            <v-icon :icon="mdiArrowRight" />
+          </template>
+          Send from other wallet
+        </v-btn-rsk>
+      </v-col>
+      <v-col cols="auto">
+        <v-btn-rsk
+          @click="sendTx(false)">
+          <template #append>
+            <v-icon :icon="mdiArrowRight" />
+          </template>
+          Send
+        </v-btn-rsk>
+      </v-col>
+    </v-row>
     <!-- Address Dialog -->
     <v-row v-if="showAddressDialog">
       <address-dialog @closeDialog="showAddressDialog = false"/>
@@ -146,12 +154,12 @@ import {
 import {
   appendRecaptcha, Machine, ServiceError, validateAddress,
 } from '@/common/utils';
-import router from '@/common/router';
 import ApiService from '@/common/services/ApiService';
 import { FlyoverService } from '@/common/services';
 import FullTxErrorDialog from '@/common/components/exchange/FullTxErrorDialog.vue';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { providers } from 'ethers';
+import { useRouter } from 'vue-router';
 import PegoutOption from './PegoutOption.vue';
 
 export default defineComponent({
@@ -179,13 +187,15 @@ export default defineComponent({
     const isWalletAuthorizedToSign = ref(true);
     const diffShown = ref(false);
     const clearAmount = ref(false);
+    const toQr = ref(false);
+    const router = useRouter();
 
     const pegOutTxState = useState<PegOutTxState>('pegOutTx');
     const flyoverPegoutState = useState<FlyoverPegoutState>('flyoverPegout');
     const flyoverService = useStateAttribute<FlyoverService>('flyoverPegout', 'flyoverService');
     const account = useStateAttribute<string>('web3Session', 'account');
     const balance = useStateAttribute<WeiBig>('web3Session', 'balance');
-    const sendTx = useAction('pegOutTx', constants.PEGOUT_TX_SEND);
+    const sendPowPegTx = useAction('pegOutTx', constants.PEGOUT_TX_SEND);
     const sendFlyoverTx = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ACCEPT_AND_SEND_QUOTE);
     const sendFlyoverTxWithConditionChanged = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ACCEPT_AND_SEND_QUOTE_WITH_CHANGED_CONDITIONS);
     const initFlyoverTx = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_INIT);
@@ -215,6 +225,7 @@ export default defineComponent({
     const liquidityProviders = useStateAttribute<LiquidityProvider2WP[]>('flyoverPegout', 'liquidityProviders');
     const startCountdown = useAction('web3Session', constants.SESSION_COUNTDOWN_GRECAPTCHA_TIME);
     const countdown = useStateAttribute<number>('web3Session', 'grecaptchaCountdown');
+    const acceptQuote = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ACCEPT_QUOTE);
     const recaptchanNewTokenTime = EnvironmentAccessorService.getEnvironmentVariables()
       .grecaptchaTime;
 
@@ -417,6 +428,16 @@ export default defineComponent({
       rskGas: pegOutTxState.value.calculatedFee.toString(),
     }));
 
+    function acceptAndSendQr(quoteHash: string):Promise<void> {
+      return acceptQuote(quoteHash)
+        .then(() => {
+          router.push({
+            name: 'QrView',
+            params: { network: constants.Networks.ROOTSTOCK },
+          });
+        });
+    }
+
     async function send() {
       clearAmount.value = false;
       const quoteHash = selectedQuoteHash.value || '';
@@ -427,8 +448,10 @@ export default defineComponent({
       try {
         if (quoteHash) {
           startCountdown();
-          await sendFlyoverTx(quoteHash);
-        } else await sendTx();
+          if (toQr.value) {
+            await acceptAndSendQr(quoteHash);
+          } else await sendFlyoverTx(quoteHash);
+        } else await sendPowPegTx();
         ApiService.registerTx(quoteHash ? registerFlyover.value : registerPegout.value);
         changePage(type);
       } catch (e) {
@@ -506,7 +529,8 @@ export default defineComponent({
       selectedOption.value = quoteHash;
     }
 
-    function executeRecaptcha() {
+    function sendTx(sendToQr:boolean) {
+      toQr.value = sendToQr;
       if (selectedQuoteHash.value) {
         window.grecaptcha.execute();
       } else {
@@ -580,7 +604,7 @@ export default defineComponent({
       isFlyoverReady,
       continueHandler,
       flyoverService,
-      executeRecaptcha,
+      sendTx,
       nativeQuote,
       pegoutType: constants.pegoutType,
       isValid,

@@ -9,6 +9,7 @@ import { getClearObjectDifference, promiseWithTimeout } from '@/common/utils';
 import { ApiService } from '@/common/services';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { providers } from 'ethers';
+import { AcceptedPegoutQuote } from '@rsksmart/flyover-sdk';
 
 export const actions: ActionTree<FlyoverPegoutState, RootState> = {
   [constants.FLYOVER_PEGOUT_INIT]: async (
@@ -245,6 +246,26 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
           }
         }
       }))
+      .then(resolve)
+      .catch(reject);
+  }),
+  [constants.FLYOVER_PEGOUT_ACCEPT_QUOTE]:
+  ({
+    state, getters, dispatch,
+  }, quoteHash: string) => new Promise<AcceptedPegoutQuote>((resolve, reject) => {
+    const providerId = getters[constants.FLYOVER_PEGOUT_GET_PROVIDER_ID](quoteHash);
+    if (providerId === -1) {
+      reject(new Error('No provider found for quote'));
+    }
+    dispatch(constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER, providerId)
+      .then(() => dispatch(constants.FLYOVER_PEGOUT_GET_FINAL_QUOTE, { providerId, quoteHash }))
+      .then(() => {
+        if (state.difference.percentage > EnvironmentAccessorService.getEnvironmentVariables()
+          .flyoverPegoutDiffPercentage) {
+          return Promise.reject(new Error('Quote differences found: cannot accept quote'));
+        }
+        return state.flyoverService.acceptPegoutQuote(state.selectedQuoteHash);
+      })
       .then(resolve)
       .catch(reject);
   }),
