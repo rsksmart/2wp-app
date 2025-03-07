@@ -228,6 +228,9 @@ export default defineComponent({
         setTxStatus(txId.value)
           .then(() => {
             loading.value = false;
+          })
+          .catch(() => {
+            loading.value = false;
           });
       }
     }

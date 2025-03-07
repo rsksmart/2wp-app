@@ -24,6 +24,8 @@ The value of these variables are used in **environment-variables.ts** file.
 |VUE_APP_FLYOVER_PEGOUT_QUOTE_DIFF_PERCENTAGE   | `2`                                      | Defines quote difference percentage to 2% so it requieres the user to review condition only for a difference bigger that this percentage                                                                   |
 |VUE_APP_RECAPTCHA_NEW_TOKEN_TIME   | `30`                                      |  Specifies the time (in seconds) to temporarily disable the flyover between new transactions. This accounts for the time required by Google reCAPTCHA to regenerate a challenge token |
 |VUE_APP_FLYOVER_PROVIDER_ID   | `1`                                      | Sets up the provider id to be use for flyover status search. |
+|VUE_APP_FLYOVER_GET_PROVIDERS_TIMEOUT   | `5000`                                      | Sets a timeout for calls made to get liquidity providers. |
+|VUE_APP_API_RESPONSE_TIMEOUT   | `10000`                                      | Sets a timeout for calls made to API on search transaction. |
 
 ## Example for .env.local.test file
 
@@ -46,4 +48,6 @@ VUE_APP_MIN_FEE_SAT_PER_BYTE_SLOW=1
 VUE_APP_LBC_ADDRESS='0xc2A630c053D12D63d32b025082f6Ba268db18300'
 VUE_APP_DEBUG_MODE='false'
 VUE_APP_FLYOVER_PEGOUT_QUOTE_DIFF_PERCENTAGE=2
+VUE_APP_API_RESPONSE_TIMEOUT=10000
+VUE_APP_FLYOVER_GET_PROVIDERS_TIMEOUT=5000
 ```
