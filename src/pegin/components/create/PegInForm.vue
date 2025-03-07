@@ -56,7 +56,7 @@
           <v-row no-gutters class="d-flex justify-end mt-5">
             <v-col>
               <v-btn-rsk
-                @click="sendTxQR"
+                @click="sendTx(true)"
                 :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])"
                 class="align-self-start text-body-1"
                 >
@@ -66,17 +66,17 @@
                   Send from other wallet
               </v-btn-rsk>
             </v-col>
-            <v-col>
+            <v-col class="d-flex justify-end">
               <v-btn-rsk v-if="!pegInFormState.matches(['loading'])"
-            @click="sendTx"
-            :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])"
-            class="align-self-end text-body-1">
-              <template #append>
-                <v-icon :icon="mdiArrowRight" />
-              </template>
+                @click="sendTx"
+                :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])"
+                class="align-self-end text-body-1">
+                <template #append>
+                  <v-icon :icon="mdiArrowRight" />
+                </template>
                 Continue to Summary
-            </v-btn-rsk>
-            <v-progress-circular class="align-self-end" v-else indeterminate />
+              </v-btn-rsk>
+              <v-progress-circular class="align-self-end" v-else indeterminate />
             </v-col>
           </v-row>
         </template>
@@ -348,17 +348,8 @@ export default defineComponent({
       return false;
     });
 
-    function sendTx() {
-      toQr.value = false;
-      if (props.isFlyoverAvailable && selected.value === constants.peginType.FLYOVER) {
-        window.grecaptcha.execute();
-      } else {
-        createTx();
-      }
-    }
-
-    function sendTxQR() {
-      toQr.value = true;
+    function sendTx(sendToQr:boolean) {
+      toQr.value = sendToQr;
       if (props.isFlyoverAvailable && selected.value === constants.peginType.FLYOVER) {
         window.grecaptcha.execute();
       } else {
@@ -411,7 +402,6 @@ export default defineComponent({
       flyoverIsEnabled,
       countdown,
       recaptchanNewTokenTime,
-      sendTxQR,
     };
   },
 });
