@@ -44,6 +44,8 @@ export class EnvironmentVariables {
 
   public cspConfiguration: string;
 
+  public apiResponseTimeout: number;
+
   public minFeeSatPerByte: {
     fast: number;
     average: number;
@@ -107,6 +109,8 @@ export class EnvironmentVariables {
     this.flyoverProviderId = Number(process.env.VUE_APP_FLYOVER_PROVIDER_ID)
       || defaultValues.flyoverProviderId;
     this.cspConfiguration = process.env.VUE_APP_CSP || defaultValues.cspConfiguration;
+    this.apiResponseTimeout = Number(process.env.VUE_APP_API_RESPONSE_TIMEOUT)
+      || defaultValues.apiResponseTimeout;
   }
 
   public get chainId(): number {
