@@ -88,6 +88,10 @@ export default class SatoshiBig extends Big {
     return BigInt(this.toFixed(0));
   }
 
+  toWeiBigIntUnsafe(): bigint {
+    return BigInt(this.mul(10_000_000_000).toFixed(0));
+  }
+
   toSatoshiNumberUnsafe(): number {
     return Number(this.toFixed(0));
   }

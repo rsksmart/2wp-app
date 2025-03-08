@@ -296,6 +296,11 @@ export enum PegStatus {
   BLOCKBOOK_FAILED = 'BLOCKBOOK_FAILED',
 }
 
+export enum PowPegMode {
+  FAST = 'Fast Mode',
+  NATIVE = 'Native Mode',
+}
+
 export enum FlyoverStatus {
   PENDING = 'PENDING',
   SUCCESS = 'SUCCESS',

@@ -1,11 +1,13 @@
 <template>
-  <v-container>
-    <v-row class="mb-4">
+  <v-container class="px-0">
+    <v-row class="mb-16">
       <status-progress-bar :isFlyover="isFlyover" :txNotFound="txNotFound"
-                           :txWithError="txWithError"/>
+                           :txWithError="txWithError" :details="summary" />
     </v-row>
+    <v-row class="mt-16">
       <status-summary :details="summary" :type="typeSummary"
                       :txWithError="txWithError" />
+    </v-row>
   </v-container>
 </template>
 
@@ -50,22 +52,26 @@ export default defineComponent({
     const amountToBeReceived = computed((): string => {
       const status = txDetails.value as PegoutStatusDataModel;
       if (isRejectedPegout.value) {
-        return '';
+        return '0';
       }
       if (status.valueInSatoshisToBeReceived) {
         return new SatoshiBig(status.valueInSatoshisToBeReceived, 'satoshi').toBTCTrimmedString();
       }
-      const requestedAmount = new SatoshiBig(status.valueRequestedInSatoshis, 'satoshi');
-      return requestedAmount.minus(pegOutEstimatedFee.value).toBTCTrimmedString();
+      const requestedAmount = new WeiBig(status.valueRequestedInSatoshis, 'wei');
+      const requestedAmountBigInt = requestedAmount.toWeiBigIntUnsafe();
+      const pegOutEstimatedFeeBigInt = pegOutEstimatedFee.value.toWeiBigIntUnsafe();
+      const amountToReceive = new WeiBig(requestedAmountBigInt - pegOutEstimatedFeeBigInt, 'wei');
+      return amountToReceive.toRBTCTrimmedString();
     });
 
     const txPegoutSummary = computed((): NormalizedSummary => {
       const status = txDetails.value as PegoutStatusDataModel;
-      const valueRequested = new SatoshiBig(status.valueRequestedInSatoshis, 'satoshi').toBTCTrimmedString();
-      const amountSent = new WeiBig(valueRequested, 'rbtc').plus(calculatedGasFee.value).toRBTCTrimmedString();
+      const valueRequested = new SatoshiBig(status.valueRequestedInSatoshis, 'satoshi');
+      const amountSent = new WeiBig(valueRequested.toSatoshiBigIntUnsafe(), 'wei').plus(calculatedGasFee.value);
       const btcTxId = status.status === PegoutStatus.RELEASE_BTC ? status.btcTxId : '';
       return {
-        amountFromString: amountSent,
+        amountFromString: isRejectedPegout.value ? valueRequested.toBTCTrimmedString()
+          : amountSent.toRBTCTrimmedString(),
         amountReceivedString: amountToBeReceived.value,
         gas: calculatedGasFee.value,
         fee: Number(new SatoshiBig(status.feeInSatoshisToBePaid ?? 0, 'satoshi').toBTCTrimmedString()),

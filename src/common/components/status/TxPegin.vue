@@ -1,21 +1,13 @@
 <template>
-  <v-container>
-    <template v-if="showConfirmations">
-      <v-row class="justify-space-around">
-        <span class="text-center text-body-2">
-          {{ btcConfirmations }} / {{ btcConfirmationsRequired }}
-        </span>
-      </v-row>
-      <v-row class="justify-space-around">
-        <span class="text-center text-body-2">Confirmations</span>
-      </v-row>
-    </template>
-    <v-row class="mb-4">
+  <v-container class="px-0">
+    <v-row class="mb-16">
       <status-progress-bar :isFlyover="isFlyover" :txNotFound="txNotFound"
-                           :txWithError="txWithError" />
+                           :txWithError="txWithError" :details="summary" />
     </v-row>
-    <status-summary :details="summary" :type="typeSummary"
+    <v-row class="mt-16">
+      <status-summary :details="summary" :type="typeSummary"
                     :txWithError="txWithError" />
+    </v-row>
   </v-container>
 </template>
 
@@ -43,7 +35,6 @@ import {
 import StatusProgressBar from '@/common/components/status/StatusProgressBar.vue';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import StatusSummary from '@/common/components/status/StatusSummary.vue';
-import { PegStatus } from '@/common/store/constants';
 
 export default defineComponent({
   name: 'TxPegin',
@@ -120,16 +111,16 @@ export default defineComponent({
     const txPeginSummary = computed((): NormalizedSummary => {
       const status = txDetails.value as PeginStatus;
       const total = new SatoshiBig(status.btc.amountTransferred, 'btc')
-        .plus(new SatoshiBig(status.btc.fees, 'btc'));
+        .minus(new SatoshiBig(status.btc.fees, 'btc'));
       return {
         amountFromString: status.btc.amountTransferred.toString(),
-        amountReceivedString: status.btc.amountTransferred.toString(),
+        amountReceivedString: total.toBTCTrimmedString(),
         fee: status.btc.fees,
         recipientAddress: status.rsk.recipientAddress,
         btcTxId: status.btc.txId,
         refundAddress: status.btc.refundAddress,
         federationAddress: status.btc.federationAddress,
-        total: total.toBTCTrimmedString(),
+        total: status.btc.amountTransferred.toString(),
         senderAddress: status.btc.senderAddress,
         status: status.status,
       };
@@ -154,9 +145,6 @@ export default defineComponent({
     const summary = computed(() => (props.isFlyover
       ? flyoverPeginSummary.value
       : txPeginSummary.value));
-
-    const showConfirmations = computed(() => !props.isFlyover
-      && txDetails.value.status === PegStatus.WAITING_CONFIRMATIONS);
 
     function refreshPercentage() {
       if ('btc' in txDetails.value) {
@@ -282,7 +270,6 @@ export default defineComponent({
       isRejected,
       mdiInformation,
       isMainnet,
-      showConfirmations,
     };
   },
 });
