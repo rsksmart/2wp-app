@@ -149,6 +149,7 @@ import {
 import * as constants from '@/common/store/constants';
 import { blockConfirmationsToTimeString, validateAddress } from '@/common/utils';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import { PowPegMode } from '@/common/store/constants';
 
 export default defineComponent({
   name: 'PegoutOption',
@@ -213,7 +214,7 @@ export default defineComponent({
     const header = computed(() => {
       if (isFlyover.value) {
         return {
-          title: 'Fast Mode',
+          title: PowPegMode.FAST,
           label: 'Powered by PowPeg + Flyover',
           subtitleBgColor: 'orange',
           link: 'https://dev.rootstock.io/concepts/rif-suite/#meet-the-suite',
@@ -221,7 +222,7 @@ export default defineComponent({
         };
       }
       return {
-        title: 'Native Mode',
+        title: PowPegMode.NATIVE,
         label: 'Powered by PowPeg',
         subtitleBgColor: 'purple',
         link: 'https://dev.rootstock.io/rsk/architecture/powpeg/',

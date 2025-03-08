@@ -9,8 +9,8 @@ export const vuetifyNonce = crypto.randomBytes(8).toString('hex');
 
 const ROOTSTOCK_COLORS = {
   pink: '#FF70E0',
-  purple: '#9E75FF',
-  orange: '#FF9100',
+  purple: '#9771F3',
+  orange: '#F38B01',
   teal: '#08FFD1',
   yellow: '#DEFF19',
   green: '#74BD01',
@@ -61,6 +61,7 @@ export const vuetify = createVuetify({
           'theme-on-purple': '#000',
           'theme-on-green': '#000',
           'theme-on-pink': '#000',
+          'theme-on-orange': '#000',
         },
       },
       light: {
@@ -76,6 +77,7 @@ export const vuetify = createVuetify({
           'theme-on-green': '#000',
           'theme-on-teal': '#000',
           'theme-on-pink': '#000',
+          'theme-on-orange': '#000',
         },
       },
     },

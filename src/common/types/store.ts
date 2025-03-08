@@ -7,6 +7,7 @@ import { PegOutTxState } from '@/common/types/pegOutTx';
 import { FlyoverPeginState } from '@/common/types/Flyover/FlyoverPegin';
 import { FlyoverPegoutState } from '@/common/types/Flyover/FlyoverPegout';
 import { StatusState } from '@/common/types/Status';
+import { PeginQuoteDTO2WP, PegoutQuoteDTO2WP } from './Flyover';
 
 export interface RootState {
   pegInTx?: PegInTxState,
@@ -87,6 +88,8 @@ export interface FlyoverStatusModel {
   senderAddress: string;
   recipientAddress: string;
   quoteHash: string;
+  aceptedQuoteSignature: string;
+  quote: PeginQuoteDTO2WP | PegoutQuoteDTO2WP;
 }
 
 export enum TxStatusType {
@@ -99,6 +102,13 @@ export enum TxStatusType {
   UNSET_STATUS = 'UNSET_STATUS',
   NOT_FOUND = 'NOT_FOUND',
   BLOCKBOOK_FAILED = 'BLOCKBOOK_FAILED',
+}
+
+export enum TxStatusStep {
+  EMPTY = '',
+  IN_PROGRESS = 'In progress',
+  COMPLETED = 'Completed',
+  FAILED = 'Failed',
 }
 
 export interface TxStatus {
