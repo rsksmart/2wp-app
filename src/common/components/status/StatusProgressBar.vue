@@ -487,7 +487,7 @@ export default defineComponent({
           return 'We are experiencing technical issues and therefore were unable to retrieve and'
             + ' display the transaction status. Please try again later.';
         }
-        return 'Your transaction is not processed yet, search again in a few minutes';
+        return 'Transaction not found, verify your transaction ID or try again later';
       }
       switch (details.reason) {
         case LOW_AMOUNT:
