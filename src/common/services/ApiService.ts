@@ -160,7 +160,6 @@ export default class ApiService {
 
   public static getTxStatus(txId: string, txType?: string): Promise<TxStatus> {
     const url = txType ? `tx-status-by-type/${txId}/${txType}` : `tx-status/${txId}`;
-    console.log(url);
     return new Promise<TxStatus>((resolve, reject) => {
       axios.get(`${ApiService.baseURL}/${url}`)
         .then((response) => {
