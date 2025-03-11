@@ -17,7 +17,10 @@ export const actions: ActionTree<TxStatus, RootState> = {
     commit(constants.STATUS_SET_CLEAR);
   },
   [constants.STATUS_GET_TX_STATUS]:
-    ({ commit, dispatch }, txId: string, txType?: string) => new Promise((resolve, reject) => {
+    (
+      { commit, dispatch },
+      { txId, txType }: {txId: string, txType?: string},
+    ) => new Promise((resolve, reject) => {
       Promise.all([
         promiseWithTimeout(
           ApiService.getTxStatus(txId, txType),
