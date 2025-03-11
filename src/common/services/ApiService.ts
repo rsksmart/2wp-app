@@ -158,9 +158,11 @@ export default class ApiService {
     });
   }
 
-  public static getTxStatus(txId: string): Promise<TxStatus> {
+  public static getTxStatus(txId: string, txType?: string): Promise<TxStatus> {
+    const url = txType ? `tx-status-by-type/${txId}/${txType}` : `tx-status/${txId}`;
+    console.log(url);
     return new Promise<TxStatus>((resolve, reject) => {
-      axios.get(`${ApiService.baseURL}/tx-status/${txId}`)
+      axios.get(`${ApiService.baseURL}/${url}`)
         .then((response) => {
           if (!response.data) {
             return reject(new Error('No data was returned'));
