@@ -120,7 +120,10 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
           }
           return state.flyoverService.acceptAndSendPegoutQuote(state.selectedQuoteHash);
         })
-        .then((txHash) => commit(constants.FLYOVER_PEGOUT_SET_TX_HASH, txHash))
+        .then(({ txHash, signature }) => {
+          commit(constants.FLYOVER_PEGOUT_SET_TX_HASH, txHash);
+          commit(constants.FLYOVER_PEGOUT_SET_ACCEPTED_QUOTE_SIGNATURE, signature);
+        })
         .then(resolve)
         .catch(reject);
     }),
@@ -128,7 +131,10 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
     ({ state, commit }) => new Promise<void>((resolve, reject) => {
       commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, state.difference.currentQuote.quoteHash);
       state.flyoverService.acceptAndSendPegoutQuote(state.selectedQuoteHash)
-        .then((txHash) => commit(constants.FLYOVER_PEGOUT_SET_TX_HASH, txHash))
+        .then(({ txHash, signature }) => {
+          commit(constants.FLYOVER_PEGOUT_SET_TX_HASH, txHash);
+          commit(constants.FLYOVER_PEGOUT_SET_ACCEPTED_QUOTE_SIGNATURE, signature);
+        })
         .then(resolve)
         .catch(reject);
     }),
