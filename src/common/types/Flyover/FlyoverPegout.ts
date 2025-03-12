@@ -27,4 +27,5 @@ export interface FlyoverPegoutState {
     flyoverService: FlyoverService;
     txHash?: string;
     selectedQuoteHash: string;
+    acceptedQuoteSignature: string;
 }

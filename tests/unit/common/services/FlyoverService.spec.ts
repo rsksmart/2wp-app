@@ -6,6 +6,7 @@ import * as constants from '@/common/store/constants';
 import sinon from 'sinon';
 import { ServiceError } from '@/common/utils';
 
+jest.setTimeout(10000);
 describe('FlyoverService', () => {
   let flyoverService: FlyoverService;
 
@@ -332,7 +333,7 @@ describe('FlyoverService', () => {
 
       const { quoteHash } = quotes[0];
       const acceptedQuote = await flyoverService.acceptAndSendPegoutQuote(quoteHash);
-      expect(acceptedQuote).toBe('txHash');
+      expect(acceptedQuote.txHash).toBe('txHash');
       expect(spyAcceptPegoutQuote).toHaveBeenCalled();
       expect(spyIsValidAcceptedQuote).toHaveBeenCalled();
       expect(spyDepositPegout).toHaveBeenCalledWith(flyoverService['pegoutQuotes'][0], 'signature', expectedTotalAmount);

@@ -361,60 +361,60 @@ export default defineComponent({
       return provider?.name ?? '';
     }
 
-    function getProviderFee(): string {
+    function getProviderFee(): WeiBig {
       return selectedQuote.value.quote.productFeeAmount
-        .plus(selectedQuote.value.quote.callFee)
-        .toRBTCTrimmedString();
+        .plus(selectedQuote.value.quote.callFee);
     }
 
     const registerFlyover = computed<TxInfo>(() => {
       const pegoutQuote = selectedQuote.value.quote;
       const dbQuote: PegoutQuoteDbModel = {
-        agreementTimestamp: pegoutQuote.agreementTimestamp,
+        agreementTimestamp: pegoutQuote.agreementTimestamp.toString(),
         btcRefundAddress: pegoutQuote.btcRefundAddress,
-        callFeeOnWei: pegoutQuote.callFee.toWeiNumberUnsafe(),
+        callFeeOnWei: pegoutQuote.callFee.toString(),
         depositAddr: pegoutQuote.depositAddr,
-        depositConfirmations: pegoutQuote.depositConfirmations,
-        depositDateLimit: pegoutQuote.depositDateLimit,
-        expireBlocks: pegoutQuote.expireBlocks,
-        expireDate: pegoutQuote.expireDate,
-        gasFeeOnWei: pegoutQuote.gasFee.toWeiNumberUnsafe(),
+        depositConfirmations: pegoutQuote.depositConfirmations.toString(),
+        depositDateLimit: pegoutQuote.depositDateLimit.toString(),
+        expireBlocks: pegoutQuote.expireBlocks.toString(),
+        expireDate: pegoutQuote.expireDate.toString(),
+        gasFeeOnWei: pegoutQuote.gasFee.toString(),
         lbcAddress: pegoutQuote.lbcAddress,
         liquidityProviderRskAddress: pegoutQuote.liquidityProviderRskAddress,
         lpBtcAddress: pegoutQuote.lpBtcAddr,
-        nonce: Number(pegoutQuote.nonce),
-        penaltyFeeOnWei: pegoutQuote.penaltyFee.toWeiNumberUnsafe(),
-        productFeeAmountOnWei: pegoutQuote.productFeeAmount.toWeiNumberUnsafe(),
+        nonce: pegoutQuote.nonce.toString(),
+        penaltyFeeOnWei: pegoutQuote.penaltyFee.toString(),
+        productFeeAmountOnWei: pegoutQuote.productFeeAmount.toString(),
         rskRefundAddress: pegoutQuote.rskRefundAddress,
-        transferConfirmations: pegoutQuote.transferConfirmations,
-        transferTime: pegoutQuote.transferTime,
-        valueOnWei: pegoutQuote.value.toWeiNumberUnsafe(),
+        transferConfirmations: pegoutQuote.transferConfirmations.toString(),
+        transferTime: pegoutQuote.transferTime.toString(),
+        valueOnWei: pegoutQuote.value.toString(),
       };
       return {
         txHash: flyoverPegoutState.value.txHash as string,
         type: TxStatusType.PEGOUT.toLowerCase(),
-        value: Number(flyoverPegoutState.value.amountToTransfer.toRBTCTrimmedString()),
+        value: flyoverPegoutState.value.amountToTransfer.toString(),
         wallet: currentWallet.value ? currentWallet.value.formal_name : '',
-        rskGas: Number(selectedQuote.value.quote.gasFee.toRBTCTrimmedString()),
-        fee: Number(getProviderFee()),
+        rskGas: selectedQuote.value.quote.gasFee.toString(),
+        fee: getProviderFee().toString(),
         provider: getLPName(),
         details: {
           senderAddress: account.value,
           recipientAddress: flyoverPegoutState.value.btcRecipientAddress,
-          blocksToCompleteTransaction: selectedQuote.value.quote.depositConfirmations,
+          blocksToCompleteTransaction: selectedQuote.value.quote.depositConfirmations.toString(),
         },
         quote: dbQuote,
         quoteHash: selectedQuote.value.quoteHash,
+        acceptedQuoteSignature: flyoverPegoutState.value.acceptedQuoteSignature,
       };
     });
 
     const registerPegout = computed(() => ({
       txHash: pegOutTxState.value.txHash as string,
       type: TxStatusType.PEGOUT.toLowerCase(),
-      value: Number(pegOutTxState.value.amountToTransfer.toRBTCTrimmedString()),
+      value: pegOutTxState.value.amountToTransfer.toString(),
       wallet: currentWallet.value ? currentWallet.value.formal_name : '',
-      btcEstimatedFee: Number(pegOutTxState.value.btcEstimatedFee.toBTCTrimmedString()),
-      rskGas: Number(pegOutTxState.value.calculatedFee.toRBTCTrimmedString()),
+      btcEstimatedFee: pegOutTxState.value.btcEstimatedFee.toString(),
+      rskGas: pegOutTxState.value.calculatedFee.toString(),
     }));
 
     async function send() {

@@ -41,4 +41,7 @@ export const mutations: MutationTree<FlyoverPegoutState> = {
       }
     });
   },
+  [constants.FLYOVER_PEGOUT_SET_ACCEPTED_QUOTE_SIGNATURE]: (state, quoteSignature: string) => {
+    state.acceptedQuoteSignature = quoteSignature;
+  },
 };

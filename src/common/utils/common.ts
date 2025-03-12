@@ -128,6 +128,7 @@ export const getClearFlyoverPegoutState = (): FlyoverPegoutState => ({
   flyoverService: markRaw(new FlyoverService()),
   selectedQuoteHash: '',
   difference: getClearObjectDifference(),
+  acceptedQuoteSignature: '',
 });
 
 export const getClearFlyoverPeginState = (): FlyoverPeginState => ({
