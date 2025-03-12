@@ -72,15 +72,6 @@ const routes: Readonly<RouteRecordRaw[]> = [
     beforeEnter: [checkAcceptedTerms, checkRSKConnection],
   },
   {
-    path: '/pegout/:type/:wallet/success',
-    name: 'PegOutSuccess',
-    component: () => import(/* webpackChunkName: "pegout-success" */ '../../pegout/views/SuccessPegout.vue'),
-    props: (route) => ({
-      type: route.params.type,
-    }),
-    beforeEnter: [checkFromRoute],
-  },
-  {
     path: '/pegin/:wallet/create',
     name: 'Create',
     component: () => import(/* webpackChunkName: "pegin-create" */ '../../pegin/views/Create.vue'),

@@ -217,8 +217,12 @@ export default class ApiService {
     return new Promise<void>((resolve, reject) => {
       const { txHash, type } = txInfo;
       if (txHash == null || type == null) resolve();
-      axios.post(`${ApiService.baseURL}/register`, txInfo)
-        .then(() => resolve())
+      axios.post(
+        `${ApiService.baseURL}/register`,
+        txInfo,
+        { headers: { 'Content-Type': 'application/json' } },
+      )
+        .then((response) => resolve(response.data))
         .catch(reject);
     });
   }

@@ -3,6 +3,8 @@ import axios, { AxiosHeaders, AxiosResponse } from 'axios';
 import sinon from 'sinon';
 import {
   NormalizedInput, NormalizedOutput, NormalizedTx, SatoshiBig,
+  TxInfo,
+  TxStatusType,
 } from '@/common/types';
 import ApiService from '@/common/services/ApiService';
 import { BridgeService } from '@/common/services/BridgeService';
@@ -436,6 +438,146 @@ describe('Api Service', () => {
       const axiosGetStub = sinon.stub(axios, 'get').resolves(expectedResponse);
       const result = await ApiService.getPeginConfiguration();
       expect(axiosGetStub.calledOnceWithExactly(`${ApiService.baseURL}/pegin-configuration`)).toBe(true);
+      expect(result).toEqual(expectedResponse.data);
+    });
+  });
+
+  describe('Function: registerTx', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+    it('should resolve when register tx on api db', async () => {
+      const expectedResponse = { data: {} };
+      const axiosPostStub = sinon.stub(axios, 'post').resolves(expectedResponse);
+      const txHash = '0x807f14318a2f4bc62ae3a14370c243087464740fb2f5b16763f2fb1635708bb4';
+      const type = 'pegout';
+      const value = '8000000000000000';
+      const wallet = 'Metamask';
+      const result = await ApiService.registerTx(
+        {
+          txHash,
+          type,
+          value,
+          wallet,
+        },
+      );
+      await expect(axiosPostStub.calledOnceWithExactly(
+        `${ApiService.baseURL}/register`,
+        {
+          txHash,
+          type,
+          value,
+          wallet,
+        },
+        { headers: { 'Content-Type': 'application/json' } },
+      )).toBe(true);
+      expect(result).toEqual(expectedResponse.data);
+    });
+  });
+
+  describe('Function: getFeatures', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+    it('should resolve feature flags configuration', async () => {
+      const expectedResponse = {
+        data: [
+          {
+            name: 'flyover_pegout',
+            value: 'enabled',
+            version: 2.3,
+          },
+          {
+            name: 'flyover_pegin',
+            value: 'enabled',
+            version: 2.3,
+          },
+          {
+            name: 'terms_and_conditions',
+            value: '# TERMS OF SERVICES',
+            version: 2.3,
+          },
+          {
+            name: 'wallet_ledger',
+            value: 'enabled',
+            version: 2.3,
+            supportedBrowsers: {
+              chrome: true,
+              firefox: false,
+              edge: false,
+              opera: false,
+              brave: false,
+              chromium: false,
+              safari: false,
+              _id: '67b8e1ee2fc2209df52211ce',
+            },
+          },
+          {
+            name: 'wallet_trezor',
+            value: 'enabled',
+            version: 2.3,
+            supportedBrowsers: {
+              chrome: true,
+              firefox: true,
+              edge: false,
+              opera: false,
+              brave: false,
+              chromium: false,
+              safari: false,
+              _id: '67b8e1ee2fc2209df52211cf',
+            },
+          },
+          {
+            name: 'wallet_leather',
+            value: 'enabled',
+            version: 2.3,
+            supportedBrowsers: {
+              chrome: true,
+              firefox: false,
+              edge: false,
+              opera: false,
+              brave: false,
+              chromium: false,
+              safari: false,
+              _id: '67b8e1ee2fc2209df52211d0',
+            },
+          },
+          {
+            name: 'wallet_xverse',
+            value: 'enabled',
+            version: 2.3,
+            supportedBrowsers: {
+              chrome: true,
+              firefox: false,
+              edge: false,
+              opera: false,
+              brave: false,
+              chromium: false,
+              safari: false,
+              _id: '67b8e1ee2fc2209df52211d1',
+            },
+          },
+          {
+            name: 'wallet_enkrypt',
+            value: 'enabled',
+            version: 2.3,
+            supportedBrowsers: {
+              chrome: true,
+              firefox: false,
+              edge: false,
+              opera: false,
+              brave: false,
+              chromium: false,
+              safari: false,
+              _id: '67b8e1ee2fc2209df52211d2',
+            },
+          },
+        ],
+      };
+      const axiosGetStub = sinon.stub(axios, 'get').resolves(expectedResponse);
+      const result = await ApiService.getFeatures();
+      expect(axiosGetStub.calledOnceWithExactly(`${ApiService.baseURL}/features`))
+        .toBe(true);
       expect(result).toEqual(expectedResponse.data);
     });
   });
