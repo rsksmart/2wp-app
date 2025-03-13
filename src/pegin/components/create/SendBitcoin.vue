@@ -17,14 +17,7 @@
           color="warning"
           indeterminate />
       </div>
-      <component v-else :is="currentComponent"
-                  @createTx="toConfirmTx" @successConfirmation="toTrackingId"
-                  :txBuilder="txBuilder"
-                  :txId="txId" @back="back"
-                  @toPegInForm="toPegInForm"
-                  :confirmTxState="confirmTxState"
-                  :isFlyoverAvailable="isFlyoverAvailable"
-                  />
+      <component v-else :is="currentComponent" v-bind="filteredProps" v-on="eventHandlers" />
     </template>
     <template v-if="showErrorDialog">
       <device-error-dialog :showErrorDialog="showErrorDialog"
@@ -93,7 +86,7 @@ export default defineComponent({
     const installationLink = ref('');
     const messageInstallationToUser = ref('');
     const sendBitcoinState = ref<SendBitcoinState>('idle');
-    const currentComponent = ref('PegInForm');
+    const currentComponent = ref<'PegInForm' | 'ConfirmTx'>('PegInForm');
     const txId = ref('');
     const txError = ref('');
     const confirmTxState = ref<Machine<
@@ -113,8 +106,6 @@ export default defineComponent({
     const addNormalizedTx = useAction('pegInTx', constants.PEGIN_TX_ADD_NORMALIZED_TX);
     const clearStore = useAction('pegInTx', constants.PEGIN_TX_CLEAR_STATE);
     const clearSessionState = useAction('web3Session', constants.WEB3_SESSION_CLEAR_ACCOUNT);
-    const init = useAction('pegInTx', constants.PEGIN_TX_INIT);
-    const setBtcWallet = useAction('pegInTx', constants.PEGIN_TX_ADD_BITCOIN_WALLET);
     const setCurrenView = useAction('pegInTx', constants.PEGIN_TX_SET_CURRENT_VIEW);
     const getChangeAddress = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_CHANGE_ADDRESS);
     const selectedUtxoList = useGetter<Utxo[]>('pegInTx', constants.PEGIN_TX_GET_SELECTED_UTXO_LIST);
@@ -257,37 +248,30 @@ export default defineComponent({
       }
     }
 
-    async function clear(): Promise<void> {
-      showErrorDialog.value = false;
-      showTxErrorDialog.value = false;
-      deviceError.value = 'Unexpected error';
-      sendBitcoinState.value = 'idle';
-      confirmTxState.value = new Machine('idle');
-      currentComponent.value = 'PegInForm';
-      txId.value = '';
-      txError.value = '';
-      setTxBuilder();
-      await stopAskingForBalance();
-    }
-
     async function back() {
       await stopAskingForBalance();
       context.emit('back');
     }
 
-    async function backToConnectDevice() {
-      await clear();
-      let wallet: BtcWallet;
-      if (bitcoinWallet.value) {
-        wallet = bitcoinWallet.value;
-      } else {
-        await back();
+    const filteredProps = computed(() => {
+      if (currentComponent.value === 'ConfirmTx') {
+        return { confirmTxState: confirmTxState.value, txBuilder: txBuilder.value };
       }
-      showConnectDeviceDialog.value = true;
-      await clearStore();
-      init()
-        .then(() => setBtcWallet(wallet));
-    }
+      if (currentComponent.value === 'PegInForm') {
+        return { isFlyoverAvailable: isFlyoverAvailable.value };
+      }
+      return {};
+    });
+
+    const eventHandlers = computed(() => {
+      if (currentComponent.value === 'ConfirmTx') {
+        return { successConfirmation: toTrackingId, toPegInForm };
+      }
+      if (currentComponent.value === 'PegInForm') {
+        return { createTx: toConfirmTx, back };
+      }
+      return {};
+    });
 
     watch(currentComponent, () => {
       setCurrenView(currentComponent.value);
@@ -310,15 +294,7 @@ export default defineComponent({
     return {
       startAskingForBalance,
       sendBitcoinState,
-      toConfirmTx,
-      toTrackingId,
       currentComponent,
-      txBuilder,
-      txId,
-      backToConnectDevice,
-      back,
-      toPegInForm,
-      confirmTxState,
       showErrorDialog,
       deviceError,
       errorType,
@@ -332,8 +308,9 @@ export default defineComponent({
       closeTxErrorDialog,
       walletDataReady,
       showConnectDeviceDialog,
-      isFlyoverAvailable,
       loadingProviders,
+      filteredProps,
+      eventHandlers,
     };
   },
 });
