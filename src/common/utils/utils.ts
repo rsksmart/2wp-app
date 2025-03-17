@@ -373,6 +373,13 @@ export function promiseWithTimeout<T>(promise: Promise<T>, timeoutMs: number): P
   return Promise.race([promise, awaitTimeout(timeoutMs)]);
 }
 
+export function convertStringToNumberSafety(str: string):number {
+  if (str) {
+    return Number(str);
+  }
+  return 0;
+}
+
 export function truncateString(str: string) {
   if (!str) return '';
   return `${str.slice(0, 6)}...${str.slice(-4)}`;

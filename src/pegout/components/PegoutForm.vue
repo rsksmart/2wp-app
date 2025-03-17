@@ -144,7 +144,7 @@ import {
   SatoshiBig, TxInfo, TxStatusType, WeiBig,
 } from '@/common/types';
 import {
-  appendRecaptcha, Machine, ServiceError, validateAddress,
+  appendRecaptcha, convertStringToNumberSafety, Machine, ServiceError, validateAddress,
 } from '@/common/utils';
 import router from '@/common/router';
 import ApiService from '@/common/services/ApiService';
@@ -338,6 +338,16 @@ export default defineComponent({
       clearSessionState();
     }
 
+    function getConfirmations(type: string): number {
+      if (type === TxStatusType.FLYOVER_PEGOUT.toLowerCase()
+        && selectedQuote.value.quote.depositConfirmations) {
+        // eslint-disable-next-line max-len
+        const depositConfs = convertStringToNumberSafety(selectedQuote.value.quote.depositConfirmations.toString());
+        return depositConfs;
+      }
+      return 0;
+    }
+
     function changePage(type: string) {
       router.push({
         name: 'SuccessTx',
@@ -347,8 +357,7 @@ export default defineComponent({
             ? flyoverPegoutState.value.txHash
             : pegOutTxState.value.txHash,
           amount: SatoshiBig.fromWeiBig(valueToReceive.value).toSatoshiString(),
-          confirmations: type === TxStatusType.FLYOVER_PEGOUT.toLowerCase()
-            ? selectedQuote.value.quote.depositConfirmations : 0,
+          confirmations: getConfirmations(type),
         },
       });
       clearWallets();

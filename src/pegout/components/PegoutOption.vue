@@ -175,7 +175,7 @@ export default defineComponent({
       default: false,
     },
     quoteDifference: {
-      type: Number,
+      type: Object,
       required: false,
     },
   },

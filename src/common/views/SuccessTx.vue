@@ -52,7 +52,7 @@ import * as constants from '@/common/store/constants';
 import { useRouter } from 'vue-router';
 import { PegInTxState, SatoshiBig, TxStatusType } from '@/common/types';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { blockConfirmationsToTimeString } from '@/common/utils';
+import { blockConfirmationsToTimeString, convertStringToNumberSafety } from '@/common/utils';
 
 export default defineComponent({
   name: 'SuccessTx',
@@ -70,7 +70,7 @@ export default defineComponent({
       required: true,
     },
     confirmations: {
-      type: Number,
+      type: String,
       required: true,
     },
   },
@@ -94,9 +94,9 @@ export default defineComponent({
         case TxStatusType.PEGOUT:
           return '34 hours';
         case TxStatusType.FLYOVER_PEGIN:
-          return `${blockConfirmationsToTimeString(props.confirmations ?? 0, 'btc')}`;
+          return `${blockConfirmationsToTimeString(convertStringToNumberSafety(props.confirmations), 'btc')}`;
         case TxStatusType.FLYOVER_PEGOUT:
-          return `${blockConfirmationsToTimeString(props.confirmations ?? 0, 'rsk')}`;
+          return `${blockConfirmationsToTimeString(convertStringToNumberSafety(props.confirmations), 'rsk')}`;
         default:
           return '';
       }
