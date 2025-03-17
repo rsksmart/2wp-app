@@ -63,10 +63,9 @@ export default defineComponent({
       }
       const requestedAmount = new WeiBig(status.valueRequestedInSatoshis, 'wei');
       const requestedAmountString = toWeiBigIntString(requestedAmount.toRBTCTrimmedString());
-      const pegOutEstimatedString = toSatoshiBigIntString(pegOutEstimatedFee.value
+      const pegOutEstimatedString = toWeiBigIntString(pegOutEstimatedFee.value
         .toBTCTrimmedString());
-      const amountToReceive = (new WeiBig(requestedAmountString, 'wei'))
-        .minus(new WeiBig(pegOutEstimatedString, 'wei'));
+      const amountToReceive = new WeiBig(BigInt(requestedAmountString) - BigInt(pegOutEstimatedString), 'wei');
       return amountToReceive.toRBTCTrimmedString();
     });
 
