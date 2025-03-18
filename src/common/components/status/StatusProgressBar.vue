@@ -223,7 +223,7 @@ export default defineComponent({
     const txDetails = useStateAttribute<PegoutStatusDataModel|PeginStatus|FlyoverStatusModel>('status', 'txDetails');
     const isPegOut = computed((): boolean => status.value.type === TxStatusType.PEGOUT
       || status.value.type === TxStatusType.FLYOVER_PEGOUT);
-    const bitcoinPrice = useStateAttribute<number>('pegInTx', 'bitcoinPrice');
+    const bitcoinPrice = useStateAttribute<number>('web3Session', 'bitcoinPrice');
 
     const sendedAmount = computed((): string => {
       if (isPegOut.value) {

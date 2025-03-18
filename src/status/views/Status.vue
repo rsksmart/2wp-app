@@ -131,6 +131,7 @@ export default defineComponent({
 
     const setTxStatus = useAction('status', constants.STATUS_GET_TX_STATUS);
     const clearStatus = useAction('status', constants.STATUS_CLEAR);
+    const getBtcPrice = useAction('web3Session', constants.SESSION_ADD_BITCOIN_PRICE);
     const activeMessage = useGetter<TxStatusMessage>('status', constants.STATUS_GET_ACTIVE_MESSAGE);
     const txDetails = useStateAttribute<PegoutStatusDataModel|PeginStatus>('status', 'txDetails');
 
@@ -260,7 +261,7 @@ export default defineComponent({
     watch(route, onUrlChange, { immediate: true, deep: true });
 
     clearStatus();
-
+    getBtcPrice();
     onUnmounted(clean);
 
     return {
