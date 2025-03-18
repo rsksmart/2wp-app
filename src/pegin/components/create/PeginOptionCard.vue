@@ -4,57 +4,66 @@
     :class="{
       'selected': selected,
       'not-available': flyoverNotAvailable,
-    }"
-    class="d-flex flex-column ga-4 pa-8 fill-height">
+    }" class="d-flex flex-column ga-4 pa-6 fill-height w-100 form">
     <div v-if="flyoverNotAvailable"
       class="not-available-text d-flex align-center justify-center pa-8 text-center">
       <slot />
     </div>
-    <v-row no-gutters class="my-2">
-      <div class='text-h3'>
-        <span :class='`pa-1 bg-${option.subtitleColor}`'>
+    <v-row no-gutters>
+      <v-col cols="8" class="d-flex justify-start">
+        <span class="text-body-sm">
+          Estimated value to receive
+        </span>
+      </v-col>
+      <v-col cols="4" class="d-flex justify-end">
+        <span :class='`font-weight-bold pa-1 bg-${option.subtitleColor}`'>
           {{ option.title }}
         </span>
-      </div>
-    </v-row>
-    <v-row no-gutters justify="space-between">
-        <div class="d-flex align-center ga-1">
-          <span class="text-balance">{{ option.label }}</span>
-          <v-btn @click="openLink(option.link)" icon density="compact" size="small" variant="plain">
-            <v-icon :icon="mdiOpenInNew"></v-icon>
-          </v-btn>
-        </div>
-      <v-tooltip :text="tooltipText" location="top" max-width="200">
-        <template v-slot:activator="{ props }">
-            <div v-bind="props" class="d-flex align-center ga-1">
-              <v-icon :icon="mdiClockOutline" :color="option.subtitleColor" size="20" />
-              <span :class='`text-${option.subtitleColor}`'>{{ option.estimatedTime() }}</span>
-            </div>
-        </template>
-      </v-tooltip>
-    </v-row>
-    <v-divider :color="option.subtitleColor" class="border-opacity-100" ></v-divider>
-    <v-row>
-      <v-col>
-    <div class="d-flex flex-column">
-      <span :class='`text-${option.subtitleColor}`'>Value to receive</span>
-      <span class="text-bw-400">
-        {{ option.valueToReceive()?.toBTCTrimmedString() }} {{ environmentContext.getRbtcTicker() }}
-      </span>
-      <span class="text-bw-400">USD {{ toUSD(option.valueToReceive()) }}</span>
-    </div>
-      </v-col>
-      <v-col>
-    <div class="d-flex flex-column">
-      <span>Total Fee {{ optionType === 'POWPEG' ? '(Network)' : '(Network & Provider)' }}</span>
-      <span class="text-bw-400">
-        {{ option.totalFee()?.toBTCTrimmedString() }} {{ environmentContext.getBtcTicker() }}
-      </span>
-      <span class="text-bw-400">USD {{ toUSD(option.totalFee()) }}</span>
-    </div>
       </v-col>
     </v-row>
-    <v-spacer></v-spacer>
+    <v-row no-gutters>
+      <v-col cols="8" class="d-flex justify-start">
+        <span class="text-body-amount">
+          ~{{ option.valueToReceive()?.toBTCTrimmedString() }} {{ environmentContext
+            .getRbtcTicker() }}
+        </span>
+      </v-col>
+      <v-col cols="4" class="d-flex justify-end">
+        <span class="text-body-sm">{{ option.label }}</span>
+        <v-btn @click="openLink(option.link)" icon density="compact" size="small" variant="plain">
+          <v-icon :icon="mdiOpenInNew" />
+        </v-btn>
+      </v-col>
+    </v-row>
+    <v-divider class="border-opacity-100" />
+    <v-row no-gutters class="text-body-details">
+      <v-col cols="8" class="d-flex justify-start">
+        <v-row no-gutters>
+          <v-col cols="6">
+            <v-tooltip :text="tooltipText" location="top" max-width="200">
+              <template v-slot:activator="{ props }">
+                <div v-bind="props" class="d-flex align-center ga-1">
+                  <v-icon :icon="mdiClockOutline" :color="option.timeColor" size="20" />
+                  <span :class='`text-${option.timeColor}`'>{{ option.estimatedTime() }}</span>
+                </div>
+              </template>
+            </v-tooltip>
+          </v-col>
+          <v-col cols="6">
+            <v-row no-gutters>
+              <v-col cols="auto" class="pa-0 pr-1">
+                <v-img class="d-flex flex-0-0" :src="moneyBagIcon"
+                width="20" height="20" contain/>
+              </v-col>
+              <v-col class="pa-0">
+                <span>{{ toUSD(option.valueToReceive()) }} USD</span>
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
+      </v-col>
+      <v-col />
+    </v-row>
   </v-card>
 </template>
 
@@ -70,6 +79,7 @@ import { blockConfirmationsToTimeString, truncateString } from '@/common/utils';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { PeginQuote, PegInTxState, SatoshiBig } from '@/common/types';
 import { PowPegMode } from '@/common/store/constants';
+import { useTheme } from 'vuetify';
 
 export default defineComponent({
   name: 'PeginOptionCard',
@@ -97,8 +107,9 @@ export default defineComponent({
     const pegInTxState = useState<PegInTxState>('pegInTx');
     const selectedFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
     const bitcoinPrice = useStateAttribute<number>('pegInTx', 'bitcoinPrice');
-
     const fixedUSDDecimals = 2;
+    const { global: { current } } = useTheme();
+
     const computedQuote = computed(() => props.quote);
 
     const quoteFee = computed(() => {
@@ -113,10 +124,11 @@ export default defineComponent({
         subtitleColor: 'purple',
         link: 'https://dev.rootstock.io/rsk/architecture/powpeg/',
         estimatedTime: () => '17 hours',
+        timeColor: 'red',
         totalFee: () => selectedFee.value,
         amountToTransfer: () => pegInTxState.value.amountToTransfer
           .plus(selectedFee.value),
-        valueToReceive: () => pegInTxState.value.amountToTransfer,
+        valueToReceive: () => pegInTxState.value.amountToTransfer.minus(selectedFee.value),
       },
       FLYOVER: {
         title: PowPegMode.FAST,
@@ -124,6 +136,7 @@ export default defineComponent({
         subtitleColor: 'orange',
         link: 'https://dev.rootstock.io/concepts/rif-suite/#meet-the-suite',
         estimatedTime: () => blockConfirmationsToTimeString(computedQuote.value?.quote.confirmations ?? 0, 'btc'),
+        timeColor: 'green',
         amountToTransfer: () => computedQuote.value?.getTotalTxAmount(selectedFee.value)
           ?? new SatoshiBig('0', 'btc'),
         totalFee: () => computedQuote.value?.getTotalQuoteFee(selectedFee.value),
@@ -132,6 +145,10 @@ export default defineComponent({
       },
     };
     const option = computed(() => PeginOptions[props.optionType as keyof typeof PeginOptions]);
+
+    const moneyBagIcon = computed(() => (current.value.dark
+      ? require('@/assets/money-bag-dark.svg')
+      : require('@/assets/money-bag-light.svg')));
 
     function selectOption() {
       context.emit('selected-option', props.optionType, props.quote);
@@ -161,7 +178,23 @@ export default defineComponent({
       openLink,
       mdiClockOutline,
       tooltipText,
+      moneyBagIcon,
     };
   },
 });
 </script>
+
+<style scoped>
+.text-body-details {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -1%;
+}
+.text-body-amount {
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 120%;
+  letter-spacing: 0%;
+}
+</style>

@@ -1,7 +1,7 @@
 <template>
-  <v-row no-gutters>
+  <v-row no-gutters class="btc-fee-select">
     <v-col class="pa-0">
-      <span class="d-inline-block font-weight-bold">
+      <span class="d-inline-block">
         Select transaction fee
       </span>
       <v-row class="ma-0 d-flex justify-start">
@@ -14,8 +14,7 @@
                       :color="txFeeColor" :track-color="txFeeColor" step="1"
                       @update:focused="focus = !focus"
                       @blur="focus = false"
-                      class="ma-0"
-                      />
+                      class="ma-0 label" />
           </v-row>
           <v-row class="ma-0">
             <v-col cols="4" class="d-flex justify-start pa-0">
@@ -165,3 +164,18 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+.btc-fee-select {
+  font-size: 12px;
+  line-height: 120%;
+  letter-spacing: 0%;
+  font-weight: 500;
+  .label {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 100%;
+    letter-spacing: 0.2px;
+  }
+}
+</style>

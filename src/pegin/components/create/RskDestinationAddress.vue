@@ -1,10 +1,10 @@
 <template>
-  <v-col class="d-flex flex-column ga-2">
-    <span class="font-weight-bold">
-      Destination Rootstock Address
+  <v-row no-gutters class="d-flex flex-column pa-0 form">
+    <span class="text-body-sm mb-4">
+      Destination Address
     </span>
     <v-text-field
-        class="flex-grow-0"
+        class="text-body-sm flex-grow-0"
         density="comfortable"
         :class="(!isValidInputAddress && isInputFilled) && 'input-error'"
         v-model="address"
@@ -32,7 +32,7 @@
       color="orange" density="compact" variant="outlined">
       Not a checksummed address
     </v-alert>
-  </v-col>
+  </v-row>
 </template>
 
 <script lang="ts">
