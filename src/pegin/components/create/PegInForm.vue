@@ -1,85 +1,95 @@
 <template>
-  <v-container fluid class="pa-0 d-flex flex-column ga-6">
-    <v-row no-gutters>
-      <v-btn variant="text"
+  <v-container class="form">
+    <v-row no-gutters class="d-flex justify-center">
+      <v-col class="d-flex justify-start">
+        <v-btn variant="text"
         class="px-0"
         :prepend-icon="mdiArrowLeft"
         @click="back"
         :disabled="pegInFormState.matches(['loading', 'goingHome'])">
-        Go Back
-      </v-btn>
+          Go Back
+        </v-btn>
+      </v-col>
+      <v-col xs="10" sm="8" md="7" lg="5" xl="5" class="d-flex space-between flex-column">
+        <btc-input class="mb-8" @valid-amount="checkValidAmount" />
+        <rsk-destination-address class="mb-8" @valid-address="checkValidAddress"
+          :is-amount-filled="validAmount"/>
+        <btc-fee-select class="mb-8" />
+      </v-col>
+      <v-col />
     </v-row>
-    <v-row no-gutters class="ga-4 ga-lg-8">
-      <btc-input @valid-amount="checkValidAmount" />
-      <rsk-destination-address @valid-address="checkValidAddress" :is-amount-filled="validAmount"/>
+    <v-row no-gutters class="d-flex justify-center">
+      <v-col />
+      <v-col xs="10" sm="8" md="7" lg="5" xl="5" class="d-flex space-between flex-column">
+        <template v-if="showOptions">
+          <v-row no-gutters class="my-4">
+            <span class="text-body-sm">Select mode to see exact amounts</span>
+          </v-row>
+          <v-row no-gutters v-if="!flyoverIsEnabled || peginQuotes.length === 0">
+            <pegin-option-card :option-type="peginType.FLYOVER" flyover-not-available>
+              <template v-slot>
+                <h4 v-if="countdown === recaptchanNewTokenTime">
+                  <span class="text-orange">Fast Mode</span> is unavailable at this time.
+                </h4>
+                <h4 v-else>
+                  Fast mode will be <br> available in
+                  <span class="text-orange">{{ countdown }} seconds.</span>
+                </h4>
+              </template>
+            </pegin-option-card>
+          </v-row>
+          <v-row no-gutters v-else v-for="(quote, index) in peginQuotes" :key="index">
+            <pegin-option-card
+              :option-type="peginType.FLYOVER"
+              @selected-option="changeSelectedOption"
+              :selected="selected === peginType.FLYOVER"
+              :quote="quote" />
+          </v-row>
+          <v-row no-gutters class="mt-4">
+            <pegin-option-card
+              :option-type="peginType.POWPEG"
+              @selected-option="changeSelectedOption"
+              :selected="selected === peginType.POWPEG"
+            />
+          </v-row>
+          <v-row no-gutters class="d-flex justify-end mt-5">
+            <v-btn-rsk v-if="!pegInFormState.matches(['loading'])"
+            @click="sendTx"
+            :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])"
+            class="align-self-end text-body-1">
+              <template #append>
+                <v-icon :icon="mdiArrowRight" />
+              </template>
+                Send
+            </v-btn-rsk>
+            <v-progress-circular class="align-self-end" v-else indeterminate />
+          </v-row>
+        </template>
+        <v-row no-gutters v-else-if="loadingQuotes" class="justify-center">
+          <v-progress-circular
+            :size="250"
+            :width="18"
+            color="warning"
+            indeterminate>
+            Searching Options...
+          </v-progress-circular>
+        </v-row>
+      </v-col>
+      <v-col />
     </v-row>
-    <btc-fee-select/>
-    <div v-if="showOptions" class="d-flex flex-column ga-2">
-      <span class="font-weight-bold">Select mode</span>
-      <v-row no-gutters class="ga-4 ga-lg-8">
-        <v-col v-if="!flyoverIsEnabled || peginQuotes.length === 0">
-          <pegin-option-card :option-type="peginType.FLYOVER" flyover-not-available>
-            <template v-slot>
-              <h4 v-if="countdown === recaptchanNewTokenTime">
-                <span class="text-orange">Fast Mode</span> is unavailable at this time.
-              </h4>
-              <h4 v-else>
-                Fast mode will be <br> available in
-                <span class="text-orange">{{ countdown }} seconds.</span>
-              </h4>
-            </template>
-          </pegin-option-card>
-        </v-col>
-        <v-col v-else v-for="(quote, index) in peginQuotes" :key="index">
-          <pegin-option-card
-            :option-type="peginType.FLYOVER"
-            @selected-option="changeSelectedOption"
-            :selected="selected === peginType.FLYOVER"
-            :quote="quote"
-          />
-        </v-col>
-        <v-col>
-          <pegin-option-card
-            :option-type="peginType.POWPEG"
-            @selected-option="changeSelectedOption"
-            :selected="selected === peginType.POWPEG"
-          />
-        </v-col>
-      </v-row>
-    </div>
-    <v-row no-gutters v-else-if="loadingQuotes" class="justify-center">
-      <v-progress-circular
-        :size="250"
-        :width="18"
-        color="warning"
-        indeterminate>
-        Searching Options...
-      </v-progress-circular>
-    </v-row>
-    <v-btn-rsk v-if="!pegInFormState.matches(['loading'])"
-      @click="sendTx"
-      :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])"
-      class="align-self-end text-body-1"
-      >
-      <template #append>
-        <v-icon :icon="mdiArrowRight" />
-      </template>
-        Send
-    </v-btn-rsk>
-    <v-progress-circular class="align-self-end" v-else indeterminate />
-  </v-container>
-  <div id="recaptcha" class="g-recaptcha"
+    <div id="recaptcha" class="g-recaptcha"
       :data-sitekey="flyoverService.siteKey"
       data-callback="onRecaptchaSuccess"
       data-action="submit"
       data-size="invisible"></div>
-  <template v-if="showErrorDialog">
-    <full-tx-error-dialog
-    :showTxErrorDialog="showErrorDialog"
-    :error="txError"
-    @closeErrorDialog="showErrorDialog = false"
-    />
-  </template>
+    <template v-if="showErrorDialog">
+      <full-tx-error-dialog
+      :showTxErrorDialog="showErrorDialog"
+      :error="txError"
+      @closeErrorDialog="showErrorDialog = false"
+      />
+    </template>
+  </v-container>
 </template>
 
 <script lang="ts">

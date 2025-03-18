@@ -1,6 +1,6 @@
 <template>
-  <v-col class="d-flex flex-column ga-2">
-    <span class="font-weight-bold">
+  <v-row no-gutters class="d-flex flex-column pa-0 form">
+    <span class="text-body-sm mb-2">
       Amount to send
     </span>
     <v-text-field
@@ -19,14 +19,13 @@
       @keydown="blockLetterKeyDown"
       @wheel.prevent
       @focus="focus = true"
-      @blur="focus = false"
-      >
+      @blur="focus = false">
         <template #prepend-inner>
-          <v-chip density="comfortable" :prepend-icon="mdiBitcoin" class="btc-icon">
-            {{ environmentContext.getBtcTicker() }}
-          </v-chip>
+          <v-icon density="comfortable" :icon="mdiBitcoin" color="orange"
+            class="ml-n1 opacity-100" />
         </template>
         <template #append-inner>
+          <span class="text-bw-500">{{ environmentContext.getBtcTicker() }}</span>
           <div class="d-flex px-2 ga-1">
             <v-chip variant="outlined" density="compact" @click="setMin">
               {{ boundaries.minValue.toBTCString().slice(0,5) }} MIN
@@ -38,7 +37,7 @@
       <v-alert v-if="!isValidAmount && isInputFilled" :text="amountErrorMessage"
         density="compact" type="warning" color="orange"/>
     </div>
-  </v-col>
+  </v-row>
 </template>
 
 <script lang="ts">
@@ -165,5 +164,4 @@ export default defineComponent({
     };
   },
 });
-
 </script>
