@@ -28,7 +28,6 @@ import { useStateAttribute } from '@/common/store/helper';
 import StatusSummary from '@/common/components/status/StatusSummary.vue';
 import {
   toWeiBigIntString,
-  toSatoshiBigIntString,
 } from '@/common/utils';
 
 export default defineComponent({
@@ -61,8 +60,8 @@ export default defineComponent({
       if (status.valueInSatoshisToBeReceived) {
         return new SatoshiBig(status.valueInSatoshisToBeReceived, 'satoshi').toBTCTrimmedString();
       }
-      const requestedAmount = new WeiBig(status.valueRequestedInSatoshis, 'wei');
-      const requestedAmountString = toWeiBigIntString(requestedAmount.toRBTCTrimmedString());
+      const requestedAmount = new SatoshiBig(status.valueRequestedInSatoshis, 'satoshi');
+      const requestedAmountString = toWeiBigIntString(requestedAmount.toBTCTrimmedString());
       const pegOutEstimatedString = toWeiBigIntString(pegOutEstimatedFee.value
         .toBTCTrimmedString());
       const amountToReceive = new WeiBig(BigInt(requestedAmountString) - BigInt(pegOutEstimatedString), 'wei');
@@ -72,7 +71,7 @@ export default defineComponent({
     const txPegoutSummary = computed((): NormalizedSummary => {
       const status = txDetails.value as PegoutStatusDataModel;
       const valueRequested = new SatoshiBig(status.valueRequestedInSatoshis, 'satoshi');
-      const amountSent = new WeiBig(toSatoshiBigIntString(valueRequested.toBTCTrimmedString()), 'wei').plus(calculatedGasFee.value);
+      const amountSent = new WeiBig(toWeiBigIntString(valueRequested.toBTCTrimmedString()), 'wei').plus(calculatedGasFee.value);
       const btcTxId = status.status === PegoutStatus.RELEASE_BTC ? status.btcTxId : '';
       return {
         amountFromString: isRejectedPegout.value ? valueRequested.toBTCTrimmedString()
