@@ -51,6 +51,8 @@ import {
   PeginQuote,
   FeatureNames,
   Feature,
+  UtxoList,
+  Fee,
 } from '@/common/types';
 import { Machine, getClearPeginTxState } from '@/common/utils';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
@@ -110,6 +112,7 @@ export default defineComponent({
     const getChangeAddress = useGetter<string>('pegInTx', constants.PEGIN_TX_GET_CHANGE_ADDRESS);
     const selectedUtxoList = useGetter<Utxo[]>('pegInTx', constants.PEGIN_TX_GET_SELECTED_UTXO_LIST);
     const selectedFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
+    const selectedFlyoverFee = useGetter<Fee & UtxoList>('flyoverPegin', constants.FLYOVER_PEGIN_GET_SELECTED_FEE);
     const selectedFlyoverQuote = useGetter<PeginQuote>('flyoverPegin', constants.FLYOVER_PEGIN_GET_SELECTED_QUOTE);
     const initFlyover = useAction('flyoverPegin', constants.FLYOVER_PEGIN_INIT);
     const flyoverFeature = useGetter<(name: FeatureNames) => Feature>('web3Session', constants.SESSION_GET_FEATURE);
@@ -123,6 +126,20 @@ export default defineComponent({
         return selectedFlyoverQuote.value.quote.value;
       }
       return amountToTransfer.value;
+    });
+
+    const selectedFeePerType = computed(() => {
+      if (type.value === constants.peginType.FLYOVER) {
+        return selectedFlyoverFee.value.amount;
+      }
+      return selectedFee.value;
+    });
+
+    const selectedUtxoListPerType = computed(() => {
+      if (type.value === constants.peginType.FLYOVER) {
+        return selectedFlyoverFee.value.selectedUtxoList;
+      }
+      return selectedUtxoList.value;
     });
 
     async function toConfirmTx({
@@ -146,8 +163,8 @@ export default defineComponent({
           refundAddress,
           rskRecipientAddress: recipient,
           changeAddress: getChangeAddress.value,
-          totalFee: selectedFee.value,
-          selectedUtxoList: selectedUtxoList.value,
+          totalFee: selectedFeePerType.value,
+          selectedUtxoList: selectedUtxoListPerType.value,
           peginType,
         },
       );

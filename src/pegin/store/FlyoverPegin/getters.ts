@@ -13,4 +13,17 @@ export const getters: GetterTree<FlyoverPeginState, RootState> = {
     });
     return quoteFound;
   },
+  [constants.FLYOVER_PEGIN_GET_SELECTED_FEE]: (state, _, rootState) => {
+    const selectedFee = rootState.pegInTx?.selectedFee;
+    switch (selectedFee) {
+      case constants.BITCOIN_AVERAGE_FEE_LEVEL:
+        return state.calculatedTxFees.average;
+      case constants.BITCOIN_FAST_FEE_LEVEL:
+        return state.calculatedTxFees.fast;
+      case constants.BITCOIN_SLOW_FEE_LEVEL:
+        return state.calculatedTxFees.slow;
+      default:
+        return state.calculatedTxFees.average;
+    }
+  },
 };

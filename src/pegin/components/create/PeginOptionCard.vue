@@ -68,7 +68,9 @@ import { mdiInformationOutline, mdiOpenInNew, mdiClockOutline } from '@mdi/js';
 import { useGetter, useState, useStateAttribute } from '@/common/store/helper';
 import { blockConfirmationsToTimeString, truncateString } from '@/common/utils';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { PeginQuote, PegInTxState, SatoshiBig } from '@/common/types';
+import {
+  Fee, PeginQuote, PegInTxState, SatoshiBig, UtxoList,
+} from '@/common/types';
 import { PowPegMode } from '@/common/store/constants';
 
 export default defineComponent({
@@ -96,6 +98,7 @@ export default defineComponent({
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const pegInTxState = useState<PegInTxState>('pegInTx');
     const selectedFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
+    const selectedFlyoverFee = useGetter<Fee & UtxoList>('flyoverPegin', constants.FLYOVER_PEGIN_GET_SELECTED_FEE);
     const bitcoinPrice = useStateAttribute<number>('pegInTx', 'bitcoinPrice');
 
     const fixedUSDDecimals = 2;
@@ -124,9 +127,9 @@ export default defineComponent({
         subtitleColor: 'orange',
         link: 'https://dev.rootstock.io/concepts/rif-suite/#meet-the-suite',
         estimatedTime: () => blockConfirmationsToTimeString(computedQuote.value?.quote.confirmations ?? 0, 'btc'),
-        amountToTransfer: () => computedQuote.value?.getTotalTxAmount(selectedFee.value)
-          ?? new SatoshiBig('0', 'btc'),
-        totalFee: () => computedQuote.value?.getTotalQuoteFee(selectedFee.value),
+        amountToTransfer:
+          () => computedQuote.value?.getTotalTxAmount(selectedFlyoverFee.value.amount) ?? new SatoshiBig('0', 'btc'),
+        totalFee: () => computedQuote.value?.getTotalQuoteFee(selectedFlyoverFee.value.amount) ?? new SatoshiBig('0', 'btc'),
         providerFee: () => quoteFee.value,
         valueToReceive: () => computedQuote.value?.quote.value ?? new SatoshiBig('0', 'btc'),
       },

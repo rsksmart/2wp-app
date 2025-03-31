@@ -32,4 +32,10 @@ export const mutations: MutationTree<FlyoverPeginState> = {
   [constants.FLYOVER_PEGIN_SET_ACCEPTED_QUOTE_SIGNATURE]: (state, quoteSignature: string) => {
     state.acceptedQuoteSignature = quoteSignature;
   },
+  [constants.FLYOVER_PEGIN_SET_CALCULATED_TX_FEE]: (state, fees) => {
+    state.calculatedTxFees = fees;
+  },
+  [constants.FLYOVER_PEGIN_SET_LOADING_FEE]: (state, isLoading: boolean) => {
+    state.isLoadingFee = isLoading;
+  },
 };

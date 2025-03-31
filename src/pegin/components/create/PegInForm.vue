@@ -155,6 +155,7 @@ export default defineComponent({
     const countdown = useStateAttribute<number>('web3Session', 'grecaptchaCountdown');
     const recaptchanNewTokenTime = EnvironmentAccessorService.getEnvironmentVariables()
       .grecaptchaTime;
+    const getFeePerByte = useAction('pegInTx', constants.PEGIN_TX_GET_FEE_PER_BYTE);
 
     const enoughAmountFlyover = computed(() => {
       if (!selectedQuote.value) {
@@ -339,6 +340,8 @@ export default defineComponent({
     if (props.isFlyoverAvailable) {
       getAvailableLiquidity();
     }
+
+    getFeePerByte();
 
     return {
       pegInFormState,

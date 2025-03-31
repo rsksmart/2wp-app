@@ -184,13 +184,12 @@ describe('Tx Fee Service', () => {
     expect(checkedFeePerKb6).toBe('110');
   });
 
-  it('should reject the call if there are no utxos stored for that', async () => {
+  it('should reject the call if there are no utxos stored for that', () => {
     const amountToTransfer = new SatoshiBig('10000', 'satoshi');
+    const feePerByte = new SatoshiBig('1000', 'satoshi');
     const totalUtxoList: Utxo[] = [];
-    const feeLevel = constants.BITCOIN_AVERAGE_FEE_LEVEL;
 
-    return expect(TxFeeService.getTxFee(amountToTransfer, totalUtxoList, feeLevel))
-      .rejects.toEqual(new Error('Empty utxo list.'));
+    expect(() => TxFeeService.getTxFee(amountToTransfer, totalUtxoList, feePerByte)).toThrowError('Empty utxo list.');
   });
 
   it('should return the fee of the required amount even if there is no enough balance, and should be the max fee given all utxos', async () => {
@@ -227,15 +226,14 @@ describe('Tx Fee Service', () => {
       .withArgs(`${API_URL}/estimate-fee/${blockNumber}`)
       .resolves(satoshiBigApiResponse);
 
-    const response = await TxFeeService.getTxFee(amountToTransfer, totalUtxoList1, feeLevel);
-    const feeResponse = response.fee;
-    const utxoResponse = response.selectedUtxoList;
+    const response = TxFeeService.getTxFee(amountToTransfer, totalUtxoList1, checkedFeePerByte);
+    const { amount, enoughBalance, selectedUtxoList: selectedUtxoListResponse } = response;
 
-    expect(feeResponse.enoughBalance)
+    expect(enoughBalance)
       .toEqual(false);
-    expect(feeResponse.amount)
+    expect(amount)
       .toEqual(totalFeeToPay);
-    expect(utxoResponse)
+    expect(selectedUtxoListResponse)
       .toEqual(totalUtxoList1);
   });
 

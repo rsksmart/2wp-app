@@ -1,49 +1,56 @@
 import { MiningSpeedFee, SatoshiBig, Utxo } from '@/common/types';
 import { ApiService } from '@/common/services';
 import * as constants from '@/common/store/constants';
-import { FeeSelection } from '@/pegin/types/services';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
-import { ServiceError } from '@/common/utils';
 
 export default class TxFeeService {
+  static async getFeePerByteByLevel() {
+    const {
+      miningSpeedBlock,
+      minFeeSatPerByte,
+    } = EnvironmentAccessorService.getEnvironmentVariables();
+
+    const getCheckedFee = (blocks: number, minFee: number) => ApiService.estimateFee(blocks)
+      .then((fee) => {
+        const minSatoshi = new SatoshiBig(minFee, 'satoshi');
+        return fee.gt(minSatoshi) ? fee : minSatoshi;
+      });
+
+    return Promise.all([
+      getCheckedFee(miningSpeedBlock.slow, minFeeSatPerByte.slow),
+      getCheckedFee(miningSpeedBlock.average, minFeeSatPerByte.average),
+      getCheckedFee(miningSpeedBlock.fast, minFeeSatPerByte.fast),
+    ]).then(([slow, average, fast]) => ({ slow, average, fast }));
+  }
+
   public static getTxFee(
     amountTotransfer: SatoshiBig,
     totalUtxoList: Utxo[],
-    feeLevel: MiningSpeedFee,
-  )
-    :Promise<FeeSelection> {
-    return new Promise<FeeSelection>((resolve, reject) => {
-      if (!totalUtxoList.length) {
-        reject(new Error('Empty utxo list.'));
-      }
-      ApiService.estimateFee(TxFeeService.getMiningSpeedBlock(feeLevel))
-        .then((feePerByte: SatoshiBig) => {
-          const checkedFeePerByte = TxFeeService.getCheckedFeePerByte(feePerByte, feeLevel);
-          const baseFee = checkedFeePerByte.mul(constants.BITCOIN_TX_HEADER_SIZE_IN_BYTES
-            + (constants.BITCOIN_TX_OUTPUT_SIZE_IN_BYTES * constants.PEGIN_OUTPUTS));
-          const feePerInput = checkedFeePerByte
-            .mul(constants.BITCOIN_TX_INPUT_SIZE_IN_BYTES);
-          const { selectedUtxoList, enoughBalance } = TxFeeService
-            .selectOptimalInputs(
-              totalUtxoList,
-              amountTotransfer,
-              baseFee,
-              feePerInput,
-            );
-          const totalFeeToPay = TxFeeService
-            .checkFeeBoundaries(baseFee.plus(feePerInput.mul(selectedUtxoList.length)));
-          resolve({
-            fee: {
-              amount: totalFeeToPay,
-              enoughBalance,
-            },
-            selectedUtxoList,
-          });
-        })
-        .catch(() => {
-          reject(new ServiceError('TxFeeService', 'getTxFee', 'Something went wrong. Please check your network connection and try again.', 'Unable to get estimated fee from API'));
-        });
-    });
+    feePerByte: SatoshiBig,
+    isFlyoverTx = false,
+  ) {
+    if (!totalUtxoList.length) {
+      throw new Error('Empty utxo list.');
+    }
+    const outputs = isFlyoverTx ? constants.FLYOVER_PEGIN_OUTPUTS : constants.PEGIN_OUTPUTS;
+    const baseFee = feePerByte.mul(constants.BITCOIN_TX_HEADER_SIZE_IN_BYTES
+            + (constants.BITCOIN_TX_OUTPUT_SIZE_IN_BYTES * outputs));
+    const feePerInput = feePerByte
+      .mul(constants.BITCOIN_TX_INPUT_SIZE_IN_BYTES);
+    const { selectedUtxoList, enoughBalance } = TxFeeService
+      .selectOptimalInputs(
+        totalUtxoList,
+        amountTotransfer,
+        baseFee,
+        feePerInput,
+      );
+    const totalFeeToPay = TxFeeService
+      .checkFeeBoundaries(baseFee.plus(feePerInput.mul(selectedUtxoList.length)));
+    return {
+      amount: totalFeeToPay,
+      enoughBalance,
+      selectedUtxoList,
+    };
   }
 
   private static checkFeeBoundaries(totalFee:SatoshiBig):SatoshiBig {

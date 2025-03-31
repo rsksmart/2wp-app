@@ -69,6 +69,11 @@ export const getClearPeginTxState = (): PegInTxState => ({
   },
   peginType: constants.peginType.POWPEG,
   walletService: undefined,
+  feePerByteByLevel: {
+    slow: new SatoshiBig(0, 'satoshi'),
+    average: new SatoshiBig(0, 'satoshi'),
+    fast: new SatoshiBig(0, 'satoshi'),
+  },
 });
 
 export const getClearPegoutTxState = (): PegOutTxState => ({
@@ -141,4 +146,22 @@ export const getClearFlyoverPeginState = (): FlyoverPeginState => ({
   flyoverService: markRaw(new FlyoverService()),
   selectedQuoteHash: '',
   acceptedQuoteSignature: '',
+  calculatedTxFees: {
+    slow: {
+      amount: new SatoshiBig(0, 'satoshi'),
+      enoughBalance: false,
+      selectedUtxoList: [],
+    },
+    average: {
+      amount: new SatoshiBig(0, 'satoshi'),
+      enoughBalance: false,
+      selectedUtxoList: [],
+    },
+    fast: {
+      amount: new SatoshiBig(0, 'satoshi'),
+      enoughBalance: false,
+      selectedUtxoList: [],
+    },
+  },
+  isLoadingFee: false,
 });

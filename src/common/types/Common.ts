@@ -56,7 +56,7 @@ export interface FeeAmountDataResponse {
   fast: Fee;
 }
 
-interface UtxoList { selectedUtxoList: Utxo[]}
+export interface UtxoList { selectedUtxoList: Utxo[]}
 
 export interface FeeAmountData {
   slow: Fee & UtxoList;

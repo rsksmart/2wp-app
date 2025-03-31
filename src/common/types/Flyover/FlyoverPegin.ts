@@ -3,6 +3,7 @@ import { LiquidityProvider2WP } from './Flyover';
 import SatoshiBig from '../SatoshiBig';
 import WeiBig from '../WeiBig';
 import PeginQuote from './PeginQuote';
+import { FeeAmountData } from '../Common';
 
 export interface FlyoverPeginState {
     amountToTransfer: SatoshiBig;
@@ -15,4 +16,6 @@ export interface FlyoverPeginState {
     txHash?: string;
     selectedQuoteHash: string;
     acceptedQuoteSignature: string;
+    calculatedTxFees: FeeAmountData;
+    isLoadingFee: boolean;
 }

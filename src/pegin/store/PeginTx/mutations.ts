@@ -41,6 +41,9 @@ export const mutations: MutationTree<PegInTxState> = {
   [constants.PEGIN_TX_SET_AMOUNT_TO_TRANSFER]: (state, amount: SatoshiBig) => {
     state.amountToTransfer = amount;
   },
+  [constants.PEGIN_TX_SET_FEE_PER_BYTE]: (state, fee) => {
+    state.feePerByteByLevel = fee;
+  },
   [constants.PEGIN_TX_SET_CALCULATED_TX_FEE]: (state, fee: FeeAmountData) => {
     state.calculatedFees = fee;
   },

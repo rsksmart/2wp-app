@@ -7,6 +7,7 @@ import * as constants from '@/common/store/constants';
 import { ApiService } from '@/common/services';
 import { promiseWithTimeout } from '@/common/utils';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import { TxFeeService } from '@/pegin/services';
 
 export const actions: ActionTree<FlyoverPeginState, RootState> = {
   [constants.FLYOVER_PEGIN_INIT]: ({ state, dispatch }) => new Promise((resolve, reject) => {
@@ -90,9 +91,41 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
         resolve();
       });
   }),
-  [constants.FLYOVER_PEGIN_ADD_SELECTED_QUOTE]: ({ commit }, quoteHash: string) => {
-    commit(constants.FLYOVER_PEGIN_SET_SELECTED_QUOTE, quoteHash);
-  },
+  [constants.FLYOVER_PEGIN_ADD_SELECTED_QUOTE]:
+    ({
+      commit, getters, rootGetters, rootState,
+    }, quoteHash: string) => {
+      commit(constants.FLYOVER_PEGIN_SET_SELECTED_QUOTE, quoteHash);
+      if (quoteHash) {
+        const amount = getters[constants.FLYOVER_PEGIN_GET_SELECTED_QUOTE]?.valueToTransfer;
+        const utxoList = rootGetters[`pegInTx/${constants.PEGIN_TX_GET_ACCOUNT_UTXO_LIST}`];
+        const feePerByte = rootState.pegInTx?.feePerByteByLevel;
+        if (utxoList.length && feePerByte) {
+          const fees = {
+            slow: TxFeeService.getTxFee(
+              amount,
+              utxoList,
+              feePerByte.slow,
+              true,
+            ),
+            average: TxFeeService.getTxFee(
+              amount,
+              utxoList,
+              feePerByte.average,
+              true,
+            ),
+            fast: TxFeeService.getTxFee(
+              amount,
+              utxoList,
+              feePerByte.fast,
+              true,
+            ),
+          };
+          commit(constants.FLYOVER_PEGIN_SET_CALCULATED_TX_FEE, fees);
+          commit(constants.FLYOVER_PEGIN_SET_LOADING_FEE, false);
+        }
+      }
+    },
   [constants.FLYOVER_PEGIN_CLEAR_QUOTES]: ({ commit }) => {
     commit(constants.FLYOVER_PEGIN_SET_QUOTES, {});
   },

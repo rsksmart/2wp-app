@@ -10,7 +10,7 @@ import {
 import SatoshiBig from '@/common/types/SatoshiBig';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import {
-  AccountBalance, FeeAmountData, NormalizedTx, RootState,
+  AccountBalance, NormalizedTx, RootState,
   PeginConfiguration, PegInTxState, WalletAddress,
   BtcAccount, BtcWallet, MiningSpeedFee, UtxoListPerAccount, Utxo,
 } from '@/common/types';
@@ -112,65 +112,46 @@ export const actions: ActionTree<PegInTxState, RootState> = {
         commit(constants.PEGIN_TX_SET_CALCULATED_TX_FEE, getClearPeginTxState().calculatedFees);
       }
     },
-  [constants.PEGIN_TX_CALCULATE_TX_FEE]: ({ commit, state, getters }):
-    Promise<void> => new Promise<void>((resolve, reject) => {
-      if (!state.selectedAccount) {
-        return;
-      }
-      const selectedBalance = getters[constants.PEGIN_TX_GET_SELECTED_BALANCE] as SatoshiBig;
-      if (!selectedBalance.gt(0)) {
-        return;
-      }
-      const amount = Number(state.amountToTransfer.toSatoshiString());
-      if (amount === 0) {
-        return;
-      }
-      commit(constants.PEGIN_TX_SET_LOADING_FEE, true);
-      const utxoList = getters[constants.PEGIN_TX_GET_ACCOUNT_UTXO_LIST] as Utxo[];
-      if (utxoList.length) {
-        const feePromises = [
-          TxFeeService.getTxFee(
-            state.amountToTransfer,
-            utxoList,
-            constants.BITCOIN_SLOW_FEE_LEVEL,
-          ),
-          TxFeeService.getTxFee(
-            state.amountToTransfer,
-            utxoList,
-            constants.BITCOIN_AVERAGE_FEE_LEVEL,
-          ),
-          TxFeeService.getTxFee(
-            state.amountToTransfer,
-            utxoList,
-            constants.BITCOIN_FAST_FEE_LEVEL,
-          ),
-        ];
-        Promise.all(feePromises)
-          .then(([slow, average, fast]) => {
-            const fees: FeeAmountData = {
-              slow: {
-                amount: new SatoshiBig(slow.fee.amount, 'satoshi'),
-                enoughBalance: slow.fee.enoughBalance,
-                selectedUtxoList: slow.selectedUtxoList,
-              },
-              average: {
-                amount: new SatoshiBig(average.fee.amount, 'satoshi'),
-                enoughBalance: average.fee.enoughBalance,
-                selectedUtxoList: average.selectedUtxoList,
-              },
-              fast: {
-                amount: new SatoshiBig(fast.fee.amount, 'satoshi'),
-                enoughBalance: fast.fee.enoughBalance,
-                selectedUtxoList: fast.selectedUtxoList,
-              },
-            };
-            commit(constants.PEGIN_TX_SET_CALCULATED_TX_FEE, fees);
-            commit(constants.PEGIN_TX_SET_LOADING_FEE, false);
-            resolve();
-          })
-          .catch(reject);
-      }
-    }),
+  [constants.PEGIN_TX_GET_FEE_PER_BYTE]: ({ commit }) => {
+    TxFeeService.getFeePerByteByLevel()
+      .then((fee) => commit(constants.PEGIN_TX_SET_FEE_PER_BYTE, fee));
+  },
+  [constants.PEGIN_TX_CALCULATE_TX_FEE]: ({ commit, state, getters }) => {
+    if (!state.selectedAccount) {
+      return;
+    }
+    const selectedBalance = getters[constants.PEGIN_TX_GET_SELECTED_BALANCE] as SatoshiBig;
+    if (!selectedBalance.gt(0)) {
+      return;
+    }
+    const amount = Number(state.amountToTransfer.toSatoshiString());
+    if (amount === 0) {
+      return;
+    }
+    commit(constants.PEGIN_TX_SET_LOADING_FEE, true);
+    const utxoList = getters[constants.PEGIN_TX_GET_ACCOUNT_UTXO_LIST] as Utxo[];
+    if (utxoList.length && state.amountToTransfer) {
+      const fees = {
+        slow: TxFeeService.getTxFee(
+          state.amountToTransfer,
+          utxoList,
+          state.feePerByteByLevel.slow,
+        ),
+        average: TxFeeService.getTxFee(
+          state.amountToTransfer,
+          utxoList,
+          state.feePerByteByLevel.average,
+        ),
+        fast: TxFeeService.getTxFee(
+          state.amountToTransfer,
+          utxoList,
+          state.feePerByteByLevel.fast,
+        ),
+      };
+      commit(constants.PEGIN_TX_SET_CALCULATED_TX_FEE, fees);
+      commit(constants.PEGIN_TX_SET_LOADING_FEE, false);
+    }
+  },
   [constants.PEGIN_TX_ADD_RSK_ADDRESS]: ({ commit }, address: string): void => {
     const chainId = EnvironmentAccessorService
       .getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_MAINNET ? 30 : 31;

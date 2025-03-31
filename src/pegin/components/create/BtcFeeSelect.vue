@@ -76,6 +76,8 @@ export default defineComponent({
     const bitcoinPrice = useStateAttribute<number>('web3Session', 'bitcoinPrice');
     const account = useStateAttribute<string>('web3Session', 'account');
     const calculatedFees = useStateAttribute<FeeAmountData>('pegInTx', 'calculatedFees');
+    const flyoverFees = useStateAttribute<FeeAmountData>('flyoverPegin', 'calculatedTxFees');
+    const peginType = useStateAttribute<constants.peginType>('pegInTx', 'peginType');
     const selectedFee = useStateAttribute<MiningSpeedFee>('pegInTx', 'selectedFee');
     const isEnoughBalance = useGetter<boolean>('pegInTx', constants.PEGIN_TX_IS_ENOUGH_BALANCE);
     const setSelectedFee = useAction('pegInTx', constants.PEGIN_TX_SELECT_FEE_LEVEL);
@@ -88,19 +90,23 @@ export default defineComponent({
       return color;
     });
 
-    const slowFee = computed(() => calculatedFees.value.slow.amount.toBTCString());
+    const currentFees = computed(() => (peginType.value === constants.peginType.FLYOVER
+      ? flyoverFees.value
+      : calculatedFees.value));
 
-    const slowFeeUSD = computed(() => calculatedFees.value.slow
+    const slowFee = computed(() => currentFees.value.slow.amount.toBTCString());
+
+    const slowFeeUSD = computed(() => currentFees.value.slow
       .amount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals));
 
-    const averageFee = computed(() => calculatedFees.value.average.amount.toBTCString());
+    const averageFee = computed(() => currentFees.value.average.amount.toBTCString());
 
-    const averageFeeUSD = computed(() => calculatedFees.value.average
+    const averageFeeUSD = computed(() => currentFees.value.average
       .amount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals));
 
-    const fastFee = computed(() => calculatedFees.value.fast.amount.toBTCString());
+    const fastFee = computed(() => currentFees.value.fast.amount.toBTCString());
 
-    const fastFeeUSD = computed(() => calculatedFees.value.fast
+    const fastFeeUSD = computed(() => currentFees.value.fast
       .amount.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals));
 
     const showErrorMessage = computed(() => !isEnoughBalance.value

@@ -75,6 +75,7 @@ export interface PegInTxState {
     safeFee: SatoshiBig;
   }
   peginType: constants.peginType;
+  feePerByteByLevel: Record<'slow' | 'average' | 'fast', SatoshiBig>;
 }
 
 export interface UnusedWalletAddress {
