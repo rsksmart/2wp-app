@@ -60,7 +60,7 @@
               <template #append>
                 <v-icon :icon="mdiArrowRight" />
               </template>
-                Send
+                Continue to summary
             </v-btn-rsk>
             <v-progress-circular class="align-self-end" v-else indeterminate />
           </v-row>
