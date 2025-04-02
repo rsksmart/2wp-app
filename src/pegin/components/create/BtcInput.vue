@@ -150,6 +150,10 @@ export default defineComponent({
       bitcoinAmountModel.value = minValue.toBTCTrimmedString();
     }
 
+    watch(selectedAccountBalance, () => {
+      emitIsValidAmount();
+    });
+
     return {
       environmentContext,
       boundaries,
