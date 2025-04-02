@@ -56,7 +56,7 @@
                 width="20" height="20" contain/>
               </v-col>
               <v-col class="pa-0">
-                <span>{{ toUSD(option.valueToReceive()) }} USD</span>
+                <span>{{ toUSD(option.totalFee()) }} USD</span>
               </v-col>
             </v-row>
           </v-col>
@@ -154,7 +154,7 @@ export default defineComponent({
       context.emit('selected-option', props.optionType, props.quote);
     }
 
-    function toUSD(value: SatoshiBig) {
+    function toUSD(value: SatoshiBig | undefined): string {
       if (!value) return '';
       return value.toUSDFromBTCString(bitcoinPrice.value, fixedUSDDecimals);
     }
