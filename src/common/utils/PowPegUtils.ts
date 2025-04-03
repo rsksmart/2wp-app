@@ -80,7 +80,11 @@ export function isValidInput(input:NormalizedInput, userAddressList: string[]): 
       .getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_MAINNET
       ? bitcoin.networks.bitcoin : bitcoin.networks.testnet;
     try {
-      const pubKey = Buffer.from(tx.outs[input.prev_index].script, 3, 20);
+      const pubKey = Buffer.from(
+        tx.outs[input.prev_index].script as unknown as WithImplicitCoercion<ArrayBufferLike>,
+        3,
+        20,
+      );
       const expectedAddress = bitcoin.address.fromOutputScript(pubKey, network);
       return expectedAddress === input.address
         && tx.getId() === input.prev_hash
