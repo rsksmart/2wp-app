@@ -145,6 +145,7 @@ import EnvironmentContextProviderService from '@/common/providers/EnvironmentCon
 import { useAction, useState, useStateAttribute } from '@/common/store/helper';
 import {
   SessionState, SatoshiBig, QuotePegOut2WP,
+  WeiBig,
 } from '@/common/types';
 import * as constants from '@/common/store/constants';
 import { blockConfirmationsToTimeString, validateAddress } from '@/common/utils';
@@ -183,6 +184,7 @@ export default defineComponent({
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const session = useState<SessionState>('web3Session');
     const bitcoinPrice = useStateAttribute<number>('pegOutTx', 'bitcoinPrice');
+    const networkFee = useStateAttribute<WeiBig>('pegOutTx', 'calculatedFee');
     const setBtcAddress = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ADD_BTC_ADDRESS);
     const fixedUSDDecimals = 2;
     const btcAddress = ref('');
@@ -236,7 +238,8 @@ export default defineComponent({
         if (isFlyover.value) {
           fee = props.quote.quote.callFee
             .plus(props.quote.quote.gasFee)
-            .plus(props.quote.quote.productFeeAmount);
+            .plus(props.quote.quote.productFeeAmount)
+            .plus(networkFee.value);
         } else {
           fee = props.quote.quote.gasFee
             .plus(props.quote.quote.productFeeAmount);
