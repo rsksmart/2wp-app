@@ -1,15 +1,16 @@
 <template>
   <v-container class="form">
+    <v-row no-gutters class="d-flex justify-start">
+      <v-btn variant="text"
+      class="px-0"
+      :prepend-icon="mdiArrowLeft"
+      @click="back"
+      :disabled="pegInFormState.matches(['loading', 'goingHome'])">
+        Go Back
+      </v-btn>
+    </v-row>
     <v-row no-gutters class="d-flex justify-center">
-      <v-col class="d-flex justify-start">
-        <v-btn variant="text"
-        class="px-0"
-        :prepend-icon="mdiArrowLeft"
-        @click="back"
-        :disabled="pegInFormState.matches(['loading', 'goingHome'])">
-          Go Back
-        </v-btn>
-      </v-col>
+      <v-col />
       <v-col xs="10" sm="8" md="7" lg="5" xl="5" class="d-flex space-between flex-column">
         <btc-input class="mb-8" @valid-amount="checkValidAmount" />
         <rsk-destination-address class="mb-8" @valid-address="checkValidAddress"
