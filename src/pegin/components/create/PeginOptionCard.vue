@@ -4,13 +4,13 @@
     :class="{
       'selected': selected,
       'not-available': flyoverNotAvailable,
-    }" class="d-flex flex-column ga-4 pa-6 fill-height w-100 form">
+    }" class="d-flex flex-column ga-4 pa-6 fill-height w-100">
     <div v-if="flyoverNotAvailable"
       class="not-available-text d-flex align-center justify-center pa-8 text-center">
       <slot />
     </div>
     <v-row no-gutters>
-      <v-col cols="8" class="d-flex justify-start">
+      <v-col cols="8" class="d-flex justify-start align-center">
         <span class="text-body-sm">
           Estimated value to receive
         </span>
@@ -183,18 +183,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped>
-.text-body-details {
-  font-weight: 500;
-  font-size: 14px;
-  line-height: 20px;
-  letter-spacing: -1%;
-}
-.text-body-amount {
-  font-weight: 700;
-  font-size: 28px;
-  line-height: 120%;
-  letter-spacing: 0%;
-}
-</style>
