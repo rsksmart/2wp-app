@@ -6,6 +6,7 @@ import { useStore } from 'vuex';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import Home from '@/common/views/Home.vue';
 import * as constants from '@/common/store/constants';
+import { isMobileDevice } from '@/common/utils';
 
 async function checkAcceptedTerms(
   from: RouteLocationNormalized,
@@ -41,11 +42,24 @@ function checkRSKConnection(
   }
 }
 
+function checkForMobileDevice(
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized,
+  next: NavigationGuardNext,
+) {
+  if (isMobileDevice()) {
+    next({ name: 'StatusSearch' });
+  } else {
+    next();
+  }
+}
+
 const routes: Readonly<RouteRecordRaw[]> = [
   {
     path: '/',
     name: 'Home',
     component: Home,
+    beforeEnter: [checkForMobileDevice],
   },
   {
     path: '/status/txId/:txId',
@@ -63,19 +77,19 @@ const routes: Readonly<RouteRecordRaw[]> = [
     path: '/pegin',
     name: 'PegIn',
     component: () => import(/* webpackChunkName: "pegin" */ '../../pegin/views/PegIn.vue'),
-    beforeEnter: [checkAcceptedTerms],
+    beforeEnter: [checkForMobileDevice, checkAcceptedTerms],
   },
   {
     path: '/pegout',
     name: 'PegOut',
     component: () => import(/* webpackChunkName: "pegout" */ '../../pegout/views/PegOut.vue'),
-    beforeEnter: [checkAcceptedTerms, checkRSKConnection],
+    beforeEnter: [checkAcceptedTerms, checkRSKConnection, checkForMobileDevice],
   },
   {
     path: '/pegin/:wallet/create',
     name: 'Create',
     component: () => import(/* webpackChunkName: "pegin-create" */ '../../pegin/views/Create.vue'),
-    beforeEnter: [checkAcceptedTerms, checkFromRoute],
+    beforeEnter: [checkAcceptedTerms, checkFromRoute, checkForMobileDevice],
   },
   {
     path: '/:type/success/tx/:txId/:amount/:confirmations',
@@ -87,7 +101,7 @@ const routes: Readonly<RouteRecordRaw[]> = [
       amount: route.params.amount,
       confirmations: route.params.confirmations,
     }),
-    beforeEnter: [checkFromRoute],
+    beforeEnter: [checkFromRoute, checkForMobileDevice],
   },
 ];
 

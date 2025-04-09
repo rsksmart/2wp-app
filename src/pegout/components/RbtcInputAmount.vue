@@ -1,10 +1,10 @@
 <template>
-  <v-row no-gutters>
-    <span class="d-inline-block font-weight-bold my-3">
+  <v-row no-gutters class="d-flex flex-column pa-0">
+    <span class="text-body-sm mb-2">
       Amount to send
     </span>
   </v-row>
-  <v-row no-gutters align="center">
+  <v-row no-gutters>
     <v-text-field
       hide-details
       hide-spin-buttons
@@ -21,18 +21,14 @@
       @wheel.prevent
       @keydown="blockLetterKeyDown"
       @focus="focus = true"
-      @blur="focus = false"
-      >
+      @blur="focus = false">
         <template #prepend-inner>
-          <v-chip class="pl-2 pr-3">
-              <v-avatar class="mr-2 rbtc-icon">
-                <v-img :src="require('@/assets/exchange/rbtc.png')" />
-              </v-avatar>
-            {{ environmentContext.getRbtcTicker() }}
-          </v-chip>
+          <v-img :src="require('@/assets/exchange/rbtc_transparent.svg')"
+            :width="25" :height="25" contain />
         </template>
         <template #append-inner>
-          <div class="d-flex px-2 ga-1">
+          <span class="text-bw-500">{{ environmentContext.getRbtcTicker() }}</span>
+          <div class="pl-2">
             <v-chip variant="outlined" density="compact" @click="setMin">
               {{ minStrVal }} MIN
             </v-chip>
@@ -40,12 +36,8 @@
         </template>
     </v-text-field>
   </v-row>
-  <v-row class="my-0" v-if="stepState === 'error'">
-    <v-col cols="6" align-self="start">
-      <v-alert :text="amountErrorMessage" class="pa-2 mr-2"
-          type="warning" color="orange">
-        </v-alert>
-    </v-col>
+  <v-row no-gutters class="mt-1" v-if="stepState === 'error'">
+    <v-alert :text="amountErrorMessage" type="warning" color="orange" />
   </v-row>
 </template>
 
