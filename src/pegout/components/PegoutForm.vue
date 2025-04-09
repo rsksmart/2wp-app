@@ -1,6 +1,6 @@
 <template>
-  <v-container>
-    <v-row>
+  <v-container class="form">
+    <v-row no-gutters class="d-flex justify-start">
       <v-btn variant="text"
         :prepend-icon="mdiArrowLeft"
         @click="back"
@@ -8,81 +8,82 @@
         Go Back
       </v-btn>
     </v-row>
-    <v-row>
-      <v-col>
+    <v-row no-gutters class="d-flex justify-center">
+      <v-col />
+      <v-col xs="10" sm="8" md="7" lg="5" xl="5" class="d-flex space-between flex-column">
         <rbtc-input-amount
           @valid-amount="checkValidAmount"
           :clear="clearAmount" />
       </v-col>
+      <v-col />
     </v-row>
-    <template v-if="showStep">
-      <v-row>
-        <span class="font-weight-bold ma-4 mb-2
-        ">Select Mode</span>
-      </v-row>
-      <v-row>
-        <v-col cols="6" v-if="!flyoverIsEnabled" >
-          <pegout-option class="mr-2" flyover-not-available
-            :option-type="pegoutType.FLYOVER">
-            <template v-slot>
-              <h4 v-if="countdown === recaptchanNewTokenTime">
-                <span class="text-orange">Fast Mode</span> is unavailable at this time.
-              </h4>
-              <h4 v-else>
-                Fast mode will be <br> available in
-                <span class="text-orange">{{ countdown }} seconds.</span>
-              </h4>
-            </template>
-          </pegout-option>
-        </v-col>
-        <v-col cols="6" v-else v-for="(quote, index) in pegoutQuotes" :key="index" >
-          <pegout-option
-            :option-type="pegoutType.FLYOVER"
-            :class="index === 0 ? 'mr-2' : 'ml-2'"
-            :quote="quote"
-            :isWalletAuthorizedToSign="isWalletAuthorizedToSign"
-            @openAddressDialog="showAddressDialog = true"
-            @changeSelectedOption="changeSelectedOption"
-            :selectedOption="selectedOption === quote.quoteHash"
-            :quote-difference="quoteDifference"
+    <v-row no-gutters class="d-flex justify-center">
+      <v-col />
+      <v-col xs="10" sm="8" md="7" lg="5" xl="5" class="d-flex space-between flex-column">
+        <template v-if="showStep">
+          <v-row no-gutters class="mb-4 mt-8">
+            <span class="text-body-sm">Select mode to see exact amounts</span>
+          </v-row>
+          <v-row no-gutters v-if="!flyoverIsEnabled || pegoutQuotes.length === 0">
+            <pegout-option :option-type="pegoutType.FLYOVER" flyover-not-available>
+              <template v-slot>
+                <h4 v-if="countdown === recaptchanNewTokenTime">
+                  <span class="text-orange">Fast Mode</span> is unavailable at this time.
+                </h4>
+                <h4 v-else>
+                  Fast mode will be <br> available in
+                  <span class="text-orange">{{ countdown }} seconds.</span>
+                </h4>
+              </template>
+            </pegout-option>
+          </v-row>
+          <v-row no-gutters v-else v-for="(quote, index) in pegoutQuotes" :key="index">
+            <pegout-option
+              :option-type="pegoutType.FLYOVER"
+              :quote="quote"
+              :isWalletAuthorizedToSign="isWalletAuthorizedToSign"
+              @openAddressDialog="showAddressDialog = true"
+              @changeSelectedOption="changeSelectedOption"
+              :selectedOption="selectedOption === quote.quoteHash"
+              :quote-difference="quoteDifference" />
+          </v-row>
+          <v-row no-gutters class="mt-4">
+            <pegout-option
+              :option-type="pegoutType.POWPEG"
+              :quote="nativeQuote"
+              :isWalletAuthorizedToSign="isWalletAuthorizedToSign"
+              @openAddressDialog="showAddressDialog = true"
+              @changeSelectedOption="changeSelectedOption"
+              :selectedOption="selectedOption === ''"
+              :quote-differences="quoteDifference"
             />
-        </v-col>
-        <v-col cols="6">
-          <pegout-option class="ml-2"
-            :option-type="pegoutType.POWPEG"
-            :quote="nativeQuote"
-            :isWalletAuthorizedToSign="isWalletAuthorizedToSign"
-            @openAddressDialog="showAddressDialog = true"
-            @changeSelectedOption="changeSelectedOption"
-            :selectedOption="selectedOption === ''"
-            :quote-differences="quoteDifference"
-            />
-        </v-col>
-      </v-row>
-    </template>
-    <v-row v-else-if="loadingQuotes" class="pt-4 justify-center">
-      <v-progress-circular
-        :size="250"
-        :width="18"
-        color="warning"
-        indeterminate>
-        Searching Options...
-      </v-progress-circular>
-    </v-row>
-    <v-row justify="end">
-        <v-col cols="auto">
+          </v-row>
+          <v-row no-gutters class="d-flex justify-end mt-5">
             <v-btn-rsk v-if="!pegOutFormState.matches(['loading'])"
             @click="executeRecaptcha"
-            :disabled="!isValid
-              || pegOutFormState.matches(['goingHome'])"
-            >
-            <template #append>
-              <v-icon :icon="mdiArrowRight" />
-            </template>
-            Send
-          </v-btn-rsk>
-        </v-col>
-      </v-row>
+            :disabled="!isValid || pegOutFormState.matches(['goingHome'])"
+            class="align-self-end text-body-1">
+              <template #append>
+                <v-icon :icon="mdiArrowRight" />
+              </template>
+                Send
+            </v-btn-rsk>
+            <v-progress-circular class="align-self-end" v-else indeterminate />
+          </v-row>
+        </template>
+        <v-row no-gutters v-else-if="loadingQuotes" class="justify-center mt-4">
+          <v-progress-circular
+            :size="250"
+            :width="18"
+            color="warning"
+            indeterminate>
+            Searching Options...
+          </v-progress-circular>
+        </v-row>
+      </v-col>
+      <v-col />
+    </v-row>
+
     <!-- Address Dialog -->
     <v-row v-if="showAddressDialog">
       <address-dialog @closeDialog="showAddressDialog = false"/>
@@ -207,7 +208,7 @@ export default defineComponent({
     const selectedOption = ref<string>('');
     const quoteDiffPercentage = EnvironmentAccessorService.getEnvironmentVariables()
       .flyoverPegoutDiffPercentage;
-    const clearStore = useAction('pegInTx', constants.PEGOUT_TX_CLEAR_STATE);
+    const clearStore = useAction('pegOutTx', constants.PEGOUT_TX_CLEAR_STATE);
     const clearSessionState = useAction('web3Session', constants.WEB3_SESSION_CLEAR_ACCOUNT);
     const getAvailableLiquidity = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_GET_AVAILABLE_LIQUIDITY);
     const clearQuotes = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_CLEAR_QUOTES);
