@@ -1,7 +1,6 @@
 <template>
   <v-app class="h-screen">
-    <mobile v-if="isMobileDevice()" />
-    <div class="d-flex flex-column h-100" v-else>
+    <div class="d-flex flex-column h-100">
       <top />
       <div class="bg-background flex-grow-1">
         <router-view @update:showDialog="showTermsDialog" />
@@ -18,20 +17,17 @@ import {
 } from 'vue';
 import Top from '@/common/components/layouts/Top.vue';
 import FooterRsk from '@/common/components/layouts/Footer.vue';
-import Mobile from '@/common/views/Mobile.vue';
 import TermsDialog from '@/common/components/common/TermsDialog.vue';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import * as constants from '@/common/store/constants';
 import { useAction } from '@/common/store/helper';
 import { vuetifyNonce } from '@/common/plugins/vuetify';
-import { isMobileDevice } from '@/common/utils';
 
 export default {
   name: 'App',
   components: {
     Top,
     FooterRsk,
-    Mobile,
     TermsDialog,
   },
   setup() {
@@ -106,7 +102,6 @@ export default {
     return {
       showTermsDialog,
       showTermsAndConditions,
-      isMobileDevice,
     };
   },
 };

@@ -1,5 +1,5 @@
 <template>
-  <v-row no-gutters class="d-flex flex-column pa-0 form">
+  <v-row no-gutters class="d-flex flex-column pa-0">
     <span class="text-body-sm mb-2">
       Amount to send
     </span>
