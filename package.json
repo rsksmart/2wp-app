@@ -23,6 +23,8 @@
     "@mdi/js": "^6.9.96",
     "@rsksmart/bridges-core-sdk": "^0.4.2",
     "@rsksmart/flyover-sdk": "^1.6.3",
+    "@reown/appkit": "^1.7.2",
+    "@reown/appkit-adapter-ethers5": "^1.7.2",
     "@rsksmart/rlogin": "^1.6.1",
     "@rsksmart/rlogin-ledger-provider": "^1.0.5-alpha",
     "@rsksmart/rlogin-trezor-provider": "^1.0.5",
