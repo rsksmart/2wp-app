@@ -114,8 +114,8 @@
   },
   "overrides": {
     "@vue/cli-plugin-unit-jest": {
-        "ts-jest": "$ts-jest",
-        "@vue/vue3-jest": "$@vue/vue3-jest"
+      "ts-jest": "$ts-jest",
+      "@vue/vue3-jest": "$@vue/vue3-jest"
     }
   }
 }
