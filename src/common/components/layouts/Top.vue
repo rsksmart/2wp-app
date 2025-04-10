@@ -7,8 +7,9 @@
       <h1 class="text-purple text-h5">PowPeg</h1>
     </div>
     <div class="d-flex align-center ga-5">
+      <appkit-button />
       <peg-in-account-select v-if="isPeginSelected && walletDataReady"/>
-      <div class="d-flex align-center ga-2" v-else-if="truncatedAccount && accountBalance">
+      <!-- <div class="d-flex align-center ga-2" v-else-if="truncatedAccount && accountBalance">
         <v-btn variant="text" size="small" density="compact" rounded="full" :icon="mdiContentCopy"
           @click="copyFullAccountAddress"
         />
@@ -22,7 +23,7 @@
         </span>
         <v-btn variant="flat" size="x-small" color="theme-primary" rounded="full" :icon="mdiLinkOff"
           @click="disconnectWallet" />
-      </div>
+      </div> -->
       <label for="theme" class="theme-switch">
         <input id="theme" type="checkbox" v-model="themeLight">
         <span class="slider"></span>
