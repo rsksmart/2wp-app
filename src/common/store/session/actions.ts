@@ -16,6 +16,7 @@ import {
 import { ethers, providers } from 'ethers';
 import { markRaw } from 'vue';
 import { toUtf8Bytes } from 'ethers/lib/utils';
+import { useWallet } from '@/common/composables/useWallet';
 
 export const actions: ActionTree<SessionState, RootState> = {
   [constants.SESSION_CONNECT_WEB3]: ({ commit, state, dispatch }): Promise<void> => {
@@ -70,10 +71,11 @@ export const actions: ActionTree<SessionState, RootState> = {
     commit(constants.SESSION_SET_TX_TYPE, peg);
   },
   [constants.SESSION_SIGN_MESSAGE]:
-    async ({ commit, state }, messageToBeSigned: string): Promise<void> => {
-      if (state.ethersProvider) {
+    async ({ commit }, messageToBeSigned: string): Promise<void> => {
+      const { address, provider } = useWallet();
+      if (provider.value) {
         const messageHash = ethers.utils.keccak256(toUtf8Bytes(messageToBeSigned));
-        const signature = await state.ethersProvider.send('personal_sign', [messageHash, state.account || '0', '']);
+        const signature = await provider.value.send('personal_sign', [messageHash, address.value, '']);
         const btcAddress = getBtcAddressFromSignedMessage(signature, messageHash || '');
         commit(constants.SESSION_SET_BTC_ACCOUNT, btcAddress);
       }
