@@ -69,6 +69,7 @@ import { useGetter, useState, useStateAttribute } from '@/common/store/helper';
 import { blockConfirmationsToTimeString, truncateString } from '@/common/utils';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { PeginQuote, PegInTxState, SatoshiBig } from '@/common/types';
+import { PowPegMode } from '@/common/store/constants';
 
 export default defineComponent({
   name: 'PeginOptionCard',
@@ -107,7 +108,7 @@ export default defineComponent({
 
     const PeginOptions = {
       POWPEG: {
-        title: 'Native Mode',
+        title: PowPegMode.NATIVE,
         label: 'Powered by PowPeg',
         subtitleColor: 'purple',
         link: 'https://dev.rootstock.io/rsk/architecture/powpeg/',
@@ -118,7 +119,7 @@ export default defineComponent({
         valueToReceive: () => pegInTxState.value.amountToTransfer,
       },
       FLYOVER: {
-        title: 'Fast Mode',
+        title: PowPegMode.FAST,
         label: 'Powered by PowPeg + Flyover',
         subtitleColor: 'orange',
         link: 'https://dev.rootstock.io/concepts/rif-suite/#meet-the-suite',

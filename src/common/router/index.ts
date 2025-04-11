@@ -72,15 +72,6 @@ const routes: Readonly<RouteRecordRaw[]> = [
     beforeEnter: [checkAcceptedTerms, checkRSKConnection],
   },
   {
-    path: '/pegout/:type/:wallet/success',
-    name: 'PegOutSuccess',
-    component: () => import(/* webpackChunkName: "pegout-success" */ '../../pegout/views/SuccessPegout.vue'),
-    props: (route) => ({
-      type: route.params.type,
-    }),
-    beforeEnter: [checkFromRoute],
-  },
-  {
     path: '/pegin/:wallet/create',
     name: 'Create',
     component: () => import(/* webpackChunkName: "pegin-create" */ '../../pegin/views/Create.vue'),
@@ -95,6 +86,15 @@ const routes: Readonly<RouteRecordRaw[]> = [
       txId: route.params.txId,
       amount: route.params.amount,
       confirmations: route.params.confirmations,
+    }),
+    beforeEnter: [checkFromRoute],
+  },
+  {
+    path: '/sendQr/:network',
+    name: 'QrView',
+    component: () => import(/* webpackChunkName: "qr-code" */ '../views/QrView.vue'),
+    props: (route) => ({
+      network: route.params.network,
     }),
     beforeEnter: [checkFromRoute],
   },

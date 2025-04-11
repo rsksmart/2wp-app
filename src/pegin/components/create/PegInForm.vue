@@ -56,16 +56,32 @@
         Searching Options...
       </v-progress-circular>
     </v-row>
-    <v-btn-rsk v-if="!pegInFormState.matches(['loading'])"
-      @click="sendTx"
-      :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])"
-      class="align-self-end text-body-1"
-      >
-      <template #append>
-        <v-icon :icon="mdiArrowRight" />
-      </template>
-        Send
-    </v-btn-rsk>
+    <v-row no-gutters v-if="!pegInFormState.matches(['loading'])">
+      <v-col>
+        <v-btn-rsk
+          @click="sendTx(true)"
+          :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])"
+          class="align-self-start text-body-1"
+          >
+          <template #append>
+            <v-icon :icon="mdiArrowRight" />
+          </template>
+            Send from other wallet
+        </v-btn-rsk>
+      </v-col>
+      <v-col class="d-flex justify-end">
+        <v-btn-rsk
+          @click="sendTx(false)"
+          :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])"
+          class="align-self-end text-body-1"
+          >
+          <template #append>
+            <v-icon :icon="mdiArrowRight" />
+          </template>
+            Send
+        </v-btn-rsk>
+      </v-col>
+    </v-row>
     <v-progress-circular class="align-self-end" v-else indeterminate />
   </v-container>
   <div id="recaptcha" class="g-recaptcha"
@@ -108,6 +124,7 @@ import FullTxErrorDialog from '@/common/components/exchange/FullTxErrorDialog.vu
 import RskDestinationAddress from '@/pegin/components/create/RskDestinationAddress.vue';
 import { AcceptedQuote } from '@rsksmart/flyover-sdk';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
   name: 'PegInForm',
@@ -155,6 +172,8 @@ export default defineComponent({
     const countdown = useStateAttribute<number>('web3Session', 'grecaptchaCountdown');
     const recaptchanNewTokenTime = EnvironmentAccessorService.getEnvironmentVariables()
       .grecaptchaTime;
+    const toQr = ref(false);
+    const router = useRouter();
 
     const enoughAmountFlyover = computed(() => {
       if (!selectedQuote.value) {
@@ -217,15 +236,19 @@ export default defineComponent({
         startCountdown();
         acceptQuote()
           .then((acceptedQuote) => {
-            context.emit('createTx', {
-              amountToTransferInSatoshi: selectedQuote.value?.valueToTransfer,
-              refundAddress: '',
-              recipient: '',
-              feeLevel: pegInTxState.value.selectedFee,
-              accountType: pegInTxState.value.selectedAccount,
-              btcRecipient: acceptedQuote.bitcoinDepositAddressHash,
-              peginType: constants.peginType.FLYOVER,
-            });
+            if (toQr.value) {
+              router.push({ name: 'QrView', params: { network: constants.Networks.BITCOIN } });
+            } else {
+              context.emit('createTx', {
+                amountToTransferInSatoshi: selectedQuote.value?.valueToTransfer,
+                refundAddress: '',
+                recipient: '',
+                feeLevel: pegInTxState.value.selectedFee,
+                accountType: pegInTxState.value.selectedAccount,
+                btcRecipient: acceptedQuote.bitcoinDepositAddressHash,
+                peginType: constants.peginType.FLYOVER,
+              });
+            }
           }).catch(handleError);
       }
       pegInFormState.value.send('fill');
@@ -316,7 +339,8 @@ export default defineComponent({
       return false;
     });
 
-    function sendTx() {
+    function sendTx(sendToQr:boolean) {
+      toQr.value = sendToQr;
       if (props.isFlyoverAvailable && selected.value === constants.peginType.FLYOVER) {
         window.grecaptcha.execute();
       } else {

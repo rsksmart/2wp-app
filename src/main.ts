@@ -35,6 +35,7 @@ const defaultEnvironmentVariables = {
   flyoverProviderId: 2,
   grecaptchaTime: constants.RECAPTCHA_NEW_TOKEN_TIME,
   cspConfiguration: 'https://testnet.lps.tekscapital.com https://staging.lps.tekscapital.com',
+  apiResponseTimeout: 5000,
 };
 
 EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);

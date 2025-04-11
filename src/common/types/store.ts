@@ -7,6 +7,7 @@ import { PegOutTxState } from '@/common/types/pegOutTx';
 import { FlyoverPeginState } from '@/common/types/Flyover/FlyoverPegin';
 import { FlyoverPegoutState } from '@/common/types/Flyover/FlyoverPegout';
 import { StatusState } from '@/common/types/Status';
+import { PeginQuoteDTO2WP, PegoutQuoteDTO2WP } from './Flyover';
 
 export interface RootState {
   pegInTx?: PegInTxState,
@@ -22,11 +23,11 @@ export interface BtcPeginStatus {
   txId: string;
   creationDate: Date;
   federationAddress: string;
-  amountTransferred: number;
+  amountTransferred: string;
   refundAddress: string;
-  confirmations: number;
-  requiredConfirmation: number;
-  fees: number;
+  confirmations: string;
+  requiredConfirmation: string;
+  fees: string;
   senderAddress: string;
 }
 
@@ -38,7 +39,7 @@ export enum RskStatus {
 
 export interface RskPeginStatus {
   recipientAddress: string;
-  confirmations: number;
+  confirmations: string;
   createOn: Date;
   status: RskStatus;
 }
@@ -65,13 +66,13 @@ export interface PegoutStatusDataModel {
   rskTxHash: string;
   rskSenderAddress: string;
   btcRecipientAddress: string;
-  valueRequestedInSatoshis: number;
-  valueInSatoshisToBeReceived: number;
-  feeInSatoshisToBePaid?: number;
+  valueRequestedInSatoshis: string;
+  valueInSatoshisToBeReceived: string;
+  feeInSatoshisToBePaid?: string;
   status: PegoutStatus;
   btcRawTransaction: string;
-  fees: number;
-  estimatedFee: SatoshiBig;
+  fees: string;
+  estimatedFee: string;
   btcTxId: string;
   reason?: RejectedPegoutReasons;
 }
@@ -80,13 +81,15 @@ export interface FlyoverStatusModel {
   txHash: string;
   type: string;
   date: Date;
-  amount: number;
-  fee: number;
-  blockToBeFinished: number;
+  amount: string;
+  fee: string;
+  blockToBeFinished: string;
   status: string;
   senderAddress: string;
   recipientAddress: string;
   quoteHash: string;
+  aceptedQuoteSignature: string;
+  quote: PeginQuoteDTO2WP | PegoutQuoteDTO2WP;
 }
 
 export enum TxStatusType {
@@ -99,6 +102,13 @@ export enum TxStatusType {
   UNSET_STATUS = 'UNSET_STATUS',
   NOT_FOUND = 'NOT_FOUND',
   BLOCKBOOK_FAILED = 'BLOCKBOOK_FAILED',
+}
+
+export enum TxStatusStep {
+  EMPTY = '',
+  IN_PROGRESS = 'In progress',
+  COMPLETED = 'Completed',
+  FAILED = 'Failed',
 }
 
 export interface TxStatus {

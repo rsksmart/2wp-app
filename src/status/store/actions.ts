@@ -10,7 +10,7 @@ import { EnvironmentAccessorService } from '@/common/services/enviroment-accesso
 import * as constants from '@/common/store/constants';
 import { ApiService } from '@/common/services';
 import { BridgeService } from '@/common/services/BridgeService';
-import { getEstimatedFee } from '@/common/utils';
+import { getEstimatedFee, promiseWithTimeout } from '@/common/utils';
 
 export const actions: ActionTree<TxStatus, RootState> = {
   [constants.STATUS_CLEAR]: ({ commit }) => {
@@ -19,8 +19,14 @@ export const actions: ActionTree<TxStatus, RootState> = {
   [constants.STATUS_GET_TX_STATUS]:
     ({ commit, dispatch }, txId: string) => new Promise((resolve, reject) => {
       Promise.all([
-        ApiService.getTxStatus(txId),
-        dispatch(constants.STATUS_GET_ESTIMATED_FEE),
+        promiseWithTimeout(
+          ApiService.getTxStatus(txId),
+          EnvironmentAccessorService.getEnvironmentVariables().apiResponseTimeout,
+        ),
+        promiseWithTimeout(
+          dispatch(constants.STATUS_GET_ESTIMATED_FEE),
+          EnvironmentAccessorService.getEnvironmentVariables().apiResponseTimeout,
+        ),
       ])
         .then(([status]) => {
           commit(constants.STATUS_SET_TX_DETAILS, status.txDetails);

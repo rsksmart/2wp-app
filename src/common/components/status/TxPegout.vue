@@ -1,11 +1,13 @@
 <template>
-  <v-container>
-    <v-row class="mb-4">
+  <v-container class="px-0">
+    <v-row class="mb-16">
       <status-progress-bar :isFlyover="isFlyover" :txNotFound="txNotFound"
-                           :txWithError="txWithError"/>
+                           :txWithError="txWithError" :details="summary" />
     </v-row>
+    <v-row class="mt-16">
       <status-summary :details="summary" :type="typeSummary"
                       :txWithError="txWithError" />
+    </v-row>
   </v-container>
 </template>
 
@@ -24,6 +26,10 @@ import {
 import StatusProgressBar from '@/common/components/status/StatusProgressBar.vue';
 import { useStateAttribute } from '@/common/store/helper';
 import StatusSummary from '@/common/components/status/StatusSummary.vue';
+import {
+  toWeiBigIntString,
+  toSatoshiBigIntString,
+} from '@/common/utils';
 
 export default defineComponent({
   name: 'TxPegout',
@@ -50,29 +56,34 @@ export default defineComponent({
     const amountToBeReceived = computed((): string => {
       const status = txDetails.value as PegoutStatusDataModel;
       if (isRejectedPegout.value) {
-        return '';
+        return '0';
       }
       if (status.valueInSatoshisToBeReceived) {
         return new SatoshiBig(status.valueInSatoshisToBeReceived, 'satoshi').toBTCTrimmedString();
       }
-      const requestedAmount = new SatoshiBig(status.valueRequestedInSatoshis, 'satoshi');
-      return requestedAmount.minus(pegOutEstimatedFee.value).toBTCTrimmedString();
+      const requestedAmount = new WeiBig(status.valueRequestedInSatoshis, 'wei');
+      const requestedAmountString = toWeiBigIntString(requestedAmount.toRBTCTrimmedString());
+      const pegOutEstimatedString = toWeiBigIntString(pegOutEstimatedFee.value
+        .toBTCTrimmedString());
+      const amountToReceive = new WeiBig(BigInt(requestedAmountString) - BigInt(pegOutEstimatedString), 'wei');
+      return amountToReceive.toRBTCTrimmedString();
     });
 
     const txPegoutSummary = computed((): NormalizedSummary => {
       const status = txDetails.value as PegoutStatusDataModel;
-      const valueRequested = new SatoshiBig(status.valueRequestedInSatoshis, 'satoshi').toBTCTrimmedString();
-      const amountSent = new WeiBig(valueRequested, 'rbtc').plus(calculatedGasFee.value).toRBTCTrimmedString();
+      const valueRequested = new SatoshiBig(status.valueRequestedInSatoshis, 'satoshi');
+      const amountSent = new WeiBig(toSatoshiBigIntString(valueRequested.toBTCTrimmedString()), 'wei').plus(calculatedGasFee.value);
       const btcTxId = status.status === PegoutStatus.RELEASE_BTC ? status.btcTxId : '';
       return {
-        amountFromString: amountSent,
+        amountFromString: isRejectedPegout.value ? valueRequested.toBTCTrimmedString()
+          : amountSent.toRBTCTrimmedString(),
         amountReceivedString: amountToBeReceived.value,
-        gas: calculatedGasFee.value,
-        fee: Number(new SatoshiBig(status.feeInSatoshisToBePaid ?? 0, 'satoshi').toBTCTrimmedString()),
+        gas: calculatedGasFee.value.toRBTCTrimmedString(),
+        fee: status.feeInSatoshisToBePaid ?? '0',
         recipientAddress: status.btcRecipientAddress,
         senderAddress: status.rskSenderAddress,
         txId: status.rskTxHash ? status.rskTxHash : props.txId,
-        estimatedFee: Number(pegOutEstimatedFee.value.toBTCTrimmedString()),
+        estimatedFee: pegOutEstimatedFee.value.toBTCTrimmedString(),
         status: status.status,
         btcTxId,
       };
@@ -80,14 +91,14 @@ export default defineComponent({
 
     const flyoverPegoutSummary = computed((): NormalizedSummary => {
       const status = txDetails.value as FlyoverStatusModel;
-      const amount = new SatoshiBig(status.amount, 'btc');
-      const fee = new SatoshiBig(status.fee, 'btc');
-      const total = amount.plus(fee).toBTCTrimmedString();
-      const amountAsString = amount.toBTCTrimmedString();
+      const amount = toWeiBigIntString(status.amount);
+      const fee = toWeiBigIntString(status.fee);
+      const total = new WeiBig(amount, 'wei')
+        .plus(new WeiBig(fee, 'wei'));
       return {
-        amountFromString: total,
-        amountReceivedString: amountAsString,
-        fee: Number(fee.toBTCTrimmedString()),
+        amountFromString: total.toRBTCTrimmedString(),
+        amountReceivedString: status.amount,
+        fee: status.fee,
         recipientAddress: status.recipientAddress,
         senderAddress: status.senderAddress,
         txId: status.txHash,

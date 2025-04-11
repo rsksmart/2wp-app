@@ -69,20 +69,28 @@
         Searching Options...
       </v-progress-circular>
     </v-row>
-    <v-row justify="end">
-        <v-col cols="auto">
-            <v-btn-rsk v-if="!pegOutFormState.matches(['loading'])"
-            @click="executeRecaptcha"
-            :disabled="!isValid
-              || pegOutFormState.matches(['goingHome'])"
-            >
-            <template #append>
-              <v-icon :icon="mdiArrowRight" />
-            </template>
-            Send
-          </v-btn-rsk>
-        </v-col>
-      </v-row>
+    <v-row justify="end" v-if="!pegOutFormState.matches(['loading'])"
+          :disabled="!isValid
+            || pegOutFormState.matches(['goingHome'])">
+      <v-col cols="auto">
+        <v-btn-rsk
+          @click="sendTx(true)">
+          <template #append>
+            <v-icon :icon="mdiArrowRight" />
+          </template>
+          Send from other wallet
+        </v-btn-rsk>
+      </v-col>
+      <v-col cols="auto">
+        <v-btn-rsk
+          @click="sendTx(false)">
+          <template #append>
+            <v-icon :icon="mdiArrowRight" />
+          </template>
+          Send
+        </v-btn-rsk>
+      </v-col>
+    </v-row>
     <!-- Address Dialog -->
     <v-row v-if="showAddressDialog">
       <address-dialog @closeDialog="showAddressDialog = false"/>
@@ -146,12 +154,12 @@ import {
 import {
   appendRecaptcha, Machine, ServiceError, validateAddress,
 } from '@/common/utils';
-import router from '@/common/router';
 import ApiService from '@/common/services/ApiService';
 import { FlyoverService } from '@/common/services';
 import FullTxErrorDialog from '@/common/components/exchange/FullTxErrorDialog.vue';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { providers } from 'ethers';
+import { useRouter } from 'vue-router';
 import PegoutOption from './PegoutOption.vue';
 
 export default defineComponent({
@@ -179,13 +187,15 @@ export default defineComponent({
     const isWalletAuthorizedToSign = ref(true);
     const diffShown = ref(false);
     const clearAmount = ref(false);
+    const toQr = ref(false);
+    const router = useRouter();
 
     const pegOutTxState = useState<PegOutTxState>('pegOutTx');
     const flyoverPegoutState = useState<FlyoverPegoutState>('flyoverPegout');
     const flyoverService = useStateAttribute<FlyoverService>('flyoverPegout', 'flyoverService');
     const account = useStateAttribute<string>('web3Session', 'account');
     const balance = useStateAttribute<WeiBig>('web3Session', 'balance');
-    const sendTx = useAction('pegOutTx', constants.PEGOUT_TX_SEND);
+    const sendPowPegTx = useAction('pegOutTx', constants.PEGOUT_TX_SEND);
     const sendFlyoverTx = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ACCEPT_AND_SEND_QUOTE);
     const sendFlyoverTxWithConditionChanged = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ACCEPT_AND_SEND_QUOTE_WITH_CHANGED_CONDITIONS);
     const initFlyoverTx = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_INIT);
@@ -215,6 +225,7 @@ export default defineComponent({
     const liquidityProviders = useStateAttribute<LiquidityProvider2WP[]>('flyoverPegout', 'liquidityProviders');
     const startCountdown = useAction('web3Session', constants.SESSION_COUNTDOWN_GRECAPTCHA_TIME);
     const countdown = useStateAttribute<number>('web3Session', 'grecaptchaCountdown');
+    const acceptQuote = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ACCEPT_QUOTE);
     const recaptchanNewTokenTime = EnvironmentAccessorService.getEnvironmentVariables()
       .grecaptchaTime;
 
@@ -361,61 +372,71 @@ export default defineComponent({
       return provider?.name ?? '';
     }
 
-    function getProviderFee(): string {
+    function getProviderFee(): WeiBig {
       return selectedQuote.value.quote.productFeeAmount
-        .plus(selectedQuote.value.quote.callFee)
-        .toRBTCTrimmedString();
+        .plus(selectedQuote.value.quote.callFee);
     }
 
     const registerFlyover = computed<TxInfo>(() => {
       const pegoutQuote = selectedQuote.value.quote;
       const dbQuote: PegoutQuoteDbModel = {
-        agreementTimestamp: pegoutQuote.agreementTimestamp,
+        agreementTimestamp: pegoutQuote.agreementTimestamp.toString(),
         btcRefundAddress: pegoutQuote.btcRefundAddress,
-        callFeeOnWei: pegoutQuote.callFee.toWeiNumberUnsafe(),
+        callFeeOnWei: pegoutQuote.callFee.toString(),
         depositAddr: pegoutQuote.depositAddr,
-        depositConfirmations: pegoutQuote.depositConfirmations,
-        depositDateLimit: pegoutQuote.depositDateLimit,
-        expireBlocks: pegoutQuote.expireBlocks,
-        expireDate: pegoutQuote.expireDate,
-        gasFeeOnWei: pegoutQuote.gasFee.toWeiNumberUnsafe(),
+        depositConfirmations: pegoutQuote.depositConfirmations.toString(),
+        depositDateLimit: pegoutQuote.depositDateLimit.toString(),
+        expireBlocks: pegoutQuote.expireBlocks.toString(),
+        expireDate: pegoutQuote.expireDate.toString(),
+        gasFeeOnWei: pegoutQuote.gasFee.toString(),
         lbcAddress: pegoutQuote.lbcAddress,
         liquidityProviderRskAddress: pegoutQuote.liquidityProviderRskAddress,
         lpBtcAddress: pegoutQuote.lpBtcAddr,
-        nonce: Number(pegoutQuote.nonce),
-        penaltyFeeOnWei: pegoutQuote.penaltyFee.toWeiNumberUnsafe(),
-        productFeeAmountOnWei: pegoutQuote.productFeeAmount.toWeiNumberUnsafe(),
+        nonce: pegoutQuote.nonce.toString(),
+        penaltyFeeOnWei: pegoutQuote.penaltyFee.toString(),
+        productFeeAmountOnWei: pegoutQuote.productFeeAmount.toString(),
         rskRefundAddress: pegoutQuote.rskRefundAddress,
-        transferConfirmations: pegoutQuote.transferConfirmations,
-        transferTime: pegoutQuote.transferTime,
-        valueOnWei: pegoutQuote.value.toWeiNumberUnsafe(),
+        transferConfirmations: pegoutQuote.transferConfirmations.toString(),
+        transferTime: pegoutQuote.transferTime.toString(),
+        valueOnWei: pegoutQuote.value.toString(),
       };
       return {
         txHash: flyoverPegoutState.value.txHash as string,
         type: TxStatusType.PEGOUT.toLowerCase(),
-        value: Number(flyoverPegoutState.value.amountToTransfer.toRBTCTrimmedString()),
+        value: flyoverPegoutState.value.amountToTransfer.toString(),
         wallet: currentWallet.value ? currentWallet.value.formal_name : '',
-        rskGas: Number(selectedQuote.value.quote.gasFee.toRBTCTrimmedString()),
-        fee: Number(getProviderFee()),
+        rskGas: selectedQuote.value.quote.gasFee.toString(),
+        fee: getProviderFee().toString(),
         provider: getLPName(),
         details: {
           senderAddress: account.value,
           recipientAddress: flyoverPegoutState.value.btcRecipientAddress,
-          blocksToCompleteTransaction: selectedQuote.value.quote.depositConfirmations,
+          blocksToCompleteTransaction: selectedQuote.value.quote.depositConfirmations.toString(),
         },
         quote: dbQuote,
         quoteHash: selectedQuote.value.quoteHash,
+        acceptedQuoteSignature: flyoverPegoutState.value.acceptedQuoteSignature,
       };
     });
 
     const registerPegout = computed(() => ({
       txHash: pegOutTxState.value.txHash as string,
       type: TxStatusType.PEGOUT.toLowerCase(),
-      value: Number(pegOutTxState.value.amountToTransfer.toRBTCTrimmedString()),
+      value: pegOutTxState.value.amountToTransfer.toString(),
       wallet: currentWallet.value ? currentWallet.value.formal_name : '',
-      btcEstimatedFee: Number(pegOutTxState.value.btcEstimatedFee.toBTCTrimmedString()),
-      rskGas: Number(pegOutTxState.value.calculatedFee.toRBTCTrimmedString()),
+      btcEstimatedFee: pegOutTxState.value.btcEstimatedFee.toString(),
+      rskGas: pegOutTxState.value.calculatedFee.toString(),
     }));
+
+    function acceptAndSendQr(quoteHash: string):Promise<void> {
+      return acceptQuote(quoteHash)
+        .then(() => {
+          router.push({
+            name: 'QrView',
+            params: { network: constants.Networks.ROOTSTOCK },
+          });
+        });
+    }
 
     async function send() {
       clearAmount.value = false;
@@ -427,8 +448,10 @@ export default defineComponent({
       try {
         if (quoteHash) {
           startCountdown();
-          await sendFlyoverTx(quoteHash);
-        } else await sendTx();
+          if (toQr.value) {
+            await acceptAndSendQr(quoteHash);
+          } else await sendFlyoverTx(quoteHash);
+        } else await sendPowPegTx();
         ApiService.registerTx(quoteHash ? registerFlyover.value : registerPegout.value);
         changePage(type);
       } catch (e) {
@@ -506,7 +529,8 @@ export default defineComponent({
       selectedOption.value = quoteHash;
     }
 
-    function executeRecaptcha() {
+    function sendTx(sendToQr:boolean) {
+      toQr.value = sendToQr;
       if (selectedQuoteHash.value) {
         window.grecaptcha.execute();
       } else {
@@ -580,7 +604,7 @@ export default defineComponent({
       isFlyoverReady,
       continueHandler,
       flyoverService,
-      executeRecaptcha,
+      sendTx,
       nativeQuote,
       pegoutType: constants.pegoutType,
       isValid,

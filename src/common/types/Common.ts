@@ -1,8 +1,7 @@
 import SatoshiBig from '@/common/types/SatoshiBig';
 import { Utxo } from '@/common/types/pegInTx';
-import { PegoutStatus, TxStatusType } from '@/common/types/store';
-import { FlyoverCallFunction, FlyoverCallResult, PegStatus } from '@/common/store/constants';
-import WeiBig from './WeiBig';
+import { PegoutStatus } from '@/common/types/store';
+import { PegStatus } from '@/common/store/constants';
 
 export interface Tx {
   coin: string;
@@ -115,12 +114,12 @@ export interface PsbtExtendedInput {
 export interface NormalizedSummary {
   amountFromString: string;
   amountReceivedString: string;
-  fee?: number;
-  estimatedFee?: number;
+  fee?: string;
+  estimatedFee?: string;
   recipientAddress: string;
   senderAddress?: string;
   txId?: string;
-  gas?: WeiBig;
+  gas?: string;
   refundAddress?: string;
   selectedAccount?: string;
   federationAddress?: string;
@@ -142,8 +141,20 @@ export interface XverseTx extends Tx {
   inputs: Array<{idx: number; address: string}>;
 }
 
-export interface FlyoverCall {
-  operationType?: TxStatusType.FLYOVER_PEGIN | TxStatusType.FLYOVER_PEGOUT,
-  functionType: FlyoverCallFunction.LPS | FlyoverCallFunction.QUOTE,
-  result: FlyoverCallResult.ERROR | FlyoverCallResult.SUCCESS,
+export enum LogEntryType {
+  Success = 'success',
+  Error = 'error',
+}
+
+export enum LogEntryOperation {
+  PeginNative = 'peginNative',
+  PeginFlyover = 'peginFlyover',
+  PegoutNative = 'pegoutNative',
+  PegoutFlyover = 'pegoutFlyover',
+}
+export interface LogEntry {
+  type: LogEntryType;
+  operation: LogEntryOperation;
+  location: string;
+  error?: Error,
 }
