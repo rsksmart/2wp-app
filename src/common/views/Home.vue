@@ -100,7 +100,7 @@
 </template>
 
 <script lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import * as constants from '@/common/store/constants';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
@@ -108,9 +108,7 @@ import { isAllowedCurrentBrowser } from '@/common/utils';
 import { Feature, FeatureNames, TransactionType } from '@/common/types';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import { mdiCloseCircleOutline } from '@mdi/js';
-import {
-  useAppKit, useAppKitAccount, useAppKitEvents,
-} from '@reown/appkit/vue';
+import { useWallet } from '../composables/useWallet';
 
 export default {
   name: 'HomeView',
@@ -140,26 +138,15 @@ export default {
       return feature?.value;
     });
 
-    const { open } = useAppKit();
-    const account = useAppKitAccount();
-    const events = useAppKitEvents();
-
-    watch(events, () => {
-      const { event } = events.data;
-      if (event === 'CONNECT_SUCCESS') {
-        router.push({ name: COMPONENTS[constants.PEG_OUT_TRANSACTION_TYPE] });
-      }
-    });
+    const { connect } = useWallet();
 
     async function selectConversion(txType: NonNullable<TransactionType>) {
       addPeg(txType);
       if (txType === constants.PEG_OUT_TRANSACTION_TYPE) {
-        if (!account.value.isConnected) {
-          open({ view: 'Connect' });
-          return;
-        }
+        connect();
+      } else {
+        router.push({ name: COMPONENTS[txType] });
       }
-      router.push({ name: COMPONENTS[txType] });
     }
 
     async function reconnect() {
