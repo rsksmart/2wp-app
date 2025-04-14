@@ -45,7 +45,7 @@
               @openAddressDialog="showAddressDialog = true"
               @changeSelectedOption="changeSelectedOption"
               :selectedOption="selectedOption === quote.quoteHash"
-              :quote-difference="quoteDifference" />
+              :quote-difference="actualDiffPercentage" />
           </v-row>
           <v-row no-gutters class="mt-4">
             <pegout-option
@@ -55,7 +55,7 @@
               @openAddressDialog="showAddressDialog = true"
               @changeSelectedOption="changeSelectedOption"
               :selectedOption="selectedOption === ''"
-              :quote-differences="quoteDifference"
+              :quote-differences="actualDiffPercentage"
             />
           </v-row>
           <v-row no-gutters class="d-flex justify-end mt-5">
@@ -226,7 +226,9 @@ export default defineComponent({
 
     const currentWallet = computed(() => walletInfo?.name ?? '');
 
-    const showQuoteDiff = computed(() => quoteDifference.value.percentage > quoteDiffPercentage
+    const actualDiffPercentage = computed(() => quoteDifference.value.percentage);
+
+    const showQuoteDiff = computed(() => actualDiffPercentage.value > quoteDiffPercentage
       && diffShown.value);
 
     const validAmountToReceive = computed((): boolean => estimatedBtcToReceive.value.gt(0));
@@ -554,6 +556,7 @@ export default defineComponent({
       sendingPegout,
       showStep,
       quoteDifference,
+      actualDiffPercentage,
       showQuoteDiff,
       mdiArrowLeft,
       selectedOption,

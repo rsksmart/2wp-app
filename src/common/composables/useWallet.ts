@@ -36,16 +36,6 @@ export function useWallet() {
     }
   }
 
-  const appKitProvider = useAppKitProvider<Provider>('eip155');
-  watch(appKitProvider, () => {
-    if (appKitProvider.walletProvider) {
-      const ethersProvider = new ethers.providers.Web3Provider(appKitProvider.walletProvider);
-      provider.value = markRaw(ethersProvider);
-    } else {
-      provider.value = null;
-    }
-  });
-
   async function setBalance() {
     if (!provider.value || !account.value.address) return;
 
@@ -60,6 +50,17 @@ export function useWallet() {
     }
   }
 
+  const appKitProvider = useAppKitProvider<Provider>('eip155');
+  watch(appKitProvider, () => {
+    if (appKitProvider.walletProvider) {
+      const ethersProvider = new ethers.providers.Web3Provider(appKitProvider.walletProvider);
+      provider.value = markRaw(ethersProvider);
+      setBalance().then(setAddress);
+    } else {
+      provider.value = null;
+    }
+  });
+
   const events = useAppKitEvents();
   watch(events, () => {
     if (events.data.event === 'CONNECT_SUCCESS') {
@@ -70,7 +71,7 @@ export function useWallet() {
         });
     }
     if (events.data.event === 'DISCONNECT_SUCCESS') {
-      router.push('/');
+      router?.push('/');
     }
   });
 
