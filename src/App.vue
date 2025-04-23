@@ -36,7 +36,8 @@ export default {
     TermsDialog,
   },
   setup() {
-    const projectId = process.env.VUE_APP_REOWN_PROJECT_ID as string; // TODO: use environment accessor service
+    const envVariables = EnvironmentAccessorService.getEnvironmentVariables();
+    const projectId = envVariables.reownProjectId;
     const metadata = {
       name: 'PowPeg App',
       description: 'Bridging Bitcoin and Rootstock',
@@ -73,14 +74,13 @@ export default {
     const getBtcPrice = useAction('pegInTx', constants.PEGIN_TX_ADD_BITCOIN_PRICE);
     const showTermsAndConditions = ref(false);
     const contentSecurityPolicy = computed((): string => {
-      const envVariables = EnvironmentAccessorService.getEnvironmentVariables();
       let response = '';
       response = `
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
       script-src 'self' 'nonce-${vuetifyNonce}' 'unsafe-eval';
       script-src-elem 'self' 'unsafe-inline' https://script.hotjar.com https://www.clarity.ms/s/* https://static.hotjar.com https://*.hotjar.com https://*.hotjar.io https://api.coingecko.com/ https://*.clarity.ms https://www.clarity.ms/ https://www.gstatic.com/ https://www.google.com/recaptcha/;
       img-src data: https: data: blob: https://walletconnect.org https://walletconnect.com https://secure.walletconnect.com https://secure.walletconnect.org;
-      connect-src 'self' 'unsafe-inline' https://www.google.com/recaptcha/ https://www.clarity.ms/s/0.7.16/clarity.js wss://* https://*.hotjar.com https://*.hotjar.io https://www.clarity.ms/s/* wss://*.hotjar.com ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} ${envVariables.cspConfiguration} https://api.coingecko.com/ https://*.clarity.ms https://www.clarity.ms/* https://rpc.walletconnect.com https://rpc.walletconnect.org https://relay.walletconnect.com https://relay.walletconnect.org wss://relay.walletconnect.com wss://relay.walletconnect.org https://pulse.walletconnect.com https://pulse.walletconnect.org https://api.web3modal.com https://api.web3modal.org;
+      connect-src 'self' 'unsafe-inline' https://www.google.com/recaptcha/ https://www.clarity.ms/s/0.7.16/clarity.js wss://* https://*.hotjar.com https://*.hotjar.io https://www.clarity.ms/s/* wss://*.hotjar.com ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} ${envVariables.cspConfiguration} https://api.coingecko.com/ https://*.clarity.ms https://www.clarity.ms/* https://rpc.walletconnect.com https://rpc.walletconnect.org https://relay.walletconnect.com https://relay.walletconnect.org wss://relay.walletconnect.com wss://relay.walletconnect.org https://pulse.walletconnect.com https://pulse.walletconnect.org https://api.web3modal.com https://api.web3modal.org https://public-node.testnet.rsk.co/ https://public-node.rsk.co;
       object-src 'none';
       frame-src https://connect.trezor.io https://www.google.com/ https://verify.walletconnect.com https://verify.walletconnect.org https://secure.walletconnect.com https://secure.walletconnect.org;
       worker-src 'none';
@@ -96,7 +96,6 @@ export default {
     }
 
     function appendClarity(): void {
-      const envVariables = EnvironmentAccessorService.getEnvironmentVariables();
       scriptTag = document.createElement('script');
       scriptTag.type = 'text/javascript';
       scriptTag.text = '(function(c,l,a,r,i,t,y){'
@@ -108,7 +107,6 @@ export default {
     }
 
     function appendHotjar(): void {
-      const envVariables = EnvironmentAccessorService.getEnvironmentVariables();
       hotjarScriptTag = document.createElement('script');
       hotjarScriptTag.type = 'text/javascript';
       hotjarScriptTag.text = '(function(h,o,t,j,a,r){'
