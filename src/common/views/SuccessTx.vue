@@ -108,7 +108,7 @@ export default defineComponent({
     }
 
     function toTxStatus() {
-      router.push({ name: 'Status', params: { txId: props.txId } });
+      router.push({ name: 'Status', params: { txId: props.txId, txType: props.type } });
     }
 
     function copyToClipboard() {
