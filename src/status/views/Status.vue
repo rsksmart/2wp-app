@@ -215,6 +215,17 @@ export default defineComponent({
       return message;
     });
 
+    const types = [
+      TxStatusType.PEGIN,
+      TxStatusType.PEGOUT,
+      TxStatusType.FLYOVER_PEGIN,
+      TxStatusType.FLYOVER_PEGOUT,
+    ];
+
+    const txType = computed(
+      () => types.find((type) => type === status.value.type),
+    );
+
     function getPegStatus() {
       if (!isValidTxId.value) clean();
       else if (route.path !== `/status/txId/${txId.value}`) {
@@ -223,10 +234,9 @@ export default defineComponent({
           params: { txId: txId.value },
         });
       } else if (txId.value !== '' && isValidTxId.value) {
-        clean();
         typingSearch.value = false;
         loading.value = true;
-        setTxStatus(txId.value)
+        setTxStatus({ txId: txId.value, txType: txType.value })
           .then(() => {
             loading.value = false;
           })
@@ -235,6 +245,12 @@ export default defineComponent({
           });
       }
     }
+
+    watch(() => txId.value, (newValue) => {
+      if (isValidTxId.value && newValue !== props.txIdProp) {
+        clean();
+      }
+    });
 
     function onUrlChange() {
       if (props.txIdProp) {

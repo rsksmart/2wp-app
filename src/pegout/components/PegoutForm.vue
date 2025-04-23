@@ -44,7 +44,7 @@
             @openAddressDialog="showAddressDialog = true"
             @changeSelectedOption="changeSelectedOption"
             :selectedOption="selectedOption === quote.quoteHash"
-            :quote-difference="quoteDifference"
+            :quote-differences="quoteDifference"
             />
         </v-col>
         <v-col cols="6">
