@@ -26,6 +26,7 @@ The value of these variables are used in **environment-variables.ts** file.
 |VUE_APP_FLYOVER_PROVIDER_ID   | `1`                                      | Sets up the provider id to be use for flyover status search. |
 |VUE_APP_FLYOVER_GET_PROVIDERS_TIMEOUT   | `5000`                                      | Sets a timeout for calls made to get liquidity providers. |
 |VUE_APP_API_RESPONSE_TIMEOUT   | `10000`                                      | Sets a timeout for calls made to API on search transaction. |
+|VUE_APP_REOWN_PROJECT_ID   | `PROJECT_ID`                                      | Reown's AppKit project Id follow [this](https://reown.com/blog/how-to-get-started-with-appkit) instructions to get one. |
 
 ## Example for .env.local.test file
 
