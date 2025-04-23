@@ -46,6 +46,8 @@ export class EnvironmentVariables {
 
   public apiResponseTimeout: number;
 
+  public reownProjectId: string;
+
   public minFeeSatPerByte: {
     fast: number;
     average: number;
@@ -111,6 +113,7 @@ export class EnvironmentVariables {
     this.cspConfiguration = process.env.VUE_APP_CSP || defaultValues.cspConfiguration;
     this.apiResponseTimeout = Number(process.env.VUE_APP_API_RESPONSE_TIMEOUT)
       || defaultValues.apiResponseTimeout;
+    this.reownProjectId = process.env.VUE_APP_REOWN_PROJECT_ID || '';
   }
 
   public get chainId(): number {
