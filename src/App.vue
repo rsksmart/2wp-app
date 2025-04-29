@@ -48,7 +48,7 @@ export default {
       script-src 'self' 'nonce-${vuetifyNonce}' 'unsafe-eval';
       script-src-elem 'self' 'unsafe-inline' https://script.hotjar.com https://www.clarity.ms/s/* https://static.hotjar.com https://*.hotjar.com https://*.hotjar.io https://api.coingecko.com/ https://*.clarity.ms https://www.clarity.ms/ https://www.gstatic.com/ https://www.google.com/recaptcha/;
       img-src data: https:;
-      connect-src 'self' 'unsafe-inline' https://www.google.com/recaptcha/ https://www.clarity.ms/s/0.7.16/clarity.js wss://* https://*.hotjar.com https://*.hotjar.io https://www.clarity.ms/s/* wss://*.hotjar.com ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} ${envVariables.cspConfiguration} https://api.coingecko.com/ https://*.clarity.ms https://www.clarity.ms/* ;
+      connect-src 'self' 'unsafe-inline' https://www.google.com/recaptcha/ https://www.clarity.ms/s/0.7.16/clarity.js wss://* https://*.hotjar.com https://*.hotjar.io https://www.clarity.ms/s/* wss://*.hotjar.com ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} ${envVariables.cspConfiguration} https://api.coingecko.com/ https://*.clarity.ms https://www.clarity.ms/* https://lps.dev.flyover.rif.technology;
       object-src 'none';
       frame-src https://connect.trezor.io https://www.google.com/;
       worker-src 'none';
