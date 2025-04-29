@@ -7,8 +7,7 @@ import {
 } from '@rsksmart/flyover-sdk';
 import * as constants from '@/common/store/constants';
 import {
-  LiquidityProvider2WP, PeginQuote, QuotePegOut2WP,
-  SatoshiBig, WeiBig,
+  LiquidityProvider2WP, PeginQuote, QuotePegOut2WP, WeiBig, SatoshiBig,
 } from '@/common/types';
 import { Wallet, providers } from 'ethers';
 import { EnvironmentAccessorService } from './enviroment-accessor.service';
@@ -105,9 +104,9 @@ export default class FlyoverService {
               ...provider,
               pegin: {
                 requiredConfirmations: provider.pegin.requiredConfirmations,
-                fee: new SatoshiBig(provider.pegin.fee, 'satoshi'),
-                maxTransactionValue: new SatoshiBig(provider.pegin.maxTransactionValue, 'satoshi'),
-                minTransactionValue: new SatoshiBig(provider.pegin.minTransactionValue, 'satoshi'),
+                fee: new WeiBig(provider.pegin.fee, 'wei'),
+                maxTransactionValue: new WeiBig(provider.pegin.maxTransactionValue, 'wei'),
+                minTransactionValue: new WeiBig(provider.pegin.minTransactionValue, 'wei'),
               },
               pegout: {
                 requiredConfirmations: provider.pegout.requiredConfirmations,
@@ -328,7 +327,7 @@ export default class FlyoverService {
       this.flyover?.getQuotes({
         rskRefundAddress: rootstockRecipientAddress,
         // TODO: this should be fixed in the SDK: valueToTransfer is in BTC
-        valueToTransfer: new WeiBig(valueToTransfer.toBTCString(), 'rbtc').toWeiBigIntUnsafe(),
+        valueToTransfer: valueToTransfer.toWeiBigIntUnsafe(),
         callContractArguments: '',
         callEoaOrContractAddress: rootstockRecipientAddress,
       })
@@ -438,13 +437,13 @@ export default class FlyoverService {
   public getAvailableLiquidity(): Promise<{
     providerId: number,
     peginLiquidity: WeiBig,
-    pegoutLiquidity: SatoshiBig,
+    pegoutLiquidity: WeiBig,
   }> {
     return new Promise((resolve, reject) => {
       this.flyover?.getAvailableLiquidity()
         .then(({ peginLiquidityAmount, pegoutLiquidityAmount }) => {
           const peginLiquidity = new WeiBig(peginLiquidityAmount, 'wei');
-          const pegoutLiquidity = new SatoshiBig(pegoutLiquidityAmount, 'satoshi');
+          const pegoutLiquidity = new WeiBig(pegoutLiquidityAmount, 'wei');
           resolve({ providerId: this.liquidityProviderIdUsed, peginLiquidity, pegoutLiquidity });
         })
         .catch((error) => {

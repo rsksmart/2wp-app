@@ -1,6 +1,6 @@
 import {
   FlyoverPegoutState, QuotePegOut2WP, RootState, WeiBig,
-  SatoshiBig, ReducedQuote, LogEntryType, LogEntryOperation,
+  ReducedQuote, LogEntryType, LogEntryOperation,
 } from '@/common/types';
 import { ActionTree } from 'vuex';
 import * as constants from '@/common/store/constants';
@@ -227,7 +227,7 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
       Promise<number | {
         providerId: number,
         peginLiquidity: WeiBig,
-        pegoutLiquidity: SatoshiBig
+        pegoutLiquidity: WeiBig
       }>[] = [];
     state.liquidityProviders.forEach((provider) => {
       dispatch(constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER, provider.id);
