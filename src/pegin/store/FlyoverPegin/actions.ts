@@ -102,7 +102,7 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
         Promise<number | {
           providerId: number,
           peginLiquidity: WeiBig,
-          pegoutLiquidity: SatoshiBig
+          pegoutLiquidity: WeiBig
         }>[] = [];
       state.liquidityProviders.forEach((provider) => {
         dispatch(constants.FLYOVER_PEGIN_USE_LIQUIDITY_PROVIDER, provider.id);

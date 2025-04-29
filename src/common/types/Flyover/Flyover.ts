@@ -3,9 +3,9 @@ import WeiBig from '../WeiBig';
 import SatoshiBig from '../SatoshiBig';
 
 interface PeginProviderDetail {
-    fee: SatoshiBig;
-    maxTransactionValue: SatoshiBig;
-    minTransactionValue: SatoshiBig;
+    fee: WeiBig;
+    maxTransactionValue: WeiBig;
+    minTransactionValue: WeiBig;
     requiredConfirmations: number;
     availableLiquidity?: WeiBig;
 }
@@ -14,7 +14,7 @@ interface PegoutProviderDetail {
     maxTransactionValue: WeiBig;
     minTransactionValue: WeiBig;
     requiredConfirmations: number;
-    availableLiquidity?: SatoshiBig;
+    availableLiquidity?: WeiBig;
 }
 interface ProviderDetailResponse2WP {
     pegin: PeginProviderDetail;

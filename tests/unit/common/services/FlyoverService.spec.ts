@@ -351,7 +351,7 @@ describe('FlyoverService', () => {
       });
       const liquidity = await flyoverService.getAvailableLiquidity();
       expect(liquidity.peginLiquidity).toBeInstanceOf(WeiBig);
-      expect(liquidity.pegoutLiquidity).toBeInstanceOf(SatoshiBig);
+      expect(liquidity.pegoutLiquidity).toBeInstanceOf(WeiBig);
     });
     it('should throw an error if the available liquidity is not found', async () => {
       const stubedInstance = sinon.createStubInstance(Flyover);
