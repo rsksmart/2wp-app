@@ -30,7 +30,12 @@
     </v-alert>
     <v-alert v-show="notChecksummedAddressWarning" type="warning"
       color="orange" density="compact" variant="outlined">
-      Not a checksummed address
+      <span> Not a checksummed address. To fix it
+        <v-btn variant="text" style="text-decoration: underline" class="px-0"
+          @click="toValidChecksumAddress">
+          click here
+        </v-btn>.
+      </span>
     </v-alert>
   </v-row>
 </template>
@@ -55,7 +60,7 @@ export default defineComponent({
   setup(props, context) {
     const connectedAccount = useGetter<string>('web3Session', constants.SESSION_GET_CHECKSUMMED_ACCOUNT);
     const address = ref(connectedAccount.value);
-    const { isAddress, isValidAddress } = rskUtils;
+    const { isAddress, isValidAddress, toChecksumAddress } = rskUtils;
 
     const CHAIN_ID = EnvironmentAccessorService.getEnvironmentVariables()
       .vueAppCoin === constants.BTC_NETWORK_MAINNET ? 30 : 31;
@@ -90,6 +95,10 @@ export default defineComponent({
       }
     }
 
+    function toValidChecksumAddress() {
+      address.value = toChecksumAddress(address.value, CHAIN_ID);
+    }
+
     if (connectedAccount.value) {
       setRskAddress(address.value);
     }
@@ -101,6 +110,7 @@ export default defineComponent({
       isValidInputAddress,
       notChecksummedAddressWarning,
       isInputFilled,
+      toValidChecksumAddress,
     };
   },
 });
