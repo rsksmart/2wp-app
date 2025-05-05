@@ -5,7 +5,6 @@ import {
 import { useStore } from 'vuex';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import Home from '@/common/views/Home.vue';
-import * as constants from '@/common/store/constants';
 import { isMobileDevice } from '@/common/utils';
 
 async function checkAcceptedTerms(
@@ -26,19 +25,6 @@ function checkFromRoute(to: RouteLocationNormalized, from: RouteLocationNormaliz
   const peg = to.path.split('/')[1];
   if (from.path === '/') {
     return { path: `/${peg}` };
-  }
-}
-
-function checkRSKConnection(
-  to: RouteLocationNormalized,
-  from: RouteLocationNormalized,
-  next: NavigationGuardNext,
-) {
-  const store = useStore();
-  if (!store.getters[`web3Session/${constants.SESSION_IS_ACCOUNT_CONNECTED}`]) {
-    next({ name: 'Home' });
-  } else {
-    next();
   }
 }
 
@@ -83,7 +69,7 @@ const routes: Readonly<RouteRecordRaw[]> = [
     path: '/pegout',
     name: 'PegOut',
     component: () => import(/* webpackChunkName: "pegout" */ '../../pegout/views/PegOut.vue'),
-    beforeEnter: [checkAcceptedTerms, checkRSKConnection, checkForMobileDevice],
+    beforeEnter: [checkAcceptedTerms, checkForMobileDevice],
   },
   {
     path: '/pegin/:wallet/create',

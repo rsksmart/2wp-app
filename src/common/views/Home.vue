@@ -108,6 +108,7 @@ import { isAllowedCurrentBrowser } from '@/common/utils';
 import { Feature, FeatureNames, TransactionType } from '@/common/types';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import { mdiCloseCircleOutline } from '@mdi/js';
+import { useWallet } from '../composables/useWallet';
 
 export default {
   name: 'HomeView',
@@ -124,7 +125,6 @@ export default {
     const setTerms = useAction('web3Session', constants.SESSION_ADD_TERMS_VALUE);
     const getBtcPrice = useAction('web3Session', constants.SESSION_ADD_BITCOIN_PRICE);
     const clearFlyoverPegout = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_CLEAR_STATE);
-    const rskAccount = useStateAttribute('web3Session', 'account');
     const connectWeb3 = useAction('web3Session', constants.SESSION_CONNECT_WEB3);
     const show = ref(false);
     const COMPONENTS = {
@@ -138,17 +138,15 @@ export default {
       return feature?.value;
     });
 
+    const { connect } = useWallet();
+
     async function selectConversion(txType: NonNullable<TransactionType>) {
       addPeg(txType);
-      if (txType === constants.PEG_OUT_TRANSACTION_TYPE && !rskAccount.value) {
-        try {
-          await connectWeb3();
-        } catch (e) {
-          show.value = true;
-          return;
-        }
+      if (txType === constants.PEG_OUT_TRANSACTION_TYPE) {
+        connect();
+      } else {
+        router.push({ name: COMPONENTS[txType] });
       }
-      router.push({ name: COMPONENTS[txType] });
     }
 
     async function reconnect() {

@@ -19,9 +19,9 @@ import {
 } from 'vue';
 import * as constants from '@/common/store/constants';
 import PegoutForm from '@/pegout/components/PegoutForm.vue';
-import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
+import { useAction, useGetter } from '@/common/store/helper';
 import { Feature, FeatureNames } from '@/common/types';
-import { providers } from 'ethers';
+import { useWallet } from '@/common/composables/useWallet';
 
 export default defineComponent({
   name: 'PegOut',
@@ -32,7 +32,7 @@ export default defineComponent({
     const init = useAction('pegOutTx', constants.PEGOUT_TX_INIT);
     const initFlyover = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_INIT);
     const flyoverFeature = useGetter<(name: FeatureNames) => Feature>('web3Session', constants.SESSION_GET_FEATURE);
-    const ethersProvider = useStateAttribute<providers.Web3Provider>('web3Session', 'ethersProvider');
+    const { provider: ethersProvider } = useWallet();
     const flyoverEnabled = ref(false);
     const loadingProviders = ref(true);
 
