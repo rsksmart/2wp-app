@@ -21,6 +21,13 @@ const state = reactive<WalletSharedState>({
   balance: new WeiBig(0, 'wei'),
 });
 
+const enum WalletEvents {
+  CONNECT_SUCCESS = 'CONNECT_SUCCESS',
+  DISCONNECT_SUCCESS = 'DISCONNECT_SUCCESS',
+  SELECT_WALLET = 'SELECT_WALLET',
+  MODAL_CLOSE = 'MODAL_CLOSE',
+}
+
 export function useWallet() {
   const { provider, balance, address } = toRefs(state);
   const account = useAppKitAccount();
@@ -50,28 +57,29 @@ export function useWallet() {
     }
   }
 
-  const appKitProvider = useAppKitProvider<Provider>('eip155');
-  watch(appKitProvider, () => {
-    if (appKitProvider.walletProvider) {
-      const ethersProvider = new ethers.providers.Web3Provider(appKitProvider.walletProvider);
-      provider.value = markRaw(ethersProvider);
-      setBalance().then(setAddress);
-    } else {
-      provider.value = null;
-    }
-  });
-
   const events = useAppKitEvents();
   watch(events, () => {
-    if (events.data.event === 'CONNECT_SUCCESS') {
-      setBalance()
-        .then(setAddress)
-        .then(() => {
-          router.push('/pegout');
-        });
-    }
-    if (events.data.event === 'DISCONNECT_SUCCESS') {
-      router?.push('/');
+    const { walletProvider } = useAppKitProvider<Provider>('eip155');
+    switch (events.data.event) {
+      case WalletEvents.CONNECT_SUCCESS:
+      case WalletEvents.MODAL_CLOSE:
+        if (walletProvider) {
+          const ethersProvider = new ethers.providers.Web3Provider(walletProvider);
+          provider.value = markRaw(ethersProvider);
+        }
+        setBalance()
+          .then(setAddress)
+          .then(() => {
+            router.push('/pegout');
+          });
+        break;
+      case WalletEvents.DISCONNECT_SUCCESS:
+        provider.value = null;
+        router?.push('/');
+        break;
+      default:
+        console.log('Unhandled AppKit event:', events.data.event);
+        break;
     }
   });
 
