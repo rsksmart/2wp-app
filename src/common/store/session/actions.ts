@@ -55,6 +55,7 @@ export const actions: ActionTree<SessionState, RootState> = {
     }
   },
   [constants.WEB3_SESSION_ADD_BALANCE]: async ({ commit, state }) => {
+    console.log('Adding balance');
     const { ethersProvider, account } = state;
     if (ethersProvider && account) {
       const balance = await ethersProvider.getBalance(account);
