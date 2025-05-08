@@ -40,6 +40,7 @@ export interface Utxo {
   amount: number; // SatoshiBN
   address?: string;
   vout: number;
+  selected: boolean;
 }
 
 export interface UtxoListPerAccount {
