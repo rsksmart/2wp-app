@@ -65,6 +65,7 @@ export default class BalanceService {
       amount: utxo.satoshis,
       address: utxo.address,
       vout: utxo.vout,
+      selected: true,
     }));
   }
 }

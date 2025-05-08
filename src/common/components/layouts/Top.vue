@@ -28,6 +28,8 @@
         <span class="slider"></span>
       </label>
     </div>
+    <v-btn @click="displayUtxoSelector">select Utxos</v-btn>
+    <uxto-selector :show-dialog="showUtxoDialog"/>
   </header>
 </template>
 
@@ -39,6 +41,7 @@ import {
   mdiContentCopy, mdiLinkOff,
 } from '@mdi/js';
 import PegInAccountSelect from '@/pegin/components/create/PegInAccountSelect.vue';
+import UxtoSelector from '@/common/components/layouts/UxtoSelector.vue';
 import * as constants from '@/common/store/constants';
 import { computed, ref, watch } from 'vue';
 import { truncateString } from '@/common/utils';
@@ -49,12 +52,14 @@ export default {
   name: 'TopBar',
   components: {
     PegInAccountSelect,
+    UxtoSelector,
   },
   setup() {
     const router = useRouter();
     const route = useRoute();
     const themeLight = ref(false);
     const vuetifyTheme = useTheme();
+    const showUtxoDialog = ref(false);
 
     const account = useGetter<string>('web3Session', constants.SESSION_GET_CHECKSUMMED_ACCOUNT);
     const truncatedAccount = computed(() => truncateString(account.value));
@@ -88,6 +93,10 @@ export default {
       return vuetifyTheme.global.current.value.dark ? require('@/assets/logo-rootstock-white.svg') : require('@/assets/logo-rootstock-black.svg');
     }
 
+    function displayUtxoSelector() {
+      showUtxoDialog.value = !showUtxoDialog.value;
+    }
+
     watch(themeLight, (enabledLight) => {
       vuetifyTheme.global.name.value = enabledLight ? 'light' : 'dark';
     });
@@ -106,6 +115,8 @@ export default {
       environmentContext,
       isPeginSelected: computed(() => route.name === 'Create'),
       walletDataReady,
+      displayUtxoSelector,
+      showUtxoDialog,
     };
   },
 };
