@@ -21,7 +21,11 @@ export const getClearPeginTxState = (): PegInTxState => ({
     sessionId: '',
   },
   sessionId: '',
-  utxoList: undefined,
+  utxoList: {
+    legacy: [],
+    segwit: [],
+    nativeSegwit: [],
+  },
   addressList: [],
   trezorConnected: false,
   bitcoinWallet: undefined,
