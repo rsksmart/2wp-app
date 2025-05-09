@@ -13,7 +13,8 @@ export default class TxFeeService {
   )
     :Promise<FeeSelection> {
     return new Promise<FeeSelection>((resolve, reject) => {
-      if (!totalUtxoList.length) {
+      const filteredUtxoList = totalUtxoList.filter((utxo) => utxo.selected);
+      if (!totalUtxoList.length || !filteredUtxoList.length) {
         reject(new Error('Empty utxo list.'));
       }
       ApiService.estimateFee(TxFeeService.getMiningSpeedBlock(feeLevel))
@@ -25,7 +26,7 @@ export default class TxFeeService {
             .mul(constants.BITCOIN_TX_INPUT_SIZE_IN_BYTES);
           const { selectedUtxoList, enoughBalance } = TxFeeService
             .selectOptimalInputs(
-              totalUtxoList,
+              filteredUtxoList,
               amountTotransfer,
               baseFee,
               feePerInput,

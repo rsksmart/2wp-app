@@ -50,7 +50,7 @@ export interface UtxoListPerAccount {
 }
 
 export interface PegInTxState {
-  utxoList?: UtxoListPerAccount;
+  utxoList: UtxoListPerAccount;
   addressList?: WalletAddress[];
   balances: AccountBalance;
   loadingBalance: boolean;
