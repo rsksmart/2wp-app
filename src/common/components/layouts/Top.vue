@@ -29,7 +29,7 @@
       </label>
     </div>
     <v-btn @click="displayUtxoSelector">select Utxos</v-btn>
-    <uxto-selector :show-dialog="showUtxoDialog"/>
+    <uxto-selector :show-dialog="showUtxoDialog" @update:showDialog="displayUtxoSelector"/>
   </header>
 </template>
 
