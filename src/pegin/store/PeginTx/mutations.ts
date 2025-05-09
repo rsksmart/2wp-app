@@ -5,6 +5,7 @@ import {
   PeginConfiguration, PegInTxState, WalletAddress,
   AccountBalance, FeeAmountData, NormalizedTx,
   SatoshiBig, UtxoListPerAccount,
+  Utxo,
 } from '@/common/types';
 import { getClearPeginTxState } from '@/common/utils';
 import { WalletService } from '@/common/services';
@@ -87,5 +88,19 @@ export const mutations: MutationTree<PegInTxState> = {
   },
   [constants.PEGIN_TX_SET_VIEW]: (state, view: string) => {
     state.currentView = view;
+  },
+  [constants.PEGIN_TX_SET_SELECTED_UTXO]: (state, { txId, selected }:
+    {txId: string, selected: boolean }) => {
+    if (state.utxoList) {
+      ['legacy', 'segwit', 'nativeSegwit'].forEach((accountType: string) => {
+        const accountUtxos = state.utxoList?.[accountType as keyof UtxoListPerAccount];
+        accountUtxos?.forEach((utxo: Utxo) => {
+          if (utxo.txid === txId) {
+          // eslint-disable-next-line no-param-reassign
+            utxo.selected = selected;
+          }
+        });
+      });
+    }
   },
 };

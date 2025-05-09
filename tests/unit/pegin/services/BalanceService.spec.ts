@@ -96,6 +96,7 @@ describe('Balance Service', () => {
           vout: u.vout,
           amount: u.satoshis,
           address: u.address,
+          selected: true,
         })),
       },
       segwit: {

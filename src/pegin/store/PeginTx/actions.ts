@@ -214,4 +214,9 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_SET_CURRENT_VIEW]: ({ commit }, view: string): void => {
     commit(constants.PEGIN_TX_SET_VIEW, view);
   },
+  // eslint-disable-next-line no-empty-pattern
+  [constants.PEGIN_TX_TOGGLE_SELECTED_UTXO]: ({ commit }, { txId, selected }:
+    {txId: string, selected: boolean }): void => {
+    commit(constants.PEGIN_TX_SET_SELECTED_UTXO, { txId, selected });
+  },
 };
