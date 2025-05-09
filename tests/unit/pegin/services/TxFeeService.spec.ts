@@ -33,6 +33,7 @@ describe('Tx Fee Service', () => {
       path: 'path',
       derivationArray: [],
       vout: 0,
+      selected: true,
     },
     {
       txid: 'txId2',
@@ -41,6 +42,7 @@ describe('Tx Fee Service', () => {
       path: 'path',
       derivationArray: [],
       vout: 0,
+      selected: true,
     },
     {
       txid: 'txId3',
@@ -49,6 +51,7 @@ describe('Tx Fee Service', () => {
       path: 'path',
       derivationArray: [],
       vout: 0,
+      selected: true,
     },
     {
       txid: 'txId4',
@@ -57,6 +60,7 @@ describe('Tx Fee Service', () => {
       path: 'path',
       derivationArray: [],
       vout: 0,
+      selected: true,
     },
   ];
 
@@ -68,6 +72,7 @@ describe('Tx Fee Service', () => {
       path: 'path',
       derivationArray: [],
       vout: 0,
+      selected: true,
     },
     {
       txid: 'txId2',
@@ -76,6 +81,7 @@ describe('Tx Fee Service', () => {
       path: 'path',
       derivationArray: [],
       vout: 0,
+      selected: true,
     },
     {
       txid: 'txId3',
@@ -84,6 +90,7 @@ describe('Tx Fee Service', () => {
       path: 'path',
       derivationArray: [],
       vout: 0,
+      selected: true,
     },
     {
       txid: 'txId4',
@@ -92,6 +99,7 @@ describe('Tx Fee Service', () => {
       path: 'path',
       derivationArray: [],
       vout: 0,
+      selected: true,
     },
     {
       txid: 'txId5',
@@ -100,6 +108,7 @@ describe('Tx Fee Service', () => {
       path: 'path',
       derivationArray: [],
       vout: 0,
+      selected: true,
     },
   ];
 

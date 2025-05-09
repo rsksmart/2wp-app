@@ -24,6 +24,7 @@ describe('PeginTx Service', () => {
       address: 'address',
       path: '',
       vout: 0,
+      selected: true,
     },
     {
       txid: 'txid-2',
@@ -31,6 +32,7 @@ describe('PeginTx Service', () => {
       address: 'address',
       path: '',
       vout: 1,
+      selected: true,
     },
   ];
   const denormalizedTx = {
@@ -124,6 +126,7 @@ describe('PeginTx Service', () => {
           address: '',
           path: '',
           vout: 0,
+          selected: true,
         },
         {
           txid: '',
@@ -131,6 +134,7 @@ describe('PeginTx Service', () => {
           address: '',
           path: '',
           vout: 0,
+          selected: true,
         },
       ],
       totalFee: new SatoshiBig(6000, 'satoshi'),

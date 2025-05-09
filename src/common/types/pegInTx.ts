@@ -40,6 +40,7 @@ export interface Utxo {
   amount: number; // SatoshiBN
   address?: string;
   vout: number;
+  selected: boolean;
 }
 
 export interface UtxoListPerAccount {
@@ -49,7 +50,7 @@ export interface UtxoListPerAccount {
 }
 
 export interface PegInTxState {
-  utxoList?: UtxoListPerAccount;
+  utxoList: UtxoListPerAccount;
   addressList?: WalletAddress[];
   balances: AccountBalance;
   loadingBalance: boolean;

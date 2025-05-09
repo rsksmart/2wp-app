@@ -4,6 +4,7 @@ import { PegInTxState, RootState, Utxo } from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import SatoshiBig from '@/common/types/SatoshiBig';
 import { WalletService } from '@/common/services';
+import { getBalanceFromUtxoList } from '@/common/utils';
 
 export const getters: GetterTree<PegInTxState, RootState> = {
   [constants.WALLET_NAME]: (state) => {
@@ -142,11 +143,11 @@ export const getters: GetterTree<PegInTxState, RootState> = {
     (state: PegInTxState): SatoshiBig => {
       switch (state.selectedAccount) {
         case constants.BITCOIN_LEGACY_ADDRESS:
-          return state.balances.legacy;
+          return getBalanceFromUtxoList(state.utxoList.legacy);
         case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
-          return state.balances.nativeSegwit;
+          return getBalanceFromUtxoList(state.utxoList.segwit);
         case constants.BITCOIN_SEGWIT_ADDRESS:
-          return state.balances.segwit;
+          return getBalanceFromUtxoList(state.utxoList.nativeSegwit);
         default:
           break;
       }
