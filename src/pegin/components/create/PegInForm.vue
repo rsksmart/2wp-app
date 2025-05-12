@@ -38,6 +38,19 @@
               </template>
             </pegin-option-card>
           </v-row>
+          <v-row no-gutters v-if="
+                flyoverIsEnabled &&
+                totalValueNotEnough &&
+                peginQuotes.length > 0">
+            <pegin-option-card :option-type="peginType.FLYOVER" flyover-not-available>
+              <template v-slot>
+                <h4 v-if="countdown === recaptchanNewTokenTime">
+                  <span class="text-orange">Review your transaction</span>
+                   Amount+Fee greater than your balance.
+                </h4>
+              </template>
+            </pegin-option-card>
+          </v-row>
           <v-row no-gutters v-else v-for="(quote, index) in peginQuotes" :key="index">
             <pegin-option-card
               :option-type="peginType.FLYOVER"
@@ -302,6 +315,14 @@ export default defineComponent({
       await getQuotes();
     });
 
+    const totalValueNotEnough = computed(() => {
+      if (!selectedQuote.value) {
+        return false;
+      }
+      const fullAmount: SatoshiBig = selectedQuote.value.getTotalTxAmount(selectedFee.value);
+      return !selectedAccountBalance.value?.gte(fullAmount);
+    });
+
     const isReadyToCreate = computed((): boolean => {
       if (!showOptions.value) {
         return false;
@@ -355,6 +376,7 @@ export default defineComponent({
       environmentContext,
       back,
       isReadyToCreate,
+      totalValueNotEnough,
       pegInTxState,
       createTx,
       mdiSendOutline,

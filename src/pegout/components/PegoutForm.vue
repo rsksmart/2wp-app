@@ -35,6 +35,17 @@
             </template>
           </pegout-option>
         </v-col>
+        <v-col cols="6" v-if="flyoverIsEnabled && !validEnoughBalance && " >
+          <pegout-option class="mr-2" flyover-not-available
+            :option-type="pegoutType.FLYOVER">
+            <template v-slot>
+                <h4 v-if="countdown === recaptchanNewTokenTime">
+                  <span class="text-orange">Review your transaction</span>
+                   Amount+Fee greater than your balance.
+                </h4>
+            </template>
+          </pegout-option>
+        </v-col>
         <v-col cols="6" v-else v-for="(quote, index) in pegoutQuotes" :key="index" >
           <pegout-option
             :option-type="pegoutType.FLYOVER"
@@ -490,6 +501,19 @@ export default defineComponent({
       }
     }
 
+    const validEnoughBalance = computed((): boolean => {
+      if (selectedQuote.value) {
+        // eslint-disable-next-line object-curly-newline
+        const { value, gasFee, productFeeAmount, callFee } = selectedQuote.value.quote;
+        const amountPlusFees = value
+          .plus(gasFee)
+          .plus(productFeeAmount)
+          .plus(callFee);
+        return balance.value.gt(amountPlusFees);
+      }
+      return false;
+    });
+
     watch([amount, validAmount], async () => {
       if (!validAmount.value) return;
       if (!enoughLiquidityForThisAmount(SatoshiBig.fromWeiBig(amountToTransfer.value))) {
@@ -590,6 +614,7 @@ export default defineComponent({
       checkValidAmount,
       countdown,
       recaptchanNewTokenTime,
+      validEnoughBalance,
     };
   },
 });

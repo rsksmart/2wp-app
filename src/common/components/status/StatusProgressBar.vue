@@ -456,7 +456,7 @@ export default defineComponent({
       if (statusStep.value.label === TxStatusStep.COMPLETED) {
         return {
           icon: require('@/assets/status/success-icon.svg'),
-          time: estimatedTime.value,
+          time: '',
           label: TxStatusStep.COMPLETED,
         };
       }
