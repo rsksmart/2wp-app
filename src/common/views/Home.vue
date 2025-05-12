@@ -79,6 +79,8 @@
       </v-col>
     </v-row>
   </v-container>
+  <web3-wallet-dialog :showDialog="showConnectModal"
+    @cancel="connectError" />
   <v-dialog v-model="show" width="500">
     <v-card class="d-flex pa-6" rounded="lg">
       <div class="d-flex justify-space-between">
@@ -109,9 +111,13 @@ import { Feature, FeatureNames, TransactionType } from '@/common/types';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import { mdiCloseCircleOutline } from '@mdi/js';
 import { useWallet } from '../composables/useWallet';
+import Web3WalletDialog from '@/common/components/exchange/Web3WalletDialog.vue';
 
 export default {
   name: 'HomeView',
+  components: {
+    Web3WalletDialog,
+  },
   setup() {
     const router = useRouter();
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
@@ -127,6 +133,7 @@ export default {
     const clearFlyoverPegout = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_CLEAR_STATE);
     const connectWeb3 = useAction('web3Session', constants.SESSION_CONNECT_WEB3);
     const show = ref(false);
+    const showConnectModal = ref(false);
     const COMPONENTS = {
       [constants.PEG_IN_TRANSACTION_TYPE]: 'PegIn',
       [constants.PEG_OUT_TRANSACTION_TYPE]: 'PegOut',
@@ -140,10 +147,14 @@ export default {
 
     const { connect } = useWallet();
 
+    function connectModal() {
+      showConnectModal.value = true;
+    }
+
     async function selectConversion(txType: NonNullable<TransactionType>) {
       addPeg(txType);
       if (txType === constants.PEG_OUT_TRANSACTION_TYPE) {
-        connect();
+        connectModal();
       } else {
         router.push({ name: COMPONENTS[txType] });
       }
@@ -183,6 +194,10 @@ export default {
       if (route.path !== '/status') router.push('/status');
     }
 
+    function connectError() {
+      show.value = true;
+    }
+
     getBtcPrice();
     clearPegin();
     clearPegOut();
@@ -205,6 +220,8 @@ export default {
       constants,
       selectConversion,
       reconnect,
+      showConnectModal,
+      connectError,
     };
   },
 };
