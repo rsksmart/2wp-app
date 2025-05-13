@@ -66,4 +66,14 @@ export class BridgeService {
         .catch(reject);
     });
   }
+
+  public getLockingCap(): Promise<bigint> {
+    return new Promise<bigint>((resolve, reject) => {
+      this.bridgeContract.methods
+        .getLockingCap()
+        .call()
+        .then(resolve)
+        .catch(reject);
+    });
+  }
 }
