@@ -11,7 +11,12 @@ import {
 } from '@/common/types';
 import { Wallet, providers } from 'ethers';
 import { EnvironmentAccessorService } from './enviroment-accessor.service';
-import { isValidSiteKey, ServiceError } from '../utils';
+import {
+  isValidSiteKey,
+  ServiceError,
+  toWeiBigIntString,
+  bigNumberToWeiBigIntString,
+} from '../utils';
 
 export default class FlyoverService {
   flyover?: Flyover;
@@ -537,5 +542,23 @@ export default class FlyoverService {
           ));
         });
     });
+  }
+
+  public async estimateGasFeeFromTx(
+    maxPerFlyoverTransaction: WeiBig,
+    callEoaOrContractAddress: string,
+  ) {
+    const provider = new providers.JsonRpcProvider(this.providerUrl);
+    const feeData = await provider.getFeeData();
+    const weiBigGasPrice = new WeiBig(bigNumberToWeiBigIntString(feeData.gasPrice), 'rbtc');
+    const gasLimit = await provider.estimateGas({
+      to: callEoaOrContractAddress.toLowerCase(),
+      value: toWeiBigIntString(maxPerFlyoverTransaction.toRBTCString()),
+      data: '',
+    });
+    const weiBigGasLimit = new WeiBig(gasLimit.toString(), 'wei');
+    const maxGasPrice = weiBigGasPrice.mul(weiBigGasLimit);
+
+    return maxGasPrice;
   }
 }
