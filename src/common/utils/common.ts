@@ -142,3 +142,19 @@ export const getClearFlyoverPeginState = (): FlyoverPeginState => ({
   selectedQuoteHash: '',
   acceptedQuoteSignature: '',
 });
+
+/**
+ * Generates a syntactically valid RSK address without a corresponding private key
+ *
+ * @returns A valid-looking RSK address string
+ */
+export const generateMockRSKAddress = (): string => {
+  const characters = '0123456789abcdef';
+  let result = '';
+
+  for (let i = 0; i < 40; i += 1) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    result += characters[randomIndex];
+  }
+  return `0x${result}`;
+};

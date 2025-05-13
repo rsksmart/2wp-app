@@ -102,7 +102,7 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
         Promise<number | {
           providerId: number,
           peginLiquidity: WeiBig,
-          pegoutLiquidity: SatoshiBig
+          pegoutLiquidity: WeiBig
         }>[] = [];
       state.liquidityProviders.forEach((provider) => {
         dispatch(constants.FLYOVER_PEGIN_USE_LIQUIDITY_PROVIDER, provider.id);
@@ -131,4 +131,13 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
       })
       .catch(reject);
   }),
+  [constants.FLYOVER_PEGIN_ESTIMATE_QUOTE_FEE]:
+    (
+      { state },
+      { maxFlyoverTxValue, callEoaOrContractAddress },
+    ) => new Promise((resolve, reject) => {
+      state.flyoverService.estimateGasFeeFromTx(maxFlyoverTxValue, callEoaOrContractAddress)
+        .then((fee) => resolve(fee))
+        .catch(reject);
+    }),
 };

@@ -171,6 +171,19 @@ export const actions: ActionTree<PegInTxState, RootState> = {
           .catch(reject);
       }
     }),
+  [constants.PEGIN_CALCULATE_MAX_FEE]: ({ getters }):
+    Promise<SatoshiBig> => new Promise<SatoshiBig>((resolve, reject) => {
+      const utxoList = getters[constants.PEGIN_TX_GET_ACCOUNT_UTXO_LIST] as Utxo[];
+      if (utxoList.length) {
+        TxFeeService.getTxFee(
+          getters[constants.PEGIN_TX_GET_SELECTED_BALANCE] as SatoshiBig,
+          utxoList,
+          constants.BITCOIN_FAST_FEE_LEVEL,
+        )
+          .then((fast) => resolve(new SatoshiBig(fast.fee.amount, 'satoshi')))
+          .catch(reject);
+      }
+    }),
   [constants.PEGIN_TX_ADD_RSK_ADDRESS]: ({ commit }, address: string): void => {
     const chainId = EnvironmentAccessorService
       .getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_MAINNET ? 30 : 31;
