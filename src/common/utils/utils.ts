@@ -11,9 +11,11 @@ import {
   PegoutStatus,
   SatoshiBig,
   Browser,
+  WeiBig,
 } from '@/common/types';
 import { BridgeService } from '@/common/services/BridgeService';
 import moment from 'moment';
+import { toWeiBigIntString } from '@/common/utils';
 
 export function getAccountType(address: string, network: AppNetwork): string {
   const [legacyTestReg, segwitTestReg, nativeTestReg] = network === constants.BTC_NETWORK_MAINNET
@@ -411,4 +413,16 @@ export function appendRecaptcha(siteKey: string): void {
   captchaDiv.setAttribute('data-action', 'submit');
   captchaDiv.setAttribute('data-size', 'invisible');
   document.body.appendChild(captchaDiv);
+}
+
+export function getBridgeLockingCap(): Promise<WeiBig> {
+  return new Promise<WeiBig>((resolve, reject) => {
+    const bridgeService = new BridgeService();
+    bridgeService.getLockingCap()
+      .then((lc) => {
+        const satLockingCap = new SatoshiBig(lc, 'satoshi');
+        resolve(new WeiBig(toWeiBigIntString(satLockingCap.toBTCTrimmedString()), 'wei'));
+      })
+      .catch(reject);
+  });
 }

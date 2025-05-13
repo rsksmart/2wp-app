@@ -131,4 +131,13 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
       })
       .catch(reject);
   }),
+  [constants.FLYOVER_PEGIN_ESTIMATE_QUOTE_FEE]:
+    (
+      { state },
+      { maxFlyoverTxValue, callEoaOrContractAddress },
+    ) => new Promise((resolve, reject) => {
+      state.flyoverService.estimateGasFeeFromTx(maxFlyoverTxValue, callEoaOrContractAddress)
+        .then((fee) => resolve(fee))
+        .catch(reject);
+    }),
 };
