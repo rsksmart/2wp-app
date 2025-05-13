@@ -1,4 +1,4 @@
-import { providers, utils } from 'ethers';
+import { providers, utils, BigNumber } from 'ethers';
 import { TransactionRequest, TransactionResponse } from '@/common/types';
 
 export const sendTransaction = (
@@ -26,5 +26,12 @@ export const toSatoshiBigIntString = (userFormatedValue: string) : string => uti
 export const toWeiBigIntString = (userFormatedValue: string) : string => utils
   .parseUnits(userFormatedValue, 18).toString();
 
-export const bigNumberToSatoshiBigIntString = (bigIntString: string) : string => utils
+export const bigIntToUserFormattedSatoshi = (bigIntString: string) : string => utils
   .formatUnits(BigInt(bigIntString), 8);
+
+export const bigNumberToWeiBigIntString = (bignumber: BigNumber | null)
+  : string => (bignumber === BigNumber.from(0) || !bignumber
+  ? '0' : utils.formatUnits(bignumber, 18));
+
+export const bigIntToUserFormattedWei = (bigIntString: string) : string => utils
+  .formatUnits(BigInt(bigIntString), 18);
