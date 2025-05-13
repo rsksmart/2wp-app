@@ -79,8 +79,8 @@
       </v-col>
     </v-row>
   </v-container>
-  <web3-wallet-dialog :showDialog="showConnectModal"
-    @cancel="connectError" />
+  <web3-wallet-dialog v-model="showConnectModal"
+    @cancel="connectError" @selected-wallet="selectWalletType" />
   <v-dialog v-model="show" width="500">
     <v-card class="d-flex pa-6" rounded="lg">
       <div class="d-flex justify-space-between">
@@ -110,8 +110,8 @@ import { isAllowedCurrentBrowser } from '@/common/utils';
 import { Feature, FeatureNames, TransactionType } from '@/common/types';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import { mdiCloseCircleOutline } from '@mdi/js';
-import { useWallet } from '../composables/useWallet';
 import Web3WalletDialog from '@/common/components/exchange/Web3WalletDialog.vue';
+// import { useWallet } from '../composables/useWallet';
 
 export default {
   name: 'HomeView',
@@ -145,7 +145,7 @@ export default {
       return feature?.value;
     });
 
-    const { connect } = useWallet();
+    // const { connect } = useWallet();
 
     function connectModal() {
       showConnectModal.value = true;
@@ -195,7 +195,13 @@ export default {
     }
 
     function connectError() {
+      showConnectModal.value = false;
       show.value = true;
+    }
+
+    function selectWalletType(walletType: string) {
+      connectWeb3(walletType)
+        .catch(connectError);
     }
 
     getBtcPrice();
@@ -222,6 +228,7 @@ export default {
       reconnect,
       showConnectModal,
       connectError,
+      selectWalletType,
     };
   },
 };

@@ -7,6 +7,11 @@ export const WALLET_NAMES = {
   ENKRYPT: { formal_name: 'Enkrypt', short_name: 'enkrypt', long_name: 'WALLET_ENKRYPT' },
 } as const;
 
+export enum WalletTypes {
+  SOFTWARE = 'SOFTWARE_WALLET',
+  HARDWARE = 'HARDWARE_WALLET',
+}
+
 export const OPERATION_TYPE = 'OPERATION_TYPE';
 export const OPERATION_AMOUNT = 'OPERATION_AMOUNT';
 
