@@ -39,7 +39,7 @@ export default defineComponent({
       emit('update:modelValue', false);
     }
 
-    function selectWallet(wallet: string) {
+    function selectWallet(wallet: constants.WalletTypes) {
       emitClose();
       emit('selected-wallet', wallet);
     }
