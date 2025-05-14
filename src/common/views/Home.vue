@@ -80,7 +80,7 @@
     </v-row>
   </v-container>
   <web3-wallet-dialog v-model="showConnectModal"
-    @cancel="connectError" @selected-wallet="selectWalletType" />
+    @cancel="connectError" @selected-wallet="selectWeb3WalletType" />
   <v-dialog v-model="show" width="500">
     <v-card class="d-flex pa-6" rounded="lg">
       <div class="d-flex justify-space-between">
@@ -111,7 +111,7 @@ import { Feature, FeatureNames, TransactionType } from '@/common/types';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import { mdiCloseCircleOutline } from '@mdi/js';
 import Web3WalletDialog from '@/common/components/exchange/Web3WalletDialog.vue';
-// import { useWallet } from '../composables/useWallet';
+import { useWallet } from '../composables/useWallet';
 
 export default {
   name: 'HomeView',
@@ -131,6 +131,7 @@ export default {
     const setTerms = useAction('web3Session', constants.SESSION_ADD_TERMS_VALUE);
     const getBtcPrice = useAction('web3Session', constants.SESSION_ADD_BITCOIN_PRICE);
     const clearFlyoverPegout = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_CLEAR_STATE);
+    const rskAccount = useStateAttribute('web3Session', 'account');
     const connectWeb3 = useAction('web3Session', constants.SESSION_CONNECT_WEB3);
     const show = ref(false);
     const showConnectModal = ref(false);
@@ -144,8 +145,6 @@ export default {
       const feature = getFeature.value(FeatureNames.TERMS_AND_CONDITIONS);
       return feature?.value;
     });
-
-    // const { connect } = useWallet();
 
     function connectModal() {
       showConnectModal.value = true;
@@ -199,9 +198,30 @@ export default {
       show.value = true;
     }
 
-    function selectWalletType(walletType: string) {
-      connectWeb3(walletType)
-        .catch(connectError);
+    function checkRskConnection() {
+      if (rskAccount.value) {
+        router.push({ name: COMPONENTS[stateTxType.value as NonNullable<TransactionType>] });
+      }
+    }
+
+    const { connect } = useWallet();
+
+    function selectWeb3WalletType(walletType: constants.WalletTypes) {
+      switch (walletType) {
+        case constants.WalletTypes.SOFTWARE:
+          connect()
+            .then(checkRskConnection)
+            .catch(connectError);
+          break;
+        case constants.WalletTypes.HARDWARE:
+          connectWeb3()
+            .then(checkRskConnection)
+            .catch(connectError);
+          break;
+        default:
+          showConnectModal.value = true;
+          break;
+      }
     }
 
     getBtcPrice();
@@ -228,7 +248,7 @@ export default {
       reconnect,
       showConnectModal,
       connectError,
-      selectWalletType,
+      selectWeb3WalletType,
     };
   },
 };

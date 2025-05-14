@@ -16,7 +16,6 @@ import {
 import { ethers, providers } from 'ethers';
 import { markRaw } from 'vue';
 import { toUtf8Bytes } from 'ethers/lib/utils';
-import { useWallet } from '@/common/composables/useWallet';
 
 export const actions: ActionTree<SessionState, RootState> = {
   [constants.SESSION_CONNECT_WEB3]: ({ commit, state, dispatch }): Promise<void> => {
@@ -46,6 +45,21 @@ export const actions: ActionTree<SessionState, RootState> = {
         });
     });
   },
+  [constants.SESSION_CONNECT_REOWN_WEB3]:
+  ({ commit, dispatch }, provider: providers.Web3Provider) => new Promise<void>((resolve) => {
+    commit(constants.SESSION_IS_ENABLED, true);
+    commit(constants.SESSION_SET_WEB3_INSTANCE, markRaw(provider));
+    commit(constants.SESSION_SET_RLOGIN_INSTANCE, undefined);
+    commit(constants.SESSION_SET_RLOGIN, undefined);
+    provider.on('block', () => dispatch(constants.WEB3_SESSION_ADD_BALANCE));
+    provider.listAccounts()
+      .then((accounts) => {
+        commit(constants.SESSION_SET_ACCOUNT, accounts[0]);
+        return dispatch(constants.WEB3_SESSION_ADD_BALANCE);
+      })
+      .then(() => dispatch(constants.SESSION_SETUP_EVENTS))
+      .then(resolve);
+  }),
   [constants.WEB3_SESSION_GET_ACCOUNT]: async ({ state, commit, dispatch }) => {
     const { ethersProvider } = state;
     if (ethersProvider) {
@@ -55,7 +69,6 @@ export const actions: ActionTree<SessionState, RootState> = {
     }
   },
   [constants.WEB3_SESSION_ADD_BALANCE]: async ({ commit, state }) => {
-    console.log('Adding balance');
     const { ethersProvider, account } = state;
     if (ethersProvider && account) {
       const balance = await ethersProvider.getBalance(account);
@@ -72,11 +85,10 @@ export const actions: ActionTree<SessionState, RootState> = {
     commit(constants.SESSION_SET_TX_TYPE, peg);
   },
   [constants.SESSION_SIGN_MESSAGE]:
-    async ({ commit }, messageToBeSigned: string): Promise<void> => {
-      const { address, provider } = useWallet();
-      if (provider.value) {
+    async ({ commit, state }, messageToBeSigned: string): Promise<void> => {
+      if (state.ethersProvider) {
         const messageHash = ethers.utils.keccak256(toUtf8Bytes(messageToBeSigned));
-        const signature = await provider.value.send('personal_sign', [messageHash, address.value, '']);
+        const signature = await state.ethersProvider.send('personal_sign', [messageHash, state.account, '']);
         const btcAddress = getBtcAddressFromSignedMessage(signature, messageHash || '');
         commit(constants.SESSION_SET_BTC_ACCOUNT, btcAddress);
       }
