@@ -7,8 +7,22 @@
       <h1 class="text-purple text-h5">PowPeg</h1>
     </div>
     <div class="d-flex align-center ga-5">
-      <appkit-account-button v-if="provider" />
       <peg-in-account-select v-if="isPeginSelected && walletDataReady"/>
+      <div class="d-flex align-center ga-2" v-else-if="truncatedAccount && accountBalance">
+        <v-btn variant="text" size="small" density="compact" rounded="full" :icon="mdiContentCopy"
+          @click="copyFullAccountAddress"
+        />
+        <span>
+          {{ truncatedAccount }} | {{ accountBalance }}
+          <v-tooltip
+            activator="parent"
+            location="bottom"
+          >{{ balance.toRBTCString() }} {{ environmentContext.getRbtcTicker() }}
+          </v-tooltip>
+        </span>
+        <v-btn variant="flat" size="x-small" color="theme-primary" rounded="full" :icon="mdiLinkOff"
+          @click="disconnectWallet" />
+      </div>
       <label for="theme" class="theme-switch">
         <input id="theme" type="checkbox" v-model="themeLight">
         <span class="slider"></span>
@@ -43,7 +57,7 @@ export default {
     const themeLight = ref(false);
     const vuetifyTheme = useTheme();
 
-    const { provider } = useWallet();
+    const { disconnect } = useWallet();
     const account = useGetter<string>('web3Session', constants.SESSION_GET_CHECKSUMMED_ACCOUNT);
     const truncatedAccount = computed(() => truncateString(account.value));
 
@@ -60,6 +74,7 @@ export default {
     const clearSession = useAction('web3Session', constants.WEB3_SESSION_CLEAR_ACCOUNT);
 
     function disconnectWallet() {
+      disconnect();
       clearSession();
       router.push({ name: 'Home' });
     }
@@ -94,7 +109,6 @@ export default {
       environmentContext,
       isPeginSelected: computed(() => route.name === 'Create'),
       walletDataReady,
-      provider,
     };
   },
 };

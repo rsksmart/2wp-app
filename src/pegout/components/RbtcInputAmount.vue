@@ -49,9 +49,12 @@ import { mdiArrowRight, mdiBitcoin, mdiInformationOutline } from '@mdi/js';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import * as constants from '@/common/store/constants';
 import { isRBTCAmountValidRegex } from '@/common/utils';
-import { PegoutConfiguration, WeiBig } from '@/common/types';
-import { useAction, useStateAttribute } from '@/common/store/helper';
-import { useWallet } from '@/common/composables/useWallet';
+import {
+  PegoutConfiguration, SatoshiBig, SessionState, WeiBig,
+} from '@/common/types';
+import {
+  useAction, useGetter, useState, useStateAttribute,
+} from '@/common/store/helper';
 
 export default defineComponent({
   name: 'RbtcInputAmount',
@@ -68,20 +71,22 @@ export default defineComponent({
     const rbtcAmount = ref('');
     const amountStyle = ref('');
     const stepState = ref<'unset' | 'valid' |'error'>('unset');
+    const web3SessionState = useState<SessionState>('web3Session');
     const setRbtcAmount = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ADD_AMOUNT);
     const addAmount = useAction('pegOutTx', constants.PEGOUT_TX_ADD_AMOUNT);
     const calculateFee = useAction('pegOutTx', constants.PEGOUT_TX_CALCULATE_FEE);
+    const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
     const pegoutConfiguration = useStateAttribute<PegoutConfiguration>('pegOutTx', 'pegoutConfiguration');
     const account = useStateAttribute<string>('web3Session', 'account');
     const minStrVal = computed(() => pegoutConfiguration.value.minValue.toRBTCString().slice(0, 5));
     const isComposing = ref(false);
-    const { balance } = useWallet();
 
     const isValidAmount = (amount: WeiBig) => {
       const { minValue } = pegoutConfiguration.value;
+      const { balance } = web3SessionState.value;
       return isRBTCAmountValidRegex(amount.toRBTCString())
         && amount.gte(minValue)
-        && amount.lte(balance.value);
+        && amount.lte(balance);
     };
 
     function emitGetQuotes() {
@@ -108,10 +113,11 @@ export default defineComponent({
 
     const amountErrorMessage = computed(() => {
       const { minValue } = pegoutConfiguration.value;
+      const { balance } = web3SessionState.value;
       if (rbtcAmount.value.toString() === '') {
         return 'Please, enter an amount';
       }
-      if (rbtcAmount.value.toString() === '0' && balance.value.lte('0')) {
+      if (rbtcAmount.value.toString() === '0' && balance.lte('0')) {
         return 'Selected account has no balance';
       }
       if (rbtcAmount.value.toString() === '0') {
@@ -120,7 +126,7 @@ export default defineComponent({
       if (!isRBTCAmountValidRegex(rbtcAmount.value)) {
         return `The amount must be a valid ${environmentContext.getRbtcTicker()} value`;
       }
-      if (safeAmount.value.gt(balance.value)) {
+      if (safeAmount.value.gt(balance)) {
         return 'You don\'t have the balance for this amount';
       }
       if (safeAmount.value.lt(minValue)) {
@@ -131,8 +137,9 @@ export default defineComponent({
 
     const insufficientAmount = computed(() => {
       const { minValue } = pegoutConfiguration.value;
+      const { balance } = web3SessionState.value;
       return safeAmount.value.lte('0')
-        || safeAmount.value.gt(balance.value)
+        || safeAmount.value.gt(balance)
         || safeAmount.value.lt(minValue);
     });
 
@@ -160,8 +167,9 @@ export default defineComponent({
 
     function setMin() {
       const { minValue } = pegoutConfiguration.value;
-      if (balance.value.lt(minValue)) {
-        rbtcAmountModel.value = balance.value.toRBTCTrimmedString();
+      const { balance } = web3SessionState.value;
+      if (balance.lt(minValue)) {
+        rbtcAmountModel.value = balance.toRBTCTrimmedString();
       } else {
         rbtcAmountModel.value = minValue.toRBTCTrimmedString();
       }
@@ -189,6 +197,7 @@ export default defineComponent({
       mdiInformationOutline,
       mdiBitcoin,
       setMin,
+      estimatedBtcToReceive,
       rbtcAmountModel,
       minStrVal,
       isComposing,
