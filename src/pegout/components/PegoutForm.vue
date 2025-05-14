@@ -103,6 +103,9 @@
             Your transaction is being processed and will be sent to the network.
           </span>
         </v-progress-circular>
+        <p v-if="isLedgerConnected" class="text-warning">
+          See your Ledger device to confirm your transaction.
+        </p>
       </div>
     </v-overlay>
     <!-- Send tx error message -->
@@ -149,8 +152,8 @@ import ApiService from '@/common/services/ApiService';
 import { FlyoverService } from '@/common/services';
 import FullTxErrorDialog from '@/common/components/exchange/FullTxErrorDialog.vue';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
-import { useWallet } from '@/common/composables/useWallet';
 import { useWalletInfo } from '@reown/appkit/vue';
+import { providers } from 'ethers';
 import PegoutOption from './PegoutOption.vue';
 
 export default defineComponent({
@@ -182,7 +185,8 @@ export default defineComponent({
     const pegOutTxState = useState<PegOutTxState>('pegOutTx');
     const flyoverPegoutState = useState<FlyoverPegoutState>('flyoverPegout');
     const flyoverService = useStateAttribute<FlyoverService>('flyoverPegout', 'flyoverService');
-    const { address, balance, provider: ethersProvider } = useWallet();
+    const account = useStateAttribute<string>('web3Session', 'account');
+    const balance = useStateAttribute<WeiBig>('web3Session', 'balance');
     const { walletInfo } = useWalletInfo();
     const sendTx = useAction('pegOutTx', constants.PEGOUT_TX_SEND);
     const sendFlyoverTx = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ACCEPT_AND_SEND_QUOTE);
@@ -192,10 +196,13 @@ export default defineComponent({
     const clearFlyoverState = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_CLEAR_STATE);
     const clearPegoutTx = useAction('pegOutTx', constants.PEGOUT_TX_CLEAR);
     const getPegoutQuotes = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_GET_QUOTES);
+    const ethersProvider = useStateAttribute<providers.Web3Provider>('web3Session', 'ethersProvider');
     const quotes = useStateAttribute<Record<number, QuotePegOut2WP[]>>('flyoverPegout', 'quotes');
     const quoteDifference = useStateAttribute<ObjectDifference>('flyoverPegout', 'difference');
     const selectedQuote = useGetter<QuotePegOut2WP>('flyoverPegout', constants.FLYOVER_PEGOUT_GET_SELECTED_QUOTE);
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
+    const isEnoughBalance = useGetter<boolean>('pegOutTx', constants.PEGOUT_TX_IS_ENOUGH_BALANCE);
+    const isLedgerConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_LEDGER_CONNECTED);
     const setSelectedQuoteHash = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE_HASH);
     const selectedQuoteHash = useStateAttribute<string>('flyoverPegout', 'selectedQuoteHash');
     const selectedOption = ref<string>('');
@@ -233,7 +240,9 @@ export default defineComponent({
 
     const validAmountToReceive = computed((): boolean => estimatedBtcToReceive.value.gt(0));
 
-    const isReadyToCreate = computed((): boolean => validAmountToReceive.value
+    const isReadyToCreate = computed((): boolean => isEnoughBalance.value
+        && !!account.value
+        && validAmountToReceive.value
         && selectedOption.value === '');
 
     const isFlyoverReady = computed(() => {
@@ -280,7 +289,7 @@ export default defineComponent({
           nonce: 0n,
           penaltyFee: new WeiBig(0, 'wei'),
           productFeeAmount: btcFee,
-          rskRefundAddress: address.value ?? '',
+          rskRefundAddress: account.value ?? '',
           transferConfirmations: 0,
           transferTime: 0,
           value: estimatedValueToReceive,
@@ -381,7 +390,7 @@ export default defineComponent({
         fee: getProviderFee().toString(),
         provider: getLPName(),
         details: {
-          senderAddress: address.value,
+          senderAddress: account.value,
           recipientAddress: flyoverPegoutState.value.btcRecipientAddress,
           blocksToCompleteTransaction: selectedQuote.value.quote.depositConfirmations.toString(),
         },
@@ -455,7 +464,7 @@ export default defineComponent({
 
     function getQuotes() {
       loadingQuotes.value = true;
-      getPegoutQuotes(address.value)
+      getPegoutQuotes(account.value)
         .catch((e) => {
           handlePegoutError(e);
           clearQuotes();
@@ -533,7 +542,7 @@ export default defineComponent({
       }
     });
 
-    watch(address, clearState);
+    watch(account, clearState);
 
     if (props.flyoverEnabled) {
       getAvailableLiquidity();
@@ -543,6 +552,7 @@ export default defineComponent({
       environmentContext,
       showAddressDialog,
       isWalletAuthorizedToSign,
+      isLedgerConnected,
       pegOutFormState,
       send,
       back,

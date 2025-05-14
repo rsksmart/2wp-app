@@ -2,13 +2,13 @@ import { ActionTree } from 'vuex';
 import axios, { AxiosResponse } from 'axios';
 import * as constants from '@/common/store/constants';
 import {
-  MiningSpeedFee, PegOutTxState, RootState, SatoshiBig, WeiBig,
+  MiningSpeedFee, PegOutTxState, RootState, SatoshiBig, SessionState, WeiBig,
 } from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import {
   getCookie, getEstimatedFee, sendTransaction, setCookie, ServiceError,
 } from '@/common/utils';
-import { useWallet } from '@/common/composables/useWallet';
+import { providers } from 'ethers';
 
 export const actions: ActionTree<PegOutTxState, RootState> = {
   [constants.PEGOUT_TX_SELECT_FEE_LEVEL]: ({ commit }, feeLevel: MiningSpeedFee) => {
@@ -17,17 +17,18 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
   [constants.PEGOUT_TX_ADD_AMOUNT]: ({ commit }, amountToTransfer: WeiBig) => {
     commit(constants.PEGOUT_TX_SET_AMOUNT, amountToTransfer);
   },
-  [constants.PEGOUT_TX_CALCULATE_FEE]: async ({ commit, state }) => {
-    const { address, provider } = useWallet();
+  [constants.PEGOUT_TX_CALCULATE_FEE]: async ({ commit, state, rootState }) => {
+    const ethersProvider = rootState.web3Session?.ethersProvider as providers.Web3Provider;
+    const sender = rootState.web3Session?.account as string;
     try {
       // RSK Fee
-      const gas = await provider.value?.estimateGas({
-        from: address.value ?? '',
+      const gas = await ethersProvider.estimateGas({
+        from: sender,
         to: state.pegoutConfiguration.bridgeContractAddress,
         value: state.amountToTransfer.toWeiString(),
       });
       commit(constants.PEGOUT_TX_SET_GAS, gas);
-      const gasPrice = Number(await provider.value?.getGasPrice());
+      const gasPrice = Number(await ethersProvider.getGasPrice());
       const calculatedFee = new WeiBig(gasPrice * Number(gas), 'wei');
       commit(constants.PEGOUT_TX_SET_RSK_ESTIMATED_FEE, calculatedFee);
     } catch (e) {
@@ -56,23 +57,23 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
   [constants.PEGOUT_TX_INIT]: ({ dispatch }):
     Promise<void> => dispatch(constants.PEGOUT_TX_ADD_BITCOIN_PRICE)
     .then(() => dispatch(constants.PEGOUT_TX_ADD_PEGOUT_CONFIGURATION)),
-  [constants.PEGOUT_TX_SEND]: ({ state, commit })
+  [constants.PEGOUT_TX_SEND]: ({ state, rootState, commit })
     : Promise<void> => new Promise<void>((resolve, reject) => {
-      const { address, provider } = useWallet();
-      if (provider.value && address.value) {
+      const { ethersProvider } = rootState.web3Session as SessionState;
+      if (ethersProvider) {
         const txToSign = {
-          from: address.value,
+          from: rootState.web3Session?.account,
           to: state.pegoutConfiguration.bridgeContractAddress,
           value: state.amountToTransfer.toWeiString(),
         };
         Promise.all([
-          sendTransaction(txToSign, provider.value)
+          sendTransaction(txToSign, ethersProvider as providers.Web3Provider)
             .then((txResponse) => {
               commit(constants.PEGOUT_TX_SET_TX_HASH, txResponse.hash);
               resolve();
               return txResponse.wait(1);
             }),
-          provider.value.getGasPrice(),
+          ethersProvider.getGasPrice(),
         ])
           .then(([tx, gasPrice]) => {
             commit(
