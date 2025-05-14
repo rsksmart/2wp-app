@@ -65,6 +65,11 @@
       </div>
     </v-col>
     <v-progress-circular v-if="loadingBalance" size="small" indeterminate color="bw-500"/>
+    <v-col cols="auto">
+        <v-btn variant="text"
+        density="compact" rounded="full" :icon="mdiTableEdit" @click="displayUtxoSelector"></v-btn>
+    </v-col>
+    <uxto-selector :show-dialog="showUtxoDialog" @update:showDialog="displayUtxoSelector"/>
   </v-row>
 </template>
 
@@ -72,7 +77,7 @@
 import {
   ref, defineComponent, computed, watch,
 } from 'vue';
-import { mdiBitcoin, mdiContentCopy, mdiChevronDown } from '@mdi/js';
+import { mdiTableEdit, mdiContentCopy, mdiChevronDown } from '@mdi/js';
 import * as constants from '@/common/store/constants';
 import { BtcAccount, WalletAddress } from '@/common/types/pegInTx';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
@@ -82,12 +87,17 @@ import {
 import { AccountBalance, BtcWallet, SatoshiBig } from '@/common/types';
 import { WalletService } from '@/common/services';
 import { truncateString } from '@/common/utils';
+import UxtoSelector from '@/common/components/layouts/UxtoSelector.vue';
 
 export default defineComponent({
   name: 'PegInAccountSelect',
+  components: {
+    UxtoSelector,
+  },
   setup(_, context) {
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const selectedAccountType = ref();
+    const showUtxoDialog = ref(false);
     const bitcoinWallet = useStateAttribute<BtcWallet>('pegInTx', 'bitcoinWallet');
     const balances = useStateAttribute<AccountBalance>('pegInTx', 'balances');
     const loadingBalance = useStateAttribute<boolean>('pegInTx', 'loadingBalance');
@@ -155,6 +165,10 @@ export default defineComponent({
       navigator.clipboard.writeText(firstBtcAddress.value);
     }
 
+    function displayUtxoSelector() {
+      showUtxoDialog.value = !showUtxoDialog.value;
+    }
+
     if (singleAccountType.value) {
       selectedAccountType.value = singleAccountType.value;
     } else {
@@ -183,7 +197,7 @@ export default defineComponent({
       loadingBalance,
       mdiContentCopy,
       balances,
-      mdiBitcoin,
+      mdiTableEdit,
       balancesPerAccountType,
       selectedAccountTypeBadge,
       tooltipText,
@@ -196,6 +210,8 @@ export default defineComponent({
       walletInfo,
       copyFullAccountAddress,
       atPeginForm,
+      displayUtxoSelector,
+      showUtxoDialog,
     };
   },
 });
