@@ -145,9 +145,9 @@ export const getters: GetterTree<PegInTxState, RootState> = {
         case constants.BITCOIN_LEGACY_ADDRESS:
           return getBalanceFromUtxoList(state.utxoList.legacy);
         case constants.BITCOIN_NATIVE_SEGWIT_ADDRESS:
-          return getBalanceFromUtxoList(state.utxoList.segwit);
-        case constants.BITCOIN_SEGWIT_ADDRESS:
           return getBalanceFromUtxoList(state.utxoList.nativeSegwit);
+        case constants.BITCOIN_SEGWIT_ADDRESS:
+          return getBalanceFromUtxoList(state.utxoList.segwit);
         default:
           break;
       }
