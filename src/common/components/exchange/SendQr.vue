@@ -41,6 +41,11 @@
         <v-text-field variant="outlined" class="address-field"
         :disabled="true" :model-value="address"/>
       </v-row>
+      <v-row class="d-flex justify-center text-center my-4">
+        <v-btn-rsk @click="toStatusSearch">
+          Search for Transaction ID status
+        </v-btn-rsk>
+    </v-row>
   </v-container>
   </v-card>
 
@@ -54,6 +59,7 @@ import { SatoshiBig, WeiBig } from '@/common/types';
 import {
   computed, defineComponent, PropType, ref,
 } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 export default defineComponent({
   name: 'SendQr',
@@ -76,6 +82,8 @@ export default defineComponent({
     const VALUE_INCOMPLETE_MESSAGE = '-';
 
     const bitcoinPrice = useStateAttribute<number>('web3Session', 'bitcoinPrice');
+    const route = useRoute();
+    const router = useRouter();
 
     const networkNameTicker = computed(() => (
       props.network === Networks.BITCOIN
@@ -103,11 +111,15 @@ export default defineComponent({
       if (!props.amount) return VALUE_INCOMPLETE_MESSAGE;
       if (props.network === Networks.ROOTSTOCK) {
         const rbtcAmount = props.amount as WeiBig;
-        return rbtcAmount.toRBTCString();
+        return rbtcAmount.toRBTCTrimmedString();
       }
       const btcAmount = props.amount as SatoshiBig;
-      return btcAmount.toBTCString();
+      return btcAmount.toBTCTrimmedString();
     });
+
+    function toStatusSearch(): void {
+      if (route.path !== '/status') router.push('/status');
+    }
 
     return {
       image,
@@ -115,6 +127,7 @@ export default defineComponent({
       networkTicker,
       amountUsd,
       amountValue,
+      toStatusSearch,
     };
   },
 });

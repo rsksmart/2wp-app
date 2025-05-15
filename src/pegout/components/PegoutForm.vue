@@ -58,17 +58,20 @@
               :quote-differences="actualDiffPercentage"
             />
           </v-row>
-          <v-row no-gutters class="d-flex justify-end mt-5">
-            <v-col>
+          <v-row no-gutters class="mt-5">
+            <v-col v-if="selectedOption !== ''" class="d-flex justify-start">
               <v-btn-rsk
-                @click="sendTx(true)">
+                @click="sendTx(true)"
+                :disabled="!isValid || pegOutFormState.matches(['goingHome'])"
+                class="align-self-start text-body-1"
+                >
                 <template #append>
-                  <v-icon :icon="mdiArrowRight" />
+                  <v-icon :icon="mdiQrcode" />
                 </template>
-                Send from other wallet
+                  Send with
               </v-btn-rsk>
             </v-col>
-            <v-col>
+            <v-col class="d-flex justify-end">
               <v-btn-rsk v-if="!pegOutFormState.matches(['loading'])"
               @click="sendTx(false)"
               :disabled="!isValid || pegOutFormState.matches(['goingHome'])"
@@ -149,7 +152,11 @@ import QuoteDiffDialog from '@/pegout/components/QuoteDiffDialog.vue';
 import {
   useAction, useGetter, useState, useStateAttribute,
 } from '@/common/store/helper';
-import { mdiArrowLeft, mdiArrowRight } from '@mdi/js';
+import {
+  mdiArrowLeft,
+  mdiArrowRight,
+  mdiQrcode,
+} from '@mdi/js';
 import {
   FlyoverPegoutState, LiquidityProvider2WP, ObjectDifference,
   PegoutQuoteDbModel, PegOutTxState, QuotePegOut2WP,
@@ -424,7 +431,6 @@ export default defineComponent({
     }));
 
     function acceptAndSendQr(quoteHash: string):Promise<void> {
-      console.log('acceptAndSendQr quoteHash:', quoteHash);
       return acceptQuote(quoteHash)
         .then(() => {
           router.push({
@@ -611,6 +617,7 @@ export default defineComponent({
       checkValidAmount,
       countdown,
       recaptchanNewTokenTime,
+      mdiQrcode,
     };
   },
 });

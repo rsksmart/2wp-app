@@ -1,7 +1,7 @@
 <template>
   <v-container fluid class="normalized-height container max-width">
     <v-row class="d-flex justify-center">
-      <v-col cols="4" offset="2" class="d-flex justify-center ma-0">
+      <v-col xs="10" sm="8" md="7" lg="5" xl="5" class="d-flex space-between flex-column">
         <send-qr :qr="qr.image" :network="network"
           :amount="qr.amount" :address="qr.address"></send-qr>
       </v-col>
@@ -38,7 +38,7 @@ export default defineComponent({
         amount: peginQuote.value?.valueToTransfer,
         address: peginQuote.value?.quote.lpBTCAddr,
       },
-      RSK: {
+      ROOTSTOCK: {
         image: pegoutQuote.value?.lpsAddressQrCode,
         amount: pegoutQuote.value?.quote.value,
         address: pegoutQuote.value?.quote.liquidityProviderRskAddress,

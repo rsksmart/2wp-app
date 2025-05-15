@@ -54,16 +54,16 @@
             />
           </v-row>
           <v-row no-gutters class="d-flex justify-end mt-5">
-            <v-col>
+            <v-col v-if="selected === peginType.FLYOVER">
               <v-btn-rsk
                 @click="sendTx(true)"
                 :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])"
                 class="align-self-start text-body-1"
                 >
                 <template #append>
-                  <v-icon :icon="mdiArrowRight" />
+                  <v-icon :icon="mdiQrcode" />
                 </template>
-                  Send from other wallet
+                  Send with
               </v-btn-rsk>
             </v-col>
             <v-col class="d-flex justify-end">
@@ -111,7 +111,12 @@
 import {
   computed, ref, defineComponent, onBeforeMount, watch, onMounted,
 } from 'vue';
-import { mdiArrowLeft, mdiArrowRight, mdiSendOutline } from '@mdi/js';
+import {
+  mdiArrowLeft,
+  mdiArrowRight,
+  mdiSendOutline,
+  mdiQrcode,
+} from '@mdi/js';
 import BtcInput from '@/pegin/components/create/BtcInput.vue';
 import PeginOptionCard from '@/pegin/components/create/PeginOptionCard.vue';
 import { PegInTxState } from '@/common/types/pegInTx';
@@ -402,6 +407,7 @@ export default defineComponent({
       flyoverIsEnabled,
       countdown,
       recaptchanNewTokenTime,
+      mdiQrcode,
     };
   },
 });
