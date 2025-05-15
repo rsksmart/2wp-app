@@ -75,6 +75,7 @@ export default defineComponent({
     const flyoverEstimateGasFee = useAction('flyoverPegin', constants.FLYOVER_PEGIN_ESTIMATE_QUOTE_FEE);
     const account = useGetter<string>('web3Session', constants.SESSION_GET_CHECKSUMMED_ACCOUNT);
     const calculateMaxFee = useAction('pegInTx', constants.PEGIN_CALCULATE_MAX_FEE);
+    const biggestBigInt = 2n ** 63n - 1n;
 
     const boundaries = computed(() => {
       const minValue: SatoshiBig = new SatoshiBig(peginConfiguration.value.minValue, 'btc');
@@ -167,30 +168,12 @@ export default defineComponent({
       bitcoinAmountModel.value = minValue.toBTCTrimmedString();
     }
 
-    async function setMax() {
-      const biggestBigInt = 2n ** 63n - 1n;
-
-      const lpId = EnvironmentAccessorService.getEnvironmentVariables().flyoverProviderId;
-
-      const provider = liquidityProviders.value.find((p) => p.id === lpId);
-      const availableLiquidity = provider?.pegin.availableLiquidity || new WeiBig(0, 'wei');
-      const maxTransactionValue = provider?.pegin.maxTransactionValue || new WeiBig(0, 'wei');
+    async function getFlyoverMaxBalanceMinusFeesBigIntString(
+      provider: LiquidityProvider2WP | undefined,
+      maxTransactionValue: WeiBig,
+      accountBalance: WeiBig,
+    ) {
       const callFee = provider?.pegin.fee || new WeiBig(0, 'wei');
-
-      // AVAILABLE FLYOVER PEGIN LIQUIDITY
-      let bigIntAvailableLiquidity = toWeiBigIntString(availableLiquidity?.toRBTCString() || '0');
-      if (bigIntAvailableLiquidity === '0') bigIntAvailableLiquidity = biggestBigInt.toString();
-
-      // MAX FLYOVER TRANSACTION VALUE
-      let bigIntMaxTransactionValue = toWeiBigIntString(maxTransactionValue?.toRBTCString());
-      if (bigIntMaxTransactionValue === '0') bigIntMaxTransactionValue = biggestBigInt.toString();
-
-      // USER BALANCE
-      const accountBalance = new WeiBig(toWeiBigIntString(selectedAccountBalance.value.toBTCString()), 'wei');
-      let bigIntUserBalance = toWeiBigIntString(accountBalance.toRBTCString());
-      if (bigIntUserBalance === '0') bigIntUserBalance = biggestBigInt.toString();
-
-      // FLYOVER PEGIN FEES
       let bigIntCallFee = toWeiBigIntString(callFee.toRBTCString());
       if (bigIntCallFee === '0') bigIntCallFee = biggestBigInt.toString();
       const maximumGasFee = await flyoverEstimateGasFee({
@@ -205,15 +188,45 @@ export default defineComponent({
       let bigIntBalanceMinusFlyoverFees = toWeiBigIntString(balanceMinusFlyoverFees.toRBTCString());
       if (bigIntBalanceMinusFlyoverFees === '0') bigIntBalanceMinusFlyoverFees = biggestBigInt.toString();
 
-      // BRIDGE LOCKING CAP
-      const bridgeLockingCap = await getBridgeLockingCap();
-      let bigIntBridgeLockingCap = toWeiBigIntString(bridgeLockingCap.toRBTCString());
-      if (bigIntBridgeLockingCap === '0') bigIntBridgeLockingCap = biggestBigInt.toString();
+      return bigIntBalanceMinusFlyoverFees;
+    }
 
+    async function getNativeMaxBalanceMinusFeesBigIntString() {
       const maxFee = await calculateMaxFee() as SatoshiBig;
       const balanceMinusNativeFee = selectedAccountBalance.value.minus(maxFee);
       let bigIntBalanceMinusNativeFee = toWeiBigIntString(balanceMinusNativeFee.toBTCString());
       if (bigIntBalanceMinusNativeFee === '0') bigIntBalanceMinusNativeFee = biggestBigInt.toString();
+      return bigIntBalanceMinusNativeFee;
+    }
+
+    async function setMax() {
+      const lpId = EnvironmentAccessorService.getEnvironmentVariables().flyoverProviderId;
+
+      const provider = liquidityProviders.value.find((p) => p.id === lpId);
+      const availableLiquidity = provider?.pegin.availableLiquidity || new WeiBig(0, 'wei');
+      const maxTransactionValue = provider?.pegin.maxTransactionValue || new WeiBig(0, 'wei');
+
+      let bigIntAvailableLiquidity = toWeiBigIntString(availableLiquidity?.toRBTCString() || '0');
+      if (bigIntAvailableLiquidity === '0') bigIntAvailableLiquidity = biggestBigInt.toString();
+
+      let bigIntMaxTransactionValue = toWeiBigIntString(maxTransactionValue?.toRBTCString());
+      if (bigIntMaxTransactionValue === '0') bigIntMaxTransactionValue = biggestBigInt.toString();
+
+      const accountBalance = new WeiBig(toWeiBigIntString(selectedAccountBalance.value.toBTCString()), 'wei');
+      let bigIntUserBalance = toWeiBigIntString(accountBalance.toRBTCString());
+      if (bigIntUserBalance === '0') bigIntUserBalance = biggestBigInt.toString();
+
+      const bigIntBalanceMinusFlyoverFees = await getFlyoverMaxBalanceMinusFeesBigIntString(
+        provider,
+        maxTransactionValue,
+        accountBalance,
+      );
+
+      const bridgeLockingCap = await getBridgeLockingCap();
+      let bigIntBridgeLockingCap = toWeiBigIntString(bridgeLockingCap.toRBTCString());
+      if (bigIntBridgeLockingCap === '0') bigIntBridgeLockingCap = biggestBigInt.toString();
+
+      const bigIntBalanceMinusNativeFee = await getNativeMaxBalanceMinusFeesBigIntString();
 
       const maxValue = [
         BigInt(bigIntAvailableLiquidity),
