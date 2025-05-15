@@ -558,7 +558,6 @@ export default class FlyoverService {
     });
     const weiBigGasLimit = new WeiBig(gasLimit.toString(), 'wei');
     const maxGasPrice = weiBigGasPrice.mul(weiBigGasLimit);
-
     return maxGasPrice;
   }
 }
