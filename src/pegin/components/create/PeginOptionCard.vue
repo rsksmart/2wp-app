@@ -164,6 +164,7 @@ export default defineComponent({
     }
 
     const tooltipText = 'Time is approximate and may vary due to block confirmation times and network congestion.';
+    const feeTooltipText = 'Fee is approximate and may vary due to network congestion.';
 
     return {
       constants,
@@ -178,6 +179,7 @@ export default defineComponent({
       openLink,
       mdiClockOutline,
       tooltipText,
+      feeTooltipText,
       moneyBagIcon,
     };
   },

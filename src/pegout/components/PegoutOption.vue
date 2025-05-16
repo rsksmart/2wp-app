@@ -26,9 +26,9 @@
         </span>
       </v-col>
       <v-col cols="auto" class="d-flex justify-end align-center">
-        <span class="text-body-sm">{{ header.label }}</span>
+        <span class="text-body-sm">{{ header.label }}&nbsp;</span>
         <v-btn @click="openLink(header.link)" icon density="compact" size="small" variant="plain">
-          <v-icon :icon="mdiOpenInNew" />
+           &nbsp;<v-icon :icon="mdiOpenInNew" />
         </v-btn>
       </v-col>
     </v-row>
@@ -48,13 +48,15 @@
           </v-col>
           <v-col cols="6">
             <v-row no-gutters>
-              <v-col cols="auto" class="pa-0 pr-1">
-                <v-img class="d-flex flex-0-0" :src="moneyBagIcon"
-                width="20" height="20" contain/>
-              </v-col>
-              <v-col class="pa-0">
-                <span>{{ toUSD(totalFee) }} USD</span>
-              </v-col>
+              <v-tooltip :text="feeTooltipText" location="top" max-width="200">
+                <template v-slot:activator="{ props }">
+                  <div v-bind="props" class="d-flex align-center ga-1">
+                    <v-img class="d-flex flex-0-0"
+                    :src="moneyBagIcon" width="20" height="20" contain/>
+                    <span :class='`text-${header.timeColor}`'>{{ toUSD(totalFee) }} USD </span>
+                  </div>
+                </template>
+              </v-tooltip>
             </v-row>
           </v-col>
         </v-row>
@@ -190,6 +192,8 @@ export default defineComponent({
     const btcAddress = ref('');
     const isFlyover = computed(() => props.optionType === constants.pegoutType.FLYOVER);
     const tooltipText = 'Time is approximate and may vary due to block confirmation times and network congestion.';
+    const feeTooltipText = 'Fee is approximate and may vary due to network congestion.';
+
     const { global: { current } } = useTheme();
 
     const estimatedValueToReceive = computed(() => {
@@ -309,6 +313,7 @@ export default defineComponent({
       btcAddressPlaceholder,
       totalFee,
       tooltipText,
+      feeTooltipText,
       mdiContentCopy,
       copyToClipboard,
       mdiClockOutline,

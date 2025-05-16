@@ -26,7 +26,7 @@
           <v-row no-gutters class="my-4">
             <span class="text-body-sm">Select mode to see exact amounts</span>
           </v-row>
-          <v-row no-gutters v-if="!flyoverIsEnabled || peginQuotes.length === 0">
+          <v-row no-gutters v-if="!flyoverIsEnabled && peginQuotes.length === 0">
             <pegin-option-card :option-type="peginType.FLYOVER" flyover-not-available>
               <template v-slot>
                 <h4 v-if="countdown === recaptchanNewTokenTime">
@@ -35,6 +35,15 @@
                 <h4 v-else>
                   Fast mode will be <br> available in
                   <span class="text-orange">{{ countdown }} seconds.</span>
+                </h4>
+              </template>
+            </pegin-option-card>
+          </v-row>
+          <v-row no-gutters v-if="flyoverIsEnabled && peginQuotes.length === 0">
+            <pegin-option-card :option-type="peginType.FLYOVER" flyover-not-available>
+              <template v-slot>
+                <h4 v-if="countdown === recaptchanNewTokenTime">
+                  <span class="text-orange">Fast Mode</span> no quotes available for this amount.
                 </h4>
               </template>
             </pegin-option-card>

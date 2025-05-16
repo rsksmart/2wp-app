@@ -22,7 +22,9 @@
       <v-col xs="10" sm="8" md="7" lg="5" xl="5" class="d-flex space-between flex-column">
         <template v-if="showStep">
           <v-row no-gutters class="mb-4 mt-8">
-            <span class="text-body-sm">Select mode to see exact amounts</span>
+            <span class="text-body-sm">
+              Select mode to see exact amounts
+            </span>
           </v-row>
           <v-row no-gutters v-if="!flyoverIsEnabled || pegoutQuotes.length === 0">
             <pegout-option :option-type="pegoutType.FLYOVER" flyover-not-available>
@@ -33,6 +35,19 @@
                 <h4 v-else>
                   Fast mode will be <br> available in
                   <span class="text-orange">{{ countdown }} seconds.</span>
+                </h4>
+              </template>
+            </pegout-option>
+          </v-row>
+          <v-row no-gutters v-if="flyoverIsEnabled
+                && pegoutQuotes.length > 0
+                && !existQuoteAndUsersBalanceIsEnough">
+            <pegout-option :option-type="pegoutType.FLYOVER" flyover-not-available>
+              <template v-slot>
+                <h4>
+                  <span class="text-orange">Fast Mode</span>
+                   you don't have enough balance
+                   <a href="https://dev.rootstock.io/developers/integrate/flyover/LP/#fees">LPS fee</a> + fee + amount.
                 </h4>
               </template>
             </pegout-option>
@@ -118,11 +133,11 @@
     </template>
     <quote-diff-dialog :show-dialog="showQuoteDiff"
       :differences="quoteDifference" @continue="continueHandler" @cancel="clearForError" />
-    <div id="recaptcha" class="g-recaptcha"
-        :data-sitekey="flyoverService.siteKey"
-        data-callback="onRecaptchaSuccess"
-        data-action="submit"
-        data-size="invisible"></div>
+      <div id="recaptcha" class="g-recaptcha"
+          :data-sitekey="flyoverService.siteKey"
+          data-callback="onRecaptchaSuccess"
+          data-action="submit"
+          data-size="invisible"></div>
   </v-container>
 </template>
 
@@ -200,6 +215,7 @@ export default defineComponent({
     const selectedQuote = useGetter<QuotePegOut2WP>('flyoverPegout', constants.FLYOVER_PEGOUT_GET_SELECTED_QUOTE);
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
     const isEnoughBalance = useGetter<boolean>('pegOutTx', constants.PEGOUT_TX_IS_ENOUGH_BALANCE);
+    const feeValue = useGetter<WeiBig>('pegOutTx', constants.PEGOUT_TX_GET_SAFE_TX_FEE);
     const isLedgerConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_LEDGER_CONNECTED);
     const isTrezorConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_TREZOR_CONNECTED);
     const isMetamaskConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_METAMASK_CONNECTED);
@@ -242,6 +258,20 @@ export default defineComponent({
         return constants.WALLET_NAMES.METAMASK;
       }
       return '';
+    });
+
+    const existQuoteAndUsersBalanceIsEnough = computed(() => {
+      if (pegoutQuotes.value.length > 0) {
+        const objectQuote = pegoutQuotes.value[0];
+        const amountPlusFees = objectQuote.quote.value
+          .plus(objectQuote.quote.gasFee)
+          .plus(objectQuote.quote.productFeeAmount)
+          .plus(feeValue.value)
+          .plus(objectQuote.quote.callFee);
+        const enoughBalance = balance.value.gt(amountPlusFees);
+        return enoughBalance;
+      }
+      return true;
     });
 
     const showQuoteDiff = computed(() => quoteDifference.value.percentage > quoteDiffPercentage
@@ -591,6 +621,7 @@ export default defineComponent({
       checkValidAmount,
       countdown,
       recaptchanNewTokenTime,
+      existQuoteAndUsersBalanceIsEnough,
     };
   },
 });
