@@ -37,6 +37,19 @@
               </template>
             </pegout-option>
           </v-row>
+          <v-row no-gutters v-if="flyoverIsEnabled
+                && pegoutQuotes.length > 0
+                && !existQuoteAndUsersBalanceIsEnough">
+            <pegout-option :option-type="pegoutType.FLYOVER" flyover-not-available>
+              <template v-slot>
+                <h4>
+                  <span class="text-orange">Fast Mode</span>
+                   you don't have enough balance
+                   <a href="https://dev.rootstock.io/developers/integrate/flyover/LP/#fees">LPS fee</a> + fee + amount.
+                </h4>
+              </template>
+            </pegout-option>
+          </v-row>
           <v-row no-gutters v-else v-for="(quote, index) in pegoutQuotes" :key="index">
             <pegout-option
               :option-type="pegoutType.FLYOVER"
@@ -201,7 +214,7 @@ export default defineComponent({
     const clearAmount = ref(false);
     const toQr = ref(false);
     const router = useRouter();
-
+    const feeValue = useGetter<WeiBig>('pegOutTx', constants.PEGOUT_TX_GET_SAFE_TX_FEE);
     const pegOutTxState = useState<PegOutTxState>('pegOutTx');
     const flyoverPegoutState = useState<FlyoverPegoutState>('flyoverPegout');
     const flyoverService = useStateAttribute<FlyoverService>('flyoverPegout', 'flyoverService');
@@ -250,6 +263,20 @@ export default defineComponent({
       });
 
       return quoteList;
+    });
+
+    const existQuoteAndUsersBalanceIsEnough = computed(() => {
+      if (pegoutQuotes.value.length > 0) {
+        const objectQuote = pegoutQuotes.value[0];
+        const amountPlusFees = objectQuote.quote.value
+          .plus(objectQuote.quote.gasFee)
+          .plus(objectQuote.quote.productFeeAmount)
+          .plus(feeValue.value)
+          .plus(objectQuote.quote.callFee);
+        const enoughBalance = balance.value.gt(amountPlusFees);
+        return enoughBalance;
+      }
+      return true;
     });
 
     const currentWallet = computed(() => walletInfo?.name ?? '');
@@ -618,6 +645,7 @@ export default defineComponent({
       countdown,
       recaptchanNewTokenTime,
       mdiQrcode,
+      existQuoteAndUsersBalanceIsEnough,
     };
   },
 });
