@@ -4,16 +4,19 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: daily
+      interval: weekly
+        target-branch: "qa"
 
   # Maintain dependencies for Docker
   - package-ecosystem: docker
     directory: /
     schedule:
-      interval: daily
+      interval: weekly
+        target-branch: "qa"
 
   # Maintain dependencies for npm and yarn
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: daily
+      interval: weekly
+        target-branch: "qa"
