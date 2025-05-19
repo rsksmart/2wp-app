@@ -1,23 +1,25 @@
 import { bridge } from '@rsksmart/rsk-precompiled-abis';
-import Web3 from 'web3';
-import { Contract } from 'web3-eth-contract';
+import { BigNumber, ethers } from 'ethers';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
 export class BridgeService {
-  private bridgeContract: Contract;
+  private bridgeContract: ethers.Contract;
 
-  private web3: Web3;
+  private provider: ethers.providers.JsonRpcProvider;
 
   constructor() {
-    this.web3 = new Web3(EnvironmentAccessorService.getEnvironmentVariables().vueAppRskNodeHost);
-    this.bridgeContract = bridge.build(this.web3);
+    const rpcUrl = EnvironmentAccessorService.getEnvironmentVariables().vueAppRskNodeHost;
+    this.provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    this.bridgeContract = new ethers.Contract(
+      bridge.address,
+      bridge.abi,
+      this.provider,
+    );
   }
 
   public getFederationAddress(): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-      this.bridgeContract.methods
-        .getFederationAddress()
-        .call()
+    return new Promise((resolve, reject) => {
+      this.bridgeContract.getFederationAddress()
         .then(resolve)
         .catch(reject);
     });
@@ -25,9 +27,8 @@ export class BridgeService {
 
   public getMinPeginValue(): Promise<number> {
     return new Promise<number>((resolve, reject) => {
-      this.bridgeContract.methods
+      this.bridgeContract
         .getMinimumLockTxValue()
-        .call()
         .then((minValue: string) => resolve(Number(minValue)))
         .catch(reject);
     });
@@ -35,32 +36,27 @@ export class BridgeService {
 
   public getEstimatedFeesForNextPegOutEvent(): Promise<bigint> {
     return new Promise<bigint>((resolve, reject) => {
-      this.bridgeContract.methods
+      this.bridgeContract
         .getEstimatedFeesForNextPegOutEvent()
-        .call()
-        .then(resolve)
+        .then((value: BigNumber) => resolve(value.toBigInt()))
         .catch(reject);
     });
   }
 
   public getQueuedPegoutsCount(): Promise<bigint> {
     return new Promise<bigint>((resolve, reject) => {
-      this.bridgeContract.methods
+      this.bridgeContract
         .getQueuedPegoutsCount()
-        .call()
-        .then(resolve)
+        .then((value: BigNumber) => resolve(value.toBigInt()))
         .catch(reject);
     });
   }
 
   public getNextPegoutCreationBlockAt(blockNumber: number): Promise<number> {
     return new Promise<number>((resolve, reject) => {
-      this.bridgeContract.defaultBlock = blockNumber;
-      this.bridgeContract.methods
-        .getNextPegoutCreationBlockNumber()
-        .call()
+      this.bridgeContract
+        .getNextPegoutCreationBlockNumber({ blockTag: blockNumber })
         .then((creationBlock: string) => {
-          this.bridgeContract.defaultBlock = 'latest';
           resolve(Number(creationBlock));
         })
         .catch(reject);
@@ -69,10 +65,9 @@ export class BridgeService {
 
   public getLockingCap(): Promise<bigint> {
     return new Promise<bigint>((resolve, reject) => {
-      this.bridgeContract.methods
+      this.bridgeContract
         .getLockingCap()
-        .call()
-        .then(resolve)
+        .then((value: BigNumber) => resolve(value.toBigInt()))
         .catch(reject);
     });
   }
