@@ -21,10 +21,10 @@
     "@ledgerhq/hw-transport-webusb": "6.27.1",
     "@mdi/font": "^7.2.96",
     "@mdi/js": "^6.9.96",
-    "@rsksmart/bridges-core-sdk": "^0.4.2",
-    "@rsksmart/flyover-sdk": "^1.6.3",
     "@reown/appkit": "^1.7.2",
     "@reown/appkit-adapter-ethers5": "^1.7.2",
+    "@rsksmart/bridges-core-sdk": "^0.4.2",
+    "@rsksmart/flyover-sdk": "^1.6.3",
     "@rsksmart/rlogin": "^1.6.1",
     "@rsksmart/rlogin-ledger-provider": "^1.0.5-alpha",
     "@rsksmart/rlogin-trezor-provider": "^1.0.5",
@@ -65,9 +65,7 @@
     "vue-i18n": "^9.13.1",
     "vue-router": "^4.4.5",
     "vuetify": "^3.7.3",
-    "vuex": "^4.1.0",
-    "web3": "^4.8.0",
-    "web3-eth-contract": "^1.10.0"
+    "vuex": "^4.1.0"
   },
   "devDependencies": {
     "@babel/plugin-transform-private-methods": "^7.25.9",
