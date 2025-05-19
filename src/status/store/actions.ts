@@ -1,5 +1,4 @@
 import { ActionTree } from 'vuex';
-import Web3 from 'web3';
 import moment from 'moment';
 import {
   FlyoverStatusModel,
@@ -11,6 +10,7 @@ import * as constants from '@/common/store/constants';
 import { ApiService } from '@/common/services';
 import { BridgeService } from '@/common/services/BridgeService';
 import { getEstimatedFee, promiseWithTimeout } from '@/common/utils';
+import { ethers } from 'ethers';
 
 export const actions: ActionTree<TxStatus, RootState> = {
   [constants.STATUS_CLEAR]: ({ commit }) => {
@@ -63,14 +63,15 @@ export const actions: ActionTree<TxStatus, RootState> = {
   [constants.STATUS_GET_ESTIMATED_RELEASE_TIME_IN_MINUTES]: ({ state, commit })
     : Promise<void> => new Promise<void>((resolve, reject) => {
       const bridgeService = new BridgeService();
-      const web3 = new Web3(EnvironmentAccessorService.getEnvironmentVariables().vueAppRskNodeHost);
+      const provider = new ethers.providers
+        .JsonRpcProvider(EnvironmentAccessorService.getEnvironmentVariables().vueAppRskNodeHost);
       if (state.txDetails) {
         const status = state.txDetails as PegoutStatusDataModel;
-        web3.eth.getTransaction(status.originatingRskTxHash)
+        provider.getTransaction(status.originatingRskTxHash)
           .then(({ blockNumber }) => {
             if (!blockNumber) reject(new Error('The tx are not mined yet'));
             return Promise.all([
-              web3.eth.getBlockNumber(),
+              provider.getBlockNumber(),
               bridgeService.getNextPegoutCreationBlockAt(Number(blockNumber) ?? 0),
             ]);
           })
