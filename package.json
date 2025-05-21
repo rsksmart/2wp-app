@@ -36,7 +36,7 @@
     "@types/lodash": "^4.17.13",
     "@walletconnect/web3-provider": "^1.7.1",
     "assert": "^2.0.0",
-    "axios": "^1.7.7",
+    "axios": "^1.9.0",
     "big.js": "^6.2.1",
     "bip32": "^4.0.0",
     "bitcoinjs-lib": "^5.2.0",
