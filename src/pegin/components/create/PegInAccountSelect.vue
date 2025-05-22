@@ -18,6 +18,8 @@
         variant="flat" :color="selectedAccountTypeBadge.color" density="compact">
         {{ selectedAccountTypeBadge.text }}
       </v-chip>
+      <v-btn variant="text"
+        density="compact" rounded="full" :icon="mdiPencil" @click="displayUtxoSelector"></v-btn>
     </v-col>
     <v-col v-if="!singleAccountType">
       <div>
@@ -58,6 +60,14 @@
                     >
                       {{ item.appendText }}
                     </v-chip>
+                    <v-tooltip text="Select UTXOs">
+                      <template v-slot:activator="{ props }">
+                        <v-btn v-bind="props" variant="text"
+                        density="compact" rounded="full" :icon="mdiPencil"
+                        @click="displayUtxoSelector">
+                    </v-btn>
+                      </template>
+                    </v-tooltip>
                 </template>
             </v-list-item>
           </v-list>
@@ -66,8 +76,6 @@
     </v-col>
     <v-progress-circular v-if="loadingBalance" size="small" indeterminate color="bw-500"/>
     <v-col cols="auto">
-        <v-btn variant="text"
-        density="compact" rounded="full" :icon="mdiTableEdit" @click="displayUtxoSelector"></v-btn>
     </v-col>
     <uxto-selector :show-dialog="showUtxoDialog" @update:showDialog="displayUtxoSelector"/>
   </v-row>
@@ -77,7 +85,7 @@
 import {
   ref, defineComponent, computed, watch,
 } from 'vue';
-import { mdiTableEdit, mdiContentCopy, mdiChevronDown } from '@mdi/js';
+import { mdiPencil, mdiContentCopy, mdiChevronDown } from '@mdi/js';
 import * as constants from '@/common/store/constants';
 import { BtcAccount, WalletAddress } from '@/common/types/pegInTx';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
@@ -197,7 +205,7 @@ export default defineComponent({
       loadingBalance,
       mdiContentCopy,
       balances,
-      mdiTableEdit,
+      mdiPencil,
       balancesPerAccountType,
       selectedAccountTypeBadge,
       tooltipText,
