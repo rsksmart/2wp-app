@@ -1,9 +1,20 @@
 <!-- eslint-disable vue/valid-v-slot -->
 <template>
-  <v-dialog v-model="show" width="850" persistent class="pa-5">
-    <v-card class="container dialog pa-6">
-      <v-row class="mx-0 mt-7 mb-2 d-flex justify-center">
-        <h2 class="text-xl font-bold mb-4">UTXO Selector</h2>
+  <v-dialog v-model="show" width="850" min-height="600" persistent class="pa-5">
+    <v-card rounded="rounded-lg" min-height="600" class="container pa-10">
+      <v-row class="mx-0 mt-7 mb-0 d-flex justify-start">
+        <v-col cols="3" class="ma-0 pa-0"><h2 class="text-h5 font-bold">UTXO List</h2></v-col>
+        <v-col class="ma-0 pa-0">
+            <v-chip v-show="selectedAccount"
+            variant="flat" :color="getAccountChip().color" density="compact">
+            {{ getAccountChip().text }}
+          </v-chip>
+        </v-col>
+      </v-row>
+      <v-row class="mx-0 mb-2 d-flex justify-start">
+        <span>
+          Select the UTXOs you want to use for the transaction.
+        </span>
       </v-row>
       <v-row>
         <v-data-table
@@ -11,7 +22,20 @@
           :items="utxoList[getAccountName(selectedAccount)]"
           item-value="txid"
           class="elevation-1"
+          hide-default-footer
         >
+        <template #headers="{ columns }">
+          <tr>
+            <th
+              v-for="column in columns"
+              :key="column.key ?? column.title"
+              scope="col"
+              class="text-left text-subtitle-2 font-weight-medium"
+            >
+              {{ column.title }}
+            </th>
+          </tr>
+        </template>
           <template #item.selected="{ item }">
             <v-checkbox
               v-model="localSelection[getAccountName(selectedAccount)][item.txid]"
@@ -20,8 +44,37 @@
               density="compact"
             />
           </template>
-          <template #item.value="{ item }">
-            {{ item.amount }} sats
+          <template #item.address="{ item }">
+            <span class="text-body-1">
+              {{ truncateStringToSize(item.address ?? '', 15) }}
+            </span>
+          </template>
+          <template #item.txid="{ item }">
+            <span class="text-body-1">
+              {{ truncateStringToSize(item.txid, 15) }}
+            </span>
+          </template>
+          <template #item.amount="{ item }">
+            <span class="text-body-1">
+              {{ item.amount }}
+            </span>
+          </template>
+          <template #item.vout="{ item }">
+            <span class="text-body-1">
+              {{ item.vout }}
+            </span>
+          </template>
+          <template #bottom>
+            <v-data-table-footer
+            :page="page"
+            :items-per-page="ITEMS_PER_PAGE"
+            :items-length="utxoList[getAccountName(selectedAccount)].length"
+            @update:page="page = $event"
+            class="justify-end"
+            :show-first-last-page="false"
+            :items-per-page-options="[ITEMS_PER_PAGE]"
+            :class="'text-body-1'"
+          />
           </template>
         </v-data-table>
       </v-row>
@@ -43,6 +96,7 @@ import {
 import { useAction, useStateAttribute } from '@/common/store/helper';
 import { BtcAccount, Utxo, UtxoListPerAccount } from '@/common/types';
 import * as constants from '@/common/store/constants';
+import { truncateStringToSize } from '@/common/utils';
 
 export default defineComponent({
   name: 'UxtoSelector',
@@ -65,8 +119,32 @@ export default defineComponent({
       segwit: {},
       nativeSegwit: {},
     });
+
+    function getAccountName(account: BtcAccount): keyof typeof localSelection {
+      switch (account) {
+        case BtcAccount.BITCOIN_LEGACY_ADDRESS:
+          return 'legacy';
+        case BtcAccount.BITCOIN_SEGWIT_ADDRESS:
+          return 'segwit';
+        case BtcAccount.BITCOIN_NATIVE_SEGWIT_ADDRESS:
+          return 'nativeSegwit';
+        default:
+          return 'legacy';
+      }
+    }
+
     const headers = [
-      { title: 'Select', value: 'selected', sortable: false },
+      {
+        title: 'Select', value: 'selected', sortable: false, width: '14',
+      },
+      {
+        title: 'Address',
+        key: 'address',
+        value: (item: Utxo) => {
+          const account = getAccountName(selectedAccount.value);
+          return item[account as keyof Utxo];
+        },
+      },
       {
         title: 'Transaction ID',
         key: 'txid',
@@ -85,16 +163,21 @@ export default defineComponent({
       },
     });
 
-    function getAccountName(account: BtcAccount): keyof typeof localSelection {
-      switch (account) {
+    const page = ref(1);
+    const ITEMS_PER_PAGE = 15;
+    const pageCount = computed(() => Math
+      .ceil(utxoList.value[getAccountName(selectedAccount.value)].length / ITEMS_PER_PAGE));
+
+    function getAccountChip() {
+      switch (selectedAccount.value) {
         case BtcAccount.BITCOIN_LEGACY_ADDRESS:
-          return 'legacy';
+          return { text: 'Legacy', color: 'pink' };
         case BtcAccount.BITCOIN_SEGWIT_ADDRESS:
-          return 'segwit';
+          return { text: 'Segwit', color: 'orange' };
         case BtcAccount.BITCOIN_NATIVE_SEGWIT_ADDRESS:
-          return 'nativeSegwit';
+          return { text: 'Native Segwit', color: 'teal' };
         default:
-          return 'legacy';
+          return { text: '', color: '' };
       }
     }
 
@@ -137,6 +220,11 @@ export default defineComponent({
       continueToApp,
       selectedAccount,
       getAccountName,
+      getAccountChip,
+      truncateStringToSize,
+      page,
+      pageCount,
+      ITEMS_PER_PAGE,
     };
   },
 });
