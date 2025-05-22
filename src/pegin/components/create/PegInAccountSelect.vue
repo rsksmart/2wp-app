@@ -23,7 +23,7 @@
     </v-col>
     <v-col v-if="!singleAccountType">
       <div>
-        <v-menu location="bottom end" no-click-animation="true"
+        <v-menu location="bottom end" :no-click-animation="true"
         :disabled="loadingBalance || !atPeginForm">
           <template v-slot:activator="{ props }">
             <v-btn
