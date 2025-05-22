@@ -15,6 +15,7 @@ import {
   BtcAccount, BtcWallet, MiningSpeedFee, UtxoListPerAccount, Utxo,
 } from '@/common/types';
 import {
+  getBalanceFromUtxoList,
   getClearPeginTxState, getCookie, isBTCAmountValidRegex, setCookie,
 } from '@/common/utils';
 import PeginConfigurationService from '@/pegin/services/peginConfigurationService';
@@ -227,8 +228,17 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_SET_CURRENT_VIEW]: ({ commit }, view: string): void => {
     commit(constants.PEGIN_TX_SET_VIEW, view);
   },
-  [constants.PEGIN_TX_TOGGLE_SELECTED_UTXO]: ({ commit }, { txId, selected }:
+  [constants.PEGIN_TX_TOGGLE_SELECTED_UTXO]: ({ commit, dispatch }, { txId, selected }:
     {txId: string, selected: boolean }): void => {
     commit(constants.PEGIN_TX_SET_SELECTED_UTXO, { txId, selected });
+    dispatch(constants.PEGIN_TX_CALCULATE_BALANCES);
+  },
+  [constants.PEGIN_TX_CALCULATE_BALANCES]: ({ commit, state }): void => {
+    const balances: AccountBalance = {
+      legacy: getBalanceFromUtxoList(state.utxoList.legacy),
+      segwit: getBalanceFromUtxoList(state.utxoList.segwit),
+      nativeSegwit: getBalanceFromUtxoList(state.utxoList.nativeSegwit),
+    };
+    commit(constants.PEGIN_TX_SET_BALANCE, balances);
   },
 };
