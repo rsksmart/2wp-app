@@ -26,8 +26,11 @@ export const toSatoshiBigIntString = (userFormatedValue: string) : string => uti
 export const toWeiBigIntString = (userFormatedValue: string) : string => utils
   .parseUnits(userFormatedValue, 18).toString();
 
-export const bigIntToUserFormattedSatoshi = (bigIntString: string) : string => utils
-  .formatUnits(BigInt(bigIntString), 8);
+export const bigIntToUserFormattedSatoshi = (bigIntString: string) : string => {
+  const formattedBigInt = bigIntString.length > 8
+    ? bigIntString.slice(0, 8) : bigIntString;
+  return utils.formatUnits(BigInt(formattedBigInt), 8);
+};
 
 export const bigNumberToWeiBigIntString = (bignumber: BigNumber | null)
   : string => (bignumber === BigNumber.from(0) || !bignumber
@@ -35,3 +38,6 @@ export const bigNumberToWeiBigIntString = (bignumber: BigNumber | null)
 
 export const bigIntToUserFormattedWei = (bigIntString: string) : string => utils
   .formatUnits(BigInt(bigIntString), 18);
+
+export const bigIntWeiToBigIntSatoshi = (bigIntWeiString: string) : string => utils
+  .parseUnits(bigIntToUserFormattedSatoshi(bigIntWeiString), 8).toString();

@@ -28,9 +28,12 @@
         </template>
         <template #append-inner>
           <span class="text-bw-500">{{ environmentContext.getRbtcTicker() }}</span>
-          <div class="pl-2">
+          <div class="d-flex pl-2 ga-1">
             <v-chip variant="outlined" density="compact" @click="setMin">
               {{ minStrVal }} MIN
+            </v-chip>
+            <v-chip variant="outlined" density="compact" @click="setMax">
+              MAX
             </v-chip>
           </div>
         </template>
@@ -47,14 +50,20 @@ import {
 } from 'vue';
 import { mdiArrowRight, mdiBitcoin, mdiInformationOutline } from '@mdi/js';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import * as constants from '@/common/store/constants';
-import { isRBTCAmountValidRegex } from '@/common/utils';
 import {
-  PegoutConfiguration, SatoshiBig, SessionState, WeiBig,
+  isRBTCAmountValidRegex,
+  toWeiBigIntString,
+  getBridgeLockingCap,
+} from '@/common/utils';
+import {
+  PegoutConfiguration, SatoshiBig, SessionState, WeiBig, LiquidityProvider2WP,
 } from '@/common/types';
 import {
   useAction, useGetter, useState, useStateAttribute,
 } from '@/common/store/helper';
+import { ApiService } from '@/common/services';
 
 export default defineComponent({
   name: 'RbtcInputAmount',
@@ -80,6 +89,7 @@ export default defineComponent({
     const account = useStateAttribute<string>('web3Session', 'account');
     const minStrVal = computed(() => pegoutConfiguration.value.minValue.toRBTCString().slice(0, 5));
     const isComposing = ref(false);
+    const liquidityProviders = useStateAttribute<LiquidityProvider2WP[]>('flyoverPegout', 'liquidityProviders');
 
     const isValidAmount = (amount: WeiBig) => {
       const { minValue } = pegoutConfiguration.value;
@@ -175,6 +185,80 @@ export default defineComponent({
       }
     }
 
+    async function getFlyoverMaxBalanceMinusFeesBigIntString(
+      provider: LiquidityProvider2WP | undefined,
+    ) {
+      // CALL FEE
+      const callFee = provider?.pegin.fee || new WeiBig(0, 'wei');
+      let bigIntCallFee = toWeiBigIntString(callFee.toRBTCString());
+      if (bigIntCallFee === '0') bigIntCallFee = constants.BIGGEST_BIG_INT.toString();
+
+      // GAS FEE
+      const extraFeeMultiplier = new WeiBig('0.1', 'rbtc'); // set on LPS
+      const minimumEstimatedConfirmations = 2; // set on LPS
+      const { feeRate: fastestFeeRate } = await ApiService
+        .estimateFee(minimumEstimatedConfirmations).catch(() => ({ feeRate: '0.00001' }));
+      const feeRateWeiBig = new WeiBig(
+        toWeiBigIntString(fastestFeeRate.toString()),
+        'wei',
+      );
+      const gasFee = feeRateWeiBig.plus((feeRateWeiBig.mul(extraFeeMultiplier)).div(1e18));
+      const flyoverFees = callFee.plus(gasFee);
+
+      const { balance } = web3SessionState.value;
+      const balanceMinusFlyoverFees = balance.minus(flyoverFees);
+      let bigIntBalanceMinusFlyoverFees = toWeiBigIntString(balanceMinusFlyoverFees?.toRBTCString() || '0');
+      if (bigIntBalanceMinusFlyoverFees === '0') bigIntBalanceMinusFlyoverFees = constants.BIGGEST_BIG_INT.toString();
+
+      return bigIntBalanceMinusFlyoverFees;
+    }
+
+    async function getMaxFlyover() {
+      const { flyoverProviderId: lpId } = EnvironmentAccessorService.getEnvironmentVariables();
+
+      const provider = liquidityProviders.value.find((p) => p.id === lpId);
+
+      const availableLiquidity = provider?.pegout.availableLiquidity || new WeiBig(0, 'wei');
+      let bigIntAvailableLiquidity = toWeiBigIntString(availableLiquidity?.toRBTCString() || '0');
+      if (bigIntAvailableLiquidity === '0') bigIntAvailableLiquidity = constants.BIGGEST_BIG_INT.toString();
+
+      const maxTransactionValue = provider?.pegout.maxTransactionValue || new WeiBig(0, 'wei');
+      let bigIntMaxTransactionValue = toWeiBigIntString(maxTransactionValue?.toRBTCString());
+      if (bigIntMaxTransactionValue === '0') bigIntMaxTransactionValue = constants.BIGGEST_BIG_INT.toString();
+
+      const bigIntFlyoverMaxBalanceMinusFees = await getFlyoverMaxBalanceMinusFeesBigIntString(
+        provider,
+      );
+
+      return [
+        BigInt(bigIntAvailableLiquidity),
+        BigInt(bigIntMaxTransactionValue),
+        BigInt(bigIntFlyoverMaxBalanceMinusFees),
+      ].reduce((min, current) => (current < min ? current : min));
+    }
+
+    async function getMaxNative() {
+      const { balance } = web3SessionState.value;
+      let bigIntUserBalance = toWeiBigIntString(balance.toRBTCString());
+      if (bigIntUserBalance === '0') bigIntUserBalance = constants.BIGGEST_BIG_INT.toString();
+
+      const bridgeLockingCap = await getBridgeLockingCap().catch(() => new WeiBig(0, 'wei'));
+      let bigIntBridgeLockingCap = toWeiBigIntString(bridgeLockingCap.toRBTCString());
+      if (bigIntBridgeLockingCap === '0') bigIntBridgeLockingCap = constants.BIGGEST_BIG_INT.toString();
+
+      return [
+        BigInt(bigIntUserBalance),
+        BigInt(bigIntBridgeLockingCap),
+      ].reduce((min, current) => (current < min ? current : min));
+    }
+
+    async function setMax() {
+      const maxValue = [await getMaxFlyover(), await getMaxNative()]
+        .reduce((max, current) => (current > max ? current : max));
+
+      rbtcAmountModel.value = new WeiBig(maxValue, 'wei').toRBTCTrimmedString();
+    }
+
     function clearInput() {
       rbtcAmountModel.value = '';
       stepState.value = 'unset';
@@ -201,6 +285,7 @@ export default defineComponent({
       rbtcAmountModel,
       minStrVal,
       isComposing,
+      setMax,
     };
   },
 });
