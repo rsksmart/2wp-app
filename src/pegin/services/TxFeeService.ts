@@ -18,7 +18,7 @@ export default class TxFeeService {
         reject(new Error('Empty utxo list.'));
       }
       ApiService.estimateFee(TxFeeService.getMiningSpeedBlock(feeLevel))
-        .then((feePerByte: SatoshiBig) => {
+        .then(({ feePerByte }) => {
           const checkedFeePerByte = TxFeeService.getCheckedFeePerByte(feePerByte, feeLevel);
           const baseFee = checkedFeePerByte.mul(constants.BITCOIN_TX_HEADER_SIZE_IN_BYTES
             + (constants.BITCOIN_TX_OUTPUT_SIZE_IN_BYTES * constants.PEGIN_OUTPUTS));
