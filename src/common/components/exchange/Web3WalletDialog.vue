@@ -15,29 +15,38 @@
 
       <v-card-text class="d-flex flex-column gap-4 my-4">
         <v-col class="my-4">
-          <v-row class ="d-flex justify-center mb-12 pa-6">
-            <v-btn variant="text"
+          <v-row class ="d-flex justify-center pa-6">
+            <v-btn variant="text" class="border-box d-block h-auto"
               @click="selectWallet(constants.WalletTypes.SOFTWARE)">
-              <div class="bg-bw-400 w-100 h-100 pa-4">
-                <v-icon color="off-white" :icon="mdiCellphoneLink" size="40"></v-icon>
-              </div>
-              <span class="mx-4 text-body-1 font-weight-bold">
-                Software Wallet
-              </span>
+              <v-row class="d-flex align-center justify-start wallet-btn pa-5">
+                <v-col class="bg-bw-400 w-100 h-100 pa-4">
+                  <v-icon color="off-white" :icon="mdiCellphoneLink" size="40"></v-icon>
+                </v-col>
+                <v-col>
+                  <span class="wallet-btn-label mx-4 text-body-1 font-weight-bold text-bw-500">
+                  Software Wallet
+                  </span>
+                </v-col>
+              </v-row>
             </v-btn>
           </v-row>
-          <v-row class="d-flex justify-center mt-12">
-            <v-btn variant="text" @click="selectWallet(constants.WalletTypes.HARDWARE)">
-              <div class="bg-bw-400 w-100 h-100 pa-4">
-                <v-icon color="off-white" :icon="mdiUsbFlashDriveOutline" size="40"></v-icon>
-              </div>
-              <span class="mx-4 text-body-1 font-weight-bold">
-                Hardware Wallet
-              </span>
+          <v-row class ="d-flex justify-center pa-6">
+            <v-btn variant="text" class="border-box d-block h-auto"
+              @click="selectWallet(constants.WalletTypes.HARDWARE)">
+              <v-row class="d-flex align-center wallet-btn justify-start pa-5">
+                <v-col class="bg-bw-400 w-100 h-100 pa-4">
+                  <v-icon color="off-white" :icon="mdiUsbFlashDriveOutline" size="40"></v-icon>
+                </v-col>
+                <v-col>
+                  <span class="wallet-btn-label mx-4 text-body-1 font-weight-bold text-bw-500">
+                  Hardware Wallet
+                  </span>
+                </v-col>
+              </v-row>
             </v-btn>
           </v-row>
         </v-col>
-        <v-row class="mt-15 d-flex justify-center">
+        <v-row class="mt-4 d-flex justify-center">
           <span>
             <a href="https://www.rsk.co/rbtc/" target="_blank" class="text-bw-400">Dont't have a wallet? </a>
           </span>
