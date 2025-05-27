@@ -406,3 +406,5 @@ export enum Networks {
   BITCOIN = 'BITCOIN',
   ROOTSTOCK = 'ROOTSTOCK',
 }
+
+export const BIGGEST_BIG_INT: bigint = 2n ** 63n - 1n;
