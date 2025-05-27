@@ -56,7 +56,7 @@
           </template>
           <template #item.amount="{ item }">
             <span class="text-body-1">
-              {{ item.amount }}
+              {{ toBtcString(item.amount) }}
             </span>
           </template>
           <template #item.vout="{ item }">
@@ -94,9 +94,12 @@ import {
   computed, defineComponent, reactive, ref, watch,
 } from 'vue';
 import { useAction, useStateAttribute } from '@/common/store/helper';
-import { BtcAccount, Utxo, UtxoListPerAccount } from '@/common/types';
+import {
+  BtcAccount, SatoshiBig, Utxo, UtxoListPerAccount,
+} from '@/common/types';
 import * as constants from '@/common/store/constants';
 import { truncateStringToSize } from '@/common/utils';
+import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 
 export default defineComponent({
   name: 'UxtoSelector',
@@ -110,6 +113,7 @@ export default defineComponent({
     const utxoList = useStateAttribute<UtxoListPerAccount>('pegInTx', 'utxoList');
     const selectedAccount = useStateAttribute<BtcAccount>('pegInTx', 'selectedAccount');
     const toggleSelection = useAction('pegInTx', constants.PEGIN_TX_TOGGLE_SELECTED_UTXO);
+    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const localSelection = reactive<{
       legacy: Record<string, boolean>;
       segwit: Record<string, boolean>;
@@ -149,7 +153,7 @@ export default defineComponent({
         title: 'Transaction ID',
         key: 'txid',
       },
-      { title: 'Value (Sats)', key: 'amount' },
+      { title: `Value (${environmentContext.getBtcTicker()})`, key: 'amount' },
       { title: 'Index', key: 'vout' },
     ];
     const selected = ref([]);
@@ -194,6 +198,10 @@ export default defineComponent({
       context.emit('update:showDialog', false);
     }
 
+    function toBtcString(sats: number): string {
+      return new SatoshiBig(sats, 'satoshi').toBTCTrimmedString();
+    }
+
     watch(
       utxoList,
       (utxos) => {
@@ -225,6 +233,7 @@ export default defineComponent({
       page,
       pageCount,
       ITEMS_PER_PAGE,
+      toBtcString,
     };
   },
 });
