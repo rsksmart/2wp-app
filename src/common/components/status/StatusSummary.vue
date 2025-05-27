@@ -9,7 +9,7 @@
           <v-row no-gutters class="mt-3 mb-2">
             <v-col class="pa-0">
               <span class="bold">{{ value?.length > 18
-                ? truncateStringToSize(value, 10) : value }}</span>
+                ? truncateStringToSize(value, 6) : value }}</span>
             </v-col>
             <v-col col="auto" class="pa-0 d-flex justify-end">
               <v-btn height="24" width="24" :disabled="value === '-'" variant="plain" small
@@ -30,13 +30,13 @@
           <v-row no-gutters class="mt-3 mb-2">
             <v-col class="pa-0">
               <span class="bold">{{ value?.length > 18
-                ? truncateStringToSize(value, 10) : value }}</span>
+                ? truncateStringToSize(value, 6) : value }}</span>
             </v-col>
             <v-col col="auto" class="pa-0 d-flex justify-end">
               <v-btn height="24" width="24" :disabled="value === '-'" variant="plain"
                   @click="copyToClipboard(value)" density="compact" :icon="mdiContentCopy">
               </v-btn>
-              <v-btn v-if="link" height="24" width="24" :disabled="value === '-'" class="pl-4 mr-2"
+              <v-btn v-if="link" height="24" width="24" :disabled="value === '-'" class="pl-2 mr-2"
                 variant="plain" :href="link" target="_blank" density="compact" :icon="mdiOpenInNew">
               </v-btn>
             </v-col>
