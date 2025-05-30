@@ -46,3 +46,21 @@
   max-width: 250px;
   justify-content: flex-start;
 }
+
+.wallet-btn {
+  transition: background-color 0.2s;
+}
+
+.wallet-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  .wallet-btn-label {
+    color: rgb(var(--v-theme-on-background)) !important;
+  }
+}
+
+.theme--dark .wallet-btn:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  .wallet-btn-label {
+    color: rgb(var(--v-theme-on-background)) !important;
+  }
+}
