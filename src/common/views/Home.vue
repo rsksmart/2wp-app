@@ -79,8 +79,10 @@
       </v-col>
     </v-row>
   </v-container>
-  <web3-wallet-dialog v-model="showConnectModal"
+  <web3-wallet-dialog v-model="showWeb3Modal"
     @cancel="connectError" @selected-wallet="selectWeb3WalletType" />
+  <btc-wallet-dialog v-model="showBtcModal"
+    @cancel="connectError" @loaded-wallet="continueToForm" />
   <v-dialog v-model="show" width="500">
     <v-card class="d-flex pa-6" rounded="lg">
       <div class="d-flex justify-space-between">
@@ -111,12 +113,14 @@ import { Feature, FeatureNames, TransactionType } from '@/common/types';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import { mdiCloseCircleOutline } from '@mdi/js';
 import Web3WalletDialog from '@/common/components/exchange/Web3WalletDialog.vue';
+import BtcWalletDialog from '@/common/components/exchange/BtcWalletDialog.vue';
 import { useWallet } from '../composables/useWallet';
 
 export default {
   name: 'HomeView',
   components: {
     Web3WalletDialog,
+    BtcWalletDialog,
   },
   setup() {
     const router = useRouter();
@@ -134,7 +138,8 @@ export default {
     const rskAccount = useStateAttribute('web3Session', 'account');
     const connectWeb3 = useAction('web3Session', constants.SESSION_CONNECT_WEB3);
     const show = ref(false);
-    const showConnectModal = ref(false);
+    const showWeb3Modal = ref(false);
+    const showBtcModal = ref(false);
     const COMPONENTS = {
       [constants.PEG_IN_TRANSACTION_TYPE]: 'PegIn',
       [constants.PEG_OUT_TRANSACTION_TYPE]: 'PegOut',
@@ -146,16 +151,12 @@ export default {
       return feature?.value;
     });
 
-    function connectModal() {
-      showConnectModal.value = true;
-    }
-
     async function selectConversion(txType: NonNullable<TransactionType>) {
       addPeg(txType);
       if (txType === constants.PEG_OUT_TRANSACTION_TYPE) {
-        connectModal();
+        showWeb3Modal.value = true;
       } else {
-        router.push({ name: COMPONENTS[txType] });
+        showBtcModal.value = true;
       }
     }
 
@@ -194,7 +195,7 @@ export default {
     }
 
     function connectError() {
-      showConnectModal.value = false;
+      showWeb3Modal.value = false;
       show.value = true;
     }
 
@@ -219,9 +220,13 @@ export default {
             .catch(connectError);
           break;
         default:
-          showConnectModal.value = true;
+          showWeb3Modal.value = true;
           break;
       }
+    }
+    function continueToForm() {
+      showBtcModal.value = false;
+      // TODO: Add logic to continue to the form after selecting a Bitcoin wallet
     }
 
     getBtcPrice();
@@ -246,9 +251,11 @@ export default {
       constants,
       selectConversion,
       reconnect,
-      showConnectModal,
+      showWeb3Modal,
+      showBtcModal,
       connectError,
       selectWeb3WalletType,
+      continueToForm,
     };
   },
 };
