@@ -12,7 +12,8 @@
     <v-row no-gutters class="d-flex justify-center">
       <v-col />
       <v-col xs="10" sm="8" md="7" lg="5" xl="5" class="d-flex space-between flex-column">
-        <btc-input class="mb-8" @valid-amount="checkValidAmount" />
+        <btc-input class="mb-8" @valid-amount="checkValidAmount"
+          :flyoverAvailable="isFlyoverAvailable" />
         <rsk-destination-address class="mb-8" @valid-address="checkValidAddress"
           :is-amount-filled="validAmount"/>
         <btc-fee-select class="mb-8" />
