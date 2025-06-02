@@ -131,7 +131,7 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
       })
       .catch(reject);
   }),
-  [constants.FLYOVER_PEGIN_ESTIMATE_QUOTE_FEE]:
+  [constants.FLYOVER_PEGIN_ESTIMATE_QUOTE_MAX_FEE]:
     (
       { state },
       { maxFlyoverTxValue, callEoaOrContractAddress },

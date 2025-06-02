@@ -55,7 +55,6 @@ import * as constants from '@/common/store/constants';
 import {
   isRBTCAmountValidRegex,
   toWeiBigIntString,
-  getBridgeLockingCap,
 } from '@/common/utils';
 import {
   PegoutConfiguration, SatoshiBig, SessionState, WeiBig, LiquidityProvider2WP,
@@ -70,6 +69,10 @@ export default defineComponent({
   emits: ['valid-amount'],
   props: {
     clear: {
+      type: Boolean,
+      required: false,
+    },
+    flyoverAvailable: {
       type: Boolean,
       required: false,
     },
@@ -242,19 +245,11 @@ export default defineComponent({
       let bigIntUserBalance = toWeiBigIntString(balance.toRBTCString());
       if (bigIntUserBalance === '0') bigIntUserBalance = constants.BIGGEST_BIG_INT.toString();
 
-      const bridgeLockingCap = await getBridgeLockingCap().catch(() => new WeiBig(0, 'wei'));
-      let bigIntBridgeLockingCap = toWeiBigIntString(bridgeLockingCap.toRBTCString());
-      if (bigIntBridgeLockingCap === '0') bigIntBridgeLockingCap = constants.BIGGEST_BIG_INT.toString();
-
-      return [
-        BigInt(bigIntUserBalance),
-        BigInt(bigIntBridgeLockingCap),
-      ].reduce((min, current) => (current < min ? current : min));
+      return BigInt(bigIntUserBalance);
     }
 
     async function setMax() {
-      const maxValue = [await getMaxFlyover(), await getMaxNative()]
-        .reduce((max, current) => (current > max ? current : max));
+      const maxValue = props.flyoverAvailable ? await getMaxFlyover() : await getMaxNative();
 
       rbtcAmountModel.value = new WeiBig(maxValue, 'wei').toRBTCTrimmedString();
     }

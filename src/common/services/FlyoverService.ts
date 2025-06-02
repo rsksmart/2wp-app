@@ -15,7 +15,6 @@ import {
   isValidSiteKey,
   ServiceError,
   toWeiBigIntString,
-  bigNumberToWeiBigIntString,
 } from '../utils';
 
 export default class FlyoverService {
@@ -547,17 +546,23 @@ export default class FlyoverService {
   public async estimateGasFeeFromTx(
     maxPerFlyoverTransaction: WeiBig,
     callEoaOrContractAddress: string,
-  ) {
-    const provider = new providers.JsonRpcProvider(this.providerUrl);
-    const feeData = await provider.getFeeData();
-    const weiBigGasPrice = new WeiBig(bigNumberToWeiBigIntString(feeData.gasPrice), 'rbtc');
-    const gasLimit = await provider.estimateGas({
-      to: callEoaOrContractAddress.toLowerCase(),
-      value: toWeiBigIntString(maxPerFlyoverTransaction.toRBTCString()),
-      data: '',
-    });
-    const weiBigGasLimit = new WeiBig(gasLimit.toString(), 'wei');
-    const maxGasPrice = weiBigGasPrice.mul(weiBigGasLimit);
-    return maxGasPrice;
+  ): Promise<WeiBig> {
+    const valueToTransfer = BigInt(toWeiBigIntString(maxPerFlyoverTransaction.toRBTCString()));
+    let maxFee = new WeiBig(0, 'wei');
+    try {
+      const quotes = await this.flyover?.getQuotes({
+        rskRefundAddress: callEoaOrContractAddress,
+        valueToTransfer,
+        callContractArguments: '',
+        callEoaOrContractAddress,
+      }) as Quote[];
+      quotes.map((quote: Quote) => {
+        const gasFeeWeiBig = new WeiBig(quote.quote.gasFee ?? 0, 'wei');
+        const callFeeWeiBig = new WeiBig(quote.quote.callFee ?? 0, 'wei');
+        maxFee = gasFeeWeiBig.plus(callFeeWeiBig);
+        return maxFee;
+      });
+    } catch (e) { maxFee = new WeiBig(0, 'wei'); }
+    return maxFee;
   }
 }
