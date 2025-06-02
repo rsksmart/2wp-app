@@ -13,7 +13,8 @@
       <v-col xs="10" sm="8" md="7" lg="5" xl="5" class="d-flex space-between flex-column">
         <rbtc-input-amount
           @valid-amount="checkValidAmount"
-          :clear="clearAmount" />
+          :clear="clearAmount"
+          :flyoverAvailable="flyoverEnabled" />
       </v-col>
       <v-col />
     </v-row>
@@ -476,10 +477,11 @@ export default defineComponent({
       pegOutFormState.value.send('loading');
       try {
         if (quoteHash) {
-          startCountdown();
-          if (toQr.value) {
-            await acceptAndSendQr(quoteHash);
-          } else await sendFlyoverTx(quoteHash);
+          if (toQr.value) await acceptAndSendQr(quoteHash);
+          else {
+            await sendFlyoverTx(quoteHash);
+            startCountdown();
+          }
         } else await sendPowPegTx();
         ApiService.registerTx(quoteHash ? registerFlyover.value : registerPegout.value);
         changePage(type);
