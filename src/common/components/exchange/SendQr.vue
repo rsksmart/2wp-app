@@ -1,10 +1,13 @@
 <template>
-  <v-card class="d-flex pa-10 fill-height selected"
+  <v-card class="fill-height selected"
   rounded="lg" flat variant="outlined"
   :hover="false"
   :ripple="false"
   >
-    <v-container fluid>
+    <v-container fluid class="pa-10">
+      <v-row no-gutters class="d-flex justify-end mt-n6 mr-n6">
+        <v-icon @click="close" :icon="mdiCloseCircleOutline" size="30" />
+      </v-row>
       <v-row class="d-flex justify-center">
         <p class="text-h6">Send funds to the {{ networkNameTicker }} address below</p>
       </v-row>
@@ -53,8 +56,10 @@
 
 <script lang="ts">
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { Networks } from '@/common/store/constants';
-import { useStateAttribute } from '@/common/store/helper';
+import * as constants from '@/common/store/constants';
+
+import { mdiCloseCircleOutline } from '@mdi/js';
+import { useStateAttribute, useAction } from '@/common/store/helper';
 import { SatoshiBig, WeiBig } from '@/common/types';
 import {
   computed, defineComponent, PropType, ref,
@@ -66,7 +71,7 @@ export default defineComponent({
   props: {
     qr: String,
     network: {
-      type: String as PropType<Networks>,
+      type: String as PropType<constants.Networks>,
       required: true,
     },
     amount: {
@@ -82,24 +87,27 @@ export default defineComponent({
     const VALUE_INCOMPLETE_MESSAGE = '-';
 
     const bitcoinPrice = useStateAttribute<number>('web3Session', 'bitcoinPrice');
+    const clearSession = useAction('web3Session', constants.WEB3_SESSION_CLEAR_ACCOUNT);
+    const clearPeginStore = useAction('pegInTx', constants.PEGIN_TX_CLEAR_STATE);
+    const clearPegoutStore = useAction('pegOutTx', constants.PEGOUT_TX_CLEAR_STATE);
     const route = useRoute();
     const router = useRouter();
 
     const networkNameTicker = computed(() => (
-      props.network === Networks.BITCOIN
+      props.network === constants.Networks.BITCOIN
         ? environmentContext.getBtcText()
         : environmentContext.getRskText()
     ));
 
     const networkTicker = computed(() => (
-      props.network === Networks.BITCOIN
+      props.network === constants.Networks.BITCOIN
         ? environmentContext.getBtcTicker()
         : environmentContext.getRbtcTicker()
     ));
 
     const amountUsd = computed(() => {
       if (!props.amount || !bitcoinPrice.value) return VALUE_INCOMPLETE_MESSAGE;
-      if (props.network === Networks.ROOTSTOCK) {
+      if (props.network === constants.Networks.ROOTSTOCK) {
         const rbtcAmount = props.amount as WeiBig;
         return rbtcAmount.toUSDFromRBTCString(bitcoinPrice.value, fixedUSDDecimals);
       }
@@ -109,7 +117,7 @@ export default defineComponent({
 
     const amountValue = computed(() => {
       if (!props.amount) return VALUE_INCOMPLETE_MESSAGE;
-      if (props.network === Networks.ROOTSTOCK) {
+      if (props.network === constants.Networks.ROOTSTOCK) {
         const rbtcAmount = props.amount as WeiBig;
         return rbtcAmount.toRBTCTrimmedString();
       }
@@ -121,6 +129,13 @@ export default defineComponent({
       if (route.path !== '/status') router.push('/status');
     }
 
+    function close(): void {
+      clearSession();
+      clearPeginStore();
+      clearPegoutStore();
+      router.push({ name: 'Home' });
+    }
+
     return {
       image,
       networkNameTicker,
@@ -128,6 +143,8 @@ export default defineComponent({
       amountUsd,
       amountValue,
       toStatusSearch,
+      mdiCloseCircleOutline,
+      close,
     };
   },
 });
