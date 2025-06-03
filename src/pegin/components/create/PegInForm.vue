@@ -77,7 +77,7 @@
             </v-col>
             <v-col class="d-flex justify-end">
               <v-btn-rsk v-if="!pegInFormState.matches(['loading'])"
-                @click="sendTx"
+                @click="sendTx(false)"
                 :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])"
                 class="align-self-end text-body-1">
                 <template #append>
