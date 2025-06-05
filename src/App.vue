@@ -5,6 +5,11 @@
       <div class="bg-background flex-grow-1">
         <router-view @update:showDialog="showTermsDialog" />
       </div>
+      <v-row>
+        <v-btn @click="connect">
+          enable BTC
+        </v-btn>
+      </v-row>
       <terms-dialog v-model:showDialog="showTermsAndConditions" />
       <footer-rsk class="flex-grow-0" @update:showDialog="showTermsDialog" />
     </div>
@@ -25,8 +30,13 @@ import { useAction } from '@/common/store/helper';
 import { vuetifyNonce } from '@/common/plugins/vuetify';
 import { createAppKit, useAppKitTheme } from '@reown/appkit/vue';
 import { Ethers5Adapter } from '@reown/appkit-adapter-ethers5';
-import { rootstockTestnet } from '@reown/appkit/networks';
+import {
+  bitcoin, bitcoinTestnet, AppKitNetwork, rootstockTestnet,
+  rootstock,
+} from '@reown/appkit/networks';
 import { useTheme } from 'vuetify';
+import { BitcoinAdapter } from '@reown/appkit-adapter-bitcoin';
+import { useWallet } from './common/composables/useWallet';
 
 export default {
   name: 'App',
@@ -45,11 +55,19 @@ export default {
       icons: [],
     };
 
+    const networks = [
+      bitcoin, bitcoinTestnet,
+      rootstock, rootstockTestnet] as [AppKitNetwork, ...AppKitNetwork[]];
+
     createAppKit({
       projectId,
       metadata,
-      adapters: [new Ethers5Adapter()],
-      networks: [rootstockTestnet],
+      adapters: [
+        new Ethers5Adapter(),
+        new BitcoinAdapter({
+          projectId,
+        })],
+      networks,
       enableNetworkSwitch: false,
       debug: true,
       features: {
@@ -124,6 +142,11 @@ export default {
       showTermsAndConditions.value = show;
     }
 
+    function connect() {
+      const { connectBtc } = useWallet();
+      connectBtc();
+    }
+
     onBeforeMount(() => {
       getFeatures();
       getBtcPrice();
@@ -136,6 +159,7 @@ export default {
     return {
       showTermsDialog,
       showTermsAndConditions,
+      connect,
     };
   },
 };
