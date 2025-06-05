@@ -16,6 +16,7 @@ import {
 import { BridgeService } from '@/common/services/BridgeService';
 import moment from 'moment';
 import { toWeiBigIntString } from '@/common/utils';
+import * as bitcoin from 'bitcoinjs-lib';
 
 export function getAccountType(address: string, network: AppNetwork): string {
   const [legacyTestReg, segwitTestReg, nativeTestReg] = network === constants.BTC_NETWORK_MAINNET
@@ -425,4 +426,17 @@ export function getBridgeLockingCap(): Promise<WeiBig> {
       })
       .catch(reject);
   });
+}
+
+export function generateRandomLegacyBitcoinAddress(): string {
+  const network = EnvironmentAccessorService
+    .getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_MAINNET
+    ? bitcoin.networks.bitcoin
+    : bitcoin.networks.testnet;
+  const keyPair = bitcoin.ECPair.makeRandom({ network });
+  const { address } = bitcoin.payments.p2pkh({
+    pubkey: keyPair.publicKey,
+    network,
+  });
+  return address || '';
 }

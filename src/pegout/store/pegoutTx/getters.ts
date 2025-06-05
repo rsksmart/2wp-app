@@ -7,8 +7,8 @@ import * as constants from '@/common/store/constants';
 export const getters: GetterTree<PegOutTxState, RootState> = {
   [constants.PEGOUT_TX_GET_SAFE_TX_FEE]: (state:PegOutTxState): WeiBig => {
     let fee:WeiBig;
-    if (state.efectivePaidFee) {
-      fee = state.efectivePaidFee;
+    if (state.effectivePaidFee) {
+      fee = state.effectivePaidFee;
     } else {
       fee = state.calculatedFee;
     }
