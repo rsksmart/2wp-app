@@ -55,6 +55,7 @@ import * as constants from '@/common/store/constants';
 import {
   isRBTCAmountValidRegex,
   toWeiBigIntString,
+  generateRandomLegacyBitcoinAddress,
 } from '@/common/utils';
 import {
   PegoutConfiguration, SatoshiBig, SessionState, WeiBig, LiquidityProvider2WP,
@@ -62,7 +63,6 @@ import {
 import {
   useAction, useGetter, useState, useStateAttribute,
 } from '@/common/store/helper';
-import { ApiService } from '@/common/services';
 
 export default defineComponent({
   name: 'RbtcInputAmount',
@@ -87,6 +87,7 @@ export default defineComponent({
     const setRbtcAmount = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ADD_AMOUNT);
     const addAmount = useAction('pegOutTx', constants.PEGOUT_TX_ADD_AMOUNT);
     const calculateFee = useAction('pegOutTx', constants.PEGOUT_TX_CALCULATE_FEE);
+    const flyoverEstimateFees = useAction<Promise<WeiBig>>('flyoverPegout', constants.FLYOVER_PEGOUT_ESTIMATE_QUOTE_MAX_FEE);
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
     const pegoutConfiguration = useStateAttribute<PegoutConfiguration>('pegOutTx', 'pegoutConfiguration');
     const account = useStateAttribute<string>('web3Session', 'account');
@@ -188,26 +189,12 @@ export default defineComponent({
       }
     }
 
-    async function getFlyoverMaxBalanceMinusFeesBigIntString(
-      provider: LiquidityProvider2WP | undefined,
-    ) {
-      // CALL FEE
-      const callFee = provider?.pegin.fee || new WeiBig(0, 'wei');
-      let bigIntCallFee = toWeiBigIntString(callFee.toRBTCString());
-      if (bigIntCallFee === '0') bigIntCallFee = constants.BIGGEST_BIG_INT.toString();
-
-      // GAS FEE
-      const extraFeeMultiplier = new WeiBig('0.1', 'rbtc'); // set on LPS
-      const minimumEstimatedConfirmations = 2; // set on LPS
-      const { feeRate: fastestFeeRate } = await ApiService
-        .estimateFee(minimumEstimatedConfirmations).catch(() => ({ feeRate: '0.00001' }));
-      const feeRateWeiBig = new WeiBig(
-        toWeiBigIntString(fastestFeeRate.toString()),
-        'wei',
-      );
-      const gasFee = feeRateWeiBig.plus((feeRateWeiBig.mul(extraFeeMultiplier)).div(1e18));
-      const flyoverFees = callFee.plus(gasFee);
-
+    async function getFlyoverMaxBalanceMinusFeesBigIntString(maxFlyoverTxValue: WeiBig) {
+      const flyoverFees = await flyoverEstimateFees({
+        maxFlyoverTxValue,
+        callEoaOrContractAddress: account.value,
+        btcRecipientAddress: generateRandomLegacyBitcoinAddress(),
+      }) as WeiBig || new WeiBig(0, 'wei');
       const { balance } = web3SessionState.value;
       const balanceMinusFlyoverFees = balance.minus(flyoverFees);
       let bigIntBalanceMinusFlyoverFees = toWeiBigIntString(balanceMinusFlyoverFees?.toRBTCString() || '0');
@@ -230,7 +217,7 @@ export default defineComponent({
       if (bigIntMaxTransactionValue === '0') bigIntMaxTransactionValue = constants.BIGGEST_BIG_INT.toString();
 
       const bigIntFlyoverMaxBalanceMinusFees = await getFlyoverMaxBalanceMinusFeesBigIntString(
-        provider,
+        maxTransactionValue,
       );
 
       return [
@@ -240,7 +227,7 @@ export default defineComponent({
       ].reduce((min, current) => (current < min ? current : min));
     }
 
-    async function getMaxNative() {
+    function getMaxNative() {
       const { balance } = web3SessionState.value;
       let bigIntUserBalance = toWeiBigIntString(balance.toRBTCString());
       if (bigIntUserBalance === '0') bigIntUserBalance = constants.BIGGEST_BIG_INT.toString();
@@ -249,7 +236,7 @@ export default defineComponent({
     }
 
     async function setMax() {
-      const maxValue = props.flyoverAvailable ? await getMaxFlyover() : await getMaxNative();
+      const maxValue = props.flyoverAvailable ? await getMaxFlyover() : getMaxNative();
 
       rbtcAmountModel.value = new WeiBig(maxValue, 'wei').toRBTCTrimmedString();
     }

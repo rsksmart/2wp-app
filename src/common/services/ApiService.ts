@@ -206,22 +206,10 @@ export default class ApiService {
     });
   }
 
-  public static estimateFee(blockNumber: number):
-    Promise<{
-      feeRate: number,
-      feePerByte: SatoshiBig,
-    }> {
-    return new Promise<{
-      feeRate: number,
-      feePerByte: SatoshiBig,
-    }>((resolve, reject) => {
+  static estimateFee(blockNumber: number):Promise<SatoshiBig> {
+    return new Promise<SatoshiBig>((resolve, reject) => {
       axios.get(`${ApiService.baseURL}/estimate-fee/${blockNumber}`)
-        .then((response) => {
-          resolve({
-            feePerByte: new SatoshiBig(response.data.amount, 'btc').div(1000),
-            feeRate: response.data.amount,
-          });
-        })
+        .then((response) => resolve(new SatoshiBig(response.data.amount, 'btc').div(1000))) // Conversion from KB to Bytes
         .catch(reject);
     });
   }
