@@ -269,4 +269,29 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
       .then(resolve)
       .catch(reject);
   }),
+  [constants.FLYOVER_PEGOUT_ESTIMATE_QUOTE_MAX_FEE]:
+    (
+      { state, rootState },
+      { maxFlyoverTxValue, callEoaOrContractAddress, btcRecipientAddress },
+    ) => new Promise((resolve) => {
+      const provider = new providers.JsonRpcProvider(
+        EnvironmentAccessorService.getEnvironmentVariables().vueAppRskNodeHost,
+      );
+      Promise.all([
+        state.flyoverService
+          .estimatePegoutMaxFee(maxFlyoverTxValue, callEoaOrContractAddress, btcRecipientAddress),
+        provider?.estimateGas({
+          from: callEoaOrContractAddress,
+          to: rootState.pegOutTx?.pegoutConfiguration.bridgeContractAddress,
+          value: maxFlyoverTxValue.toWeiString(),
+        }),
+        provider?.getGasPrice(),
+      ])
+        .then(([fee, gas, gasPrice]) => {
+          const gasFee = new WeiBig(Number(gasPrice) * Number(gas), 'wei');
+          return fee.plus(gasFee);
+        })
+        .then((fullFee: WeiBig) => resolve(fullFee))
+        .catch(() => resolve(new WeiBig(0, 'wei')));
+    }),
 };

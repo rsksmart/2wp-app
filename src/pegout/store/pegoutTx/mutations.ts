@@ -32,7 +32,7 @@ export const mutations: MutationTree<PegOutTxState> = {
     state.gas = gas;
   },
   [constants.PEGOUT_TX_SET_EFECTIVE_FEE]: (state, effectiveFee: WeiBig) => {
-    state.efectivePaidFee = effectiveFee;
+    state.effectivePaidFee = effectiveFee;
     state.selectedFee = constants.BITCOIN_AVERAGE_FEE_LEVEL;
   },
   [constants.PEGOUT_TX_CLEAR_STATE]: (state) => {

@@ -543,7 +543,7 @@ export default class FlyoverService {
     });
   }
 
-  public async estimateGasFeeFromTx(
+  public async estimatePeginMaxFee(
     maxPerFlyoverTransaction: WeiBig,
     callEoaOrContractAddress: string,
   ): Promise<WeiBig> {
@@ -556,7 +556,30 @@ export default class FlyoverService {
         callContractArguments: '',
         callEoaOrContractAddress,
       }) as Quote[];
-      quotes.map((quote: Quote) => {
+      quotes.forEach((quote: Quote) => {
+        const gasFeeWeiBig = new WeiBig(quote.quote.gasFee ?? 0, 'wei');
+        const callFeeWeiBig = new WeiBig(quote.quote.callFee ?? 0, 'wei');
+        maxFee = gasFeeWeiBig.plus(callFeeWeiBig);
+        return maxFee;
+      });
+    } catch (e) { maxFee = new WeiBig(0, 'wei'); }
+    return maxFee;
+  }
+
+  public async estimatePegoutMaxFee(
+    maxPerFlyoverTransaction: WeiBig,
+    callEoaOrContractAddress: string,
+    btcRecipientAddress: string,
+  ): Promise<WeiBig> {
+    const valueToTransfer = BigInt(toWeiBigIntString(maxPerFlyoverTransaction.toRBTCString()));
+    let maxFee = new WeiBig(0, 'wei');
+    try {
+      const quotes = await this.flyover?.getPegoutQuotes({
+        rskRefundAddress: callEoaOrContractAddress,
+        to: btcRecipientAddress,
+        valueToTransfer,
+      }) as PegoutQuote[];
+      quotes.forEach((quote: PegoutQuote) => {
         const gasFeeWeiBig = new WeiBig(quote.quote.gasFee ?? 0, 'wei');
         const callFeeWeiBig = new WeiBig(quote.quote.callFee ?? 0, 'wei');
         maxFee = gasFeeWeiBig.plus(callFeeWeiBig);

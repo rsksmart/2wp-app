@@ -137,7 +137,7 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
       { maxFlyoverTxValue, callEoaOrContractAddress },
     ) => new Promise((resolve) => {
       state.flyoverService
-        .estimateGasFeeFromTx(maxFlyoverTxValue, callEoaOrContractAddress)
+        .estimatePeginMaxFee(maxFlyoverTxValue, callEoaOrContractAddress)
         .then((fee) => resolve(fee))
         .catch(() => resolve(new WeiBig(0, 'wei')));
     }),
