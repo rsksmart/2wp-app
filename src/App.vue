@@ -5,11 +5,6 @@
       <div class="bg-background flex-grow-1">
         <router-view @update:showDialog="showTermsDialog" />
       </div>
-      <v-row>
-        <v-btn @click="connect">
-          enable BTC
-        </v-btn>
-      </v-row>
       <terms-dialog v-model:showDialog="showTermsAndConditions" />
       <footer-rsk class="flex-grow-0" @update:showDialog="showTermsDialog" />
     </div>
@@ -30,13 +25,9 @@ import { useAction } from '@/common/store/helper';
 import { vuetifyNonce } from '@/common/plugins/vuetify';
 import { createAppKit, useAppKitTheme } from '@reown/appkit/vue';
 import { Ethers5Adapter } from '@reown/appkit-adapter-ethers5';
-import {
-  bitcoin, bitcoinTestnet, AppKitNetwork, rootstockTestnet,
-  rootstock,
-} from '@reown/appkit/networks';
 import { useTheme } from 'vuetify';
 import { BitcoinAdapter } from '@reown/appkit-adapter-bitcoin';
-import { useWallet } from './common/composables/useWallet';
+import { getNetworks } from './common/utils/reownUtils';
 
 export default {
   name: 'App',
@@ -55,10 +46,6 @@ export default {
       icons: [],
     };
 
-    const networks = [
-      bitcoin, bitcoinTestnet,
-      rootstock, rootstockTestnet] as [AppKitNetwork, ...AppKitNetwork[]];
-
     createAppKit({
       projectId,
       metadata,
@@ -67,7 +54,7 @@ export default {
         new BitcoinAdapter({
           projectId,
         })],
-      networks,
+      networks: getNetworks(),
       enableNetworkSwitch: false,
       debug: true,
       features: {
@@ -98,7 +85,7 @@ export default {
       script-src 'self' 'nonce-${vuetifyNonce}' 'unsafe-eval';
       script-src-elem 'self' 'unsafe-inline' https://script.hotjar.com https://www.clarity.ms/s/* https://static.hotjar.com https://*.hotjar.com https://*.hotjar.io https://api.coingecko.com/ https://*.clarity.ms https://www.clarity.ms/ https://www.gstatic.com/ https://www.google.com/recaptcha/;
       img-src data: https: data: blob: https://walletconnect.org https://walletconnect.com https://secure.walletconnect.com https://secure.walletconnect.org;
-      connect-src 'self' 'unsafe-inline' https://www.google.com/recaptcha/ https://www.clarity.ms/s/0.7.16/clarity.js wss://* https://*.hotjar.com https://*.hotjar.io https://www.clarity.ms/s/* wss://*.hotjar.com ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} ${envVariables.cspConfiguration} https://api.coingecko.com/ https://*.clarity.ms https://www.clarity.ms/* https://rpc.walletconnect.com https://rpc.walletconnect.org https://relay.walletconnect.com https://relay.walletconnect.org wss://relay.walletconnect.com wss://relay.walletconnect.org https://pulse.walletconnect.com https://pulse.walletconnect.org https://api.web3modal.com https://api.web3modal.org https://public-node.testnet.rsk.co/ https://public-node.rsk.co;
+      connect-src 'self' 'unsafe-inline' https://www.google.com/recaptcha/ https://www.clarity.ms/s/0.7.16/clarity.js wss://* https://*.hotjar.com https://*.hotjar.io https://www.clarity.ms/s/* wss://*.hotjar.com ${envVariables.vueAppApiBaseUrl} ${envVariables.vueAppRskNodeHost} ${envVariables.cspConfiguration} https://api.coingecko.com/ https://*.clarity.ms https://www.clarity.ms/* https://rpc.walletconnect.com https://rpc.walletconnect.org https://relay.walletconnect.com https://relay.walletconnect.org wss://relay.walletconnect.com wss://relay.walletconnect.org https://pulse.walletconnect.com https://pulse.walletconnect.org https://api.web3modal.com https://api.web3modal.org https://public-node.testnet.rsk.co/ https://public-node.rsk.co https://mempool.space;
       object-src 'none';
       frame-src https://connect.trezor.io https://www.google.com/ https://verify.walletconnect.com https://verify.walletconnect.org https://secure.walletconnect.com https://secure.walletconnect.org;
       worker-src 'none';
@@ -142,11 +129,6 @@ export default {
       showTermsAndConditions.value = show;
     }
 
-    function connect() {
-      const { connectBtc } = useWallet();
-      connectBtc();
-    }
-
     onBeforeMount(() => {
       getFeatures();
       getBtcPrice();
@@ -159,7 +141,6 @@ export default {
     return {
       showTermsDialog,
       showTermsAndConditions,
-      connect,
     };
   },
 };
