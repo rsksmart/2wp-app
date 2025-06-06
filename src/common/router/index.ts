@@ -110,7 +110,17 @@ const routes: Readonly<RouteRecordRaw[]> = [
     props: (route) => ({
       network: route.params.network,
     }),
-    beforeEnter: [checkFromRoute],
+    beforeEnter: (
+      from: RouteLocationNormalized,
+      to: RouteLocationNormalized,
+      next: NavigationGuardNext,
+    ) => {
+      if (to.params.network) {
+        next();
+      } else {
+        next({ name: 'Home' });
+      }
+    },
   },
 ];
 
