@@ -37,7 +37,7 @@ export function useWallet() {
   function setProvider() {
     return new Promise((resolve) => {
       const { walletProvider } = useAppKitProvider<Provider>('eip155');
-      if (walletProvider) {
+      if (walletProvider && isWeb3Connected.value) {
         const ethersProvider = new ethers.providers.Web3Provider(walletProvider);
         provider.value = markRaw(ethersProvider);
         store.dispatch(`web3Session/${constants.SESSION_CONNECT_REOWN_WEB3}`, provider.value)
@@ -88,33 +88,9 @@ export function useWallet() {
     return disconnectWallet({ namespace: 'eip155' });
   }
 
-  function connectBtc(): Promise<void> {
-    return new Promise((resolve) => {
-      if (!isWeb3Connected.value) {
-        openModal(
-          {
-            view: 'Connect',
-            namespace: 'bip122',
-          },
-        )
-          .then(resolve);
-      }
-    });
-  }
-
-  function getBtcAddress() {
-    console.log('getBtcAddress called');
-    const appkit = useAppKitAccount({ namespace: 'bip122' });
-    console.log('allAccounts:', appkit.value.allAccounts);
-    console.log('address:', appkit.value.address);
-    console.log('isConnected:', appkit.value.isConnected);
-  }
-
   return {
     connect,
     disconnect,
     provider,
-    connectBtc,
-    getBtcAddress,
   };
 }
