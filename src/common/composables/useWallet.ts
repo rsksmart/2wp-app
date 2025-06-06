@@ -31,13 +31,13 @@ export function useWallet() {
   const { provider } = toRefs(state);
   const account = useAppKitAccount();
 
-  const isConnected = computed(() => account.value.isConnected);
+  const isWeb3Connected = computed(() => account.value.isConnected);
   const { open: openModal } = useAppKit();
 
   function setProvider() {
     return new Promise((resolve) => {
       const { walletProvider } = useAppKitProvider<Provider>('eip155');
-      if (walletProvider) {
+      if (walletProvider && isWeb3Connected.value) {
         const ethersProvider = new ethers.providers.Web3Provider(walletProvider);
         provider.value = markRaw(ethersProvider);
         store.dispatch(`web3Session/${constants.SESSION_CONNECT_REOWN_WEB3}`, provider.value)
@@ -48,8 +48,13 @@ export function useWallet() {
 
   function connect(): Promise<void> {
     return new Promise((resolve) => {
-      if (!isConnected.value) {
-        openModal({ view: 'Connect' })
+      if (!isWeb3Connected.value) {
+        openModal(
+          {
+            view: 'Connect',
+            namespace: 'eip155',
+          },
+        )
           .then(resolve);
       } else {
         setProvider()
