@@ -33,12 +33,12 @@ export default defineComponent({
     const pegoutQuote = useGetter<QuotePegOut2WP>('flyoverPegout', constants.FLYOVER_PEGOUT_GET_SELECTED_QUOTE);
 
     const qrData = {
-      BITCOIN: {
+      [constants.Networks.BITCOIN]: {
         image: peginQuote.value?.lpsAddressQrCode,
         amount: peginQuote.value?.valueToTransfer,
         address: peginQuote.value?.quote.lpBTCAddr,
       },
-      ROOTSTOCK: {
+      [constants.Networks.ROOTSTOCK]: {
         image: pegoutQuote.value?.lpsAddressQrCode,
         amount: pegoutQuote.value?.quote.value,
         address: pegoutQuote.value?.quote.liquidityProviderRskAddress,

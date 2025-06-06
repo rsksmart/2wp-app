@@ -404,8 +404,8 @@ export enum RejectedPegoutReasons {
 export const RECAPTCHA_NEW_TOKEN_TIME = 30;
 
 export enum Networks {
-  BITCOIN = 'BITCOIN',
-  ROOTSTOCK = 'ROOTSTOCK',
+  BITCOIN = 'bitcoin',
+  ROOTSTOCK = 'ethereum',
 }
 
 export const BIGGEST_BIG_INT: bigint = 2n ** 63n - 1n;
