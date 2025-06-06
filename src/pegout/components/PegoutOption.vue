@@ -22,7 +22,7 @@
     <v-row no-gutters>
       <v-col class="d-flex justify-start">
         <span class="text-body-amount">
-          ~{{ estimatedValueToReceive }} {{ environmentContext.getRbtcTicker() }}
+          ~{{ estimatedValueToReceive }} {{ environmentContext.getBtcTicker() }}
         </span>
       </v-col>
       <v-col cols="auto" class="d-flex justify-end align-center">
@@ -51,8 +51,7 @@
               <v-tooltip :text="feeTooltipText" location="top" max-width="200">
                 <template v-slot:activator="{ props }">
                   <div v-bind="props" class="d-flex align-center ga-1">
-                    <v-img class="d-flex flex-0-0"
-                    :src="moneyBagIcon" width="20" height="20" contain/>
+                    <v-icon :icon="mdiCurrencyUsd" :color="header.timeColor" size="20" />
                     <span :class='`text-${header.timeColor}`'>{{ toUSD(totalFee) }} USD </span>
                   </div>
                 </template>
@@ -142,6 +141,7 @@ import {
   mdiOpenInNew,
   mdiClockOutline,
   mdiContentCopy,
+  mdiCurrencyUsd,
 } from '@mdi/js';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { useAction, useState, useStateAttribute } from '@/common/store/helper';
@@ -317,6 +317,7 @@ export default defineComponent({
       mdiContentCopy,
       copyToClipboard,
       mdiClockOutline,
+      mdiCurrencyUsd,
       moneyBagIcon,
     };
   },

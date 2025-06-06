@@ -51,13 +51,16 @@
           </v-col>
           <v-col cols="6">
             <v-row no-gutters>
-              <v-col cols="auto" class="pa-0 pr-1">
-                <v-img class="d-flex flex-0-0" :src="moneyBagIcon"
-                width="20" height="20" contain/>
-              </v-col>
-              <v-col class="pa-0">
-                <span>{{ toUSD(option.totalFee()) }} USD</span>
-              </v-col>
+              <v-tooltip :text="feeTooltipText" location="top" max-width="200">
+                <template v-slot:activator="{ props }">
+                  <div v-bind="props" class="d-flex align-center ga-1">
+                    <v-icon :icon="mdiCurrencyUsd" :color="option.timeColor" size="20" />
+                    <span :class='`text-${option.timeColor}`'>
+                      {{ toUSD(option.totalFee()) }} USD
+                    </span>
+                  </div>
+                </template>
+              </v-tooltip>
             </v-row>
           </v-col>
         </v-row>
@@ -73,7 +76,9 @@ import {
   computed, defineComponent,
 } from 'vue';
 import * as constants from '@/common/store/constants';
-import { mdiInformationOutline, mdiOpenInNew, mdiClockOutline } from '@mdi/js';
+import {
+  mdiInformationOutline, mdiOpenInNew, mdiClockOutline, mdiCurrencyUsd,
+} from '@mdi/js';
 import { useGetter, useState, useStateAttribute } from '@/common/store/helper';
 import { blockConfirmationsToTimeString, truncateString } from '@/common/utils';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
@@ -122,7 +127,7 @@ export default defineComponent({
         title: PowPegMode.NATIVE,
         label: 'Powered by PowPeg',
         subtitleColor: 'purple',
-        link: 'https://dev.rootstock.io/rsk/architecture/powpeg/',
+        link: 'https://dev.rootstock.io/developers/integrate/flyover/powpeg-vs-flyover/',
         estimatedTime: () => '17 hours',
         timeColor: 'red',
         totalFee: () => selectedFee.value,
@@ -134,7 +139,7 @@ export default defineComponent({
         title: PowPegMode.FAST,
         label: 'Powered by PowPeg + Flyover',
         subtitleColor: 'orange',
-        link: 'https://dev.rootstock.io/concepts/rif-suite/#meet-the-suite',
+        link: 'https://dev.rootstock.io/developers/integrate/flyover/powpeg-vs-flyover/',
         estimatedTime: () => blockConfirmationsToTimeString(computedQuote.value?.quote.confirmations ?? 0, 'btc'),
         timeColor: 'green',
         amountToTransfer: () => computedQuote.value?.getTotalTxAmount(selectedFee.value)
@@ -178,6 +183,7 @@ export default defineComponent({
       mdiOpenInNew,
       openLink,
       mdiClockOutline,
+      mdiCurrencyUsd,
       tooltipText,
       feeTooltipText,
       moneyBagIcon,
