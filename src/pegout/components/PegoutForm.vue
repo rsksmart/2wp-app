@@ -72,31 +72,17 @@
               :quote-differences="actualDiffPercentage"
             />
           </v-row>
-          <v-row no-gutters class="mt-5">
-            <v-col v-if="selectedOption !== ''" class="d-flex justify-start">
-              <v-btn-rsk
-                @click="sendTx(true)"
-                :disabled="!isValid || pegOutFormState.matches(['goingHome'])"
-                class="align-self-start text-body-1"
-                >
-                <template #append>
-                  <v-icon :icon="mdiQrcode" />
-                </template>
-                  Send with
-              </v-btn-rsk>
-            </v-col>
-            <v-col class="d-flex justify-end">
-              <v-btn-rsk v-if="!pegOutFormState.matches(['loading'])"
-              @click="sendTx(false)"
-              :disabled="!isValid || pegOutFormState.matches(['goingHome'])"
-              class="align-self-end text-body-1">
-                <template #append>
-                  <v-icon :icon="mdiArrowRight" />
-                </template>
-                  Send
-              </v-btn-rsk>
-              <v-progress-circular class="align-self-end" v-else indeterminate />
-            </v-col>
+          <v-row no-gutters class="mt-5d-flex justify-end">
+            <v-btn-rsk v-if="!pegOutFormState.matches(['loading'])"
+            @click="sendTx(false)"
+            :disabled="!isValid || pegOutFormState.matches(['goingHome'])"
+            class="align-self-end text-body-1">
+              <template #append>
+                <v-icon :icon="mdiArrowRight" />
+              </template>
+                Send
+            </v-btn-rsk>
+            <v-progress-circular class="align-self-end" v-else indeterminate />
           </v-row>
         </template>
         <v-row no-gutters v-else-if="loadingQuotes" class="justify-center mt-4">
