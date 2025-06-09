@@ -5,6 +5,7 @@ export const WALLET_NAMES = {
   LEATHER: { formal_name: 'Leather', short_name: 'leather', long_name: 'WALLET_LEATHER' },
   XVERSE: { formal_name: 'XVerse', short_name: 'xverse', long_name: 'WALLET_XVERSE' },
   ENKRYPT: { formal_name: 'Enkrypt', short_name: 'enkrypt', long_name: 'WALLET_ENKRYPT' },
+  REOWN: { formal_name: 'Reown', short_name: 'reown', long_name: 'WALLET_REOWN' },
 } as const;
 
 export enum WalletTypes {
