@@ -71,7 +71,7 @@ export default defineComponent({
   props: {
     qr: String,
     network: {
-      type: String as PropType<constants.Networks>,
+      type: String as PropType<constants.QRCodeNetworks>,
       required: true,
     },
     amount: {
@@ -94,20 +94,20 @@ export default defineComponent({
     const router = useRouter();
 
     const networkNameTicker = computed(() => (
-      props.network === constants.Networks.BITCOIN
+      props.network === constants.QRCodeNetworks.BITCOIN
         ? environmentContext.getBtcText()
         : environmentContext.getRskText()
     ));
 
     const networkTicker = computed(() => (
-      props.network === constants.Networks.BITCOIN
+      props.network === constants.QRCodeNetworks.BITCOIN
         ? environmentContext.getBtcTicker()
         : environmentContext.getRbtcTicker()
     ));
 
     const amountUsd = computed(() => {
       if (!props.amount || !bitcoinPrice.value) return VALUE_INCOMPLETE_MESSAGE;
-      if (props.network === constants.Networks.ROOTSTOCK) {
+      if (props.network === constants.QRCodeNetworks.ROOTSTOCK) {
         const rbtcAmount = props.amount as WeiBig;
         return rbtcAmount.toUSDFromRBTCString(bitcoinPrice.value, fixedUSDDecimals);
       }
@@ -117,7 +117,7 @@ export default defineComponent({
 
     const amountValue = computed(() => {
       if (!props.amount) return VALUE_INCOMPLETE_MESSAGE;
-      if (props.network === constants.Networks.ROOTSTOCK) {
+      if (props.network === constants.QRCodeNetworks.ROOTSTOCK) {
         const rbtcAmount = props.amount as WeiBig;
         return rbtcAmount.toRBTCTrimmedString();
       }

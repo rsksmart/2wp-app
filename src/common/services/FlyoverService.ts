@@ -179,7 +179,7 @@ export default class FlyoverService {
               fullQuote.lpsAddressQrCode = await this.flyover?.generateQrCode(
                 quote.quote.liquidityProviderRskAddress,
                 quote.quote.value.toRBTCString(),
-                constants.Networks.ROOTSTOCK,
+                constants.QRCodeNetworks.ROOTSTOCK,
               ) ?? '';
               return fullQuote;
             });
@@ -358,7 +358,7 @@ export default class FlyoverService {
               quote.qrCode = await this.flyover?.generateQrCode(
                 quoteFromServer.quote.lpBTCAddr,
                 quote.valueToTransfer.toBTCString(),
-                constants.Networks.BITCOIN,
+                constants.QRCodeNetworks.BITCOIN,
               ) ?? '';
               return quote;
             });

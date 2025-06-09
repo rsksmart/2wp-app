@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-import { Networks } from '@/common/store/constants';
+import { QRCodeNetworks } from '@/common/store/constants';
 import { computed, defineComponent, PropType } from 'vue';
 import SendQr from '@/common/components/exchange/SendQr.vue';
 import { PeginQuote, QuotePegOut2WP } from '@/common/types';
@@ -24,7 +24,7 @@ export default defineComponent({
   },
   props: {
     network: {
-      type: String as PropType<Networks>,
+      type: String as PropType<QRCodeNetworks>,
       required: true,
     },
   },
@@ -33,12 +33,12 @@ export default defineComponent({
     const pegoutQuote = useGetter<QuotePegOut2WP>('flyoverPegout', constants.FLYOVER_PEGOUT_GET_SELECTED_QUOTE);
 
     const qrData = {
-      [constants.Networks.BITCOIN]: {
+      [constants.QRCodeNetworks.BITCOIN]: {
         image: peginQuote.value?.lpsAddressQrCode,
         amount: peginQuote.value?.valueToTransfer,
         address: peginQuote.value?.quote.lpBTCAddr,
       },
-      [constants.Networks.ROOTSTOCK]: {
+      [constants.QRCodeNetworks.ROOTSTOCK]: {
         image: pegoutQuote.value?.lpsAddressQrCode,
         amount: pegoutQuote.value?.quote.value,
         address: pegoutQuote.value?.quote.liquidityProviderRskAddress,
