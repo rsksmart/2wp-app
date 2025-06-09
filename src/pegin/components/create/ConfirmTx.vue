@@ -32,7 +32,6 @@ import * as constants from '@/common/store/constants';
 import { ApiService, FlyoverService, WalletService } from '@/common/services';
 import { useState, useGetter, useStateAttribute } from '@/common/store/helper';
 import {
-  BtcWallet,
   LiquidityProvider2WP,
   PeginQuote,
   PeginQuoteDbModel,
@@ -72,7 +71,7 @@ export default defineComponent({
     const peginType = useStateAttribute<string>('pegInTx', 'peginType');
     const acceptedQuoteSignature = useStateAttribute<string>('flyoverPegin', 'acceptedQuoteSignature');
     const flyoverService = useStateAttribute<FlyoverService>('flyoverPegin', 'flyoverService');
-    const selectBitcoinWallet = useStateAttribute<BtcWallet>('peginTx', 'bitcoinWallet');
+    const bitcoinWallet = useStateAttribute('pegInTx', 'bitcoinWallet');
     const isFlyover = computed(() => peginType.value === constants.peginType.FLYOVER);
 
     function getLPName(): string {
@@ -134,10 +133,11 @@ export default defineComponent({
           pegInTxState.value.selectedAccount,
         ))
         .then(async (tx: Tx) => {
-          if (selectBitcoinWallet.value === constants.WALLET_NAMES.REOWN.long_name) {
+          if (bitcoinWallet.value === constants.WALLET_NAMES.REOWN.long_name) {
             const { walletProvider } = useAppKitProvider<BitcoinConnector>('bip122');
             const reownTx = tx as ReownTx;
             if (walletProvider) {
+              console.log('Reown wallet detected, signing PSBT...');
               try {
                 const signature = await walletProvider.signPSBT({
                   psbt: reownTx.base64UnsignedPsbt,
@@ -146,7 +146,6 @@ export default defineComponent({
                 });
                 (walletService.value as ReownService).setSignedPsbt(signature);
               } catch (error) {
-                console.error('Error validating PSBT:', error);
                 throw new Error('Failed to validate PSBT');
               }
             }
