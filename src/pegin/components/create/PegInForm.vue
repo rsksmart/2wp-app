@@ -261,7 +261,7 @@ export default defineComponent({
         acceptQuote()
           .then((acceptedQuote) => {
             if (toQr.value) {
-              router.push({ name: 'QrView', params: { network: constants.Networks.BITCOIN } });
+              router.push({ name: 'QrView', params: { network: constants.QRCodeNetworks.BITCOIN } });
             } else {
               context.emit('createTx', {
                 amountToTransferInSatoshi: selectedQuote.value?.valueToTransfer,
