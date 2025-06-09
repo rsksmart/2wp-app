@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable class-methods-use-this */
 import * as constants from '@/common/store/constants';
+import { BitcoinConnector } from '@reown/appkit-adapter-bitcoin';
+import * as bitcoin from 'bitcoinjs-lib';
 import {
   WalletAddress, Tx, SignedTx, BtcAccount,
 } from '../types';
@@ -8,6 +10,8 @@ import WalletService from './WalletService';
 
 export default class ReownService extends WalletService {
   connectedAddress: WalletAddress;
+
+  signedResponse: BitcoinConnector.SignPSBTResponse | null = null;
 
   constructor(connectedAddress: WalletAddress) {
     super();
@@ -19,7 +23,16 @@ export default class ReownService extends WalletService {
   }
 
   sign(tx: Tx): Promise<SignedTx> {
-    throw new Error('Method not implemented.');
+    return new Promise<SignedTx>((resolve, reject) => {
+      const signedPsbt = bitcoin.Psbt.fromBase64(this.signedResponse?.psbt || '');
+      if (!signedPsbt.validateSignaturesOfAllInputs()) {
+        reject(new Error('Invalid signature provided'));
+      } else {
+        resolve({
+          signedTx: signedPsbt.finalizeAllInputs().extractTransaction().toHex(),
+        });
+      }
+    });
   }
 
   isConnected(): Promise<boolean> {
@@ -54,5 +67,9 @@ export default class ReownService extends WalletService {
       BtcAccount.BITCOIN_NATIVE_SEGWIT_ADDRESS,
       BtcAccount.BITCOIN_SEGWIT_ADDRESS,
     ];
+  }
+
+  public setSignedPsbt(signedResponse: BitcoinConnector.SignPSBTResponse) {
+    this.signedResponse = signedResponse;
   }
 }

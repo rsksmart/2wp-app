@@ -161,15 +161,13 @@ export const getters: GetterTree<PegInTxState, RootState> = {
     let isHdWallet = false;
     switch (state.bitcoinWallet) {
       case constants.WALLET_NAMES.TREZOR.long_name:
-        isHdWallet = true;
-        break;
       case constants.WALLET_NAMES.LEDGER.long_name:
         isHdWallet = true;
         break;
       case constants.WALLET_NAMES.LEATHER.long_name:
-        isHdWallet = false;
-        break;
       case constants.WALLET_NAMES.XVERSE.long_name:
+      case constants.WALLET_NAMES.REOWN.long_name:
+      case constants.WALLET_NAMES.ENKRYPT.long_name:
         isHdWallet = false;
         break;
       default:
