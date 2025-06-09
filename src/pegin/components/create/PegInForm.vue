@@ -233,7 +233,7 @@ export default defineComponent({
     function back() {
       pegInFormState.value.send('loading');
       clearQuotes();
-      context.emit('back');
+      router.push({ name: 'Home' });
     }
 
     function handleError(error: Error) {

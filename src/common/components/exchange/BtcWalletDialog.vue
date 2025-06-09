@@ -1,6 +1,6 @@
 <template>
   <v-dialog :model-value="modelValue" @update:model-value="emitClose" max-width="900"
-    min-height="500">
+    min-height="500" z-index="4">
     <v-row no-gutters>
       <v-col no-gutters cols="5" class="ma-0 pa-0">
         <v-card class="pt-5 rounded-s-lg" min-height="500">
@@ -121,7 +121,9 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue';
+import {
+  computed, defineComponent, ref, watch,
+} from 'vue';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import * as constants from '@/common/store/constants';
 import { mdiCellphoneLink, mdiUsbFlashDriveOutline } from '@mdi/js';
@@ -129,10 +131,15 @@ import walletConf from '@/common/walletConf.json';
 import { useTheme } from 'vuetify';
 import {
   Browser, BtcWallet, Feature, FeatureNames, SupportedBrowsers,
+  WalletAddress,
 } from '@/common/types';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import { getBrowserName } from '@/common/utils';
 import { useRouter } from 'vue-router';
+import {
+  useAppKit, useAppKitAccount, useAppKitProvider,
+} from '@reown/appkit/vue';
+import { BitcoinConnector } from '@reown/appkit-adapter-bitcoin';
 
 export default defineComponent({
   name: 'BtcWalletDialog',
@@ -146,10 +153,12 @@ export default defineComponent({
     const getFeature = useGetter<(name: FeatureNames) => Feature>('web3Session', constants.SESSION_GET_FEATURE);
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const currentBrowser = getBrowserName() as Browser;
+    const accountInfo = useAppKitAccount();
     const { global: { name } } = useTheme();
     const router = useRouter();
     const walletType = ref<constants.WalletTypes>(constants.WalletTypes.SOFTWARE);
     const loadingAddresses = ref<boolean>(false);
+    const selectedWallet = ref<BtcWallet | null>(null);
     const initPegin = useAction('pegInTx', constants.PEGIN_TX_INIT);
     const addBitcoinWallet = useAction('pegInTx', constants.PEGIN_TX_ADD_BITCOIN_WALLET);
     const bitcoinWallet = useStateAttribute<BtcWallet>('pegInTx', 'bitcoinWallet');
@@ -188,6 +197,9 @@ export default defineComponent({
         case constants.WALLET_NAMES.ENKRYPT.long_name:
           wallet = constants.WALLET_NAMES.ENKRYPT.short_name;
           break;
+        case constants.WALLET_NAMES.REOWN.long_name:
+          wallet = constants.WALLET_NAMES.REOWN.short_name;
+          break;
         default:
           wallet = '';
           break;
@@ -204,10 +216,61 @@ export default defineComponent({
       walletType.value = wallet;
     }
 
+    function connectReown(): Promise<void> {
+      const { walletProvider } = useAppKitProvider<BitcoinConnector>('bip122');
+      const { open: openModal } = useAppKit();
+      return new Promise((resolve, reject) => {
+        if (!walletProvider) {
+          openModal(
+            {
+              namespace: 'bip122',
+            },
+          )
+            .then(resolve)
+            .catch(reject);
+        } else {
+          reject(new Error('Reown aleready connected'));
+        }
+      });
+    }
+
     function selectBitcoinWallet(wallet: BtcWallet) {
-      addBitcoinWallet(wallet)
+      selectedWallet.value = wallet;
+      if (wallet === constants.WALLET_NAMES.REOWN.long_name) {
+        connectReown()
+          .catch((e: Error) => {
+            console.error('Error connecting Reown wallet:', e);
+          });
+        return;
+      }
+      addBitcoinWallet({
+        bitcoinWallet: wallet,
+      })
         .then(toSendBitcoin);
     }
+
+    function setReownWallet(): void {
+      if (accountInfo.value.isConnected && accountInfo.value.allAccounts.length) {
+        addBitcoinWallet({
+          bitcoinWallet: selectedWallet.value,
+          connectedAddress: {
+            address: accountInfo.value.address,
+            derivationPath: '',
+            unused: true,
+            publicKey: accountInfo.value.allAccounts[0].publicKey,
+          } as WalletAddress,
+        })
+          .then(toSendBitcoin);
+      }
+    }
+
+    watch(() => accountInfo.value.isConnected, () => {
+      setReownWallet();
+    }, { immediate: true });
+
+    watch(() => accountInfo.value.allAccounts, () => {
+      setReownWallet();
+    }, { immediate: true });
 
     initPegin();
 
