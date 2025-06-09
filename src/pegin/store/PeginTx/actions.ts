@@ -19,6 +19,7 @@ import {
   getClearPeginTxState, getCookie, isBTCAmountValidRegex, setCookie,
 } from '@/common/utils';
 import PeginConfigurationService from '@/pegin/services/peginConfigurationService';
+import ReownService from '@/common/services/ReownService';
 import TxFeeService from '../../services/TxFeeService';
 
 export const actions: ActionTree<PegInTxState, RootState> = {
@@ -37,7 +38,11 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_ADD_SESSION_ID]: ({ commit }, sessionId: string) => {
     commit(constants.PEGIN_TX_SET_SESSION_ID, sessionId);
   },
-  [constants.PEGIN_TX_ADD_BITCOIN_WALLET]: ({ commit, state }, bitcoinWallet: BtcWallet) => {
+  [constants.PEGIN_TX_ADD_BITCOIN_WALLET]: (
+    { commit, state },
+    { bitcoinWallet, connectedAddress }:
+    { bitcoinWallet: BtcWallet, connectedAddress: WalletAddress },
+  ) => {
     commit(constants.PEGIN_TX_SET_BITCOIN_WALLET, bitcoinWallet);
     try {
       switch (bitcoinWallet) {
@@ -55,6 +60,9 @@ export const actions: ActionTree<PegInTxState, RootState> = {
           break;
         case constants.WALLET_NAMES.ENKRYPT.long_name:
           commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new EnkryptService());
+          break;
+        case constants.WALLET_NAMES.REOWN.long_name:
+          commit(constants.PEGIN_TX_SET_WALLET_SERVICE, new ReownService(connectedAddress));
           break;
         default:
           commit(constants.PEGIN_TX_SET_WALLET_SERVICE, undefined);

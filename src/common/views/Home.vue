@@ -79,16 +79,6 @@
       </v-col>
     </v-row>
   </v-container>
-  <v-btn @click="connectReown = true">
-    Reown
-  </v-btn>
-  <v-btn @click="disconnect = true">
-    disconnect
-  </v-btn>
-  <reown-wallet-service
-    :connectTrigger="connectReown"
-    :disconnect="disconnect"
-    @error="handleReowError"/>
   <web3-wallet-dialog v-model="showWeb3Modal"
     @cancel="connectError" @selected-wallet="selectWeb3WalletType" />
   <btc-wallet-dialog v-model="showBtcModal"
@@ -124,7 +114,7 @@ import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import { mdiCloseCircleOutline } from '@mdi/js';
 import Web3WalletDialog from '@/common/components/exchange/Web3WalletDialog.vue';
 import BtcWalletDialog from '@/common/components/exchange/BtcWalletDialog.vue';
-import ReownWalletService from '@/pegin/services/ReownWalletService.vue';
+import { useDisconnect } from '@reown/appkit/vue';
 import { useWallet } from '../composables/useWallet';
 
 export default {
@@ -132,13 +122,13 @@ export default {
   components: {
     Web3WalletDialog,
     BtcWalletDialog,
-    ReownWalletService,
   },
   setup() {
     const router = useRouter();
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const isAllowedBrowser = isAllowedCurrentBrowser();
     const showTermsAndConditions = ref(false);
+    const { disconnect: disconnectReown } = useDisconnect();
     const areTermsAccepted = useStateAttribute<boolean>('web3Session', 'acceptedTerms');
     const clearPegin = useAction('pegInTx', constants.PEGIN_TX_CLEAR_STATE);
     const clearPegOut = useAction('pegOutTx', constants.PEGOUT_TX_CLEAR);
@@ -240,13 +230,9 @@ export default {
       showBtcModal.value = false;
     }
 
-    const connectReown = ref(false);
-    function handleReowError(e: Error) {
-      console.error('Reown error', e);
-    }
-
     getBtcPrice();
     clearPegin();
+    disconnectReown();
     clearPegOut();
     clearFlyoverPegout();
     addPeg();
@@ -272,9 +258,6 @@ export default {
       connectError,
       selectWeb3WalletType,
       continueToForm,
-      connectReown,
-      handleReowError,
-      disconnect: ref(false),
     };
   },
 };
