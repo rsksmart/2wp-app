@@ -136,6 +136,10 @@ export enum AppLocale {
   LOCALE_ES = 'es',
 }
 
+export interface ReownTx extends Tx {
+  base64UnsignedPsbt: string;
+  inputs: Array<{index: number; address: string; sighashTypes: Array<number>}>;
+}
 export interface XverseTx extends Tx {
   base64UnsignedPsbt: string;
   inputs: Array<{idx: number; address: string}>;
