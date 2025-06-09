@@ -24,6 +24,9 @@ export const getters: GetterTree<PegInTxState, RootState> = {
       case constants.WALLET_NAMES.ENKRYPT.long_name: {
         return constants.WALLET_NAMES.ENKRYPT.formal_name;
       }
+      case constants.WALLET_NAMES.REOWN.long_name: {
+        return constants.WALLET_NAMES.REOWN.formal_name;
+      }
       default: {
         return 'wallet';
       }
