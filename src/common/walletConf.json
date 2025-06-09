@@ -62,15 +62,15 @@
         },
         {
             "name": "Reown",
-            "icon": "wallet-icons/enkrypt-black.svg",
-            "iconWhite": "wallet-icons/enkrypt-white.svg",
+            "icon": "wallet-icons/reown-black.svg",
+            "iconWhite": "wallet-icons/reown-white.svg",
             "constant": "WALLET_REOWN",
             "pegin": true,
             "pegout": true,
             "hover": false,
             "btnClass": "btn-reown",
             "kind": "Software Wallet",
-            "installation": "https://www.reown.com/"
+            "installation": "https://reown.com/"
         }
     ]
 }
