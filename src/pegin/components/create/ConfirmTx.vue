@@ -32,13 +32,17 @@ import * as constants from '@/common/store/constants';
 import { ApiService, FlyoverService, WalletService } from '@/common/services';
 import { useState, useGetter, useStateAttribute } from '@/common/store/helper';
 import {
+  BtcWallet,
   LiquidityProvider2WP,
   PeginQuote,
   PeginQuoteDbModel,
-  PegInTxState, SatoshiBig, TxStatusType,
+  PegInTxState, ReownTx, SatoshiBig, Tx, TxStatusType,
 } from '@/common/types';
 import { mdiInformation, mdiArrowLeft, mdiArrowRight } from '@mdi/js';
 import ConfirmationSteps from '@/pegin/components/create/ConfirmationSteps.vue';
+import { useAppKitProvider } from '@reown/appkit/vue';
+import { BitcoinConnector } from '@reown/appkit-adapter-bitcoin';
+import ReownService from '@/common/services/ReownService';
 
 export default defineComponent({
   name: 'ConfirmTx',
@@ -68,6 +72,7 @@ export default defineComponent({
     const peginType = useStateAttribute<string>('pegInTx', 'peginType');
     const acceptedQuoteSignature = useStateAttribute<string>('flyoverPegin', 'acceptedQuoteSignature');
     const flyoverService = useStateAttribute<FlyoverService>('flyoverPegin', 'flyoverService');
+    const selectBitcoinWallet = useStateAttribute<BtcWallet>('peginTx', 'bitcoinWallet');
     const isFlyover = computed(() => peginType.value === constants.peginType.FLYOVER);
 
     function getLPName(): string {
@@ -128,7 +133,26 @@ export default defineComponent({
           pegInTxState.value.normalizedTx,
           pegInTxState.value.selectedAccount,
         ))
-        .then((tx) => walletService.value.sign(tx))
+        .then(async (tx: Tx) => {
+          if (selectBitcoinWallet.value === constants.WALLET_NAMES.REOWN.long_name) {
+            const { walletProvider } = useAppKitProvider<BitcoinConnector>('bip122');
+            const reownTx = tx as ReownTx;
+            if (walletProvider) {
+              try {
+                const signature = await walletProvider.signPSBT({
+                  psbt: reownTx.base64UnsignedPsbt,
+                  signInputs: reownTx.inputs,
+                  broadcast: false,
+                });
+                (walletService.value as ReownService).setSignedPsbt(signature);
+              } catch (error) {
+                console.error('Error validating PSBT:', error);
+                throw new Error('Failed to validate PSBT');
+              }
+            }
+          }
+          return walletService.value.sign(tx);
+        })
         .then(async ({ signedTx }) => {
           if (isFlyover.value) {
             await flyoverService.value.validatePegin(
