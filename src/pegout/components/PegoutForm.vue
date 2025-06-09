@@ -449,7 +449,7 @@ export default defineComponent({
         .then(() => {
           router.push({
             name: 'QrView',
-            params: { network: constants.Networks.ROOTSTOCK },
+            params: { network: constants.QRCodeNetworks.ROOTSTOCK },
           });
         });
     }
