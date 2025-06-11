@@ -6,7 +6,7 @@
             @click="copyFullAccountAddress"
           />
       <span class="align-center text-no-wrap">
-        {{ walletInfo }} | {{ selectedAccountBalance.toBTCTrimmedString() }}
+        {{ walletName }} | {{ selectedAccountBalance.toBTCTrimmedString() }}
         {{ environmentContext.getBtcTicker() }}
         <v-tooltip
           activator="parent"
@@ -96,6 +96,7 @@ import { AccountBalance, BtcWallet, SatoshiBig } from '@/common/types';
 import { WalletService } from '@/common/services';
 import { truncateString } from '@/common/utils';
 import UxtoSelector from '@/common/components/layouts/UxtoSelector.vue';
+import { useWalletInfo } from '@reown/appkit/vue';
 
 export default defineComponent({
   name: 'PegInAccountSelect',
@@ -162,8 +163,16 @@ export default defineComponent({
 
     const firstBtcAddress = computed(() => addressList.value[0]?.address);
 
-    const walletInfo = computed(() => (!singleAccountType.value
-      ? walletService.value.name().formal_name : truncateString(firstBtcAddress.value)));
+    const walletName = computed(() => {
+      if (!singleAccountType.value) {
+        if (bitcoinWallet.value === constants.WALLET_NAMES.REOWN.long_name) {
+          const { walletInfo } = useWalletInfo();
+          return walletInfo?.name;
+        }
+        return walletService.value.name().formal_name;
+      }
+      return truncateString(firstBtcAddress.value);
+    });
 
     function setSelectedAccount(account: string) {
       selectedAccountType.value = account;
@@ -215,7 +224,7 @@ export default defineComponent({
       selectedAccountBalance,
       accountChanged,
       mdiChevronDown,
-      walletInfo,
+      walletName,
       copyFullAccountAddress,
       atPeginForm,
       displayUtxoSelector,

@@ -22,7 +22,7 @@ export default defineComponent({
 
     function back() {
       clear();
-      router.push({ name: 'PegIn' });
+      router.push({ name: 'Home' });
     }
 
     return {
