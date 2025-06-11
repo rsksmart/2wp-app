@@ -74,12 +74,6 @@ const routes: Readonly<RouteRecordRaw[]> = [
       () => import(/* webpackChunkName: "status-search" */ '../../status/views/Status.vue'),
   },
   {
-    path: '/pegin',
-    name: 'PegIn',
-    component: () => import(/* webpackChunkName: "pegin" */ '../../pegin/views/PegIn.vue'),
-    beforeEnter: [checkForMobileDevice, checkAcceptedTerms],
-  },
-  {
     path: '/pegout',
     name: 'PegOut',
     component: () => import(/* webpackChunkName: "pegout" */ '../../pegout/views/PegOut.vue'),
