@@ -2,7 +2,7 @@
   <div class="transactions">
     <v-col offset="2" cols="8">
       <v-row v-if="isSftwWallet" justify="center" class="mx-0 mb-1">
-        <h1>Enable {{ walletName }} wallet</h1>
+        <h1>Enable {{ walletName }}</h1>
       </v-row>
       <v-row v-else justify="center" class="mx-0 mb-1">
         <h1>Connect your {{ walletName }}</h1>
@@ -87,6 +87,7 @@ import * as constants from '@/common/store/constants';
 import { SendBitcoinState } from '@/common/types';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
+import { useWalletInfo } from '@reown/appkit/vue';
 
 export default defineComponent({
   name: 'ConnectDevice',
@@ -100,7 +101,7 @@ export default defineComponent({
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
     const bitcoinWallet = useStateAttribute('pegInTx', 'bitcoinWallet');
-    const walletName = useGetter<string>('pegInTx', constants.WALLET_NAME);
+    const getWalletName = useGetter<string>('pegInTx', constants.WALLET_NAME);
     const isHdWallet = useGetter<boolean>('pegInTx', constants.PEGIN_TX_IS_HD_WALLET);
     const isSftwWallet = useGetter<boolean>('pegInTx', constants.PEGIN_TX_IS_SF_WALLET);
     const clearStore = useAction('pegInTx', constants.PEGIN_TX_CLEAR_STATE);
@@ -108,26 +109,42 @@ export default defineComponent({
     const deviceImagePath = computed(() => {
       if (bitcoinWallet.value === constants.WALLET_NAMES.LEDGER.long_name) {
         // eslint-disable-next-line global-require, import/no-dynamic-require
-        return require('@/assets/exchange/ledger/connect_ledger.png');
+        return require('@/assets/exchange/connect/connect_ledger.png');
       }
       if (bitcoinWallet.value === constants.WALLET_NAMES.TREZOR.long_name) {
         // eslint-disable-next-line global-require, import/no-dynamic-require
-        return require('@/assets/exchange/trezor/connect_trezor.png');
+        return require('@/assets/exchange/connect/connect_trezor.png');
       }
       if (bitcoinWallet.value === constants.WALLET_NAMES.LEATHER.long_name) {
         // eslint-disable-next-line global-require, import/no-dynamic-require
-        return require('@/assets/exchange/leather/connect_leather.png');
+        return require('@/assets/exchange/connect/connect_leather.png');
       }
       if (bitcoinWallet.value === constants.WALLET_NAMES.ENKRYPT.long_name) {
         // eslint-disable-next-line global-require, import/no-dynamic-require
-        return require('@/assets/exchange/enkrypt/connect_enkrypt.png');
+        return require('@/assets/exchange/connect/connect_enkrypt.png');
+      }
+      if (bitcoinWallet.value === constants.WALLET_NAMES.XVERSE.long_name) {
+        // eslint-disable-next-line global-require, import/no-dynamic-require
+        return require('@/assets/exchange/connect/connect_xverse.png');
+      }
+      if (bitcoinWallet.value === constants.WALLET_NAMES.REOWN.long_name) {
+        // eslint-disable-next-line global-require, import/no-dynamic-require
+        return require('@/assets/exchange/connect/connect_reown.png');
       }
       // eslint-disable-next-line global-require, import/no-dynamic-require
-      return require('@/assets/exchange/wallet.png');
+      return require('@/assets/exchange/connect/wallet.png');
     });
 
     const isLedgerWallet = computed(() => bitcoinWallet.value
       === constants.WALLET_NAMES.LEDGER.long_name);
+
+    const walletName = computed(() => {
+      if (bitcoinWallet.value === constants.WALLET_NAMES.REOWN.long_name) {
+        const { walletInfo } = useWalletInfo();
+        return walletInfo?.name;
+      }
+      return `${getWalletName.value} wallet`;
+    });
 
     function continueToForm() {
       context.emit('continueToForm', bitcoinWallet);
@@ -135,7 +152,7 @@ export default defineComponent({
 
     function back() {
       clearStore();
-      router.push({ name: 'PegIn' });
+      router.push({ name: 'Home' });
     }
 
     function tryConnect() {
