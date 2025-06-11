@@ -137,7 +137,6 @@ export default defineComponent({
             const { walletProvider } = useAppKitProvider<BitcoinConnector>('bip122');
             const reownTx = tx as ReownTx;
             if (walletProvider) {
-              console.log('Reown wallet detected, signing PSBT...');
               try {
                 const signature = await walletProvider.signPSBT({
                   psbt: reownTx.base64UnsignedPsbt,

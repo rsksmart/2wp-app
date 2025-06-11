@@ -69,14 +69,15 @@
                     </span>
                   </v-col>
                   <v-col cols="2" class="w-100 h-100 d-flex justify-center align-center">
-                    <v-row class="square-ratio bg-off-white ma-0 pa-0
-                          align-center justify-center rounded-lg">
-                      <v-img class="flex-grow-0"
-                      :class="[name === 'dark' ? 'bg-off-white': 'bg-bw-800']"
-                      justify="center" :height="30" :width="30"
-                      :src="name === 'dark' ?
-                      require('@/assets/' + wallet.icon) :
-                      require('@/assets/' + wallet.iconWhite) " />
+                    <v-row class="square-ratio ma-0 pa-0
+                          align-center justify-center rounded-lg"
+                          :class="[themeIsDark ? 'bg-off-white': 'bg-bw-600']">
+                      <v-img class="d-flex justify-center"
+                        :class="[themeIsDark ? 'bg-off-white': 'bg-bw-600']"
+                        justify="center" :height="30" :width="30"
+                        :src="themeIsDark ?
+                        require('@/assets/' + wallet.icon) :
+                        require('@/assets/' + wallet.iconWhite) " />
                     </v-row>
                   </v-col>
                 </v-row>
@@ -97,12 +98,13 @@
                       </span>
                   </v-col>
                   <v-col cols="2" class="w-100 h-100 d-flex justify-center align-center">
-                    <v-row class="square-ratio bg-off-white ma-0 pa-0
-                            align-center justify-center rounded-lg">
+                    <v-row class="square-ratio ma-0 pa-0
+                            align-center justify-center rounded-lg"
+                            :class="[themeIsDark ? 'bg-off-white': 'bg-bw-600']">
                         <v-img class="flex-grow-0"
-                        :class="[name === 'dark' ? 'bg-off-white': 'bg-bw-800']"
+                        :class="[themeIsDark ? 'bg-off-white': 'bg-bw-600']"
                         justify="center" :height="30" :width="30"
-                        :src="name === 'dark' ?
+                        :src="themeIsDark ?
                         require('@/assets/' + wallet.icon) :
                         require('@/assets/' + wallet.iconWhite) " />
                     </v-row>
@@ -175,6 +177,8 @@ export default defineComponent({
 
     const hardwareWallets = computed(() => wallets.value.filter((wallet) => wallet.kind === 'Hardware Wallet'));
     const softwareWallets = computed(() => wallets.value.filter((wallet) => wallet.kind === 'Software Wallet'));
+    const { global: { current } } = useTheme();
+    const themeIsDark = computed(() => (current.value.dark));
 
     function emitClose() {
       emit('update:modelValue', false);
@@ -288,6 +292,7 @@ export default defineComponent({
       walletTypes: constants.WalletTypes,
       loadingAddresses,
       selectBitcoinWallet,
+      themeIsDark,
     };
   },
 });
