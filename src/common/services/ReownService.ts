@@ -5,13 +5,14 @@ import { BitcoinConnector } from '@reown/appkit-adapter-bitcoin';
 import * as bitcoin from 'bitcoinjs-lib';
 import {
   WalletAddress, Tx, SignedTx, BtcAccount,
+  ReownTx,
 } from '../types';
 import WalletService from './WalletService';
 
 export default class ReownService extends WalletService {
   connectedAddress: WalletAddress;
 
-  signedResponse: BitcoinConnector.SignPSBTResponse | null = null;
+  walletProvider: BitcoinConnector | null = null;
 
   constructor(connectedAddress: WalletAddress) {
     super();
@@ -24,14 +25,23 @@ export default class ReownService extends WalletService {
 
   sign(tx: Tx): Promise<SignedTx> {
     return new Promise<SignedTx>((resolve, reject) => {
-      const signedPsbt = bitcoin.Psbt.fromBase64(this.signedResponse?.psbt || '');
-      if (!signedPsbt.validateSignaturesOfAllInputs()) {
-        reject(new Error('Invalid signature provided'));
-      } else {
-        resolve({
-          signedTx: signedPsbt.finalizeAllInputs().extractTransaction().toHex(),
-        });
-      }
+      const reownTx = tx as ReownTx;
+      this.walletProvider?.signPSBT({
+        psbt: reownTx.base64UnsignedPsbt,
+        signInputs: reownTx.inputs,
+        broadcast: false,
+      })
+        .then((signature) => {
+          const signedPsbt = bitcoin.Psbt.fromBase64(signature.psbt || '');
+          if (!signedPsbt.validateSignaturesOfAllInputs()) {
+            reject(new Error('Invalid signature provided'));
+          } else {
+            resolve({
+              signedTx: signedPsbt.finalizeAllInputs().extractTransaction().toHex(),
+            });
+          }
+        })
+        .catch((error) => reject(error));
     });
   }
 
@@ -69,7 +79,7 @@ export default class ReownService extends WalletService {
     ];
   }
 
-  public setSignedPsbt(signedResponse: BitcoinConnector.SignPSBTResponse) {
-    this.signedResponse = signedResponse;
+  public setReownProvider(provider: BitcoinConnector) {
+    this.walletProvider = provider;
   }
 }
