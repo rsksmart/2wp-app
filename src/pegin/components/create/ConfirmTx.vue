@@ -35,7 +35,7 @@ import {
   LiquidityProvider2WP,
   PeginQuote,
   PeginQuoteDbModel,
-  PegInTxState, ReownTx, SatoshiBig, Tx, TxStatusType,
+  PegInTxState, SatoshiBig, Tx, TxStatusType,
 } from '@/common/types';
 import { mdiInformation, mdiArrowLeft, mdiArrowRight } from '@mdi/js';
 import ConfirmationSteps from '@/pegin/components/create/ConfirmationSteps.vue';
@@ -135,19 +135,8 @@ export default defineComponent({
         .then(async (tx: Tx) => {
           if (bitcoinWallet.value === constants.WALLET_NAMES.REOWN.long_name) {
             const { walletProvider } = useAppKitProvider<BitcoinConnector>('bip122');
-            const reownTx = tx as ReownTx;
-            if (walletProvider) {
-              try {
-                const signature = await walletProvider.signPSBT({
-                  psbt: reownTx.base64UnsignedPsbt,
-                  signInputs: reownTx.inputs,
-                  broadcast: false,
-                });
-                (walletService.value as ReownService).setSignedPsbt(signature);
-              } catch (error) {
-                throw new Error('Failed to validate PSBT');
-              }
-            }
+            (walletService.value as ReownService)
+              .setReownProvider(walletProvider as BitcoinConnector);
           }
           return walletService.value.sign(tx);
         })
