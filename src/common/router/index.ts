@@ -109,7 +109,7 @@ const routes: Readonly<RouteRecordRaw[]> = [
       to: RouteLocationNormalized,
       next: NavigationGuardNext,
     ) => {
-      if (to.params.network) {
+      if (from.params.network && to.params.wallet) {
         next();
       } else {
         next({ name: 'Home' });
