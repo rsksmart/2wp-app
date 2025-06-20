@@ -5,7 +5,10 @@ import {
 import { ActionTree } from 'vuex';
 import * as constants from '@/common/store/constants';
 import { BridgeService } from '@/common/services/BridgeService';
-import { getClearObjectDifference, promiseWithTimeout } from '@/common/utils';
+import {
+  generateMockRSKAddress, generateRandomLegacyBitcoinAddress,
+  getClearObjectDifference, promiseWithTimeout, toWeiBigIntString,
+} from '@/common/utils';
 import { ApiService } from '@/common/services';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { providers } from 'ethers';
@@ -269,29 +272,61 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
       .then(resolve)
       .catch(reject);
   }),
-  [constants.FLYOVER_PEGOUT_ESTIMATE_QUOTE_MAX_FEE]:
+  [constants.FLYOVER_PEGOUT_ESTIMATE_MAX_VALUE]:
     (
       { state, rootState },
-      { maxFlyoverTxValue, callEoaOrContractAddress, btcRecipientAddress },
     ) => new Promise((resolve) => {
-      const provider = new providers.JsonRpcProvider(
+      const web3Provider = new providers.JsonRpcProvider(
         EnvironmentAccessorService.getEnvironmentVariables().vueAppRskNodeHost,
       );
-      Promise.all([
+      const { flyoverProviderId: lpId } = EnvironmentAccessorService.getEnvironmentVariables();
+
+      const provider = state.liquidityProviders.find((p) => p.id === lpId);
+
+      state.flyoverService.useLiquidityProvider(lpId);
+
+      const maxFlyoverTxValue = provider?.pegout.maxTransactionValue || new WeiBig(0, 'wei');
+      let bigIntMaxTransactionValue = toWeiBigIntString(maxFlyoverTxValue?.toRBTCString());
+      if (bigIntMaxTransactionValue === '0') bigIntMaxTransactionValue = constants.BIGGEST_BIG_INT.toString();
+
+      const callEoaOrContractAddress = rootState.web3Session?.account || generateMockRSKAddress();
+      const btcRecipientAddress = generateRandomLegacyBitcoinAddress();
+
+      Promise.allSettled([
         state.flyoverService
           .estimatePegoutMaxFee(maxFlyoverTxValue, callEoaOrContractAddress, btcRecipientAddress),
-        provider?.estimateGas({
+        web3Provider?.estimateGas({
           from: callEoaOrContractAddress,
           to: rootState.pegOutTx?.pegoutConfiguration.bridgeContractAddress,
           value: maxFlyoverTxValue.toWeiString(),
         }),
-        provider?.getGasPrice(),
+        web3Provider?.getGasPrice(),
+        state.flyoverService.getAvailableLiquidity(),
       ])
-        .then(([fee, gas, gasPrice]) => {
+        .then(([feeResult, gasResult, gasPriceResult, liquidityResult]) => {
+          const availableLiquidity = liquidityResult.status === constants.FULFILLED
+            ? liquidityResult.value.peginLiquidity : new WeiBig(0, 'wei');
+          let bigIntAvailableLiquidity = toWeiBigIntString(availableLiquidity.toRBTCString() || '0');
+          if (bigIntAvailableLiquidity === '0') bigIntAvailableLiquidity = constants.BIGGEST_BIG_INT.toString();
+
+          const gasPrice = gasPriceResult.status === constants.FULFILLED
+            ? gasPriceResult.value : 24000000;
+          const gas = gasResult.status === constants.FULFILLED ? gasResult.value : 21000;
+          const maxQuoteFee = feeResult.status === constants.FULFILLED ? feeResult.value : new WeiBig(0, 'wei');
           const gasFee = new WeiBig(Number(gasPrice) * Number(gas), 'wei');
-          return fee.plus(gasFee);
+          const fullFee = maxQuoteFee.plus(gasFee);
+
+          const balance = rootState.web3Session?.balance || new WeiBig(0, 'wei');
+          const balanceMinusFlyoverFees = balance.minus(fullFee);
+          let bigIntBalanceMinusFlyoverFees = toWeiBigIntString(balanceMinusFlyoverFees?.toRBTCString() || '0');
+          if (bigIntBalanceMinusFlyoverFees === '0') bigIntBalanceMinusFlyoverFees = constants.BIGGEST_BIG_INT.toString();
+          const maxValue = new WeiBig([
+            BigInt(bigIntAvailableLiquidity),
+            BigInt(bigIntMaxTransactionValue),
+            BigInt(bigIntBalanceMinusFlyoverFees),
+          ].reduce((min, current) => (current < min ? current : min)), 'wei');
+          resolve(maxValue);
         })
-        .then((fullFee: WeiBig) => resolve(fullFee))
-        .catch(() => resolve(new WeiBig(0, 'wei')));
+        .catch(() => { resolve(new WeiBig(0, 'wei')); });
     }),
 };
