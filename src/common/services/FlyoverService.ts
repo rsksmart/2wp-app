@@ -559,10 +559,13 @@ export default class FlyoverService {
       quotes.forEach((quote: Quote) => {
         const gasFeeWeiBig = new WeiBig(quote.quote.gasFee ?? 0, 'wei');
         const callFeeWeiBig = new WeiBig(quote.quote.callFee ?? 0, 'wei');
-        maxFee = gasFeeWeiBig.plus(callFeeWeiBig);
+        const productFeeWeiBig = new WeiBig(quote.quote.productFeeAmount ?? 0, 'wei');
+        maxFee = gasFeeWeiBig.plus(callFeeWeiBig).plus(productFeeWeiBig);
         return maxFee;
       });
-    } catch (e) { maxFee = new WeiBig(0, 'wei'); }
+    } catch (e) {
+      maxFee = new WeiBig(0, 'wei');
+    }
     return maxFee;
   }
 
@@ -582,7 +585,8 @@ export default class FlyoverService {
       quotes.forEach((quote: PegoutQuote) => {
         const gasFeeWeiBig = new WeiBig(quote.quote.gasFee ?? 0, 'wei');
         const callFeeWeiBig = new WeiBig(quote.quote.callFee ?? 0, 'wei');
-        maxFee = gasFeeWeiBig.plus(callFeeWeiBig);
+        const productFeeWeiBig = new WeiBig(quote.quote.productFeeAmount ?? 0, 'wei');
+        maxFee = gasFeeWeiBig.plus(callFeeWeiBig).plus(productFeeWeiBig);
         return maxFee;
       });
     } catch (e) { maxFee = new WeiBig(0, 'wei'); }

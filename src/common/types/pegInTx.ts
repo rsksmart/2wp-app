@@ -76,6 +76,7 @@ export interface PegInTxState {
     safeFee: SatoshiBig;
   }
   peginType: constants.peginType;
+  maxFee: SatoshiBig;
 }
 
 export interface UnusedWalletAddress {

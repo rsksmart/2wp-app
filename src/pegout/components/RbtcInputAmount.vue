@@ -33,7 +33,13 @@
               {{ minStrVal }} MIN
             </v-chip>
             <v-chip variant="outlined" density="compact" @click="setMax">
-              MAX
+              <v-progress-circular v-if="loadingMax"
+                :size="12"
+                :width="2"
+                color="warning"
+                indeterminate />
+              <span v-else>{{ maxValue === '0' ? '' : maxValue.slice(0,5) }}</span>
+              <span class="ml-1">MAX</span>
             </v-chip>
           </div>
         </template>
@@ -50,15 +56,12 @@ import {
 } from 'vue';
 import { mdiArrowRight, mdiBitcoin, mdiInformationOutline } from '@mdi/js';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import * as constants from '@/common/store/constants';
 import {
   isRBTCAmountValidRegex,
-  toWeiBigIntString,
-  generateRandomLegacyBitcoinAddress,
 } from '@/common/utils';
 import {
-  PegoutConfiguration, SatoshiBig, SessionState, WeiBig, LiquidityProvider2WP,
+  PegoutConfiguration, SatoshiBig, SessionState, WeiBig,
 } from '@/common/types';
 import {
   useAction, useGetter, useState, useStateAttribute,
@@ -83,17 +86,18 @@ export default defineComponent({
     const rbtcAmount = ref('');
     const amountStyle = ref('');
     const stepState = ref<'unset' | 'valid' |'error'>('unset');
+    const loadingMax = ref(false);
+    const maxValue = ref('0');
     const web3SessionState = useState<SessionState>('web3Session');
     const setRbtcAmount = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ADD_AMOUNT);
     const addAmount = useAction('pegOutTx', constants.PEGOUT_TX_ADD_AMOUNT);
     const calculateFee = useAction('pegOutTx', constants.PEGOUT_TX_CALCULATE_FEE);
-    const flyoverEstimateFees = useAction<Promise<WeiBig>>('flyoverPegout', constants.FLYOVER_PEGOUT_ESTIMATE_QUOTE_MAX_FEE);
+    const getMaxFlyover = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ESTIMATE_MAX_VALUE);
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
     const pegoutConfiguration = useStateAttribute<PegoutConfiguration>('pegOutTx', 'pegoutConfiguration');
     const account = useStateAttribute<string>('web3Session', 'account');
     const minStrVal = computed(() => pegoutConfiguration.value.minValue.toRBTCString().slice(0, 5));
     const isComposing = ref(false);
-    const liquidityProviders = useStateAttribute<LiquidityProvider2WP[]>('flyoverPegout', 'liquidityProviders');
 
     const isValidAmount = (amount: WeiBig) => {
       const { minValue } = pegoutConfiguration.value;
@@ -189,56 +193,32 @@ export default defineComponent({
       }
     }
 
-    async function getFlyoverMaxBalanceMinusFeesBigIntString(maxFlyoverTxValue: WeiBig) {
-      const flyoverFees = await flyoverEstimateFees({
-        maxFlyoverTxValue,
-        callEoaOrContractAddress: account.value,
-        btcRecipientAddress: generateRandomLegacyBitcoinAddress(),
-      }) as WeiBig || new WeiBig(0, 'wei');
-      const { balance } = web3SessionState.value;
-      const balanceMinusFlyoverFees = balance.minus(flyoverFees);
-      let bigIntBalanceMinusFlyoverFees = toWeiBigIntString(balanceMinusFlyoverFees?.toRBTCString() || '0');
-      if (bigIntBalanceMinusFlyoverFees === '0') bigIntBalanceMinusFlyoverFees = constants.BIGGEST_BIG_INT.toString();
-
-      return bigIntBalanceMinusFlyoverFees;
-    }
-
-    async function getMaxFlyover() {
-      const { flyoverProviderId: lpId } = EnvironmentAccessorService.getEnvironmentVariables();
-
-      const provider = liquidityProviders.value.find((p) => p.id === lpId);
-
-      const availableLiquidity = provider?.pegout.availableLiquidity || new WeiBig(0, 'wei');
-      let bigIntAvailableLiquidity = toWeiBigIntString(availableLiquidity?.toRBTCString() || '0');
-      if (bigIntAvailableLiquidity === '0') bigIntAvailableLiquidity = constants.BIGGEST_BIG_INT.toString();
-
-      const maxTransactionValue = provider?.pegout.maxTransactionValue || new WeiBig(0, 'wei');
-      let bigIntMaxTransactionValue = toWeiBigIntString(maxTransactionValue?.toRBTCString());
-      if (bigIntMaxTransactionValue === '0') bigIntMaxTransactionValue = constants.BIGGEST_BIG_INT.toString();
-
-      const bigIntFlyoverMaxBalanceMinusFees = await getFlyoverMaxBalanceMinusFeesBigIntString(
-        maxTransactionValue,
-      );
-
-      return [
-        BigInt(bigIntAvailableLiquidity),
-        BigInt(bigIntMaxTransactionValue),
-        BigInt(bigIntFlyoverMaxBalanceMinusFees),
-      ].reduce((min, current) => (current < min ? current : min));
-    }
-
     function getMaxNative() {
       const { balance } = web3SessionState.value;
-      let bigIntUserBalance = toWeiBigIntString(balance.toRBTCString());
-      if (bigIntUserBalance === '0') bigIntUserBalance = constants.BIGGEST_BIG_INT.toString();
-
-      return BigInt(bigIntUserBalance);
+      return balance ?? new WeiBig(0, 'wei');
     }
 
-    async function setMax() {
-      const maxValue = props.flyoverAvailable ? await getMaxFlyover() : getMaxNative();
+    function setMax() {
+      loadingMax.value = true;
+      let maxFlyover = new WeiBig(0, 'wei');
 
-      rbtcAmountModel.value = new WeiBig(maxValue, 'wei').toRBTCTrimmedString();
+      if (props.flyoverAvailable) {
+        getMaxFlyover()
+          .then((maxFlyoverValue) => {
+            maxFlyover = maxFlyoverValue as WeiBig;
+            loadingMax.value = false;
+          })
+          .catch(() => { loadingMax.value = false; })
+          .finally(() => {
+            maxValue.value = maxFlyover.toRBTCTrimmedString();
+            loadingMax.value = false;
+            rbtcAmountModel.value = maxValue.value;
+          });
+      } else {
+        maxValue.value = getMaxNative().toRBTCTrimmedString();
+        loadingMax.value = false;
+        rbtcAmountModel.value = maxValue.value;
+      }
     }
 
     function clearInput() {
@@ -268,6 +248,8 @@ export default defineComponent({
       minStrVal,
       isComposing,
       setMax,
+      maxValue,
+      loadingMax,
     };
   },
 });
