@@ -5,7 +5,9 @@ import {
 import { ActionTree } from 'vuex';
 import * as constants from '@/common/store/constants';
 import { ApiService } from '@/common/services';
-import { promiseWithTimeout } from '@/common/utils';
+import {
+  promiseWithTimeout, generateMockRSKAddress, toWeiBigIntString, bigIntToUserFormattedWei,
+} from '@/common/utils';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
 export const actions: ActionTree<FlyoverPeginState, RootState> = {
@@ -131,14 +133,57 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
       })
       .catch(reject);
   }),
-  [constants.FLYOVER_PEGIN_ESTIMATE_QUOTE_MAX_FEE]:
-    (
-      { state },
-      { maxFlyoverTxValue, callEoaOrContractAddress },
-    ) => new Promise((resolve) => {
-      state.flyoverService
-        .estimatePeginMaxFee(maxFlyoverTxValue, callEoaOrContractAddress)
-        .then((fee) => resolve(fee))
-        .catch(() => resolve(new WeiBig(0, 'wei')));
-    }),
+  [constants.FLYOVER_PEGIN_ESTIMATE_MAX_VALUE]: (
+    {
+      state, rootState, rootGetters,
+    },
+  ) => new Promise((resolve) => {
+    const provider = state.liquidityProviders
+      .find((p) => p.id === EnvironmentAccessorService.getEnvironmentVariables().flyoverProviderId);
+    state.flyoverService.useLiquidityProvider(provider?.id || 0);
+
+    const maxTransactionValue = provider?.pegin.maxTransactionValue || new WeiBig(0, 'wei');
+    let bigIntMaxTransactionValue = toWeiBigIntString(maxTransactionValue?.toRBTCString());
+    if (bigIntMaxTransactionValue === '0') bigIntMaxTransactionValue = constants.BIGGEST_BIG_INT.toString();
+
+    const callEoaOrContractAddress = rootState.web3Session?.account || generateMockRSKAddress();
+    const selectedAccountBalance = rootGetters[`pegInTx/${constants.PEGIN_TX_GET_SELECTED_BALANCE}`];
+    const accountBalance = new WeiBig(toWeiBigIntString(selectedAccountBalance.toBTCString()), 'wei');
+    Promise.allSettled([
+      state.flyoverService.estimatePeginMaxFee(maxTransactionValue, callEoaOrContractAddress),
+      state.flyoverService.getAvailableLiquidity(),
+    ])
+      .then(([fullMaxFeeResult, liquidityResult]) => {
+        const availableLiquidity = liquidityResult.status === constants.FULFILLED
+          ? liquidityResult.value.peginLiquidity : new WeiBig(0, 'wei');
+        let bigIntAvailableLiquidity = toWeiBigIntString(availableLiquidity.toRBTCString() || '0');
+        if (bigIntAvailableLiquidity === '0') bigIntAvailableLiquidity = constants.BIGGEST_BIG_INT.toString();
+
+        const maxFeeBtc = rootState.pegInTx?.maxFee || new SatoshiBig(0, 'satoshi');
+        const maxFeeWei = new WeiBig(toWeiBigIntString(maxFeeBtc.toBTCString()), 'wei');
+        const fullMaxFee = fullMaxFeeResult.status === constants.FULFILLED
+          ? fullMaxFeeResult.value : new WeiBig(0, 'wei');
+        const balanceMinusFlyoverFees = accountBalance.minus(fullMaxFee).minus(maxFeeWei);
+        let bigIntBalanceMinusFlyoverFees = toWeiBigIntString(
+          balanceMinusFlyoverFees.toRBTCString(),
+        );
+        if (bigIntBalanceMinusFlyoverFees === '0') bigIntBalanceMinusFlyoverFees = constants.BIGGEST_BIG_INT.toString();
+
+        const maxBigIntValue = [
+          BigInt(bigIntAvailableLiquidity),
+          BigInt(bigIntMaxTransactionValue),
+          BigInt(bigIntBalanceMinusFlyoverFees),
+        ].reduce((min, current) => (current < min ? current : min));
+
+        const satoshiMaxValue = new SatoshiBig(
+          bigIntToUserFormattedWei(maxBigIntValue.toString()),
+          'btc',
+        );
+        resolve(satoshiMaxValue);
+      })
+      .catch(() => {
+        const zero = new SatoshiBig(0, 'satoshi');
+        resolve(zero);
+      });
+  }),
 };

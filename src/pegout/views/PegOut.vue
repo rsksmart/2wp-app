@@ -45,10 +45,12 @@ export default defineComponent({
             loadingProviders.value = false;
           })
           .catch(() => {
-            flyoverEnabled.value = false;
             loadingProviders.value = false;
           });
-      } else loadingProviders.value = false;
+      } else {
+        flyoverEnabled.value = false;
+        loadingProviders.value = false;
+      }
     });
 
     init();
