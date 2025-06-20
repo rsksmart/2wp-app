@@ -180,19 +180,6 @@ export const actions: ActionTree<PegInTxState, RootState> = {
           .catch(reject);
       }
     }),
-  [constants.PEGIN_CALCULATE_MAX_FEE]: ({ getters }):
-    Promise<SatoshiBig> => new Promise<SatoshiBig>((resolve, reject) => {
-      const utxoList = getters[constants.PEGIN_TX_GET_ACCOUNT_UTXO_LIST] as Utxo[];
-      if (utxoList.length) {
-        TxFeeService.getTxFee(
-          getters[constants.PEGIN_TX_GET_SELECTED_BALANCE] as SatoshiBig,
-          utxoList,
-          constants.BITCOIN_FAST_FEE_LEVEL,
-        )
-          .then((fast) => resolve(new SatoshiBig(fast.fee.amount, 'satoshi')))
-          .catch(reject);
-      }
-    }),
   [constants.PEGIN_TX_ADD_RSK_ADDRESS]: ({ commit }, address: string): void => {
     const chainId = EnvironmentAccessorService
       .getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_MAINNET ? 30 : 31;
@@ -249,4 +236,24 @@ export const actions: ActionTree<PegInTxState, RootState> = {
     };
     commit(constants.PEGIN_TX_SET_BALANCE, balances);
   },
+  [constants.PEGIN_TX_ESTIMATE_MAX_VALUE]:
+  ({ commit, getters }) => new Promise<SatoshiBig>((resolve) => {
+    const selectedBalance = getters[constants.PEGIN_TX_GET_SELECTED_BALANCE] as SatoshiBig
+      || new SatoshiBig(0, 'satoshi');
+    const utxoList = getters[constants.PEGIN_TX_GET_ACCOUNT_UTXO_LIST] as Utxo[];
+    TxFeeService.getTxFee(
+      selectedBalance,
+      utxoList,
+      constants.BITCOIN_FAST_FEE_LEVEL,
+    )
+      .then((fast) => {
+        const maxFee = new SatoshiBig(fast.fee.amount, 'satoshi')
+        || new SatoshiBig(0, 'satoshi');
+        commit(constants.PEGIN_TX_SET_MAX_FEE, maxFee);
+
+        const maxValue = selectedBalance.minus(maxFee);
+        resolve(maxValue);
+      })
+      .catch(() => { resolve(new SatoshiBig(0, 'satoshi')); });
+  }),
 };
