@@ -31,7 +31,13 @@
               {{ boundaries.minValue.toBTCString().slice(0,5) }} MIN
             </v-chip>
             <v-chip variant="outlined" density="compact" @click="setMax">
-              MAX
+              <v-progress-circular v-if="loadingMax"
+                :size="12"
+                :width="2"
+                color="warning"
+                indeterminate />
+              <span v-else>{{ maxValue === '0' ? '' : maxValue.slice(0,5) }}</span>
+              <span class="ml-1">MAX</span>
             </v-chip>
           </div>
         </template>
@@ -45,24 +51,18 @@
 
 <script lang="ts">
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import {
   computed, defineComponent, ref, watch,
 } from 'vue';
 import SatoshiBig from '@/common/types/SatoshiBig';
 import {
   PeginConfiguration,
-  LiquidityProvider2WP,
-  WeiBig,
 } from '@/common/types';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import { mdiBitcoin } from '@mdi/js';
 import * as constants from '@/common/store/constants';
 import {
   isBTCAmountValidRegex,
-  toWeiBigIntString,
-  generateMockRSKAddress,
-  bigIntToUserFormattedWei,
 } from '@/common/utils';
 
 export default defineComponent({
@@ -74,12 +74,13 @@ export default defineComponent({
     },
   },
   setup(props, context) {
+    const focus = ref(false);
+    const loadingMax = ref(false);
+    const maxValue = ref('0');
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const peginConfiguration = useStateAttribute<PeginConfiguration>('pegInTx', 'peginConfiguration');
-    const liquidityProviders = useStateAttribute<LiquidityProvider2WP[]>('flyoverPegin', 'liquidityProviders');
-    const flyoverEstimateGasFee = useAction<Promise<WeiBig>>('flyoverPegin', constants.FLYOVER_PEGIN_ESTIMATE_QUOTE_MAX_FEE);
-    const account = useGetter<string>('web3Session', constants.SESSION_GET_CHECKSUMMED_ACCOUNT);
-    const calculateMaxFee = useAction('pegInTx', constants.PEGIN_CALCULATE_MAX_FEE);
+    const estimateMaxFlyover = useAction('flyoverPegin', constants.FLYOVER_PEGIN_ESTIMATE_MAX_VALUE);
+    const estimateMaxNative = useAction('pegInTx', constants.PEGIN_TX_ESTIMATE_MAX_VALUE);
 
     const boundaries = computed(() => {
       const minValue: SatoshiBig = new SatoshiBig(peginConfiguration.value.minValue, 'btc');
@@ -172,69 +173,31 @@ export default defineComponent({
       bitcoinAmountModel.value = minValue.toBTCTrimmedString();
     }
 
-    async function getFlyoverMaxBalanceMinusFeesBigIntString(
-      maxTransactionValue: WeiBig,
-      accountBalance: WeiBig,
-      maxFeeWeiBig: WeiBig,
-    ) {
-      const fullMaxFee = await flyoverEstimateGasFee({
-        maxFlyoverTxValue: maxTransactionValue,
-        callEoaOrContractAddress: account.value || generateMockRSKAddress(),
-      }) as WeiBig;
+    function setMax() {
+      loadingMax.value = true;
+      let maxNative = new SatoshiBig(0, 'satoshi');
+      let maxFlyover = new SatoshiBig(0, 'satoshi');
 
-      const balanceMinusFlyoverFees = accountBalance.minus(fullMaxFee).minus(maxFeeWeiBig);
-      let bigIntBalanceMinusFlyoverFees = toWeiBigIntString(balanceMinusFlyoverFees.toRBTCString());
-      if (bigIntBalanceMinusFlyoverFees === '0') bigIntBalanceMinusFlyoverFees = constants.BIGGEST_BIG_INT.toString();
+      estimateMaxNative()
+        .then((maxNativeValue) => {
+          maxNative = maxNativeValue as SatoshiBig;
+          return props.flyoverAvailable
+            ? estimateMaxFlyover() : Promise.resolve();
+        })
+        .then((maxFlyoverValue) => {
+          maxFlyover = maxFlyoverValue as SatoshiBig;
+          loadingMax.value = false;
+        })
+        .catch(() => { loadingMax.value = false; })
+        .finally(() => {
+          loadingMax.value = false;
 
-      return bigIntBalanceMinusFlyoverFees;
-    }
+          maxValue.value = props.flyoverAvailable
+            ? maxFlyover.toBTCTrimmedString()
+            : maxNative.toBTCTrimmedString();
 
-    async function getMaxFlyover(maxFee: SatoshiBig) {
-      const lpId = EnvironmentAccessorService.getEnvironmentVariables().flyoverProviderId;
-
-      const provider = liquidityProviders.value.find((p) => p.id === lpId);
-      const availableLiquidity = provider?.pegin.availableLiquidity || new WeiBig(0, 'wei');
-      const maxTransactionValue = provider?.pegin.maxTransactionValue || new WeiBig(0, 'wei');
-
-      let bigIntAvailableLiquidity = toWeiBigIntString(availableLiquidity?.toRBTCString() || '0');
-      if (bigIntAvailableLiquidity === '0') bigIntAvailableLiquidity = constants.BIGGEST_BIG_INT.toString();
-
-      let bigIntMaxTransactionValue = toWeiBigIntString(maxTransactionValue?.toRBTCString());
-      if (bigIntMaxTransactionValue === '0') bigIntMaxTransactionValue = constants.BIGGEST_BIG_INT.toString();
-
-      const accountBalance = new WeiBig(toWeiBigIntString(selectedAccountBalance.value.toBTCString()), 'wei');
-
-      const maxFeeWeiBig = new WeiBig(toWeiBigIntString(maxFee.toBTCString()), 'wei');
-
-      const bigIntBalanceMinusFlyoverFees = await getFlyoverMaxBalanceMinusFeesBigIntString(
-        maxTransactionValue,
-        accountBalance,
-        maxFeeWeiBig,
-      );
-      return [
-        BigInt(bigIntAvailableLiquidity),
-        BigInt(bigIntMaxTransactionValue),
-        BigInt(bigIntBalanceMinusFlyoverFees),
-      ].reduce((min, current) => (current < min ? current : min));
-    }
-
-    function getMaxNative(maxFee: SatoshiBig) {
-      const balanceMinusNativeFee = selectedAccountBalance.value.minus(maxFee);
-      let bigIntBalanceMinusNativeFee = toWeiBigIntString(balanceMinusNativeFee.toBTCString());
-      if (bigIntBalanceMinusNativeFee === '0') bigIntBalanceMinusNativeFee = constants.BIGGEST_BIG_INT.toString();
-      return bigIntBalanceMinusNativeFee;
-    }
-
-    async function setMax() {
-      const maxFee = await calculateMaxFee().catch(() => new SatoshiBig(0, 'satoshi')) as SatoshiBig;
-      const maxValue = props.flyoverAvailable
-        ? await getMaxFlyover(maxFee) : getMaxNative(maxFee);
-
-      const satoshiMaxValue = new SatoshiBig(
-        bigIntToUserFormattedWei(maxValue.toString()),
-        'btc',
-      );
-      bitcoinAmountModel.value = satoshiMaxValue.toBTCTrimmedString();
+          bitcoinAmountModel.value = maxValue.value;
+        });
     }
 
     watch(selectedAccountBalance, () => {
@@ -253,6 +216,9 @@ export default defineComponent({
       amountErrorMessage,
       setMin,
       setMax,
+      maxValue,
+      loadingMax,
+      focus,
     };
   },
 });

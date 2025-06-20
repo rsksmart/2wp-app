@@ -103,4 +103,7 @@ export const mutations: MutationTree<PegInTxState> = {
       });
     }
   },
+  [constants.PEGIN_TX_SET_MAX_FEE]: (state, maxFee: SatoshiBig) => {
+    state.maxFee = maxFee;
+  },
 };
