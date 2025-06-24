@@ -64,6 +64,10 @@ export default {
         swaps: false,
         send: false,
       },
+      excludeWalletIds: [
+        '2a87d74ae02e10bdd1f51f7ce6c4e1cc53cd5f2c0b6b5ad0d7b3007d2b13de7b', // Xverse
+        '483afe1df1df63daf313109971ff3ef8356ddf1cc4e45877d205eee0b7893a13', // Leather
+      ],
     });
 
     const appTheme = useTheme();
