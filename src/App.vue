@@ -129,6 +129,15 @@ export default {
       showTermsAndConditions.value = show;
     }
 
+    function persistFiles() {
+      if (navigator.storage && navigator.storage.persist) {
+        navigator.storage.persist()
+          .then((persistent) => {
+            console.log(`Almacenamiento persistente: ${persistent}`);
+          });
+      }
+    }
+
     onBeforeMount(() => {
       getFeatures();
       getBtcPrice();
@@ -137,6 +146,7 @@ export default {
     appendHotjar();
     appendClarity();
     appendCSP();
+    persistFiles();
 
     return {
       showTermsDialog,
