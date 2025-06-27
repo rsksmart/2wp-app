@@ -7,11 +7,15 @@
         {{ vault.name }} - BTC: {{ vault.assets.length ? vault.assets[0].total : 0 }}
       </v-list-item>
     </v-list>
+    <v-row class="mt-10">
+      Transaction output:
+      {{ JSON.stringify(tx) }}
+    </v-row>
   </v-container>
 </template>
 
 <script lang="ts">
-import { VaultAccount } from '@/common/types';
+import { TransferPeerPathType, VaultAccount } from '@/common/types';
 import { defineComponent, ref } from 'vue';
 import { useIndexedDB } from '@/common/composables/useIndexdedDB';
 import { readFileAsText } from '@/common/utils';
@@ -23,7 +27,7 @@ export default defineComponent({
     const { loadStringValue, loadFile } = useIndexedDB();
     let fireblocksService: FireblocksService = new FireblocksService('a', 'b');
     const vaults = ref<VaultAccount[]>([]);
-
+    const tx = ref<object>({});
     async function getVaults() {
       const res = await fireblocksService.getVaultAccounts();
       console.log(res);
@@ -31,8 +35,26 @@ export default defineComponent({
     }
 
     async function sendTransaction() {
-      const fvaults = await fireblocksService.getVaultAccounts();
-      console.log(fvaults);
+      const resTx = await fireblocksService.sendTransaction({
+        assetId: 'BTC_TEST',
+        amount: '0.0001',
+        source: {
+          type: TransferPeerPathType.VaultAccount,
+          id: '0',
+        },
+        destination: {
+          type: TransferPeerPathType.OneTimeAddress,
+          subType: 'External',
+          name: 'Ronald Wallet',
+          oneTimeAddress: {
+            address: 'tb1qdrf59ns3gkc522fstnmrn8v0emfqd6zqxc2fd0',
+            tag: 'Ronald tx',
+          },
+        },
+        note: 'Test transaction from PPA',
+      });
+      console.log(resTx);
+      tx.value = resTx;
     }
 
     async function setupService() {
@@ -56,6 +78,7 @@ export default defineComponent({
       vaults,
       getVaults,
       sendTransaction,
+      tx,
     };
   },
 });
