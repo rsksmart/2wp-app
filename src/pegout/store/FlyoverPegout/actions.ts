@@ -11,7 +11,7 @@ import {
 } from '@/common/utils';
 import { ApiService } from '@/common/services';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
-import { providers } from 'ethers';
+import { BigNumber, providers } from 'ethers';
 import { AcceptedPegoutQuote } from '@rsksmart/flyover-sdk';
 
 export const actions: ActionTree<FlyoverPegoutState, RootState> = {
@@ -313,7 +313,10 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
             ? gasPriceResult.value : 24000000;
           const gas = gasResult.status === constants.FULFILLED ? gasResult.value : 21000;
           const maxQuoteFee = feeResult.status === constants.FULFILLED ? feeResult.value : new WeiBig(0, 'wei');
-          const gasFee = new WeiBig(Number(gasPrice) * Number(gas), 'wei');
+          const gasFee = new WeiBig(
+            BigNumber.from(gasPrice).toNumber() * BigNumber.from(gas).toNumber(),
+            'wei',
+          );
           const fullFee = maxQuoteFee.plus(gasFee);
 
           const balance = rootState.web3Session?.balance || new WeiBig(0, 'wei');

@@ -5,6 +5,7 @@ import * as constants from '@/common/store/constants';
 import store from '@/common/store';
 import sinon from 'sinon';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import { BigNumber } from 'ethers';
 
 describe('TrezorTxBuilder', () => {
   let trezorTxBuilder: TrezorTxBuilder;
@@ -84,7 +85,7 @@ describe('TrezorTxBuilder', () => {
         expect(output.amount).toBe('0');
       } else {
         expect(output.script_type).toBe('PAYTOADDRESS');
-        expect(Number(output.amount)).toBeGreaterThan(0);
+        expect(BigNumber.from(output.amount).toNumber()).toBeGreaterThan(0);
       }
     });
   });

@@ -9,6 +9,7 @@ import ApiService from '@/common/services/ApiService';
 import store from '@/common/store';
 import { WalletAddress } from '@/common/types/pegInTx';
 import { UnusedAddressesService } from '@/pegin/services';
+import { BigNumber } from 'ethers';
 
 export default abstract class TxBuilder {
   protected coin!: AppNetwork;
@@ -87,7 +88,10 @@ export default abstract class TxBuilder {
           txBuilder.addOutput(script.output, 0);
         }
       } else if (normalizedOutput.address) {
-        txBuilder.addOutput(normalizedOutput.address, Number(normalizedOutput.amount));
+        txBuilder.addOutput(
+          normalizedOutput.address,
+          BigNumber.from(normalizedOutput.amount).toNumber(),
+        );
       }
     });
     return txBuilder.buildIncomplete()
