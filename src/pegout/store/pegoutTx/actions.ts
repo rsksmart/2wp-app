@@ -8,7 +8,7 @@ import { EnvironmentAccessorService } from '@/common/services/enviroment-accesso
 import {
   getCookie, getEstimatedFee, sendTransaction, setCookie, ServiceError,
 } from '@/common/utils';
-import { providers } from 'ethers';
+import { BigNumber, providers } from 'ethers';
 
 export const actions: ActionTree<PegOutTxState, RootState> = {
   [constants.PEGOUT_TX_SELECT_FEE_LEVEL]: ({ commit }, feeLevel: MiningSpeedFee) => {
@@ -28,8 +28,11 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
         value: state.amountToTransfer.toWeiString(),
       });
       commit(constants.PEGOUT_TX_SET_GAS, gas);
-      const gasPrice = Number(await ethersProvider.getGasPrice());
-      const calculatedFee = new WeiBig(gasPrice * Number(gas), 'wei');
+      const gasPrice = BigNumber.from(await ethersProvider.getGasPrice()).toNumber();
+      const calculatedFee = new WeiBig(
+        gasPrice * BigNumber.from(gas).toNumber(),
+        'wei',
+      );
       commit(constants.PEGOUT_TX_SET_RSK_ESTIMATED_FEE, calculatedFee);
     } catch (e) {
       commit(constants.PEGOUT_TX_SET_GAS, 0);
@@ -78,7 +81,10 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
           .then(([tx, gasPrice]) => {
             commit(
               constants.PEGOUT_TX_SET_EFECTIVE_FEE,
-              new WeiBig(Number(gasPrice) * Number(tx.gasUsed), 'wei'),
+              new WeiBig(
+                BigNumber.from(gasPrice).toNumber() * BigNumber.from(tx.gasUsed).toNumber(),
+                'wei',
+              ),
             );
           })
           .catch((e) => {
@@ -97,7 +103,7 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
   [constants.PEGOUT_TX_ADD_BITCOIN_PRICE]: ({ commit }) => {
     const storedPrice = getCookie('BtcPrice');
     if (storedPrice) {
-      commit(constants.PEGOUT_TX_SET_BITCOIN_PRICE, Number(storedPrice));
+      commit(constants.PEGOUT_TX_SET_BITCOIN_PRICE, BigNumber.from(storedPrice).toNumber());
     } else {
       axios.get(constants.COINGECKO_API_URL)
         .then((response: AxiosResponse) => {

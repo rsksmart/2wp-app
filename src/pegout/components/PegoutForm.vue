@@ -72,7 +72,7 @@
               :quote-differences="actualDiffPercentage"
             />
           </v-row>
-          <v-row no-gutters class="mt-5d-flex justify-end">
+          <v-row no-gutters class="mt-5 d-flex justify-end">
             <v-btn-rsk v-if="!pegOutFormState.matches(['loading'])"
             @click="sendTx(false)"
             :disabled="!isValid || pegOutFormState.matches(['goingHome'])"

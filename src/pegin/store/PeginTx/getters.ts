@@ -5,6 +5,7 @@ import { EnvironmentAccessorService } from '@/common/services/enviroment-accesso
 import SatoshiBig from '@/common/types/SatoshiBig';
 import { WalletService } from '@/common/services';
 import { getBalanceFromUtxoList } from '@/common/utils';
+import { BigNumber } from 'ethers';
 
 export const getters: GetterTree<PegInTxState, RootState> = {
   [constants.WALLET_NAME]: (state) => {
@@ -133,10 +134,10 @@ export const getters: GetterTree<PegInTxState, RootState> = {
         }
       } else {
         const inputsAmonut = state.normalizedTx.inputs
-          .map((input) => Number(input.amount))
+          .map((input) => BigNumber.from(input.amount).toNumber())
           .reduce((prevAmount, currAmount) => prevAmount + currAmount);
         const outputsAmount = state.normalizedTx.outputs
-          .map((output) => Number(output.amount))
+          .map((output) => BigNumber.from(output.amount).toNumber())
           .reduce((prevAmount, currAmount) => prevAmount + currAmount);
         fee = new SatoshiBig(inputsAmonut - outputsAmount, 'satoshi');
       }

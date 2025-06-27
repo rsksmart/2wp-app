@@ -5,6 +5,7 @@ import ApiService from '@/common/services/ApiService';
 import sinon from 'sinon';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import LedgerTransportService from '@/common/services/LedgerTransportService';
+import { BigNumber } from 'ethers';
 import MockLedgerTransportService from '../../../utils/MockLedgerTransportService';
 
 describe('LedgerTxBuilder', () => {
@@ -73,7 +74,7 @@ describe('LedgerTxBuilder', () => {
       } else {
         expect(['2N3JQb9erL1SnAr3NTMrZiPQQ8dcjJp4idV', 'tb1q94rcex3msq7tdn5m6fsmkl9xlzk2l6m3zxzlvn'])
           .toContain(output.address);
-        expect(Number(output.amount)).toBeGreaterThan(0);
+        expect(BigNumber.from(output.amount).toNumber()).toBeGreaterThan(0);
       }
     });
   });
