@@ -78,6 +78,12 @@
         </div>
       </v-col>
     </v-row>
+    <v-row>
+      <v-col>
+        <v-btn @click="toSetupIBI">Setup IBI</v-btn>
+        <v-btn @click="toIBIConsole">IBI Console</v-btn>
+      </v-col>
+    </v-row>
   </v-container>
   <web3-wallet-dialog v-model="showWeb3Modal"
     @cancel="connectError" @selected-wallet="selectWeb3WalletType" />
@@ -230,6 +236,14 @@ export default {
       showBtcModal.value = false;
     }
 
+    function toSetupIBI() {
+      router.push({ name: 'SetUpIBI' });
+    }
+
+    function toIBIConsole() {
+      router.push({ name: 'IBIConsole' });
+    }
+
     getBtcPrice();
     clearPegin();
     disconnectReown();
@@ -258,6 +272,8 @@ export default {
       connectError,
       selectWeb3WalletType,
       continueToForm,
+      toSetupIBI,
+      toIBIConsole,
     };
   },
 };

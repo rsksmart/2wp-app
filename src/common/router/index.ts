@@ -116,6 +116,16 @@ const routes: Readonly<RouteRecordRaw[]> = [
       }
     },
   },
+  {
+    path: '/setupIBi',
+    name: 'SetUpIBI',
+    component: () => import(/* webpackChunkName: "IBIS" */ '../../pegin/views/SetUpIBI.vue'),
+  },
+  {
+    path: '/IBIConsole',
+    name: 'IBIConsole',
+    component: () => import(/* webpackChunkName: "IBIS" */ '../../pegin/views/IBIConsole.vue'),
+  },
 ];
 
 const history = createWebHistory(EnvironmentAccessorService.getEnvironmentVariables().baseUrl);
