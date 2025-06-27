@@ -7,6 +7,7 @@ import {
 import * as bitcoin from 'bitcoinjs-lib';
 import * as constants from '@/common/store/constants';
 import { getP2SHRedeemScript, validateAddress } from '@/common/utils';
+import { BigNumber } from 'ethers';
 import TxBuilder from './TxBuilder';
 
 export default class XverseTxBuilder extends TxBuilder {
@@ -29,7 +30,7 @@ export default class XverseTxBuilder extends TxBuilder {
             } else if (normalizedOutput.address) {
               psbt.addOutput({
                 address: normalizedOutput.address,
-                value: Number(normalizedOutput.amount),
+                value: BigNumber.from(normalizedOutput.amount).toNumber(),
               });
             }
           });

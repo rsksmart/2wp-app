@@ -19,6 +19,7 @@ import { EnvironmentAccessorService } from '@/common/services/enviroment-accesso
 import { ApiInformation } from '@/common/types/ApiInformation';
 import { BlockbookUtxo } from '@/pegin/types/services';
 import { AddressInfo } from '@/pegin/types';
+import { BigNumber } from 'ethers';
 
 export default class ApiService {
   static get baseURL(): string {
@@ -106,10 +107,10 @@ export default class ApiService {
             reject(new Error('Invalid input list on the created Transaction'));
           }
           const inputsSum = normalizedTx.inputs
-            .map((input) => Number(input.amount))
+            .map((input) => BigNumber.from(input.amount).toNumber())
             .reduce((prevAmount, currAmount) => prevAmount + currAmount);
           const outputsSum = normalizedTx.outputs
-            .map((output) => Number(output.amount))
+            .map((output) => BigNumber.from(output.amount).toNumber())
             .reduce((prevAmount, currAmount) => prevAmount + currAmount);
           const feeToPay = new SatoshiBig(inputsSum - outputsSum, 'satoshi');
           if (feeToPay.gt(feeAmountCalculated)) {

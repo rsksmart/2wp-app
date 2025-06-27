@@ -20,6 +20,7 @@ import {
 } from '@/common/utils';
 import PeginConfigurationService from '@/pegin/services/peginConfigurationService';
 import ReownService from '@/common/services/ReownService';
+import { BigNumber } from 'ethers';
 import TxFeeService from '../../services/TxFeeService';
 
 export const actions: ActionTree<PegInTxState, RootState> = {
@@ -86,7 +87,7 @@ export const actions: ActionTree<PegInTxState, RootState> = {
   [constants.PEGIN_TX_ADD_BITCOIN_PRICE]: ({ commit }) => {
     const storedPrice = getCookie('BtcPrice');
     if (storedPrice) {
-      commit(constants.PEGIN_TX_SET_BITCOIN_PRICE, Number(storedPrice));
+      commit(constants.PEGIN_TX_SET_BITCOIN_PRICE, BigNumber.from(storedPrice).toNumber());
     } else {
       axios.get(constants.COINGECKO_API_URL)
         .then((response: AxiosResponse) => {
@@ -130,7 +131,7 @@ export const actions: ActionTree<PegInTxState, RootState> = {
       if (!selectedBalance.gt(0)) {
         return;
       }
-      const amount = Number(state.amountToTransfer.toSatoshiString());
+      const amount = BigNumber.from(state.amountToTransfer.toSatoshiString()).toNumber();
       if (amount === 0) {
         return;
       }

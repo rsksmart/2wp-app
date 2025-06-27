@@ -5,6 +5,7 @@ import {
 } from '@/common/types';
 import { remove0x, validateAddress } from '@/common/utils';
 import * as constants from '@/common/store/constants';
+import { BigNumber } from 'ethers';
 
 export default class PeginTxService {
   private static getRskOutput(recipientAddress: string, refundAddress: string): NormalizedOutput {
@@ -77,7 +78,7 @@ export default class PeginTxService {
       EnvironmentAccessorService.getEnvironmentVariables().burnDustValue,
       constants.BURN_DUST_MAX_VALUE,
     );
-    if (Number(changeOutput.amount) > burnDustValue) {
+    if (BigNumber.from(changeOutput.amount).toNumber() > burnDustValue) {
       normalizedTx.outputs.push(changeOutput);
     }
     return normalizedTx;
