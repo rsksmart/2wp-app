@@ -19,12 +19,18 @@ export function useIndexedDB() {
   }
 
   async function saveFile(name: string, blob: Blob) {
-    console.log('saving file', name);
     const db = await openDB();
     const tx = db.transaction(storeName, 'readwrite');
     const store = tx.objectStore(storeName);
-    const key = await store.put({ name, content: blob });
-    console.log('key', key);
+    await store.put({ name, content: blob });
+    return tx.commit();
+  }
+
+  async function saveStringValue(name: string, value: string) {
+    const db = await openDB();
+    const tx = db.transaction(storeName, 'readwrite');
+    const store = tx.objectStore(storeName);
+    await store.put({ name, content: value, type: 'string' });
     return tx.commit();
   }
 
@@ -44,5 +50,29 @@ export function useIndexedDB() {
     });
   }
 
-  return { saveFile, loadFile };
+  async function loadStringValue(name: string): Promise<string | null> {
+    const db = await openDB();
+    const tx = db.transaction(storeName, 'readonly');
+    const store = tx.objectStore(storeName);
+    const request = store.get(name);
+
+    return new Promise((resolve) => {
+      request.onsuccess = () => {
+        const { result } = request;
+        if (result?.type === 'string') {
+          resolve(result.content);
+        } else {
+          resolve(null);
+        }
+      };
+      request.onerror = () => resolve(null);
+    });
+  }
+
+  return {
+    saveFile,
+    loadFile,
+    saveStringValue,
+    loadStringValue,
+  };
 }
