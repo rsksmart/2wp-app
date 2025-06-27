@@ -1,4 +1,4 @@
-import { VaultAccount } from '@/common/types';
+import { FireblocksTransactionParams, VaultAccount } from '@/common/types';
 import axios from 'axios';
 
 export default class FireblocksService {
@@ -16,7 +16,6 @@ export default class FireblocksService {
 
   // eslint-disable-next-line class-methods-use-this
   public async getVaultAccounts(): Promise<Array<VaultAccount>> {
-    console.log('attempting to request something');
     const encodedSecretKey = btoa(this.cert);
     const res = await axios.post('http://localhost:3000/fireblocks/vaults', {
       apiKey: this.apiKey,
@@ -27,5 +26,15 @@ export default class FireblocksService {
       },
     });
     return Promise.resolve(res.data.vaults);
+  }
+
+  public async sendTransaction(params: FireblocksTransactionParams) {
+    const encodedSecretKey = btoa(this.cert);
+    const res = await axios.post('http://localhost:3000/fireblocks/transaction', {
+      apiKey: this.apiKey,
+      cert: encodedSecretKey,
+      payload: params,
+    });
+    return Promise.resolve(res);
   }
 }
