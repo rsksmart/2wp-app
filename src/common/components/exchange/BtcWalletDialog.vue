@@ -6,7 +6,7 @@
         <v-card class="pt-5 rounded-s-lg" min-height="500">
           <v-card-title class="d-flex align-center mt-6">
             <v-row class="d-flex justify-center align-center">
-              <span class="font-weight-bold the-text-h5">
+              <span class="font-weight-bold the-text-h5 bg-purple">
                 Select your wallet
               </span>
             </v-row>
@@ -18,11 +18,12 @@
                 <v-btn variant="text" class="border-box d-block h-auto pa-5"
                   @click="selectWalletType(constants.WalletTypes.SOFTWARE)">
                   <v-row class="d-flex align-center justify-start wallet-btn">
-                    <v-col class="bg-bw-400 w-100 h-100 pa-4">
+                    <v-col class="bg-bw-400 w-100 h-100 pa-4" style="border-radius: 16px;">
                       <v-icon color="off-white" :icon="mdiCellphoneLink" size="40"></v-icon>
                     </v-col>
                     <v-col>
-                      <span class="wallet-btn-label mx-4 text-body-1 font-weight-bold text-bw-500">
+                      <span class="wallet-btn-label mx-4
+                      text-body-1 font-weight-bold text-w-500 bg-orange">
                       Software Wallet
                       </span>
                     </v-col>
@@ -33,11 +34,12 @@
                 <v-btn variant="text" class="border-box d-block h-auto pa-5"
                   @click="selectWalletType(constants.WalletTypes.HARDWARE)">
                   <v-row class="d-flex align-center wallet-btn justify-start">
-                    <v-col class="bg-bw-400 w-100 h-100 pa-4">
+                    <v-col class="bg-bw-400 w-100 h-100 pa-4" style="border-radius: 16px;">
                       <v-icon color="off-white" :icon="mdiUsbFlashDriveOutline" size="40"></v-icon>
                     </v-col>
                     <v-col>
-                      <span class="wallet-btn-label mx-4 text-body-1 font-weight-bold text-bw-500">
+                      <span class="wallet-btn-label mx-4 text-body-1
+                      font-weight-bold text-w-500 bg-green">
                       Hardware Wallet
                       </span>
                     </v-col>
@@ -64,7 +66,7 @@
                     border-sm border-background rounded-lg">
                   <v-col cols="10" class="d-flex justify-start align-center">
                     <span class="mx-4 text-subtitle-1 wallet-btn-label
-                      justify-start text-bw-500">
+                      justify-start text-w-500">
                     {{ wallet.name }}
                     </span>
                   </v-col>
@@ -93,7 +95,7 @@
                     border-sm border-background rounded-lg">
                   <v-col cols="10" class="d-flex justify-start align-center">
                       <span class="mx-4 text-subtitle-1 wallet-btn-label
-                        justify-start text-bw-500">
+                        justify-start text-w-500">
                       {{ wallet.name }}
                       </span>
                   </v-col>
