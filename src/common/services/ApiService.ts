@@ -107,12 +107,12 @@ export default class ApiService {
             reject(new Error('Invalid input list on the created Transaction'));
           }
           const inputsSum = normalizedTx.inputs
-            .map((input) => BigNumber.from(input.amount).toNumber())
-            .reduce((prevAmount, currAmount) => prevAmount + currAmount);
+            .map((input) => BigNumber.from(input.amount))
+            .reduce((prevAmount, currAmount) => prevAmount.add(currAmount));
           const outputsSum = normalizedTx.outputs
-            .map((output) => BigNumber.from(output.amount).toNumber())
-            .reduce((prevAmount, currAmount) => prevAmount + currAmount);
-          const feeToPay = new SatoshiBig(inputsSum - outputsSum, 'satoshi');
+            .map((output) => BigNumber.from(output.amount))
+            .reduce((prevAmount, currAmount) => prevAmount.add(currAmount));
+          const feeToPay = new SatoshiBig(inputsSum.sub(outputsSum).toString(), 'satoshi');
           if (feeToPay.gt(feeAmountCalculated)) {
             reject(new Error('There was an unexpected increase of the calculated fee'));
           }

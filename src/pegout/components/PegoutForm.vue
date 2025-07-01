@@ -375,7 +375,7 @@ export default defineComponent({
             : pegOutTxState.value.txHash,
           amount: SatoshiBig.fromWeiBig(valueToReceive.value).toSatoshiString(),
           confirmations: type === TxStatusType.FLYOVER_PEGOUT.toLowerCase()
-            ? selectedQuote.value.quote.depositConfirmations : 0,
+            ? Number(selectedQuote.value.quote.depositConfirmations) : 0,
         },
       });
       clearWallets();
