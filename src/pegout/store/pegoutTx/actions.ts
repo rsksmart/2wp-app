@@ -28,9 +28,9 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
         value: state.amountToTransfer.toWeiString(),
       });
       commit(constants.PEGOUT_TX_SET_GAS, gas);
-      const gasPrice = BigNumber.from(await ethersProvider.getGasPrice()).toNumber();
+      const gasPrice = await ethersProvider.getGasPrice();
       const calculatedFee = new WeiBig(
-        gasPrice * BigNumber.from(gas).toNumber(),
+        BigNumber.from(gasPrice).mul(BigNumber.from(gas)).toNumber(),
         'wei',
       );
       commit(constants.PEGOUT_TX_SET_RSK_ESTIMATED_FEE, calculatedFee);
@@ -82,7 +82,7 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
             commit(
               constants.PEGOUT_TX_SET_EFECTIVE_FEE,
               new WeiBig(
-                BigNumber.from(gasPrice).toNumber() * BigNumber.from(tx.gasUsed).toNumber(),
+                BigNumber.from(gasPrice).mul(BigNumber.from(tx.gasUsed)).toNumber(),
                 'wei',
               ),
             );

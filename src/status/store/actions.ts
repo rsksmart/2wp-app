@@ -78,11 +78,12 @@ export const actions: ActionTree<TxStatus, RootState> = {
             ]);
           })
           .then(([currentBlock, nextPegoutCreationBlock]) => {
-            const estimatedBlocksLeft = nextPegoutCreationBlock
-            + constants.PEGOUT_REQUIRED_CONFIRMATIONS
-            + constants.PEGOUT_SIGNING_BLOCKS_GAP - BigNumber.from(currentBlock).toNumber();
-            const estimatedMinutes = estimatedBlocksLeft
-            * ((365.25 * 1440) / constants.BLOCKS_PER_YEAR);
+            const estimatedBlocksLeft = BigNumber.from(nextPegoutCreationBlock)
+              .add(BigNumber.from(constants.PEGOUT_REQUIRED_CONFIRMATIONS))
+              .add(BigNumber.from(constants.PEGOUT_SIGNING_BLOCKS_GAP))
+              .sub(BigNumber.from(currentBlock));
+            const estimatedMinutes = estimatedBlocksLeft.toNumber()
+              * ((365.25 * 1440) / constants.BLOCKS_PER_YEAR);
             commit(constants.STATUS_SET_ESTIMATED_RELEASE_TIME_IN_MINUTES, moment.duration(estimatedMinutes, 'minutes'));
           })
           .catch(reject);

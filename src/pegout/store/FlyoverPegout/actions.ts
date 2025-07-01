@@ -314,7 +314,7 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
           const gas = gasResult.status === constants.FULFILLED ? gasResult.value : 21000;
           const maxQuoteFee = feeResult.status === constants.FULFILLED ? feeResult.value : new WeiBig(0, 'wei');
           const gasFee = new WeiBig(
-            BigNumber.from(gasPrice).toNumber() * BigNumber.from(gas).toNumber(),
+            BigNumber.from(gasPrice).mul(BigNumber.from(gas)).toNumber(),
             'wei',
           );
           const fullFee = maxQuoteFee.plus(gasFee);

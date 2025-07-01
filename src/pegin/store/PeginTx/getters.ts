@@ -134,12 +134,12 @@ export const getters: GetterTree<PegInTxState, RootState> = {
         }
       } else {
         const inputsAmonut = state.normalizedTx.inputs
-          .map((input) => BigNumber.from(input.amount).toNumber())
-          .reduce((prevAmount, currAmount) => prevAmount + currAmount);
+          .map((input) => BigNumber.from(input.amount))
+          .reduce((prevAmount, currAmount) => prevAmount.add(currAmount));
         const outputsAmount = state.normalizedTx.outputs
-          .map((output) => BigNumber.from(output.amount).toNumber())
-          .reduce((prevAmount, currAmount) => prevAmount + currAmount);
-        fee = new SatoshiBig(inputsAmonut - outputsAmount, 'satoshi');
+          .map((output) => BigNumber.from(output.amount))
+          .reduce((prevAmount, currAmount) => prevAmount.add(currAmount));
+        fee = new SatoshiBig(inputsAmonut.sub(outputsAmount).toString(), 'satoshi');
       }
       return fee;
     },
