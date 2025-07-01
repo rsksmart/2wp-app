@@ -183,7 +183,7 @@ export default defineComponent({
               : TxStatusType.PEGIN,
             amount: valueToReceive.value.toSatoshiString(),
             confirmations: type.value === constants.peginType.FLYOVER
-              ? selectedFlyoverQuote.value.quote.confirmations : 0,
+              ? Number(selectedFlyoverQuote.value.quote.confirmations) : 0,
           },
         });
         clearWallets();
