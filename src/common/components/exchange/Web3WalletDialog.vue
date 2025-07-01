@@ -19,11 +19,12 @@
             <v-btn variant="text" class="border-box d-block h-auto"
               @click="selectWallet(constants.WalletTypes.SOFTWARE)">
               <v-row class="d-flex align-center justify-start wallet-btn pa-5">
-                <v-col class="bg-bw-400 w-100 h-100 pa-4">
+                <v-col class="bg-bw-400 w-100 h-100 pa-4" style="border-radius: 16px;">
                   <v-icon color="off-white" :icon="mdiCellphoneLink" size="40"></v-icon>
                 </v-col>
                 <v-col>
-                  <span class="wallet-btn-label mx-4 text-body-1 font-weight-bold text-bw-500">
+                  <span class="wallet-btn-label mx-4 text-body-1
+                  font-weight-bold text-w-500 bg-orange">
                   Software Wallet
                   </span>
                 </v-col>
@@ -34,11 +35,12 @@
             <v-btn variant="text" class="border-box d-block h-auto"
               @click="selectWallet(constants.WalletTypes.HARDWARE)">
               <v-row class="d-flex align-center wallet-btn justify-start pa-5">
-                <v-col class="bg-bw-400 w-100 h-100 pa-4">
+                <v-col class="bg-bw-400 w-100 h-100 pa-4" style="border-radius: 16px;">
                   <v-icon color="off-white" :icon="mdiUsbFlashDriveOutline" size="40"></v-icon>
                 </v-col>
                 <v-col>
-                  <span class="wallet-btn-label mx-4 text-body-1 font-weight-bold text-bw-500">
+                  <span class="wallet-btn-label mx-4 text-body-1
+                  font-weight-bold text-w-500 bg-green">
                   Hardware Wallet
                   </span>
                 </v-col>
