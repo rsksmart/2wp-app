@@ -10,7 +10,7 @@ import * as constants from '@/common/store/constants';
 import { ApiService } from '@/common/services';
 import { BridgeService } from '@/common/services/BridgeService';
 import { getEstimatedFee, promiseWithTimeout } from '@/common/utils';
-import { BigNumber, ethers } from 'ethers';
+import { ethers } from 'ethers';
 
 export const actions: ActionTree<TxStatus, RootState> = {
   [constants.STATUS_CLEAR]: ({ commit }) => {
@@ -72,18 +72,15 @@ export const actions: ActionTree<TxStatus, RootState> = {
             if (!blockNumber) reject(new Error('The tx are not mined yet'));
             return Promise.all([
               provider.getBlockNumber(),
-              bridgeService.getNextPegoutCreationBlockAt(
-                BigNumber.from(blockNumber).toNumber() ?? 0,
-              ),
+              bridgeService.getNextPegoutCreationBlockAt(Number(blockNumber) ?? 0),
             ]);
           })
           .then(([currentBlock, nextPegoutCreationBlock]) => {
-            const estimatedBlocksLeft = BigNumber.from(nextPegoutCreationBlock)
-              .add(BigNumber.from(constants.PEGOUT_REQUIRED_CONFIRMATIONS))
-              .add(BigNumber.from(constants.PEGOUT_SIGNING_BLOCKS_GAP))
-              .sub(BigNumber.from(currentBlock));
-            const estimatedMinutes = estimatedBlocksLeft.toNumber()
-              * ((365.25 * 1440) / constants.BLOCKS_PER_YEAR);
+            const estimatedBlocksLeft = nextPegoutCreationBlock
+            + constants.PEGOUT_REQUIRED_CONFIRMATIONS
+            + constants.PEGOUT_SIGNING_BLOCKS_GAP - Number(currentBlock);
+            const estimatedMinutes = estimatedBlocksLeft
+            * ((365.25 * 1440) / constants.BLOCKS_PER_YEAR);
             commit(constants.STATUS_SET_ESTIMATED_RELEASE_TIME_IN_MINUTES, moment.duration(estimatedMinutes, 'minutes'));
           })
           .catch(reject);
