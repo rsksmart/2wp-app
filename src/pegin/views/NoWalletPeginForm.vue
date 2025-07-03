@@ -66,13 +66,6 @@
               :selected="selected === peginType.FLYOVER"
               :quote="quote" />
           </v-row>
-          <v-row no-gutters class="mt-4">
-            <pegin-option-card
-              :option-type="peginType.POWPEG"
-              @selected-option="changeSelectedOption"
-              :selected="selected === peginType.POWPEG"
-            />
-          </v-row>
           <v-row no-gutters class="d-flex justify-end mt-5">
             <v-col class="d-flex justify-end">
               <v-btn-rsk v-if="!pegInFormState.matches(['loading'])"
