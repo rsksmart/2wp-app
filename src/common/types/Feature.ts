@@ -9,6 +9,7 @@ export enum FeatureNames {
   WALLET_TREZOR = 'wallet_trezor',
   WALLET_LEDGER = 'wallet_ledger',
   WALLET_REOWN = 'wallet_reown',
+  WALLET_FIREBLOCKS = 'wallet_fireblocks',
 }
 
 export enum Browser {

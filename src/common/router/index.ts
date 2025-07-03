@@ -126,6 +126,11 @@ const routes: Readonly<RouteRecordRaw[]> = [
     name: 'IBIConsole',
     component: () => import(/* webpackChunkName: "IBIS" */ '../../pegin/views/IBIConsole.vue'),
   },
+  {
+    path: '/noWalletPegin',
+    name: 'NoWalletPegin',
+    component: () => import(/* webpackChunkName: "no-wallet-pegin" */ '../../pegin/views/NoWalletPeginForm.vue'),
+  },
 ];
 
 const history = createWebHistory(EnvironmentAccessorService.getEnvironmentVariables().baseUrl);
