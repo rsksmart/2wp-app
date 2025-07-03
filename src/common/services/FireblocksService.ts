@@ -9,15 +9,12 @@ import * as constants from '@/common/store/constants';
 export default class FireblocksService {
   private config: FireblocksLocalConfig;
 
-  private basePath: string;
-
   private apiUrl: string;
 
   private vaults: VaultAccount[] = [];
 
   constructor(config: FireblocksLocalConfig) {
     this.apiUrl = `${ApiService.baseURL}/fireblocks`;
-    this.basePath = 'https://api.fireblocks.io/v1';
     this.config = config;
   }
 
@@ -74,6 +71,6 @@ export default class FireblocksService {
       cert: encodedSecretKey,
       payload: params,
     });
-    return Promise.resolve(res);
+    return Promise.resolve(res.data);
   }
 }
