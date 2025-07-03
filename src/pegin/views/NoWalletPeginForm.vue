@@ -25,7 +25,7 @@
             density="comfortable"
             rounded="lg"
             class="text-h4 flex-grow-0 amount-input"
-            v-model="amount"
+            v-model="amountModel"
             type="text"
             :readonly="isComposing"
             @compositionstart="isComposing = true"
@@ -47,7 +47,7 @@
               </template>
           </v-text-field>
         </v-row>
-        <rsk-destination-address class="mb-8" @valid-address="checkValidAddress"
+          <rsk-destination-address class="mb-8 mt-8"
           :is-amount-filled="validAmount"/>
       </v-col>
       <v-col />
@@ -59,25 +59,7 @@
           <v-row no-gutters class="my-4">
             <span class="text-body-sm">Select mode to see exact amounts</span>
           </v-row>
-          <v-row no-gutters v-if="!flyoverIsEnabled && peginQuotes.length === 0">
-            <pegin-option-card :option-type="peginType.FLYOVER" flyover-not-available>
-              <template v-slot>
-                <h4>
-                  <span class="text-orange">Fast Mode</span> is unavailable at this time.
-                </h4>
-              </template>
-            </pegin-option-card>
-          </v-row>
-          <v-row no-gutters v-if="flyoverIsEnabled && peginQuotes.length === 0">
-            <pegin-option-card :option-type="peginType.FLYOVER" flyover-not-available>
-              <template v-slot>
-                <h4>
-                  <span class="text-orange">Fast Mode</span> no quotes available for this amount.
-                </h4>
-              </template>
-            </pegin-option-card>
-          </v-row>
-          <v-row no-gutters v-else v-for="(quote, index) in peginQuotes" :key="index">
+          <v-row no-gutters v-for="(quote, index) in peginQuotes" :key="index">
             <pegin-option-card
               :option-type="peginType.FLYOVER"
               @selected-option="changeSelectedOption"
@@ -94,8 +76,8 @@
           <v-row no-gutters class="d-flex justify-end mt-5">
             <v-col v-if="selected === peginType.FLYOVER">
               <v-btn-rsk
-                @click="sendTx"
-                :disabled="!isReadyToCreate || formState === 'loading'"
+                @click="sendTx()"
+                :disabled="!isReadyToCreate"
                 class="align-self-start text-body-1"
                 >
                 <template #append>
@@ -105,16 +87,16 @@
               </v-btn-rsk>
             </v-col>
             <v-col class="d-flex justify-end">
-              <v-btn-rsk v-if="isFillState"
-                @click="sendTx"
-                :disabled="!isReadyToCreate || formState === 'loading'"
+              <v-btn-rsk v-if="!pegInFormState.matches(['loading'])"
+                @click="sendTx()"
+                :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])"
                 class="align-self-end text-body-1">
                 <template #append>
                   <v-icon :icon="mdiArrowRight" />
                 </template>
-                Send to Fireblocks
+                Continue to Summary
               </v-btn-rsk>
-              <v-progress-circular v-else class="align-self-end" indeterminate />
+              <v-progress-circular class="align-self-end" v-else indeterminate />
             </v-col>
           </v-row>
         </template>
@@ -144,6 +126,7 @@
 import {
   computed, ref, defineComponent,
   watch,
+  onBeforeMount,
 } from 'vue';
 import {
   mdiArrowLeft,
@@ -162,21 +145,20 @@ import type PeginQuote from '@/common/types/Flyover/PeginQuote';
 import FireblocksService from '@/common/services/FireblocksService';
 import type { FireblocksTransactionParams } from '@/common/types/Fireblocks';
 import { TransferPeerPathType } from '@/common/types/Fireblocks';
-import { readFileAsText } from '@/common/utils';
+import { appendRecaptcha, Machine, readFileAsText } from '@/common/utils';
 import { useIndexedDB } from '@/common/composables/useIndexdedDB';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { useStateAttribute } from '@/common/store/helper';
-import { PeginConfiguration } from '@/common/types';
+import { useAction, useState, useStateAttribute } from '@/common/store/helper';
+import {
+  FlyoverPeginState, PeginConfiguration,
+  QuotePegIn2WP, TxStatusType,
+} from '@/common/types';
+import { FlyoverService } from '@/common/services';
+import { useRouter } from 'vue-router';
 import SetUpIbi from './SetUpIBI.vue';
 
 export default defineComponent({
   name: 'NoWalletPeginForm',
-  props: {
-    isFlyoverAvailable: {
-      type: Boolean,
-      required: true,
-    },
-  },
   components: {
     RskDestinationAddress,
     PeginOptionCard,
@@ -185,6 +167,7 @@ export default defineComponent({
   },
   emits: ['back', 'createTx'],
   setup(props, context) {
+    const pegInFormState = ref<Machine<'loading' | 'goingHome' | 'fill'>>(new Machine('fill'));
     const { loadStringValue, loadFile } = useIndexedDB();
     const formState = ref<'fill' | 'loading'>('fill');
     const loadingQuotes = ref(false);
@@ -192,45 +175,77 @@ export default defineComponent({
     const selectedQuote = ref<PeginQuote | undefined>(undefined);
     const showErrorDialog = ref(false);
     const txError = ref(new ServiceError('', '', '', ''));
-    const validAmount = ref(false);
     const amount = ref('');
-    const validAddress = ref(false);
-    const address = ref('');
     const vaultId = ref(0);
     const { peginType } = constants;
+    const router = useRouter();
     const peginConfiguration = useStateAttribute<PeginConfiguration>('pegInTx', 'peginConfiguration');
-    const peginQuotes = ref<PeginQuote[]>([ // Mock quotes
-      {
-        quoteHash: 'mock-quote-1',
-        getTotalTxAmount: (fee: SatoshiBig) => new SatoshiBig(0.01, 'btc').plus(fee),
-        valueToTransfer: new SatoshiBig(0.01, 'btc'),
-        providerFee: new SatoshiBig(0.0002, 'btc'),
-        getTotalQuoteFee: (fee: SatoshiBig) => new SatoshiBig(0.0002, 'btc').plus(fee),
-        quote: {
-          value: new SatoshiBig(0.01, 'btc'),
-          confirmations: 6,
-        },
-      } as unknown as PeginQuote,
-    ]);
+    const initFlyover = useAction('flyoverPegin', constants.FLYOVER_PEGIN_INIT);
+    const getPeginQuotes = useAction('flyoverPegin', constants.FLYOVER_PEGIN_GET_QUOTES);
+    const quotes = useStateAttribute<Record<number, QuotePegIn2WP[]>>('flyoverPegin', 'quotes');
+    const setBtcAmountFlyover = useAction('flyoverPegin', constants.FLYOVER_PEGIN_ADD_AMOUNT);
+    const flyoverPeginState = useState<FlyoverPeginState>('flyoverPegin');
+    const flyoverService = useStateAttribute<FlyoverService>('flyoverPegin', 'flyoverService');
     const fireblocksService = ref<FireblocksService>();
     const showSetUpIBI = ref(true);
 
     // UI logic
+    const validAmount = computed(() => Number(amount.value) > 0);
     const showOptions = computed(
-      () => !loadingQuotes.value && validAddress.value && validAmount.value,
+      () => !loadingQuotes.value && validAmount.value,
     );
-    const flyoverIsEnabled = computed(() => props.isFlyoverAvailable);
+    // TODO: Remove this to check if flyover is enabled
+    const flyoverIsEnabled = computed(() => true);
     const isReadyToCreate = computed(() => {
       if (!showOptions.value) return false;
       if (selected.value === peginType.POWPEG) {
-        return validAmount.value && validAddress.value;
+        return validAmount.value;
       }
       if (selected.value === peginType.FLYOVER) {
-        return validAmount.value && validAddress.value && selectedQuote.value;
+        return validAmount.value && selectedQuote.value;
       }
       return false;
     });
     const isFillState = computed(() => formState.value === 'fill');
+
+    const peginQuotes = computed(() => {
+      if (!flyoverIsEnabled.value) {
+        return [];
+      }
+      const quoteList: QuotePegIn2WP[] = [];
+      Object.values(quotes.value).forEach((providerQuotes) => {
+        providerQuotes.forEach((quote) => {
+          quoteList.push(quote);
+        });
+      });
+      return quoteList;
+    });
+
+    function getQuotes() {
+      if (!flyoverPeginState.value.rootstockRecipientAddress && Number(amount.value) === 0) return;
+      loadingQuotes.value = true;
+      getPeginQuotes({
+        rootstockRecipientAddress: flyoverPeginState.value.rootstockRecipientAddress,
+      })
+        .finally(() => {
+          loadingQuotes.value = false;
+        });
+    }
+
+    const timeOutId = ref(0);
+    const amountModel = computed({
+      get() {
+        return amount.value;
+      },
+      set(amountInformed: string) {
+        window.clearTimeout(timeOutId.value);
+        amount.value = amountInformed;
+        timeOutId.value = window.setTimeout(() => {
+          setBtcAmountFlyover(new SatoshiBig(amount.value, 'btc'));
+          getQuotes();
+        }, 600);
+      },
+    });
 
     // Methods
     function back() {
@@ -245,59 +260,58 @@ export default defineComponent({
       }
     }
 
-    function checkValidAddress(isValid: boolean, addressInformed: string) {
-      validAddress.value = isValid;
-      if (isValid && addressInformed !== address.value) {
-        address.value = addressInformed;
-      }
-    }
-
-    function checkValidAmount(isValid: boolean, amountInformed: string) {
-      validAmount.value = isValid;
-      if (isValid && amountInformed !== amount.value) {
-        amount.value = amountInformed;
-      }
-    }
-
     function changeSelectedOption(selectedType: peginType, quote?: PeginQuote) {
       selected.value = selectedType;
       selectedQuote.value = quote;
     }
 
-    function sendTx() {
+    function createTx(): Promise<void> {
+      if (!fireblocksService.value) return Promise.resolve();
       formState.value = 'loading';
-      try {
-        const params: FireblocksTransactionParams = {
-          assetId: 'BTC',
-          amount: amount.value,
-          source: {
-            type: TransferPeerPathType.VaultAccount,
-            id: String(vaultId.value),
+      const params: FireblocksTransactionParams = {
+        assetId: 'BTC_TEST',
+        amount: amount.value,
+        source: {
+          type: TransferPeerPathType.VaultAccount,
+          id: String(vaultId.value),
+        },
+        destination: {
+          type: TransferPeerPathType.OneTimeAddress,
+          subType: 'External',
+          name: 'LBC BTC Address',
+          oneTimeAddress: {
+            address: flyoverPeginState.value.rootstockRecipientAddress,
+            tag: '',
           },
-          destination: {
-            type: TransferPeerPathType.OneTimeAddress,
-            subType: '',
-            name: 'User BTC Address',
-            oneTimeAddress: {
-              address: address.value,
-              tag: '',
+        },
+        note: 'PPA Fireblocks Peg-in',
+      };
+      return fireblocksService.value.sendTransaction(params)
+        .then((res) => {
+          console.log('res', res);
+          router.push({
+            name: 'SuccessTx',
+            params: {
+              txId: res.id,
+              type: TxStatusType.FLYOVER_PEGIN,
+              amount: amount.value,
+              confirmations: 0,
             },
-          },
-          note: '2WP Fireblocks Peg-in',
-        };
-        fireblocksService.value?.sendTransaction(params)
-          .then((res) => {
-            context.emit('createTx', res);
-          })
-          .catch((e) => {
-            handleError(e);
-          })
-          .finally(() => {
-            formState.value = 'fill';
           });
-      } catch (e) {
-        handleError(e as Error);
-        formState.value = 'fill';
+        })
+        .catch((e) => {
+          handleError(e);
+        })
+        .finally(() => {
+          formState.value = 'fill';
+        });
+    }
+
+    function sendTx() {
+      if (flyoverIsEnabled.value && selected.value === constants.peginType.FLYOVER) {
+        window.grecaptcha.execute();
+      } else {
+        createTx();
       }
     }
 
@@ -339,15 +353,22 @@ export default defineComponent({
         e.preventDefault();
       }
     }
-
     function setMin() {
       const { minValue } = boundaries.value;
-      amount.value = minValue.toBTCTrimmedString();
+      amountModel.value = minValue.toBTCTrimmedString();
     }
 
     watch(isComposing, () => {
       const timeout = setTimeout(() => { isComposing.value = false; }, 200);
       return () => clearTimeout(timeout);
+    });
+
+    onBeforeMount(() => {
+      initFlyover()
+        .then(() => {
+          appendRecaptcha(flyoverService.value.siteKey);
+        });
+      window.onRecaptchaSuccess = createTx;
     });
 
     setupService();
@@ -356,16 +377,13 @@ export default defineComponent({
       formState,
       back,
       isReadyToCreate,
-      checkValidAmount,
-      checkValidAddress,
       validAmount,
-      validAddress,
       sendTx,
       changeSelectedOption,
       selected,
       showOptions,
       loadingQuotes,
-      peginQuotes: peginQuotes.value,
+      peginQuotes,
       peginType,
       showErrorDialog,
       txError,
@@ -383,6 +401,9 @@ export default defineComponent({
       setMin,
       boundaries,
       showSetUpIBI,
+      amountModel,
+      pegInFormState,
+      flyoverService,
     };
   },
 });

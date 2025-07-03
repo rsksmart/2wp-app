@@ -11,7 +11,7 @@
           :rules="fileRules"
           accept=".key"
           label="Select Key File"
-          prepend-icon="mdi-file-upload"
+          :prepend-icon="mdiFileUpload"
           variant="outlined"
           class="mb-4"
           :error-messages="fileError"
@@ -23,7 +23,7 @@
           label="API Key"
           variant="outlined"
           type="text"
-          prepend-icon="mdi-key"
+          :prepend-icon="mdiKey"
           class="mb-6"
           :error-messages="apiKeyError"
           @update:model-value="validateApiKey"
@@ -62,7 +62,7 @@ import {
   defineComponent, ref,
   computed, watch,
 } from 'vue';
-import { mdiArrowRight } from '@mdi/js';
+import { mdiArrowRight, mdiFileUpload, mdiKey } from '@mdi/js';
 import { useIndexedDB } from '@/common/composables/useIndexdedDB';
 
 export default defineComponent({
@@ -176,6 +176,8 @@ export default defineComponent({
       validateApiKey,
       handleSubmit,
       mdiArrowRight,
+      mdiFileUpload,
+      mdiKey,
       successMessage,
       closeDialog,
       onDialogClose,
