@@ -7,6 +7,12 @@ export interface VaultAccount {
   }>;
 }
 
+export interface FireblocksLocalConfig {
+  apiKey: string;
+  cert: string;
+  vaultId: number;
+}
+
 export enum TransferPeerPathType {
   VaultAccount = 'VAULT_ACCOUNT',
   ExchangeAccount = 'EXCHANGE_ACCOUNT',

@@ -1,70 +1,80 @@
 <template>
-  <v-container class="form">
-    <v-row no-gutters class="d-flex justify-center">
-      <v-col cols="6" class="d-flex space-between flex-column">
-        <v-card class="pa-6">
-          <v-card-title class="text-h5 mb-4">
-            Set Up IBI on Fireblocks
-          </v-card-title>
-
-          <v-form @submit.prevent="handleSubmit" class="my-10">
-            <v-file-input
-              v-model="selectedFile"
-              :rules="fileRules"
-              accept=".key"
-              label="Select Key File"
-              prepend-icon="mdi-file-upload"
-              variant="outlined"
-              class="mb-4"
-              :error-messages="fileError"
-              @update:model-value="validateFile"
-            />
-
-            <v-text-field
-              v-model="apiKey"
-              :rules="apiKeyRules"
-              label="API Key"
-              variant="outlined"
-              type="password"
-              prepend-icon="mdi-key"
-              class="mb-6"
-              :error-messages="apiKeyError"
-              @update:model-value="validateApiKey"
-            />
-
-            <v-row no-gutters class="d-flex justify-end">
-              <v-btn-rsk
-                @click="handleSubmit"
-                :disabled="!isFormValid || loading"
-                class="text-body-1"
-                :loading="loading"
-              >
-                <template #append>
-                  <v-icon :icon="mdiArrowRight" />
-                </template>
-                Submit Configuration
-              </v-btn-rsk>
-            </v-row>
-          </v-form>
-          <v-row class="d-flex justify-center mt-6 mb-6">
-            <span>
-              {{ successMessage }}
-            </span>
-          </v-row>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+  <v-dialog :model-value="modelValue" persistent max-width="600"
+    @update:model-value="onDialogClose">
+    <v-card class="pa-6">
+      <v-card-title class="text-h5 mb-4">
+        Set Up IBI on Fireblocks
+      </v-card-title>
+      <v-form @submit.prevent="handleSubmit" class="my-10">
+        <v-file-input
+          v-model="selectedFile"
+          :rules="fileRules"
+          accept=".key"
+          label="Select Key File"
+          prepend-icon="mdi-file-upload"
+          variant="outlined"
+          class="mb-4"
+          :error-messages="fileError"
+          @update:model-value="validateFile"
+        />
+        <v-text-field
+          v-model="apiKey"
+          :rules="apiKeyRules"
+          label="API Key"
+          variant="outlined"
+          type="text"
+          prepend-icon="mdi-key"
+          class="mb-6"
+          :error-messages="apiKeyError"
+          @update:model-value="validateApiKey"
+        />
+        <v-row no-gutters class="d-flex justify-end">
+          <v-btn-rsk
+            @click="handleSubmit"
+            :disabled="!isFormValid || loading"
+            class="text-body-1"
+            :loading="loading"
+            v-if="!successMessage"
+          >
+            <template #append>
+              <v-icon :icon="mdiArrowRight" />
+            </template>
+            Submit Configuration
+          </v-btn-rsk>
+        </v-row>
+      </v-form>
+      <v-row class="d-flex justify-center">
+        <span>
+          {{ successMessage }}
+        </span>
+      </v-row>
+      <v-row class="d-flex justify-end mr-4 mb-4">
+        <v-btn-rsk v-if="successMessage" @click="closeDialog">
+          Close
+        </v-btn-rsk>
+      </v-row>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from 'vue';
+import {
+  defineComponent, ref,
+  computed, watch,
+} from 'vue';
 import { mdiArrowRight } from '@mdi/js';
 import { useIndexedDB } from '@/common/composables/useIndexdedDB';
 
 export default defineComponent({
-  name: 'SetUpIBI',
-  setup() {
+  name: 'SetUpIbi',
+  props: {
+    modelValue: {
+      type: Boolean,
+      required: true,
+    },
+  },
+  emits: ['update:modelValue'],
+  setup(props, { emit }) {
     const selectedFile = ref<File | null>(null);
     const apiKey = ref<string>('');
     const loading = ref<boolean>(false);
@@ -133,6 +143,26 @@ export default defineComponent({
         });
     }
 
+    function closeDialog() {
+      emit('update:modelValue', false);
+    }
+
+    function onDialogClose(val: boolean) {
+      // Prevent closing unless form is submitted successfully
+      if (!successMessage.value) {
+        emit('update:modelValue', true);
+      } else {
+        emit('update:modelValue', val);
+      }
+    }
+
+    // Prevent closing with ESC or outside click unless success
+    watch(() => props.modelValue, (val) => {
+      if (!val && !successMessage.value) {
+        emit('update:modelValue', true);
+      }
+    });
+
     return {
       selectedFile,
       apiKey,
@@ -147,6 +177,8 @@ export default defineComponent({
       handleSubmit,
       mdiArrowRight,
       successMessage,
+      closeDialog,
+      onDialogClose,
     };
   },
 });

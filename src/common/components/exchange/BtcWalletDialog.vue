@@ -249,6 +249,11 @@ export default defineComponent({
           });
         return;
       }
+      if (wallet === constants.WALLET_NAMES.FIREBLOCKS.long_name) {
+        router.push({ name: 'NoWalletPegin' });
+        emitClose();
+        return;
+      }
       addBitcoinWallet({
         bitcoinWallet: wallet,
       })

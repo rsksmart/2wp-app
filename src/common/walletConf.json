@@ -71,6 +71,18 @@
             "btnClass": "btn-reown",
             "kind": "Software Wallet",
             "installation": "https://reown.com/"
+        },
+        {
+            "name": "Fireblocks",
+            "icon": "wallet-icons/fireblocks-black.svg",
+            "iconWhite": "wallet-icons/fireblocks-white.svg",
+            "constant": "WALLET_FIREBLOCKS",
+            "pegin": true,
+            "pegout": false,
+            "hover": false,
+            "btnClass": "btn-fireblocks",
+            "kind": "Software Wallet",
+            "installation": "https://fireblocks.com/"
         }
     ]
 }

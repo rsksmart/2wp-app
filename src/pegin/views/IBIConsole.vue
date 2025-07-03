@@ -25,7 +25,11 @@ export default defineComponent({
   name: 'IBIConsole',
   setup() {
     const { loadStringValue, loadFile } = useIndexedDB();
-    let fireblocksService: FireblocksService = new FireblocksService('a', 'b');
+    let fireblocksService: FireblocksService = new FireblocksService({
+      apiKey: '',
+      cert: '',
+      vaultId: 0,
+    });
     const vaults = ref<VaultAccount[]>([]);
     const tx = ref<object>({});
     async function getVaults() {
@@ -68,7 +72,11 @@ export default defineComponent({
         lastModified: Date.now(),
       });
       const key = await readFileAsText(file);
-      fireblocksService = new FireblocksService(apiKey, key);
+      fireblocksService = new FireblocksService({
+        apiKey,
+        cert: key,
+        vaultId: 0,
+      });
       console.log('Fireblocks service setup complete');
     }
 
