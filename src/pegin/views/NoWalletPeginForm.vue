@@ -74,18 +74,6 @@
             />
           </v-row>
           <v-row no-gutters class="d-flex justify-end mt-5">
-            <v-col v-if="selected === peginType.FLYOVER">
-              <v-btn-rsk
-                @click="sendTx()"
-                :disabled="!isReadyToCreate"
-                class="align-self-start text-body-1"
-                >
-                <template #append>
-                  <v-icon :icon="mdiQrcode" />
-                </template>
-                  Send with
-              </v-btn-rsk>
-            </v-col>
             <v-col class="d-flex justify-end">
               <v-btn-rsk v-if="!pegInFormState.matches(['loading'])"
                 @click="sendTx()"
@@ -94,7 +82,7 @@
                 <template #append>
                   <v-icon :icon="mdiArrowRight" />
                 </template>
-                Continue to Summary
+                Send Fireblocks Transaction
               </v-btn-rsk>
               <v-progress-circular class="align-self-end" v-else indeterminate />
             </v-col>
