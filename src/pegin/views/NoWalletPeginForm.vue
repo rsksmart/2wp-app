@@ -136,6 +136,7 @@ import {
 } from '@/common/types';
 import { FlyoverService } from '@/common/services';
 import { useRouter } from 'vue-router';
+import { AcceptedQuote } from '@rsksmart/flyover-sdk';
 import SetUpIbi from './SetUpIBI.vue';
 
 export default defineComponent({
@@ -167,6 +168,8 @@ export default defineComponent({
     const setBtcAmountFlyover = useAction('flyoverPegin', constants.FLYOVER_PEGIN_ADD_AMOUNT);
     const flyoverPeginState = useState<FlyoverPeginState>('flyoverPegin');
     const flyoverService = useStateAttribute<FlyoverService>('flyoverPegin', 'flyoverService');
+    const acceptQuote = useAction<AcceptedQuote>('flyoverPegin', constants.FLYOVER_PEGIN_ACCEPT_QUOTE);
+    const setSelectedQuote = useAction('flyoverPegin', constants.FLYOVER_PEGIN_ADD_SELECTED_QUOTE);
     const fireblocksService = ref<FireblocksService>();
     const showSetUpIBI = ref(true);
 
@@ -244,10 +247,10 @@ export default defineComponent({
     function changeSelectedOption(selectedType: peginType, quote?: PeginQuote) {
       selected.value = selectedType;
       selectedQuote.value = quote;
+      setSelectedQuote(quote?.quoteHash);
     }
 
     function createTx(): Promise<void> {
-      if (!fireblocksService.value) return Promise.resolve();
       formState.value = 'loading';
       const params: FireblocksTransactionParams = {
         assetId: 'BTC_TEST',
@@ -267,7 +270,15 @@ export default defineComponent({
         },
         note: 'PPA Fireblocks Peg-in',
       };
-      return fireblocksService.value.sendTransaction(params)
+      return acceptQuote({
+        quote: selectedQuote.value,
+        amount: amount.value,
+      })
+        .then((acceptedQuote) => {
+          if (!fireblocksService.value) return Promise.resolve();
+          params.destination.oneTimeAddress.address = acceptedQuote.bitcoinDepositAddressHash;
+          return fireblocksService.value.sendTransaction(params);
+        })
         .then((res) => {
           console.log('res', res);
           router.push({
