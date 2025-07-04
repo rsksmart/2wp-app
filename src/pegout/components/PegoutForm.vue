@@ -61,7 +61,7 @@
               :selectedOption="selectedOption === quote.quoteHash"
               :quote-difference="actualDiffPercentage" />
           </v-row>
-          <v-row no-gutters class="mt-4">
+          <v-row no-gutters class="mt-4" v-if="!isFireblocksConnected">
             <pegout-option
               :option-type="pegoutType.POWPEG"
               :quote="nativeQuote"
@@ -223,6 +223,7 @@ export default defineComponent({
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
     const isEnoughBalance = useGetter<boolean>('pegOutTx', constants.PEGOUT_TX_IS_ENOUGH_BALANCE);
     const isLedgerConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_LEDGER_CONNECTED);
+    const isFireblocksConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_FIREBLOCKS_CONNECTED);
     const setSelectedQuoteHash = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE_HASH);
     const selectedQuoteHash = useStateAttribute<string>('flyoverPegout', 'selectedQuoteHash');
     const selectedOption = ref<string>('');
@@ -634,6 +635,7 @@ export default defineComponent({
       recaptchanNewTokenTime,
       mdiQrcode,
       existQuoteAndUsersBalanceIsEnough,
+      isFireblocksConnected,
     };
   },
 });

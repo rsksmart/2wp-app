@@ -5,6 +5,7 @@ import { RootState } from '@/common/types/store';
 import { Feature, FeatureNames, WeiBig } from '@/common/types';
 import * as rskUtils from '@rsksmart/rsk-utils';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import { useWalletInfo } from '@reown/appkit/vue';
 
 export const getters: GetterTree<SessionState, RootState> = {
   [constants.SESSION_IN_TX_FLOW]: (state): boolean => state.txType !== undefined,
@@ -39,5 +40,12 @@ export const getters: GetterTree<SessionState, RootState> = {
       return rskUtils.toChecksumAddress(state.account, CHAIN_ID);
     }
     return '';
+  },
+  [constants.SESSION_IS_FIREBLOCKS_CONNECTED]: (state): boolean => {
+    if (state.ethersProvider) {
+      const { walletInfo } = useWalletInfo();
+      return walletInfo?.name === 'Fireblocks';
+    }
+    return false;
   },
 };
