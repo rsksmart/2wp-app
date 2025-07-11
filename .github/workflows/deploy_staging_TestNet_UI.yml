@@ -55,8 +55,8 @@ jobs:
           VUE_APP_LBC_ADDRESS='0xc2A630c053D12D63d32b025082f6Ba268db18300'
           VUE_APP_FLYOVER_PEGOUT_QUOTE_DIFF_PERCENTAGE=20
           VUE_APP_RECAPTCHA_NEW_TOKEN_TIME=30
-          VUE_APP_FLYOVER_PROVIDER_ID=2
-          VUE_APP_CSP=https://staging.lps.tekscapital.com
+          VUE_APP_FLYOVER_PROVIDER_ID=1
+          VUE_APP_CSP=https://lps.testnet.flyover.rif.technology
           VUE_APP_API_RESPONSE_TIMEOUT=10000
           VUE_APP_REOWN_PROJECT_ID=${{ secrets.STAGING_TESTNET_VUE_APP_REOWN_PROJECT_ID }}
           npm run-script build
