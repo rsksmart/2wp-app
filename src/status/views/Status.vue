@@ -31,9 +31,15 @@
           </v-col>
         </template>
         <v-col cols="auto">
-          <v-btn class="text-none ml-2" color="emphasis"
+          <v-progress-circular v-if="loading"
+              class="ma-auto"
+              :size="24"
+              :width="2"
+              color="warning"
+              indeterminate />
+          <v-btn v-else class="text-none ml-2" color="emphasis"
             variant="outlined" @click="getPegStatus" rounded>
-              <span class="btn-label">{{ btnLabel }}</span>
+            <span class="btn-label">{{ btnLabel }}</span>
           </v-btn>
         </v-col>
       </v-row>
@@ -83,6 +89,7 @@
 <script lang="ts">
 import {
   computed, ref, watch, defineComponent, onUnmounted,
+  onBeforeUnmount,
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { mdiOpenInNew, mdiContentCopy, mdiClose } from '@mdi/js';
@@ -91,6 +98,8 @@ import TxPegin from '@/common/components/status/TxPegin.vue';
 import {
   PegoutStatus, TxStatusType,
   PegoutStatusDataModel, TxStatus, TxStatusMessage, PeginStatus,
+  FlyoverStatusModel, FlyoverStatus,
+  RskStatus,
 } from '@/common/types';
 import * as constants from '@/common/store/constants';
 import {
@@ -124,6 +133,7 @@ export default defineComponent({
     const typingSearch = ref(true);
     const route = useRoute();
     const router = useRouter();
+    let interval: ReturnType<typeof setInterval>;
 
     const { global: { current } } = useTheme();
 
@@ -133,7 +143,7 @@ export default defineComponent({
     const clearStatus = useAction('status', constants.STATUS_CLEAR);
     const getBtcPrice = useAction('web3Session', constants.SESSION_ADD_BITCOIN_PRICE);
     const activeMessage = useGetter<TxStatusMessage>('status', constants.STATUS_GET_ACTIVE_MESSAGE);
-    const txDetails = useStateAttribute<PegoutStatusDataModel|PeginStatus>('status', 'txDetails');
+    const txDetails = useStateAttribute<PegoutStatusDataModel|PeginStatus|FlyoverStatusModel>('status', 'txDetails');
 
     const showStatus = computed(() => !loading.value);
 
@@ -251,11 +261,47 @@ export default defineComponent({
         clean();
       }
     });
+    function stopCallPeriodicallyStatus() {
+      clearInterval(interval);
+    }
+
+    function callPeriodicallyStatus() {
+      const timeMilliseconds = 5 * 60 * 1000;
+      interval = setInterval(() => {
+        switch (txType.value) {
+          case TxStatusType.FLYOVER_PEGOUT:
+          case TxStatusType.FLYOVER_PEGIN:
+            if ((txDetails.value as FlyoverStatusModel).status === FlyoverStatus.COMPLETED) {
+              stopCallPeriodicallyStatus();
+            } else {
+              getPegStatus();
+            }
+            break;
+          case TxStatusType.PEGOUT:
+            if ((txDetails.value as PegoutStatusDataModel).status === PegoutStatus.RELEASE_BTC) {
+              stopCallPeriodicallyStatus();
+            } else {
+              getPegStatus();
+            }
+            break;
+          case TxStatusType.PEGIN:
+            if ((txDetails.value as PeginStatus).rsk.status === RskStatus.LOCKED) {
+              stopCallPeriodicallyStatus();
+            } else {
+              getPegStatus();
+            }
+            break;
+          default:
+            break;
+        }
+      }, timeMilliseconds);
+    }
 
     function onUrlChange() {
       if (props.txIdProp) {
         txId.value = props.txIdProp ?? '';
         getPegStatus();
+        callPeriodicallyStatus();
       } else {
         clean();
       }
@@ -279,6 +325,7 @@ export default defineComponent({
     clearStatus();
     getBtcPrice();
     onUnmounted(clean);
+    onBeforeUnmount(stopCallPeriodicallyStatus);
 
     return {
       txId,
