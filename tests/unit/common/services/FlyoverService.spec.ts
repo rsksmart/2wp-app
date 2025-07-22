@@ -1,7 +1,7 @@
 import FlyoverService from '@/common/services/FlyoverService';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { SatoshiBig, WeiBig } from '@/common/types';
-import { Flyover, FlyoverUtils } from '@rsksmart/flyover-sdk';
+import { Flyover, FlyoverUtils, LiquidityProvider } from '@rsksmart/flyover-sdk';
 import * as constants from '@/common/store/constants';
 import sinon from 'sinon';
 import { ServiceError } from '@/common/utils';
@@ -10,7 +10,7 @@ jest.setTimeout(10000);
 describe('FlyoverService', () => {
   let flyoverService: FlyoverService;
 
-  const testLiquidProviders = [
+  const testLiquidProviders: LiquidityProvider[] = [
     {
       apiBaseUrl: 'https://lps.testnet.flyover.rif.technology',
       id: 1,
@@ -25,12 +25,16 @@ describe('FlyoverService', () => {
         minTransactionValue: 5000000000000000n,
         maxTransactionValue: 1000000000000000000n,
         requiredConfirmations: 60,
+        feePercentage: 0.001,
+        fixedFee: 0n,
       },
       pegout: {
         fee: 100000000000000n,
         minTransactionValue: 5000000000000000n,
         maxTransactionValue: 1000000000000000000n,
         requiredConfirmations: 60,
+        feePercentage: 0.001,
+        fixedFee: 0n,
       },
     },
   ];
