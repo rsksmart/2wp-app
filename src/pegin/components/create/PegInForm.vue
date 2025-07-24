@@ -64,7 +64,7 @@
             />
           </v-row>
           <v-row no-gutters class="d-flex justify-end mt-5">
-            <v-col v-if="selected === peginType.FLYOVER">
+            <v-col v-if="showQrButton">
               <v-btn-rsk
                 @click="sendTx(true)"
                 :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])"
@@ -384,6 +384,10 @@ export default defineComponent({
       }
     });
 
+    const showQrButton = computed(
+      () => ((selected.value === constants.peginType.FLYOVER) && false), // temporary disable qr button
+    );
+
     if (props.isFlyoverAvailable) {
       getAvailableLiquidity();
     }
@@ -418,6 +422,7 @@ export default defineComponent({
       countdown,
       recaptchanNewTokenTime,
       mdiQrcode,
+      showQrButton,
     };
   },
 });
