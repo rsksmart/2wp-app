@@ -13,7 +13,7 @@
         hide-details
         rounded="lg"
         variant="solo"
-        placeholder="Paste your RBTC Address">
+        :placeholder="`Paste your ${environmentContext.getRbtcTicker()} Address`">
       <template #append-inner>
         <v-btn size="small" class="text-button" @click="connectOrDisconnect">
           {{ connectedAccount ? 'Disconnect' : 'Connect Wallet' }}
@@ -48,6 +48,7 @@ import { useAction, useGetter } from '@/common/store/helper';
 import * as rskUtils from '@rsksmart/rsk-utils';
 import * as constants from '@/common/store/constants';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 
 export default defineComponent({
   name: 'RskDestinationAddress',
@@ -58,6 +59,7 @@ export default defineComponent({
     },
   },
   setup(props, context) {
+    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const connectedAccount = useGetter<string>('web3Session', constants.SESSION_GET_CHECKSUMMED_ACCOUNT);
     const address = ref(connectedAccount.value);
     const { isAddress, isValidAddress, toChecksumAddress } = rskUtils;
@@ -111,6 +113,7 @@ export default defineComponent({
       notChecksummedAddressWarning,
       isInputFilled,
       toValidChecksumAddress,
+      environmentContext,
     };
   },
 });

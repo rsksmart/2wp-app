@@ -61,7 +61,7 @@
             "installation": "https://www.enkrypt.com/"
         },
         {
-            "name": "Reown",
+            "name": "More Wallets",
             "icon": "wallet-icons/reown-black.svg",
             "iconWhite": "wallet-icons/reown-white.svg",
             "constant": "WALLET_REOWN",
