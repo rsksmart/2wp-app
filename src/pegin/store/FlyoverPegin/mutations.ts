@@ -32,4 +32,18 @@ export const mutations: MutationTree<FlyoverPeginState> = {
   [constants.FLYOVER_PEGIN_SET_ACCEPTED_QUOTE_SIGNATURE]: (state, quoteSignature: string) => {
     state.acceptedQuoteSignature = quoteSignature;
   },
+  [constants.FLYOVER_PEGIN_SET_QR_DESTINATION_ADDRESS]: (state, { quoteHash, btcAddress }) => {
+    Object.entries(state.quotes).forEach(async ([, quotes]) => {
+      const selectedQuote = quotes.find((quote) => quote.quoteHash === quoteHash);
+      if (selectedQuote) {
+        const qrCode = await state.flyoverService.flyover?.generateQrCode(
+          btcAddress,
+          selectedQuote.valueToTransfer.toBTCString(),
+          constants.QRCodeNetworks.BITCOIN,
+        ) ?? '';
+        selectedQuote.qrCode = qrCode;
+        selectedQuote.recipientBtcAddress = btcAddress;
+      }
+    });
+  },
 };

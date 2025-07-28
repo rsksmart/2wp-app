@@ -10,10 +10,13 @@ export default class PeginQuote implements QuotePegIn2WP {
 
     originalQuote: QuoteDetail;
 
-    qrCode: string;
+    private qrCodeData: string;
+
+    private recipientAddress: string;
 
     constructor({ quote, quoteHash }: Quote) {
-      this.qrCode = '';
+      this.qrCodeData = '';
+      this.recipientAddress = '';
       this.originalQuote = quote;
       this.quote = {
         ...quote,
@@ -38,12 +41,20 @@ export default class PeginQuote implements QuotePegIn2WP {
         .plus(SatoshiBig.fromWeiBig(this.quote.gasFee));
     }
 
-    get lpsAddressQrCode(): string {
-      return this.qrCode ?? '';
+    get qrCode(): string {
+      return this.qrCodeData ?? '';
     }
 
-    set lpsAddressQrCode(qrCode: string) {
-      this.qrCode = qrCode;
+    set qrCode(qrCode: string) {
+      this.qrCodeData = qrCode;
+    }
+
+    get recipientBtcAddress(): string {
+      return this.recipientAddress ?? '';
+    }
+
+    set recipientBtcAddress(btcAddress: string) {
+      this.recipientAddress = btcAddress;
     }
 
     getTotalQuoteFee(btcNetworkFee: SatoshiBig): SatoshiBig {
