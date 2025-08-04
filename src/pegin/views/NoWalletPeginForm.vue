@@ -1,5 +1,5 @@
 <template>
-  <set-up-ibi v-model="showSetUpIBI" />
+  <set-up-ibi v-model="showSetUpIBI" @close="getFireblocksData" />
   <v-container class="form">
     <v-row no-gutters class="d-flex justify-start">
       <v-btn variant="text"
@@ -79,6 +79,17 @@
               </v-btn-rsk>
               <v-progress-circular class="align-self-end" v-else indeterminate />
             </v-col>
+          </v-row>
+          <v-row no-gutters class="d-flex justify-end mt-5">
+            <v-btn-rsk v-if="!pegInFormState.matches(['loading'])"
+                @click="getUserInfo()"
+                :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])"
+                class="align-self-end text-body-1">
+                <template #append>
+                  <v-icon :icon="mdiArrowRight" />
+                </template>
+                Get User Info
+              </v-btn-rsk>
           </v-row>
         </template>
         <v-row no-gutters v-else-if="loadingQuotes" class="justify-center">
@@ -350,6 +361,45 @@ export default defineComponent({
       amountModel.value = minValue.toBTCTrimmedString();
     }
 
+    async function getUserInfo() {
+      try {
+        const vaults = await fireblocksService.value?.getVaultAccounts();
+        if (!vaults) {
+          showErrorDialog.value = true;
+          txError.value = new ServiceError(
+            'FireblocksService',
+            'getVaultAccounts',
+            'The credential are invalid or expired, please check them and try again',
+            'Failed to fetch vaults or no vaults returned',
+          );
+          return;
+        }
+        const users = await fireblocksService.value?.getApiUsers();
+        if (users && users.length > 0) {
+          showErrorDialog.value = true;
+          txError.value = new ServiceError(
+            'FireblocksService',
+            'getApiUsers',
+            'The credentials used has wrong permissions',
+            'User has management privileges',
+          );
+        }
+      } catch (e) {
+        showErrorDialog.value = true;
+        txError.value = new ServiceError(
+          'FireblocksService',
+          'getVaultAccounts',
+          'The credential are invalid or expired, please check them and try again',
+          'Failed to fetch vaults or no vaults returned',
+        );
+      }
+    }
+
+    function getFireblocksData() {
+      setupService()
+        .then(() => getUserInfo());
+    }
+
     watch(isComposing, () => {
       const timeout = setTimeout(() => { isComposing.value = false; }, 200);
       return () => clearTimeout(timeout);
@@ -362,8 +412,6 @@ export default defineComponent({
         });
       window.onRecaptchaSuccess = createTx;
     });
-
-    setupService();
 
     return {
       formState,
@@ -396,6 +444,8 @@ export default defineComponent({
       amountModel,
       pegInFormState,
       flyoverService,
+      getUserInfo,
+      getFireblocksData,
     };
   },
 });
