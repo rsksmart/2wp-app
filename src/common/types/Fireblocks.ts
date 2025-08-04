@@ -7,6 +7,12 @@ export interface VaultAccount {
   }>;
 }
 
+export interface ApiUser {
+  id: number;
+  name: string;
+  role: string;
+}
+
 export interface FireblocksLocalConfig {
   apiKey: string;
   cert: string;

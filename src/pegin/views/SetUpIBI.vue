@@ -73,7 +73,7 @@ export default defineComponent({
       required: true,
     },
   },
-  emits: ['update:modelValue'],
+  emits: ['update:modelValue', 'close'],
   setup(props, { emit }) {
     const selectedFile = ref<File | null>(null);
     const apiKey = ref<string>('');
@@ -145,6 +145,7 @@ export default defineComponent({
 
     function closeDialog() {
       emit('update:modelValue', false);
+      emit('close');
     }
 
     function onDialogClose(val: boolean) {

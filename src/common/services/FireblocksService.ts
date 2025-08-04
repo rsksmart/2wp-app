@@ -1,6 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import { ApiService } from '@/common/services';
 import {
+  ApiUser,
   BtcAccount, FireblocksLocalConfig, FireblocksTransactionParams, VaultAccount, WalletAddress,
 } from '@/common/types';
 import axios from 'axios';
@@ -72,5 +73,19 @@ export default class FireblocksService {
       payload: params,
     });
     return Promise.resolve(res.data);
+  }
+
+  public async getApiUsers(): Promise<Array<ApiUser>> {
+    return new Promise((resolve, reject) => {
+      const encodedSecretKey = btoa(this.config.cert);
+      axios.post(`${this.apiUrl}/api-users`, {
+        apiKey: this.config.apiKey,
+        cert: encodedSecretKey,
+      })
+        .then((res) => {
+          resolve(res.data.users);
+        })
+        .catch(reject);
+    });
   }
 }
