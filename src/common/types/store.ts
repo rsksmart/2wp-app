@@ -61,6 +61,11 @@ export enum PegoutStatus {
   NOT_PEGOUT_TX = 'NOT_PEGOUT_TX'
 }
 
+export enum FlyoverStatus {
+  PENDING = 'PENDING',
+  COMPLETED = 'COMPLETED',
+}
+
 export interface PegoutStatusDataModel {
   originatingRskTxHash: string;
   rskTxHash: string;
@@ -84,7 +89,7 @@ export interface FlyoverStatusModel {
   amount: string;
   fee: string;
   blockToBeFinished: string;
-  status: string;
+  status: FlyoverStatus;
   senderAddress: string;
   recipientAddress: string;
   quoteHash: string;

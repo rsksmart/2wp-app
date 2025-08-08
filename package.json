@@ -1,6 +1,6 @@
 {
   "name": "PowPeg",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -25,7 +25,7 @@
     "@reown/appkit-adapter-bitcoin": "^1.7.8",
     "@reown/appkit-adapter-ethers5": "^1.7.8",
     "@rsksmart/bridges-core-sdk": "^0.4.2",
-    "@rsksmart/flyover-sdk": "^1.6.3",
+    "@rsksmart/flyover-sdk": "^1.6.4",
     "@rsksmart/rlogin": "^1.6.1",
     "@rsksmart/rlogin-ledger-provider": "^1.0.5-alpha",
     "@rsksmart/rlogin-trezor-provider": "^1.0.6",

@@ -7,8 +7,8 @@
         </v-btn>
       <v-card-title class="d-flex justify-space-between align-center ">
         <v-row class="d-flex justify-center align-center">
-          <span class="font-weight-bold the-text-h5">
-            Select your wallet
+          <span class="font-weight-bold the-text-h5 bg-purple">
+                Select your wallet
           </span>
         </v-row>
       </v-card-title>

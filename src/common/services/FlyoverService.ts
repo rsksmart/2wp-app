@@ -355,11 +355,6 @@ export default class FlyoverService {
             }))
             .map(async (quoteFromServer: Quote) => {
               const quote = new PeginQuote(quoteFromServer);
-              quote.qrCode = await this.flyover?.generateQrCode(
-                quoteFromServer.quote.lpBTCAddr,
-                quote.valueToTransfer.toBTCString(),
-                constants.QRCodeNetworks.BITCOIN,
-              ) ?? '';
               return quote;
             });
 

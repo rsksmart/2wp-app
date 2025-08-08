@@ -34,9 +34,9 @@ export default defineComponent({
 
     const qrData = {
       [constants.QRCodeNetworks.BITCOIN]: {
-        image: peginQuote.value?.lpsAddressQrCode,
+        image: peginQuote.value?.qrCode,
         amount: peginQuote.value?.valueToTransfer,
-        address: peginQuote.value?.quote.lpBTCAddr,
+        address: peginQuote.value?.recipientBtcAddress,
       },
       [constants.QRCodeNetworks.ROOTSTOCK]: {
         image: pegoutQuote.value?.lpsAddressQrCode,

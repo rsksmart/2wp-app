@@ -129,6 +129,13 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
     state.flyoverService.acceptPeginQuote(state.selectedQuoteHash)
       .then((acceptedQuote) => {
         commit(constants.FLYOVER_PEGIN_SET_ACCEPTED_QUOTE_SIGNATURE, acceptedQuote.signature);
+        commit(
+          constants.FLYOVER_PEGIN_SET_QR_DESTINATION_ADDRESS,
+          {
+            quoteHash: state.selectedQuoteHash,
+            btcAddress: acceptedQuote.bitcoinDepositAddressHash,
+          },
+        );
         resolve(acceptedQuote);
       })
       .catch(reject);

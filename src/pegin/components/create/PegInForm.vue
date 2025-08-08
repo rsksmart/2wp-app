@@ -64,8 +64,8 @@
             />
           </v-row>
           <v-row no-gutters class="d-flex justify-end mt-5">
-            <v-col v-if="showQrButton">
-              <v-btn-rsk
+            <v-col v-if="selected === peginType.FLYOVER">
+              <v-btn-rsk v-if="!pegInFormState.matches(['loading']) && !toQr"
                 @click="sendTx(true)"
                 :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])"
                 class="align-self-start text-body-1"
@@ -75,11 +75,12 @@
                 </template>
                   Send with
               </v-btn-rsk>
+              <v-progress-circular class="align-self-end" v-else indeterminate />
             </v-col>
             <v-col class="d-flex justify-end">
               <v-btn-rsk v-if="!pegInFormState.matches(['loading'])"
                 @click="sendTx(false)"
-                :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])"
+                :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome']) || toQr"
                 class="align-self-end text-body-1">
                 <template #append>
                   <v-icon :icon="mdiArrowRight" />
@@ -384,10 +385,6 @@ export default defineComponent({
       }
     });
 
-    const showQrButton = computed(
-      () => ((selected.value === constants.peginType.FLYOVER) && false), // temporary disable qr button
-    );
-
     if (props.isFlyoverAvailable) {
       getAvailableLiquidity();
     }
@@ -422,7 +419,7 @@ export default defineComponent({
       countdown,
       recaptchanNewTokenTime,
       mdiQrcode,
-      showQrButton,
+      toQr,
     };
   },
 });
