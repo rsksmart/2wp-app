@@ -80,17 +80,6 @@
               <v-progress-circular class="align-self-end" v-else indeterminate />
             </v-col>
           </v-row>
-          <v-row no-gutters class="d-flex justify-end mt-5">
-            <v-btn-rsk v-if="!pegInFormState.matches(['loading'])"
-                @click="getUserInfo()"
-                :disabled="!isReadyToCreate || pegInFormState.matches(['goingHome'])"
-                class="align-self-end text-body-1">
-                <template #append>
-                  <v-icon :icon="mdiArrowRight" />
-                </template>
-                Get User Info
-              </v-btn-rsk>
-          </v-row>
         </template>
         <v-row no-gutters v-else-if="loadingQuotes" class="justify-center">
           <v-progress-circular
@@ -374,6 +363,17 @@ export default defineComponent({
           );
           return;
         }
+      } catch (e) {
+        showErrorDialog.value = true;
+        txError.value = new ServiceError(
+          'FireblocksService',
+          'getVaultAccounts',
+          'The credential are invalid or expired, please check them and try again',
+          'Failed to fetch vaults or no vaults returned',
+        );
+        return;
+      }
+      try {
         const users = await fireblocksService.value?.getApiUsers();
         if (users && users.length > 0) {
           showErrorDialog.value = true;
@@ -385,13 +385,7 @@ export default defineComponent({
           );
         }
       } catch (e) {
-        showErrorDialog.value = true;
-        txError.value = new ServiceError(
-          'FireblocksService',
-          'getVaultAccounts',
-          'The credential are invalid or expired, please check them and try again',
-          'Failed to fetch vaults or no vaults returned',
-        );
+        // User has no access to the api-users endpoint, so we can continue
       }
     }
 
