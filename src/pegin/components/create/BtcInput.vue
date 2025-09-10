@@ -30,7 +30,7 @@
             <v-chip variant="outlined" density="compact" @click="setMin">
               {{ boundaries.minValue.toBTCString().slice(0,5) }} MIN
             </v-chip>
-            <v-chip variant="outlined" density="compact" @click="setMax">
+            <v-chip v-if="false" variant="outlined" density="compact" @click="setMax">
               <v-progress-circular v-if="loadingMax"
                 :size="12"
                 :width="2"
