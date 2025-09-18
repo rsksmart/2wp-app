@@ -1,11 +1,14 @@
 /* eslint-disable class-methods-use-this */
 import { ApiService } from '@/common/services';
 import {
-  ApiUser,
-  BtcAccount, FireblocksLocalConfig, FireblocksTransactionParams, VaultAccount, WalletAddress,
+  ApiUsersResponse,
+  BtcAccount, FireblocksLocalConfig,
+  FireblocksResponse, FireblocksTransactionParams,
+  VaultAccount, WalletAddress,
 } from '@/common/types';
 import axios from 'axios';
 import * as constants from '@/common/store/constants';
+import { buildJWT } from '../utils';
 
 export default class FireblocksService {
   private config: FireblocksLocalConfig;
@@ -53,16 +56,24 @@ export default class FireblocksService {
 
   // eslint-disable-next-line class-methods-use-this
   public async getVaultAccounts(): Promise<Array<VaultAccount>> {
-    const encodedSecretKey = btoa(this.config.cert);
-    const res = await axios.post(`${ApiService.baseURL}/fireblocks/vaults`, {
+    const uri = '/v1/vault/accounts_paged';
+    const body = {
+      limit: 200,
+      orderBy: 'DESC',
+    };
+    const jwt = await buildJWT({
+      pemKey: this.config.cert,
       apiKey: this.config.apiKey,
-      cert: encodedSecretKey,
-      options: {
-        limit: 200,
-        orderBy: 'DESC',
-      },
+      uri,
+      body: JSON.stringify(body),
     });
-    return Promise.resolve(res.data.vaults);
+    const res = await axios.post(`${ApiService.baseURL}/fireblocks/generic-get`, {
+      apiKey: this.config.apiKey,
+      jwt,
+      uri,
+      bodyData: body,
+    });
+    return Promise.resolve(res.data.data.accounts);
   }
 
   public async sendTransaction(params: FireblocksTransactionParams) {
@@ -75,15 +86,26 @@ export default class FireblocksService {
     return Promise.resolve(res.data);
   }
 
-  public async getApiUsers(): Promise<Array<ApiUser>> {
+  public async getApiUsers(): Promise<FireblocksResponse<ApiUsersResponse>> {
     return new Promise((resolve, reject) => {
-      const encodedSecretKey = btoa(this.config.cert);
-      axios.post(`${this.apiUrl}/api-users`, {
+      const uri = '/v1/management/api_users';
+      const body = {
+        limit: 200,
+        orderBy: 'DESC',
+      };
+      buildJWT({
+        pemKey: this.config.cert,
         apiKey: this.config.apiKey,
-        cert: encodedSecretKey,
-      })
+        uri,
+        body: JSON.stringify(body),
+      }).then((jwt) => axios.post(`${this.apiUrl}/generic-get`, {
+        apiKey: this.config.apiKey,
+        jwt,
+        uri,
+        bodyData: body,
+      }))
         .then((res) => {
-          resolve(res.data.users);
+          resolve(res.data);
         })
         .catch(reject);
     });

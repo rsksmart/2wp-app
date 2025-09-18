@@ -374,8 +374,8 @@ export default defineComponent({
         return;
       }
       try {
-        const users = await fireblocksService.value?.getApiUsers();
-        if (users && users.length > 0) {
+        const res = await fireblocksService.value?.getApiUsers();
+        if (res && res && res.statusCode !== 403) {
           showErrorDialog.value = true;
           txError.value = new ServiceError(
             'FireblocksService',
@@ -385,7 +385,13 @@ export default defineComponent({
           );
         }
       } catch (e) {
-        // User has no access to the api-users endpoint, so we can continue
+        showErrorDialog.value = true;
+        txError.value = new ServiceError(
+          'FireblocksService',
+          'getApiUsers',
+          'Something is wrong with the credentials used',
+          'User may not have any privileges',
+        );
       }
     }
 

@@ -6,11 +6,20 @@ export interface VaultAccount {
     total: number;
   }>;
 }
-
 export interface ApiUser {
   id: number;
   name: string;
   role: string;
+}
+
+export interface FireblocksResponse<T> {
+  statusCode: number;
+  statusMessage: string;
+  data: T;
+}
+
+export interface ApiUsersResponse {
+  users: ApiUser[];
 }
 
 export interface FireblocksLocalConfig {

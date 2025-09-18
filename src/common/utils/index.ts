@@ -10,3 +10,4 @@ export * from './rlogin';
 export * from './utxo';
 export { default as ServiceError } from './ServiceError';
 export * from './files';
+export * from './jwtBuilder';
