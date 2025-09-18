@@ -8,7 +8,7 @@ import {
 } from '@/common/types';
 import axios from 'axios';
 import * as constants from '@/common/store/constants';
-import { buildJWT } from '../utils';
+import { buildJWT, generateExternalTxId } from '../utils';
 
 export default class FireblocksService {
   private config: FireblocksLocalConfig;
@@ -77,13 +77,22 @@ export default class FireblocksService {
   }
 
   public async sendTransaction(params: FireblocksTransactionParams) {
-    const encodedSecretKey = btoa(this.config.cert);
-    const res = await axios.post(`${this.apiUrl}/transaction`, {
+    const uri = '/v1/transactions';
+    const externalTxId = await generateExternalTxId(params);
+    const body = JSON.stringify({ externalTxId, ...params });
+    const jwt = await buildJWT({
+      pemKey: this.config.cert,
       apiKey: this.config.apiKey,
-      cert: encodedSecretKey,
-      payload: params,
+      uri,
+      body,
     });
-    return Promise.resolve(res.data);
+    const res = await axios.post(`${this.apiUrl}/generic-post`, {
+      apiKey: this.config.apiKey,
+      jwt,
+      uri,
+      bodyData: { externalTxId, ...params },
+    });
+    return Promise.resolve(res.data.data);
   }
 
   public async getApiUsers(): Promise<FireblocksResponse<ApiUsersResponse>> {

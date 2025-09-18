@@ -45,7 +45,7 @@ function base64urlJSON(obj: object): string {
     .replace(/\//g, '_');
 }
 
-function sha256Hex(data: string): Promise<string> {
+export function sha256Hex(data: string): Promise<string> {
   const enc = new TextEncoder().encode(data);
   return window.crypto.subtle.digest('SHA-256', enc).then((hashBuffer) => Array.from(new Uint8Array(hashBuffer))
     .map((b) => b.toString(16).padStart(2, '0'))

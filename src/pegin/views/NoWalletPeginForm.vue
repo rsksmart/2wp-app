@@ -253,6 +253,7 @@ export default defineComponent({
     function createTx(): Promise<void> {
       formState.value = 'loading';
       const params: FireblocksTransactionParams = {
+        operation: 'TRANSFER',
         assetId: 'BTC_TEST',
         amount: amount.value,
         source: {
@@ -280,7 +281,6 @@ export default defineComponent({
           return fireblocksService.value.sendTransaction(params);
         })
         .then((res) => {
-          console.log('res', res);
           router.push({
             name: 'SuccessTx',
             params: {

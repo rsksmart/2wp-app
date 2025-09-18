@@ -46,6 +46,7 @@ export enum TransferPeerPathType {
 }
 
 export interface FireblocksTransactionParams {
+  operation: 'TRANSFER';
   assetId: string;
   amount: string;
   source: {
