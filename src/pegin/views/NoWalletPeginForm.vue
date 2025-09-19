@@ -375,7 +375,7 @@ export default defineComponent({
       }
       try {
         const res = await fireblocksService.value?.getApiUsers();
-        if (res && res && res.statusCode !== 403) {
+        if (res && res.statusCode !== 403) {
           showErrorDialog.value = true;
           txError.value = new ServiceError(
             'FireblocksService',

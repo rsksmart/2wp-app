@@ -7,7 +7,10 @@ import { sha256Hex } from './jwtBuilder';
  */
 export function generateExternalTxId(params: object): Promise<string> {
   const timestamp = Date.now().toString();
-  const randomValue = Math.random().toString(36).substring(2, 15);
+  const { crypto } = window;
+  const array = new Uint32Array(1);
+  crypto.getRandomValues(array);
+  const randomValue = array[0].toString(36).substring(2, 15);
   const paramsString = JSON.stringify(params);
 
   const combinedString = `${paramsString}-${timestamp}-${randomValue}`;
