@@ -13,6 +13,36 @@
     <v-row no-gutters class="d-flex justify-center">
       <v-col />
       <v-col xs="10" sm="8" md="7" lg="5" xl="5" class="d-flex space-between flex-column">
+        <v-row no-gutters>
+          <v-col>
+            <span class="text-body-sm mb-2">
+              Fireblocks Vault
+            </span>
+            <v-select
+              v-model="selectedVault"
+              :items="vaultList"
+              :menu-props="{ scrim: true, scrollStrategy: 'close' }"
+              label="Vault"
+              >
+              <template #selection="{ item }">
+                <v-icon :icon="mdiBank" />
+                <span class="px-3 text-h7">{{ item.raw.name }}</span>
+              </template>
+              <template #item="{ props, item }">
+                <v-list-item v-bind="props">
+                  <template #title>
+                    <span class="text-h6">{{ item.raw.name }}</span>
+                  </template>
+                  <template #subtitle>
+                    <span class="text-body-2 text-medium-emphasis">
+                      BTC Balance: {{ getVaultBtcBalance(item.raw) }}
+                    </span>
+                  </template>
+                </v-list-item>
+              </template>
+            </v-select>
+          </v-col>
+        </v-row>
         <v-row no-gutters class="d-flex flex-column pa-0">
           <span class="text-body-sm mb-2">
             Amount to send
@@ -112,6 +142,7 @@ import {
 import {
   mdiArrowLeft,
   mdiArrowRight,
+  mdiBank,
   mdiQrcode,
   mdiBitcoin,
 } from '@mdi/js';
@@ -124,7 +155,7 @@ import ServiceError from '@/common/utils/ServiceError';
 import type { peginType } from '@/common/store/constants';
 import type PeginQuote from '@/common/types/Flyover/PeginQuote';
 import FireblocksService from '@/common/services/FireblocksService';
-import type { FireblocksTransactionParams } from '@/common/types/Fireblocks';
+import type { FireblocksTransactionParams, VaultAccount } from '@/common/types/Fireblocks';
 import { TransferPeerPathType } from '@/common/types/Fireblocks';
 import { appendRecaptcha, Machine, readFileAsText } from '@/common/utils';
 import { useIndexedDB } from '@/common/composables/useIndexdedDB';
@@ -158,7 +189,8 @@ export default defineComponent({
     const showErrorDialog = ref(false);
     const txError = ref(new ServiceError('', '', '', ''));
     const amount = ref('');
-    const vaultId = ref(0);
+    const selectedVault = ref<VaultAccount | null>(null);
+    const vaultList = ref<VaultAccount[]>([]);
     const { peginType } = constants;
     const router = useRouter();
     const peginConfiguration = useStateAttribute<PeginConfiguration>('pegInTx', 'peginConfiguration');
@@ -231,7 +263,6 @@ export default defineComponent({
       },
     });
 
-    // Methods
     function back() {
       formState.value = 'loading';
       context.emit('back');
@@ -254,11 +285,11 @@ export default defineComponent({
       formState.value = 'loading';
       const params: FireblocksTransactionParams = {
         operation: 'TRANSFER',
-        assetId: 'BTC_TEST',
+        assetId: FireblocksService.btcAssetId,
         amount: amount.value,
         source: {
           type: TransferPeerPathType.VaultAccount,
-          id: String(vaultId.value),
+          id: String(selectedVault.value?.id),
         },
         destination: {
           type: TransferPeerPathType.OneTimeAddress,
@@ -321,7 +352,7 @@ export default defineComponent({
       fireblocksService.value = new FireblocksService({
         apiKey,
         cert: key,
-        vaultId: vaultId.value,
+        vaultId: selectedVault.value?.id ?? 0,
       });
       console.log('Fireblocks service setup complete');
     }
@@ -351,28 +382,20 @@ export default defineComponent({
     }
 
     async function getUserInfo() {
-      try {
-        const vaults = await fireblocksService.value?.getVaultAccounts();
-        if (!vaults) {
+      fireblocksService.value?.getVaultAccounts()
+        .then((vaults) => {
+          console.log('vaults', vaults);
+          vaultList.value = vaults;
+        })
+        .catch((e) => {
           showErrorDialog.value = true;
           txError.value = new ServiceError(
             'FireblocksService',
             'getVaultAccounts',
             'The credential are invalid or expired, please check them and try again',
-            'Failed to fetch vaults or no vaults returned',
+            `Failed to fetch vaults or no vaults returned error: ${e}`,
           );
-          return;
-        }
-      } catch (e) {
-        showErrorDialog.value = true;
-        txError.value = new ServiceError(
-          'FireblocksService',
-          'getVaultAccounts',
-          'The credential are invalid or expired, please check them and try again',
-          'Failed to fetch vaults or no vaults returned',
-        );
-        return;
-      }
+        });
       try {
         const res = await fireblocksService.value?.getApiUsers();
         if (res && res.statusCode !== 403) {
@@ -393,6 +416,12 @@ export default defineComponent({
           'User may not have any privileges',
         );
       }
+    }
+
+    function getVaultBtcBalance(vault: VaultAccount): string {
+      const btcAsset = vault.assets.find((asset) => asset.id === FireblocksService.btcAssetId);
+      if (!btcAsset) return '0.0';
+      return btcAsset.total.toString();
     }
 
     function getFireblocksData() {
@@ -446,6 +475,10 @@ export default defineComponent({
       flyoverService,
       getUserInfo,
       getFireblocksData,
+      vaultList,
+      getVaultBtcBalance,
+      mdiBank,
+      selectedVault,
     };
   },
 });

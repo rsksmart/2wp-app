@@ -9,6 +9,7 @@ import {
 import axios from 'axios';
 import * as constants from '@/common/store/constants';
 import { buildJWT, generateExternalTxId } from '../utils';
+import { EnvironmentAccessorService } from './enviroment-accessor.service';
 
 export default class FireblocksService {
   private config: FireblocksLocalConfig;
@@ -17,9 +18,19 @@ export default class FireblocksService {
 
   private vaults: VaultAccount[] = [];
 
+  private vaultId: number;
+
+  static btcAssetId = EnvironmentAccessorService
+    .getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_TESTNET ? 'BTC_TEST' : 'BTC';
+
   constructor(config: FireblocksLocalConfig) {
     this.apiUrl = `${ApiService.baseURL}/fireblocks`;
     this.config = config;
+    this.vaultId = config.vaultId;
+  }
+
+  public setVaultId(vaultId: number) {
+    this.vaultId = vaultId;
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -28,7 +39,7 @@ export default class FireblocksService {
       const addresses: WalletAddress[] = [];
       this.getVaultAccounts().then((vaults) => {
         this.vaults = vaults;
-        const vault = vaults.find((v) => v.id === this.config.vaultId);
+        const vault = vaults.find((v) => v.id === this.vaultId);
         if (!vault) {
           reject(new Error('Vault not found'));
         }
