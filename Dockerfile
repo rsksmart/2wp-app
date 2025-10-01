@@ -1,4 +1,4 @@
-FROM node@sha256:c65ab339c494443a7d2ed36140674bc8815f7100b0d4cebfe0144ce35267a693 as build-stage
+FROM node@sha256:c54b0b6001291558f6ce3cb8b87ef086e70d581d81a9c0c8ec1fa637fa1702d5 as build-stage
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
