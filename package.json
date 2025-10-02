@@ -42,7 +42,7 @@
     "axios": "^1.7.7",
     "big.js": "^6.2.1",
     "bip32": "^4.0.0",
-    "bitcoinjs-lib": "^5.2.0",
+    "bitcoinjs-lib": "^7.0.0",
     "bowser": "^2.11.0",
     "buffer": "^6.0.3",
     "core-js": "^3.39.0",
