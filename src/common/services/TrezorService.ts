@@ -34,6 +34,7 @@ export default class TrezorService extends WalletService {
     TrezorConnect.manifest({
       email: EnvironmentAccessorService.getEnvironmentVariables().vueAppManifestEmail,
       appUrl: EnvironmentAccessorService.getEnvironmentVariables().vueAppManifestAppUrl,
+      appName: 'PowPeg App',
     });
   }
 
