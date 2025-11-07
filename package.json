@@ -33,7 +33,7 @@
     "@rsksmart/rsk-utils": "^1.1.0",
     "@stacks/connect": "^7.7.1",
     "@swan-bitcoin/xpub-lib": "^0.1.5",
-    "@trezor/connect-web": "^9.5.5",
+    "@trezor/connect-web": "^9.6.4",
     "@types/big.js": "^6.1.1",
     "@types/ledgerhq__hw-transport-webusb": "^4.70.1",
     "@types/lodash": "^4.17.13",
