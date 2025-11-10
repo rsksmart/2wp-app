@@ -127,7 +127,7 @@ export default defineComponent({
         title: PowPegMode.NATIVE,
         label: 'Powered by PowPeg',
         subtitleColor: 'purple',
-        link: 'https://dev.rootstock.io/developers/integrate/flyover/powpeg-vs-flyover/',
+        link: 'https://dev.rootstock.io/developers/integrate/flyover/',
         estimatedTime: () => '17 hours',
         timeColor: 'red',
         totalFee: () => selectedFee.value,
@@ -139,7 +139,7 @@ export default defineComponent({
         title: PowPegMode.FAST,
         label: 'Powered by PowPeg + Flyover',
         subtitleColor: 'orange',
-        link: 'https://dev.rootstock.io/developers/integrate/flyover/powpeg-vs-flyover/',
+        link: 'https://dev.rootstock.io/developers/integrate/flyover/',
         estimatedTime: () => blockConfirmationsToTimeString(computedQuote.value?.quote.confirmations ?? 0, 'btc'),
         timeColor: 'green',
         amountToTransfer: () => computedQuote.value?.getTotalTxAmount(selectedFee.value)

@@ -222,7 +222,7 @@ export default defineComponent({
           title: PowPegMode.FAST,
           label: 'Powered by PowPeg + Flyover',
           subtitleBgColor: 'orange',
-          link: 'https://dev.rootstock.io/developers/integrate/flyover/powpeg-vs-flyover/',
+          link: 'https://dev.rootstock.io/developers/integrate/flyover/',
           color: '#FF9100',
           timeColor: 'green',
         };
@@ -231,7 +231,7 @@ export default defineComponent({
         title: PowPegMode.NATIVE,
         label: 'Powered by PowPeg',
         subtitleBgColor: 'purple',
-        link: 'https://dev.rootstock.io/developers/integrate/flyover/powpeg-vs-flyover/',
+        link: 'https://dev.rootstock.io/developers/integrate/flyover/',
         color: '#9E75FF',
         timeColor: 'red',
       };
