@@ -1,9 +1,20 @@
+const preset = require('@vue/cli-plugin-unit-jest/presets/typescript-and-babel/jest-preset');
+
+// Remove deprecated ts-jest from globals
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const { 'ts-jest': _, ...globalsWithoutTsJest } = preset.globals || {};
+
 module.exports = {
+  ...preset,
   transform: {
+    ...preset.transform,
     '^.+\\.vue$': '@vue/vue3-jest',
-    '^.+\\.(mts|mjs|jsx|ts|tsx)$': 'ts-jest',
+    '^.+\\.(mts|ts|tsx)$': ['ts-jest', {
+      babelConfig: true, // Moved from deprecated globals config
+    }],
+    '^.+\\.mjs$': 'babel-jest',
   },
-  preset: '@vue/cli-plugin-unit-jest/presets/typescript-and-babel',
+  globals: globalsWithoutTsJest,
   collectCoverage: true,
   collectCoverageFrom: ['src/(common|pegin)/(providers|services|utils)/*.ts'],
   coverageThreshold: {
@@ -15,7 +26,9 @@ module.exports = {
     },
   },
   coverageProvider: 'v8',
-  transformIgnorePatterns: ['node_modules/(?!axios)/'],
+  transformIgnorePatterns: [
+    'node_modules/(?!axios|sats-connect|@sats-connect)',
+  ],
   setupFilesAfterEnv: ['<rootDir>/setup-jest.js'],
   silent: true,
   testPathIgnorePatterns: ['.*Builder.spec.ts'], // TODO: Remove once resolved @reown/appkit/vue import issue
