@@ -29,7 +29,7 @@
     "@rsksmart/rlogin": "^1.6.1",
     "@rsksmart/rlogin-ledger-provider": "^1.0.5-alpha",
     "@rsksmart/rlogin-trezor-provider": "^1.0.6",
-    "@rsksmart/rsk-precompiled-abis": "^6.0.0-ARROWHEAD",
+    "@rsksmart/rsk-precompiled-abis": "^8.0.0-REED",
     "@rsksmart/rsk-utils": "^1.1.0",
     "@stacks/connect": "^7.7.1",
     "@swan-bitcoin/xpub-lib": "^0.1.5",
