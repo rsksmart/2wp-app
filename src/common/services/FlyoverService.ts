@@ -42,18 +42,7 @@ export default class FlyoverService {
   constructor(providerUrl?: string) {
     this.providerUrl = providerUrl
     ?? EnvironmentAccessorService.getEnvironmentVariables().vueAppRskNodeHost;
-    const appNetwork = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
-    switch (appNetwork) {
-      case constants.BTC_NETWORK_MAINNET:
-        this.flyoverNetwork = 'Mainnet';
-        break;
-      case constants.BTC_NETWORK_TESTNET:
-        this.flyoverNetwork = 'Testnet';
-        break;
-      default:
-        this.flyoverNetwork = 'Regtest';
-        break;
-    }
+    this.flyoverNetwork = EnvironmentAccessorService.getEnvironmentVariables().flyoverNetwork;
   }
 
   initialize(web3Provider?: providers.ExternalProvider): Promise<void> {
@@ -68,7 +57,7 @@ export default class FlyoverService {
         .then((connection) => {
           this.flyover = new Flyover({
             rskConnection: connection,
-            network: 'Development', // this.flyoverNetwork,
+            network: this.flyoverNetwork,
             captchaTokenResolver: this.tokenResolver.bind(this),
             disableChecksum: true,
           });
