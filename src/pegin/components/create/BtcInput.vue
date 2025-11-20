@@ -79,7 +79,7 @@ export default defineComponent({
     const maxValue = ref('0');
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
     const peginConfiguration = useStateAttribute<PeginConfiguration>('pegInTx', 'peginConfiguration');
-    const estimateMaxFlyover = useAction('flyoverPegin', constants.FLYOVER_PEGIN_ESTIMATE_MAX_VALUE);
+    const estimateMaxFlyover = useAction<SatoshiBig>('flyoverPegin', constants.FLYOVER_PEGIN_ESTIMATE_MAX_VALUE);
     const estimateMaxNative = useAction('pegInTx', constants.PEGIN_TX_ESTIMATE_MAX_VALUE);
 
     const boundaries = computed(() => {
@@ -173,31 +173,39 @@ export default defineComponent({
       bitcoinAmountModel.value = minValue.toBTCTrimmedString();
     }
 
-    function setMax() {
+    async function getMaxFlyover(maxNative: SatoshiBig): Promise<SatoshiBig> {
+      return new Promise<SatoshiBig>((resolve) => {
+        if (props.flyoverAvailable) {
+          estimateMaxFlyover(selectedAccountBalance.value)
+            .then(resolve)
+            .catch(() => {
+              resolve(maxNative);
+            });
+        } else {
+          resolve(maxNative);
+        }
+      });
+    }
+
+    async function setMax() {
       loadingMax.value = true;
       let maxNative = new SatoshiBig(0, 'satoshi');
       let maxFlyover = new SatoshiBig(0, 'satoshi');
 
-      estimateMaxNative()
-        .then((maxNativeValue) => {
-          maxNative = maxNativeValue as SatoshiBig;
-          return props.flyoverAvailable
-            ? estimateMaxFlyover() : Promise.resolve();
-        })
-        .then((maxFlyoverValue) => {
-          maxFlyover = maxFlyoverValue as SatoshiBig;
-          loadingMax.value = false;
-        })
-        .catch(() => { loadingMax.value = false; })
-        .finally(() => {
-          loadingMax.value = false;
+      try {
+        maxNative = await estimateMaxNative() as SatoshiBig;
+      } catch {
+        // work with default values
+      } finally {
+        maxFlyover = await getMaxFlyover(maxNative);
+        loadingMax.value = false;
 
-          maxValue.value = props.flyoverAvailable
-            ? maxFlyover.toBTCTrimmedString()
-            : maxNative.toBTCTrimmedString();
+        maxValue.value = props.flyoverAvailable
+          ? maxFlyover.toBTCTrimmedString()
+          : maxNative.toBTCTrimmedString();
 
-          bitcoinAmountModel.value = maxValue.value;
-        });
+        bitcoinAmountModel.value = maxValue.value;
+      }
     }
 
     watch(selectedAccountBalance, () => {

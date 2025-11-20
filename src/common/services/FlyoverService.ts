@@ -12,6 +12,7 @@ import {
 import { Wallet, providers } from 'ethers';
 import { EnvironmentAccessorService } from './enviroment-accessor.service';
 import {
+  getBtcAddressType,
   isValidSiteKey,
   ServiceError,
   toWeiBigIntString,
@@ -66,8 +67,8 @@ export default class FlyoverService {
       connectionPromise
         .then((connection) => {
           this.flyover = new Flyover({
-            rskConnection: connection as BlockchainConnection,
-            network: this.flyoverNetwork,
+            rskConnection: connection,
+            network: 'Development', // this.flyoverNetwork,
             captchaTokenResolver: this.tokenResolver.bind(this),
             disableChecksum: true,
           });
@@ -341,7 +342,6 @@ export default class FlyoverService {
     return new Promise<Array<PeginQuote>>((resolve, reject) => {
       this.flyover?.getQuotes({
         rskRefundAddress: rootstockRecipientAddress,
-        // TODO: this should be fixed in the SDK: valueToTransfer is in BTC
         valueToTransfer: valueToTransfer.toWeiBigIntUnsafe(),
         callContractArguments: '',
         callEoaOrContractAddress: rootstockRecipientAddress,
@@ -357,7 +357,6 @@ export default class FlyoverService {
               const quote = new PeginQuote(quoteFromServer);
               return quote;
             });
-
           return Promise.all(peginQuotes);
         })
         .then(resolve)
@@ -426,9 +425,7 @@ export default class FlyoverService {
   public registerPeginQuote(
     quoteHash: string,
     signature: string,
-    btcRawTransaction: string,
-    partialMerkleTree: string,
-    blockheight: number,
+    btcTxHash: string,
   ): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       const selectedQuote = this.peginQuotes
@@ -436,10 +433,8 @@ export default class FlyoverService {
       if (selectedQuote) {
         this.flyover?.registerPegin({
           quote: selectedQuote,
-          signature,
-          btcRawTransaction,
-          partialMerkleTree,
-          height: blockheight,
+          providerSignature: signature,
+          userBtcTransactionHash: btcTxHash,
         })
           .then((txHash: string) => resolve(txHash))
           .catch((error: Error) => {
@@ -586,5 +581,47 @@ export default class FlyoverService {
       });
     } catch (e) { maxFee = new WeiBig(0, 'wei'); }
     return maxFee;
+  }
+
+  public estimateRecommendedPegin(amount: SatoshiBig, rootstockRecipientAddress: string)
+  : Promise<SatoshiBig> {
+    return new Promise<SatoshiBig>((resolve, reject) => {
+      this.flyover?.estimateRecommendedPegin(amount.toWeiBigIntUnsafe(), {
+        destinationAddress: rootstockRecipientAddress,
+        data: '',
+      })
+        .then((recommendedOperation) => {
+          resolve(SatoshiBig.fromWeiBig(new WeiBig(recommendedOperation.recommendedQuoteValue, 'wei')));
+        })
+        .catch((error: Error) => {
+          reject(new ServiceError(
+            'FlyoverService',
+            'estimateRecommendedPegin',
+            'There was an error estimating the recommended peg-in transaction',
+            error.message,
+          ));
+        });
+    });
+  }
+
+  public estimateRecommendedPegout(amount: WeiBig, btcRecipientAddress: string)
+  : Promise<WeiBig> {
+    return new Promise<WeiBig>((resolve, reject) => {
+      const destinationAddressType = getBtcAddressType(btcRecipientAddress);
+      this.flyover?.estimateRecommendedPegout(amount.toWeiBigIntUnsafe(), {
+        destinationAddressType,
+      })
+        .then((recommendedOperation) => {
+          resolve(new WeiBig(recommendedOperation.recommendedQuoteValue, 'wei'));
+        })
+        .catch((error: Error) => {
+          reject(new ServiceError(
+            'FlyoverService',
+            'estimateRecommendedPegout',
+            'There was an error estimating the recommended peg-out transaction',
+            error.message,
+          ));
+        });
+    });
   }
 }
