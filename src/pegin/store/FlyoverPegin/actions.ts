@@ -165,7 +165,7 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
           || maxValueToSend.toWeiBigIntUnsafe() > provider
             .pegin.maxTransactionValue.toWeiBigIntUnsafe()
         ) {
-          reject(new Error(`Balance is not within the provider allowed range: ${provider.pegin.minTransactionValue.toWeiBigIntUnsafe()} - ${provider.pegin.maxTransactionValue.toWeiBigIntUnsafe()}`));
+          reject(new Error(`Balance is not within the provider allowed range: ${provider.pegin.minTransactionValue.toRBTCTrimmedString()} - ${provider.pegin.maxTransactionValue.toRBTCTrimmedString()}`));
         }
         return state.flyoverService.estimateRecommendedPegin(
           maxValueToSend,
