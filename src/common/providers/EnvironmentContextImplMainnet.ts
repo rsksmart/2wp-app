@@ -44,6 +44,7 @@ export default class EnvironmentContextImpl implements EnvironmentContext {
       legacy: new RegExp(constants.MAINNET_ADDRESS_LEGACY),
       segwit: new RegExp(constants.MAINNET_ADDRESS_SEGWIT),
       nativeSegwit: new RegExp(constants.MAINNET_ADDRESS_NSEGWIT),
+      taproot: new RegExp(constants.MAINNET_ADDRESS_TAPROOT),
     };
   }
 

@@ -45,6 +45,7 @@ export default class EnvironmentContextImplTestnet implements EnvironmentContext
       legacy: new RegExp(constants.TESTNET_ADDRESS_LEGACY),
       segwit: new RegExp(constants.TESTNET_ADDRESS_SEGWIT),
       nativeSegwit: new RegExp(constants.TESTNET_ADDRESS_NSEGWIT),
+      taproot: new RegExp(constants.TESTNET_ADDRESS_TAPROOT),
     };
   }
 

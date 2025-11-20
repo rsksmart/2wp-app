@@ -2,6 +2,7 @@ export interface AddressRegexPattern {
   legacy: RegExp;
   segwit: RegExp;
   nativeSegwit: RegExp;
+  taproot: RegExp;
 }
 
 export interface EnvironmentContext {
