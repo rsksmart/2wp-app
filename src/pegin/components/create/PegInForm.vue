@@ -46,6 +46,12 @@
                 <h4 v-if="countdown === recaptchanNewTokenTime">
                   <span class="text-orange">Fast Mode</span> no quotes available for this amount.
                 </h4>
+                <h4 v-else-if="!enoughFlyoverLiquidity">
+                  <span class="text-orange">Fast Mode</span>
+                  There is not enough liquidity for this amount.
+                  <a href="mailto:support@rootstocklabs.com?subject=Liquidity Provider Issue">
+                    Contact support</a> if you want to use the fast mode.
+                </h4>
               </template>
             </pegin-option-card>
           </v-row>
@@ -175,6 +181,7 @@ export default defineComponent({
     const selectedQuote = ref<PeginQuote>();
     const showErrorDialog = ref(false);
     const txError = ref<ServiceError>(new ServiceError('', '', '', ''));
+    const enoughFlyoverLiquidity = ref(true);
     const account = useStateAttribute<string>('web3Session', 'account');
     const pegInTxState = useState<PegInTxState>('pegInTx');
     const flyoverPeginState = useState<FlyoverPeginState>('flyoverPegin');
@@ -332,7 +339,8 @@ export default defineComponent({
       if (!validAmount.value || !validAddress.value) {
         return;
       }
-      if (!enoughLiquidityForThisAmount(new WeiBig(amount.value, 'rbtc'))) {
+      enoughFlyoverLiquidity.value = enoughLiquidityForThisAmount(new WeiBig(amount.value, 'rbtc'));
+      if (!enoughFlyoverLiquidity.value) {
         await clearQuotes();
         return;
       }
