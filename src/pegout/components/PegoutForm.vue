@@ -25,11 +25,18 @@
           <v-row no-gutters class="mb-4 mt-8">
             <span class="text-body-sm">Select mode to see exact amounts</span>
           </v-row>
-          <v-row no-gutters v-if="!flyoverIsEnabled || pegoutQuotes.length === 0">
+          <v-row no-gutters
+            v-if="!flyoverIsEnabled || (pegoutQuotes.length === 0 && enoughFlyoverLiquidity)">
             <pegout-option :option-type="pegoutType.FLYOVER" flyover-not-available>
               <template v-slot>
                 <h4 v-if="countdown === recaptchanNewTokenTime">
                   <span class="text-orange">Fast Mode</span> is unavailable at this time.
+                </h4>
+                <h4 v-else-if="!enoughFlyoverLiquidity">
+                  <span class="text-orange">Fast Mode</span>
+                  There is not enough liquidity for this amount.
+                  <a href="mailto:support@rootstocklabs.com?subject=Liquidity Provider Issue">
+                    Contact support</a> if you want to use the fast mode.
                 </h4>
                 <h4 v-else>
                   Fast mode will be <br> available in
@@ -240,6 +247,7 @@ export default defineComponent({
     const acceptQuote = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ACCEPT_QUOTE);
     const recaptchanNewTokenTime = EnvironmentAccessorService.getEnvironmentVariables()
       .grecaptchaTime;
+    const enoughFlyoverLiquidity = ref(true);
 
     const pegoutQuotes = computed(() => {
       const quoteList: QuotePegOut2WP[] = [];
@@ -533,7 +541,10 @@ export default defineComponent({
 
     watch([amount, validAmount], async () => {
       if (!validAmount.value) return;
-      if (!enoughLiquidityForThisAmount(SatoshiBig.fromWeiBig(amountToTransfer.value))) {
+      enoughFlyoverLiquidity.value = enoughLiquidityForThisAmount(
+        SatoshiBig.fromWeiBig(amountToTransfer.value),
+      );
+      if (!enoughFlyoverLiquidity.value) {
         await clearQuotes();
         return;
       }
@@ -636,6 +647,7 @@ export default defineComponent({
       mdiQrcode,
       existQuoteAndUsersBalanceIsEnough,
       isFireblocksConnected,
+      enoughFlyoverLiquidity,
     };
   },
 });
