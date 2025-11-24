@@ -6,12 +6,11 @@ import { ActionTree } from 'vuex';
 import * as constants from '@/common/store/constants';
 import { BridgeService } from '@/common/services/BridgeService';
 import {
-  generateMockRSKAddress, generateRandomLegacyBitcoinAddress,
-  getClearObjectDifference, promiseWithTimeout, toWeiBigIntString,
+  getClearObjectDifference, promiseWithTimeout,
 } from '@/common/utils';
 import { ApiService } from '@/common/services';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
-import { BigNumber, providers } from 'ethers';
+import { providers } from 'ethers';
 import { AcceptedPegoutQuote } from '@rsksmart/flyover-sdk';
 
 export const actions: ActionTree<FlyoverPegoutState, RootState> = {
@@ -274,62 +273,24 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
   }),
   [constants.FLYOVER_PEGOUT_ESTIMATE_MAX_VALUE]:
     (
-      { state, rootState },
-    ) => new Promise((resolve) => {
-      const web3Provider = new providers.JsonRpcProvider(
-        EnvironmentAccessorService.getEnvironmentVariables().vueAppRskNodeHost,
-      );
-      const { flyoverProviderId: lpId } = EnvironmentAccessorService.getEnvironmentVariables();
-
-      const provider = state.liquidityProviders.find((p) => p.id === lpId);
-
-      state.flyoverService.useLiquidityProvider(lpId);
-
-      const maxFlyoverTxValue = provider?.pegout.maxTransactionValue || new WeiBig(0, 'wei');
-      let bigIntMaxTransactionValue = toWeiBigIntString(maxFlyoverTxValue?.toRBTCString());
-      if (bigIntMaxTransactionValue === '0') bigIntMaxTransactionValue = constants.BIGGEST_BIG_INT.toString();
-
-      const callEoaOrContractAddress = rootState.web3Session?.account || generateMockRSKAddress();
-      const btcRecipientAddress = generateRandomLegacyBitcoinAddress();
-
-      Promise.allSettled([
-        state.flyoverService
-          .estimatePegoutMaxFee(maxFlyoverTxValue, callEoaOrContractAddress, btcRecipientAddress),
-        web3Provider?.estimateGas({
-          from: callEoaOrContractAddress,
-          to: rootState.pegOutTx?.pegoutConfiguration.bridgeContractAddress,
-          value: maxFlyoverTxValue.toWeiString(),
-        }),
-        web3Provider?.getGasPrice(),
-        state.flyoverService.getAvailableLiquidity(),
+      { state, rootState, dispatch },
+    ) => new Promise<WeiBig>((resolve, reject) => {
+      const bridgeService = new BridgeService();
+      Promise.all([
+        dispatch(
+          constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER,
+          EnvironmentAccessorService.getEnvironmentVariables().flyoverProviderId,
+        ),
+        bridgeService.getFederationAddress(),
       ])
-        .then(([feeResult, gasResult, gasPriceResult, liquidityResult]) => {
-          const availableLiquidity = liquidityResult.status === constants.FULFILLED
-            ? liquidityResult.value.peginLiquidity : new WeiBig(0, 'wei');
-          let bigIntAvailableLiquidity = toWeiBigIntString(availableLiquidity.toRBTCString() || '0');
-          if (bigIntAvailableLiquidity === '0') bigIntAvailableLiquidity = constants.BIGGEST_BIG_INT.toString();
-
-          const gasPrice = gasPriceResult.status === constants.FULFILLED
-            ? gasPriceResult.value : 24000000;
-          const gas = gasResult.status === constants.FULFILLED ? gasResult.value : 21000;
-          const maxQuoteFee = feeResult.status === constants.FULFILLED ? feeResult.value : new WeiBig(0, 'wei');
-          const gasFee = new WeiBig(
-            BigNumber.from(gasPrice).mul(BigNumber.from(gas)).toNumber(),
-            'wei',
-          );
-          const fullFee = maxQuoteFee.plus(gasFee);
-
-          const balance = rootState.web3Session?.balance || new WeiBig(0, 'wei');
-          const balanceMinusFlyoverFees = balance.minus(fullFee);
-          let bigIntBalanceMinusFlyoverFees = toWeiBigIntString(balanceMinusFlyoverFees?.toRBTCString() || '0');
-          if (bigIntBalanceMinusFlyoverFees === '0') bigIntBalanceMinusFlyoverFees = constants.BIGGEST_BIG_INT.toString();
-          const maxValue = new WeiBig([
-            BigInt(bigIntAvailableLiquidity),
-            BigInt(bigIntMaxTransactionValue),
-            BigInt(bigIntBalanceMinusFlyoverFees),
-          ].reduce((min, current) => (current < min ? current : min)), 'wei');
-          resolve(maxValue);
-        })
-        .catch(() => { resolve(new WeiBig(0, 'wei')); });
+        .then(([, tempBtcAddress]) => state.flyoverService.estimateDepositPegoutGas(
+        rootState.web3Session?.balance as WeiBig,
+        tempBtcAddress,
+        rootState.web3Session?.account as string,
+        ))
+        .then((gas: WeiBig) => state.flyoverService
+          .estimateRecommendedPegout(rootState.web3Session?.balance.minus(gas) as WeiBig, state.btcRecipientAddress ?? ''))
+        .then(resolve)
+        .catch(reject);
     }),
 };
