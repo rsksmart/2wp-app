@@ -92,7 +92,7 @@ export default defineComponent({
     const setRbtcAmount = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ADD_AMOUNT);
     const addAmount = useAction('pegOutTx', constants.PEGOUT_TX_ADD_AMOUNT);
     const calculateFee = useAction('pegOutTx', constants.PEGOUT_TX_CALCULATE_FEE);
-    const getMaxFlyover = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ESTIMATE_MAX_VALUE);
+    const estimateMaxFlyover = useAction<WeiBig>('flyoverPegout', constants.FLYOVER_PEGOUT_ESTIMATE_MAX_VALUE);
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
     const pegoutConfiguration = useStateAttribute<PegoutConfiguration>('pegOutTx', 'pegoutConfiguration');
     const account = useStateAttribute<string>('web3Session', 'account');
@@ -198,27 +198,35 @@ export default defineComponent({
       return balance ?? new WeiBig(0, 'wei');
     }
 
-    function setMax() {
+    async function getMaxFlyover(): Promise<WeiBig> {
+      return new Promise<WeiBig>((resolve) => {
+        if (props.flyoverAvailable) {
+          estimateMaxFlyover()
+            .then(resolve)
+            .catch(() => {
+              resolve(new WeiBig(0, 'wei'));
+            });
+        } else {
+          resolve(new WeiBig(0, 'wei'));
+        }
+      });
+    }
+
+    async function setMax() {
       loadingMax.value = true;
       let maxFlyover = new WeiBig(0, 'wei');
+      const maxNative = getMaxNative();
+      maxFlyover = await getMaxFlyover();
 
+      loadingMax.value = false;
       if (props.flyoverAvailable) {
-        getMaxFlyover()
-          .then((maxFlyoverValue) => {
-            maxFlyover = maxFlyoverValue as WeiBig;
-            loadingMax.value = false;
-          })
-          .catch(() => { loadingMax.value = false; })
-          .finally(() => {
-            maxValue.value = maxFlyover.toRBTCTrimmedString();
-            loadingMax.value = false;
-            rbtcAmountModel.value = maxValue.value;
-          });
+        maxValue.value = maxFlyover.gt(maxNative)
+          ? maxFlyover.toRBTCTrimmedString() : maxNative.toRBTCTrimmedString();
       } else {
-        maxValue.value = getMaxNative().toRBTCTrimmedString();
-        loadingMax.value = false;
-        rbtcAmountModel.value = maxValue.value;
+        maxValue.value = maxFlyover.toRBTCTrimmedString();
       }
+
+      rbtcAmountModel.value = maxValue.value;
     }
 
     function clearInput() {

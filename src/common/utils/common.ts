@@ -163,3 +163,12 @@ export const generateMockRSKAddress = (): string => {
   }
   return `0x${result}`;
 };
+
+/**
+ * Returns the minimum of two BigInt values
+ *
+ * @param a - First BigInt value
+ * @param b - Second BigInt value
+ * @returns The minimum of the two BigInt values
+ */
+export const minBigInt = (a: bigint, b: bigint): bigint => (a < b ? a : b);
