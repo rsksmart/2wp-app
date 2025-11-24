@@ -127,7 +127,7 @@ export default defineComponent({
         title: PowPegMode.NATIVE,
         label: 'Powered by PowPeg',
         subtitleColor: 'purple',
-        link: 'https://dev.rootstock.io/developers/integrate/flyover/',
+        link: 'https://dev.rootstock.io/concepts/powpeg/',
         estimatedTime: () => '17 hours',
         timeColor: 'red',
         totalFee: () => selectedFee.value,

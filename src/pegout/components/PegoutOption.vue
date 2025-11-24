@@ -231,7 +231,7 @@ export default defineComponent({
         title: PowPegMode.NATIVE,
         label: 'Powered by PowPeg',
         subtitleBgColor: 'purple',
-        link: 'https://dev.rootstock.io/developers/integrate/flyover/',
+        link: 'https://dev.rootstock.io/concepts/powpeg/',
         color: '#9E75FF',
         timeColor: 'red',
       };
