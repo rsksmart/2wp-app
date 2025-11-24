@@ -1,14 +1,14 @@
 import {
   FlyoverPeginState, QuotePegIn2WP, RootState, SatoshiBig,
   WeiBig, LogEntryType, LogEntryOperation,
+  Utxo,
 } from '@/common/types';
 import { ActionTree } from 'vuex';
 import * as constants from '@/common/store/constants';
 import { ApiService } from '@/common/services';
-import {
-  promiseWithTimeout, generateMockRSKAddress, toWeiBigIntString, bigIntToUserFormattedWei,
-} from '@/common/utils';
+import { promiseWithTimeout } from '@/common/utils';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import { TxFeeService } from '@/pegin/services';
 
 export const actions: ActionTree<FlyoverPeginState, RootState> = {
   [constants.FLYOVER_PEGIN_INIT]: ({ state, dispatch }) => new Promise((resolve, reject) => {
@@ -141,52 +141,39 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
       .catch(reject);
   }),
   [constants.FLYOVER_PEGIN_ESTIMATE_MAX_VALUE]: (
-    {
-      state, rootState, rootGetters,
-    },
-  ) => new Promise((resolve) => {
+    { state, rootGetters },
+    balance: SatoshiBig,
+  ) => new Promise<SatoshiBig>((resolve, reject) => {
     const provider = state.liquidityProviders
       .find((p) => p.id === EnvironmentAccessorService.getEnvironmentVariables().flyoverProviderId);
-    state.flyoverService.useLiquidityProvider(provider?.id || 0);
-
-    const maxTransactionValue = provider?.pegin.maxTransactionValue || new WeiBig(0, 'wei');
-    let bigIntMaxTransactionValue = toWeiBigIntString(maxTransactionValue?.toRBTCString());
-    if (bigIntMaxTransactionValue === '0') bigIntMaxTransactionValue = constants.BIGGEST_BIG_INT.toString();
-
-    const callEoaOrContractAddress = rootState.web3Session?.account || generateMockRSKAddress();
-    const selectedAccountBalance = rootGetters[`pegInTx/${constants.PEGIN_TX_GET_SELECTED_BALANCE}`];
-    const accountBalance = new WeiBig(toWeiBigIntString(selectedAccountBalance.toBTCString()), 'wei');
-    Promise.allSettled([
-      state.flyoverService.estimatePeginMaxFee(maxTransactionValue, callEoaOrContractAddress),
-      state.flyoverService.getAvailableLiquidity(),
-    ])
-      .then(([fullMaxFeeResult, liquidityResult]) => {
-        const availableLiquidity = liquidityResult.status === constants.FULFILLED
-          ? liquidityResult.value.peginLiquidity : new WeiBig(0, 'wei');
-        let bigIntAvailableLiquidity = toWeiBigIntString(availableLiquidity.toRBTCString() || '0');
-        if (bigIntAvailableLiquidity === '0') bigIntAvailableLiquidity = constants.BIGGEST_BIG_INT.toString();
-
-        const maxFeeBtc = rootState.pegInTx?.maxFee || new SatoshiBig(0, 'satoshi');
-        const maxFeeWei = new WeiBig(toWeiBigIntString(maxFeeBtc.toBTCString()), 'wei');
-        const fullMaxFee = fullMaxFeeResult.status === constants.FULFILLED
-          ? fullMaxFeeResult.value : new WeiBig(0, 'wei');
-        const balanceMinusFlyoverFees = accountBalance.minus(fullMaxFee).minus(maxFeeWei);
-        let bigIntBalanceMinusFlyoverFees = toWeiBigIntString(
-          balanceMinusFlyoverFees.toRBTCString(),
+    if (!provider) {
+      reject(new Error('No provider found'));
+      return;
+    }
+    state.flyoverService.useLiquidityProvider(provider.id);
+    const utxoList = rootGetters[`pegInTx/${constants.PEGIN_TX_GET_ACCOUNT_UTXO_LIST}`] as Utxo[];
+    TxFeeService.getTxFee(
+      balance,
+      utxoList,
+      constants.BITCOIN_FAST_FEE_LEVEL,
+    )
+      .then((fee) => {
+        const maxValueToSend = balance.minus(fee.fee.amount);
+        if (
+          maxValueToSend.toWeiBigIntUnsafe() < provider
+            .pegin.minTransactionValue.toWeiBigIntUnsafe()
+          || maxValueToSend.toWeiBigIntUnsafe() > provider
+            .pegin.maxTransactionValue.toWeiBigIntUnsafe()
+        ) {
+          reject(new Error(`Balance is not within the provider allowed range: ${provider.pegin.minTransactionValue.toRBTCTrimmedString()} - ${provider.pegin.maxTransactionValue.toRBTCTrimmedString()}`));
+        }
+        return state.flyoverService.estimateRecommendedPegin(
+          maxValueToSend,
+          state.rootstockRecipientAddress,
         );
-        if (bigIntBalanceMinusFlyoverFees === '0') bigIntBalanceMinusFlyoverFees = constants.BIGGEST_BIG_INT.toString();
-
-        const maxBigIntValue = [
-          BigInt(bigIntAvailableLiquidity),
-          BigInt(bigIntMaxTransactionValue),
-          BigInt(bigIntBalanceMinusFlyoverFees),
-        ].reduce((min, current) => (current < min ? current : min));
-
-        const satoshiMaxValue = new SatoshiBig(
-          bigIntToUserFormattedWei(maxBigIntValue.toString()),
-          'btc',
-        );
-        resolve(satoshiMaxValue);
+      })
+      .then((recommendedPegin) => {
+        resolve(recommendedPegin);
       })
       .catch(() => {
         const zero = new SatoshiBig(0, 'satoshi');

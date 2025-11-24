@@ -149,6 +149,7 @@ export default defineComponent({
               signedTx,
             );
           }
+          console.log('signedTx', signedTx);
           return ApiService.broadcast(signedTx);
         })
         .then((id) => {

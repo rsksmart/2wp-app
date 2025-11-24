@@ -13,14 +13,16 @@ import {
   AccountBalance, FeeAmountData, NormalizedTx, RootState,
   PeginConfiguration, PegInTxState, WalletAddress,
   BtcAccount, BtcWallet, MiningSpeedFee, UtxoListPerAccount, Utxo,
+  WeiBig,
 } from '@/common/types';
 import {
   getBalanceFromUtxoList,
-  getClearPeginTxState, getCookie, isBTCAmountValidRegex, setCookie,
+  getClearPeginTxState, getCookie, isBTCAmountValidRegex, minBigInt, setCookie,
 } from '@/common/utils';
 import PeginConfigurationService from '@/pegin/services/peginConfigurationService';
 import ReownService from '@/common/services/ReownService';
 import { BigNumber } from 'ethers';
+import { BridgeService } from '@/common/services/BridgeService';
 import TxFeeService from '../../services/TxFeeService';
 
 export const actions: ActionTree<PegInTxState, RootState> = {
@@ -255,6 +257,13 @@ export const actions: ActionTree<PegInTxState, RootState> = {
         const maxValue = selectedBalance.minus(maxFee);
         resolve(maxValue);
       })
-      .catch(() => { resolve(new SatoshiBig(0, 'satoshi')); });
+      .catch(async () => {
+        const bridgeService = new BridgeService();
+        const defaultMaxValue = minBigInt(
+          selectedBalance.toWeiBigIntUnsafe(),
+          await bridgeService.getLockingCap(),
+        );
+        resolve(SatoshiBig.fromWeiBig(new WeiBig(defaultMaxValue, 'wei')));
+      });
   }),
 };

@@ -1,5 +1,6 @@
 import { AppNetwork } from '@/common/types';
 import * as constants from '@/common/store/constants';
+import { Network } from '@rsksmart/bridges-core-sdk';
 
 export class EnvironmentVariables {
   public vueAppCoin: AppNetwork;
@@ -47,6 +48,8 @@ export class EnvironmentVariables {
   public apiResponseTimeout: number;
 
   public reownProjectId: string;
+
+  public flyoverNetwork: Network;
 
   public minFeeSatPerByte: {
     fast: number;
@@ -114,6 +117,8 @@ export class EnvironmentVariables {
     this.apiResponseTimeout = Number(process.env.VUE_APP_API_RESPONSE_TIMEOUT)
       || defaultValues.apiResponseTimeout;
     this.reownProjectId = process.env.VUE_APP_REOWN_PROJECT_ID || '';
+    this.flyoverNetwork = (process.env.VUE_APP_FLYOVER_NETWORK as Network)
+      || defaultValues.flyoverNetwork;
   }
 
   public get chainId(): number {

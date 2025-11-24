@@ -1,4 +1,6 @@
-import { BlockchainConnection, Network } from '@rsksmart/bridges-core-sdk';
+import {
+  BlockchainConnection, decodeBtcAddress, estimateGas, Network,
+} from '@rsksmart/bridges-core-sdk';
 import {
   AcceptedPegoutQuote, Flyover,
   LiquidityProvider, PegoutQuote, Quote,
@@ -9,9 +11,13 @@ import * as constants from '@/common/store/constants';
 import {
   LiquidityProvider2WP, PeginQuote, QuotePegOut2WP, WeiBig, SatoshiBig,
 } from '@/common/types';
-import { Wallet, providers } from 'ethers';
+import {
+  Wallet, providers, Contract, BigNumber,
+} from 'ethers';
+import lbcAbi from '@/common/abis/lbc';
 import { EnvironmentAccessorService } from './enviroment-accessor.service';
 import {
+  getBtcAddressType,
   isValidSiteKey,
   ServiceError,
   toWeiBigIntString,
@@ -41,18 +47,7 @@ export default class FlyoverService {
   constructor(providerUrl?: string) {
     this.providerUrl = providerUrl
     ?? EnvironmentAccessorService.getEnvironmentVariables().vueAppRskNodeHost;
-    const appNetwork = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
-    switch (appNetwork) {
-      case constants.BTC_NETWORK_MAINNET:
-        this.flyoverNetwork = 'Mainnet';
-        break;
-      case constants.BTC_NETWORK_TESTNET:
-        this.flyoverNetwork = 'Testnet';
-        break;
-      default:
-        this.flyoverNetwork = 'Regtest';
-        break;
-    }
+    this.flyoverNetwork = EnvironmentAccessorService.getEnvironmentVariables().flyoverNetwork;
   }
 
   initialize(web3Provider?: providers.ExternalProvider): Promise<void> {
@@ -66,7 +61,7 @@ export default class FlyoverService {
       connectionPromise
         .then((connection) => {
           this.flyover = new Flyover({
-            rskConnection: connection as BlockchainConnection,
+            rskConnection: connection,
             network: this.flyoverNetwork,
             captchaTokenResolver: this.tokenResolver.bind(this),
             disableChecksum: true,
@@ -341,7 +336,6 @@ export default class FlyoverService {
     return new Promise<Array<PeginQuote>>((resolve, reject) => {
       this.flyover?.getQuotes({
         rskRefundAddress: rootstockRecipientAddress,
-        // TODO: this should be fixed in the SDK: valueToTransfer is in BTC
         valueToTransfer: valueToTransfer.toWeiBigIntUnsafe(),
         callContractArguments: '',
         callEoaOrContractAddress: rootstockRecipientAddress,
@@ -357,7 +351,6 @@ export default class FlyoverService {
               const quote = new PeginQuote(quoteFromServer);
               return quote;
             });
-
           return Promise.all(peginQuotes);
         })
         .then(resolve)
@@ -426,9 +419,7 @@ export default class FlyoverService {
   public registerPeginQuote(
     quoteHash: string,
     signature: string,
-    btcRawTransaction: string,
-    partialMerkleTree: string,
-    blockheight: number,
+    btcTxHash: string,
   ): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       const selectedQuote = this.peginQuotes
@@ -436,10 +427,8 @@ export default class FlyoverService {
       if (selectedQuote) {
         this.flyover?.registerPegin({
           quote: selectedQuote,
-          signature,
-          btcRawTransaction,
-          partialMerkleTree,
-          height: blockheight,
+          providerSignature: signature,
+          userBtcTransactionHash: btcTxHash,
         })
           .then((txHash: string) => resolve(txHash))
           .catch((error: Error) => {
@@ -564,27 +553,98 @@ export default class FlyoverService {
     return maxFee;
   }
 
-  public async estimatePegoutMaxFee(
-    maxPerFlyoverTransaction: WeiBig,
-    callEoaOrContractAddress: string,
+  public estimateRecommendedPegin(amount: SatoshiBig, rootstockRecipientAddress: string)
+  : Promise<SatoshiBig> {
+    return new Promise<SatoshiBig>((resolve, reject) => {
+      this.flyover?.estimateRecommendedPegin(amount.toWeiBigIntUnsafe(), {
+        destinationAddress: rootstockRecipientAddress,
+        data: '',
+      })
+        .then((recommendedOperation) => {
+          resolve(SatoshiBig.fromWeiBig(new WeiBig(recommendedOperation.recommendedQuoteValue, 'wei')));
+        })
+        .catch((error: Error) => {
+          reject(new ServiceError(
+            'FlyoverService',
+            'estimateRecommendedPegin',
+            'There was an error estimating the recommended peg-in transaction',
+            error.message,
+          ));
+        });
+    });
+  }
+
+  public estimateRecommendedPegout(amount: WeiBig, btcRecipientAddress: string)
+  : Promise<WeiBig> {
+    return new Promise<WeiBig>((resolve, reject) => {
+      const destinationAddressType = getBtcAddressType(btcRecipientAddress);
+      this.flyover?.estimateRecommendedPegout(amount.toWeiBigIntUnsafe(), {
+        destinationAddressType,
+      })
+        .then((recommendedOperation) => {
+          resolve(new WeiBig(recommendedOperation.recommendedQuoteValue, 'wei'));
+        })
+        .catch((error: Error) => {
+          reject(new ServiceError(
+            'FlyoverService',
+            'estimateRecommendedPegout',
+            'There was an error estimating the recommended peg-out transaction',
+            error.message,
+          ));
+        });
+    });
+  }
+
+  private static toContractPegoutQuote({ quote: detail }: QuotePegOut2WP) {
+    return {
+      lbcAddress: detail.lbcAddress.toLowerCase(),
+      lpRskAddress: detail.liquidityProviderRskAddress.toLowerCase(),
+      btcRefundAddress: decodeBtcAddress(detail.btcRefundAddress),
+      rskRefundAddress: detail.rskRefundAddress.toLowerCase(),
+      lpBtcAddress: decodeBtcAddress(detail.lpBtcAddr),
+      callFee: detail.callFee,
+      penaltyFee: detail.penaltyFee,
+      nonce: detail.nonce,
+      deposityAddress: decodeBtcAddress(detail.depositAddr),
+      value: detail.value,
+      agreementTimestamp: detail.agreementTimestamp,
+      depositDateLimit: detail.depositDateLimit,
+      depositConfirmations: detail.depositConfirmations,
+      transferConfirmations: detail.transferConfirmations,
+      transferTime: detail.transferTime,
+      expireDate: detail.expireDate,
+      expireBlock: detail.expireBlocks,
+      productFeeAmount: detail.productFeeAmount,
+      gasFee: detail.gasFee,
+    };
+  }
+
+  public estimateDepositPegoutGas(
+    balance: WeiBig,
     btcRecipientAddress: string,
+    rskRefundAddress: string,
   ): Promise<WeiBig> {
-    const valueToTransfer = BigInt(toWeiBigIntString(maxPerFlyoverTransaction.toRBTCString()));
-    let maxFee = new WeiBig(0, 'wei');
-    try {
-      const quotes = await this.flyover?.getPegoutQuotes({
-        rskRefundAddress: callEoaOrContractAddress,
-        to: btcRecipientAddress,
-        valueToTransfer,
-      }) as PegoutQuote[];
-      quotes.forEach((quote: PegoutQuote) => {
-        const gasFeeWeiBig = new WeiBig(quote.quote.gasFee ?? 0, 'wei');
-        const callFeeWeiBig = new WeiBig(quote.quote.callFee ?? 0, 'wei');
-        const productFeeWeiBig = new WeiBig(quote.quote.productFeeAmount ?? 0, 'wei');
-        maxFee = gasFeeWeiBig.plus(callFeeWeiBig).plus(productFeeWeiBig);
-        return maxFee;
-      });
-    } catch (e) { maxFee = new WeiBig(0, 'wei'); }
-    return maxFee;
+    return new Promise<WeiBig>((resolve, reject) => {
+      this.getPegoutQuotes(rskRefundAddress, btcRecipientAddress, btcRecipientAddress, balance)
+        .then(([quote]: QuotePegOut2WP[]) => {
+          const amountToTransfer = this.calculateFinalAmountToTransfer(quote.quoteHash);
+          const signatureBytes = '0x';
+          const provider = new providers.JsonRpcProvider(this.providerUrl);
+          const lbcContract = new Contract(this.lbcAddress, lbcAbi, provider);
+          const lbcPegoutQuote = FlyoverService.toContractPegoutQuote(quote);
+          return estimateGas(lbcContract, 'depositPegout', lbcPegoutQuote, signatureBytes, { value: amountToTransfer });
+        })
+        .then((gas: BigNumber | bigint) => {
+          resolve(new WeiBig(gas as bigint, 'wei'));
+        })
+        .catch((error: Error) => {
+          reject(new ServiceError(
+            'FlyoverService',
+            'estimateDepositPegoutGas',
+            'There was an error estimating the gas for the deposit peg-out transaction',
+            error.message,
+          ));
+        });
+    });
   }
 }
