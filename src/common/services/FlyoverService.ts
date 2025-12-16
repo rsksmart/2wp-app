@@ -1,5 +1,5 @@
 import {
-  BlockchainConnection, decodeBtcAddress, estimateGas, Network,
+  BlockchainConnection, Network,
 } from '@rsksmart/bridges-core-sdk';
 import {
   AcceptedPegoutQuote, Flyover,
@@ -12,9 +12,8 @@ import {
   LiquidityProvider2WP, PeginQuote, QuotePegOut2WP, WeiBig, SatoshiBig,
 } from '@/common/types';
 import {
-  Wallet, providers, Contract, BigNumber,
+  Wallet, providers,
 } from 'ethers';
-import lbcAbi from '@/common/abis/lbc';
 import { EnvironmentAccessorService } from './enviroment-accessor.service';
 import {
   getBtcAddressType,
@@ -595,56 +594,12 @@ export default class FlyoverService {
     });
   }
 
-  private static toContractPegoutQuote({ quote: detail }: QuotePegOut2WP) {
-    return {
-      lbcAddress: detail.lbcAddress.toLowerCase(),
-      lpRskAddress: detail.liquidityProviderRskAddress.toLowerCase(),
-      btcRefundAddress: decodeBtcAddress(detail.btcRefundAddress),
-      rskRefundAddress: detail.rskRefundAddress.toLowerCase(),
-      lpBtcAddress: decodeBtcAddress(detail.lpBtcAddr),
-      callFee: detail.callFee,
-      penaltyFee: detail.penaltyFee,
-      nonce: detail.nonce,
-      deposityAddress: decodeBtcAddress(detail.depositAddr),
-      value: detail.value,
-      agreementTimestamp: detail.agreementTimestamp,
-      depositDateLimit: detail.depositDateLimit,
-      depositConfirmations: detail.depositConfirmations,
-      transferConfirmations: detail.transferConfirmations,
-      transferTime: detail.transferTime,
-      expireDate: detail.expireDate,
-      expireBlock: detail.expireBlocks,
-      productFeeAmount: detail.productFeeAmount,
-      gasFee: detail.gasFee,
-    };
-  }
-
-  public estimateDepositPegoutGas(
-    balance: WeiBig,
-    btcRecipientAddress: string,
-    rskRefundAddress: string,
-  ): Promise<WeiBig> {
-    return new Promise<WeiBig>((resolve, reject) => {
-      this.getPegoutQuotes(rskRefundAddress, btcRecipientAddress, btcRecipientAddress, balance)
-        .then(([quote]: QuotePegOut2WP[]) => {
-          const amountToTransfer = this.calculateFinalAmountToTransfer(quote.quoteHash);
-          const signatureBytes = '0x';
-          const provider = new providers.JsonRpcProvider(this.providerUrl);
-          const lbcContract = new Contract(this.lbcAddress, lbcAbi, provider);
-          const lbcPegoutQuote = FlyoverService.toContractPegoutQuote(quote);
-          return estimateGas(lbcContract, 'depositPegout', lbcPegoutQuote, signatureBytes, { value: amountToTransfer });
-        })
-        .then((gas: BigNumber | bigint) => {
-          resolve(new WeiBig(gas as bigint, 'wei'));
-        })
-        .catch((error: Error) => {
-          reject(new ServiceError(
-            'FlyoverService',
-            'estimateDepositPegoutGas',
-            'There was an error estimating the gas for the deposit peg-out transaction',
-            error.message,
-          ));
-        });
-    });
+  public static async getDepositPegoutGas(): Promise<WeiBig> {
+    const gasValue = EnvironmentAccessorService.getEnvironmentVariables().flyoverDepositPegoutGas;
+    const provider = new providers.JsonRpcProvider(
+      EnvironmentAccessorService.getEnvironmentVariables().vueAppRskNodeHost,
+    );
+    const gasPrice = await provider.getGasPrice();
+    return new WeiBig(BigInt(gasValue) * BigInt(gasPrice.toBigInt()), 'wei');
   }
 }

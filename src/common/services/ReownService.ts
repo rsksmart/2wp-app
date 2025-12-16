@@ -31,7 +31,7 @@ export default class ReownService extends WalletService {
         signInputs: reownTx.inputs,
         broadcast: false,
       })
-        .then((signature) => {
+        .then((signature: { psbt: string }) => {
           const signedPsbt = bitcoin.Psbt.fromBase64(signature.psbt || '');
           if (!signedPsbt.validateSignaturesOfAllInputs()) {
             reject(new Error('Invalid signature provided'));
@@ -41,7 +41,7 @@ export default class ReownService extends WalletService {
             });
           }
         })
-        .catch((error) => reject(error));
+        .catch(reject);
     });
   }
 

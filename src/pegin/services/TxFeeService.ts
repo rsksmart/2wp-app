@@ -72,7 +72,7 @@ export default class TxFeeService {
       if (remainingSatoshisToBePaid.gt(0)) {
         inputs.push(utxo);
         const amount = new SatoshiBig(utxo.amount, 'satoshi');
-        remainingSatoshisToBePaid = remainingSatoshisToBePaid.plus(feePerInput).safeMinus(amount);
+        remainingSatoshisToBePaid = remainingSatoshisToBePaid.plus(feePerInput).minus(amount);
       }
     });
     return {

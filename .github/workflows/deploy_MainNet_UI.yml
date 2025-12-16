@@ -60,6 +60,7 @@ jobs:
           VUE_APP_CSP=https://lps.tekscapital.com
           VUE_APP_API_RESPONSE_TIMEOUT=10000
           VUE_APP_REOWN_PROJECT_ID=${{ secrets.MAINNET_VUE_APP_REOWN_PROJECT_ID }}
+          VUE_APP_FLYOVER_DEPOSIT_PEGOUT_GAS=410700
           npm run-script build
 
       - name: Configure AWS credentials

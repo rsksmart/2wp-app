@@ -1,5 +1,5 @@
 <template>
-  <v-card :ripple="false" :disabled="flyoverNotAvailable"
+  <v-card :ripple="false"
     @click="selectOption" rounded="lg" flat variant="outlined"
     :class="{
       'selected': selected,

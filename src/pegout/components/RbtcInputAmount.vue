@@ -32,7 +32,7 @@
             <v-chip variant="outlined" density="compact" @click="setMin">
               {{ minStrVal }} MIN
             </v-chip>
-            <v-chip v-if="false" variant="outlined" density="compact" @click="setMax">
+            <v-chip variant="outlined" density="compact" @click="setMax">
               <v-progress-circular v-if="loadingMax"
                 :size="12"
                 :width="2"
@@ -219,12 +219,8 @@ export default defineComponent({
       maxFlyover = await getMaxFlyover();
 
       loadingMax.value = false;
-      if (props.flyoverAvailable) {
-        maxValue.value = maxFlyover.gt(maxNative)
-          ? maxFlyover.toRBTCTrimmedString() : maxNative.toRBTCTrimmedString();
-      } else {
-        maxValue.value = maxFlyover.toRBTCTrimmedString();
-      }
+      maxValue.value = props.flyoverAvailable
+        ? maxFlyover.toRBTCTrimmedString() : maxNative.toRBTCTrimmedString();
 
       rbtcAmountModel.value = maxValue.value;
     }

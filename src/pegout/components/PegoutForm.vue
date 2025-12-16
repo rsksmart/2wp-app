@@ -29,13 +29,14 @@
             v-if="!flyoverIsEnabled || (pegoutQuotes.length === 0 && enoughFlyoverLiquidity)">
             <pegout-option :option-type="pegoutType.FLYOVER" flyover-not-available>
               <template v-slot>
-                <h4 v-if="countdown === recaptchanNewTokenTime">
+                <h4 v-if="countdown === recaptchanNewTokenTime && enoughFlyoverLiquidity">
                   <span class="text-orange">Fast Mode</span> is unavailable at this time.
                 </h4>
                 <h4 v-else-if="!enoughFlyoverLiquidity">
                   <span class="text-orange">Fast Mode</span>
                   There is not enough liquidity for this amount.
-                  <a href="mailto:support@rootstocklabs.com?subject=Liquidity Provider Issue">
+                  <a style="text-decoration: underline; z-index: 99999;"
+                  href="mailto:flyover@rootstocklabs.com?subject=Insufficient Liquidity">
                     Contact support</a> if you want to use the fast mode.
                 </h4>
                 <h4 v-else>

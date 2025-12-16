@@ -141,7 +141,7 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
       .catch(reject);
   }),
   [constants.FLYOVER_PEGIN_ESTIMATE_MAX_VALUE]: (
-    { state, rootGetters },
+    { state, rootGetters, commit },
     balance: SatoshiBig,
   ) => new Promise<SatoshiBig>((resolve, reject) => {
     const provider = state.liquidityProviders
@@ -167,12 +167,20 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
         ) {
           reject(new Error(`Balance is not within the provider allowed range: ${provider.pegin.minTransactionValue.toRBTCTrimmedString()} - ${provider.pegin.maxTransactionValue.toRBTCTrimmedString()}`));
         }
-        return state.flyoverService.estimateRecommendedPegin(
+        return Promise.all([state.flyoverService.estimateRecommendedPegin(
           maxValueToSend,
           state.rootstockRecipientAddress,
-        );
+        ),
+        { maxValueToSend, maxFee: fee.fee.amount, maxSelectedUtxoList: fee.selectedUtxoList },
+        ]);
       })
-      .then((recommendedPegin) => {
+      .then(([recommendedPegin, { maxValueToSend, maxFee, maxSelectedUtxoList }]) => {
+        commit(constants.FLYOVER_PEGIN_SET_MAX_VALUES, {
+          isMaxSelected: true,
+          maxValueToSend,
+          maxFee,
+          maxSelectedUtxoList,
+        });
         resolve(recommendedPegin);
       })
       .catch(() => {
