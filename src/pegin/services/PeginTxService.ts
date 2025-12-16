@@ -72,7 +72,8 @@ export default class PeginTxService {
     const totalBalanceInSatoshis = new SatoshiBig(totalBalance, 'satoshi');
     const changeOutput: NormalizedOutput = {
       address: changeAddress === '' ? normalizedTx.inputs[0].address : changeAddress,
-      amount: totalBalanceInSatoshis.minus(amountToTransfer).minus(totalFee).toSatoshiString(),
+      amount: totalBalanceInSatoshis.safeMinus(amountToTransfer)
+        .safeMinus(totalFee).toSatoshiString(),
     };
     const burnDustValue = Math.min(
       EnvironmentAccessorService.getEnvironmentVariables().burnDustValue,

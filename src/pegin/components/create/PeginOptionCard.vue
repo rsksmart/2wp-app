@@ -133,7 +133,7 @@ export default defineComponent({
         totalFee: () => selectedFee.value,
         amountToTransfer: () => pegInTxState.value.amountToTransfer
           .plus(selectedFee.value),
-        valueToReceive: () => pegInTxState.value.amountToTransfer.minus(selectedFee.value),
+        valueToReceive: () => pegInTxState.value.amountToTransfer.safeMinus(selectedFee.value),
       },
       FLYOVER: {
         title: PowPegMode.FAST,

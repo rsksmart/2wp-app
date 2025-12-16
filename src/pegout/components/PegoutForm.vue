@@ -314,8 +314,8 @@ export default defineComponent({
     const nativeQuote = computed(() => {
       const btcFee = new WeiBig(pegOutTxState.value.btcEstimatedFee.toBTCString(), 'rbtc');
       const estimatedValueToReceive = pegOutTxState.value.amountToTransfer
-        .minus(pegOutTxState.value.calculatedFee)
-        .minus(btcFee);
+        .safeMinus(pegOutTxState.value.calculatedFee)
+        .safeMinus(btcFee);
       return {
         quote: {
           agreementTimestamp: 0,

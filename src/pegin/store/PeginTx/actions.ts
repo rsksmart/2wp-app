@@ -254,7 +254,7 @@ export const actions: ActionTree<PegInTxState, RootState> = {
         || new SatoshiBig(0, 'satoshi');
         commit(constants.PEGIN_TX_SET_MAX_FEE, maxFee);
 
-        const maxValue = selectedBalance.minus(maxFee);
+        const maxValue = selectedBalance.safeMinus(maxFee);
         resolve(maxValue);
       })
       .catch(async () => {
