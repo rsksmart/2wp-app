@@ -159,8 +159,6 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
     )
       .then((fee) => {
         const maxValueToSend = balance.safeMinus(fee.fee.amount);
-        console.log({ balance: balance.toWeiBigIntUnsafe() });
-        console.log({ maxValueToSend: maxValueToSend.toWeiBigIntUnsafe() });
         if (
           maxValueToSend.toWeiBigIntUnsafe() < provider
             .pegin.minTransactionValue.toWeiBigIntUnsafe()
