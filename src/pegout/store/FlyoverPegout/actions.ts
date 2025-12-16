@@ -184,7 +184,7 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
             .gt(currentQuoteTotal) ? newQuoteTotal : currentQuoteTotal;
           const minor = newQuoteTotal
             .gt(currentQuoteTotal) ? currentQuoteTotal : newQuoteTotal;
-          const percentageDifference = ((largest.minus(minor)).mul('100')).div(largest.toRBTCString());
+          const percentageDifference = ((largest.safeMinus(minor)).mul('100')).div(largest.toRBTCString());
           if (Number(percentageDifference.toRBTCString()) <= EnvironmentAccessorService
             .getEnvironmentVariables().flyoverPegoutDiffPercentage) {
             commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, quote2wp.quoteHash);
@@ -289,7 +289,7 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
         rootState.web3Session?.account as string,
         ))
         .then((gas: WeiBig) => state.flyoverService
-          .estimateRecommendedPegout(rootState.web3Session?.balance.minus(gas) as WeiBig, state.btcRecipientAddress ?? ''))
+          .estimateRecommendedPegout(rootState.web3Session?.balance.safeMinus(gas) as WeiBig, state.btcRecipientAddress ?? ''))
         .then(resolve)
         .catch(reject);
     }),
