@@ -42,7 +42,8 @@ export default class TxFeeService {
             selectedUtxoList,
           });
         })
-        .catch(() => {
+        .catch((e) => {
+          console.log(e);
           reject(new ServiceError('TxFeeService', 'getTxFee', 'Something went wrong. Please check your network connection and try again.', 'Unable to get estimated fee from API'));
         });
     });
