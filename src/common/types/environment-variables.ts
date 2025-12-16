@@ -51,6 +51,8 @@ export class EnvironmentVariables {
 
   public flyoverNetwork: Network;
 
+  public flyoverDepositPegoutGas: number;
+
   public minFeeSatPerByte: {
     fast: number;
     average: number;
@@ -119,6 +121,8 @@ export class EnvironmentVariables {
     this.reownProjectId = process.env.VUE_APP_REOWN_PROJECT_ID || '';
     this.flyoverNetwork = (process.env.VUE_APP_FLYOVER_NETWORK as Network)
       || defaultValues.flyoverNetwork;
+    this.flyoverDepositPegoutGas = Number(process.env.VUE_APP_FLYOVER_DEPOSIT_PEGOUT_GAS)
+      || defaultValues.flyoverDepositPegoutGas || 0;
   }
 
   public get chainId(): number {

@@ -222,7 +222,7 @@ export default defineComponent({
       walletType.value = wallet;
     }
 
-    function connectReown(): Promise<void> {
+    function connectReown(): Promise<void | { hash: string }> {
       const { walletProvider } = useAppKitProvider<BitcoinConnector>('bip122');
       const { open: openModal } = useAppKit();
       return new Promise((resolve, reject) => {
@@ -235,7 +235,7 @@ export default defineComponent({
             .then(resolve)
             .catch(reject);
         } else {
-          reject(new Error('Reown aleready connected'));
+          reject(new Error('Reown already connected'));
         }
       });
     }

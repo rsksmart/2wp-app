@@ -146,6 +146,10 @@ export const getClearFlyoverPeginState = (): FlyoverPeginState => ({
   flyoverService: markRaw(new FlyoverService()),
   selectedQuoteHash: '',
   acceptedQuoteSignature: '',
+  isMaxSelected: false,
+  maxValueToSend: new SatoshiBig(0, 'satoshi'),
+  maxFee: new SatoshiBig(0, 'satoshi'),
+  maxSelectedUtxoList: [],
 });
 
 /**

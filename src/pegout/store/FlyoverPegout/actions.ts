@@ -8,7 +8,7 @@ import { BridgeService } from '@/common/services/BridgeService';
 import {
   getClearObjectDifference, promiseWithTimeout,
 } from '@/common/utils';
-import { ApiService } from '@/common/services';
+import { ApiService, FlyoverService } from '@/common/services';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { providers } from 'ethers';
 import { AcceptedPegoutQuote } from '@rsksmart/flyover-sdk';
@@ -275,22 +275,20 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
     (
       { state, rootState, dispatch },
     ) => new Promise<WeiBig>((resolve, reject) => {
-      const bridgeService = new BridgeService();
       Promise.all([
         dispatch(
           constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER,
           EnvironmentAccessorService.getEnvironmentVariables().flyoverProviderId,
         ),
-        bridgeService.getFederationAddress(),
+        FlyoverService.getDepositPegoutGas(),
       ])
-        .then(([, tempBtcAddress]) => state.flyoverService.estimateDepositPegoutGas(
-        rootState.web3Session?.balance as WeiBig,
-        tempBtcAddress,
-        rootState.web3Session?.account as string,
-        ))
-        .then((gas: WeiBig) => state.flyoverService
-          .estimateRecommendedPegout(rootState.web3Session?.balance.safeMinus(gas) as WeiBig, state.btcRecipientAddress ?? ''))
+        .then(([, gas]) => {
+          const maxValueToSend = rootState.web3Session?.balance.safeMinus(gas) as WeiBig;
+          return state.flyoverService.estimateRecommendedPegout(maxValueToSend, state.btcRecipientAddress ?? '');
+        })
         .then(resolve)
-        .catch(reject);
+        .catch((error) => {
+          reject(error);
+        });
     }),
 };
