@@ -51,6 +51,7 @@ import {
   PeginQuote,
   FeatureNames,
   Feature,
+  NormalizedTx,
 } from '@/common/types';
 import { Machine, getClearPeginTxState } from '@/common/utils';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
@@ -102,6 +103,10 @@ export default defineComponent({
     const currentWallet = ref('');
     const bitcoinWallet = useStateAttribute<BtcWallet>('pegInTx', 'bitcoinWallet');
     const walletDataReady = useStateAttribute<boolean>('pegInTx', 'walletDataReady');
+    const maxFlyoverSelected = useStateAttribute<boolean>('flyoverPegin', 'isMaxSelected');
+    const maxFlyoverValueToSend = useStateAttribute<SatoshiBig>('flyoverPegin', 'maxValueToSend');
+    const maxFlyoverFee = useStateAttribute<SatoshiBig>('flyoverPegin', 'maxFee');
+    const maxFlyoverSelectedUtxoList = useStateAttribute<Utxo[]>('flyoverPegin', 'maxSelectedUtxoList');
     const startAskingForBalanceStore = useAction('pegInTx', constants.PEGIN_TX_START_ASKING_FOR_BALANCE);
     const stopAskingForBalance = useAction('pegInTx', constants.PEGIN_TX_STOP_ASKING_FOR_BALANCE);
     const addNormalizedTx = useAction('pegInTx', constants.PEGIN_TX_ADD_NORMALIZED_TX);
@@ -140,18 +145,34 @@ export default defineComponent({
       btcRecipient: string;
       peginType: constants.peginType;
     }) {
-      const normalizedTx = PeginTxService.buildNormalizedTx(
-        {
-          amountToTransfer: amountToTransferInSatoshi,
-          federationOrLPAddress: btcRecipient,
-          refundAddress,
-          rskRecipientAddress: recipient,
-          changeAddress: getChangeAddress.value,
-          totalFee: selectedFee.value,
-          selectedUtxoList: selectedUtxoList.value,
-          peginType,
-        },
-      );
+      let normalizedTx: NormalizedTx;
+      if (maxFlyoverSelected.value) {
+        normalizedTx = PeginTxService.buildNormalizedTx(
+          {
+            amountToTransfer: maxFlyoverValueToSend.value,
+            federationOrLPAddress: btcRecipient,
+            refundAddress,
+            rskRecipientAddress: recipient,
+            changeAddress: getChangeAddress.value,
+            totalFee: maxFlyoverFee.value,
+            selectedUtxoList: maxFlyoverSelectedUtxoList.value,
+            peginType,
+          },
+        );
+      } else {
+        normalizedTx = PeginTxService.buildNormalizedTx(
+          {
+            amountToTransfer: amountToTransferInSatoshi,
+            federationOrLPAddress: btcRecipient,
+            refundAddress,
+            rskRecipientAddress: recipient,
+            changeAddress: getChangeAddress.value,
+            totalFee: selectedFee.value,
+            selectedUtxoList: selectedUtxoList.value,
+            peginType,
+          },
+        );
+      }
       await addNormalizedTx(normalizedTx);
       currentComponent.value = 'ConfirmTx';
       return normalizedTx;

@@ -46,7 +46,7 @@ export function useWallet() {
     });
   }
 
-  function connect(): Promise<void> {
+  function connect(): Promise<void | { hash: string }> {
     return new Promise((resolve) => {
       if (!isWeb3Connected.value) {
         openModal(

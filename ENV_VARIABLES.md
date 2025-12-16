@@ -28,5 +28,6 @@ The value of these variables are used in **environment-variables.ts** file.
 |VUE_APP_API_RESPONSE_TIMEOUT                 | `10000` | Sets a timeout for calls made to API on search transaction.                 |
 |VUE_APP_REOWN_PROJECT_ID  | `PROJECT_ID` | Reown's AppKit project Id follow [this](https://reown.com/blog/how-to-get-started-with-appkit) instructions to get one. |
 |VUE_APP_FLYOVER_NETWORK                      | `Testnet` | The network to use for Flyover service. Valid values: `Mainnet`, `Testnet`, `Regtest`, `Alphanet`, `Development`. |
+|VUE_APP_FLYOVER_DEPOSIT_PEGOUT_GAS          | `410700` | Gas units to use for deposit pegout transactions (replaces dynamic gas estimation) |
 
 Example for [.env.local.test](https://github.com/rsksmart/2wp-app/blob/main/.env.local.test) file.

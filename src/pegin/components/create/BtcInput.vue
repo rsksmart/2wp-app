@@ -30,7 +30,7 @@
             <v-chip variant="outlined" density="compact" @click="setMin">
               {{ boundaries.minValue.toBTCString().slice(0,5) }} MIN
             </v-chip>
-            <v-chip v-if="false" variant="outlined" density="compact" @click="setMax">
+            <v-chip variant="outlined" density="compact" @click="setMax">
               <v-progress-circular v-if="loadingMax"
                 :size="12"
                 :width="2"
@@ -85,7 +85,7 @@ export default defineComponent({
     const boundaries = computed(() => {
       const minValue: SatoshiBig = new SatoshiBig(peginConfiguration.value.minValue, 'btc');
       return {
-        minValue,
+        minValue: minValue.plus(new SatoshiBig(1, 'satoshi')),
       };
     });
     const isComposing = ref(false);

@@ -43,13 +43,13 @@
            <v-row no-gutters v-if="flyoverIsEnabled && peginQuotes.length === 0">
             <pegin-option-card :option-type="peginType.FLYOVER" flyover-not-available>
               <template v-slot>
-                <h4 v-if="countdown === recaptchanNewTokenTime">
+                <h4 v-if="countdown === recaptchanNewTokenTime && enoughFlyoverLiquidity">
                   <span class="text-orange">Fast Mode</span> no quotes available for this amount.
                 </h4>
                 <h4 v-else-if="!enoughFlyoverLiquidity">
                   <span class="text-orange">Fast Mode</span>
                   There is not enough liquidity for this amount.
-                  <a href="mailto:support@rootstocklabs.com?subject=Liquidity Provider Issue">
+                  <a href="mailto:flyover@rootstocklabs.com?subject=Insufficient Liquidity">
                     Contact support</a> if you want to use the fast mode.
                 </h4>
               </template>

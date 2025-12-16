@@ -1,5 +1,6 @@
 import {
   FlyoverPeginState, LiquidityProvider2WP, PeginQuote, SatoshiBig,
+  Utxo,
 } from '@/common/types';
 import { MutationTree } from 'vuex';
 import * as constants from '@/common/store/constants';
@@ -45,5 +46,22 @@ export const mutations: MutationTree<FlyoverPeginState> = {
         selectedQuote.recipientBtcAddress = btcAddress;
       }
     });
+  },
+  [constants.FLYOVER_PEGIN_SET_MAX_VALUES]: (
+    state,
+    {
+      isMaxSelected, maxValueToSend, maxFee, maxSelectedUtxoList,
+    }:
+    {
+      isMaxSelected: boolean,
+      maxValueToSend: SatoshiBig,
+      maxFee: SatoshiBig,
+      maxSelectedUtxoList: Utxo[],
+    },
+  ) => {
+    state.isMaxSelected = isMaxSelected;
+    state.maxValueToSend = maxValueToSend;
+    state.maxFee = maxFee;
+    state.maxSelectedUtxoList = maxSelectedUtxoList;
   },
 };

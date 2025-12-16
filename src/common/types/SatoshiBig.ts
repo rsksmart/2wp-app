@@ -37,6 +37,10 @@ export default class SatoshiBig extends Big {
     return new SatoshiBig(super.plus(amount), 'satoshi');
   }
 
+  minus(amount: SatoshiBig) {
+    return new SatoshiBig(super.minus(amount), 'satoshi');
+  }
+
   safeMinus(amount: SatoshiBig) {
     const result = super.minus(amount);
     if (result.lt(0)) {
