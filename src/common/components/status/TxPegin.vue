@@ -47,7 +47,7 @@ export default defineComponent({
     const txPeginSummary = computed((): NormalizedSummary => {
       const status = txDetails.value as PeginStatus;
       const total = new SatoshiBig(status.btc.amountTransferred, 'btc')
-        .minus(new SatoshiBig(status.btc.fees, 'btc'));
+        .safeMinus(new SatoshiBig(status.btc.fees, 'btc'));
       return {
         amountFromString: status.btc.amountTransferred.toString(),
         amountReceivedString: total.toBTCTrimmedString(),

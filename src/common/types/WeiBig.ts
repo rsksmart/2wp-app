@@ -35,8 +35,12 @@ export default class WeiBig extends Big {
     return new WeiBig(super.plus(amount), 'wei');
   }
 
-  minus(amount: WeiBig) {
-    return new WeiBig(super.minus(amount), 'wei');
+  safeMinus(amount: WeiBig) {
+    const result = super.minus(amount);
+    if (result.lt(0)) {
+      throw new Error('WeiBig underflow: result cannot be negative');
+    }
+    return new WeiBig(result, 'wei');
   }
 
   mul(amount: BigSource) {

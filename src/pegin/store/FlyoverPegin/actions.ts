@@ -158,7 +158,7 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
       constants.BITCOIN_FAST_FEE_LEVEL,
     )
       .then((fee) => {
-        const maxValueToSend = balance.minus(fee.fee.amount);
+        const maxValueToSend = balance.safeMinus(fee.fee.amount);
         if (
           maxValueToSend.toWeiBigIntUnsafe() < provider
             .pegin.minTransactionValue.toWeiBigIntUnsafe()
