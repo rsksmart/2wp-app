@@ -9,9 +9,6 @@
       </v-btn>
     </v-row>
     <v-row no-gutters>
-      <v-col>
-        <span>Flyover Available: {{ flyoverEnabled }}</span>
-      </v-col>
       <v-col v-for="value in pegoutQuotes" :key="value.quoteHash">
         <span>Pegout Quotes: {{ value.quoteHash }}</span>
       </v-col>
