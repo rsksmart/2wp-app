@@ -602,4 +602,61 @@ export default class FlyoverService {
     const gasPrice = await provider.getGasPrice();
     return new WeiBig(BigInt(gasValue) * BigInt(gasPrice.toBigInt()), 'wei');
   }
+
+  public async refundPegout(quoteHash: string): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      const selectedQuote = this.pegoutQuotes
+        .find((quote: PegoutQuote) => quote.quoteHash === quoteHash);
+      if (selectedQuote) {
+        this.flyover?.refundPegout(selectedQuote)
+          .then(resolve)
+          .catch((error) => {
+            reject(new ServiceError(
+              'FlyoverService',
+              'refundPegout',
+              'There was an error refunding the peg-out transaction from the Flyover server',
+              error.message,
+            ));
+          });
+      } else {
+        reject(new ServiceError(
+          'FlyoverService',
+          'refundPegout',
+          'The selected option does not exist',
+          'Quote not found',
+        ));
+      }
+    });
+  }
+
+  public async registerPegin(
+    quoteHash: string,
+    signature: string,
+    btcRawTransaction: string,
+    partialMerkleTree: string,
+    blockheight: number,
+  ): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      const selectedQuote = this.peginQuotes
+        .find((quote: Quote) => quote.quoteHash === quoteHash);
+      if (selectedQuote) {
+        this.flyover?.registerPegin({
+          quote: selectedQuote,
+          signature,
+          btcRawTransaction,
+          partialMerkleTree,
+          height: blockheight,
+        })
+          .then(resolve)
+          .catch((error) => {
+            reject(new ServiceError(
+              'FlyoverService',
+              'registerPegin',
+              'There was an error registering the peg-in transaction from the Flyover server',
+              error.message,
+            ));
+          });
+      }
+    });
+  }
 }
