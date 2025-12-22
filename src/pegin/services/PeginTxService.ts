@@ -54,9 +54,6 @@ export default class PeginTxService {
       inputs: [],
       outputs: [],
     };
-    console.log({ selectedUtxoList });
-    console.log({ amountToTransfer });
-    console.log({ totalFee });
     normalizedTx.inputs = selectedUtxoList.map((utxo) => ({
       address: utxo.address ?? '',
       prev_hash: utxo.txid,
