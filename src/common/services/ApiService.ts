@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { PeginConfiguration, RequestBalance } from '@/common/types/pegInTx';
+import { RequestBalance } from '@/common/types/pegInTx';
 import {
   AccountBalance,
   AddressStatus,
@@ -49,14 +49,6 @@ export default class ApiService {
       } else {
         resolve([]);
       }
-    });
-  }
-
-  public static getPeginConfiguration(): Promise<PeginConfiguration> {
-    return new Promise<PeginConfiguration>((resolve, reject) => {
-      axios.get(`${ApiService.baseURL}/pegin-configuration`)
-        .then((response) => resolve(response.data))
-        .catch(reject);
     });
   }
 

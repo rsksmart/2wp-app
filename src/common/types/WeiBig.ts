@@ -1,4 +1,5 @@
 import Big, { BigSource } from 'big.js';
+import SatoshiBig from './SatoshiBig';
 
 const numberRegex = /^[0-9]*(\.[0-9]*)?$/;
 
@@ -86,5 +87,18 @@ export default class WeiBig extends Big {
 
   toWeiNumberUnsafe(): number {
     return Number(this.toFixed(0));
+  }
+
+  static max(a: WeiBig, b: WeiBig): WeiBig {
+    return a.gt(b) ? a : b;
+  }
+
+  static min(a: WeiBig, b: WeiBig): WeiBig {
+    return a.lt(b) ? a : b;
+  }
+
+  public static fromSatoshiBig(satoshiBig: SatoshiBig): WeiBig {
+    const safeWeiBig = new Big(satoshiBig.toBTCString());
+    return new WeiBig(safeWeiBig.mul(100_000_000_000_000_000_0).toFixed(0, Big.roundUp), 'wei');
   }
 }

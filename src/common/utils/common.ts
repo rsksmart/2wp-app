@@ -18,9 +18,7 @@ export const getClearPeginTxState = (): PegInTxState => ({
   peginConfiguration: {
     minValue: 0,
     federationAddress: '',
-    sessionId: '',
   },
-  sessionId: '',
   utxoList: {
     legacy: [],
     segwit: [],
