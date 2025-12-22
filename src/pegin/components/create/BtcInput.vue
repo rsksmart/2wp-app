@@ -107,10 +107,15 @@ export default defineComponent({
 
     const setBtcAmountPeginTx = useAction('pegInTx', constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER);
     const setBtcAmountFlyover = useAction('flyoverPegin', constants.FLYOVER_PEGIN_ADD_AMOUNT);
+    const resetMaxSelected = useAction('flyoverPegin', constants.FLYOVER_PEGIN_RESET_MAX_SELECTED);
+    const recommendedPegin = useStateAttribute<SatoshiBig>('flyoverPegin', 'recommendedPegin');
 
     function setBtcAmount(amount: SatoshiBig) {
       setBtcAmountPeginTx(amount);
       setBtcAmountFlyover(amount);
+      if (recommendedPegin.value && !amount.eq(recommendedPegin.value)) {
+        resetMaxSelected();
+      }
     }
 
     const safeTxFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);

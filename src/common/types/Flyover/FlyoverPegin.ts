@@ -17,6 +17,7 @@ export interface FlyoverPeginState {
     selectedQuoteHash: string;
     acceptedQuoteSignature: string;
     isMaxSelected: boolean;
+    recommendedPegin: SatoshiBig;
     maxValueToSend: SatoshiBig;
     maxFee: SatoshiBig;
     maxSelectedUtxoList: Utxo[];

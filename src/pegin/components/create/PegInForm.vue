@@ -28,7 +28,7 @@
             <span class="text-body-sm">Select mode to see exact amounts</span>
           </v-row>
           <v-row no-gutters v-if="(!flyoverIsEnabled
-                    && peginQuotes.length === 0)
+                    || peginQuotes.length === 0)
                     || !enoughAmountFlyover">
             <pegin-option-card :option-type="peginType.FLYOVER" flyover-not-available>
               <template v-slot>
@@ -349,7 +349,6 @@ export default defineComponent({
         return;
       }
       await changeSelectedOption(null);
-      console.log('getting quotes...');
       await getQuotes();
     });
 
