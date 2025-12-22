@@ -186,8 +186,9 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
       .then(([recommendedPegin, { maxValueToSend, maxFee, maxSelectedUtxoList }]) => {
         commit(constants.FLYOVER_PEGIN_SET_MAX_VALUES, {
           isMaxSelected: true,
-          maxValueToSend,
+          recommendedPegin,
           maxFee,
+          maxValueToSend,
           maxSelectedUtxoList,
         });
         resolve(recommendedPegin);
@@ -197,6 +198,9 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
         resolve(zero);
       });
   }),
+  [constants.FLYOVER_PEGIN_RESET_MAX_SELECTED]: ({ commit }) => {
+    commit(constants.FLYOVER_PEGIN_RESET_MAX_SELECTED);
+  },
   [constants.FLYOVER_PEGIN_CLEAR_STATE]: ({ commit }) => {
     commit(constants.FLYOVER_PEGIN_SET_CLEAR_STATE);
   },

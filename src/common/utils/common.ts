@@ -145,6 +145,7 @@ export const getClearFlyoverPeginState = (): FlyoverPeginState => ({
   selectedQuoteHash: '',
   acceptedQuoteSignature: '',
   isMaxSelected: false,
+  recommendedPegin: new SatoshiBig(0, 'satoshi'),
   maxValueToSend: new SatoshiBig(0, 'satoshi'),
   maxFee: new SatoshiBig(0, 'satoshi'),
   maxSelectedUtxoList: [],
