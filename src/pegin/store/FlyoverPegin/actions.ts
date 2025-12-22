@@ -172,8 +172,9 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
           WeiBig.fromSatoshiBig(maxValueToSend),
         );
 
-        if (maxValueToSend.lt(minAllowedValue) || maxValueToSend.gt(maxAllowedValue)) {
-          reject(new Error(`Balance is not within the provider allowed range: ${minAllowedValue.toRBTCTrimmedString()} - ${maxAllowedValue.toRBTCTrimmedString()}`));
+        const weiMaxValueToSend = WeiBig.fromSatoshiBig(maxValueToSend);
+        if (weiMaxValueToSend.lt(minAllowedValue) || weiMaxValueToSend.gt(maxAllowedValue)) {
+          reject(new Error(`Balance is not within the provider allowed range: ${minAllowedValue.toRBTCTrimmedString()} - ${provider.pegin.maxTransactionValue.toRBTCTrimmedString()}`));
         }
         return Promise.all([state.flyoverService.estimateRecommendedPegin(
           maxValueToSend,
