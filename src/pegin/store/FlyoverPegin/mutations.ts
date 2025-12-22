@@ -4,6 +4,7 @@ import {
 } from '@/common/types';
 import { MutationTree } from 'vuex';
 import * as constants from '@/common/store/constants';
+import { getClearFlyoverPeginState } from '@/common/utils';
 
 export const mutations: MutationTree<FlyoverPeginState> = {
   [constants.FLYOVER_PEGIN_SET_AMOUNT]: (state, amount: SatoshiBig) => {
@@ -63,5 +64,9 @@ export const mutations: MutationTree<FlyoverPeginState> = {
     state.maxValueToSend = maxValueToSend;
     state.maxFee = maxFee;
     state.maxSelectedUtxoList = maxSelectedUtxoList;
+  },
+  [constants.FLYOVER_PEGIN_SET_CLEAR_STATE]: (state) => {
+    const clearState = getClearFlyoverPeginState();
+    Object.assign(state, clearState);
   },
 };

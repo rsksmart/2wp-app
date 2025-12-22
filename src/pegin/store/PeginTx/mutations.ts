@@ -20,9 +20,6 @@ export const mutations: MutationTree<PegInTxState> = {
   [constants.PEGIN_TX_SET_TREZOR_CONNECTED]: (state, trezorConnected: boolean) => {
     state.trezorConnected = trezorConnected;
   },
-  [constants.PEGIN_TX_SET_SESSION_ID]: (state, sessionId: string) => {
-    state.sessionId = sessionId;
-  },
   [constants.PEGIN_TX_SET_PEGIN_CONFIGURATION]: (state, peginConfiguration: PeginConfiguration) => {
     state.peginConfiguration = peginConfiguration;
   },

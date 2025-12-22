@@ -31,7 +31,6 @@ export interface PeginConfiguration {
   minValue: number; // SatoshiBN
   federationAddress: string;
   feePerKb?: number; // SatoshiBN
-  sessionId: string;
   id?: number;
 }
 
@@ -56,7 +55,6 @@ export interface PegInTxState {
   loadingBalance: boolean;
   trezorConnected: boolean;
   peginConfiguration: PeginConfiguration;
-  sessionId: string;
   bitcoinWallet?: BtcWallet;
   selectedAccount?: BtcAccount;
   bitcoinPrice: number;
