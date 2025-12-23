@@ -58,7 +58,9 @@
               </template>
             </pegin-option-card>
           </v-row>
-          <v-row no-gutters v-else v-for="(quote, index) in peginQuotes" :key="index">
+          <v-row no-gutters v-else-if="countdown === recaptchanNewTokenTime
+                          && peginQuotes.length > 0"
+            v-for="(quote, index) in peginQuotes" :key="index">
             <pegin-option-card
               :option-type="peginType.FLYOVER"
               @selected-option="changeSelectedOption"
