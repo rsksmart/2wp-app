@@ -42,13 +42,14 @@
 
 <script lang="ts">
 import {
-  computed, defineComponent, ref, watch,
+  computed, defineComponent, onMounted, ref, watch,
 } from 'vue';
 import { useAction, useGetter } from '@/common/store/helper';
 import * as rskUtils from '@rsksmart/rsk-utils';
 import * as constants from '@/common/store/constants';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
+import { useWallet } from '@/common/composables/useWallet';
 
 export default defineComponent({
   name: 'RskDestinationAddress',
@@ -78,22 +79,25 @@ export default defineComponent({
     const isValidInputAddress = computed(() => isInputFilled.value && isAddress(address.value));
     const setRskAddress = useAction('pegInTx', constants.PEGIN_TX_ADD_RSK_ADDRESS);
     const setRskAddressForFlyover = useAction('flyoverPegin', constants.FLYOVER_PEGIN_ADD_ROOTSTOCK_ADDRESS);
-
-    watch(address, async () => {
-      if (isValidInputAddress.value) {
-        await setRskAddress(address.value);
-        await setRskAddressForFlyover(address.value);
-      }
-      context.emit('validAddress', isValidInputAddress.value, address.value);
-    });
+    const { connect, disconnect } = useWallet();
 
     const clearSession = useAction('web3Session', constants.WEB3_SESSION_CLEAR_ACCOUNT);
-    const connectWeb3 = useAction('web3Session', constants.SESSION_CONNECT_WEB3);
+
+    function checkAndEmmitValidAddress() {
+      if (isValidInputAddress.value) {
+        setRskAddress(address.value);
+        setRskAddressForFlyover(address.value);
+      }
+      context.emit('validAddress', isValidInputAddress.value, address.value);
+    }
+
     function connectOrDisconnect() {
       if (connectedAccount.value) {
-        clearSession().then(() => { address.value = ''; });
+        clearSession()
+          .then(() => disconnect())
+          .then(() => { address.value = ''; });
       } else {
-        connectWeb3().then(() => { address.value = connectedAccount.value; });
+        connect();
       }
     }
 
@@ -104,6 +108,18 @@ export default defineComponent({
     if (connectedAccount.value) {
       setRskAddress(address.value);
     }
+
+    onMounted(() => {
+      checkAndEmmitValidAddress();
+    });
+
+    watch(address, () => {
+      checkAndEmmitValidAddress();
+    });
+    watch(connectedAccount, () => {
+      address.value = connectedAccount.value;
+      checkAndEmmitValidAddress();
+    });
 
     return {
       address,
