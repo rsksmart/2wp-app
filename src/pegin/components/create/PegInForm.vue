@@ -27,7 +27,9 @@
           <v-row no-gutters class="my-4">
             <span class="text-body-sm">Select mode to see exact amounts</span>
           </v-row>
-          <v-row no-gutters v-if="!flyoverIsEnabled && peginQuotes.length === 0">
+          <v-row no-gutters v-if="(!flyoverIsEnabled
+                    || peginQuotes.length === 0)
+                    || !enoughAmountFlyover">
             <pegin-option-card :option-type="peginType.FLYOVER" flyover-not-available>
               <template v-slot>
                 <h4 v-if="countdown === recaptchanNewTokenTime">
@@ -40,7 +42,8 @@
               </template>
             </pegin-option-card>
           </v-row>
-           <v-row no-gutters v-if="flyoverIsEnabled && peginQuotes.length === 0">
+          <v-row no-gutters v-if="flyoverIsEnabled
+            && peginQuotes.length === 0 && enoughAmountFlyover">
             <pegin-option-card :option-type="peginType.FLYOVER" flyover-not-available>
               <template v-slot>
                 <h4 v-if="countdown === recaptchanNewTokenTime && enoughFlyoverLiquidity">
@@ -55,7 +58,9 @@
               </template>
             </pegin-option-card>
           </v-row>
-          <v-row no-gutters v-else v-for="(quote, index) in peginQuotes" :key="index">
+          <v-row no-gutters v-else-if="countdown === recaptchanNewTokenTime
+                          && peginQuotes.length > 0"
+            v-for="(quote, index) in peginQuotes" :key="index">
             <pegin-option-card
               :option-type="peginType.FLYOVER"
               @selected-option="changeSelectedOption"
@@ -207,14 +212,6 @@ export default defineComponent({
     const toQr = ref(false);
     const router = useRouter();
 
-    const enoughAmountFlyover = computed(() => {
-      if (!selectedQuote.value) {
-        return false;
-      }
-      const fullAmount: SatoshiBig = selectedQuote.value.getTotalTxAmount(selectedFee.value);
-      return selectedAccountBalance.value?.gte(fullAmount);
-    });
-
     const sendingPegin = computed(():boolean => pegInFormState.value.matches(['loading']));
 
     const peginQuotes = computed(() => {
@@ -236,6 +233,15 @@ export default defineComponent({
         return countdown.value === recaptchanNewTokenTime;
       }
       return false;
+    });
+
+    const enoughAmountFlyover = computed(() => {
+      const [providerQuote] = peginQuotes.value as PeginQuote[];
+      if (!providerQuote) {
+        return false;
+      }
+      const fullAmount: SatoshiBig = providerQuote.getTotalTxAmount(selectedFee.value);
+      return selectedAccountBalance.value?.gte(fullAmount);
     });
 
     function back() {
@@ -428,6 +434,8 @@ export default defineComponent({
       recaptchanNewTokenTime,
       mdiQrcode,
       toQr,
+      enoughFlyoverLiquidity,
+      enoughAmountFlyover,
     };
   },
 });

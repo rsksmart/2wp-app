@@ -13,8 +13,6 @@ export default class PeginConfigurationService {
         const peginConf: PeginConfiguration = ({
           minValue,
           federationAddress,
-          // sessionId should be removed eventually
-          sessionId: '',
         });
         resolve(peginConf);
       })

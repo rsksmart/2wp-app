@@ -18,9 +18,7 @@ export const getClearPeginTxState = (): PegInTxState => ({
   peginConfiguration: {
     minValue: 0,
     federationAddress: '',
-    sessionId: '',
   },
-  sessionId: '',
   utxoList: {
     legacy: [],
     segwit: [],
@@ -147,6 +145,7 @@ export const getClearFlyoverPeginState = (): FlyoverPeginState => ({
   selectedQuoteHash: '',
   acceptedQuoteSignature: '',
   isMaxSelected: false,
+  recommendedPegin: new SatoshiBig(0, 'satoshi'),
   maxValueToSend: new SatoshiBig(0, 'satoshi'),
   maxFee: new SatoshiBig(0, 'satoshi'),
   maxSelectedUtxoList: [],

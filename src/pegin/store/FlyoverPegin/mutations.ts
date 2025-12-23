@@ -4,6 +4,7 @@ import {
 } from '@/common/types';
 import { MutationTree } from 'vuex';
 import * as constants from '@/common/store/constants';
+import { getClearFlyoverPeginState } from '@/common/utils';
 
 export const mutations: MutationTree<FlyoverPeginState> = {
   [constants.FLYOVER_PEGIN_SET_AMOUNT]: (state, amount: SatoshiBig) => {
@@ -50,18 +51,27 @@ export const mutations: MutationTree<FlyoverPeginState> = {
   [constants.FLYOVER_PEGIN_SET_MAX_VALUES]: (
     state,
     {
-      isMaxSelected, maxValueToSend, maxFee, maxSelectedUtxoList,
+      isMaxSelected, recommendedPegin, maxFee, maxSelectedUtxoList, maxValueToSend,
     }:
     {
       isMaxSelected: boolean,
-      maxValueToSend: SatoshiBig,
+      recommendedPegin: SatoshiBig,
       maxFee: SatoshiBig,
       maxSelectedUtxoList: Utxo[],
+      maxValueToSend: SatoshiBig,
     },
   ) => {
     state.isMaxSelected = isMaxSelected;
-    state.maxValueToSend = maxValueToSend;
+    state.recommendedPegin = recommendedPegin;
     state.maxFee = maxFee;
     state.maxSelectedUtxoList = maxSelectedUtxoList;
+    state.maxValueToSend = maxValueToSend;
+  },
+  [constants.FLYOVER_PEGIN_RESET_MAX_SELECTED]: (state) => {
+    state.isMaxSelected = false;
+  },
+  [constants.FLYOVER_PEGIN_SET_CLEAR_STATE]: (state) => {
+    const clearState = getClearFlyoverPeginState();
+    Object.assign(state, clearState);
   },
 };

@@ -55,6 +55,7 @@ import {
   computed, ref, watch, defineComponent,
 } from 'vue';
 import { mdiArrowRight, mdiBitcoin, mdiInformationOutline } from '@mdi/js';
+import { BigNumber, providers } from 'ethers';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import * as constants from '@/common/store/constants';
 import {
@@ -193,21 +194,42 @@ export default defineComponent({
       }
     }
 
-    function getMaxNative() {
-      const { balance } = web3SessionState.value;
-      return balance ?? new WeiBig(0, 'wei');
+    async function getMaxNative(): Promise<WeiBig> {
+      const { balance, ethersProvider } = web3SessionState.value;
+      const { bridgeContractAddress } = pegoutConfiguration.value;
+      const sender = account.value;
+      if (!ethersProvider || !sender || !bridgeContractAddress || !balance) {
+        return balance ?? new WeiBig(0, 'wei');
+      }
+      try {
+        const gas = await (ethersProvider as providers.Web3Provider).estimateGas({
+          from: sender,
+          to: bridgeContractAddress,
+          value: balance.toWeiString(),
+        });
+
+        const gasPrice = await (ethersProvider as providers.Web3Provider).getGasPrice();
+        const gasCost = BigNumber.from(gasPrice).mul(BigNumber.from(gas));
+        const gasCostWeiBig = new WeiBig(gasCost.toString(), 'wei');
+
+        const maxAmount = balance.safeMinus(gasCostWeiBig);
+
+        return maxAmount.gte(0) ? maxAmount : new WeiBig(0, 'wei');
+      } catch (e) {
+        return balance ?? new WeiBig(0, 'wei');
+      }
     }
 
-    async function getMaxFlyover(): Promise<WeiBig> {
+    async function getMaxFlyover(maxNative: WeiBig): Promise<WeiBig> {
       return new Promise<WeiBig>((resolve) => {
         if (props.flyoverAvailable) {
           estimateMaxFlyover()
             .then(resolve)
             .catch(() => {
-              resolve(new WeiBig(0, 'wei'));
+              resolve(maxNative);
             });
         } else {
-          resolve(new WeiBig(0, 'wei'));
+          resolve(maxNative);
         }
       });
     }
@@ -215,8 +237,8 @@ export default defineComponent({
     async function setMax() {
       loadingMax.value = true;
       let maxFlyover = new WeiBig(0, 'wei');
-      const maxNative = getMaxNative();
-      maxFlyover = await getMaxFlyover();
+      const maxNative = await getMaxNative();
+      maxFlyover = await getMaxFlyover(maxNative);
 
       loadingMax.value = false;
       maxValue.value = props.flyoverAvailable

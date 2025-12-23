@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from 'axios';
 import * as rskUtils from '@rsksmart/rsk-utils';
 import * as constants from '@/common/store/constants';
 import {
-  ApiService, LedgerService,
+  LedgerService,
   TrezorService, LeatherService,
   EnkryptService, XverseService,
 } from '@/common/services';
@@ -30,16 +30,10 @@ export const actions: ActionTree<PegInTxState, RootState> = {
     commit(constants.PEGIN_TX_SET_TREZOR_CONNECTED, trezorConnected);
   },
   [constants.PEGIN_TX_ADD_PEGIN_CONFIGURATION]: ({ commit }) => {
-    Promise.all([
-      PeginConfigurationService.getPeginConfiguration(),
-      ApiService.getPeginConfiguration()])
-      .then(([localConfig, apiConfig]: PeginConfiguration[]) => {
+    PeginConfigurationService.getPeginConfiguration()
+      .then((localConfig: PeginConfiguration) => {
         commit(constants.PEGIN_TX_SET_PEGIN_CONFIGURATION, localConfig);
-        commit(constants.PEGIN_TX_SET_SESSION_ID, apiConfig.sessionId);
       });
-  },
-  [constants.PEGIN_TX_ADD_SESSION_ID]: ({ commit }, sessionId: string) => {
-    commit(constants.PEGIN_TX_SET_SESSION_ID, sessionId);
   },
   [constants.PEGIN_TX_ADD_BITCOIN_WALLET]: (
     { commit, state },

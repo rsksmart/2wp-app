@@ -2,6 +2,7 @@ import {
   FlyoverPeginState, QuotePegIn2WP, RootState, SatoshiBig,
   WeiBig, LogEntryType, LogEntryOperation,
   Utxo,
+  PegInTxState,
 } from '@/common/types';
 import { ActionTree } from 'vuex';
 import * as constants from '@/common/store/constants';
@@ -141,9 +142,12 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
       .catch(reject);
   }),
   [constants.FLYOVER_PEGIN_ESTIMATE_MAX_VALUE]: (
-    { state, rootGetters, commit },
+    {
+      state, rootGetters, commit, rootState,
+    },
     balance: SatoshiBig,
   ) => new Promise<SatoshiBig>((resolve, reject) => {
+    const { peginConfiguration } = rootState.pegInTx as PegInTxState;
     const provider = state.liquidityProviders
       .find((p) => p.id === EnvironmentAccessorService.getEnvironmentVariables().flyoverProviderId);
     if (!provider) {
@@ -159,13 +163,18 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
     )
       .then((fee) => {
         const maxValueToSend = balance.safeMinus(fee.fee.amount);
-        if (
-          maxValueToSend.toWeiBigIntUnsafe() < provider
-            .pegin.minTransactionValue.toWeiBigIntUnsafe()
-          || maxValueToSend.toWeiBigIntUnsafe() > provider
-            .pegin.maxTransactionValue.toWeiBigIntUnsafe()
-        ) {
-          reject(new Error(`Balance is not within the provider allowed range: ${provider.pegin.minTransactionValue.toRBTCTrimmedString()} - ${provider.pegin.maxTransactionValue.toRBTCTrimmedString()}`));
+        const minAllowedValue = WeiBig.max(
+          provider.pegin.minTransactionValue,
+          new WeiBig(peginConfiguration.minValue, 'rbtc'),
+        );
+        const maxAllowedValue = WeiBig.min(
+          provider.pegin.maxTransactionValue,
+          WeiBig.fromSatoshiBig(maxValueToSend),
+        );
+
+        const weiMaxValueToSend = WeiBig.fromSatoshiBig(maxValueToSend);
+        if (weiMaxValueToSend.lt(minAllowedValue) || weiMaxValueToSend.gt(maxAllowedValue)) {
+          reject(new Error(`Balance is not within the provider allowed range: ${minAllowedValue.toRBTCTrimmedString()} - ${provider.pegin.maxTransactionValue.toRBTCTrimmedString()}`));
         }
         return Promise.all([state.flyoverService.estimateRecommendedPegin(
           maxValueToSend,
@@ -177,8 +186,9 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
       .then(([recommendedPegin, { maxValueToSend, maxFee, maxSelectedUtxoList }]) => {
         commit(constants.FLYOVER_PEGIN_SET_MAX_VALUES, {
           isMaxSelected: true,
-          maxValueToSend,
+          recommendedPegin,
           maxFee,
+          maxValueToSend,
           maxSelectedUtxoList,
         });
         resolve(recommendedPegin);
@@ -188,4 +198,10 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
         resolve(zero);
       });
   }),
+  [constants.FLYOVER_PEGIN_RESET_MAX_SELECTED]: ({ commit }) => {
+    commit(constants.FLYOVER_PEGIN_RESET_MAX_SELECTED);
+  },
+  [constants.FLYOVER_PEGIN_CLEAR_STATE]: ({ commit }) => {
+    commit(constants.FLYOVER_PEGIN_SET_CLEAR_STATE);
+  },
 };

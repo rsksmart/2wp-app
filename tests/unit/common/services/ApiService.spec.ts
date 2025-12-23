@@ -3,8 +3,6 @@ import axios, { AxiosHeaders, AxiosResponse } from 'axios';
 import sinon from 'sinon';
 import {
   NormalizedInput, NormalizedOutput, NormalizedTx, SatoshiBig,
-  TxInfo,
-  TxStatusType,
 } from '@/common/types';
 import ApiService from '@/common/services/ApiService';
 import { BridgeService } from '@/common/services/BridgeService';
@@ -425,19 +423,6 @@ describe('Api Service', () => {
         sessionId,
         addressList,
       })).toBe(true);
-      expect(result).toEqual(expectedResponse.data);
-    });
-  });
-
-  describe('Function: getPeginConfiguration', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-    it('should resolve with the Pegin configuration if successful', async () => {
-      const expectedResponse = { data: {} };
-      const axiosGetStub = sinon.stub(axios, 'get').resolves(expectedResponse);
-      const result = await ApiService.getPeginConfiguration();
-      expect(axiosGetStub.calledOnceWithExactly(`${ApiService.baseURL}/pegin-configuration`)).toBe(true);
       expect(result).toEqual(expectedResponse.data);
     });
   });

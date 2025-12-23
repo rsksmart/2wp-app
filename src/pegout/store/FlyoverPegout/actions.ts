@@ -1,6 +1,6 @@
 import {
   FlyoverPegoutState, QuotePegOut2WP, RootState, WeiBig,
-  ReducedQuote, LogEntryType, LogEntryOperation,
+  ReducedQuote, LogEntryType, LogEntryOperation, PegOutTxState,
 } from '@/common/types';
 import { ActionTree } from 'vuex';
 import * as constants from '@/common/store/constants';
@@ -275,16 +275,45 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
     (
       { state, rootState, dispatch },
     ) => new Promise<WeiBig>((resolve, reject) => {
+      const pegOutTxState = rootState.pegOutTx as PegOutTxState;
+      const { pegoutConfiguration } = pegOutTxState;
+      const { flyoverProviderId } = EnvironmentAccessorService
+        .getEnvironmentVariables();
+      const provider = state.liquidityProviders
+        .find((p) => p.id === flyoverProviderId);
+      if (!provider) {
+        reject(new Error('No provider found'));
+        return;
+      }
       Promise.all([
         dispatch(
           constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER,
-          EnvironmentAccessorService.getEnvironmentVariables().flyoverProviderId,
+          flyoverProviderId,
         ),
         FlyoverService.getDepositPegoutGas(),
       ])
         .then(([, gas]) => {
           const maxValueToSend = rootState.web3Session?.balance.safeMinus(gas) as WeiBig;
-          return state.flyoverService.estimateRecommendedPegout(maxValueToSend, state.btcRecipientAddress ?? '');
+          const minAllowedValue = WeiBig.max(
+            provider.pegout.minTransactionValue,
+            pegoutConfiguration.minValue,
+          );
+          const maxAllowedValue = WeiBig.min(
+            provider.pegout.maxTransactionValue,
+            maxValueToSend,
+          );
+
+          if (maxValueToSend.lt(minAllowedValue) || maxValueToSend.gt(maxAllowedValue)) {
+            const errorMessage = 'Balance is not within the provider allowed range: '
+              + `${minAllowedValue.toRBTCTrimmedString()} - `
+              + `${provider.pegout.maxTransactionValue.toRBTCTrimmedString()}`;
+            reject(new Error(errorMessage));
+            return Promise.reject(new Error(errorMessage));
+          }
+          return state.flyoverService.estimateRecommendedPegout(
+            maxValueToSend,
+            state.btcRecipientAddress ?? '',
+          );
         })
         .then(resolve)
         .catch((error) => {

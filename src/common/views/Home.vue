@@ -137,6 +137,7 @@ export default {
     const setTerms = useAction('web3Session', constants.SESSION_ADD_TERMS_VALUE);
     const getBtcPrice = useAction('web3Session', constants.SESSION_ADD_BITCOIN_PRICE);
     const clearFlyoverPegout = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_CLEAR_STATE);
+    const clearFlyoverPegin = useAction('flyoverPegin', constants.FLYOVER_PEGIN_CLEAR_STATE);
     const rskAccount = useStateAttribute('web3Session', 'account');
     const connectWeb3 = useAction('web3Session', constants.SESSION_CONNECT_WEB3);
     const show = ref(false);
@@ -232,6 +233,7 @@ export default {
 
     getBtcPrice();
     clearPegin();
+    clearFlyoverPegin();
     disconnectReown();
     clearPegOut();
     clearFlyoverPegout();

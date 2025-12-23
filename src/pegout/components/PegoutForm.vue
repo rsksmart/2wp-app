@@ -26,18 +26,18 @@
             <span class="text-body-sm">Select mode to see exact amounts</span>
           </v-row>
           <v-row no-gutters
-            v-if="!flyoverIsEnabled || (pegoutQuotes.length === 0 && enoughFlyoverLiquidity)">
+            v-if="!flyoverIsEnabled || pegoutQuotes.length === 0">
             <pegout-option :option-type="pegoutType.FLYOVER" flyover-not-available>
               <template v-slot>
-                <h4 v-if="countdown === recaptchanNewTokenTime && enoughFlyoverLiquidity">
-                  <span class="text-orange">Fast Mode</span> is unavailable at this time.
-                </h4>
-                <h4 v-else-if="!enoughFlyoverLiquidity">
+                <h4 v-if="!enoughFlyoverLiquidity">
                   <span class="text-orange">Fast Mode</span>
                   There is not enough liquidity for this amount.
                   <a style="text-decoration: underline; z-index: 99999;"
                   href="mailto:flyover@rootstocklabs.com?subject=Insufficient Liquidity">
                     Contact support</a> if you want to use the fast mode.
+                </h4>
+                <h4 v-else-if="countdown === recaptchanNewTokenTime && enoughFlyoverLiquidity">
+                  <span class="text-orange">Fast Mode</span> is unavailable at this time.
                 </h4>
                 <h4 v-else>
                   Fast mode will be <br> available in
@@ -51,7 +51,14 @@
                 && !existQuoteAndUsersBalanceIsEnough">
             <pegout-option :option-type="pegoutType.FLYOVER" flyover-not-available>
               <template v-slot>
-                <h4>
+                <h4 v-if="!enoughFlyoverLiquidity">
+                  <span class="text-orange">Fast Mode</span>
+                  There is not enough liquidity for this amount.
+                  <a style="text-decoration: underline; z-index: 99999;"
+                  href="mailto:flyover@rootstocklabs.com?subject=Insufficient Liquidity">
+                    Contact support</a> if you want to use the fast mode.
+                </h4>
+                <h4 v-else>
                   <span class="text-orange">Fast Mode</span>
                    you don't have enough balance
                    <a href="https://dev.rootstock.io/developers/integrate/flyover/LP/#fees">LPS fee</a> + fee + amount.
@@ -59,7 +66,9 @@
               </template>
             </pegout-option>
           </v-row>
-          <v-row no-gutters v-else v-for="(quote, index) in pegoutQuotes" :key="index">
+          <v-row no-gutters v-else-if="countdown === recaptchanNewTokenTime
+                          && pegoutQuotes.length > 0"
+            v-for="(quote, index) in pegoutQuotes" :key="index">
             <pegout-option
               :option-type="pegoutType.FLYOVER"
               :quote="quote"
@@ -511,7 +520,7 @@ export default defineComponent({
       router.push({ name: 'Home' });
     }
 
-    function enoughLiquidityForThisAmount(amount: SatoshiBig) {
+    function enoughLiquidityForThisAmount(amount: WeiBig) {
       return liquidityProviders.value.some((provider) => {
         const { liquidityCheckEnabled, pegout: { availableLiquidity } } = provider;
         return liquidityCheckEnabled && availableLiquidity?.gt(amount);
@@ -543,7 +552,7 @@ export default defineComponent({
     watch([amount, validAmount], async () => {
       if (!validAmount.value) return;
       enoughFlyoverLiquidity.value = enoughLiquidityForThisAmount(
-        SatoshiBig.fromWeiBig(amountToTransfer.value),
+        amountToTransfer.value,
       );
       if (!enoughFlyoverLiquidity.value) {
         await clearQuotes();
