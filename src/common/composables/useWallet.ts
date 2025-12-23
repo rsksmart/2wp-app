@@ -8,7 +8,7 @@ import {
 import { ethers } from 'ethers';
 import * as constants from '@/common/store/constants';
 import { useStore } from 'vuex';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 interface WalletSharedState {
   provider: ethers.providers.Web3Provider | null;
@@ -30,7 +30,7 @@ export function useWallet() {
   const router = useRouter();
   const { provider } = toRefs(state);
   const account = useAppKitAccount();
-
+  const route = useRoute();
   const isWeb3Connected = computed(() => account.value.isConnected);
   const { open: openModal } = useAppKit();
 
@@ -59,7 +59,6 @@ export function useWallet() {
       } else {
         setProvider()
           .then(() => {
-            router.push('/pegout');
             resolve();
           });
       }
@@ -72,7 +71,11 @@ export function useWallet() {
       case WalletEvents.CONNECT_SUCCESS:
       case WalletEvents.MODAL_CLOSE:
         setProvider()
-          .then(() => router.push('/pegout'));
+          .then(() => {
+            if (route.name === 'Home') {
+              router.push('/pegout');
+            }
+          });
         break;
       case WalletEvents.DISCONNECT_SUCCESS:
         provider.value = null;
