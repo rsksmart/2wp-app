@@ -35,9 +35,9 @@ export default class ReownTxBuilder extends TxBuilder {
             }
           });
           const inputs = normalizedTx.inputs
-            .map((input) => ({
+            .map((input, index) => ({
               address: input.address,
-              index: input.prev_index,
+              index,
               sighashTypes: [1],
             }));
           resolve({
