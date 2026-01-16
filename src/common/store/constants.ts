@@ -260,6 +260,7 @@ export const SESSION_IS_ACCOUNT_CONNECTED = 'SESSION_IS_ACCOUNT_CONNECTED';
 export const SESSION_GET_FEATURE = 'SESSION_GET_FEATURE';
 export const SESSION_GET_CHECKSUMMED_ACCOUNT = 'SESSION_GET_CHECKSUMMED_ACCOUNT';
 export const SESSION_IS_FIREBLOCKS_CONNECTED = 'SESSION_IS_FIREBLOCKS_CONNECTED';
+export const SESSION_IS_ALLOWED_WALLET = 'SESSION_IS_ALLOWED_WALLET';
 
 // Flyover PegOut getters
 export const FLYOVER_PEGOUT_GET_PROVIDER_ID = 'FLYOVER_PEGOUT_GET_PROVIDER_ID';
@@ -418,3 +419,14 @@ export enum QRCodeNetworks {
 }
 
 export const BIGGEST_BIG_INT: bigint = 2n ** 63n - 1n;
+
+// Allowed wallet whitelists
+export const ALLOWED_WALLETS_PEGIN: string[] = [
+  'Ledger', 'Trezor', 'Fireblocks', 'Fordefi', 'Xverse', 'Leather',
+  WALLET_NAMES.REOWN.long_name,
+  WALLET_NAMES.XVERSE.long_name,
+  WALLET_NAMES.LEATHER.long_name,
+  WALLET_NAMES.TREZOR.long_name,
+  WALLET_NAMES.LEDGER.long_name,
+];
+export const ALLOWED_WALLETS_PEGOUT: string[] = ['MetaMask', 'Ledger', 'Trezor'];

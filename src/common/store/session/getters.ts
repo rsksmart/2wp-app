@@ -41,11 +41,29 @@ export const getters: GetterTree<SessionState, RootState> = {
     }
     return '';
   },
-  [constants.SESSION_IS_FIREBLOCKS_CONNECTED]: (state): boolean => {
-    if (state.ethersProvider) {
-      const { walletInfo } = useWalletInfo();
-      return walletInfo?.name === 'Fireblocks';
+  [constants.SESSION_IS_ALLOWED_WALLET]: (state, moduleGetters, rootState:RootState): {
+    pegin: boolean;
+    pegout: boolean;
+  } => {
+    const response = {
+      pegin: false,
+      pegout: false,
+    };
+    const bitcoinWallet = rootState.pegInTx?.bitcoinWallet;
+    const { walletInfo } = useWalletInfo();
+    const walletName = walletInfo?.name;
+
+    if (bitcoinWallet && bitcoinWallet !== constants.WALLET_NAMES.REOWN.long_name) {
+      response.pegin = constants.ALLOWED_WALLETS_PEGIN.includes(bitcoinWallet as string);
+    } else {
+      response.pegin = constants.ALLOWED_WALLETS_PEGIN.includes(walletName || '');
     }
-    return false;
+
+    if (walletName) {
+      response.pegout = constants.ALLOWED_WALLETS_PEGOUT.includes(walletName);
+    } else {
+      response.pegout = !!state.rLoginInstance;
+    }
+    return response;
   },
 };
