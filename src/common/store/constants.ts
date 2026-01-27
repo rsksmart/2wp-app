@@ -429,4 +429,4 @@ export const ALLOWED_WALLETS_PEGIN: string[] = [
   WALLET_NAMES.TREZOR.long_name,
   WALLET_NAMES.LEDGER.long_name,
 ];
-export const ALLOWED_WALLETS_PEGOUT: string[] = ['MetaMask', 'Ledger', 'Trezor'];
+export const ALLOWED_WALLETS_PEGOUT: string[] = ['MetaMask', 'Ledger', 'Trezor', 'Rabby Wallet', 'Wigwam'];
