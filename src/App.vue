@@ -137,7 +137,7 @@ export default {
       if (navigator.storage && navigator.storage.persist) {
         navigator.storage.persist()
           .then((persistent) => {
-            console.log(`Almacenamiento persistente: ${persistent}`);
+            console.log(`Persistent storage: ${persistent}`);
           });
       }
     }

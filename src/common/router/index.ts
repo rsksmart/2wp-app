@@ -117,11 +117,6 @@ const routes: Readonly<RouteRecordRaw[]> = [
     },
   },
   {
-    path: '/setupIBi',
-    name: 'SetUpIBI',
-    component: () => import(/* webpackChunkName: "IBIS" */ '../../pegin/views/SetUpIBI.vue'),
-  },
-  {
     path: '/noWalletPegin',
     name: 'NoWalletPegin',
     component: () => import(/* webpackChunkName: "no-wallet-pegin" */ '../../pegin/views/NoWalletPeginForm.vue'),

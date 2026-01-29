@@ -1,5 +1,5 @@
 export function useIndexedDB() {
-  const dbName = 'my-db';
+  const dbName = 'local-files-db';
   const storeName = 'files';
 
   function openDB(): Promise<IDBDatabase> {

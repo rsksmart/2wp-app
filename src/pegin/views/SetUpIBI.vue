@@ -63,7 +63,7 @@ import {
   computed, watch,
 } from 'vue';
 import { mdiArrowRight, mdiFileUpload, mdiKey } from '@mdi/js';
-import { useIndexedDB } from '@/common/composables/useIndexdedDB';
+import { useIndexedDB } from '@/common/composables/useIndexedDB';
 
 export default defineComponent({
   name: 'SetUpIbi',

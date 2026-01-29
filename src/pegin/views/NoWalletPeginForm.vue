@@ -78,7 +78,8 @@
           </v-text-field>
         </v-row>
           <rsk-destination-address class="mb-8 mt-8"
-          :is-amount-filled="validAmount"/>
+          :is-amount-filled="validAmount"
+          @valid-address="handleValidAddress"/>
       </v-col>
       <v-col />
     </v-row>
@@ -158,7 +159,7 @@ import FireblocksService from '@/common/services/FireblocksService';
 import type { FireblocksTransactionParams, VaultAccount } from '@/common/types/Fireblocks';
 import { TransferPeerPathType } from '@/common/types/Fireblocks';
 import { appendRecaptcha, Machine, readFileAsText } from '@/common/utils';
-import { useIndexedDB } from '@/common/composables/useIndexdedDB';
+import { useIndexedDB } from '@/common/composables/useIndexedDB';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import { useAction, useState, useStateAttribute } from '@/common/store/helper';
 import {
@@ -214,11 +215,8 @@ export default defineComponent({
     const flyoverIsEnabled = computed(() => true);
     const isReadyToCreate = computed(() => {
       if (!showOptions.value) return false;
-      if (selected.value === peginType.POWPEG) {
-        return validAmount.value;
-      }
       if (selected.value === peginType.FLYOVER) {
-        return validAmount.value && selectedQuote.value;
+        return validAmount.value && selectedQuote.value !== undefined;
       }
       return false;
     });
@@ -239,6 +237,8 @@ export default defineComponent({
 
     function getQuotes() {
       if (!flyoverPeginState.value.rootstockRecipientAddress && Number(amount.value) === 0) return;
+      selectedQuote.value = undefined;
+      setSelectedQuote('');
       loadingQuotes.value = true;
       getPeginQuotes({
         rootstockRecipientAddress: flyoverPeginState.value.rootstockRecipientAddress,
@@ -294,7 +294,7 @@ export default defineComponent({
         destination: {
           type: TransferPeerPathType.OneTimeAddress,
           subType: 'External',
-          name: 'LBC BTC Address',
+          name: 'Flyover Peg-in BTC Address',
           oneTimeAddress: {
             address: flyoverPeginState.value.rootstockRecipientAddress,
             tag: '',
@@ -392,7 +392,7 @@ export default defineComponent({
           txError.value = new ServiceError(
             'FireblocksService',
             'getVaultAccounts',
-            'The credential are invalid or expired, please check them and try again',
+            'The credentials are invalid or expired, please check them and try again',
             `Failed to fetch vaults or no vaults returned error: ${e}`,
           );
         });
@@ -433,6 +433,12 @@ export default defineComponent({
       const timeout = setTimeout(() => { isComposing.value = false; }, 200);
       return () => clearTimeout(timeout);
     });
+
+    function handleValidAddress(isValid: boolean) {
+      if (isValid && validAmount.value) {
+        getQuotes();
+      }
+    }
 
     onBeforeMount(() => {
       initFlyover()
@@ -479,6 +485,7 @@ export default defineComponent({
       getVaultBtcBalance,
       mdiBank,
       selectedVault,
+      handleValidAddress,
     };
   },
 });
