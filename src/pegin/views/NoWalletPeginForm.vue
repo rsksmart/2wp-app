@@ -54,6 +54,7 @@
             variant="solo"
             density="comfortable"
             rounded="lg"
+            :class="(!isValidAmount && isInputFilled) && 'input-error'"
             class="text-h4 flex-grow-0 amount-input"
             v-model="amountModel"
             type="text"
@@ -76,6 +77,10 @@
                 </div>
               </template>
           </v-text-field>
+          <div v-if="!isValidAmount && isInputFilled">
+            <v-alert :text="amountErrorMessage"
+              density="compact" type="warning" color="orange" class="mt-2"/>
+          </div>
         </v-row>
           <rsk-destination-address class="mb-8 mt-8"
           :is-amount-filled="validAmount"
@@ -158,7 +163,10 @@ import type PeginQuote from '@/common/types/Flyover/PeginQuote';
 import FireblocksService from '@/common/services/FireblocksService';
 import type { FireblocksTransactionParams, VaultAccount } from '@/common/types/Fireblocks';
 import { TransferPeerPathType } from '@/common/types/Fireblocks';
-import { appendRecaptcha, Machine, readFileAsText } from '@/common/utils';
+import {
+  appendRecaptcha, Machine, readFileAsText,
+  isBTCAmountValidRegex,
+} from '@/common/utils';
 import { useIndexedDB } from '@/common/composables/useIndexedDB';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 import {
@@ -213,8 +221,82 @@ export default defineComponent({
     const fireblocksService = ref<FireblocksService>();
     const showSetUpIBI = ref(true);
 
+    // Setup dependencies needed for validation
+    const isComposing = ref(false);
+    const focus = ref(false);
+    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
+    const boundaries = computed(() => {
+      const minValue: SatoshiBig = new SatoshiBig(peginConfiguration.value.minValue, 'btc');
+      return {
+        minValue,
+      };
+    });
+
+    function getVaultBtcBalance(vault: VaultAccount): string {
+      const btcAsset = vault.assets.find((asset) => asset.id === FireblocksService.btcAssetId);
+      if (!btcAsset) return '0.0';
+      return btcAsset.total.toString();
+    }
+
     // UI logic
-    const validAmount = computed(() => Number(amount.value) > 0);
+    const isInputFilled = computed(() => amount.value !== '');
+    const safeAmount = computed(() => {
+      if (!amount.value || amount.value === '') return new SatoshiBig(0, 'btc');
+      return new SatoshiBig(Number(amount.value), 'btc');
+    });
+
+    const insufficientAmount = computed(() => {
+      const { minValue } = boundaries.value;
+      if (safeAmount.value.lte('0') || safeAmount.value.lt(minValue)) {
+        return true;
+      }
+      if (!isBTCAmountValidRegex(amount.value)) {
+        return true;
+      }
+      // Check vault balance if vault is selected
+      if (selectedVault.value) {
+        const vaultBalance = getVaultBtcBalance(selectedVault.value);
+        const vaultBalanceSatoshi = new SatoshiBig(vaultBalance, 'btc');
+        if (safeAmount.value.gt(vaultBalanceSatoshi)) {
+          return true;
+        }
+      }
+      return false;
+    });
+
+    const amountErrorMessage = computed(() => {
+      if (!isInputFilled.value) {
+        return '';
+      }
+      const { minValue } = boundaries.value;
+
+      if (amount.value === '' || amount.value === '0') {
+        return 'Please, enter an amount';
+      }
+
+      if (!isBTCAmountValidRegex(amount.value)) {
+        return `The amount must be a valid ${environmentContext.getBtcTicker()} value`;
+      }
+
+      if (safeAmount.value.lt(minValue)) {
+        return `The minimum accepted value is ${minValue.toBTCTrimmedString()} ${environmentContext.getBtcTicker()}`;
+      }
+
+      // Check vault balance if vault is selected
+      if (selectedVault.value) {
+        const vaultBalance = getVaultBtcBalance(selectedVault.value);
+        const vaultBalanceSatoshi = new SatoshiBig(vaultBalance, 'btc');
+        if (safeAmount.value.gt(vaultBalanceSatoshi)) {
+          return 'You don\'t have the balance for this amount';
+        }
+      }
+
+      return '';
+    });
+
+    const isValidAmount = computed(() => !insufficientAmount.value && isInputFilled.value);
+    const validAmount = computed(() => isValidAmount.value);
+
     const showOptions = computed(
       () => !loadingQuotes.value && validAmount.value,
     );
@@ -379,16 +461,6 @@ export default defineComponent({
       console.log('Fireblocks service setup complete');
     }
 
-    const isComposing = ref(false);
-    const focus = ref(false);
-    const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
-    const boundaries = computed(() => {
-      const minValue: SatoshiBig = new SatoshiBig(peginConfiguration.value.minValue, 'btc');
-      return {
-        minValue,
-      };
-    });
-
     function blockLetterKeyDown(e: KeyboardEvent) {
       const allowedKeys = ['Backspace', 'Delete', 'Home', 'End', 'ArrowRight', 'ArrowLeft'];
       if (allowedKeys.includes(e.key)) return;
@@ -440,12 +512,6 @@ export default defineComponent({
       }
     }
 
-    function getVaultBtcBalance(vault: VaultAccount): string {
-      const btcAsset = vault.assets.find((asset) => asset.id === FireblocksService.btcAssetId);
-      if (!btcAsset) return '0.0';
-      return btcAsset.total.toString();
-    }
-
     function getFireblocksData() {
       setupService()
         .then(() => getUserInfo());
@@ -455,6 +521,21 @@ export default defineComponent({
       const timeout = setTimeout(() => { isComposing.value = false; }, 200);
       return () => clearTimeout(timeout);
     });
+
+    watch(
+      selectedVault,
+      (newVault) => {
+        if (!newVault) return;
+        const hasValidAmount = isValidAmount.value;
+        const hasValidAddress = flyoverPeginState.value.rootstockRecipientAddress
+          && flyoverPeginState.value.rootstockRecipientAddress !== '';
+        const hasSufficientBalance = !insufficientAmount.value;
+
+        if (hasValidAmount && hasValidAddress && hasSufficientBalance) {
+          getQuotes();
+        }
+      },
+    );
 
     function handleValidAddress(isValid: boolean) {
       if (isValid && validAmount.value) {
@@ -508,6 +589,9 @@ export default defineComponent({
       mdiBank,
       selectedVault,
       handleValidAddress,
+      isValidAmount,
+      isInputFilled,
+      amountErrorMessage,
     };
   },
 });
