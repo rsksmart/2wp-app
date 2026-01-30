@@ -161,10 +161,17 @@ import { TransferPeerPathType } from '@/common/types/Fireblocks';
 import { appendRecaptcha, Machine, readFileAsText } from '@/common/utils';
 import { useIndexedDB } from '@/common/composables/useIndexedDB';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
-import { useAction, useState, useStateAttribute } from '@/common/store/helper';
 import {
-  FlyoverPeginState, PeginConfiguration,
-  QuotePegIn2WP, TxStatusType,
+  useAction, useGetter,
+  useState, useStateAttribute,
+} from '@/common/store/helper';
+import {
+  FlyoverPeginState,
+  PeginConfiguration,
+  QuotePegIn2WP,
+  TxStatusType,
+  FeatureNames,
+  Feature,
 } from '@/common/types';
 import { FlyoverService } from '@/common/services';
 import { useRouter } from 'vue-router';
@@ -186,7 +193,7 @@ export default defineComponent({
     const formState = ref<'fill' | 'loading'>('fill');
     const loadingQuotes = ref(false);
     const selected = ref<peginType>(constants.peginType.POWPEG);
-    const selectedQuote = ref<PeginQuote | undefined>(undefined);
+    const selectedQuote = ref<PeginQuote>();
     const showErrorDialog = ref(false);
     const txError = ref(new ServiceError('', '', '', ''));
     const amount = ref('');
@@ -211,8 +218,11 @@ export default defineComponent({
     const showOptions = computed(
       () => !loadingQuotes.value && validAmount.value,
     );
-    // TODO: Remove this to check if flyover is enabled
-    const flyoverIsEnabled = computed(() => true);
+    const getFeature = useGetter<(name: FeatureNames) => Feature>('web3Session', constants.SESSION_GET_FEATURE);
+    const flyoverIsEnabled = computed(() => {
+      const feature = getFeature.value(FeatureNames.FLYOVER_PEG_IN);
+      return feature?.value === constants.ENABLED;
+    });
     const isReadyToCreate = computed(() => {
       if (!showOptions.value) return false;
       if (selected.value === peginType.FLYOVER) {
@@ -281,12 +291,24 @@ export default defineComponent({
       setSelectedQuote(quote?.quoteHash);
     }
 
+    function getValueToTransfer(quote: QuotePegIn2WP): SatoshiBig {
+      const { value } = quote.quote;
+      const providerFee = quote.quote.productFeeAmount
+        .plus(quote.quote.callFee)
+        .plus(SatoshiBig.fromWeiBig(quote.quote.gasFee));
+      return value.plus(providerFee);
+    }
+
     function createTx(): Promise<void> {
       formState.value = 'loading';
+      if (!selectedQuote.value) {
+        handleError(new ServiceError('NoWalletPeginForm', 'createTx', 'No quote selected', 'No quote selected'));
+        return Promise.resolve();
+      }
       const params: FireblocksTransactionParams = {
         operation: 'TRANSFER',
         assetId: FireblocksService.btcAssetId,
-        amount: amount.value,
+        amount: getValueToTransfer(selectedQuote.value).toBTCTrimmedString(),
         source: {
           type: TransferPeerPathType.VaultAccount,
           id: String(selectedVault.value?.id),
