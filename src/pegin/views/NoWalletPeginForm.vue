@@ -373,14 +373,6 @@ export default defineComponent({
       setSelectedQuote(quote?.quoteHash);
     }
 
-    function getValueToTransfer(quote: QuotePegIn2WP): SatoshiBig {
-      const { value } = quote.quote;
-      const providerFee = quote.quote.productFeeAmount
-        .plus(quote.quote.callFee)
-        .plus(SatoshiBig.fromWeiBig(quote.quote.gasFee));
-      return value.plus(providerFee);
-    }
-
     function createTx(): Promise<void> {
       formState.value = 'loading';
       if (!selectedQuote.value) {
@@ -390,7 +382,7 @@ export default defineComponent({
       const params: FireblocksTransactionParams = {
         operation: 'TRANSFER',
         assetId: FireblocksService.btcAssetId,
-        amount: getValueToTransfer(selectedQuote.value).toBTCTrimmedString(),
+        amount: selectedQuote.value.valueToTransfer.toBTCTrimmedString(),
         source: {
           type: TransferPeerPathType.VaultAccount,
           id: String(selectedVault.value?.id),
