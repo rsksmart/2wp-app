@@ -8,6 +8,11 @@
         Go Back
       </v-btn>
     </v-row>
+    <v-row no-gutters>
+      <v-col v-for="value in pegoutQuotes" :key="value.quoteHash">
+        <span>Pegout Quotes: {{ value.quoteHash }}</span>
+      </v-col>
+    </v-row>
     <v-row no-gutters class="d-flex justify-center">
       <v-col />
       <v-col xs="10" sm="8" md="7" lg="5" xl="5" class="d-flex space-between flex-column">
