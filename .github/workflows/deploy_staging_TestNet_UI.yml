@@ -37,6 +37,8 @@ jobs:
 
       - name: Build site
         run: >
+          SENTRY_DSN=${{ secrets.STAGING_TESTNET_SENTRY_DSN }}
+          SENTRY_ENV='staging-testnet'
           VUE_APP_COIN='test'
           VUE_APP_MANIFEST_EMAIL='user@rsk.co'
           VUE_APP_HOTJAR_ID=${{ secrets.STAGING_TESTNET_VUE_APP_HOTJAR_ID }}

@@ -37,6 +37,8 @@ jobs:
 
       - name: Build site
         run: >
+          SENTRY_DSN=${{ secrets.TESTNET_SENTRY_DSN }}
+          SENTRY_ENV='testnet'
           VUE_APP_HOTJAR_ID=${{ secrets.TESTNET_VUE_APP_HOTJAR_ID }}
           VUE_APP_CLARITY_ID=${{ secrets.TESTNET_VUE_APP_CLARITY_ID }}
           VUE_APP_COIN='test'
