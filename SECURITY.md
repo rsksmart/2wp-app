@@ -8,12 +8,12 @@ For all security related issues, RootstockLabs has two main points of contact. R
 
 **Ensure the bug was not already reported** by searching on GitHub under [Issues](https://github.com/rsksmart/2wp-app/issues).
 
-## Disclouse Policy
+## Disclosure Policy
 
 - Follow Immunefi's [disclosure guidelines](https://immunefi.com/responsible-publication/).
 - Public disclosure of a vulnerability makes it ineligible for a bounty.
 
-For more information check RootstockLabs bounty program policy at [Immunefi](https://immunefi.com/bug-bounty/rootstocklabs/information)
+For more information, check RootstockLabs bounty program policy at [Immunefi](https://immunefi.com/bug-bounty/rootstocklabs/information)
 
 ## Public Keys
 
