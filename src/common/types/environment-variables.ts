@@ -53,6 +53,10 @@ export class EnvironmentVariables {
 
   public flyoverDepositPegoutGas: number;
 
+  public apiKey: string;
+
+  public apiSalt: string;
+
   public minFeeSatPerByte: {
     fast: number;
     average: number;
@@ -123,6 +127,8 @@ export class EnvironmentVariables {
       || defaultValues.flyoverNetwork;
     this.flyoverDepositPegoutGas = Number(process.env.VUE_APP_FLYOVER_DEPOSIT_PEGOUT_GAS)
       || defaultValues.flyoverDepositPegoutGas || 0;
+    this.apiKey = process.env.VUE_APP_API_KEY || defaultValues.apiKey || '';
+    this.apiSalt = process.env.VUE_APP_API_SALT || defaultValues.apiSalt || '';
   }
 
   public get chainId(): number {
