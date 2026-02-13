@@ -41,6 +41,8 @@ jobs:
           VUE_APP_MANIFEST_EMAIL='user@rsk.co'
           VUE_APP_HOTJAR_ID=${{ secrets.STAGING_MAINNET_VUE_APP_HOTJAR_ID }}
           VUE_APP_CLARITY_ID=${{ secrets.STAGING_MAINNET_VUE_APP_CLARITY_ID }}
+          VUE_APP_API_KEY=${{ secrets.STAGING_MAINNET_VUE_APP_API_KEY }}
+          VUE_APP_API_SALT=${{ secrets.STAGING_MAINNET_VUE_APP_API_SALT }}
           VUE_APP_MANIFEST_APP_URL='https://powpeg.staging.rootstock.io'
           VUE_APP_API_BASE_URL='https://api.2wp.staging.rootstock.io'
           VUE_APP_RSK_NODE_HOST='https://public-node.rsk.co'
