@@ -50,7 +50,7 @@
     "ethers": "^5.7.2",
     "https-browserify": "^1.0.0",
     "jest-environment-jsdom": "^27.5.1",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "markdown-it": "^14.1.0",
     "moment": "^2.29.4",
     "os-browserify": "^0.3.0",
