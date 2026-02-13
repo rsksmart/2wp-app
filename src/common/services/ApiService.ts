@@ -1,4 +1,5 @@
 import axios from 'axios';
+import crypto from 'crypto';
 import { RequestBalance } from '@/common/types/pegInTx';
 import {
   AccountBalance,
@@ -20,6 +21,48 @@ import { ApiInformation } from '@/common/types/ApiInformation';
 import { BlockbookUtxo } from '@/pegin/types/services';
 import { AddressInfo } from '@/pegin/types';
 import { BigNumber } from 'ethers';
+
+/**
+ * Calculate the payload hash as sha256(sha256(body payload.toLowerCase() + SALT))
+ */
+function calculatePayloadHash(payload: string, salt: string): string {
+  const combined = payload.toLowerCase() + salt;
+  const firstHash = crypto.createHash('sha256').update(combined).digest('hex');
+  const secondHash = crypto.createHash('sha256').update(firstHash).digest('hex');
+  return secondHash;
+}
+
+/**
+ * Setup axios interceptor to add authentication headers
+ */
+function setupAxiosInterceptors(): void {
+  const envVars = EnvironmentAccessorService.getEnvironmentVariables();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  axios.interceptors.request.use((config: any) => {
+    const { apiKey, apiSalt } = envVars;
+
+    // Add API key header
+    if (apiKey) {
+      // eslint-disable-next-line no-param-reassign
+      config.headers.api_key = apiKey;
+    }
+
+    // Add payload hash header if there's data in the request
+    if (apiSalt) {
+      const basicPayload = config.data ? config.data : '';
+      const payload = typeof basicPayload === 'string' ? basicPayload : JSON.stringify(basicPayload);
+      const payloadHash = calculatePayloadHash(payload, apiSalt);
+      // eslint-disable-next-line no-param-reassign
+      config.headers['x-payload-hash'] = payloadHash;
+    }
+
+    return config;
+  });
+}
+
+// Initialize axios interceptors when module is loaded
+setupAxiosInterceptors();
 
 export default class ApiService {
   static get baseURL(): string {

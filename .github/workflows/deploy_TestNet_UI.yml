@@ -39,6 +39,8 @@ jobs:
         run: >
           VUE_APP_HOTJAR_ID=${{ secrets.TESTNET_VUE_APP_HOTJAR_ID }}
           VUE_APP_CLARITY_ID=${{ secrets.TESTNET_VUE_APP_CLARITY_ID }}
+          VUE_APP_API_KEY=${{ secrets.TESTNET_VUE_APP_API_KEY }}
+          VUE_APP_API_SALT=${{ secrets.TESTNET_VUE_APP_API_SALT }}
           VUE_APP_COIN='test'
           VUE_APP_MANIFEST_EMAIL='user@rsk.co'
           VUE_APP_MANIFEST_APP_URL='https://powpeg.testnet.rootstock.io'
