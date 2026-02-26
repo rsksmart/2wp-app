@@ -116,6 +116,11 @@ const routes: Readonly<RouteRecordRaw[]> = [
       }
     },
   },
+  {
+    path: '/noWalletPegin',
+    name: 'NoWalletPegin',
+    component: () => import(/* webpackChunkName: "no-wallet-pegin" */ '../../pegin/views/NoWalletPeginForm.vue'),
+  },
 ];
 
 const history = createWebHistory(EnvironmentAccessorService.getEnvironmentVariables().baseUrl);

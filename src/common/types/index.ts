@@ -14,3 +14,4 @@ export * from './Feature';
 export * from './ethers';
 export * from './Flyover';
 export * from './TxInfo';
+export * from './Fireblocks';

@@ -31,3 +31,4 @@ nginx.crt
 nginx.key
 
 .npmrc
+.cursor
