@@ -96,7 +96,7 @@
                 <template #append>
                   <v-icon :icon="mdiArrowRight" />
                 </template>
-                Continue to Summary
+                Confirm quote
               </v-btn-rsk>
               <v-progress-circular class="align-self-end" v-else indeterminate />
             </v-col>
