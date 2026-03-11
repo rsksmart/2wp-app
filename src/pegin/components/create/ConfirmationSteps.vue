@@ -3,6 +3,19 @@
     <v-row>
       <p class="text-h6">Confirm Transaction on your {{ walletName }} Wallet</p>
     </v-row>
+    <v-row no-gutters class="d-flex justify-start">
+            <v-alert variant="text" type="warning" density="compact" class="pa-0" prominent>
+          <template #prepend>
+            <v-icon size="x-small" :icon="mdiInformationOutline" />
+          </template>
+          <span class="text-body-sm">Follow
+            <a :href=constants.DERIVE_BTC_ADDRESS_DOCUMENTATION_URL target='_blank'>
+              this steps
+            </a>
+            to view and access your {{ environmentContext.getBtcTicker() }} funds.
+          </span>
+        </v-alert>
+    </v-row>
     <v-row class="mt-6 text-bw-400">
       Make sure the amount, address and transaction fee displayed on the {{ walletName }} wallet
       are correct.
@@ -414,7 +427,12 @@ import { PeginQuote } from '@/common/types';
 import * as constants from '@/common/store/constants';
 import { truncateStringToSize, copyToClipboard, getBtcAddressExplorerUrl } from '@/common/utils';
 import { useGetter, useState } from '@/common/store/helper';
-import { mdiInformation, mdiOpenInNew, mdiContentCopy } from '@mdi/js';
+import {
+  mdiInformation,
+  mdiOpenInNew,
+  mdiContentCopy,
+  mdiInformationOutline,
+} from '@mdi/js';
 
 export default defineComponent({
   name: 'ConfirmationSteps',
@@ -512,6 +530,7 @@ export default defineComponent({
       getBtcAddressExplorerUrl,
       hasChange,
       openAddressInExplorer,
+      mdiInformationOutline,
     };
   },
 });
