@@ -8,11 +8,8 @@
           <template #prepend>
             <v-icon size="x-small" :icon="mdiInformationOutline" />
           </template>
-          <span class="text-body-sm">Follow
-            <a :href=constants.DERIVE_BTC_ADDRESS_DOCUMENTATION_URL target='_blank'>
-              this steps
-            </a>
-            to view and access your {{ environmentContext.getBtcTicker() }} funds.
+          <span class="text-body-sm">
+            Make sure that you are sending the exact amounted quoted.
           </span>
         </v-alert>
     </v-row>
