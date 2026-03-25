@@ -32,3 +32,5 @@ nginx.key
 
 .npmrc
 .env
+
+.cursor
