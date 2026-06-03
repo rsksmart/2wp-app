@@ -34,3 +34,5 @@ nginx.key
 .env
 
 .cursor
+
+.claude

@@ -1,6 +1,6 @@
 import {
   FlyoverPegoutState, QuotePegOut2WP, RootState, WeiBig,
-  ReducedQuote, LogEntryType, LogEntryOperation, PegOutTxState,
+  ReducedQuote, PegOutTxState,
 } from '@/common/types';
 import { ActionTree } from 'vuex';
 import * as constants from '@/common/store/constants';
@@ -8,7 +8,7 @@ import { BridgeService } from '@/common/services/BridgeService';
 import {
   getClearObjectDifference, promiseWithTimeout,
 } from '@/common/utils';
-import { ApiService, FlyoverService } from '@/common/services';
+import { FlyoverService } from '@/common/services';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { providers } from 'ethers';
 import { AcceptedPegoutQuote } from '@rsksmart/flyover-sdk';
@@ -31,20 +31,9 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
       )
         .then((liquidityProviders) => {
           commit(constants.FLYOVER_PEGOUT_SET_PROVIDERS, liquidityProviders);
-          ApiService.logToServer({
-            type: LogEntryType.Success,
-            operation: LogEntryOperation.PegoutFlyover,
-            location: constants.FLYOVER_PEGOUT_GET_PROVIDERS,
-          }).catch(() => undefined);
           resolve();
         })
-        .catch((error) => {
-          ApiService.logToServer({
-            type: LogEntryType.Error,
-            operation: LogEntryOperation.PegoutFlyover,
-            location: constants.FLYOVER_PEGOUT_GET_PROVIDERS,
-            error,
-          }).catch(() => undefined);
+        .catch(() => {
           reject();
         });
     }),
@@ -86,19 +75,7 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
               };
             }
           });
-          return responses;
-        }).then((responses) => {
           commit(constants.FLYOVER_PEGOUT_SET_QUOTES, quotesByProvider);
-          responses.forEach((response) => {
-            ApiService.logToServer({
-              type: response.status === constants.FULFILLED
-                ? LogEntryType.Success
-                : LogEntryType.Error,
-              operation: LogEntryOperation.PegoutFlyover,
-              location: constants.FLYOVER_PEGOUT_GET_QUOTES,
-              ...(response.status === constants.FULFILLED ? {} : { error: response.reason }),
-            }).catch(() => undefined);
-          });
           resolve();
         });
     });

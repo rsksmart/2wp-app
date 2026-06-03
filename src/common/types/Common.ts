@@ -144,21 +144,3 @@ export interface XverseTx extends Tx {
   base64UnsignedPsbt: string;
   inputs: Array<{idx: number; address: string}>;
 }
-
-export enum LogEntryType {
-  Success = 'success',
-  Error = 'error',
-}
-
-export enum LogEntryOperation {
-  PeginNative = 'peginNative',
-  PeginFlyover = 'peginFlyover',
-  PegoutNative = 'pegoutNative',
-  PegoutFlyover = 'pegoutFlyover',
-}
-export interface LogEntry {
-  type: LogEntryType;
-  operation: LogEntryOperation;
-  location: string;
-  error?: Error,
-}

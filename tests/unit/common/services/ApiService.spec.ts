@@ -427,39 +427,6 @@ describe('Api Service', () => {
     });
   });
 
-  describe('Function: registerTx', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-    it('should resolve when register tx on api db', async () => {
-      const expectedResponse = { data: {} };
-      const axiosPostStub = sinon.stub(axios, 'post').resolves(expectedResponse);
-      const txHash = '0x807f14318a2f4bc62ae3a14370c243087464740fb2f5b16763f2fb1635708bb4';
-      const type = 'pegout';
-      const value = '8000000000000000';
-      const wallet = 'Metamask';
-      const result = await ApiService.registerTx(
-        {
-          txHash,
-          type,
-          value,
-          wallet,
-        },
-      );
-      await expect(axiosPostStub.calledOnceWithExactly(
-        `${ApiService.baseURL}/register`,
-        {
-          txHash,
-          type,
-          value,
-          wallet,
-        },
-        { headers: { 'Content-Type': 'application/json' } },
-      )).toBe(true);
-      expect(result).toEqual(expectedResponse.data);
-    });
-  });
-
   describe('Function: getFeatures', () => {
     afterEach(() => {
       sinon.restore();
