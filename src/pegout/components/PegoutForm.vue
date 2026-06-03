@@ -176,17 +176,15 @@ import {
 } from '@mdi/js';
 import {
   FlyoverPegoutState, LiquidityProvider2WP, ObjectDifference,
-  PegoutQuoteDbModel, PegOutTxState, QuotePegOut2WP,
-  SatoshiBig, TxInfo, TxStatusType, WeiBig,
+  PegOutTxState, QuotePegOut2WP,
+  SatoshiBig, TxStatusType, WeiBig,
 } from '@/common/types';
 import {
   appendRecaptcha, Machine, ServiceError, validateAddress,
 } from '@/common/utils';
-import ApiService from '@/common/services/ApiService';
 import { FlyoverService } from '@/common/services';
 import FullTxErrorDialog from '@/common/components/exchange/FullTxErrorDialog.vue';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
-import { useWalletInfo } from '@reown/appkit/vue';
 import { providers } from 'ethers';
 import { useRouter } from 'vue-router';
 import PegoutOption from './PegoutOption.vue';
@@ -224,7 +222,6 @@ export default defineComponent({
     const flyoverService = useStateAttribute<FlyoverService>('flyoverPegout', 'flyoverService');
     const account = useStateAttribute<string>('web3Session', 'account');
     const balance = useStateAttribute<WeiBig>('web3Session', 'balance');
-    const { walletInfo } = useWalletInfo();
     const sendPowPegTx = useAction('pegOutTx', constants.PEGOUT_TX_SEND);
     const sendFlyoverTx = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ACCEPT_AND_SEND_QUOTE);
     const sendFlyoverTxWithConditionChanged = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ACCEPT_AND_SEND_QUOTE_WITH_CHANGED_CONDITIONS);
@@ -284,8 +281,6 @@ export default defineComponent({
       }
       return true;
     });
-
-    const currentWallet = computed(() => walletInfo?.name ?? '');
 
     const actualDiffPercentage = computed(() => quoteDifference.value.percentage);
 
@@ -400,69 +395,6 @@ export default defineComponent({
       clearWallets();
     }
 
-    function getLPName(): string {
-      const lpAddress = selectedQuote.value.quote.liquidityProviderRskAddress.toLowerCase();
-      const provider = flyoverPegoutState.value.liquidityProviders
-        .find((lp) => lp.provider.toLowerCase() === lpAddress);
-      return provider?.name ?? '';
-    }
-
-    function getProviderFee(): WeiBig {
-      return selectedQuote.value.quote.productFeeAmount
-        .plus(selectedQuote.value.quote.callFee);
-    }
-
-    const registerFlyover = computed<TxInfo>(() => {
-      const pegoutQuote = selectedQuote.value.quote;
-      const dbQuote: PegoutQuoteDbModel = {
-        agreementTimestamp: pegoutQuote.agreementTimestamp.toString(),
-        btcRefundAddress: pegoutQuote.btcRefundAddress,
-        callFeeOnWei: pegoutQuote.callFee.toString(),
-        depositAddr: pegoutQuote.depositAddr,
-        depositConfirmations: pegoutQuote.depositConfirmations.toString(),
-        depositDateLimit: pegoutQuote.depositDateLimit.toString(),
-        expireBlocks: pegoutQuote.expireBlocks.toString(),
-        expireDate: pegoutQuote.expireDate.toString(),
-        gasFeeOnWei: pegoutQuote.gasFee.toString(),
-        lbcAddress: pegoutQuote.lbcAddress,
-        liquidityProviderRskAddress: pegoutQuote.liquidityProviderRskAddress,
-        lpBtcAddress: pegoutQuote.lpBtcAddr,
-        nonce: pegoutQuote.nonce.toString(),
-        penaltyFeeOnWei: pegoutQuote.penaltyFee.toString(),
-        productFeeAmountOnWei: pegoutQuote.productFeeAmount.toString(),
-        rskRefundAddress: pegoutQuote.rskRefundAddress,
-        transferConfirmations: pegoutQuote.transferConfirmations.toString(),
-        transferTime: pegoutQuote.transferTime.toString(),
-        valueOnWei: pegoutQuote.value.toString(),
-      };
-      return {
-        txHash: flyoverPegoutState.value.txHash as string,
-        type: TxStatusType.PEGOUT.toLowerCase(),
-        value: flyoverPegoutState.value.amountToTransfer.toString(),
-        wallet: currentWallet.value,
-        rskGas: selectedQuote.value.quote.gasFee.toString(),
-        fee: getProviderFee().toString(),
-        provider: getLPName(),
-        details: {
-          senderAddress: account.value,
-          recipientAddress: flyoverPegoutState.value.btcRecipientAddress,
-          blocksToCompleteTransaction: selectedQuote.value.quote.depositConfirmations.toString(),
-        },
-        quote: dbQuote,
-        quoteHash: selectedQuote.value.quoteHash,
-        acceptedQuoteSignature: flyoverPegoutState.value.acceptedQuoteSignature,
-      };
-    });
-
-    const registerPegout = computed(() => ({
-      txHash: pegOutTxState.value.txHash as string,
-      type: TxStatusType.PEGOUT.toLowerCase(),
-      value: pegOutTxState.value.amountToTransfer.toString(),
-      wallet: currentWallet.value,
-      btcEstimatedFee: pegOutTxState.value.btcEstimatedFee.toString(),
-      rskGas: pegOutTxState.value.calculatedFee.toString(),
-    }));
-
     function acceptAndSendQr(quoteHash: string):Promise<void> {
       return acceptQuote(quoteHash)
         .then(() => {
@@ -488,7 +420,6 @@ export default defineComponent({
             startCountdown();
           }
         } else await sendPowPegTx();
-        ApiService.registerTx(quoteHash ? registerFlyover.value : registerPegout.value);
         changePage(type);
       } catch (e) {
         if (e instanceof ServiceError) {
@@ -582,7 +513,6 @@ export default defineComponent({
       pegOutFormState.value.send('loading');
       try {
         await sendFlyoverTxWithConditionChanged();
-        ApiService.registerTx(registerFlyover.value);
         changePage(TxStatusType.FLYOVER_PEGOUT.toLowerCase());
       } catch (e) {
         if (e instanceof ServiceError) {
