@@ -10,8 +10,6 @@ import {
   TxStatus,
   TxStatusType,
   Feature,
-  TxInfo,
-  LogEntry,
 } from '@/common/types';
 import { areValidOutputs, isValidInput } from '@/common/utils';
 import { BridgeService } from '@/common/services/BridgeService';
@@ -207,33 +205,11 @@ export default class ApiService {
     });
   }
 
-  static registerTx(txInfo: TxInfo): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      const { txHash, type } = txInfo;
-      if (txHash == null || type == null) resolve();
-      axios.post(
-        `${ApiService.baseURL}/register`,
-        txInfo,
-        { headers: { 'Content-Type': 'application/json' } },
-      )
-        .then((response) => resolve(response.data))
-        .catch(reject);
-    });
-  }
-
   static getFeatures(): Promise<Feature[]> {
     return new Promise<Feature[]>((resolve, reject) => {
       axios.get(`${ApiService.baseURL}/features`)
         .then((response) => resolve(response.data))
         .catch(() => reject(new Error('Unable to get feature flags')));
-    });
-  }
-
-  static logToServer(entry: LogEntry): Promise<void> {
-    return new Promise((resolve, reject) => {
-      axios.post(`${ApiService.baseURL}/logs`, entry)
-        .then(() => resolve())
-        .catch(reject);
     });
   }
 }

@@ -1,12 +1,11 @@
 import {
   FlyoverPeginState, QuotePegIn2WP, RootState, SatoshiBig,
-  WeiBig, LogEntryType, LogEntryOperation,
+  WeiBig,
   Utxo,
   PegInTxState,
 } from '@/common/types';
 import { ActionTree } from 'vuex';
 import * as constants from '@/common/store/constants';
-import { ApiService } from '@/common/services';
 import { promiseWithTimeout } from '@/common/utils';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { TxFeeService } from '@/pegin/services';
@@ -26,20 +25,9 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
       )
         .then((providers) => {
           commit(constants.FLYOVER_PEGIN_SET_PROVIDERS, providers);
-          ApiService.logToServer({
-            type: LogEntryType.Success,
-            operation: LogEntryOperation.PeginFlyover,
-            location: constants.FLYOVER_PEGIN_GET_PROVIDERS,
-          }).catch(() => undefined);
           resolve();
         })
-        .catch((error) => {
-          ApiService.logToServer({
-            type: LogEntryType.Error,
-            operation: LogEntryOperation.PeginFlyover,
-            location: constants.FLYOVER_PEGIN_GET_PROVIDERS,
-            error,
-          }).catch(() => undefined);
+        .catch(() => {
           reject();
         });
     },
@@ -76,20 +64,7 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
             };
           }
         });
-        return responses;
-      })
-      .then((responses) => {
         commit(constants.FLYOVER_PEGIN_SET_QUOTES, quotesByProvider);
-        responses.forEach((response) => {
-          ApiService.logToServer({
-            type: response.status === constants.FULFILLED
-              ? LogEntryType.Success
-              : LogEntryType.Error,
-            operation: LogEntryOperation.PeginFlyover,
-            location: constants.FLYOVER_PEGIN_GET_QUOTES,
-            ...(response.status === constants.FULFILLED ? {} : { error: response.reason }),
-          }).catch(() => undefined);
-        });
         resolve();
       });
   }),
