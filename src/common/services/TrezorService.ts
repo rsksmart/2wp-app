@@ -21,6 +21,11 @@ export default class TrezorService extends WalletService {
 
   constructor() {
     super();
+    TrezorConnect.manifest({
+      email: EnvironmentAccessorService.getEnvironmentVariables().vueAppManifestEmail,
+      appUrl: EnvironmentAccessorService.getEnvironmentVariables().vueAppManifestAppUrl,
+      appName: 'PowPeg App',
+    });
     switch (this.network) {
       case constants.BTC_NETWORK_MAINNET:
         this.bitcoinJsNetwork = bitcoin.networks.bitcoin;
@@ -29,13 +34,15 @@ export default class TrezorService extends WalletService {
       default:
         this.bitcoinJsNetwork = bitcoin.networks.testnet;
         this.trezorCoin = 'TESTNET';
+        TrezorConnect.blockchainSetCustomBackend({
+          coin: 'Testnet',
+          blockchainLink: {
+            type: 'blockbook',
+            url: ['https://tbtc1.trezor.io'],
+          },
+        });
         break;
     }
-    TrezorConnect.manifest({
-      email: EnvironmentAccessorService.getEnvironmentVariables().vueAppManifestEmail,
-      appUrl: EnvironmentAccessorService.getEnvironmentVariables().vueAppManifestAppUrl,
-      appName: 'PowPeg App',
-    });
   }
 
   private static unableToConnect(): TrezorError {
