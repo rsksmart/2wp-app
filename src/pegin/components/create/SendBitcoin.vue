@@ -53,8 +53,11 @@ import {
   Feature,
   NormalizedTx,
 } from '@/common/types';
-import { Machine, getClearPeginTxState } from '@/common/utils';
+import {
+  Machine, getClearPeginTxState, createBridgeId, BridgeIdSource, BridgeNetwork,
+} from '@/common/utils';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
+import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import TrezorTxBuilder from '@/pegin/middleware/TxBuilder/TrezorTxBuilder';
 import LedgerTxBuilder from '@/pegin/middleware/TxBuilder/LedgerTxBuilder';
 import TxBuilder from '@/pegin/middleware/TxBuilder/TxBuilder';
@@ -195,15 +198,29 @@ export default defineComponent({
         showTxErrorDialog.value = true;
         txId.value = txHash;
       } else if (txHash) {
+        const isFlyover = type.value === constants.peginType.FLYOVER;
+        const lpId = String(EnvironmentAccessorService.getEnvironmentVariables().flyoverProviderId);
+        const bridgeId = isFlyover
+          ? createBridgeId({
+            source: BridgeIdSource.FLYOVER,
+            providerId: lpId,
+            txHash,
+            network: BridgeNetwork.BTC,
+            providerHash: selectedFlyoverQuote.value.quoteHash,
+          })
+          : createBridgeId({
+            source: BridgeIdSource.PEGIN,
+            providerId: 'powpeg',
+            txHash,
+            network: BridgeNetwork.BTC,
+          });
         router.push({
           name: 'SuccessTx',
           params: {
-            txId: txHash,
-            type: type.value === constants.peginType.FLYOVER
-              ? TxStatusType.FLYOVER_PEGIN
-              : TxStatusType.PEGIN,
+            txId: bridgeId,
+            type: isFlyover ? TxStatusType.FLYOVER_PEGIN : TxStatusType.PEGIN,
             amount: valueToReceive.value.toSatoshiString(),
-            confirmations: type.value === constants.peginType.FLYOVER
+            confirmations: isFlyover
               ? Number(selectedFlyoverQuote.value.quote.confirmations) : 0,
           },
         });

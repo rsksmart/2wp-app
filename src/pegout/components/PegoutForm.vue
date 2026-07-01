@@ -181,6 +181,7 @@ import {
 } from '@/common/types';
 import {
   appendRecaptcha, Machine, ServiceError, validateAddress,
+  createBridgeId, BridgeIdSource, BridgeNetwork,
 } from '@/common/utils';
 import { FlyoverService } from '@/common/services';
 import FullTxErrorDialog from '@/common/components/exchange/FullTxErrorDialog.vue';
@@ -380,15 +381,32 @@ export default defineComponent({
     }
 
     function changePage(type: string) {
+      const isFlyover = type === TxStatusType.FLYOVER_PEGOUT.toLowerCase();
+      const rawTxHash = isFlyover
+        ? (flyoverPegoutState.value.txHash ?? '')
+        : (pegOutTxState.value.txHash ?? '');
+      const lpId = String(EnvironmentAccessorService.getEnvironmentVariables().flyoverProviderId);
+      const bridgeId = isFlyover
+        ? createBridgeId({
+          source: BridgeIdSource.FLYOVER,
+          providerId: lpId,
+          txHash: rawTxHash,
+          network: BridgeNetwork.RSK,
+          providerHash: selectedQuoteHash.value,
+        })
+        : createBridgeId({
+          source: BridgeIdSource.PEGOUT,
+          providerId: 'powpeg',
+          txHash: rawTxHash,
+          network: BridgeNetwork.RSK,
+        });
       router.push({
         name: 'SuccessTx',
         params: {
           type,
-          txId: type === TxStatusType.FLYOVER_PEGOUT.toLowerCase()
-            ? flyoverPegoutState.value.txHash
-            : pegOutTxState.value.txHash,
+          txId: bridgeId,
           amount: SatoshiBig.fromWeiBig(valueToReceive.value).toSatoshiString(),
-          confirmations: type === TxStatusType.FLYOVER_PEGOUT.toLowerCase()
+          confirmations: isFlyover
             ? Number(selectedQuote.value.quote.depositConfirmations) : 0,
         },
       });

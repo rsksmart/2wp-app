@@ -9,7 +9,10 @@ import { EnvironmentAccessorService } from '@/common/services/enviroment-accesso
 import * as constants from '@/common/store/constants';
 import { ApiService } from '@/common/services';
 import { BridgeService } from '@/common/services/BridgeService';
-import { getEstimatedFee, promiseWithTimeout } from '@/common/utils';
+import {
+  getEstimatedFee, promiseWithTimeout,
+  isValidBridgeId, parseBridgeId, bridgeIdToTxStatusType, BridgeIdSource,
+} from '@/common/utils';
 import { ethers } from 'ethers';
 
 export const actions: ActionTree<TxStatus, RootState> = {
@@ -21,6 +24,53 @@ export const actions: ActionTree<TxStatus, RootState> = {
       { commit, dispatch },
       { txId, txType }: {txId: string, txType?: string},
     ) => new Promise((resolve, reject) => {
+      if (isValidBridgeId(txId)) {
+        const parsed = parseBridgeId(txId);
+        const resolvedType = bridgeIdToTxStatusType(txId);
+        commit(constants.STATUS_SET_TX_TYPE, resolvedType);
+
+        const nextActions: Promise<unknown>[] = [
+          promiseWithTimeout(
+            dispatch(constants.STATUS_GET_ESTIMATED_FEE),
+            EnvironmentAccessorService.getEnvironmentVariables().apiResponseTimeout,
+          ),
+        ];
+
+        if (parsed.source === BridgeIdSource.FLYOVER) {
+          nextActions.push(
+            dispatch(constants.STATUS_GET_FLYOVER_STATUS, {
+              quoteHash: parsed.providerHash,
+              providerId: Number(parsed.providerId),
+            }),
+          );
+          Promise.all(nextActions).then(resolve).catch(() => {
+            commit(constants.STATUS_SET_TX_DETAILS, undefined);
+            commit(constants.STATUS_SET_TX_TYPE, TxStatusType.UNEXPECTED_ERROR);
+            reject();
+          });
+          return;
+        }
+
+        promiseWithTimeout(
+          ApiService.getTxStatus(parsed.txHash, resolvedType),
+          EnvironmentAccessorService.getEnvironmentVariables().apiResponseTimeout,
+        )
+          .then((status) => {
+            commit(constants.STATUS_SET_TX_DETAILS, status.txDetails);
+            return Promise.all([
+              ...nextActions,
+              dispatch(constants.STATUS_GET_ESTIMATED_RELEASE_TIME_IN_MINUTES),
+            ]);
+          })
+          .then(resolve)
+          .catch(() => {
+            commit(constants.STATUS_SET_TX_DETAILS, undefined);
+            commit(constants.STATUS_SET_TX_TYPE, TxStatusType.UNEXPECTED_ERROR);
+            reject();
+          });
+        return;
+      }
+
       Promise.all([
         promiseWithTimeout(
           ApiService.getTxStatus(txId, txType),
@@ -89,21 +139,24 @@ export const actions: ActionTree<TxStatus, RootState> = {
     }),
   [constants.STATUS_GET_FLYOVER_STATUS]: async ({
     state, commit, dispatch, rootState,
-  }, quoteHash) => {
+  }, payload: string | { quoteHash: string; providerId?: number }) => {
+    const quoteHash = typeof payload === 'string' ? payload : payload.quoteHash;
+    const providerId = typeof payload === 'object' && payload.providerId !== undefined
+      ? payload.providerId
+      : EnvironmentAccessorService.getEnvironmentVariables().flyoverProviderId;
+
     let status;
     try {
       if (state.type === TxStatusType.FLYOVER_PEGIN) {
         const flyoverService = rootState.flyoverPegin?.flyoverService;
         await dispatch(`flyoverPegin/${constants.FLYOVER_PEGIN_INIT}`, null, { root: true });
-        flyoverService?.useLiquidityProvider(EnvironmentAccessorService.getEnvironmentVariables()
-          .flyoverProviderId);
+        flyoverService?.useLiquidityProvider(providerId);
         status = await flyoverService?.getPeginStatus(quoteHash);
       }
       if (state.type === TxStatusType.FLYOVER_PEGOUT) {
         const flyoverService = rootState.flyoverPegout?.flyoverService;
         await dispatch(`flyoverPegout/${constants.FLYOVER_PEGOUT_INIT}`, {}, { root: true });
-        flyoverService?.useLiquidityProvider(EnvironmentAccessorService.getEnvironmentVariables()
-          .flyoverProviderId);
+        flyoverService?.useLiquidityProvider(providerId);
         status = await rootState.flyoverPegout?.flyoverService.getPegoutStatus(quoteHash);
       }
     } catch (e) {

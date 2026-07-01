@@ -1,4 +1,4 @@
-import { PROTO } from '@trezor/connect-web';
+import { PROTO, RefTransaction } from '@trezor/connect-web';
 import { Tx } from '@/common/types/Common';
 
 export type InputScriptType =
@@ -11,6 +11,7 @@ export interface TrezorTx extends Tx {
   inputs: PROTO.TxInputType[];
   outputs: PROTO.TxOutputType[];
   version: number;
+  refTxs: RefTransaction[];
 }
 
 export interface GetAddress {
