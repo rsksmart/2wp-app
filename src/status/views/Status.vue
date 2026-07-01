@@ -110,7 +110,7 @@ import StatusProgressBar from '@/common/components/status/StatusProgressBar.vue'
 import { PegStatus } from '@/common/store/constants';
 import {
   copyToClipboard, getBtcTxExplorerUrl,
-  getRskTxExplorerUrl,
+  getRskTxExplorerUrl, isValidBridgeId, extractTxHash,
 } from '@/common/utils';
 import { useTheme } from 'vuetify/lib/framework.mjs';
 
@@ -191,24 +191,30 @@ export default defineComponent({
         || errorStatus as PegoutStatus === PegoutStatus.REJECTED;
     });
 
+    const rawTxHashRegex = /^(0x[a-fA-F0-9]{64}|[a-fA-F0-9]{64})$/;
+
+    function isValidInput(value: string): boolean {
+      return rawTxHashRegex.test(value) || isValidBridgeId(value);
+    }
+
     const rules = {
       required: (value: string) => !!value || 'Required.',
-      valid: (value: string) => (/^(0x[a-fA-F0-9]{64}|[a-fA-F0-9]{64})$/.test(value))
-        || 'Invalid Transaction Id.',
+      valid: (value: string) => isValidInput(value) || 'Invalid Transaction Id.',
     };
 
     function regexValidationTxId(): boolean {
-      const regex = /^(0x[a-fA-F0-9]{64}|[a-fA-F0-9]{64})$/;
-      return regex.test(txId.value);
+      return isValidInput(txId.value);
     }
 
     const isValidTxId = computed(() => regexValidationTxId());
 
     const btnLabel = computed(() => (!typingSearch.value && showStatus ? 'Refresh' : 'Show status'));
 
+    const rawTxHash = computed(() => extractTxHash(txId.value));
+
     const txIdExplorerLink = computed(() => (isPegOut.value
-      ? getRskTxExplorerUrl(txId.value)
-      : getBtcTxExplorerUrl(txId.value)));
+      ? getRskTxExplorerUrl(rawTxHash.value)
+      : getBtcTxExplorerUrl(rawTxHash.value)));
 
     function clean() {
       clearStatus();

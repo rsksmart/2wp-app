@@ -1,10 +1,12 @@
-import { PROTO } from '@trezor/connect-web';
+import { PROTO, RefTransaction } from '@trezor/connect-web';
+import * as bitcoin from 'bitcoinjs-lib';
 import { WalletAddress } from '@/common/types/pegInTx';
 import {
   InputScriptType,
   NormalizedInput, NormalizedOutput, NormalizedTx, TrezorTx,
 } from '@/common/types';
 import { getAccountType } from '@/common/utils';
+import { ApiService } from '@/common/services';
 import * as constants from '@/common/store/constants';
 import store from '@/common/store';
 import TxBuilder from './TxBuilder';
@@ -13,16 +15,41 @@ export default class TrezorTxBuilder extends TxBuilder {
   private tx!: TrezorTx;
 
   buildTx(normalizedTx: NormalizedTx): Promise<TrezorTx> {
-    return new Promise<TrezorTx>((resolve) => {
-      const { coin } = this;
-      const tx = {
-        coin,
-        inputs: this.getInputs(normalizedTx.inputs),
-        outputs: TrezorTxBuilder.getOutputs(normalizedTx.outputs),
-        version: constants.BITCOIN_TX_VERSION,
+    const { coin } = this;
+    return TrezorTxBuilder.buildRefTxs(normalizedTx.inputs)
+      .then((refTxs) => {
+        const tx: TrezorTx = {
+          coin,
+          inputs: this.getInputs(normalizedTx.inputs),
+          outputs: TrezorTxBuilder.getOutputs(normalizedTx.outputs),
+          version: constants.BITCOIN_TX_VERSION,
+          refTxs,
+        };
+        this.tx = tx;
+        return tx;
+      });
+  }
+
+  private static async buildRefTxs(inputs: NormalizedInput[]): Promise<RefTransaction[]> {
+    const uniqueHashes = [...new Set(inputs.map((i) => i.prev_hash))];
+    const hexes = await Promise.all(uniqueHashes.map((h) => ApiService.getTxHex(h)));
+    return uniqueHashes.map((hash, idx) => {
+      const tx = bitcoin.Transaction.fromHex(hexes[idx]);
+      return {
+        hash,
+        version: tx.version,
+        lock_time: tx.locktime,
+        inputs: tx.ins.map((input) => ({
+          prev_hash: Buffer.from(input.hash).reverse().toString('hex'),
+          prev_index: input.index,
+          script_sig: input.script.toString('hex'),
+          sequence: input.sequence,
+        })),
+        bin_outputs: tx.outs.map((output) => ({
+          amount: output.value.toString(),
+          script_pubkey: output.script.toString('hex'),
+        })),
       };
-      this.tx = tx;
-      resolve(tx);
     });
   }
 
