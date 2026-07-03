@@ -40,7 +40,6 @@ export interface PegoutQuoteDTO2WP {
     lpBtcAddr: string;
     nonce: bigint;
     penaltyFee: WeiBig;
-    productFeeAmount: WeiBig;
     rskRefundAddress: string;
     transferConfirmations: number;
     transferTime: number;
@@ -70,7 +69,6 @@ export interface PeginQuoteDTO2WP {
     lpRSKAddr: string;
     nonce: bigint;
     penaltyFee: WeiBig;
-    productFeeAmount: SatoshiBig;
     rskRefundAddr: string;
     timeForDepositInSeconds: number;
     value: SatoshiBig;

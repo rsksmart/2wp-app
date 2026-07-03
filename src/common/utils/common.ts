@@ -110,7 +110,6 @@ export const getClearSessionState = (): SessionState => (
 export const getClearReducedQuote = (): ReducedQuote => ({
   gasFee: new WeiBig(0, 'wei'),
   callFee: new WeiBig(0, 'wei'),
-  productFeeAmount: new WeiBig(0, 'wei'),
   value: new WeiBig(0, 'wei'),
   quoteHash: '',
 });

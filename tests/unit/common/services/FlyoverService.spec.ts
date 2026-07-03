@@ -60,7 +60,7 @@ describe('FlyoverService', () => {
         expireDate: 1706821191,
         expireBlocks: 4764623,
         gasFee: 105689215476000n,
-        productFeeAmount: 50000000000000n,
+        chainId: 31,
       },
       quoteHash: '7360231032856e3e655ae1e2e4c82dabc5bc4e09a2a19e7c315dca1369f542aa',
     },
@@ -80,7 +80,6 @@ describe('FlyoverService', () => {
         agreementTimestamp: 1706817591,
         timeForDeposit: 120,
         gasFee: 105689215476000n,
-        productFeeAmount: 50000000000000n,
         callOnRegister: true,
         confirmations: 60,
         contractAddr: '0xe9a84d226bb3008f09a46096b00dd6782be4d5f2',
@@ -89,6 +88,7 @@ describe('FlyoverService', () => {
         gasLimit: 200,
         lpCallTime: 360,
         lpRSKAddr: '0x7C4890A0f1D4bBf2C669Ac2d1efFa185c505359b',
+        chainId: 31,
       },
       quoteHash: '7360231032856e3e655ae1e2e4c82dabc5bc4e09a2a19e7c315dca1369f542aa',
     },
@@ -322,7 +322,7 @@ describe('FlyoverService', () => {
       const btcRefundAddress = 'n2y5V6LYszsrsxkMdMypL98YQxtBoLCXdc';
       const btcRecipientAddress = 'n2y5V6LYszsrsxkMdMypL98YQxtBoLCXdc';
       const valueToTransfer = new WeiBig('0.005', 'rbtc');
-      const expectedTotalAmount = 5255689215476000n;
+      const expectedTotalAmount = 5205689215476000n;
 
       const quotes = await flyoverService.getPegoutQuotes(
         rskRefundAddress,

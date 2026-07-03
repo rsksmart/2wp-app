@@ -25,7 +25,7 @@ describe('PeginQuote', () => {
     confirmations: 2,
     callOnRegister: false,
     gasFee: 1368444000000n,
-    productFeeAmount: 0n,
+    chainId: 31,
   };
 
   beforeEach(() => {
@@ -45,15 +45,12 @@ describe('PeginQuote', () => {
       .toEqual(new WeiBig(quoteValues.gasFee, 'wei').toRBTCString());
     expect(peginQuote.quote.penaltyFee.toRBTCString())
       .toEqual(new WeiBig(quoteValues.penaltyFee, 'wei').toRBTCString());
-    expect(peginQuote.quote.productFeeAmount.toBTCTrimmedString())
-      .toEqual(SatoshiBig.fromWeiBig(new WeiBig(quoteValues.productFeeAmount, 'wei')).toBTCTrimmedString());
     expect(peginQuote.quote.value.toBTCTrimmedString())
       .toEqual(SatoshiBig.fromWeiBig(new WeiBig(quoteValues.value, 'wei')).toBTCTrimmedString());
   });
 
   it('should calculate providerFee correctly', () => {
     const expectedProviderFee = SatoshiBig.fromWeiBig(new WeiBig(quoteValues.callFee, 'wei'))
-      .plus(SatoshiBig.fromWeiBig(new WeiBig(quoteValues.productFeeAmount, 'wei')))
       .plus(SatoshiBig.fromWeiBig(new WeiBig(quoteValues.gasFee, 'wei')));
     expect(peginQuote.providerFee.toBTCString()).toEqual(expectedProviderFee.toBTCString());
   });
