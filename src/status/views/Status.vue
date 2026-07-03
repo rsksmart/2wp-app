@@ -278,7 +278,7 @@ export default defineComponent({
         switch (txType.value) {
           case TxStatusType.FLYOVER_PEGOUT:
           case TxStatusType.FLYOVER_PEGIN:
-            if ((txDetails.value as FlyoverStatusModel).status === FlyoverStatus.COMPLETED) {
+            if ((txDetails.value as FlyoverStatusModel)?.status === FlyoverStatus.COMPLETED) {
               stopCallPeriodicallyStatus();
             } else {
               getPegStatus();
