@@ -274,7 +274,6 @@ export default defineComponent({
         const objectQuote = pegoutQuotes.value[0];
         const amountPlusFees = objectQuote.quote.value
           .plus(objectQuote.quote.gasFee)
-          .plus(objectQuote.quote.productFeeAmount)
           .plus(feeValue.value)
           .plus(objectQuote.quote.callFee);
         const enoughBalance = balance.value.gt(amountPlusFees);
@@ -305,7 +304,6 @@ export default defineComponent({
           || addressType === constants.BITCOIN_NATIVE_SEGWIT_ADDRESS);
         const amountPlusFees = selectedQuote.value.quote.value
           .plus(selectedQuote.value.quote.gasFee)
-          .plus(selectedQuote.value.quote.productFeeAmount)
           .plus(selectedQuote.value.quote.callFee);
         const enoughBalance = balance.value.gt(amountPlusFees);
         return valid && enoughBalance
@@ -338,7 +336,6 @@ export default defineComponent({
           lpBtcAddr: '',
           nonce: 0n,
           penaltyFee: new WeiBig(0, 'wei'),
-          productFeeAmount: btcFee,
           rskRefundAddress: account.value ?? '',
           transferConfirmations: 0,
           transferTime: 0,

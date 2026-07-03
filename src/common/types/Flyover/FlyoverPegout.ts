@@ -6,7 +6,6 @@ import WeiBig from '../WeiBig';
 export interface ReducedQuote {
     gasFee: WeiBig;
     callFee: WeiBig;
-    productFeeAmount: WeiBig;
     value: WeiBig;
     quoteHash: string;
 }
