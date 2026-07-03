@@ -136,7 +136,6 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
         const reducedCurrentQuote = {
           callFee: currentQuote?.quote.callFee,
           gasFee: currentQuote?.quote.gasFee,
-          productFeeAmount: currentQuote?.quote.productFeeAmount,
           value: currentQuote?.quote.value,
           quoteHash: currentQuote?.quoteHash,
         };
@@ -144,18 +143,15 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
           const reducedNewQuote = {
             callFee: quote2wp.quote.callFee,
             gasFee: quote2wp.quote.gasFee,
-            productFeeAmount: quote2wp.quote.productFeeAmount,
             value: quote2wp.quote.value,
             quoteHash: quote2wp.quoteHash,
           };
           const zeroWei = new WeiBig(0, 'wei');
           const currentQuoteTotal = (reducedCurrentQuote.callFee ?? zeroWei)
             .plus(reducedCurrentQuote.gasFee ?? zeroWei)
-            .plus(reducedCurrentQuote.productFeeAmount ?? zeroWei)
             .plus(reducedCurrentQuote.value ?? zeroWei);
           const newQuoteTotal = (reducedNewQuote.callFee ?? zeroWei)
             .plus(reducedNewQuote.gasFee ?? zeroWei)
-            .plus(reducedNewQuote.productFeeAmount ?? zeroWei)
             .plus(reducedNewQuote.value ?? zeroWei);
           const largest = newQuoteTotal
             .gt(currentQuoteTotal) ? newQuoteTotal : currentQuoteTotal;
@@ -173,14 +169,12 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
                 previousQuote: {
                   gasFee: reducedCurrentQuote.gasFee,
                   callFee: reducedCurrentQuote.callFee,
-                  productFeeAmount: reducedCurrentQuote.productFeeAmount,
                   value: reducedCurrentQuote.value,
                   quoteHash: reducedCurrentQuote.quoteHash,
                 } as ReducedQuote,
                 currentQuote: {
                   gasFee: reducedNewQuote.gasFee,
                   callFee: reducedNewQuote.callFee,
-                  productFeeAmount: reducedNewQuote.productFeeAmount,
                   value: reducedNewQuote.value,
                   quoteHash: reducedNewQuote.quoteHash,
                 } as ReducedQuote,

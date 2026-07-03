@@ -187,6 +187,7 @@ export default defineComponent({
     const session = useState<SessionState>('web3Session');
     const bitcoinPrice = useStateAttribute<number>('pegOutTx', 'bitcoinPrice');
     const networkFee = useStateAttribute<WeiBig>('pegOutTx', 'calculatedFee');
+    const btcEstimatedFee = useStateAttribute<SatoshiBig>('pegOutTx', 'btcEstimatedFee');
     const setBtcAddress = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_ADD_BTC_ADDRESS);
     const fixedUSDDecimals = 2;
     const btcAddress = ref('');
@@ -243,11 +244,10 @@ export default defineComponent({
         if (isFlyover.value) {
           fee = props.quote.quote.callFee
             .plus(props.quote.quote.gasFee)
-            .plus(props.quote.quote.productFeeAmount)
             .plus(networkFee.value);
         } else {
           fee = props.quote.quote.gasFee
-            .plus(props.quote.quote.productFeeAmount);
+            .plus(new WeiBig(btcEstimatedFee.value.toBTCString(), 'rbtc'));
         }
         return fee.toRBTCTrimmedString();
       }

@@ -156,7 +156,6 @@ export default class FlyoverService {
               callFee: new WeiBig(pegoutQuote.quote.callFee ?? 0, 'wei'),
               gasFee: new WeiBig(pegoutQuote.quote.gasFee ?? 0, 'wei'),
               penaltyFee: new WeiBig(pegoutQuote.quote.penaltyFee ?? 0, 'wei'),
-              productFeeAmount: new WeiBig(pegoutQuote.quote.productFeeAmount ?? 0, 'wei'),
               value: new WeiBig(pegoutQuote.quote.value ?? 0, 'wei'),
             },
             quoteHash: pegoutQuote.quoteHash,
@@ -265,7 +264,6 @@ export default class FlyoverService {
     if (selectedQuote) {
       const { quote } = selectedQuote;
       amount = BigInt(quote.value)
-            + BigInt(quote.productFeeAmount)
             + BigInt(quote.gasFee)
             + BigInt(quote.callFee);
     }
@@ -307,7 +305,6 @@ export default class FlyoverService {
       quote.callFee.lte(0)
       || quote.gasFee.lte(0)
       || quote.penaltyFee.lte(0)
-      || quote.productFeeAmount.lt(0) // TODO: Check if can be 0
       || quote.value.lte(0)
     ) {
       return false;
@@ -542,8 +539,7 @@ export default class FlyoverService {
       quotes.forEach((quote: Quote) => {
         const gasFeeWeiBig = new WeiBig(quote.quote.gasFee ?? 0, 'wei');
         const callFeeWeiBig = new WeiBig(quote.quote.callFee ?? 0, 'wei');
-        const productFeeWeiBig = new WeiBig(quote.quote.productFeeAmount ?? 0, 'wei');
-        maxFee = gasFeeWeiBig.plus(callFeeWeiBig).plus(productFeeWeiBig);
+        maxFee = gasFeeWeiBig.plus(callFeeWeiBig);
         return maxFee;
       });
     } catch (e) {

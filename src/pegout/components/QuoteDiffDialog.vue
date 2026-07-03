@@ -69,8 +69,7 @@ export default defineComponent({
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
     const getTotalFees = (quoteDiff: ReducedQuote) => (quoteDiff.gasFee
-      .plus(quoteDiff.callFee)
-      .plus(quoteDiff.productFeeAmount));
+      .plus(quoteDiff.callFee));
 
     const previousQuoteFees = computed(() => (getTotalFees(quoteDifference.value
       .previousQuote)));
