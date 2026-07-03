@@ -44,11 +44,6 @@ export const actions: ActionTree<TxStatus, RootState> = {
               providerId: Number(parsed.providerId),
             }),
           ])
-            .then(([, flyoverStatus]) => {
-              if (flyoverStatus && flyoverStatus !== TxStatusType.NOT_FOUND) {
-                commit(constants.STATUS_SET_TX_DETAILS, flyoverStatus);
-              }
-            })
             .then(resolve)
             .catch(() => {
               commit(constants.STATUS_SET_TX_DETAILS, undefined);
@@ -168,7 +163,7 @@ export const actions: ActionTree<TxStatus, RootState> = {
         status = await rootState.flyoverPegout?.flyoverService.getPegoutStatus(quoteHash);
       }
     } catch (e) {
-      status = TxStatusType.NOT_FOUND;
+      status = { status: TxStatusType.NOT_FOUND, txId: '' };
     } finally {
       commit(constants.STATUS_SET_FLYOVER_STATUS, status);
     }
