@@ -5,7 +5,7 @@
                            :txWithError="txWithError" :details="summary" />
     </v-row>
     <v-row class="mt-16">
-      <status-summary :details="summary" :type="typeSummary"
+      <status-summary v-if="summary" :details="summary" :type="typeSummary"
                       :txWithError="txWithError" />
     </v-row>
   </v-container>
@@ -50,7 +50,7 @@ export default defineComponent({
     const pegOutEstimatedFee = useStateAttribute<SatoshiBig>('status', 'pegOutEstimatedFee');
     const calculatedGasFee = useStateAttribute<WeiBig>('pegOutTx', 'calculatedFee');
 
-    const isRejectedPegout = computed(() => txDetails.value.status === PegoutStatus.REJECTED);
+    const isRejectedPegout = computed(() => txDetails.value?.status === PegoutStatus.REJECTED);
 
     const amountToBeReceived = computed((): string => {
       const status = txDetails.value as PegoutStatusDataModel;
@@ -105,9 +105,10 @@ export default defineComponent({
       };
     });
 
-    const summary = computed(() => (props.isFlyover
-      ? flyoverPegoutSummary.value
-      : txPegoutSummary.value));
+    const summary = computed(() => {
+      if (!txDetails.value) return undefined;
+      return props.isFlyover ? flyoverPegoutSummary.value : txPegoutSummary.value;
+    });
 
     return {
       typeSummary,
