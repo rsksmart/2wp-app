@@ -31,9 +31,15 @@ export default class TrezorTxBuilder extends TxBuilder {
   }
 
   private static async buildRefTxs(inputs: NormalizedInput[]): Promise<RefTransaction[]> {
-    const uniqueHashes = [...new Set(inputs.map((i) => i.prev_hash))];
-    const hexes = await Promise.all(uniqueHashes.map((h) => ApiService.getTxHex(h)));
-    return uniqueHashes.map((hash, idx) => {
+    const byHash = new Map<string, string | undefined>();
+    inputs.forEach((i) => {
+      if (!byHash.has(i.prev_hash)) byHash.set(i.prev_hash, i.prevRawTx);
+    });
+    const entries = [...byHash.entries()];
+    const hexes = await Promise.all(
+      entries.map(([hash, raw]) => (raw ? Promise.resolve(raw) : ApiService.getTxHex(hash))),
+    );
+    return entries.map(([hash], idx) => {
       const tx = bitcoin.Transaction.fromHex(hexes[idx]);
       return {
         hash,

@@ -169,6 +169,11 @@ describe('bridgeId', () => {
       expect(isValidBridgeId(id)).toBe(false);
     });
 
+    it('rejects flyover id with non-integer providerId (e.g. scientific notation)', () => {
+      const id = `flyover-1e3-${BTC_TX_HASH}-btc-${QUOTE_HASH}`;
+      expect(isValidBridgeId(id)).toBe(false);
+    });
+
     it('rejects an unknown source', () => {
       const id = `unknown-powpeg-${BTC_TX_HASH}-btc`;
       expect(isValidBridgeId(id)).toBe(false);

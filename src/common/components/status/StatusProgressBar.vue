@@ -432,12 +432,14 @@ export default defineComponent({
     });
     const estimatedTime = computed(() => {
       if (status.value.type === TxStatusType.FLYOVER_PEGIN) {
-        const details = status.value.txDetails as FlyoverStatusModel;
+        const details = status.value.txDetails as FlyoverStatusModel | undefined;
+        if (!details?.quote) return '';
         const quote = details.quote as PeginQuoteDTO2WP;
         return blockConfirmationsToTimeString(quote.confirmations);
       }
       if (status.value.type === TxStatusType.FLYOVER_PEGOUT) {
-        const details = status.value.txDetails as FlyoverStatusModel;
+        const details = status.value.txDetails as FlyoverStatusModel | undefined;
+        if (!details?.quote) return '';
         const quote = details.quote as PegoutQuoteDTO2WP;
         return blockConfirmationsToTimeString(quote.depositConfirmations);
       }
