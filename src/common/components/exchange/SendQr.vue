@@ -89,7 +89,7 @@ export default defineComponent({
     const bitcoinPrice = useStateAttribute<number>('web3Session', 'bitcoinPrice');
     const clearSession = useAction('web3Session', constants.WEB3_SESSION_CLEAR_ACCOUNT);
     const clearPeginStore = useAction('pegInTx', constants.PEGIN_TX_CLEAR_STATE);
-    const clearPegoutStore = useAction('pegOutTx', constants.PEGOUT_TX_CLEAR_STATE);
+    const clearPegoutStore = useAction('pegOutTx', constants.PEGOUT_TX_CLEAR);
     const route = useRoute();
     const router = useRouter();
 

@@ -37,26 +37,34 @@ export const actions: ActionTree<TxStatus, RootState> = {
         ];
 
         if (parsed.source === BridgeIdSource.FLYOVER) {
-          nextActions.push(
+          Promise.all([
+            ...nextActions,
             dispatch(constants.STATUS_GET_FLYOVER_STATUS, {
               quoteHash: parsed.providerHash,
               providerId: Number(parsed.providerId),
             }),
-          );
-          Promise.all(nextActions).then(resolve).catch(() => {
-            commit(constants.STATUS_SET_TX_DETAILS, undefined);
-            commit(constants.STATUS_SET_TX_TYPE, TxStatusType.UNEXPECTED_ERROR);
-            reject();
-          });
+          ])
+            .then(([, flyoverStatus]) => {
+              if (flyoverStatus && flyoverStatus !== TxStatusType.NOT_FOUND) {
+                commit(constants.STATUS_SET_TX_DETAILS, flyoverStatus);
+              }
+            })
+            .then(resolve)
+            .catch(() => {
+              commit(constants.STATUS_SET_TX_DETAILS, undefined);
+              commit(constants.STATUS_SET_TX_TYPE, TxStatusType.UNEXPECTED_ERROR);
+              reject();
+            });
           return;
         }
 
         promiseWithTimeout(
-          ApiService.getTxStatus(parsed.txHash, resolvedType),
+          ApiService.getTxStatus(parsed.txHash),
           EnvironmentAccessorService.getEnvironmentVariables().apiResponseTimeout,
         )
           .then((status) => {
             commit(constants.STATUS_SET_TX_DETAILS, status.txDetails);
+            commit(constants.STATUS_SET_TX_TYPE, status.type);
             return Promise.all([
               ...nextActions,
               dispatch(constants.STATUS_GET_ESTIMATED_RELEASE_TIME_IN_MINUTES),
@@ -164,5 +172,6 @@ export const actions: ActionTree<TxStatus, RootState> = {
     } finally {
       commit(constants.STATUS_SET_FLYOVER_STATUS, status);
     }
+    return status;
   },
 };

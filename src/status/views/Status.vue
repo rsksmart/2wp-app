@@ -170,6 +170,7 @@ export default defineComponent({
       || status.value.type === TxStatusType.FLYOVER_PEGOUT);
 
     const showTimeLeft = computed((): boolean => {
+      if (!txDetails.value) return false;
       const details = txDetails.value as PegoutStatusDataModel;
       return status.value.type === TxStatusType.PEGOUT
           && (details.status === PegoutStatus.PENDING
@@ -179,7 +180,7 @@ export default defineComponent({
     });
 
     const txWithError = computed(() => {
-      if (txNotFound.value) return false;
+      if (txNotFound.value || !txDetails.value) return false;
       const { status: errorStatus } = txDetails.value;
       return errorStatus as PegStatus === PegStatus.REJECTED_REFUND
         || errorStatus as PegStatus === PegStatus.REJECTED_NO_REFUND
