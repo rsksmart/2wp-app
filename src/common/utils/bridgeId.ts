@@ -75,7 +75,7 @@ export function isValidBridgeId(bridgeId: string): boolean {
   if (source === BridgeIdSource.PEGIN && network !== BridgeNetwork.BTC) return false;
   if (source === BridgeIdSource.PEGOUT && network !== BridgeNetwork.RSK) return false;
 
-  if (source === BridgeIdSource.FLYOVER && Number.isNaN(Number(providerId))) return false;
+  if (source === BridgeIdSource.FLYOVER && !/^\d+$/.test(providerId)) return false;
 
   const btcTxHashRegex = /^[a-fA-F0-9]{64}$/;
   const rskTxHashRegex = /^(0x)?[a-fA-F0-9]{64}$/;
