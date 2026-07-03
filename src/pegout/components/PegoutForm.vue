@@ -244,7 +244,7 @@ export default defineComponent({
     const selectedOption = ref<string>('');
     const quoteDiffPercentage = EnvironmentAccessorService.getEnvironmentVariables()
       .flyoverPegoutDiffPercentage;
-    const clearStore = useAction('pegOutTx', constants.PEGOUT_TX_CLEAR_STATE);
+    const clearStore = useAction('pegOutTx', constants.PEGOUT_TX_CLEAR);
     const clearSessionState = useAction('web3Session', constants.WEB3_SESSION_CLEAR_ACCOUNT);
     const getAvailableLiquidity = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_GET_AVAILABLE_LIQUIDITY);
     const clearQuotes = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_CLEAR_QUOTES);
