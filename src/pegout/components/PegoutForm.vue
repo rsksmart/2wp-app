@@ -235,6 +235,7 @@ export default defineComponent({
     const quotes = useStateAttribute<Record<number, QuotePegOut2WP[]>>('flyoverPegout', 'quotes');
     const quoteDifference = useStateAttribute<ObjectDifference>('flyoverPegout', 'difference');
     const selectedQuote = useGetter<QuotePegOut2WP>('flyoverPegout', constants.FLYOVER_PEGOUT_GET_SELECTED_QUOTE);
+    const getProviderId = useGetter<(quoteHash: string) => number>('flyoverPegout', constants.FLYOVER_PEGOUT_GET_PROVIDER_ID);
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);
     const isEnoughBalance = useGetter<boolean>('pegOutTx', constants.PEGOUT_TX_IS_ENOUGH_BALANCE);
     const isLedgerConnected = useGetter<boolean>('web3Session', constants.SESSION_IS_LEDGER_CONNECTED);
@@ -382,7 +383,7 @@ export default defineComponent({
       const rawTxHash = isFlyover
         ? (flyoverPegoutState.value.txHash ?? '')
         : (pegOutTxState.value.txHash ?? '');
-      const lpId = String(EnvironmentAccessorService.getEnvironmentVariables().flyoverProviderId);
+      const lpId = String(getProviderId.value(selectedQuoteHash.value ?? ''));
       const bridgeId = isFlyover
         ? createBridgeId({
           source: BridgeIdSource.FLYOVER,

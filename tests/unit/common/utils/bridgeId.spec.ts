@@ -154,6 +154,21 @@ describe('bridgeId', () => {
       expect(isValidBridgeId(id)).toBe(false);
     });
 
+    it('rejects flyover id with malformed providerHash (wrong length)', () => {
+      const id = `flyover-1-${BTC_TX_HASH}-btc-tooshort`;
+      expect(isValidBridgeId(id)).toBe(false);
+    });
+
+    it('rejects pegin id with unexpected providerHash segment', () => {
+      const id = `pegin-powpeg-${BTC_TX_HASH}-btc-${QUOTE_HASH}`;
+      expect(isValidBridgeId(id)).toBe(false);
+    });
+
+    it('rejects pegout id with unexpected providerHash segment', () => {
+      const id = `pegout-powpeg-${RSK_TX_HASH}-rsk-${QUOTE_HASH}`;
+      expect(isValidBridgeId(id)).toBe(false);
+    });
+
     it('rejects an unknown source', () => {
       const id = `unknown-powpeg-${BTC_TX_HASH}-btc`;
       expect(isValidBridgeId(id)).toBe(false);
