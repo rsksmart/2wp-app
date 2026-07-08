@@ -181,7 +181,7 @@ import {
 } from '@/common/types';
 import {
   appendRecaptcha, Machine, ServiceError, validateAddress,
-  createBridgeId, BridgeIdSource, BridgeNetwork,
+  createBridgeId, isValidBridgeId, BridgeIdSource, BridgeNetwork,
 } from '@/common/utils';
 import { FlyoverService } from '@/common/services';
 import FullTxErrorDialog from '@/common/components/exchange/FullTxErrorDialog.vue';
@@ -383,11 +383,10 @@ export default defineComponent({
       const rawTxHash = isFlyover
         ? (flyoverPegoutState.value.txHash ?? '')
         : (pegOutTxState.value.txHash ?? '');
-      const lpId = String(getProviderId.value(selectedQuoteHash.value ?? ''));
       const bridgeId = isFlyover
         ? createBridgeId({
           source: BridgeIdSource.FLYOVER,
-          providerId: lpId,
+          providerId: String(getProviderId.value(selectedQuoteHash.value ?? '')),
           txHash: rawTxHash,
           network: BridgeNetwork.RSK,
           providerHash: selectedQuoteHash.value,
@@ -398,11 +397,12 @@ export default defineComponent({
           txHash: rawTxHash,
           network: BridgeNetwork.RSK,
         });
+      const txId = isValidBridgeId(bridgeId) ? bridgeId : rawTxHash;
       router.push({
         name: 'SuccessTx',
         params: {
           type,
-          txId: bridgeId,
+          txId,
           amount: SatoshiBig.fromWeiBig(valueToReceive.value).toSatoshiString(),
           confirmations: isFlyover
             ? Number(selectedQuote.value.quote.depositConfirmations) : 0,

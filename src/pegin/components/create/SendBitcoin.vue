@@ -57,7 +57,6 @@ import {
   Machine, getClearPeginTxState, createBridgeId, BridgeIdSource, BridgeNetwork,
 } from '@/common/utils';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
-import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import TrezorTxBuilder from '@/pegin/middleware/TxBuilder/TrezorTxBuilder';
 import LedgerTxBuilder from '@/pegin/middleware/TxBuilder/LedgerTxBuilder';
 import TxBuilder from '@/pegin/middleware/TxBuilder/TxBuilder';
@@ -120,6 +119,7 @@ export default defineComponent({
     const selectedUtxoList = useGetter<Utxo[]>('pegInTx', constants.PEGIN_TX_GET_SELECTED_UTXO_LIST);
     const selectedFee = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SAFE_TX_FEE);
     const selectedFlyoverQuote = useGetter<PeginQuote>('flyoverPegin', constants.FLYOVER_PEGIN_GET_SELECTED_QUOTE);
+    const getProviderId = useGetter<(quoteHash: string) => number>('flyoverPegin', constants.FLYOVER_PEGIN_GET_PROVIDER_ID);
     const initFlyover = useAction('flyoverPegin', constants.FLYOVER_PEGIN_INIT);
     const flyoverFeature = useGetter<(name: FeatureNames) => Feature>('web3Session', constants.SESSION_GET_FEATURE);
     const isFlyoverAvailable = ref(false);
@@ -199,11 +199,10 @@ export default defineComponent({
         txId.value = txHash;
       } else if (txHash) {
         const isFlyover = type.value === constants.peginType.FLYOVER;
-        const lpId = String(EnvironmentAccessorService.getEnvironmentVariables().flyoverProviderId);
         const bridgeId = isFlyover
           ? createBridgeId({
             source: BridgeIdSource.FLYOVER,
-            providerId: lpId,
+            providerId: String(getProviderId.value(selectedFlyoverQuote.value.quoteHash)),
             txHash,
             network: BridgeNetwork.BTC,
             providerHash: selectedFlyoverQuote.value.quoteHash,
