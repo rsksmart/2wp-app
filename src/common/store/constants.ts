@@ -269,6 +269,7 @@ export const FLYOVER_PEGOUT_GET_MIN_MAX_VALUES = 'FLYOVER_PEGOUT_GET_MIN_MAX_VAL
 
 // Flyover PegIn getters
 export const FLYOVER_PEGIN_GET_SELECTED_QUOTE = 'FLYOVER_PEGIN_GET_SELECTED_QUOTE';
+export const FLYOVER_PEGIN_GET_PROVIDER_ID = 'FLYOVER_PEGIN_GET_PROVIDER_ID';
 
 // environment
 export const BTC_NETWORK_MAINNET = 'main';
@@ -328,6 +329,7 @@ export enum FlyoverStatus {
   PENDING = 'PENDING',
   SUCCESS = 'SUCCESS',
   FAILED = 'FAILED',
+  EXPIRED = 'EXPIRED',
 }
 
 export const LEDGER_STATUS_CODES = {
