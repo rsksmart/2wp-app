@@ -22,7 +22,7 @@ export const actions: ActionTree<TxStatus, RootState> = {
   [constants.STATUS_GET_TX_STATUS]:
     (
       { commit, dispatch },
-      { txId, txType }: {txId: string, txType?: string},
+      { txId, txType }: { txId: string, txType?: string },
     ) => new Promise((resolve, reject) => {
       if (isValidBridgeId(txId)) {
         const parsed = parseBridgeId(txId);
@@ -37,8 +37,19 @@ export const actions: ActionTree<TxStatus, RootState> = {
         ];
 
         if (parsed.source === BridgeIdSource.FLYOVER) {
+          const backendTxDetails = promiseWithTimeout(
+            ApiService.getTxStatus(parsed.txHash),
+            EnvironmentAccessorService.getEnvironmentVariables().apiResponseTimeout,
+          )
+            .then((status) => {
+              if (status.type === resolvedType) {
+                commit(constants.STATUS_SET_TX_DETAILS, status.txDetails);
+              }
+            })
+            .catch(() => undefined);
           Promise.all([
             ...nextActions,
+            backendTxDetails,
             dispatch(constants.STATUS_GET_FLYOVER_STATUS, {
               quoteHash: parsed.providerHash,
               providerId: Number(parsed.providerId),
@@ -89,7 +100,7 @@ export const actions: ActionTree<TxStatus, RootState> = {
           commit(constants.STATUS_SET_TX_TYPE, status.type);
           const nextActions = [];
           if (status.type === TxStatusType.FLYOVER_PEGIN
-          || status.type === TxStatusType.FLYOVER_PEGOUT) {
+            || status.type === TxStatusType.FLYOVER_PEGOUT) {
             nextActions.push(dispatch(
               constants.STATUS_GET_FLYOVER_STATUS,
               (status.txDetails as FlyoverStatusModel).quoteHash,
@@ -130,10 +141,10 @@ export const actions: ActionTree<TxStatus, RootState> = {
           })
           .then(([currentBlock, nextPegoutCreationBlock]) => {
             const estimatedBlocksLeft = nextPegoutCreationBlock
-            + constants.PEGOUT_REQUIRED_CONFIRMATIONS
-            + constants.PEGOUT_SIGNING_BLOCKS_GAP - Number(currentBlock);
+              + constants.PEGOUT_REQUIRED_CONFIRMATIONS
+              + constants.PEGOUT_SIGNING_BLOCKS_GAP - Number(currentBlock);
             const estimatedMinutes = estimatedBlocksLeft
-            * ((365.25 * 1440) / constants.BLOCKS_PER_YEAR);
+              * ((365.25 * 1440) / constants.BLOCKS_PER_YEAR);
             commit(constants.STATUS_SET_ESTIMATED_RELEASE_TIME_IN_MINUTES, moment.duration(estimatedMinutes, 'minutes'));
           })
           .catch(reject);

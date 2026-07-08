@@ -169,6 +169,16 @@ describe('bridgeId', () => {
       expect(isValidBridgeId(id)).toBe(false);
     });
 
+    it('rejects a flyover id built from a not-found provider (-1)', () => {
+      const id = `flyover--1-${RSK_TX_HASH}-rsk-${QUOTE_HASH}`;
+      expect(isValidBridgeId(id)).toBe(false);
+    });
+
+    it('rejects an id with an empty txHash', () => {
+      const id = `flyover-1--rsk-${QUOTE_HASH}`;
+      expect(isValidBridgeId(id)).toBe(false);
+    });
+
     it('rejects flyover id with non-integer providerId (e.g. scientific notation)', () => {
       const id = `flyover-1e3-${BTC_TX_HASH}-btc-${QUOTE_HASH}`;
       expect(isValidBridgeId(id)).toBe(false);

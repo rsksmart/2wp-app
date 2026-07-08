@@ -277,13 +277,19 @@ export default defineComponent({
       interval = setInterval(() => {
         switch (txType.value) {
           case TxStatusType.FLYOVER_PEGOUT:
-          case TxStatusType.FLYOVER_PEGIN:
-            if ((txDetails.value as FlyoverStatusModel)?.status === FlyoverStatus.COMPLETED) {
+          case TxStatusType.FLYOVER_PEGIN: {
+            const lpStatus = status.value.flyoverStatus?.status;
+            const lpFinished = lpStatus === constants.FlyoverStatus.SUCCESS
+              || lpStatus === constants.FlyoverStatus.FAILED
+              || lpStatus === constants.FlyoverStatus.EXPIRED;
+            if (lpFinished
+              || (txDetails.value as FlyoverStatusModel)?.status === FlyoverStatus.COMPLETED) {
               stopCallPeriodicallyStatus();
             } else {
               getPegStatus();
             }
             break;
+          }
           case TxStatusType.PEGOUT:
             if ((txDetails.value as PegoutStatusDataModel).status === PegoutStatus.RELEASE_BTC) {
               stopCallPeriodicallyStatus();
