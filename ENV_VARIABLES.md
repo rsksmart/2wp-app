@@ -19,7 +19,8 @@ The value of these variables are used in **environment-variables.ts** file.
 |VUE_APP_MIN_FEE_SAT_PER_BYTE_FAST            | `8`     | Min fee rate (sats/byte) required to broadcast the transaction              |
 |VUE_APP_MIN_FEE_SAT_PER_BYTE_AVG             | `4`     | Min fee rate (sats/byte) required to broadcast the transaction              |
 |VUE_APP_MIN_FEE_SAT_PER_BYTE_SLOW            | `1`     | Min fee rate (sats/byte) required to broadcast the transaction              |
-|VUE_APP_LBC_ADDRESS   | `0xc2A630c053D12D63d32b025082f6Ba268db18300` | Liquidity bridge contract address on the flyover protocol     |
+|VUE_APP_LBC_PEGIN_ADDRESS   | `0x9270733402dc7c5730EA24268fC11039FD75E189` | Liquidity bridge contract address for the pegin flow on the flyover protocol     |
+|VUE_APP_LBC_PEGOUT_ADDRESS   | `0x9A0678742cfB567874Eb4E99DF2106BdeD78F5e4` | Liquidity bridge contract address for the pegout flow on the flyover protocol     |
 |VUE_APP_DEBUG_MODE                           | `false` | enable developer messages for debuging                                      |
 |VUE_APP_FLYOVER_PEGOUT_QUOTE_DIFF_PERCENTAGE | `2`  | Defines quote difference percentage to 2% so it requieres the user to review condition only for a difference bigger that this percentage |
 |VUE_APP_RECAPTCHA_NEW_TOKEN_TIME             | `30`    |  Specifies the time (in seconds) to temporarily disable the flyover between new transactions. This accounts for the time required by Google reCAPTCHA to regenerate a challenge token |
