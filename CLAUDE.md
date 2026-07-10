@@ -47,7 +47,7 @@ The `src/` directory is split into feature modules that mirror the PowPeg flows:
 - **`src/pegin/`** — Bitcoin → RSK flow. Contains its own `components/`, `services/` (TxBuilder, BalanceService, TxFeeService), `store/`, `types/`, and `views/`.
 - **`src/pegout/`** — RSK → Bitcoin flow. Same structure.
 - **`src/status/`** — Transaction status tracking page.
-- **`src/common/`** — Shared code used by all modules: ABIs, components, composables, providers, router, services, store, types, utils, plugins.
+- **`src/common/`** — Shared code used by all modules: components, composables, providers, router, services, store, types, utils, plugins.
 
 ### State Management
 
@@ -64,10 +64,6 @@ Each wallet (Ledger, Trezor, Leather, Xverse, Enkrypt, ReownAppKit) is implement
 ### Services Layer
 
 Business logic lives in `*Service` classes under `src/common/services/` and `src/pegin/services/`. These wrap API calls, blockchain interactions, and wallet operations. Services throw `ServiceError` (custom class with `code` + `message`) for structured error handling.
-
-### Smart Contract ABIs
-
-RSK Bridge and Flyover contract ABIs are in `src/common/abis/`. Ethers.js 5.x is used for all EVM interactions.
 
 ## Key Constraints
 

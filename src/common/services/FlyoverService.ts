@@ -27,7 +27,9 @@ export default class FlyoverService {
 
   flyoverNetwork: Network;
 
-  private lbcAddress = EnvironmentAccessorService.getEnvironmentVariables().lbcAddress;
+  private lbcPeginAddress = EnvironmentAccessorService.getEnvironmentVariables().lbcPeginAddress;
+
+  private lbcPegoutAddress = EnvironmentAccessorService.getEnvironmentVariables().lbcPegoutAddress;
 
   private liquidityProviders: LiquidityProvider[] = [];
 
@@ -45,7 +47,7 @@ export default class FlyoverService {
 
   constructor(providerUrl?: string) {
     this.providerUrl = providerUrl
-    ?? EnvironmentAccessorService.getEnvironmentVariables().vueAppRskNodeHost;
+      ?? EnvironmentAccessorService.getEnvironmentVariables().vueAppRskNodeHost;
     this.flyoverNetwork = EnvironmentAccessorService.getEnvironmentVariables().flyoverNetwork;
   }
 
@@ -216,8 +218,9 @@ export default class FlyoverService {
     });
   }
 
-  public acceptAndSendPegoutQuote(quoteHash: string): Promise<{txHash: string, signature: string}> {
-    return new Promise<{txHash: string, signature: string}>((resolve, reject) => {
+  public acceptAndSendPegoutQuote(quoteHash: string):
+    Promise<{ txHash: string, signature: string }> {
+    return new Promise<{ txHash: string, signature: string }>((resolve, reject) => {
       this.acceptPegoutQuote(quoteHash)
         .then((acceptedQuote: AcceptedPegoutQuote) => Promise
           .all([this.isValidAcceptedQuote(quoteHash, acceptedQuote.signature), acceptedQuote]))
@@ -264,8 +267,8 @@ export default class FlyoverService {
     if (selectedQuote) {
       const { quote } = selectedQuote;
       amount = BigInt(quote.value)
-            + BigInt(quote.gasFee)
-            + BigInt(quote.callFee);
+        + BigInt(quote.gasFee)
+        + BigInt(quote.callFee);
     }
     return amount;
   }
@@ -309,7 +312,7 @@ export default class FlyoverService {
     ) {
       return false;
     }
-    if (quote.lbcAddress !== this.lbcAddress) {
+    if (quote.lbcAddress !== this.lbcPegoutAddress) {
       return false;
     }
     if (
@@ -328,7 +331,7 @@ export default class FlyoverService {
   public getPeginQuotes(
     rootstockRecipientAddress: string,
     valueToTransfer: SatoshiBig,
-  ):Promise<Array<PeginQuote>> {
+  ): Promise<Array<PeginQuote>> {
     return new Promise<Array<PeginQuote>>((resolve, reject) => {
       this.flyover?.getQuotes({
         rskRefundAddress: rootstockRecipientAddress,
@@ -365,8 +368,8 @@ export default class FlyoverService {
     { quote }: Quote,
     quoteRequest: {
       rootstockRecipientAddress: string;
-        valueToTransfer: SatoshiBig;
-      },
+      valueToTransfer: SatoshiBig;
+    },
   ): boolean {
     if (
       new Date(quote.agreementTimestamp).getTime() <= 0
@@ -380,7 +383,7 @@ export default class FlyoverService {
     ) {
       return false;
     }
-    if (quote.lbcAddr !== this.lbcAddress) {
+    if (quote.lbcAddr !== this.lbcPeginAddress) {
       return false;
     }
     return true;
@@ -463,7 +466,7 @@ export default class FlyoverService {
   }
 
   public getPeginStatus(quoteHash: string) {
-    return new Promise<{status: string, txId: string}>((resolve, reject) => {
+    return new Promise<{ status: string, txId: string }>((resolve, reject) => {
       this.flyover?.getPeginStatus(quoteHash)
         .then((detailedStatus) => {
           const status = FlyoverUtils.getSimpleQuoteStatus(detailedStatus.status.state);
@@ -481,7 +484,7 @@ export default class FlyoverService {
   }
 
   public getPegoutStatus(quoteHash: string) {
-    return new Promise<{status: string, txId: string}>((resolve, reject) => {
+    return new Promise<{ status: string, txId: string }>((resolve, reject) => {
       this.flyover?.getPegoutStatus(quoteHash)
         .then((detailedStatus) => {
           const status = FlyoverUtils.getSimpleQuoteStatus(detailedStatus.status.state);
@@ -549,7 +552,7 @@ export default class FlyoverService {
   }
 
   public estimateRecommendedPegin(amount: SatoshiBig, rootstockRecipientAddress: string)
-  : Promise<SatoshiBig> {
+    : Promise<SatoshiBig> {
     return new Promise<SatoshiBig>((resolve, reject) => {
       this.flyover?.estimateRecommendedPegin(amount.toWeiBigIntUnsafe(), {
         destinationAddress: rootstockRecipientAddress,
@@ -570,7 +573,7 @@ export default class FlyoverService {
   }
 
   public estimateRecommendedPegout(amount: WeiBig, btcRecipientAddress: string)
-  : Promise<WeiBig> {
+    : Promise<WeiBig> {
     return new Promise<WeiBig>((resolve, reject) => {
       const destinationAddressType = getBtcAddressType(btcRecipientAddress);
       this.flyover?.estimateRecommendedPegout(amount.toWeiBigIntUnsafe(), {
