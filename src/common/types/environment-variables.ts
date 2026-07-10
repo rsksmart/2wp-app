@@ -31,7 +31,9 @@ export class EnvironmentVariables {
 
   public burnDustValue: number;
 
-  public lbcAddress: string;
+  public lbcPeginAddress: string;
+
+  public lbcPegoutAddress: string;
 
   public peginMinAmountAllowedInBtc: number;
 
@@ -103,7 +105,9 @@ export class EnvironmentVariables {
         || (defaultValues.miningSpeedBlock ? defaultValues.miningSpeedBlock.slow : 0),
     };
     this.burnDustValue = Number(process.env.VUE_APP_BURN_DUST_VALUE) || defaultValues.burnDustValue;
-    this.lbcAddress = process.env.VUE_APP_LBC_ADDRESS || defaultValues.lbcAddress;
+    this.lbcPeginAddress = process.env.VUE_APP_LBC_PEGIN_ADDRESS || defaultValues.lbcPeginAddress;
+    this.lbcPegoutAddress = process.env.VUE_APP_LBC_PEGOUT_ADDRESS
+      || defaultValues.lbcPegoutAddress;
     this.debugMode = process.env.VUE_APP_DEBUG_MODE === 'true' || defaultValues.debugMode;
     this.peginMinAmountAllowedInBtc = Number(process.env.VUE_APP_PEGIN_MIN_AMOUNT_ALLOWED_IN_BTC)
       || defaultValues.peginMinValue;

@@ -42,7 +42,7 @@ describe('FlyoverService', () => {
   const testPegoutQuotes = [
     {
       quote: {
-        lbcAddress: '0xc2A630c053D12D63d32b025082f6Ba268db18300',
+        lbcAddress: '0x9A0678742cfB567874Eb4E99DF2106BdeD78F5e4',
         liquidityProviderRskAddress: '0x7C4890A0f1D4bBf2C669Ac2d1efFa185c505359b',
         btcRefundAddress: 'n2y5V6LYszsrsxkMdMypL98YQxtBoLCXdc',
         rskRefundAddress: '0xe9a84d226bb3008f09a46096b00dd6782be4d5f2',
@@ -69,7 +69,7 @@ describe('FlyoverService', () => {
   const testPeginQuotes = [
     {
       quote: {
-        lbcAddr: '0xc2A630c053D12D63d32b025082f6Ba268db18300',
+        lbcAddr: '0x9270733402dc7c5730EA24268fC11039FD75E189',
         btcRefundAddr: 'n2y5V6LYszsrsxkMdMypL98YQxtBoLCXdc',
         rskRefundAddr: '0xe9a84d226bb3008f09a46096b00dd6782be4d5f2',
         lpBTCAddr: 'mhghaQCHedKZZQuFqSzg6Z3Rf1TqqDEPCc',
@@ -99,7 +99,8 @@ describe('FlyoverService', () => {
       vueAppCoin: constants.BTC_NETWORK_TESTNET,
       vueAppRskNodeHost: '',
       vueAppApiBaseUrl: 'https://2wp-api.testnet.rsk.co',
-      lbcAddress: '0xc2A630c053D12D63d32b025082f6Ba268db18300',
+      lbcPeginAddress: '0x9270733402dc7c5730EA24268fC11039FD75E189',
+      lbcPegoutAddress: '0x9A0678742cfB567874Eb4E99DF2106BdeD78F5e4',
     };
     EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
     flyoverService = new FlyoverService('https://public-node.testnet.rsk.co');
@@ -235,7 +236,7 @@ describe('FlyoverService', () => {
       stubedInstance.getLiquidityProviders.resolves(testLiquidProviders);
       stubedInstance.getPegoutQuotes.resolves(testPegoutQuotes);
       stubedInstance.acceptPegoutQuote.resolves({
-        lbcAddress: EnvironmentAccessorService.getEnvironmentVariables().lbcAddress,
+        lbcAddress: EnvironmentAccessorService.getEnvironmentVariables().lbcPegoutAddress,
         signature: 'signature',
       });
     });
@@ -254,7 +255,7 @@ describe('FlyoverService', () => {
       );
       const { quoteHash } = quotes[0];
       const acceptedQuote = await flyoverService.acceptPegoutQuote(quoteHash);
-      expect(acceptedQuote).toHaveProperty('lbcAddress', EnvironmentAccessorService.getEnvironmentVariables().lbcAddress);
+      expect(acceptedQuote).toHaveProperty('lbcAddress', EnvironmentAccessorService.getEnvironmentVariables().lbcPegoutAddress);
       expect(acceptedQuote).toHaveProperty('signature');
     });
   });
@@ -299,7 +300,7 @@ describe('FlyoverService', () => {
       stubedInstance.getLiquidityProviders.resolves(testLiquidProviders);
       stubedInstance.getPegoutQuotes.resolves(testPegoutQuotes);
       stubedInstance.acceptPegoutQuote.resolves({
-        lbcAddress: EnvironmentAccessorService.getEnvironmentVariables().lbcAddress,
+        lbcAddress: EnvironmentAccessorService.getEnvironmentVariables().lbcPegoutAddress,
         signature: 'signature',
       });
       stubedInstance.depositPegout.resolves('txHash');
