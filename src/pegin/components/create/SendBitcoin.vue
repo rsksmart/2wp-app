@@ -54,7 +54,7 @@ import {
   NormalizedTx,
 } from '@/common/types';
 import {
-  Machine, getClearPeginTxState, createBridgeId, BridgeIdSource, BridgeNetwork,
+  Machine, getClearPeginTxState, createBridgeId, isValidBridgeId, BridgeIdSource, BridgeNetwork,
 } from '@/common/utils';
 import { useAction, useGetter, useStateAttribute } from '@/common/store/helper';
 import TrezorTxBuilder from '@/pegin/middleware/TxBuilder/TrezorTxBuilder';
@@ -198,7 +198,8 @@ export default defineComponent({
         showTxErrorDialog.value = true;
         txId.value = txHash;
       } else if (txHash) {
-        const isFlyover = type.value === constants.peginType.FLYOVER;
+        const isFlyover = type.value === constants.peginType.FLYOVER
+          && !!selectedFlyoverQuote.value;
         const bridgeId = isFlyover
           ? createBridgeId({
             source: BridgeIdSource.FLYOVER,
@@ -216,7 +217,7 @@ export default defineComponent({
         router.push({
           name: 'SuccessTx',
           params: {
-            txId: bridgeId,
+            txId: isValidBridgeId(bridgeId) ? bridgeId : txHash,
             type: isFlyover ? TxStatusType.FLYOVER_PEGIN : TxStatusType.PEGIN,
             amount: valueToReceive.value.toSatoshiString(),
             confirmations: isFlyover

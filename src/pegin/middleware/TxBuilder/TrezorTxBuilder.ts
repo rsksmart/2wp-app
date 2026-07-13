@@ -33,7 +33,7 @@ export default class TrezorTxBuilder extends TxBuilder {
   private static async buildRefTxs(inputs: NormalizedInput[]): Promise<RefTransaction[]> {
     const byHash = new Map<string, string | undefined>();
     inputs.forEach((i) => {
-      if (!byHash.has(i.prev_hash)) byHash.set(i.prev_hash, i.prevRawTx);
+      byHash.set(i.prev_hash, byHash.get(i.prev_hash) ?? i.prevRawTx);
     });
     const entries = [...byHash.entries()];
     const hexes = await Promise.all(
