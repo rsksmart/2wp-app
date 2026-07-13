@@ -27,6 +27,7 @@ export const actions: ActionTree<TxStatus, RootState> = {
       if (isValidBridgeId(txId)) {
         const parsed = parseBridgeId(txId);
         const resolvedType = bridgeIdToTxStatusType(txId);
+        commit(constants.STATUS_SET_TX_DETAILS, undefined);
         commit(constants.STATUS_SET_TX_TYPE, resolvedType);
 
         const nextActions: Promise<unknown>[] = [
