@@ -15,6 +15,7 @@ export interface SessionState {
     disconnect: () => Promise<void>;
   };
   rLoginInstance?: RLogin;
+  connectedWalletName?: string;
   txType: TransactionType;
   balance: WeiBig;
   btcDerivedAddress: string;

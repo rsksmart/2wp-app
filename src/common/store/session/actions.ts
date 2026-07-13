@@ -46,11 +46,16 @@ export const actions: ActionTree<SessionState, RootState> = {
     });
   },
   [constants.SESSION_CONNECT_REOWN_WEB3]:
-  ({ commit, dispatch }, provider: providers.Web3Provider) => new Promise<void>((resolve) => {
+  ({ commit, dispatch }, payload: {
+    provider: providers.Web3Provider;
+    walletName?: string;
+  }) => new Promise<void>((resolve) => {
+    const { provider, walletName } = payload;
     commit(constants.SESSION_IS_ENABLED, true);
     commit(constants.SESSION_SET_WEB3_INSTANCE, markRaw(provider));
     commit(constants.SESSION_SET_RLOGIN_INSTANCE, undefined);
     commit(constants.SESSION_SET_RLOGIN, undefined);
+    commit(constants.SESSION_SET_CONNECTED_WALLET_NAME, walletName);
     provider.on('block', () => dispatch(constants.WEB3_SESSION_ADD_BALANCE));
     provider.listAccounts()
       .then((accounts) => {
