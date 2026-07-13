@@ -23,6 +23,9 @@ export const mutations: MutationTree<SessionState> = {
   [constants.SESSION_SET_RLOGIN_INSTANCE]: (state, rLoginInstance) => {
     state.rLoginInstance = rLoginInstance;
   },
+  [constants.SESSION_SET_CONNECTED_WALLET_NAME]: (state, walletName?: string) => {
+    state.connectedWalletName = walletName;
+  },
   [constants.SESSION_CLOSE_RLOGIN]: async (state) => {
     await state.rLogin?.disconnect();
   },

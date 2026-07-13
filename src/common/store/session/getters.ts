@@ -5,7 +5,6 @@ import { RootState } from '@/common/types/store';
 import { Feature, FeatureNames, WeiBig } from '@/common/types';
 import * as rskUtils from '@rsksmart/rsk-utils';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
-import { useWalletInfo } from '@reown/appkit/vue';
 
 export const getters: GetterTree<SessionState, RootState> = {
   [constants.SESSION_IN_TX_FLOW]: (state): boolean => state.txType !== undefined,
@@ -13,12 +12,12 @@ export const getters: GetterTree<SessionState, RootState> = {
   [constants.SESSION_IS_LEDGER_CONNECTED]: (state): boolean => !!(state.rLogin?.provider.isLedger),
   [constants.SESSION_IS_TREZOR_CONNECTED]: (state): boolean => !!(state.rLogin?.provider.isTrezor),
   [constants.SESSION_IS_METAMASK_CONNECTED]:
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (state): boolean => (state.rLoginInstance as any).providerController?.injectedProvider.name
-    === constants.RLOGIN_METAMASK_WALLET,
+      === constants.RLOGIN_METAMASK_WALLET,
   [constants.SESSION_IS_RLOGIN_DEFINED]: (state): boolean => state.rLogin !== undefined,
   [constants.SESSION_GET_FEATURE]: (state) => (feature: FeatureNames)
-  : Feature | undefined => state.features.find((f) => f.name === feature),
+    : Feature | undefined => state.features.find((f) => f.name === feature),
   [constants.SESSION_GET_RBTC_GAS_FEE]: async (
     { account, balance, ethersProvider },
     _,
@@ -41,7 +40,7 @@ export const getters: GetterTree<SessionState, RootState> = {
     }
     return '';
   },
-  [constants.SESSION_IS_ALLOWED_WALLET]: (state, moduleGetters, rootState:RootState): {
+  [constants.SESSION_IS_ALLOWED_WALLET]: (state, rootState: RootState): {
     pegin: boolean;
     pegout: boolean;
   } => {
@@ -50,8 +49,7 @@ export const getters: GetterTree<SessionState, RootState> = {
       pegout: false,
     };
     const bitcoinWallet = rootState.pegInTx?.bitcoinWallet;
-    const { walletInfo } = useWalletInfo();
-    const walletName = walletInfo?.name;
+    const walletName = state.connectedWalletName;
 
     if (bitcoinWallet && bitcoinWallet !== constants.WALLET_NAMES.REOWN.long_name) {
       response.pegin = constants.ALLOWED_WALLETS_PEGIN.includes(bitcoinWallet as string);

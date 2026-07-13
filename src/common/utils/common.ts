@@ -95,6 +95,7 @@ export const getClearSessionState = (): SessionState => (
     enabled: false,
     rLogin: undefined,
     rLoginInstance: undefined,
+    connectedWalletName: undefined,
     txType: undefined,
     balance: new WeiBig('0', 'wei'),
     btcDerivedAddress: '',
