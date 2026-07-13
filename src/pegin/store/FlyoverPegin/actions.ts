@@ -131,14 +131,12 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
     }
     state.flyoverService.useLiquidityProvider(provider.id);
     const utxoList = rootGetters[`pegInTx/${constants.PEGIN_TX_GET_ACCOUNT_UTXO_LIST}`] as Utxo[];
-    console.log('[FLYOVER_PEGIN_ESTIMATE_MAX_VALUE] input balance (satoshi):', balance.toString());
     TxFeeService.getTxFee(
       balance,
       utxoList,
       constants.BITCOIN_FAST_FEE_LEVEL,
     )
       .then((fee) => {
-        console.log('[FLYOVER_PEGIN_ESTIMATE_MAX_VALUE] estimated btc fee (satoshi):', fee.fee.amount.toString());
         const maxValueToSend = balance.safeMinus(fee.fee.amount);
         const minAllowedValue = WeiBig.max(
           provider.pegin.minTransactionValue,
@@ -150,21 +148,7 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
         );
 
         const weiMaxValueToSend = WeiBig.fromSatoshiBig(maxValueToSend);
-        console.log('[FLYOVER_PEGIN_ESTIMATE_MAX_VALUE] calculation summary:', {
-          balance: balance.toString(),
-          fee: fee.fee.amount.toString(),
-          maxValueToSend: maxValueToSend.toString(),
-          weiMaxValueToSend: weiMaxValueToSend.toRBTCTrimmedString(),
-          providerMinTransactionValue: provider.pegin.minTransactionValue.toRBTCTrimmedString(),
-          providerMaxTransactionValue: provider.pegin.maxTransactionValue.toRBTCTrimmedString(),
-          peginConfigurationMinValue: peginConfiguration.minValue,
-          minAllowedValue: minAllowedValue.toRBTCTrimmedString(),
-          maxAllowedValue: maxAllowedValue.toRBTCTrimmedString(),
-          isBelowMin: weiMaxValueToSend.lt(minAllowedValue),
-          isAboveMax: weiMaxValueToSend.gt(maxAllowedValue),
-        });
         if (weiMaxValueToSend.lt(minAllowedValue) || weiMaxValueToSend.gt(maxAllowedValue)) {
-          console.warn(`[FLYOVER_PEGIN_ESTIMATE_MAX_VALUE] balance out of provider allowed range: ${minAllowedValue.toRBTCTrimmedString()} - ${provider.pegin.maxTransactionValue.toRBTCTrimmedString()}, got ${weiMaxValueToSend.toRBTCTrimmedString()}`);
           reject(new Error(`Balance is not within the provider allowed range: ${minAllowedValue.toRBTCTrimmedString()} - ${provider.pegin.maxTransactionValue.toRBTCTrimmedString()}`));
           return Promise.reject(new Error('out of range'));
         }
@@ -176,7 +160,6 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
         ]);
       })
       .then(([recommendedPegin, { maxValueToSend, maxFee, maxSelectedUtxoList }]) => {
-        console.log('[FLYOVER_PEGIN_ESTIMATE_MAX_VALUE] recommendedPegin from LP (satoshi):', recommendedPegin.toString());
         commit(constants.FLYOVER_PEGIN_SET_MAX_VALUES, {
           isMaxSelected: true,
           recommendedPegin,
@@ -186,8 +169,7 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
         });
         resolve(recommendedPegin);
       })
-      .catch((error) => {
-        console.error('[FLYOVER_PEGIN_ESTIMATE_MAX_VALUE] failed, falling back to 0:', error);
+      .catch(() => {
         const zero = new SatoshiBig(0, 'satoshi');
         resolve(zero);
       });

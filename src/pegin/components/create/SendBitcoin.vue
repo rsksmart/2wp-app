@@ -150,14 +150,17 @@ export default defineComponent({
     }) {
       let normalizedTx: NormalizedTx;
       if (maxFlyoverSelected.value) {
+        const totalAvailable = maxFlyoverValueToSend.value.plus(maxFlyoverFee.value);
+        const quoteTotalToTransfer = selectedFlyoverQuote.value.valueToTransfer;
+        const adjustedFee = totalAvailable.safeMinus(quoteTotalToTransfer);
         normalizedTx = PeginTxService.buildNormalizedTx(
           {
-            amountToTransfer: maxFlyoverValueToSend.value,
+            amountToTransfer: quoteTotalToTransfer,
             federationOrLPAddress: btcRecipient,
             refundAddress,
             rskRecipientAddress: recipient,
             changeAddress: getChangeAddress.value,
-            totalFee: maxFlyoverFee.value,
+            totalFee: adjustedFee,
             selectedUtxoList: maxFlyoverSelectedUtxoList.value,
             peginType,
           },
@@ -321,6 +324,7 @@ export default defineComponent({
     }, { immediate: true });
 
     setTxBuilder();
+    watch(bitcoinWallet, setTxBuilder);
 
     onBeforeMount(() => {
       const flag = flyoverFeature.value(FeatureNames.FLYOVER_PEG_IN);
