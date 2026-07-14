@@ -40,7 +40,7 @@ export const getters: GetterTree<SessionState, RootState> = {
     }
     return '';
   },
-  [constants.SESSION_IS_ALLOWED_WALLET]: (state, rootState: RootState): {
+  [constants.SESSION_IS_ALLOWED_WALLET]: (state, _moduleGetters, rootState: RootState): {
     pegin: boolean;
     pegout: boolean;
   } => {

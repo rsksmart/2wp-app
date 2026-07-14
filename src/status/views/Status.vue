@@ -283,6 +283,7 @@ export default defineComponent({
               || lpStatus === constants.FlyoverStatus.FAILED
               || lpStatus === constants.FlyoverStatus.EXPIRED;
             if (lpFinished
+              || txNotFound.value
               || (txDetails.value as FlyoverStatusModel)?.status === FlyoverStatus.COMPLETED) {
               stopCallPeriodicallyStatus();
             } else {
