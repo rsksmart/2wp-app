@@ -169,6 +169,11 @@ describe('bridgeId', () => {
       expect(isValidBridgeId(id)).toBe(false);
     });
 
+    it('rejects pegin id with a trailing separator (empty providerHash segment)', () => {
+      const id = `pegin-powpeg-${BTC_TX_HASH}-btc-`;
+      expect(isValidBridgeId(id)).toBe(false);
+    });
+
     it('rejects a flyover id built from a not-found provider (-1)', () => {
       const id = `flyover--1-${RSK_TX_HASH}-rsk-${QUOTE_HASH}`;
       expect(isValidBridgeId(id)).toBe(false);

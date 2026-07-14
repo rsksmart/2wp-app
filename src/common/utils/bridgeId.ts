@@ -82,7 +82,7 @@ export function isValidBridgeId(bridgeId: string): boolean {
   if (network === BridgeNetwork.BTC && !btcTxHashRegex.test(txHash)) return false;
   if (network === BridgeNetwork.RSK && !rskTxHashRegex.test(txHash)) return false;
 
-  if (source !== BridgeIdSource.FLYOVER && providerHash) return false;
+  if (source !== BridgeIdSource.FLYOVER && providerHash !== undefined) return false;
 
   const quoteHashRegex = /^(0x)?[a-fA-F0-9]{64}$/;
   if (source === BridgeIdSource.FLYOVER && !quoteHashRegex.test(providerHash ?? '')) {

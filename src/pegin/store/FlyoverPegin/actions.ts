@@ -149,8 +149,7 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
 
         const weiMaxValueToSend = WeiBig.fromSatoshiBig(maxValueToSend);
         if (weiMaxValueToSend.lt(minAllowedValue) || weiMaxValueToSend.gt(maxAllowedValue)) {
-          reject(new Error(`Balance is not within the provider allowed range: ${minAllowedValue.toRBTCTrimmedString()} - ${provider.pegin.maxTransactionValue.toRBTCTrimmedString()}`));
-          return Promise.reject(new Error('out of range'));
+          return Promise.reject(new Error(`Balance is not within the provider allowed range: ${minAllowedValue.toRBTCTrimmedString()} - ${provider.pegin.maxTransactionValue.toRBTCTrimmedString()}`));
         }
         return Promise.all([state.flyoverService.estimateRecommendedPegin(
           maxValueToSend,
@@ -169,10 +168,7 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
         });
         resolve(recommendedPegin);
       })
-      .catch(() => {
-        const zero = new SatoshiBig(0, 'satoshi');
-        resolve(zero);
-      });
+      .catch(reject);
   }),
   [constants.FLYOVER_PEGIN_RESET_MAX_SELECTED]: ({ commit }) => {
     commit(constants.FLYOVER_PEGIN_RESET_MAX_SELECTED);

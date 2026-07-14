@@ -52,7 +52,7 @@ export const actions: ActionTree<TxStatus, RootState> = {
             ...nextActions,
             backendTxDetails,
             dispatch(constants.STATUS_GET_FLYOVER_STATUS, {
-              quoteHash: parsed.providerHash,
+              quoteHash: parsed.providerHash ?? '',
               providerId: Number(parsed.providerId),
             }),
           ])
@@ -172,7 +172,7 @@ export const actions: ActionTree<TxStatus, RootState> = {
         const flyoverService = rootState.flyoverPegout?.flyoverService;
         await dispatch(`flyoverPegout/${constants.FLYOVER_PEGOUT_INIT}`, {}, { root: true });
         flyoverService?.useLiquidityProvider(providerId);
-        status = await rootState.flyoverPegout?.flyoverService.getPegoutStatus(quoteHash);
+        status = await flyoverService?.getPegoutStatus(quoteHash);
       }
     } catch (e) {
       status = { status: TxStatusType.NOT_FOUND, txId: '' };

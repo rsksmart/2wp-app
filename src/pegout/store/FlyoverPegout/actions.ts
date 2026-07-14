@@ -278,7 +278,6 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
             const errorMessage = 'Balance is not within the provider allowed range: '
               + `${minAllowedValue.toRBTCTrimmedString()} - `
               + `${provider.pegout.maxTransactionValue.toRBTCTrimmedString()}`;
-            reject(new Error(errorMessage));
             return Promise.reject(new Error(errorMessage));
           }
           return state.flyoverService.estimateRecommendedPegout(
@@ -287,8 +286,6 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
           );
         })
         .then(resolve)
-        .catch((error) => {
-          reject(error);
-        });
+        .catch(reject);
     }),
 };
