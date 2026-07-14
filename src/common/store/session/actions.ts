@@ -7,6 +7,7 @@ import {
   FeatureNames,
 } from '@/common/types';
 import { ApiService } from '@/common/services';
+import { captureError } from '@/sentry';
 import {
   getBtcAddressFromSignedMessage,
   getCookie,
@@ -109,7 +110,8 @@ export const actions: ActionTree<SessionState, RootState> = {
           setCookie('BtcPrice', result.current_price, constants.COOKIE_EXPIRATION_HOURS);
           commit(constants.SESSION_SET_BITCOIN_PRICE, result.current_price);
         })
-        .catch(() => {
+        .catch((e) => {
+          captureError(e, { source: constants.SESSION_ADD_BITCOIN_PRICE });
           commit(constants.SESSION_SET_BITCOIN_PRICE, 0);
         });
     }
@@ -136,6 +138,7 @@ export const actions: ActionTree<SessionState, RootState> = {
       const versionAccepted = Number(localStorage.getItem('TERMS_AND_CONDITIONS_ACCEPTED'));
       dispatch(constants.SESSION_ADD_TERMS_VALUE, flag?.version === versionAccepted);
     } catch (e) {
+      captureError(e, { source: constants.SESSION_ADD_FEATURES });
       dispatch(constants.SESSION_ADD_TERMS_VALUE, false);
     }
   },

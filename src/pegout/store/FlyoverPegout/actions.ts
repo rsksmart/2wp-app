@@ -10,6 +10,7 @@ import {
 } from '@/common/utils';
 import { FlyoverService } from '@/common/services';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import { captureError } from '@/sentry';
 import { providers } from 'ethers';
 import { AcceptedPegoutQuote } from '@rsksmart/flyover-sdk';
 
@@ -33,7 +34,8 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
           commit(constants.FLYOVER_PEGOUT_SET_PROVIDERS, liquidityProviders);
           resolve();
         })
-        .catch(() => {
+        .catch((e) => {
+          captureError(e, { source: constants.FLYOVER_PEGOUT_GET_PROVIDERS });
           reject();
         });
     }),
