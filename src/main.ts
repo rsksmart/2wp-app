@@ -3,6 +3,8 @@ import { AppNetwork } from '@/common/types';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import * as constants from '@/common/store/constants';
 import i18n from '@/i18n';
+import * as Sentry from '@sentry/vue';
+import { getSentryOptions } from './sentry';
 import App from './App.vue';
 import router from './common/router';
 import store from './common/store';
@@ -37,11 +39,20 @@ const defaultEnvironmentVariables = {
   cspConfiguration: 'https://testnet.lps.tekscapital.com https://staging.lps.tekscapital.com',
   apiResponseTimeout: 5000,
   flyoverNetwork: 'Testnet',
+  sentryEnv: 'development',
 };
 
 EnvironmentAccessorService.initializeEnvironmentVariables(defaultEnvironmentVariables);
 
 const app = createApp(App);
+
+const { sentryDsn } = EnvironmentAccessorService.getEnvironmentVariables();
+if (sentryDsn) {
+  Sentry.init({
+    app,
+    ...getSentryOptions(router),
+  });
+}
 
 app.use(i18n);
 app.use(router);

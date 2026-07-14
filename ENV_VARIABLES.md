@@ -30,5 +30,8 @@ The value of these variables are used in **environment-variables.ts** file.
 |VUE_APP_REOWN_PROJECT_ID  | `PROJECT_ID` | Reown's AppKit project Id follow [this](https://reown.com/blog/how-to-get-started-with-appkit) instructions to get one. |
 |VUE_APP_FLYOVER_NETWORK                      | `Testnet` | The network to use for Flyover service. Valid values: `Mainnet`, `Testnet`, `Regtest`, `Alphanet`, `Development`. |
 |VUE_APP_FLYOVER_DEPOSIT_PEGOUT_GAS          | `410700` | Gas units to use for deposit pegout transactions (replaces dynamic gas estimation) |
+|VUE_APP_SENTRY_DSN                           |         | Sentry DSN for error monitoring. Leave empty to disable Sentry.             |
+|VUE_APP_SENTRY_ENV                           |         | Sentry environment tag (e.g. `production`, `staging`).                      |
+|VUE_APP_SENTRY_TRACE_PROPAGATION_TARGETS     |         | Comma-separated list of `https://` URLs to attach Sentry tracing headers to. Set only in deployed environments. Leave unset for local dev: Sentry then uses its default (localhost and same-origin requests). |
 
 Example for [.env.local.test](https://github.com/rsksmart/2wp-app/blob/main/.env.local.test) file.
