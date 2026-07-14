@@ -16,11 +16,11 @@ The solution will be a **web interface (this app)**, which integrates with a Res
 Ensure you are using the following versions of npm and node:
 ```
 npm -v
-9.5.1
+11.x
 ```
 ```
 node -v
-v18.16.1
+v24.18.0
 ```
 #### nvm
 (Optionally) Use version from `.nvmrc`:
