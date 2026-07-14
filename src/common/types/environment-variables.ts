@@ -67,6 +67,13 @@ export class EnvironmentVariables {
     slow: number;
   };
 
+  public sentryDsn: string;
+
+  public sentryEnv: string;
+
+  // Comma-separated list of URLs. Sentry attaches tracing headers to requests sent to them.
+  public sentryTracePropagationTargets: string;
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(defaultValues: any = {}) {
     this.vueAppCoin = process.env.VUE_APP_COIN || defaultValues.vueAppCoin;
@@ -127,6 +134,9 @@ export class EnvironmentVariables {
       || defaultValues.flyoverNetwork;
     this.flyoverDepositPegoutGas = Number(process.env.VUE_APP_FLYOVER_DEPOSIT_PEGOUT_GAS)
       || defaultValues.flyoverDepositPegoutGas || 0;
+    this.sentryDsn = process.env.VUE_APP_SENTRY_DSN || '';
+    this.sentryEnv = process.env.VUE_APP_SENTRY_ENV || defaultValues.sentryEnv;
+    this.sentryTracePropagationTargets = process.env.VUE_APP_SENTRY_TRACE_PROPAGATION_TARGETS || '';
   }
 
   public get chainId(): number {
