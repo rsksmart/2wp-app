@@ -333,10 +333,10 @@ export default defineComponent({
       return `input-bg-${current.value.dark ? 'dark' : 'light'}`;
     }
 
-    watch(route, onUrlChange, { immediate: true, deep: true });
-
     clearStatus();
     getBtcPrice();
+    watch(route, onUrlChange, { immediate: true, deep: true });
+
     onUnmounted(clean);
     onBeforeUnmount(stopCallPeriodicallyStatus);
 
