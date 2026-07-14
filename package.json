@@ -32,6 +32,7 @@
     "@rsksmart/rsk-precompiled-abis": "^8.0.0-REED",
     "@rsksmart/rsk-utils": "^1.1.0",
     "@sentry/vue": "^10.65.0",
+    "@sentry/webpack-plugin": "^5.4.0",
     "@stacks/connect": "^7.7.1",
     "@swan-bitcoin/xpub-lib": "^0.1.5",
     "@trezor/connect-web": "^9.6.4",
