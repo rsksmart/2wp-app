@@ -34,4 +34,14 @@ The value of these variables are used in **environment-variables.ts** file.
 |VUE_APP_SENTRY_ENV                           |         | Sentry environment tag (e.g. `production`, `staging`).                      |
 |VUE_APP_SENTRY_TRACE_PROPAGATION_TARGETS     |         | Comma-separated list of `https://` URLs to attach Sentry tracing headers to. Set only in deployed environments. Leave unset for local dev: Sentry then uses its default (localhost and same-origin requests). |
 
+## Sentry source map upload variables
+
+These variables are read by the Sentry webpack plugin in `vue.config.js` during `npm run build` to upload source maps to Sentry. If they are unset, the build still succeeds but source maps are **not** uploaded.
+
+| Name                 | Details                                                      |
+|----------------------|--------------------------------------------------------------|
+| `SENTRY_ORG`         | Sentry organization slug that owns the project.              |
+| `SENTRY_PROJECT`     | Sentry project slug to upload source maps to.                |
+| `SENTRY_AUTH_TOKEN`  | Sentry auth token with `project:releases` scope.             |
+
 Example for [.env.local.test](https://github.com/rsksmart/2wp-app/blob/main/.env.local.test) file.

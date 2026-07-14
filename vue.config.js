@@ -3,6 +3,7 @@ const path = require('path');
 const webpack = require('webpack');
 const { defineConfig } = require('@vue/cli-service');
 const { VuetifyPlugin } = require('webpack-plugin-vuetify');
+const { sentryWebpackPlugin } = require('@sentry/webpack-plugin');
 
 module.exports = defineConfig({
   transpileDependencies: true,
@@ -33,12 +34,18 @@ module.exports = defineConfig({
         http: require.resolve('stream-http'),
       },
     },
+    devtool: 'source-map',
     plugins: [
       new webpack.ProvidePlugin({
         process: 'process/browser',
         Buffer: ['buffer', 'Buffer'],
       }),
       new VuetifyPlugin({ styles: { configFile: 'src/scss/settings.scss' } }),
+      sentryWebpackPlugin({
+        org: process.env.SENTRY_ORG,
+        project: process.env.SENTRY_PROJECT,
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+      }),
     ],
   },
   devServer: {
