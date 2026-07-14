@@ -13,6 +13,7 @@ import {
   getEstimatedFee, promiseWithTimeout,
   isValidBridgeId, parseBridgeId, bridgeIdToTxStatusType, BridgeIdSource,
 } from '@/common/utils';
+import { captureError } from '@/sentry';
 import { ethers } from 'ethers';
 
 export const actions: ActionTree<TxStatus, RootState> = {
@@ -111,7 +112,8 @@ export const actions: ActionTree<TxStatus, RootState> = {
           return Promise.all(nextActions);
         })
         .then(resolve)
-        .catch(() => {
+        .catch((e) => {
+          captureError(e, { source: constants.STATUS_GET_TX_STATUS });
           commit(constants.STATUS_SET_TX_DETAILS, undefined);
           commit(constants.STATUS_SET_TX_TYPE, TxStatusType.UNEXPECTED_ERROR);
           reject();
@@ -122,6 +124,7 @@ export const actions: ActionTree<TxStatus, RootState> = {
       const estimatedFee = await getEstimatedFee(true);
       commit(constants.STATUS_SET_BTC_ESTIMATED_FEE, new SatoshiBig(estimatedFee, 'satoshi'));
     } catch (e) {
+      captureError(e, { source: constants.STATUS_GET_ESTIMATED_FEE });
       commit(constants.STATUS_SET_BTC_ESTIMATED_FEE, new SatoshiBig(0, 'satoshi'));
     }
   },
@@ -175,6 +178,7 @@ export const actions: ActionTree<TxStatus, RootState> = {
         status = await flyoverService?.getPegoutStatus(quoteHash);
       }
     } catch (e) {
+      captureError(e, { source: constants.STATUS_GET_FLYOVER_STATUS });
       status = { status: TxStatusType.NOT_FOUND, txId: '' };
     } finally {
       commit(constants.STATUS_SET_FLYOVER_STATUS, status);

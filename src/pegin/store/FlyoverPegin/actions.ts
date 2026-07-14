@@ -9,6 +9,7 @@ import * as constants from '@/common/store/constants';
 import { promiseWithTimeout } from '@/common/utils';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { TxFeeService } from '@/pegin/services';
+import { captureError } from '@/sentry';
 
 export const actions: ActionTree<FlyoverPeginState, RootState> = {
   [constants.FLYOVER_PEGIN_INIT]: ({ state, dispatch }) => new Promise((resolve, reject) => {
@@ -27,7 +28,8 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
           commit(constants.FLYOVER_PEGIN_SET_PROVIDERS, providers);
           resolve();
         })
-        .catch(() => {
+        .catch((e) => {
+          captureError(e, { source: constants.FLYOVER_PEGIN_GET_PROVIDERS });
           reject();
         });
     },

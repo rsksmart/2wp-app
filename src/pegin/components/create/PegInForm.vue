@@ -157,6 +157,7 @@ import BtcFeeSelect from '@/pegin/components/create/BtcFeeSelect.vue';
 import { BridgeService } from '@/common/services/BridgeService';
 import { FlyoverService } from '@/common/services';
 import FullTxErrorDialog from '@/common/components/exchange/FullTxErrorDialog.vue';
+import { captureError } from '@/sentry';
 import RskDestinationAddress from '@/pegin/components/create/RskDestinationAddress.vue';
 import { AcceptedQuote } from '@rsksmart/flyover-sdk';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
@@ -254,6 +255,8 @@ export default defineComponent({
       if (error instanceof ServiceError) {
         txError.value = error;
         showErrorDialog.value = true;
+      } else {
+        captureError(error, { flow: 'pegin', source: 'PegInForm.createTx' });
       }
     }
 

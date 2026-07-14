@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/vue';
 import type { Router } from 'vue-router';
 import { EnvironmentAccessorService } from './common/services/enviroment-accessor.service';
+import ServiceError from './common/utils/ServiceError';
 
 function isParsableUrl(url: string): boolean {
   try {
@@ -28,6 +29,22 @@ function parsePropagationTargets(targets: string): RegExp[] {
   return validUrls
     .map((url) => escapeRegExp(new URL(url).origin))
     .map((origin) => new RegExp(`^${origin}(?:[/?#]|$)`));
+}
+
+export function captureError(error: unknown, context?: Record<string, string>): void {
+  if (error instanceof ServiceError) {
+    Sentry.captureException(error, {
+      tags: {
+        service: error.serviceName,
+        method: error.triggeredByMethod,
+        ...context,
+      },
+      extra: { technicalMessage: error.technicalMessage },
+      fingerprint: [error.serviceName, error.triggeredByMethod],
+    });
+    return;
+  }
+  Sentry.captureException(error, { tags: context });
 }
 
 export function getSentryOptions(router: Router): Parameters<typeof Sentry.init>[0] {

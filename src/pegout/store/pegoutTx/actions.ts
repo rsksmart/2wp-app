@@ -8,6 +8,7 @@ import { EnvironmentAccessorService } from '@/common/services/enviroment-accesso
 import {
   getCookie, getEstimatedFee, sendTransaction, setCookie, ServiceError,
 } from '@/common/utils';
+import { captureError } from '@/sentry';
 import { BigNumber, providers } from 'ethers';
 
 export const actions: ActionTree<PegOutTxState, RootState> = {
@@ -35,6 +36,7 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
       );
       commit(constants.PEGOUT_TX_SET_RSK_ESTIMATED_FEE, calculatedFee);
     } catch (e) {
+      captureError(e, { source: constants.PEGOUT_TX_CALCULATE_FEE, step: 'rskFee' });
       commit(constants.PEGOUT_TX_SET_GAS, 0);
       commit(constants.PEGOUT_TX_SET_RSK_ESTIMATED_FEE, 0);
     }
@@ -44,6 +46,7 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
       const estimatedFee = await getEstimatedFee();
       commit(constants.PEGOUT_TX_SET_BTC_ESTIMATED_FEE, new SatoshiBig(estimatedFee, 'satoshi'));
     } catch (e) {
+      captureError(e, { source: constants.PEGOUT_TX_CALCULATE_FEE, step: 'btcFee' });
       commit(constants.PEGOUT_TX_SET_BTC_ESTIMATED_FEE, new SatoshiBig(0, 'satoshi'));
     }
   },
@@ -111,7 +114,8 @@ export const actions: ActionTree<PegOutTxState, RootState> = {
           setCookie('BtcPrice', result.current_price, constants.COOKIE_EXPIRATION_HOURS);
           commit(constants.PEGOUT_TX_SET_BITCOIN_PRICE, result.current_price);
         })
-        .catch(() => {
+        .catch((e) => {
+          captureError(e, { source: constants.PEGOUT_TX_ADD_BITCOIN_PRICE });
           commit(constants.PEGOUT_TX_SET_BITCOIN_PRICE, 0);
         });
     }

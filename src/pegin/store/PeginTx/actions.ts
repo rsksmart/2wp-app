@@ -9,6 +9,7 @@ import {
 } from '@/common/services';
 import SatoshiBig from '@/common/types/SatoshiBig';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import { captureError } from '@/sentry';
 import {
   AccountBalance, FeeAmountData, NormalizedTx, RootState,
   PeginConfiguration, PegInTxState, WalletAddress,
@@ -66,6 +67,7 @@ export const actions: ActionTree<PegInTxState, RootState> = {
           break;
       }
     } catch (e) {
+      captureError(e, { source: constants.PEGIN_TX_ADD_BITCOIN_WALLET });
       commit(constants.PEGIN_TX_SET_WALLET_SERVICE, undefined);
       return;
     }
@@ -91,7 +93,8 @@ export const actions: ActionTree<PegInTxState, RootState> = {
           setCookie('BtcPrice', result.current_price, constants.COOKIE_EXPIRATION_HOURS);
           commit(constants.PEGIN_TX_SET_BITCOIN_PRICE, result.current_price);
         })
-        .catch(() => {
+        .catch((e) => {
+          captureError(e, { source: constants.PEGIN_TX_ADD_BITCOIN_PRICE });
           commit(constants.PEGIN_TX_SET_BITCOIN_PRICE, 0);
         });
     }
@@ -251,7 +254,8 @@ export const actions: ActionTree<PegInTxState, RootState> = {
         const maxValue = selectedBalance.safeMinus(maxFee);
         resolve(maxValue);
       })
-      .catch(async () => {
+      .catch(async (e) => {
+        captureError(e, { source: constants.PEGIN_TX_ESTIMATE_MAX_VALUE });
         const bridgeService = new BridgeService();
         const defaultMaxValue = minBigInt(
           selectedBalance.toWeiBigIntUnsafe(),
