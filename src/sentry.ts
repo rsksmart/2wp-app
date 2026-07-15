@@ -15,7 +15,7 @@ function escapeRegExp(text: string): string {
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-function parsePropagationTargets(targets: string): RegExp[] {
+export function parsePropagationTargets(targets: string): RegExp[] {
   const entries = targets
     .split(',')
     .map((target) => target.trim())
