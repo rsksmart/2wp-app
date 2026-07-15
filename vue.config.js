@@ -5,6 +5,12 @@ const { defineConfig } = require('@vue/cli-service');
 const { VuetifyPlugin } = require('webpack-plugin-vuetify');
 const { sentryWebpackPlugin } = require('@sentry/webpack-plugin');
 
+const isProduction = process.env.NODE_ENV === 'production';
+const sentryUploadEnabled = isProduction
+  && !!process.env.SENTRY_ORG
+  && !!process.env.SENTRY_PROJECT
+  && !!process.env.SENTRY_AUTH_TOKEN;
+
 module.exports = defineConfig({
   transpileDependencies: true,
   chainWebpack: (config) => {
@@ -34,18 +40,21 @@ module.exports = defineConfig({
         http: require.resolve('stream-http'),
       },
     },
-    devtool: 'source-map',
+    devtool: isProduction ? 'hidden-source-map' : 'eval-cheap-module-source-map',
     plugins: [
       new webpack.ProvidePlugin({
         process: 'process/browser',
         Buffer: ['buffer', 'Buffer'],
       }),
       new VuetifyPlugin({ styles: { configFile: 'src/scss/settings.scss' } }),
-      sentryWebpackPlugin({
+      ...(sentryUploadEnabled ? [sentryWebpackPlugin({
         org: process.env.SENTRY_ORG,
         project: process.env.SENTRY_PROJECT,
         authToken: process.env.SENTRY_AUTH_TOKEN,
-      }),
+        sourcemaps: {
+          filesToDeleteAfterUpload: ['dist/**/*.map'],
+        },
+      })] : []),
     ],
   },
   devServer: {
