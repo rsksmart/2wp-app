@@ -73,19 +73,15 @@ export function areValidOutputs(
   return response;
 }
 
-export function isValidInput(input:NormalizedInput, userAddressList: string[]): boolean {
+export function isValidInput(input: NormalizedInput, userAddressList: string[]): boolean {
   if (input.prevRawTx) {
     const tx = bitcoin.Transaction.fromHex(input.prevRawTx);
     const network = EnvironmentAccessorService
       .getEnvironmentVariables().vueAppCoin === constants.BTC_NETWORK_MAINNET
       ? bitcoin.networks.bitcoin : bitcoin.networks.testnet;
     try {
-      const pubKey = Buffer.from(
-        tx.outs[input.prev_index].script as unknown as WithImplicitCoercion<ArrayBufferLike>,
-        3,
-        20,
-      );
-      const expectedAddress = bitcoin.address.fromOutputScript(pubKey, network);
+      const { script } = tx.outs[input.prev_index];
+      const expectedAddress = bitcoin.address.fromOutputScript(script, network);
       return expectedAddress === input.address
         && tx.getId() === input.prev_hash
         && userAddressList.includes(expectedAddress);

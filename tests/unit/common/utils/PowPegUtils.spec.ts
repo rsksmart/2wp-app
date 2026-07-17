@@ -1,5 +1,8 @@
-import { NormalizedOutput } from '@/common/types';
-import { areValidOutputs, isValidPowPegOutput } from '@/common/utils';
+import * as bitcoin from 'bitcoinjs-lib';
+import { NormalizedInput, NormalizedOutput } from '@/common/types';
+import {
+  areValidOutputs, isValidInput, isValidPowPegOutput,
+} from '@/common/utils';
 import * as constants from '@/common/store/constants';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
@@ -349,5 +352,69 @@ describe('Function: areValidOutputs', () => {
       userRefundAddress,
     );
     expect(result.valid).toBe(false);
+  });
+});
+
+describe('isValidInput', () => {
+  const network = bitcoin.networks.testnet;
+  const hash = Buffer.alloc(20, 1);
+  const { address, output } = bitcoin.payments.p2pkh({ hash, network });
+
+  function buildPrevRawTx(): string {
+    const tx = new bitcoin.Transaction();
+    tx.addInput(Buffer.alloc(32), 0);
+    tx.addOutput(output as Buffer, 100000);
+    return tx.toHex();
+  }
+
+  function buildInput(overrides: Partial<NormalizedInput> = {}): NormalizedInput {
+    const prevRawTx = buildPrevRawTx();
+    const prevTx = bitcoin.Transaction.fromHex(prevRawTx);
+    return {
+      address: address as string,
+      prev_hash: prevTx.getId(),
+      amount: '100000',
+      prev_index: 0,
+      prevRawTx,
+      ...overrides,
+    };
+  }
+
+  it('returns true when the output resolves to an address owned by the user', () => {
+    const input = buildInput();
+    expect(isValidInput(input, [address as string])).toBe(true);
+  });
+
+  it('returns false when the resolved address is not part of the user address list', () => {
+    const input = buildInput();
+    expect(isValidInput(input, ['some-other-address'])).toBe(false);
+  });
+
+  it('returns false when the input address does not match the resolved output address', () => {
+    const input = buildInput({ address: 'wrong-address' });
+    expect(isValidInput(input, [address as string])).toBe(false);
+  });
+
+  it('returns false when prev_hash does not match the raw transaction id', () => {
+    const input = buildInput({ prev_hash: '0'.repeat(64) });
+    expect(isValidInput(input, [address as string])).toBe(false);
+  });
+
+  it('returns false when the referenced output script cannot be decoded to an address', () => {
+    const opReturnScript = bitcoin.script.compile([
+      bitcoin.opcodes.OP_RETURN,
+      Buffer.from('not-an-address'),
+    ]);
+    const tx = new bitcoin.Transaction();
+    tx.addInput(Buffer.alloc(32), 0);
+    tx.addOutput(opReturnScript, 0);
+    const prevRawTx = tx.toHex();
+    const input = buildInput({ prevRawTx, prev_hash: tx.getId() });
+    expect(isValidInput(input, [address as string])).toBe(false);
+  });
+
+  it('returns false when prevRawTx is not provided', () => {
+    const input = buildInput({ prevRawTx: undefined });
+    expect(isValidInput(input, [address as string])).toBe(false);
   });
 });

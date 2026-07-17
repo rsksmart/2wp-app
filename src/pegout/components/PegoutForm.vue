@@ -186,6 +186,7 @@ import {
 import { FlyoverService } from '@/common/services';
 import FullTxErrorDialog from '@/common/components/exchange/FullTxErrorDialog.vue';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import { captureError } from '@/sentry';
 import { providers } from 'ethers';
 import { useRouter } from 'vue-router';
 import PegoutOption from './PegoutOption.vue';
@@ -440,9 +441,10 @@ export default defineComponent({
       } catch (e) {
         if (e instanceof ServiceError) {
           handlePegoutError(e);
-        }
-        if ((e as Error).toString().includes('Quote differences')) {
+        } else if ((e as Error).toString().includes('Quote differences')) {
           diffShown.value = true;
+        } else {
+          captureError(e, { flow: 'pegout', source: 'PegoutForm.send' });
         }
       } finally {
         pegOutFormState.value.send('fill');
@@ -533,6 +535,8 @@ export default defineComponent({
       } catch (e) {
         if (e instanceof ServiceError) {
           handlePegoutError(e);
+        } else {
+          captureError(e, { flow: 'pegout', source: 'PegoutForm.continueHandler' });
         }
       } finally {
         pegOutFormState.value.send('fill');

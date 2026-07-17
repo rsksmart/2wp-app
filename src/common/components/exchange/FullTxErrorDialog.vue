@@ -39,6 +39,7 @@
 <script lang="ts">
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import ServiceError from '@/common/utils/ServiceError';
+import { captureError } from '@/sentry';
 import { ref, defineComponent, PropType } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -56,6 +57,8 @@ export default defineComponent({
     const router = useRouter();
 
     const showDevError = EnvironmentAccessorService.getEnvironmentVariables().debugMode;
+
+    if (props.error) captureError(props.error, { source: 'FullTxErrorDialog' });
 
     function toExchange() {
       router.push({ name: 'Home' });

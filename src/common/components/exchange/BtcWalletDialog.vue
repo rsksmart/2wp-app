@@ -132,6 +132,7 @@ import EnvironmentContextProviderService from '@/common/providers/EnvironmentCon
 import * as constants from '@/common/store/constants';
 import { mdiCellphoneLink, mdiUsbFlashDriveOutline } from '@mdi/js';
 import walletConf from '@/common/walletConf.json';
+import { captureError } from '@/sentry';
 import { useTheme } from 'vuetify';
 import {
   Browser, BtcWallet, Feature, FeatureNames, SupportedBrowsers,
@@ -245,7 +246,7 @@ export default defineComponent({
       if (wallet === constants.WALLET_NAMES.REOWN.long_name) {
         connectReown()
           .catch((e: Error) => {
-            console.error('Error connecting Reown wallet:', e);
+            captureError(e, { source: 'BtcWalletDialog.connectReown' });
           });
         return;
       }

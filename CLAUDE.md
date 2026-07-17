@@ -9,7 +9,7 @@ PowPeg app is a Vue 3 + TypeScript SPA for the 2-Way-Peg (PowPeg) solution — a
 ## Commands
 
 ```bash
-nvm use                  # Switch to Node v20.18.2 (from .nvmrc)
+nvm use                  # Switch to Node v24.18.0 (from .nvmrc)
 npm ci                   # Install dependencies
 npm run serve            # Dev server at https://localhost:8080
 npm run build            # Production build

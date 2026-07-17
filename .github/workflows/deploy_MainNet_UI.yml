@@ -62,6 +62,12 @@ jobs:
           VUE_APP_API_RESPONSE_TIMEOUT=10000
           VUE_APP_REOWN_PROJECT_ID=${{ secrets.MAINNET_VUE_APP_REOWN_PROJECT_ID }}
           VUE_APP_FLYOVER_DEPOSIT_PEGOUT_GAS=410700
+          VUE_APP_SENTRY_DSN=${{ secrets.VUE_APP_SENTRY_DSN }}
+          VUE_APP_SENTRY_ENV=mainnet
+          VUE_APP_SENTRY_TRACE_PROPAGATION_TARGETS=${{ secrets.MAINNET_VUE_APP_SENTRY_TRACE_PROPAGATION_TARGETS }}
+          SENTRY_ORG=${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT }}
+          SENTRY_AUTH_TOKEN=${{ secrets.MAINNET_SENTRY_AUTH_TOKEN }}
           npm run-script build
 
       - name: Configure AWS credentials
