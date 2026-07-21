@@ -1,6 +1,5 @@
 import RLogin from '@rsksmart/rlogin';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
-import WalletConnectProvider from '@walletconnect/web3-provider';
 import { trezorProviderOptions } from '@rsksmart/rlogin-trezor-provider';
 import { ledgerProviderOptions } from '@rsksmart/rlogin-ledger-provider';
 import * as constants from '@/common/store/constants';
@@ -42,14 +41,7 @@ export function getRloginInstance(features: Array<Feature>): RLogin {
   const rLoginOptions = {
     cacheProvider: false,
     defaultTheme: 'dark' as 'dark' | 'light',
-    providerOptions: {
-      walletconnect: {
-        package: WalletConnectProvider,
-        options: {
-          rpc: rpcUrls,
-        },
-      },
-    },
+    providerOptions: {},
     rpcUrls,
     supportedChains,
   };

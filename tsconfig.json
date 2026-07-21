@@ -5,7 +5,7 @@
     "strict": true,
     "jsx": "preserve",
     "importHelpers": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule":true,
     "experimentalDecorators": true,
     "skipLibCheck": true,
@@ -14,17 +14,18 @@
     "sourceMap": true,
     "baseUrl": ".",
     "typeRoots": [
-      "./node_modules/@types",
-      "./node_modules/vuetify/types"
+      "./node_modules/@types"
     ],
     "types": [
       "webpack-env",
-      "jest",
-      "vuetify"
+      "jest"
     ],
     "paths": {
       "@/*": [
         "src/*"
+      ],
+      "vuex": [
+        "./node_modules/vuex/types/index.d.ts"
       ]
     },
     "lib": [
