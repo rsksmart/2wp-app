@@ -1,17 +1,21 @@
 import RLogin from '@rsksmart/rlogin';
 import WeiBig from '@/common/types/WeiBig';
-import WalletConnectProvider from '@walletconnect/web3-provider';
 import { providers } from 'ethers';
 import { Feature } from './Feature';
 
 export type TransactionType = 'PEG_IN_TRANSACTION_TYPE' | 'PEG_OUT_TRANSACTION_TYPE' | undefined;
+
+type RLoginProvider = providers.ExternalProvider & {
+  isLedger?: boolean;
+  isTrezor?: boolean;
+};
 
 export interface SessionState {
   enabled: boolean;
   account?: string;
   ethersProvider?: providers.Web3Provider;
   rLogin?: {
-    provider: WalletConnectProvider;
+    provider: RLoginProvider;
     disconnect: () => Promise<void>;
   };
   rLoginInstance?: RLogin;
