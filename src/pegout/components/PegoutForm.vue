@@ -294,7 +294,8 @@ export default defineComponent({
     const isReadyToCreate = computed((): boolean => isEnoughBalance.value
         && !!account.value
         && validAmountToReceive.value
-        && selectedOption.value === '');
+        && selectedOption.value === ''
+        && isAllowedWallet.value.pegout);
 
     const isFlyoverReady = computed(() => {
       if (selectedOption.value && selectedQuote.value) {
@@ -516,6 +517,16 @@ export default defineComponent({
       setSelectedQuoteHash(quoteHash);
       selectedOption.value = quoteHash;
     }
+
+    watch([pegoutQuotes, existQuoteAndUsersBalanceIsEnough], () => {
+      if (!isAllowedWallet.value.pegout
+          && !selectedOption.value
+          && flyoverIsEnabled.value
+          && pegoutQuotes.value.length > 0
+          && existQuoteAndUsersBalanceIsEnough.value) {
+        changeSelectedOption(pegoutQuotes.value[0].quoteHash);
+      }
+    });
 
     function sendTx(sendToQr:boolean) {
       toQr.value = sendToQr;
