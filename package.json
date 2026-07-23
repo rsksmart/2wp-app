@@ -15,9 +15,9 @@
   "dependencies": {
     "@enkryptcom/types": "^0.0.5",
     "@leather.io/rpc": "^2.0.2",
-    "@ledgerhq/hw-app-btc": "6.27.1",
-    "@ledgerhq/hw-transport": "6.27.1",
-    "@ledgerhq/hw-transport-webusb": "6.27.1",
+    "@ledgerhq/hw-app-btc": "11.3.0",
+    "@ledgerhq/hw-transport": "6.35.6",
+    "@ledgerhq/hw-transport-webusb": "6.35.0",
     "@mdi/js": "^6.9.96",
     "@reown/appkit": "^1.8.22",
     "@reown/appkit-adapter-bitcoin": "^1.8.22",

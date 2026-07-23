@@ -65,7 +65,7 @@ export default class LedgerService extends WalletService {
     return LedgerTransportService.getInstance()
       .enqueueRequest(
         (transport:TransportWebUSB) => new Promise<LedgerjsTransaction>((resolve) => {
-          const btc = new Btc(transport);
+          const btc = new Btc({ transport });
           const bitcoinJsTx = bitcoin.Transaction.fromHex(hexTx);
           resolve(btc.splitTransaction(hexTx, bitcoinJsTx.hasWitnesses()));
         }),
@@ -75,7 +75,7 @@ export default class LedgerService extends WalletService {
   static splitTransactionList(txHexList: string[]): Promise<LedgerjsTransaction[]> {
     return LedgerTransportService.getInstance()
       .enqueueRequest((transport: TransportWebUSB) => {
-        const btc = new Btc(transport);
+        const btc = new Btc({ transport });
         return Promise.all(txHexList.map((tx) => {
           const bitcoinJsTx = bitcoin.Transaction.fromHex(tx);
           return btc.splitTransaction(tx, bitcoinJsTx.hasWitnesses());
@@ -87,7 +87,7 @@ export default class LedgerService extends WalletService {
     return LedgerTransportService.getInstance()
       .enqueueRequest(
         (transport: TransportWebUSB) => new Promise<string>((resolve) => {
-          const btc = new Btc(transport);
+          const btc = new Btc({ transport });
           const txOutputsBuffer: Buffer = btc.serializeTransactionOutputs(splitTx);
           resolve(txOutputsBuffer.toString('hex'));
         }),
@@ -152,8 +152,8 @@ export default class LedgerService extends WalletService {
     return LedgerTransportService.getInstance()
       .enqueueRequest(
         (transport: TransportWebUSB) => new Promise<LedgerSignedTx>((resolve, reject) => {
-          const btc = new Btc(transport);
-          btc.createPaymentTransactionNew({
+          const btc = new Btc({ transport });
+          btc.createPaymentTransaction({
             inputs: ledgerTx.inputs.map((input) => [input.tx, input.outputIndex, null, null]),
             associatedKeysets: ledgerTx.associatedKeysets,
             outputScriptHex: ledgerTx.outputScriptHex,
@@ -215,7 +215,7 @@ export default class LedgerService extends WalletService {
   getXpub(accountType: BtcAccount, accountNumber: number): Promise<string> {
     return LedgerTransportService.getInstance()
       .enqueueRequest((transport: TransportWebUSB) => {
-        const btc = new Btc(transport);
+        const btc = new Btc({ transport });
         const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin;
         const xpubVersion = network === constants.BTC_NETWORK_MAINNET
           ? constants.LEDGER_BTC_MAIN_XPUB_VERSION : constants.LEDGER_BTC_TEST_XPUB_VERSION;
