@@ -38,6 +38,7 @@ module.exports = defineConfig({
         os: require.resolve('os-browserify/browser'),
         https: require.resolve('https-browserify'),
         http: require.resolve('stream-http'),
+        vm: false,
       },
     },
     devtool: isProduction ? 'hidden-source-map' : 'eval-cheap-module-source-map',
