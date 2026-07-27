@@ -134,6 +134,16 @@
     },
     "sinon": {
       "diff": "^8.0.3"
+    },
+    "mocha": {
+      ".": "^11.7.6",
+      "minimatch": "^10.2.6"
+    },
+    "editorconfig": {
+      "minimatch": "^10.2.6"
+    },
+    "js-beautify": {
+      "minimatch": "^10.2.6"
     }
   },
   "allowScripts": {
