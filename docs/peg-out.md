@@ -93,3 +93,12 @@ it automatically. `PegoutOption.vue` surfaces this directly next to the derived 
 [dev.rootstock.io/guides/two-way-peg-app/pegout/deriving-electrum](https://dev.rootstock.io/guides/two-way-peg-app/pegout/deriving-electrum/)),
 which walks through reconstructing the same private key in Electrum (from the same signing
 account) so the BTC that landed at the derived address can actually be spent.
+
+### Walkthrough videos
+
+Recorded, wallet-specific walkthroughs of signing the derivation message and recovering the
+funds in Electrum afterwards (tracked via Git LFS, since these are large binary files):
+
+- [Ledger](./videos/ledger-pegout.mp4)
+- [Trezor](./videos/trezor-pegout.mp4)
+- [MetaMask](./videos/metamask-pegout.mp4)
