@@ -1,9 +1,9 @@
 # QR code payment
 
-Some payment paths in both [Peg-in](./peg-in.md) and [Peg-out](./peg-out.md) ask the user to send
-funds from an external wallet/app rather than signing in-browser — a mobile BTC wallet scanning a
+`QrView.vue` is built to handle a payment path for either flow — a mobile BTC wallet scanning a
 code to pay the peg-in address, or an RSK wallet paying a Flyover liquidity provider's address for
-a peg-out. Both are handled by the same view.
+a peg-out — from a single shared view. Only the [Peg-in](./peg-in.md) path is actually reachable
+today; see the route guard note below.
 
 ## Route
 
@@ -11,10 +11,32 @@ a peg-out. Both are handled by the same view.
 |---|---|
 | `/sendQr/:network` | `src/common/views/QrView.vue` |
 
-The `network` param is one of the `QRCodeNetworks` constants (`bitcoin` or `rootstock`,
-`src/common/store/constants.ts`). The router only allows entering this route when navigating from
-a route that had a `network` param on the way in and a `wallet` param on the way out
-(`src/common/router/index.ts`), i.e. mid-flow from peg-in/peg-out, not directly.
+The `network` param is one of the `QRCodeNetworks` constants — `bitcoin` or `ethereum` (the
+peg-out/RSK value; despite the constant's name, `QRCodeNetworks.ROOTSTOCK === 'ethereum'`,
+`src/common/store/constants.ts`).
+
+### Route guard: only reachable from peg-in today
+
+```ts
+beforeEnter: (from: RouteLocationNormalized, to: RouteLocationNormalized, next: NavigationGuardNext) => {
+  if (from.params.network && to.params.wallet) { next(); } else { next({ name: 'Home' }); }
+},
+```
+
+The parameter *names* here are misleading: Vue Router always calls a `beforeEnter` guard as
+`(to, from, next)`, but this guard's declared parameters are named `(from, to, next)`. So
+`from.params.network` actually reads the **destination** route's `network` param (always present,
+since both callers set it), and `to.params.wallet` actually reads the **previous** route's
+`wallet` param. In practice the guard only lets someone through when they navigated here *from* a
+route with a `:wallet` param — which today is only `/pegin/:wallet/create`
+(`src/pegin/components/create/PegInForm.vue` pushes `QrView` with `network: 'bitcoin'` from
+there).
+
+`PegoutForm.vue`'s `acceptAndSendQr` does push `router.push({ name: 'QrView', params: { network:
+constants.QRCodeNetworks.ROOTSTOCK } })`, but since the previous route is `/pegout` (no `:wallet`
+param), this guard currently redirects that navigation to Home instead of showing the QR — a
+pre-existing mismatch between `PegoutForm.vue` and the router guard, not something this doc can
+paper over. Fixing it is a code change outside this documentation update's scope.
 
 ## How the QR is built
 
@@ -23,9 +45,10 @@ a route that had a `network` param on the way in and a `wallet` param on the way
 - **`bitcoin`** (peg-in) — reads the selected peg-in Flyover quote from the `flyoverPegin` store
   module (`FLYOVER_PEGIN_GET_SELECTED_QUOTE`): the quote's own `qrCode` image, amount
   (`valueToTransfer`), and destination (`recipientBtcAddress`).
-- **`rootstock`** (peg-out) — reads the selected peg-out Flyover quote from `flyoverPegout`
-  (`FLYOVER_PEGOUT_GET_SELECTED_QUOTE`): the liquidity provider's `lpsAddressQrCode`, the quote
-  value, and the liquidity provider's RSK address.
+- **`ethereum`** (peg-out's `QRCodeNetworks.ROOTSTOCK`) — reads the selected peg-out Flyover quote
+  from `flyoverPegout` (`FLYOVER_PEGOUT_GET_SELECTED_QUOTE`): the liquidity provider's
+  `lpsAddressQrCode`, the quote value, and the liquidity provider's RSK address. This branch is
+  implemented but not currently reachable through the UI — see the route guard note above.
 
 See [Flyover quotes & refunds](./flyover.md) for how those quotes are obtained.
 

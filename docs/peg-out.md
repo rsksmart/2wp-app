@@ -10,7 +10,8 @@ the Home screen ("RBTC TO BTC") and lives under `src/pegout/`.
 | `/pegout` | `src/pegout/views/PegOut.vue` | `checkAcceptedTerms`, `checkRSKConnection`, `checkForMobileDevice` (`src/common/router/index.ts`) |
 
 Unlike peg-in, the wallet isn't chosen via the route — `checkRSKConnection` requires an already
-Reown-connected EVM/RSK account (`web3Session/SESSION_IS_ACCOUNT_CONNECTED`) before entering. See
+connected EVM/RSK account (`web3Session/SESSION_IS_ACCOUNT_CONNECTED`) before entering, whether
+that connection came from Reown/AppKit (software) or RLogin (hardware). See
 [Wallet connection & signing](./wallet-connection.md).
 
 ## Steps
@@ -30,9 +31,11 @@ Reown-connected EVM/RSK account (`web3Session/SESSION_IS_ACCOUNT_CONNECTED`) bef
 4. **Send** — submitting builds and sends the RBTC transaction through the connected wallet's
    provider (`ethers.providers.Web3Provider` from `web3Session`), dispatching into the
    `pegoutTx` store module (`src/pegout/store/pegoutTx/`).
-5. **Pay via QR (Flyover path)** — when the selected option is a Flyover quote that expects the
-   RSK-side payment to a liquidity provider address, the flow can route to `/sendQr/rootstock`
-   (`QrView.vue`) — see [QR code payment](./qr-code-payment.md).
+5. **Pay via QR (Flyover path, currently unreachable)** — `PegoutForm.vue` has code
+   (`acceptAndSendQr`) to route to `/sendQr/ethereum` (`QrView.vue`) for a Flyover quote that
+   expects RSK-side payment to a liquidity provider address, but the router guard on that route
+   currently redirects it back to Home — see
+   [QR code payment](./qr-code-payment.md#route-guard-only-reachable-from-peg-in-today) for why.
 6. On success the router sends the user to `SuccessTx.vue`
    (`type` = `pegout`), from where they can look up the transaction on the
    [transaction status](./transaction-status.md) page.
