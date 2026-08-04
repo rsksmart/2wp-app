@@ -67,4 +67,9 @@ To report a vulnerability, please use the [vulnerability reporting guideline](./
 
 ## Adding your own wallet for pegin
 
-To know how to add your own wallet in the pegin page, visit [how to add new wallet, step by step](./WALLET.md) for details on how to do it.
+To know how to add your own wallet in the pegin page, visit [how to add new wallet, step by step](./Wallet.md) for details on how to do it.
+
+## Documentation
+
+See [`docs/`](./docs/) for the peg-in and peg-out flows, and how wallet connection & signing,
+transaction status tracking, Flyover quotes & refunds, QR code payment, and UTXO selection work.
