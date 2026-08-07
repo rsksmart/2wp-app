@@ -12,11 +12,16 @@ import {
   getBtcAddressFromSignedMessage,
   getCookie,
   getRloginInstance,
+  ServiceError,
   setCookie,
 } from '@/common/utils';
 import { ethers, providers } from 'ethers';
 import { markRaw } from 'vue';
 import { toUtf8Bytes } from 'ethers/lib/utils';
+
+type EIP1193EventEmitter = {
+  on?: (event: string, handler: (...args: unknown[]) => void) => void;
+};
 
 export const actions: ActionTree<SessionState, RootState> = {
   [constants.SESSION_CONNECT_WEB3]: ({ commit, state, dispatch }): Promise<void> => {
@@ -67,12 +72,49 @@ export const actions: ActionTree<SessionState, RootState> = {
       .then(resolve);
   }),
   [constants.WEB3_SESSION_GET_ACCOUNT]: async ({ state, commit, dispatch }) => {
-    const { ethersProvider } = state;
+    const { ethersProvider, account: previousAccount } = state;
     if (ethersProvider) {
       const accounts = await ethersProvider.listAccounts();
-      commit(constants.SESSION_SET_ACCOUNT, accounts[0]);
+      const [currentAccount] = accounts;
+      // A derived beneficiary and any quote bound to it belong to the previous account only.
+      if (previousAccount?.toLowerCase() !== currentAccount?.toLowerCase()) {
+        await dispatch(constants.SESSION_CLEAR_IDENTITY);
+      }
+      commit(constants.SESSION_SET_ACCOUNT, currentAccount);
       dispatch(constants.WEB3_SESSION_ADD_BALANCE);
     }
+  },
+  [constants.SESSION_CLEAR_IDENTITY]: async ({ commit, dispatch }) => {
+    commit(constants.SESSION_SET_BTC_ACCOUNT, '');
+    commit(`pegInTx/${constants.PEGIN_TX_SET_RSK_ADDRESS}`, '', { root: true });
+    await Promise.all([
+      dispatch(`flyoverPegout/${constants.FLYOVER_PEGOUT_ADD_BTC_ADDRESS}`, '', { root: true }),
+      dispatch(`flyoverPegin/${constants.FLYOVER_PEGIN_ADD_ROOTSTOCK_ADDRESS}`, '', { root: true }),
+      dispatch(`flyoverPegout/${constants.FLYOVER_PEGOUT_CLEAR_QUOTES}`, undefined, { root: true }),
+      dispatch(`flyoverPegin/${constants.FLYOVER_PEGIN_CLEAR_QUOTES}`, undefined, { root: true }),
+    ]);
+  },
+  [constants.SESSION_REVALIDATE_ACCOUNT]: async ({ state, dispatch }): Promise<string> => {
+    const { ethersProvider, account } = state;
+    if (!ethersProvider || !account) {
+      throw new ServiceError(
+        'SessionService',
+        constants.SESSION_REVALIDATE_ACCOUNT,
+        'No connected Rootstock account. Please connect your wallet and start again.',
+        'SESSION_REVALIDATE_ACCOUNT called without a provider or account',
+      );
+    }
+    const [currentAccount] = await ethersProvider.listAccounts();
+    if (!currentAccount || currentAccount.toLowerCase() !== account.toLowerCase()) {
+      await dispatch(constants.SESSION_CLEAR_IDENTITY);
+      throw new ServiceError(
+        'SessionService',
+        constants.SESSION_REVALIDATE_ACCOUNT,
+        'The connected Rootstock account changed. Please reconnect and start again.',
+        `Wallet reported ${currentAccount} while ${account} was the connected account`,
+      );
+    }
+    return account;
   },
   [constants.WEB3_SESSION_ADD_BALANCE]: async ({ commit, state }) => {
     const { ethersProvider, account } = state;
@@ -92,12 +134,25 @@ export const actions: ActionTree<SessionState, RootState> = {
   },
   [constants.SESSION_SIGN_MESSAGE]:
     async ({ commit, state }, messageToBeSigned: string): Promise<void> => {
-      if (state.ethersProvider) {
-        const messageHash = ethers.utils.keccak256(toUtf8Bytes(messageToBeSigned));
-        const signature = await state.ethersProvider.send('personal_sign', [messageHash, state.account, '']);
-        const btcAddress = getBtcAddressFromSignedMessage(signature, messageHash || '');
-        commit(constants.SESSION_SET_BTC_ACCOUNT, btcAddress);
+      if (!state.ethersProvider) return;
+      // Captured before awaiting so a mid-signing account swap can be detected.
+      const signerAccount = state.account;
+      if (!signerAccount) {
+        throw new Error('No connected account to sign with');
       }
+      const messageHash = ethers.utils.keccak256(toUtf8Bytes(messageToBeSigned));
+      const signature = await state.ethersProvider.send('personal_sign', [messageHash, signerAccount, '']);
+      // The beneficiary Bitcoin address is derived from whoever signed, so the signature
+      // must be proven to come from the connected account before it is trusted.
+      const recovered = ethers.utils.verifyMessage(ethers.utils.arrayify(messageHash), signature);
+      if (recovered.toLowerCase() !== signerAccount.toLowerCase()) {
+        throw new Error('Signature does not belong to the connected account');
+      }
+      if (state.account?.toLowerCase() !== signerAccount.toLowerCase()) {
+        throw new Error('Account changed during signing');
+      }
+      const btcAddress = getBtcAddressFromSignedMessage(signature, messageHash);
+      commit(constants.SESSION_SET_BTC_ACCOUNT, btcAddress);
     },
   [constants.SESSION_ADD_BITCOIN_PRICE]: ({ commit }) => {
     const storedPrice = getCookie('BtcPrice');
@@ -159,9 +214,23 @@ export const actions: ActionTree<SessionState, RootState> = {
     }
   },
   [constants.SESSION_SETUP_EVENTS]: ({ state, dispatch }) => {
-    const { rLoginInstance } = state;
+    const { rLoginInstance, ethersProvider } = state;
     rLoginInstance?.on('accountsChanged', () => {
       dispatch(constants.WEB3_SESSION_GET_ACCOUNT);
+    });
+    // rLogin only forwards accountsChanged, and the Reown/AppKit path has no rLogin instance
+    // at all, so subscribe to the EIP-1193 provider directly. Any change of account, chain or
+    // wallet session must invalidate the identity-derived beneficiary and its quotes.
+    const walletProvider = ethersProvider?.provider as EIP1193EventEmitter | undefined;
+    if (typeof walletProvider?.on !== 'function') return;
+    walletProvider.on('accountsChanged', () => {
+      dispatch(constants.WEB3_SESSION_GET_ACCOUNT);
+    });
+    walletProvider.on('chainChanged', () => {
+      dispatch(constants.SESSION_CLEAR_IDENTITY);
+    });
+    walletProvider.on('disconnect', () => {
+      dispatch(constants.WEB3_SESSION_CLEAR_ACCOUNT);
     });
   },
   [constants.SESSION_COUNTDOWN_GRECAPTCHA_TIME]: ({ state, commit, dispatch }) => {

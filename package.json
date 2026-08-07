@@ -106,6 +106,7 @@
     "@trezor/protobuf": {
       "protobufjs": "^7.6.5"
     },
+    "@trezor/connect-web": "^9.7.3",
     "axios": "$axios",
     "@sats-connect/core": {
       "valibot": "^1.4.2"

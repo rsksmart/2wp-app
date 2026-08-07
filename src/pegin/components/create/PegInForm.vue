@@ -207,6 +207,7 @@ export default defineComponent({
     const selectedAccountBalance = useGetter<SatoshiBig>('pegInTx', constants.PEGIN_TX_GET_SELECTED_BALANCE);
     const loadingFee = useStateAttribute<boolean>('pegInTx', 'loadingFee');
     const startCountdown = useAction('web3Session', constants.SESSION_COUNTDOWN_GRECAPTCHA_TIME);
+    const revalidateAccount = useAction('web3Session', constants.SESSION_REVALIDATE_ACCOUNT);
     const countdown = useStateAttribute<number>('web3Session', 'grecaptchaCountdown');
     const recaptchanNewTokenTime = EnvironmentAccessorService.getEnvironmentVariables()
       .grecaptchaTime;
@@ -263,6 +264,15 @@ export default defineComponent({
     async function createTx() {
       pegInFormState.value.send('loading');
       const bridgeService = new BridgeService();
+      try {
+        // The recipient ends up serialized in the RSKT01 commitment (native) or bound to the
+        // quote (Flyover), so the connected account is revalidated right before it is used.
+        await revalidateAccount();
+      } catch (e) {
+        handleError(e as Error);
+        pegInFormState.value.send('fill');
+        return;
+      }
       if (selected.value === constants.peginType.POWPEG) {
         context.emit('createTx', {
           amountToTransferInSatoshi: pegInTxState.value.amountToTransfer,
@@ -310,6 +320,7 @@ export default defineComponent({
       getPeginQuotes({
         rootstockRecipientAddress: flyoverPeginState.value.rootstockRecipientAddress,
       })
+        .catch(handleError)
         .finally(() => {
           loadingQuotes.value = false;
         });
