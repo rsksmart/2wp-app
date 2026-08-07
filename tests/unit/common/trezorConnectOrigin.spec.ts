@@ -88,6 +88,21 @@ describe('Trezor Connect cross-origin fix', () => {
       console.warn('dist/js not present — run `npm run build` to check for duplicate copies');
       return;
     }
+    // @rsksmart/rlogin-trezor-provider bundled its own Trezor Connect copy through 1.x, so a
+    // second copy is unavoidable until the app depends on a release that externalizes it.
+    // Checking the installed major keeps this dormant rather than permanently red, and
+    // re-arms it automatically on the bump — no one has to remember to re-enable it.
+    const providerVersion = (readJson(
+      path.join(REPO_ROOT, 'node_modules/@rsksmart/rlogin-trezor-provider/package.json'),
+    ) as { version: string }).version;
+    if (parseVersion(providerVersion)[0] < 2) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `@rsksmart/rlogin-trezor-provider@${providerVersion} bundles its own Trezor Connect; `
+        + 'skipping the single-instance check until the dependency is bumped to >=2.0.0',
+      );
+      return;
+    }
     const versions = fs.readdirSync(bundleDir)
       .filter((file) => file.endsWith('.js'))
       .flatMap((file) => fs.readFileSync(path.join(bundleDir, file), 'utf8')

@@ -123,11 +123,13 @@ export const actions: ActionTree<SessionState, RootState> = {
       commit(constants.WEB3_SESSION_SET_BALANCE, new WeiBig(Number(balance), 'wei'));
     }
   },
-  [constants.WEB3_SESSION_CLEAR_ACCOUNT]: async ({ commit }) => {
+  [constants.WEB3_SESSION_CLEAR_ACCOUNT]: async ({ commit, dispatch }) => {
     commit(constants.SESSION_SET_ACCOUNT, undefined);
     commit(constants.SESSION_CLOSE_RLOGIN);
     commit(constants.SESSION_SET_RLOGIN, undefined);
-    commit(constants.SESSION_SET_BTC_ACCOUNT, '');
+    // Reconnecting can land on a different account, so the beneficiary, both peg-in
+    // recipients and the quotes bound to them cannot survive the disconnect either.
+    await dispatch(constants.SESSION_CLEAR_IDENTITY);
   },
   [constants.SESSION_ADD_TX_TYPE]: ({ commit }, peg: TransactionType): void => {
     commit(constants.SESSION_SET_TX_TYPE, peg);

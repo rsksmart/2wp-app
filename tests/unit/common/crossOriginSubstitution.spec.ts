@@ -244,4 +244,30 @@ describe('A substituted account clears every identity-derived value', () => {
       store.dispatch(`web3Session/${constants.SESSION_REVALIDATE_ACCOUNT}`),
     ).rejects.toThrow(/account changed/i);
   });
+
+  it('clears every identity-derived value when the wallet disconnects', async () => {
+    // Disconnecting and reconnecting can land on a different account, so nothing bound to
+    // the previous identity may survive the disconnect.
+    const store = buildStore(victim);
+
+    await store.dispatch(`web3Session/${constants.WEB3_SESSION_CLEAR_ACCOUNT}`);
+
+    const state = slicesOf(store);
+    expect(state.session.account).toBeUndefined();
+    expect(state.session.btcDerivedAddress).toBe('');
+    expect(state.flyoverPegout.btcRecipientAddress).toBe('');
+    expect(state.flyoverPegin.rootstockRecipientAddress).toBe('');
+    expect(state.pegInTx.rskAddressSelected).toBe('');
+  });
+
+  it('clears quotes bound to the previous identity on disconnect', async () => {
+    const store = buildStore(victim);
+    store.commit(`flyoverPegout/${constants.FLYOVER_PEGOUT_SET_QUOTES}`, { 1: [] });
+    store.commit(`flyoverPegin/${constants.FLYOVER_PEGIN_SET_QUOTES}`, { 1: [] });
+
+    await store.dispatch(`web3Session/${constants.WEB3_SESSION_CLEAR_ACCOUNT}`);
+
+    expect(slicesOf(store).flyoverPegout.quotes).toEqual({});
+    expect(slicesOf(store).flyoverPegin.quotes).toEqual({});
+  });
 });

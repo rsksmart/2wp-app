@@ -215,6 +215,24 @@ describe(`${constants.SESSION_CLEAR_IDENTITY} — identity and beneficiary clean
   });
 });
 
+describe(`${constants.WEB3_SESSION_CLEAR_ACCOUNT} — disconnect`, () => {
+  let commit: jest.Mock;
+  let dispatch: jest.Mock;
+
+  beforeEach(() => {
+    initEnvironment();
+    commit = jest.fn();
+    dispatch = jest.fn().mockResolvedValue(undefined);
+  });
+
+  it('clears the identity-derived state, not just the account', async () => {
+    await callAction(constants.WEB3_SESSION_CLEAR_ACCOUNT, { commit, dispatch });
+
+    expect(commit).toHaveBeenCalledWith(constants.SESSION_SET_ACCOUNT, undefined);
+    expect(dispatch).toHaveBeenCalledWith(constants.SESSION_CLEAR_IDENTITY);
+  });
+});
+
 describe(`${constants.SESSION_REVALIDATE_ACCOUNT} — recipient revalidation`, () => {
   const CONNECTED = '0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf';
   const SUBSTITUTED = '0x2B5AD5c4795c026514f8317c7a215E218DcCD6cF';
