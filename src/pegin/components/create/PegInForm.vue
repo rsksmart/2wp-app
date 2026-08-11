@@ -30,7 +30,7 @@
           <v-row no-gutters v-if="fastModeState !== 'available'">
             <pegin-option-card :option-type="peginType.FLYOVER" flyover-not-available>
               <template v-slot>
-                <h4 v-if="fastModeState === 'disabled' && countdown === recaptchanNewTokenTime">
+                <h4 v-if="fastModeState === 'disabled' && countdown === recaptchaNewTokenTime">
                   <span class="text-orange">Fast Mode</span> is unavailable at this time.
                 </h4>
                 <h4 v-else-if="fastModeState === 'disabled'">
@@ -156,7 +156,12 @@ import { AcceptedQuote } from '@rsksmart/flyover-sdk';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { useRouter } from 'vue-router';
 
-type FlyoverDisplayState = 'disabled' | 'no-liquidity' | 'no-quotes' | 'insufficient-funds' | 'available';
+type FlyoverDisplayState =
+  | 'disabled'
+  | 'no-liquidity'
+  | 'no-quotes'
+  | 'insufficient-funds'
+  | 'available';
 
 export default defineComponent({
   name: 'PegInForm',
@@ -203,7 +208,7 @@ export default defineComponent({
     const loadingFee = useStateAttribute<boolean>('pegInTx', 'loadingFee');
     const startCountdown = useAction('web3Session', constants.SESSION_COUNTDOWN_GRECAPTCHA_TIME);
     const countdown = useStateAttribute<number>('web3Session', 'grecaptchaCountdown');
-    const recaptchanNewTokenTime = EnvironmentAccessorService.getEnvironmentVariables()
+    const recaptchaNewTokenTime = EnvironmentAccessorService.getEnvironmentVariables()
       .grecaptchaTime;
     const toQr = ref(false);
     const router = useRouter();
@@ -226,7 +231,7 @@ export default defineComponent({
     const flyoverIsEnabled = computed(() => {
       if (props.isFlyoverAvailable) {
         if (sendingPegin.value) return true;
-        return countdown.value === recaptchanNewTokenTime;
+        return countdown.value === recaptchaNewTokenTime;
       }
       return false;
     });
@@ -378,7 +383,7 @@ export default defineComponent({
           && !!flyoverPeginState.value.selectedQuoteHash
           && !!flyoverPeginState.value.rootstockRecipientAddress
           && flyoverPeginState.value.rootstockRecipientAddress !== '0x'
-          && countdown.value === recaptchanNewTokenTime;
+          && countdown.value === recaptchaNewTokenTime;
       }
 
       return false;
@@ -437,7 +442,7 @@ export default defineComponent({
       sendTx,
       flyoverIsEnabled,
       countdown,
-      recaptchanNewTokenTime,
+      recaptchaNewTokenTime,
       mdiQrcode,
       toQr,
       enoughFlyoverLiquidity,
