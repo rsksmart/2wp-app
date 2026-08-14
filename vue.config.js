@@ -28,6 +28,10 @@ module.exports = defineConfig({
     resolve: {
       alias: {
         '@': path.resolve(__dirname, 'src'),
+        // Trezor Connect is a singleton: it installs a window "message" listener and issues
+        // sequential request ids starting at 1. Two copies on the page cross-resolve each
+        // other's postMessage responses, so every consumer must share this one.
+        '@trezor/connect-web': path.resolve(__dirname, 'node_modules/@trezor/connect-web'),
       },
       extensions: ['.png'],
       fallback: {
@@ -61,6 +65,11 @@ module.exports = defineConfig({
   devServer: {
     server: {
       type: 'https',
+    },
+    // Mirrors the header nginx.conf serves in production so the popup-based wallet flows
+    // are exercised under the same opener policy during development.
+    headers: {
+      'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
     },
   },
   pluginOptions: {
