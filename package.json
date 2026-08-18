@@ -26,7 +26,7 @@
     "@rsksmart/flyover-sdk": "^1.9.1",
     "@rsksmart/rlogin": "^1.6.1",
     "@rsksmart/rlogin-ledger-provider": "^1.0.5-alpha",
-    "@rsksmart/rlogin-trezor-provider": "^1.0.6",
+    "@rsksmart/rlogin-trezor-provider": "^2.0.0-beta.0",
     "@rsksmart/rsk-precompiled-abis": "^9.0.0-VETIVER",
     "@rsksmart/rsk-utils": "^2.0.5",
     "@sentry/vue": "^10.66.0",
