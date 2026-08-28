@@ -5,7 +5,7 @@ RUN npm ci
 COPY ./ .
 RUN npm run build
 
-FROM nginx@sha256:bc5eac5eafc581aeda3008b4b1f07ebba230de2f27d47767129a6a905c84f470 as production-stage
+FROM nginx@sha256:b34848eff6db786b6b1282d3a9c3fd0b5563dfb6d261df4923378b419e0d24f0 as production-stage
 RUN mkdir /app
 COPY --from=build-stage /app/dist /app
 COPY nginx.crt /etc/ssl/
