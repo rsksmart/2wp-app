@@ -61,6 +61,25 @@ To create a production build, run:
 npm run build
 ```
 
+## Sunset warning banner
+
+A warning banner can be shown at the top of every page (above the header) to announce the
+PowPeg app sunset. Its text is read from the feature flag `sunset_banner_message`, served by
+the 2wp-api `/features` endpoint (backoffice flag `SUNSET_BANNER_MESSAGE`, of type string, or the
+`features` collection).
+
+- **Expected value:** a plain-text string, e.g.
+  `The PowPeg app will be discontinued on October 31, 2026.` It is rendered as plain text (no
+  HTML); line breaks are kept and long messages wrap.
+- **Update it:** change the flag value in the backoffice (or the `features` collection). No code
+  change or redeploy is needed: the new text shows on the next page load, once the 2wp-api flag
+  cache refreshes.
+- **Hide it:** disable the flag (`false` / `disabled`), set it to an empty string, or remove it.
+  The banner is also hidden when the features cannot be fetched.
+- Keep the key free of a boolean flag prefix (e.g. not `POWPEG_...`, since `POWPEG` is a boolean
+  flag): the 2wp-api would treat it as a property of that flag and the banner would not show.
+  Likewise, do not create boolean flags named `SUNSET` or `SUNSET_BANNER`.
+
 ## Report Security Vulnerabilities
 
 To report a vulnerability, please use the [vulnerability reporting guideline](./SECURITY.md) for details on how to do it.
