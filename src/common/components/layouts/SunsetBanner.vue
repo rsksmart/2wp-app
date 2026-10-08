@@ -12,10 +12,12 @@ import * as constants from '@/common/store/constants';
 import { Feature, FeatureNames } from '@/common/types';
 import { getSunsetBannerMessage } from '@/common/utils';
 
+type FeatureGetter = (name: FeatureNames) => Feature | undefined;
+
 export default {
   name: 'SunsetBanner',
   setup() {
-    const getFeature = useGetter<(name: FeatureNames) => Feature | undefined>('web3Session', constants.SESSION_GET_FEATURE);
+    const getFeature = useGetter<FeatureGetter>('web3Session', constants.SESSION_GET_FEATURE);
     const message = computed(() => getSunsetBannerMessage(
       getFeature.value(FeatureNames.SUNSET_BANNER_MESSAGE),
     ));
