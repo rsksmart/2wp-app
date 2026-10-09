@@ -33,7 +33,7 @@ export default {
 .sunset-banner {
   white-space: pre-line;
   align-self: center;
-  width: calc(100% - 64px);
-  max-width: 1200px;
+  width: fit-content;
+  max-width: min(1200px, calc(100% - 64px));
 }
 </style>
