@@ -1,6 +1,6 @@
 <template>
   <v-alert v-if="message" variant="outlined" type="warning" prominent
-    class="sunset-banner flex-0-0 mx-8 mt-4" role="alert">
+    class="sunset-banner flex-0-0 mt-4" role="alert">
     <span class="text-break">{{ message }}</span>
   </v-alert>
 </template>
@@ -32,5 +32,8 @@ export default {
 <style scoped lang="scss">
 .sunset-banner {
   white-space: pre-line;
+  align-self: center;
+  width: calc(100% - 64px);
+  max-width: 1200px;
 }
 </style>
