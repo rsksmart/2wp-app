@@ -1,30 +1,32 @@
 name: 2WP-app deploy UI for TestNet
+run-name: Deploy ${{ github.event.release.tag_name }} to testnet
 
 on:
-  push:
-    tags:
-      - '*-rc'
+  release:
+    # `released` fires when a full release is published and when a
+    # pre-release is changed into a full release.
+    types: [released]
 
 # Declare default permissions as read only.
 permissions: read-all
 
 jobs:
   checkout-and-build:
+    if: github.event.release.prerelease == false
     runs-on: ubuntu-latest
     environment: testnet
+    concurrency:
+      group: deploy-testnet
+      cancel-in-progress: false
     permissions:
       id-token: write
       contents: read
 
     steps:
-      - name: Get tag name.
-        id: get_tag_name
-        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
-
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ steps.get_tag_name.outputs.VERSION }}
+          ref: refs/tags/${{ github.event.release.tag_name }}
 
       - name: Setup NodeJS
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
