@@ -60,7 +60,10 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
         ));
       });
       let quotesByProvider: Record<number, QuotePegIn2WP[]> = {};
-      Promise.allSettled(quotePromises)
+      const quotePromisesWithTimeout = quotePromises.map(
+        (promise) => promiseWithTimeout(promise, constants.FLYOVER_QUOTES_MAX_RESPONSE_TIME_IN_MS),
+      );
+      Promise.allSettled(quotePromisesWithTimeout)
         .then((responses) => {
           responses.forEach((response, index) => {
             if (response.status === constants.FULFILLED) {

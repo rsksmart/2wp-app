@@ -63,9 +63,8 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
         ));
       });
       let quotesByProvider: Record<number, QuotePegOut2WP[]> = {};
-      const MAX_RESPONSE_TIME_IN_MS = 30000;
       const quotePromisesWithTimeout = quotePromises.map(
-        (promise) => promiseWithTimeout(promise, MAX_RESPONSE_TIME_IN_MS),
+        (promise) => promiseWithTimeout(promise, constants.FLYOVER_QUOTES_MAX_RESPONSE_TIME_IN_MS),
       );
       Promise.allSettled(quotePromisesWithTimeout)
         .then((responses) => {

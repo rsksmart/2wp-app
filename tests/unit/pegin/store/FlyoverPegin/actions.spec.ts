@@ -103,3 +103,59 @@ describe(`${constants.FLYOVER_PEGIN_GET_QUOTES} — recipient revalidation`, () 
     expect(commit).toHaveBeenCalledWith(constants.FLYOVER_PEGIN_SET_QUOTES, { 1: [] });
   });
 });
+
+describe(`${constants.FLYOVER_PEGIN_GET_QUOTES} — provider response time`, () => {
+  const RESPONDING_PROVIDER_ID = 1;
+  const SILENT_PROVIDER_ID = 2;
+  const { setImmediate: realSetImmediate } = jest.requireActual<typeof import('timers')>('timers');
+  const flushPromises = () => new Promise<void>((resolve) => { realSetImmediate(resolve); });
+
+  beforeEach(() => {
+    initEnvironment();
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('stores the quotes of the providers that respond when another one does not', async () => {
+    const respondingQuote = { quoteHash: '0x01' };
+    let selectedProviderId = 0;
+    const dispatch = jest.fn().mockImplementation((name: string, providerId?: number) => {
+      if (name === constants.FLYOVER_PEGIN_USE_LIQUIDITY_PROVIDER) {
+        selectedProviderId = providerId as number;
+      }
+      return Promise.resolve(undefined);
+    });
+    const getPeginQuotes = jest.fn().mockImplementation(() => {
+      if (selectedProviderId === RESPONDING_PROVIDER_ID) {
+        return Promise.resolve([respondingQuote]);
+      }
+      return new Promise(() => { /* never settles */ });
+    });
+    const commit = jest.fn();
+    const state = {
+      liquidityProviders: [{ id: RESPONDING_PROVIDER_ID }, { id: SILENT_PROVIDER_ID }],
+      amountToTransfer: new SatoshiBig(0, 'satoshi'),
+      flyoverService: { getPeginQuotes, useLiquidityProvider: jest.fn() },
+    } as unknown as FlyoverPeginState;
+    let settled = false;
+
+    callAction(
+      constants.FLYOVER_PEGIN_GET_QUOTES,
+      { commit, dispatch, state },
+      { rootstockRecipientAddress: RECIPIENT },
+    ).then(() => { settled = true; });
+    await flushPromises();
+    jest.advanceTimersByTime(constants.FLYOVER_QUOTES_MAX_RESPONSE_TIME_IN_MS);
+    await flushPromises();
+
+    expect(getPeginQuotes).toHaveBeenCalledTimes(2);
+    expect(settled).toBe(true);
+    expect(commit).toHaveBeenCalledWith(
+      constants.FLYOVER_PEGIN_SET_QUOTES,
+      { [RESPONDING_PROVIDER_ID]: [respondingQuote] },
+    );
+  });
+});
