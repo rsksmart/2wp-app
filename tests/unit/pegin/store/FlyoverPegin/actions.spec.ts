@@ -2,7 +2,9 @@ import { ActionContext } from 'vuex';
 import { actions } from '@/pegin/store/FlyoverPegin/actions';
 import * as constants from '@/common/store/constants';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
-import { FlyoverPeginState, RootState, SatoshiBig } from '@/common/types';
+import {
+  FlyoverPeginState, QuotePegIn2WP, RootState, SatoshiBig,
+} from '@/common/types';
 
 type FlyoverPeginActionContext = ActionContext<FlyoverPeginState, RootState>;
 type FlyoverPeginActionHandler = (
@@ -157,5 +159,50 @@ describe(`${constants.FLYOVER_PEGIN_GET_QUOTES} — provider response time`, () 
       constants.FLYOVER_PEGIN_SET_QUOTES,
       { [RESPONDING_PROVIDER_ID]: [respondingQuote] },
     );
+  });
+});
+
+/**
+ * The form re-searches on every input change, so two searches can overlap and finish out of
+ * order. Only the most recent one may commit; an older one must not overwrite its quotes.
+ */
+describe(`${constants.FLYOVER_PEGIN_GET_QUOTES} — overlapping searches`, () => {
+  function deferred<T>() {
+    let resolve!: (value: T) => void;
+    const promise = new Promise<T>((res) => { resolve = res; });
+    return { promise, resolve };
+  }
+
+  it('does not let an older search overwrite the quotes of a newer one', async () => {
+    initEnvironment();
+    const commit = jest.fn();
+    const dispatch = jest.fn().mockResolvedValue(undefined);
+    const olderSearch = deferred<QuotePegIn2WP[]>();
+    const newerSearch = deferred<QuotePegIn2WP[]>();
+    const getPeginQuotes = jest.fn()
+      .mockReturnValueOnce(olderSearch.promise)
+      .mockReturnValueOnce(newerSearch.promise);
+    const state = {
+      liquidityProviders: [{ id: 1 }],
+      amountToTransfer: new SatoshiBig(0, 'satoshi'),
+      flyoverService: { getPeginQuotes, useLiquidityProvider: jest.fn() },
+    } as unknown as FlyoverPeginState;
+    const search = () => callAction(
+      constants.FLYOVER_PEGIN_GET_QUOTES,
+      { commit, dispatch, state },
+      { rootstockRecipientAddress: RECIPIENT },
+    );
+    const olderQuote = { quoteHash: 'older' } as unknown as QuotePegIn2WP;
+    const newerQuote = { quoteHash: 'newer' } as unknown as QuotePegIn2WP;
+
+    const older = search();
+    const newer = search();
+    newerSearch.resolve([newerQuote]);
+    await newer;
+    olderSearch.resolve([olderQuote]);
+    await older;
+
+    expect(commit).toHaveBeenCalledTimes(1);
+    expect(commit).toHaveBeenCalledWith(constants.FLYOVER_PEGIN_SET_QUOTES, { 1: [newerQuote] });
   });
 });

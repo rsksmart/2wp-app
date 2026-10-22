@@ -11,6 +11,10 @@ import { EnvironmentAccessorService } from '@/common/services/enviroment-accesso
 import { TxFeeService } from '@/pegin/services';
 import { captureError } from '@/sentry';
 
+// Searches can overlap (the form re-searches on every input change) and finish out of
+// order, so only the most recent one is allowed to commit its quotes.
+let latestQuotesRequestId = 0;
+
 export const actions: ActionTree<FlyoverPeginState, RootState> = {
   [constants.FLYOVER_PEGIN_INIT]: ({ state, dispatch }) => new Promise((resolve, reject) => {
     state.flyoverService.initialize()
@@ -51,6 +55,8 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
     // account must still be the one the wallet reports before any quote is requested.
     await dispatch(`web3Session/${constants.SESSION_REVALIDATE_ACCOUNT}`, undefined, { root: true });
     return new Promise<void>((resolve) => {
+      latestQuotesRequestId += 1;
+      const requestId = latestQuotesRequestId;
       const quotePromises: Promise<QuotePegIn2WP[]>[] = [];
       state.liquidityProviders.forEach((provider) => {
         dispatch(constants.FLYOVER_PEGIN_USE_LIQUIDITY_PROVIDER, provider.id);
@@ -73,7 +79,9 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
               };
             }
           });
-          commit(constants.FLYOVER_PEGIN_SET_QUOTES, quotesByProvider);
+          if (requestId === latestQuotesRequestId) {
+            commit(constants.FLYOVER_PEGIN_SET_QUOTES, quotesByProvider);
+          }
           resolve();
         });
     });

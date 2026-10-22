@@ -14,6 +14,10 @@ import { captureError } from '@/sentry';
 import { providers } from 'ethers';
 import { AcceptedPegoutQuote } from '@rsksmart/flyover-sdk';
 
+// Searches can overlap (the form re-searches on every input change) and finish out of
+// order, so only the most recent one is allowed to commit its quotes.
+let latestQuotesRequestId = 0;
+
 export const actions: ActionTree<FlyoverPegoutState, RootState> = {
   [constants.FLYOVER_PEGOUT_INIT]: async (
     { state, dispatch },
@@ -52,6 +56,8 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
     const bridgeService = new BridgeService();
     const tempBtcAddress = await bridgeService.getFederationAddress();
     return new Promise<void>((resolve) => {
+      latestQuotesRequestId += 1;
+      const requestId = latestQuotesRequestId;
       const quotePromises: Promise<QuotePegOut2WP[]>[] = [];
       state.liquidityProviders.forEach((provider) => {
         dispatch(constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER, provider.id);
@@ -76,7 +82,9 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
               };
             }
           });
-          commit(constants.FLYOVER_PEGOUT_SET_QUOTES, quotesByProvider);
+          if (requestId === latestQuotesRequestId) {
+            commit(constants.FLYOVER_PEGOUT_SET_QUOTES, quotesByProvider);
+          }
           resolve();
         });
     });

@@ -7,7 +7,13 @@ import {
   FlyoverPegoutState, QuotePegOut2WP, RootState, WeiBig,
 } from '@/common/types';
 
-type FlyoverPegoutActionContext = ActionContext<FlyoverPegoutState, RootState>;
+jest.mock('@/common/services/BridgeService', () => ({
+  BridgeService: jest.fn().mockImplementation(() => ({
+    getFederationAddress: jest.fn().mockResolvedValue('2N1federationAddress'),
+  })),
+}));
+
+type FlyoverPegoutActionContext =ActionContext<FlyoverPegoutState, RootState>;
 type FlyoverPegoutActionHandler = (
   context: Partial<FlyoverPegoutActionContext>,
   payload?: unknown,
@@ -88,5 +94,55 @@ describe(`${constants.FLYOVER_PEGOUT_ACCEPT_AND_SEND_QUOTE} — empty final refr
       constants.FLYOVER_PEGOUT_SET_TX_HASH,
       expect.anything(),
     );
+  });
+});
+
+/**
+ * The form re-searches on every input change, so two searches can overlap and finish out of
+ * order. Only the most recent one may commit; an older one must not overwrite its quotes.
+ */
+describe(`${constants.FLYOVER_PEGOUT_GET_QUOTES} — overlapping searches`, () => {
+  function deferred<T>() {
+    let resolve!: (value: T) => void;
+    const promise = new Promise<T>((res) => { resolve = res; });
+    return { promise, resolve };
+  }
+
+  it('does not let an older search overwrite the quotes of a newer one', async () => {
+    EnvironmentAccessorService.initializeEnvironmentVariables({
+      vueAppCoin: constants.BTC_NETWORK_TESTNET,
+    });
+    const commit = jest.fn();
+    const dispatch = jest.fn().mockResolvedValue(undefined);
+    const olderSearch = deferred<QuotePegOut2WP[]>();
+    const newerSearch = deferred<QuotePegOut2WP[]>();
+    const getPegoutQuotes = jest.fn()
+      .mockReturnValueOnce(olderSearch.promise)
+      .mockReturnValueOnce(newerSearch.promise);
+    const state = {
+      liquidityProviders: [{ id: 1 }],
+      btcRecipientAddress: 'tb1qrecipient',
+      amountToTransfer: new WeiBig(1, 'wei'),
+      flyoverService: { getPegoutQuotes, useLiquidityProvider: jest.fn() },
+    } as unknown as FlyoverPegoutState;
+    const search = () => callAction(
+      constants.FLYOVER_PEGOUT_GET_QUOTES,
+      { commit, dispatch, state },
+      '0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf',
+    );
+    const olderQuote = { quoteHash: 'older' } as unknown as QuotePegOut2WP;
+    const newerQuote = { quoteHash: 'newer' } as unknown as QuotePegOut2WP;
+
+    const older = search();
+    const newer = search();
+    // Let both actions get past their awaited federation address lookup.
+    await new Promise((resolve) => { setTimeout(resolve, 0); });
+    newerSearch.resolve([newerQuote]);
+    await newer;
+    olderSearch.resolve([olderQuote]);
+    await older;
+
+    expect(commit).toHaveBeenCalledTimes(1);
+    expect(commit).toHaveBeenCalledWith(constants.FLYOVER_PEGOUT_SET_QUOTES, { 1: [newerQuote] });
   });
 });
