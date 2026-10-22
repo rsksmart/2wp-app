@@ -2,6 +2,7 @@ import { ActionContext } from 'vuex';
 import { actions } from '@/pegout/store/FlyoverPegout/actions';
 import * as constants from '@/common/store/constants';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
+import { ServiceError } from '@/common/utils';
 import {
   FlyoverPegoutState, QuotePegOut2WP, RootState, WeiBig,
 } from '@/common/types';
@@ -70,14 +71,18 @@ describe(`${constants.FLYOVER_PEGOUT_ACCEPT_AND_SEND_QUOTE} — empty final refr
   it('rejects without accepting or depositing when the selected provider returns no quotes', async () => {
     const getters = { [constants.FLYOVER_PEGOUT_GET_PROVIDER_ID]: () => PROVIDER_ID };
 
-    await expect(callAction(
+    const error = await callAction(
       constants.FLYOVER_PEGOUT_ACCEPT_AND_SEND_QUOTE,
       {
         state, getters, commit, dispatch,
       } as unknown as Partial<FlyoverPegoutActionContext>,
       QUOTE_HASH,
-    )).rejects.toThrow('No quotes available from the selected provider');
+    ).catch((e: unknown) => e);
 
+    // The form only opens its error dialog for a ServiceError.
+    expect(error).toBeInstanceOf(ServiceError);
+    expect((error as ServiceError).userMessage)
+      .toBe('No quotes are available right now. Refresh the options and try again.');
     expect(acceptAndSendPegoutQuote).not.toHaveBeenCalled();
     expect(commit).not.toHaveBeenCalledWith(
       constants.FLYOVER_PEGOUT_SET_TX_HASH,

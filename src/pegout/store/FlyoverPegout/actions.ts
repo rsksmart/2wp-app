@@ -6,7 +6,7 @@ import { ActionTree } from 'vuex';
 import * as constants from '@/common/store/constants';
 import { BridgeService } from '@/common/services/BridgeService';
 import {
-  getClearObjectDifference, promiseWithTimeout,
+  getClearObjectDifference, promiseWithTimeout, ServiceError,
 } from '@/common/utils';
 import { FlyoverService } from '@/common/services';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
@@ -135,7 +135,12 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
     dispatch(constants.FLYOVER_PEGOUT_GET_QUOTES, currentQuote?.quote.rskRefundAddress ?? '')
       .then(() => {
         if (!state.quotes[providerId]?.length) {
-          throw new Error('No quotes available from the selected provider');
+          throw new ServiceError(
+            'FlyoverPegout',
+            constants.FLYOVER_PEGOUT_GET_FINAL_QUOTE,
+            'No quotes are available right now. Refresh the options and try again.',
+            'No quotes available from the selected provider',
+          );
         }
         const reducedCurrentQuote = {
           callFee: currentQuote?.quote.callFee,
