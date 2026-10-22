@@ -134,6 +134,9 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
     }
     dispatch(constants.FLYOVER_PEGOUT_GET_QUOTES, currentQuote?.quote.rskRefundAddress ?? '')
       .then(() => {
+        if (!state.quotes[providerId]?.length) {
+          throw new Error('No quotes available from the selected provider');
+        }
         const reducedCurrentQuote = {
           callFee: currentQuote?.quote.callFee,
           gasFee: currentQuote?.quote.gasFee,
