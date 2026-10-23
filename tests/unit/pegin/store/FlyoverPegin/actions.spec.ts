@@ -205,4 +205,42 @@ describe(`${constants.FLYOVER_PEGIN_GET_QUOTES} — overlapping searches`, () =>
     expect(commit).toHaveBeenCalledTimes(1);
     expect(commit).toHaveBeenCalledWith(constants.FLYOVER_PEGIN_SET_QUOTES, { 1: [newerQuote] });
   });
+
+  it('orders searches by invocation, not by when the account revalidation finishes', async () => {
+    initEnvironment();
+    const commit = jest.fn();
+    const olderRevalidation = deferred<void>();
+    const newerRevalidation = deferred<void>();
+    const revalidations = [olderRevalidation, newerRevalidation];
+    const dispatch = jest.fn().mockImplementation((name: string) => (
+      name === `web3Session/${constants.SESSION_REVALIDATE_ACCOUNT}`
+        ? revalidations.shift()?.promise
+        : Promise.resolve(undefined)
+    ));
+    const olderQuote = { quoteHash: 'older' } as unknown as QuotePegIn2WP;
+    const newerQuote = { quoteHash: 'newer' } as unknown as QuotePegIn2WP;
+    const getPeginQuotes = jest.fn()
+      .mockResolvedValueOnce([newerQuote])
+      .mockResolvedValueOnce([olderQuote]);
+    const state = {
+      liquidityProviders: [{ id: 1 }],
+      amountToTransfer: new SatoshiBig(0, 'satoshi'),
+      flyoverService: { getPeginQuotes, useLiquidityProvider: jest.fn() },
+    } as unknown as FlyoverPeginState;
+    const search = () => callAction(
+      constants.FLYOVER_PEGIN_GET_QUOTES,
+      { commit, dispatch, state },
+      { rootstockRecipientAddress: RECIPIENT },
+    );
+
+    const older = search();
+    const newer = search();
+    newerRevalidation.resolve();
+    await newer;
+    olderRevalidation.resolve();
+    await older;
+
+    expect(commit).toHaveBeenCalledTimes(1);
+    expect(commit).toHaveBeenCalledWith(constants.FLYOVER_PEGIN_SET_QUOTES, { 1: [newerQuote] });
+  });
 });

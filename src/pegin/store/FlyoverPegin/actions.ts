@@ -51,12 +51,12 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
     { state, commit, dispatch },
     { rootstockRecipientAddress },
   ) => {
+    latestQuotesRequestId += 1;
+    const requestId = latestQuotesRequestId;
     // The quote binds rskRefundAddress and callEoaOrContractAddress, so the connected
     // account must still be the one the wallet reports before any quote is requested.
     await dispatch(`web3Session/${constants.SESSION_REVALIDATE_ACCOUNT}`, undefined, { root: true });
     return new Promise<void>((resolve) => {
-      latestQuotesRequestId += 1;
-      const requestId = latestQuotesRequestId;
       const quotePromises: Promise<QuotePegIn2WP[]>[] = [];
       state.liquidityProviders.forEach((provider) => {
         dispatch(constants.FLYOVER_PEGIN_USE_LIQUIDITY_PROVIDER, provider.id);

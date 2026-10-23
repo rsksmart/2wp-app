@@ -53,11 +53,11 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
     { state, commit, dispatch },
     rskRefundAddress: string,
   ) => {
+    latestQuotesRequestId += 1;
+    const requestId = latestQuotesRequestId;
     const bridgeService = new BridgeService();
     const tempBtcAddress = await bridgeService.getFederationAddress();
-    return new Promise<void>((resolve) => {
-      latestQuotesRequestId += 1;
-      const requestId = latestQuotesRequestId;
+    return new Promise<boolean>((resolve) => {
       const quotePromises: Promise<QuotePegOut2WP[]>[] = [];
       state.liquidityProviders.forEach((provider) => {
         dispatch(constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER, provider.id);
@@ -82,10 +82,11 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
               };
             }
           });
-          if (requestId === latestQuotesRequestId) {
+          const isLatest = requestId === latestQuotesRequestId;
+          if (isLatest) {
             commit(constants.FLYOVER_PEGOUT_SET_QUOTES, quotesByProvider);
           }
-          resolve();
+          resolve(isLatest);
         });
     });
   },
@@ -141,7 +142,15 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
       reject(new Error('Quote not found'));
     }
     dispatch(constants.FLYOVER_PEGOUT_GET_QUOTES, currentQuote?.quote.rskRefundAddress ?? '')
-      .then(() => {
+      .then((isLatestSearch: boolean) => {
+        if (!isLatestSearch) {
+          throw new ServiceError(
+            'FlyoverPegout',
+            constants.FLYOVER_PEGOUT_GET_FINAL_QUOTE,
+            'The options changed before sending. Refresh them and try again.',
+            'Final quote refresh was superseded by a newer search',
+          );
+        }
         if (!state.quotes[providerId]?.length) {
           throw new ServiceError(
             'FlyoverPegout',
