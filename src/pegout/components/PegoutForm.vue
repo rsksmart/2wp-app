@@ -244,8 +244,6 @@ export default defineComponent({
     const setSelectedQuoteHash = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE_HASH);
     const selectedQuoteHash = useStateAttribute<string>('flyoverPegout', 'selectedQuoteHash');
     const selectedOption = ref<string>('');
-    const quoteDiffPercentage = EnvironmentAccessorService.getEnvironmentVariables()
-      .flyoverPegoutDiffPercentage;
     const clearStore = useAction('pegOutTx', constants.PEGOUT_TX_CLEAR);
     const clearSessionState = useAction('web3Session', constants.WEB3_SESSION_CLEAR_ACCOUNT);
     const getAvailableLiquidity = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_GET_AVAILABLE_LIQUIDITY);
@@ -286,7 +284,7 @@ export default defineComponent({
 
     const actualDiffPercentage = computed(() => quoteDifference.value.percentage);
 
-    const showQuoteDiff = computed(() => actualDiffPercentage.value > quoteDiffPercentage
+    const showQuoteDiff = computed(() => quoteDifference.value.requiresApproval
       && diffShown.value);
 
     const validAmountToReceive = computed((): boolean => estimatedBtcToReceive.value.gt(0));

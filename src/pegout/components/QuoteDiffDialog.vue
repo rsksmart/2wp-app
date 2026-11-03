@@ -25,6 +25,13 @@
                 </span>
                 {{ environmentContext.getRbtcTicker() }}.
               </p>
+              <p class="text-center my-2">
+                Your wallet will ask you to send
+                <span class="text-purple font-weight-bold">
+                  {{ currentQuoteTotal.toRBTCTrimmedString() }}
+                </span>
+                {{ environmentContext.getRbtcTicker() }} in total.
+              </p>
               <p class="text-center text-body-2 my-4">
                 Please note that these values are estimates based on the network.
               </p>
@@ -75,6 +82,8 @@ export default defineComponent({
       .previousQuote)));
     const currentQuoteFees = computed(() => (getTotalFees(quoteDifference.value
       .currentQuote)));
+    const currentQuoteTotal = computed(() => (quoteDifference.value.currentQuote.value
+      .plus(currentQuoteFees.value)));
     const increasedOrDecreasedString = computed(() => (previousQuoteFees.value
       .lt(currentQuoteFees.value) ? 'increased' : 'decreased'));
 
@@ -96,6 +105,7 @@ export default defineComponent({
       quoteDifference,
       previousQuoteFees,
       currentQuoteFees,
+      currentQuoteTotal,
       increasedOrDecreasedString,
       environmentContext,
     };

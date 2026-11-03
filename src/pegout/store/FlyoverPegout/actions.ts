@@ -6,7 +6,8 @@ import { ActionTree } from 'vuex';
 import * as constants from '@/common/store/constants';
 import { BridgeService } from '@/common/services/BridgeService';
 import {
-  getClearObjectDifference, promiseWithTimeout,
+  computeFeeDifferencePercentage, getClearObjectDifference, promiseWithTimeout,
+  requiresFeeApproval,
 } from '@/common/utils';
 import { FlyoverService } from '@/common/services';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
@@ -96,8 +97,7 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
       dispatch(constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER, providerId)
         .then(() => dispatch(constants.FLYOVER_PEGOUT_GET_FINAL_QUOTE, { providerId, quoteHash }))
         .then(() => {
-          if (state.difference.percentage > EnvironmentAccessorService.getEnvironmentVariables()
-            .flyoverPegoutDiffPercentage) {
+          if (state.difference.requiresApproval) {
             return Promise.reject(new Error('Quote differences found: cannot accept quote'));
           }
           return state.flyoverService.acceptAndSendPegoutQuote(state.selectedQuoteHash);
@@ -132,56 +132,35 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
       .find((quote) => quote.quoteHash === quoteHash);
     if (!currentQuote) {
       reject(new Error('Quote not found'));
+      return;
     }
-    dispatch(constants.FLYOVER_PEGOUT_GET_QUOTES, currentQuote?.quote.rskRefundAddress ?? '')
+    commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE, getClearObjectDifference());
+    dispatch(constants.FLYOVER_PEGOUT_GET_QUOTES, currentQuote.quote.rskRefundAddress)
       .then(() => {
-        const reducedCurrentQuote = {
-          callFee: currentQuote?.quote.callFee,
-          gasFee: currentQuote?.quote.gasFee,
-          value: currentQuote?.quote.value,
-          quoteHash: currentQuote?.quoteHash,
+        const reducedCurrentQuote: ReducedQuote = {
+          callFee: currentQuote.quote.callFee,
+          gasFee: currentQuote.quote.gasFee,
+          value: currentQuote.quote.value,
+          quoteHash: currentQuote.quoteHash,
         };
+        const tolerancePercentage = EnvironmentAccessorService.getEnvironmentVariables()
+          .flyoverPegoutDiffPercentage;
         state.quotes[providerId].forEach((quote2wp) => {
-          const reducedNewQuote = {
+          const reducedNewQuote: ReducedQuote = {
             callFee: quote2wp.quote.callFee,
             gasFee: quote2wp.quote.gasFee,
             value: quote2wp.quote.value,
             quoteHash: quote2wp.quoteHash,
           };
-          const zeroWei = new WeiBig(0, 'wei');
-          const currentQuoteTotal = (reducedCurrentQuote.callFee ?? zeroWei)
-            .plus(reducedCurrentQuote.gasFee ?? zeroWei)
-            .plus(reducedCurrentQuote.value ?? zeroWei);
-          const newQuoteTotal = (reducedNewQuote.callFee ?? zeroWei)
-            .plus(reducedNewQuote.gasFee ?? zeroWei)
-            .plus(reducedNewQuote.value ?? zeroWei);
-          const largest = newQuoteTotal
-            .gt(currentQuoteTotal) ? newQuoteTotal : currentQuoteTotal;
-          const minor = newQuoteTotal
-            .gt(currentQuoteTotal) ? currentQuoteTotal : newQuoteTotal;
-          const percentageDifference = ((largest.safeMinus(minor)).mul('100')).div(largest.toRBTCString());
-          if (Number(percentageDifference.toRBTCString()) <= EnvironmentAccessorService
-            .getEnvironmentVariables().flyoverPegoutDiffPercentage) {
-            commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, quote2wp.quoteHash);
+          if (requiresFeeApproval(reducedCurrentQuote, reducedNewQuote, tolerancePercentage)) {
+            commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE, {
+              percentage: computeFeeDifferencePercentage(reducedCurrentQuote, reducedNewQuote),
+              requiresApproval: true,
+              previousQuote: reducedCurrentQuote,
+              currentQuote: reducedNewQuote,
+            });
           } else {
-            commit(
-              constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE,
-              {
-                percentage: Number(percentageDifference.toRBTCString()),
-                previousQuote: {
-                  gasFee: reducedCurrentQuote.gasFee,
-                  callFee: reducedCurrentQuote.callFee,
-                  value: reducedCurrentQuote.value,
-                  quoteHash: reducedCurrentQuote.quoteHash,
-                } as ReducedQuote,
-                currentQuote: {
-                  gasFee: reducedNewQuote.gasFee,
-                  callFee: reducedNewQuote.callFee,
-                  value: reducedNewQuote.value,
-                  quoteHash: reducedNewQuote.quoteHash,
-                } as ReducedQuote,
-              },
-            );
+            commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, quote2wp.quoteHash);
           }
         });
         resolve();
@@ -235,8 +214,7 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
     dispatch(constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER, providerId)
       .then(() => dispatch(constants.FLYOVER_PEGOUT_GET_FINAL_QUOTE, { providerId, quoteHash }))
       .then(() => {
-        if (state.difference.percentage > EnvironmentAccessorService.getEnvironmentVariables()
-          .flyoverPegoutDiffPercentage) {
+        if (state.difference.requiresApproval) {
           return Promise.reject(new Error('Quote differences found: cannot accept quote'));
         }
         return state.flyoverService.acceptPegoutQuote(state.selectedQuoteHash);

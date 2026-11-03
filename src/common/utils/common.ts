@@ -117,9 +117,35 @@ export const getClearReducedQuote = (): ReducedQuote => ({
 
 export const getClearObjectDifference = (): ObjectDifference => ({
   percentage: 0,
+  requiresApproval: false,
   previousQuote: getClearReducedQuote(),
   currentQuote: getClearReducedQuote(),
 });
+
+const sumCallAndGasFees = (quote: ReducedQuote): WeiBig => quote.callFee.plus(quote.gasFee);
+
+export const computeFeeDifferencePercentage = (
+  approvedQuote: ReducedQuote,
+  finalQuote: ReducedQuote,
+): number => {
+  const approvedFees = sumCallAndGasFees(approvedQuote);
+  const finalFees = sumCallAndGasFees(finalQuote);
+  const largest = WeiBig.max(approvedFees, finalFees);
+  const smallest = WeiBig.min(approvedFees, finalFees);
+  return largest.gt(0)
+    ? Number(largest.safeMinus(smallest).mul('100').div(largest.toRBTCString())
+      .toRBTCString())
+    : 0;
+};
+
+// The final quote may replace the quote the user picked only if its fees are not higher and
+// moved within the tolerance. Otherwise the user has to approve the new fees first.
+export const requiresFeeApproval = (
+  approvedQuote: ReducedQuote,
+  finalQuote: ReducedQuote,
+  tolerancePercentage: number,
+): boolean => sumCallAndGasFees(finalQuote).gt(sumCallAndGasFees(approvedQuote))
+  || computeFeeDifferencePercentage(approvedQuote, finalQuote) > tolerancePercentage;
 
 export const getClearFlyoverPegoutState = (): FlyoverPegoutState => ({
   amountToTransfer: new WeiBig(0, 'wei'),

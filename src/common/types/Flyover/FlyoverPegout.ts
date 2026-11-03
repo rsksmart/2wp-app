@@ -11,6 +11,7 @@ export interface ReducedQuote {
 }
 export interface ObjectDifference {
     percentage: number;
+    requiresApproval: boolean;
     previousQuote: ReducedQuote;
     currentQuote: ReducedQuote;
 }
