@@ -108,7 +108,7 @@
     },
     "@trezor/connect-web": "^9.7.3",
     "@stellar/stellar-sdk": {
-      "toml": "^4.2.0"
+      "toml": "^5.0.1"
     },
     "axios": "$axios",
     "@sats-connect/core": {
