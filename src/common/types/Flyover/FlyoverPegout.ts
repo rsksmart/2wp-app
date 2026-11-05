@@ -9,15 +9,15 @@ export interface ReducedQuote {
     value: WeiBig;
     quoteHash: string;
 }
-export interface ObjectDifference {
+export interface QuoteFeeDifference {
     percentage: number;
     requiresApproval: boolean;
-    previousQuote: ReducedQuote;
-    currentQuote: ReducedQuote;
+    approvedQuote: ReducedQuote;
+    finalQuote: ReducedQuote;
 }
 
 export interface FlyoverPegoutState {
-    difference: ObjectDifference;
+    difference: QuoteFeeDifference;
     amountToTransfer: WeiBig;
     validAmount: boolean;
     btcRecipientAddress: string;

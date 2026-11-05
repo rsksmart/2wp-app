@@ -16,19 +16,19 @@
               <p class="text-center">
                 Fees have {{ increasedOrDecreasedString }} from
                 <span class="text-purple">
-                  {{ previousQuoteFees.toRBTCTrimmedString() }}
+                  {{ approvedQuoteFees.toRBTCTrimmedString() }}
                 </span> to
               </p>
               <p class="text-center">
                 <span class="text-purple">
-                  {{ currentQuoteFees.toRBTCTrimmedString() }}
+                  {{ finalQuoteFees.toRBTCTrimmedString() }}
                 </span>
                 {{ environmentContext.getRbtcTicker() }}.
               </p>
               <p class="text-center my-2">
                 Your wallet will ask you to send
                 <span class="text-purple font-weight-bold">
-                  {{ currentQuoteTotal.toRBTCTrimmedString() }}
+                  {{ finalQuoteTotal.toRBTCTrimmedString() }}
                 </span>
                 {{ environmentContext.getRbtcTicker() }} in total.
               </p>
@@ -59,7 +59,7 @@
 import { computed, defineComponent, toRef } from 'vue';
 import { mdiAlertOutline } from '@mdi/js';
 import { useStateAttribute } from '@/common/store/helper';
-import { ObjectDifference, ReducedQuote } from '@/common/types';
+import { QuoteFeeDifference, ReducedQuote } from '@/common/types';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 
 export default defineComponent({
@@ -72,20 +72,20 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const showWarningMessage = toRef(props, 'showDialog');
-    const quoteDifference = useStateAttribute<ObjectDifference>('flyoverPegout', 'difference');
+    const quoteDifference = useStateAttribute<QuoteFeeDifference>('flyoverPegout', 'difference');
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
     const getTotalFees = (quoteDiff: ReducedQuote) => (quoteDiff.gasFee
       .plus(quoteDiff.callFee));
 
-    const previousQuoteFees = computed(() => (getTotalFees(quoteDifference.value
-      .previousQuote)));
-    const currentQuoteFees = computed(() => (getTotalFees(quoteDifference.value
-      .currentQuote)));
-    const currentQuoteTotal = computed(() => (quoteDifference.value.currentQuote.value
-      .plus(currentQuoteFees.value)));
-    const increasedOrDecreasedString = computed(() => (previousQuoteFees.value
-      .lt(currentQuoteFees.value) ? 'increased' : 'decreased'));
+    const approvedQuoteFees = computed(() => (getTotalFees(quoteDifference.value
+      .approvedQuote)));
+    const finalQuoteFees = computed(() => (getTotalFees(quoteDifference.value
+      .finalQuote)));
+    const finalQuoteTotal = computed(() => (quoteDifference.value.finalQuote.value
+      .plus(finalQuoteFees.value)));
+    const increasedOrDecreasedString = computed(() => (approvedQuoteFees.value
+      .lt(finalQuoteFees.value) ? 'increased' : 'decreased'));
 
     const send = () => {
       showWarningMessage.value = false;
@@ -103,9 +103,9 @@ export default defineComponent({
       showWarningMessage,
       mdiAlertOutline,
       quoteDifference,
-      previousQuoteFees,
-      currentQuoteFees,
-      currentQuoteTotal,
+      approvedQuoteFees,
+      finalQuoteFees,
+      finalQuoteTotal,
       increasedOrDecreasedString,
       environmentContext,
     };

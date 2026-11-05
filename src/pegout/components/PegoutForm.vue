@@ -175,7 +175,7 @@ import {
   mdiQrcode,
 } from '@mdi/js';
 import {
-  FlyoverPegoutState, LiquidityProvider2WP, ObjectDifference,
+  FlyoverPegoutState, LiquidityProvider2WP, QuoteFeeDifference,
   PegOutTxState, QuotePegOut2WP,
   SatoshiBig, TxStatusType, WeiBig,
 } from '@/common/types';
@@ -234,7 +234,7 @@ export default defineComponent({
     const getPegoutQuotes = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_GET_QUOTES);
     const ethersProvider = useStateAttribute<providers.Web3Provider>('web3Session', 'ethersProvider');
     const quotes = useStateAttribute<Record<number, QuotePegOut2WP[]>>('flyoverPegout', 'quotes');
-    const quoteDifference = useStateAttribute<ObjectDifference>('flyoverPegout', 'difference');
+    const quoteDifference = useStateAttribute<QuoteFeeDifference>('flyoverPegout', 'difference');
     const selectedQuote = useGetter<QuotePegOut2WP>('flyoverPegout', constants.FLYOVER_PEGOUT_GET_SELECTED_QUOTE);
     const getProviderId = useGetter<(quoteHash: string) => number>('flyoverPegout', constants.FLYOVER_PEGOUT_GET_PROVIDER_ID);
     const estimatedBtcToReceive = useGetter<SatoshiBig>('pegOutTx', constants.PEGOUT_TX_GET_ESTIMATED_BTC_TO_RECEIVE);

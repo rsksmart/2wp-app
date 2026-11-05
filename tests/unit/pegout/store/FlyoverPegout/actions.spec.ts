@@ -6,7 +6,7 @@ import { EnvironmentAccessorService } from '@/common/services/enviroment-accesso
 import {
   FlyoverPegoutState, QuotePegOut2WP, RootState, WeiBig,
 } from '@/common/types';
-import { getClearObjectDifference } from '@/common/utils';
+import { getClearQuoteFeeDifference } from '@/common/utils';
 
 type FlyoverPegoutActionContext = ActionContext<FlyoverPegoutState, RootState>;
 type FlyoverPegoutActionHandler = (
@@ -66,7 +66,7 @@ describe('Flyover peg-out re-quote on Send', () => {
     state = {
       quotes: { [PROVIDER_ID]: [approvedQuote] },
       selectedQuoteHash: APPROVED_HASH,
-      difference: getClearObjectDifference(),
+      difference: getClearQuoteFeeDifference(),
       flyoverService: { acceptAndSendPegoutQuote, acceptPegoutQuote },
     } as unknown as FlyoverPegoutState;
     commit = jest.fn((type: string, payload?: unknown) => {
@@ -117,13 +117,15 @@ describe('Flyover peg-out re-quote on Send', () => {
       expect(state.selectedQuoteHash).toBe(APPROVED_HASH);
       expect(state.difference.requiresApproval).toBe(true);
       expect(state.difference.percentage).toBe(97);
-      expect(state.difference.previousQuote.quoteHash).toBe(APPROVED_HASH);
-      expect(state.difference.currentQuote.quoteHash).toBe(FINAL_QUOTE_HASH);
+      expect(state.difference.approvedQuote.quoteHash).toBe(APPROVED_HASH);
+      expect(state.difference.finalQuote.quoteHash).toBe(FINAL_QUOTE_HASH);
     });
 
     it('drops a difference left by an earlier Send before comparing again', async () => {
       setUp(sameFeesFinalQuote);
-      state.difference = { ...getClearObjectDifference(), percentage: 97, requiresApproval: true };
+      state.difference = {
+        ...getClearQuoteFeeDifference(), percentage: 97, requiresApproval: true,
+      };
 
       await callAction(
         constants.FLYOVER_PEGOUT_GET_FINAL_QUOTE,

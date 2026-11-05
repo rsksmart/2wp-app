@@ -6,7 +6,7 @@ import { ActionTree } from 'vuex';
 import * as constants from '@/common/store/constants';
 import { BridgeService } from '@/common/services/BridgeService';
 import {
-  computeFeeDifferencePercentage, getClearObjectDifference, promiseWithTimeout,
+  computeFeeDifferencePercentage, getClearQuoteFeeDifference, promiseWithTimeout,
   requiresFeeApproval,
 } from '@/common/utils';
 import { FlyoverService } from '@/common/services';
@@ -111,7 +111,7 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
     }),
   [constants.FLYOVER_PEGOUT_ACCEPT_AND_SEND_QUOTE_WITH_CHANGED_CONDITIONS]:
     ({ state, commit }) => new Promise<void>((resolve, reject) => {
-      commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, state.difference.currentQuote.quoteHash);
+      commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, state.difference.finalQuote.quoteHash);
       state.flyoverService.acceptAndSendPegoutQuote(state.selectedQuoteHash)
         .then(({ txHash, signature }) => {
           commit(constants.FLYOVER_PEGOUT_SET_TX_HASH, txHash);
@@ -128,36 +128,36 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
     { state, commit, dispatch },
     { providerId, quoteHash },
   ) => new Promise<void>((resolve, reject) => {
-    const currentQuote = state.quotes[providerId]
+    const approvedQuote = state.quotes[providerId]
       .find((quote) => quote.quoteHash === quoteHash);
-    if (!currentQuote) {
+    if (!approvedQuote) {
       reject(new Error('Quote not found'));
       return;
     }
-    commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE, getClearObjectDifference());
-    dispatch(constants.FLYOVER_PEGOUT_GET_QUOTES, currentQuote.quote.rskRefundAddress)
+    commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE, getClearQuoteFeeDifference());
+    dispatch(constants.FLYOVER_PEGOUT_GET_QUOTES, approvedQuote.quote.rskRefundAddress)
       .then(() => {
-        const reducedCurrentQuote: ReducedQuote = {
-          callFee: currentQuote.quote.callFee,
-          gasFee: currentQuote.quote.gasFee,
-          value: currentQuote.quote.value,
-          quoteHash: currentQuote.quoteHash,
+        const reducedApprovedQuote: ReducedQuote = {
+          callFee: approvedQuote.quote.callFee,
+          gasFee: approvedQuote.quote.gasFee,
+          value: approvedQuote.quote.value,
+          quoteHash: approvedQuote.quoteHash,
         };
         const tolerancePercentage = EnvironmentAccessorService.getEnvironmentVariables()
           .flyoverPegoutDiffPercentage;
         state.quotes[providerId].forEach((quote2wp) => {
-          const reducedNewQuote: ReducedQuote = {
+          const reducedFinalQuote: ReducedQuote = {
             callFee: quote2wp.quote.callFee,
             gasFee: quote2wp.quote.gasFee,
             value: quote2wp.quote.value,
             quoteHash: quote2wp.quoteHash,
           };
-          if (requiresFeeApproval(reducedCurrentQuote, reducedNewQuote, tolerancePercentage)) {
+          if (requiresFeeApproval(reducedApprovedQuote, reducedFinalQuote, tolerancePercentage)) {
             commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE, {
-              percentage: computeFeeDifferencePercentage(reducedCurrentQuote, reducedNewQuote),
+              percentage: computeFeeDifferencePercentage(reducedApprovedQuote, reducedFinalQuote),
               requiresApproval: true,
-              previousQuote: reducedCurrentQuote,
-              currentQuote: reducedNewQuote,
+              approvedQuote: reducedApprovedQuote,
+              finalQuote: reducedFinalQuote,
             });
           } else {
             commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, quote2wp.quoteHash);
@@ -174,7 +174,7 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
     commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, quoteHash);
   },
   [constants.FLYOVER_PEGOUT_CLEAR_QUOTE_DIFFERENCES]: ({ commit }) => {
-    commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE, getClearObjectDifference());
+    commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE, getClearQuoteFeeDifference());
   },
   [constants.FLYOVER_PEGOUT_GET_AVAILABLE_LIQUIDITY]:
   ({ state, dispatch, commit }) => new Promise((resolve, reject) => {

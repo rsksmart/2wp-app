@@ -3,7 +3,7 @@ import SatoshiBig from '@/common/types/SatoshiBig';
 import { BITCOIN_AVERAGE_FEE_LEVEL } from '@/common/store/constants';
 import {
   FlyoverPeginState,
-  FlyoverPegoutState, ObjectDifference, PegOutTxState,
+  FlyoverPegoutState, QuoteFeeDifference, PegOutTxState,
   ReducedQuote,
   SessionState, WeiBig,
 } from '@/common/types';
@@ -115,11 +115,11 @@ export const getClearReducedQuote = (): ReducedQuote => ({
   quoteHash: '',
 });
 
-export const getClearObjectDifference = (): ObjectDifference => ({
+export const getClearQuoteFeeDifference = (): QuoteFeeDifference => ({
   percentage: 0,
   requiresApproval: false,
-  previousQuote: getClearReducedQuote(),
-  currentQuote: getClearReducedQuote(),
+  approvedQuote: getClearReducedQuote(),
+  finalQuote: getClearReducedQuote(),
 });
 
 const sumCallAndGasFees = (quote: ReducedQuote): WeiBig => quote.callFee.plus(quote.gasFee);
@@ -156,7 +156,7 @@ export const getClearFlyoverPegoutState = (): FlyoverPegoutState => ({
   quotes: {},
   flyoverService: markRaw(new FlyoverService()),
   selectedQuoteHash: '',
-  difference: getClearObjectDifference(),
+  difference: getClearQuoteFeeDifference(),
   acceptedQuoteSignature: '',
 });
 
