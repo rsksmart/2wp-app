@@ -7,7 +7,7 @@ import * as constants from '@/common/store/constants';
 import { BridgeService } from '@/common/services/BridgeService';
 import {
   computeFeeDifferencePercentage, getClearQuoteFeeDifference, promiseWithTimeout,
-  requiresFeeApproval,
+  requiresFeeApproval, ServiceError,
 } from '@/common/utils';
 import { FlyoverService } from '@/common/services';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
@@ -137,6 +137,19 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
     commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE, getClearQuoteFeeDifference());
     dispatch(constants.FLYOVER_PEGOUT_GET_QUOTES, approvedQuote.quote.rskRefundAddress)
       .then(() => {
+        // The SDK already rejects a quote for another amount; this keeps the app from relying
+        // on it. The amount is the user's own input, so there is nothing to approve.
+        const amountChanged = state.quotes[providerId]
+          .some((quote2wp) => !quote2wp.quote.value.eq(approvedQuote.quote.value));
+        if (amountChanged) {
+          reject(new ServiceError(
+            'FlyoverPegout',
+            constants.FLYOVER_PEGOUT_GET_FINAL_QUOTE,
+            'The new option is for a different amount. Refresh the options and try again.',
+            'Final quote value differs from the approved quote',
+          ));
+          return;
+        }
         const reducedApprovedQuote: ReducedQuote = {
           callFee: approvedQuote.quote.callFee,
           gasFee: approvedQuote.quote.gasFee,

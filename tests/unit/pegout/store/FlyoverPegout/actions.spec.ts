@@ -6,7 +6,7 @@ import { EnvironmentAccessorService } from '@/common/services/enviroment-accesso
 import {
   FlyoverPegoutState, QuotePegOut2WP, RootState, WeiBig,
 } from '@/common/types';
-import { getClearQuoteFeeDifference } from '@/common/utils';
+import { getClearQuoteFeeDifference, ServiceError } from '@/common/utils';
 
 type FlyoverPegoutActionContext = ActionContext<FlyoverPegoutState, RootState>;
 type FlyoverPegoutActionHandler = (
@@ -29,12 +29,17 @@ const APPROVED_HASH = 'approved-quote-hash';
 const FINAL_QUOTE_HASH = 'final-quote-hash';
 const RSK_REFUND_ADDRESS = '0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf';
 
-function quote2wp(quoteHash: string, callFee: string, gasFee: string): QuotePegOut2WP {
+function quote2wp(
+  quoteHash: string,
+  callFee: string,
+  gasFee: string,
+  value = '50000000000000000',
+): QuotePegOut2WP {
   return {
     quote: {
       callFee: new WeiBig(callFee, 'wei'),
       gasFee: new WeiBig(gasFee, 'wei'),
-      value: new WeiBig('50000000000000000', 'wei'),
+      value: new WeiBig(value, 'wei'),
       rskRefundAddress: RSK_REFUND_ADDRESS,
     },
     quoteHash,
@@ -46,6 +51,13 @@ const approvedQuote = quote2wp(APPROVED_HASH, '20000000000000', '10000000000000'
 const sameFeesFinalQuote = quote2wp(FINAL_QUOTE_HASH, '20000000000000', '10000000000000');
 // Fees of 0.001 RBTC: the total moves by 1.9%, under the 2% tolerance
 const higherFeesFinalQuote = quote2wp(FINAL_QUOTE_HASH, '700000000000000', '300000000000000');
+// Same fees, amount doubled to 0.1 RBTC
+const doubledAmountFinalQuote = quote2wp(
+  FINAL_QUOTE_HASH,
+  '20000000000000',
+  '10000000000000',
+  '100000000000000000',
+);
 
 /**
  * Send re-quotes the Flyover peg-out before the wallet signs. The wallet must never be asked
@@ -175,6 +187,21 @@ describe('Flyover peg-out re-quote on Send', () => {
         APPROVED_HASH,
       )).rejects.toThrow('Quote differences found');
       expect(acceptAndSendPegoutQuote).not.toHaveBeenCalled();
+    });
+
+    it('does not ask the wallet to sign a final quote for a different amount', async () => {
+      setUp(doubledAmountFinalQuote);
+
+      await expect(callAction(
+        constants.FLYOVER_PEGOUT_ACCEPT_AND_SEND_QUOTE,
+        {
+          state, commit, dispatch, getters,
+        },
+        APPROVED_HASH,
+      )).rejects.toThrow(ServiceError);
+      expect(acceptAndSendPegoutQuote).not.toHaveBeenCalled();
+      expect(state.selectedQuoteHash).toBe(APPROVED_HASH);
+      expect(state.difference.requiresApproval).toBe(false);
     });
 
     it('sends the final quote shown in the dialog once the user approves it', async () => {
