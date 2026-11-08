@@ -10,7 +10,6 @@ export interface ReducedQuote {
     quoteHash: string;
 }
 export interface QuoteFeeDifference {
-    percentage: number;
     requiresApproval: boolean;
     approvedQuote: ReducedQuote;
     finalQuote: ReducedQuote;

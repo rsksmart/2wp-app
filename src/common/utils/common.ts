@@ -117,7 +117,6 @@ export const getClearReducedQuote = (): ReducedQuote => ({
 });
 
 export const getClearQuoteFeeDifference = (): QuoteFeeDifference => ({
-  percentage: 0,
   requiresApproval: false,
   approvedQuote: getClearReducedQuote(),
   finalQuote: getClearReducedQuote(),
@@ -127,8 +126,8 @@ export const getClearQuoteFeeDifference = (): QuoteFeeDifference => ({
 export const sumCallAndGasFees = (quote: ReducedQuote): WeiBig => quote.callFee.plus(quote.gasFee);
 
 // How far the final fees moved from the fees the user approved, as a percentage of the
-// approved fees. Quotes with no fees are never offered, so approved fees of 0 only happen
-// in tests.
+// approved fees. Approved fees of 0 only appear in the cleared difference, which the
+// Review conditions dialog never shows; returning 0 keeps the function safe to call on it.
 export const computeFeeDifferencePercentage = (
   approvedQuote: ReducedQuote,
   finalQuote: ReducedQuote,

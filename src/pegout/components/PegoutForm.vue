@@ -75,8 +75,7 @@
               :isWalletAuthorizedToSign="isWalletAuthorizedToSign"
               @openAddressDialog="showAddressDialog = true"
               @changeSelectedOption="changeSelectedOption"
-              :selectedOption="selectedOption === quote.quoteHash"
-              :quote-difference="actualDiffPercentage" />
+              :selectedOption="selectedOption === quote.quoteHash" />
           </v-row>
           <v-row no-gutters class="mt-4" v-if="isAllowedWallet.pegout">
             <pegout-option
@@ -86,7 +85,6 @@
               @openAddressDialog="showAddressDialog = true"
               @changeSelectedOption="changeSelectedOption"
               :selectedOption="selectedOption === ''"
-              :quote-differences="actualDiffPercentage"
             />
           </v-row>
           <v-row no-gutters class="mt-5 d-flex justify-end">
@@ -148,7 +146,7 @@
       />
     </template>
     <quote-diff-dialog :show-dialog="showQuoteDiff"
-      :differences="quoteDifference" @continue="continueHandler" @cancel="clearForError" />
+      @continue="continueHandler" @cancel="clearForError" />
     <div id="recaptcha" class="g-recaptcha"
         :data-sitekey="flyoverService.siteKey"
         data-callback="onRecaptchaSuccess"
@@ -282,8 +280,6 @@ export default defineComponent({
       }
       return true;
     });
-
-    const actualDiffPercentage = computed(() => quoteDifference.value.percentage);
 
     const showQuoteDiff = computed(() => quoteDifference.value.requiresApproval
       && diffShown.value);
@@ -620,8 +616,6 @@ export default defineComponent({
       loadingQuotes,
       sendingPegout,
       showStep,
-      quoteDifference,
-      actualDiffPercentage,
       showQuoteDiff,
       mdiArrowLeft,
       selectedOption,

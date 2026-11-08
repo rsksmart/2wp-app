@@ -6,8 +6,7 @@ import { ActionTree } from 'vuex';
 import * as constants from '@/common/store/constants';
 import { BridgeService } from '@/common/services/BridgeService';
 import {
-  computeFeeDifferencePercentage, getClearQuoteFeeDifference, promiseWithTimeout,
-  requiresFeeApproval, ServiceError,
+  getClearQuoteFeeDifference, promiseWithTimeout, requiresFeeApproval, ServiceError,
 } from '@/common/utils';
 import { FlyoverService } from '@/common/services';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
@@ -188,7 +187,6 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
           };
           if (requiresFeeApproval(reducedApprovedQuote, reducedFinalQuote, tolerancePercentage)) {
             commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE, {
-              percentage: computeFeeDifferencePercentage(reducedApprovedQuote, reducedFinalQuote),
               requiresApproval: true,
               approvedQuote: reducedApprovedQuote,
               finalQuote: reducedFinalQuote,

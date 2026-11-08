@@ -10,7 +10,7 @@
               <p class="text-center my-2">
                 Network conditions have changed by
                 <span class="text-purple font-weight-bold">
-                  {{ quoteDifference.percentage.toFixed(2) }}%
+                  {{ percentage.toFixed(2) }}%
                 </span>.
               </p>
               <p class="text-center">
@@ -60,7 +60,7 @@ import { computed, defineComponent, toRef } from 'vue';
 import { mdiAlertOutline } from '@mdi/js';
 import { useStateAttribute } from '@/common/store/helper';
 import { QuoteFeeDifference } from '@/common/types';
-import { sumCallAndGasFees } from '@/common/utils';
+import { computeFeeDifferencePercentage, sumCallAndGasFees } from '@/common/utils';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 
 export default defineComponent({
@@ -79,6 +79,10 @@ export default defineComponent({
     const approvedQuoteFees = computed(() => sumCallAndGasFees(quoteDifference.value
       .approvedQuote));
     const finalQuoteFees = computed(() => sumCallAndGasFees(quoteDifference.value.finalQuote));
+    const percentage = computed(() => computeFeeDifferencePercentage(
+      quoteDifference.value.approvedQuote,
+      quoteDifference.value.finalQuote,
+    ));
     const finalQuoteTotal = computed(() => (quoteDifference.value.finalQuote.value
       .plus(finalQuoteFees.value)));
     const increasedOrDecreasedString = computed(() => (approvedQuoteFees.value
@@ -99,7 +103,7 @@ export default defineComponent({
       cancel,
       showWarningMessage,
       mdiAlertOutline,
-      quoteDifference,
+      percentage,
       approvedQuoteFees,
       finalQuoteFees,
       finalQuoteTotal,
