@@ -8,6 +8,18 @@ import {
 } from '@/common/types';
 import { getClearQuoteFeeDifference, ServiceError } from '@/common/utils';
 
+jest.mock('@/common/services/BridgeService', () => ({
+  BridgeService: jest.fn().mockImplementation(() => ({
+    getFederationAddress: () => Promise.resolve('2MxhE499S1BkVoNN3kUbLFjFwAB2eLxZB8y'),
+  })),
+}));
+
+// The real helper leaves a 30 second timer behind for every quote request.
+jest.mock('@/common/utils', () => ({
+  ...jest.requireActual('@/common/utils'),
+  promiseWithTimeout: <T>(promise: Promise<T>) => promise,
+}));
+
 type FlyoverPegoutActionContext = ActionContext<FlyoverPegoutState, RootState>;
 type FlyoverPegoutActionHandler = (
   context: Partial<FlyoverPegoutActionContext>,
@@ -87,7 +99,7 @@ describe('Flyover peg-out re-quote on Send', () => {
     dispatch = jest.fn((name: string, payload?: unknown) => {
       if (name === constants.FLYOVER_PEGOUT_GET_QUOTES) {
         state.quotes = { [PROVIDER_ID]: [finalQuote] };
-        return Promise.resolve();
+        return Promise.resolve(true);
       }
       if (name === constants.FLYOVER_PEGOUT_GET_FINAL_QUOTE) {
         return callAction(name, { state, commit, dispatch }, payload);
@@ -221,6 +233,66 @@ describe('Flyover peg-out re-quote on Send', () => {
 
       expect(acceptAndSendPegoutQuote).toHaveBeenCalledTimes(1);
       expect(acceptAndSendPegoutQuote).toHaveBeenCalledWith(FINAL_QUOTE_HASH);
+    });
+  });
+
+  describe(constants.FLYOVER_PEGOUT_GET_QUOTES, () => {
+    it('keeps the quotes of the latest request when an earlier one answers last', async () => {
+      setUp(sameFeesFinalQuote);
+      let answerEarlierRequest!: (quotes: QuotePegOut2WP[]) => void;
+      const earlierAnswer = new Promise<QuotePegOut2WP[]>((resolve) => {
+        answerEarlierRequest = resolve;
+      });
+      const latestQuote = quote2wp('latest-quote-hash', '20000000000000', '12700000000000');
+      const staleQuote = quote2wp('stale-quote-hash', '20000000000000', '12600000000000');
+      const providers = [{ id: PROVIDER_ID }];
+      state.liquidityProviders = providers as unknown as typeof state.liquidityProviders;
+      state.flyoverService = {
+        getPegoutQuotes: jest.fn()
+          .mockReturnValueOnce(earlierAnswer)
+          .mockResolvedValueOnce([latestQuote]),
+      } as unknown as typeof state.flyoverService;
+      const context = { state, commit, dispatch };
+
+      const earlierRequest = callAction(
+        constants.FLYOVER_PEGOUT_GET_QUOTES,
+        context,
+        RSK_REFUND_ADDRESS,
+      );
+      const latestRequest = callAction(
+        constants.FLYOVER_PEGOUT_GET_QUOTES,
+        context,
+        RSK_REFUND_ADDRESS,
+      );
+      await expect(latestRequest).resolves.toBe(true);
+      answerEarlierRequest([staleQuote]);
+
+      await expect(earlierRequest).resolves.toBe(false);
+      expect(state.quotes[PROVIDER_ID]).toEqual([latestQuote]);
+    });
+  });
+
+  describe('when a newer quote request replaces the final quote', () => {
+    it('stops Send without picking a quote or asking the wallet', async () => {
+      setUp(sameFeesFinalQuote);
+      dispatch.mockImplementation((name: string, payload?: unknown) => {
+        if (name === constants.FLYOVER_PEGOUT_GET_QUOTES) return Promise.resolve(false);
+        if (name === constants.FLYOVER_PEGOUT_GET_FINAL_QUOTE) {
+          return callAction(name, { state, commit, dispatch }, payload);
+        }
+        return Promise.resolve();
+      });
+
+      await expect(callAction(
+        constants.FLYOVER_PEGOUT_ACCEPT_AND_SEND_QUOTE,
+        {
+          state, commit, dispatch, getters,
+        },
+        APPROVED_HASH,
+      )).rejects.toThrow('The options changed while sending');
+      expect(acceptAndSendPegoutQuote).not.toHaveBeenCalled();
+      expect(state.selectedQuoteHash).toBe(APPROVED_HASH);
+      expect(state.difference.requiresApproval).toBe(false);
     });
   });
 

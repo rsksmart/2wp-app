@@ -15,6 +15,11 @@ import { captureError } from '@/sentry';
 import { providers } from 'ethers';
 import { AcceptedPegoutQuote } from '@rsksmart/flyover-sdk';
 
+// Quote requests can overlap when the amount or the BTC address changes again before the
+// liquidity provider answers, and the SDK cannot cancel a request. Only the latest request
+// may store its quotes.
+let latestQuotesRequest = 0;
+
 export const actions: ActionTree<FlyoverPegoutState, RootState> = {
   [constants.FLYOVER_PEGOUT_INIT]: async (
     { state, dispatch },
@@ -49,10 +54,12 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
   [constants.FLYOVER_PEGOUT_GET_QUOTES]: async (
     { state, commit, dispatch },
     rskRefundAddress: string,
-  ) => {
+  ): Promise<boolean> => {
+    latestQuotesRequest += 1;
+    const request = latestQuotesRequest;
     const bridgeService = new BridgeService();
     const tempBtcAddress = await bridgeService.getFederationAddress();
-    return new Promise<void>((resolve) => {
+    return new Promise<boolean>((resolve) => {
       const quotePromises: Promise<QuotePegOut2WP[]>[] = [];
       state.liquidityProviders.forEach((provider) => {
         dispatch(constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER, provider.id);
@@ -70,6 +77,10 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
       );
       Promise.allSettled(quotePromisesWithTimeout)
         .then((responses) => {
+          if (request !== latestQuotesRequest) {
+            resolve(false);
+            return;
+          }
           responses.forEach((response, index) => {
             if (response.status === constants.FULFILLED) {
               quotesByProvider = {
@@ -79,7 +90,7 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
             }
           });
           commit(constants.FLYOVER_PEGOUT_SET_QUOTES, quotesByProvider);
-          resolve();
+          resolve(true);
         });
     });
   },
@@ -136,7 +147,17 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
     }
     commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE, getClearQuoteFeeDifference());
     dispatch(constants.FLYOVER_PEGOUT_GET_QUOTES, approvedQuote.quote.rskRefundAddress)
-      .then(() => {
+      .then((stored: boolean) => {
+        // A newer request replaced these quotes, so state.quotes is not the final quote.
+        if (!stored) {
+          reject(new ServiceError(
+            'FlyoverPegout',
+            constants.FLYOVER_PEGOUT_GET_FINAL_QUOTE,
+            'The options changed while sending. Check them and press Send again.',
+            'A newer quote request replaced the final quote',
+          ));
+          return;
+        }
         // The SDK already rejects a quote for another amount; this keeps the app from relying
         // on it. The amount is the user's own input, so there is nothing to approve.
         const amountChanged = state.quotes[providerId]
