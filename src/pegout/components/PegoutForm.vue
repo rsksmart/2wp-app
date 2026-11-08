@@ -181,7 +181,7 @@ import {
 } from '@/common/types';
 import {
   appendRecaptcha, Machine, ServiceError, validateAddress,
-  createBridgeId, isValidBridgeId, BridgeIdSource, BridgeNetwork,
+  createBridgeId, isValidBridgeId, BridgeIdSource, BridgeNetwork, isFlyoverPegoutAddress,
 } from '@/common/utils';
 import { FlyoverService } from '@/common/services';
 import FullTxErrorDialog from '@/common/components/exchange/FullTxErrorDialog.vue';
@@ -213,6 +213,7 @@ export default defineComponent({
     const pegOutFormState = ref<Machine<'loading' | 'goingHome' | 'fill'>>(new Machine('fill'));
     const showAddressDialog = ref(false);
     const loadingQuotes = ref(false);
+    const requotingForAddress = ref(false);
     const isWalletAuthorizedToSign = ref(true);
     const diffShown = ref(false);
     const clearAmount = ref(false);
@@ -231,7 +232,7 @@ export default defineComponent({
     const initPegoutTx = useAction('pegOutTx', constants.PEGOUT_TX_INIT);
     const clearFlyoverState = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_CLEAR_STATE);
     const clearPegoutTx = useAction('pegOutTx', constants.PEGOUT_TX_CLEAR);
-    const getPegoutQuotes = useAction('flyoverPegout', constants.FLYOVER_PEGOUT_GET_QUOTES);
+    const getPegoutQuotes = useAction<boolean>('flyoverPegout', constants.FLYOVER_PEGOUT_GET_QUOTES);
     const ethersProvider = useStateAttribute<providers.Web3Provider>('web3Session', 'ethersProvider');
     const quotes = useStateAttribute<Record<number, QuotePegOut2WP[]>>('flyoverPegout', 'quotes');
     const quoteDifference = useStateAttribute<QuoteFeeDifference>('flyoverPegout', 'difference');
@@ -348,7 +349,7 @@ export default defineComponent({
 
     const isValid = computed(() => {
       if (selectedQuote.value === undefined) return !loadingQuotes.value && isReadyToCreate.value;
-      return !loadingQuotes.value && isFlyoverReady.value
+      return !loadingQuotes.value && !requotingForAddress.value && isFlyoverReady.value
         && countdown.value === recaptchanNewTokenTime;
     });
 
@@ -515,6 +516,32 @@ export default defineComponent({
       setSelectedQuoteHash(quoteHash);
       selectedOption.value = quoteHash;
     }
+
+    // The amount comes before the BTC address, so the first quotes are priced for the
+    // federation address. Once the user's address is in, price them again for it, so the
+    // quote compared at Send is for the same transaction. Every valid address re-quotes,
+    // even one the stored quotes match: a request for an earlier address may still be
+    // running, and only the newest request is stored. loadingQuotes stays false: it would
+    // unmount the options and empty the address field.
+    let latestRequote = 0;
+    watch(() => flyoverPegoutState.value.btcRecipientAddress, async (address) => {
+      if (pegoutQuotes.value.length === 0 || !isFlyoverPegoutAddress(address)) return;
+      const providerId = selectedOption.value
+        ? getProviderId.value(selectedOption.value) : -1;
+      latestRequote += 1;
+      const requote = latestRequote;
+      requotingForAddress.value = true;
+      try {
+        const stored = await getPegoutQuotes(account.value);
+        const requotedHash = quotes.value[providerId]?.[0]?.quoteHash;
+        if (stored && requotedHash) changeSelectedOption(requotedHash);
+      } catch (e) {
+        captureError(e, { flow: 'pegout', source: 'PegoutForm.requoteForBtcAddress' });
+      } finally {
+        // An earlier re-quote can finish after a newer one started; Send waits for the newest.
+        if (requote === latestRequote) requotingForAddress.value = false;
+      }
+    });
 
     watch([pegoutQuotes, existQuoteAndUsersBalanceIsEnough], () => {
       if (!isAllowedWallet.value.pegout
