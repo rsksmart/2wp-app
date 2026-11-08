@@ -1,12 +1,12 @@
 import {
-  FlyoverPegoutState, QuotePegOut2WP, RootState, WeiBig,
-  ReducedQuote, PegOutTxState,
+  FlyoverPegoutState, QuotePegOut2WP, RootState, WeiBig, PegOutTxState,
 } from '@/common/types';
 import { ActionTree } from 'vuex';
 import * as constants from '@/common/store/constants';
 import { BridgeService } from '@/common/services/BridgeService';
 import {
   getClearQuoteFeeDifference, promiseWithTimeout, requiresFeeApproval, ServiceError,
+  toReducedQuote,
 } from '@/common/utils';
 import { FlyoverService } from '@/common/services';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
@@ -170,21 +170,11 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
           ));
           return;
         }
-        const reducedApprovedQuote: ReducedQuote = {
-          callFee: approvedQuote.quote.callFee,
-          gasFee: approvedQuote.quote.gasFee,
-          value: approvedQuote.quote.value,
-          quoteHash: approvedQuote.quoteHash,
-        };
+        const reducedApprovedQuote = toReducedQuote(approvedQuote);
         const tolerancePercentage = EnvironmentAccessorService.getEnvironmentVariables()
           .flyoverPegoutDiffPercentage;
         state.quotes[providerId].forEach((quote2wp) => {
-          const reducedFinalQuote: ReducedQuote = {
-            callFee: quote2wp.quote.callFee,
-            gasFee: quote2wp.quote.gasFee,
-            value: quote2wp.quote.value,
-            quoteHash: quote2wp.quoteHash,
-          };
+          const reducedFinalQuote = toReducedQuote(quote2wp);
           if (requiresFeeApproval(reducedApprovedQuote, reducedFinalQuote, tolerancePercentage)) {
             commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE, {
               requiresApproval: true,

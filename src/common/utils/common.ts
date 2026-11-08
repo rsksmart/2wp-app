@@ -4,7 +4,7 @@ import { BITCOIN_AVERAGE_FEE_LEVEL } from '@/common/store/constants';
 import {
   FlyoverPeginState,
   FlyoverPegoutState, QuoteFeeDifference, PegOutTxState,
-  ReducedQuote,
+  QuotePegOut2WP, ReducedQuote,
   SessionState, WeiBig,
 } from '@/common/types';
 import { FlyoverService } from '@/common/services';
@@ -114,6 +114,14 @@ export const getClearReducedQuote = (): ReducedQuote => ({
   callFee: new WeiBig(0, 'wei'),
   value: new WeiBig(0, 'wei'),
   quoteHash: '',
+});
+
+// The part of a peg-out quote that the fee check and the Review conditions dialog use.
+export const toReducedQuote = (quote2wp: QuotePegOut2WP): ReducedQuote => ({
+  callFee: quote2wp.quote.callFee,
+  gasFee: quote2wp.quote.gasFee,
+  value: quote2wp.quote.value,
+  quoteHash: quote2wp.quoteHash,
 });
 
 export const getClearQuoteFeeDifference = (): QuoteFeeDifference => ({

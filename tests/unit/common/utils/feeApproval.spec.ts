@@ -1,5 +1,5 @@
-import { computeFeeDifferencePercentage, requiresFeeApproval } from '@/common/utils';
-import { ReducedQuote, WeiBig } from '@/common/types';
+import { computeFeeDifferencePercentage, requiresFeeApproval, toReducedQuote } from '@/common/utils';
+import { QuotePegOut2WP, ReducedQuote, WeiBig } from '@/common/types';
 
 const TOLERANCE = 2;
 const VALUE = '50000000000000000';
@@ -83,5 +83,22 @@ describe('computeFeeDifferencePercentage', () => {
   it('is 0 when both quotes have no fees', () => {
     expect(computeFeeDifferencePercentage(reducedQuote('0', '0'), reducedQuote('0', '0')))
       .toBe(0);
+  });
+});
+
+describe('toReducedQuote', () => {
+  it('keeps the call fee, gas fee, amount and hash of the quote', () => {
+    const quote2wp = {
+      quote: {
+        callFee: new WeiBig('20000000000000', 'wei'),
+        gasFee: new WeiBig('10000000000000', 'wei'),
+        penaltyFee: new WeiBig('10000000000000', 'wei'),
+        value: new WeiBig(VALUE, 'wei'),
+      },
+      quoteHash: 'hash',
+      lpsAddressQrCode: '',
+    } as unknown as QuotePegOut2WP;
+
+    expect(toReducedQuote(quote2wp)).toEqual(approved);
   });
 });
