@@ -59,7 +59,8 @@
 import { computed, defineComponent, toRef } from 'vue';
 import { mdiAlertOutline } from '@mdi/js';
 import { useStateAttribute } from '@/common/store/helper';
-import { QuoteFeeDifference, ReducedQuote } from '@/common/types';
+import { QuoteFeeDifference } from '@/common/types';
+import { sumCallAndGasFees } from '@/common/utils';
 import EnvironmentContextProviderService from '@/common/providers/EnvironmentContextProvider';
 
 export default defineComponent({
@@ -75,13 +76,9 @@ export default defineComponent({
     const quoteDifference = useStateAttribute<QuoteFeeDifference>('flyoverPegout', 'difference');
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
 
-    const getTotalFees = (quoteDiff: ReducedQuote) => (quoteDiff.gasFee
-      .plus(quoteDiff.callFee));
-
-    const approvedQuoteFees = computed(() => (getTotalFees(quoteDifference.value
-      .approvedQuote)));
-    const finalQuoteFees = computed(() => (getTotalFees(quoteDifference.value
-      .finalQuote)));
+    const approvedQuoteFees = computed(() => sumCallAndGasFees(quoteDifference.value
+      .approvedQuote));
+    const finalQuoteFees = computed(() => sumCallAndGasFees(quoteDifference.value.finalQuote));
     const finalQuoteTotal = computed(() => (quoteDifference.value.finalQuote.value
       .plus(finalQuoteFees.value)));
     const increasedOrDecreasedString = computed(() => (approvedQuoteFees.value

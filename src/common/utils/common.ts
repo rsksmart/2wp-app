@@ -123,7 +123,8 @@ export const getClearQuoteFeeDifference = (): QuoteFeeDifference => ({
   finalQuote: getClearReducedQuote(),
 });
 
-const sumCallAndGasFees = (quote: ReducedQuote): WeiBig => quote.callFee.plus(quote.gasFee);
+// The fees the user pays on top of the amount: the provider's call fee and the BTC gas fee.
+export const sumCallAndGasFees = (quote: ReducedQuote): WeiBig => quote.callFee.plus(quote.gasFee);
 
 // How far the final fees moved from the fees the user approved, as a percentage of the
 // approved fees. Quotes with no fees are never offered, so approved fees of 0 only happen
