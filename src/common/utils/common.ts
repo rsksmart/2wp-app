@@ -9,6 +9,7 @@ import {
 } from '@/common/types';
 import { FlyoverService } from '@/common/services';
 import { markRaw } from 'vue';
+import Big from 'big.js';
 import * as constants from '@/common/store/constants';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
@@ -124,18 +125,18 @@ export const getClearQuoteFeeDifference = (): QuoteFeeDifference => ({
 
 const sumCallAndGasFees = (quote: ReducedQuote): WeiBig => quote.callFee.plus(quote.gasFee);
 
+// How far the final fees moved from the fees the user approved, as a percentage of the
+// approved fees. Quotes with no fees are never offered, so approved fees of 0 only happen
+// in tests.
 export const computeFeeDifferencePercentage = (
   approvedQuote: ReducedQuote,
   finalQuote: ReducedQuote,
 ): number => {
-  const approvedFees = sumCallAndGasFees(approvedQuote);
-  const finalFees = sumCallAndGasFees(finalQuote);
-  const largest = WeiBig.max(approvedFees, finalFees);
-  const smallest = WeiBig.min(approvedFees, finalFees);
-  return largest.gt(0)
-    ? Number(largest.safeMinus(smallest).mul('100').div(largest.toRBTCString())
-      .toRBTCString())
-    : 0;
+  const approvedFees = new Big(sumCallAndGasFees(approvedQuote));
+  if (approvedFees.lte(0)) return 0;
+  const finalFees = new Big(sumCallAndGasFees(finalQuote));
+  return finalFees.minus(approvedFees).abs().times(100).div(approvedFees)
+    .toNumber();
 };
 
 // The final quote may replace the quote the user picked only if its fees are not higher and

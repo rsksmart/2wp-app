@@ -140,7 +140,7 @@ describe('Flyover peg-out re-quote on Send', () => {
 
       expect(state.selectedQuoteHash).toBe(APPROVED_HASH);
       expect(state.difference.requiresApproval).toBe(true);
-      expect(state.difference.percentage).toBe(97);
+      expect(state.difference.percentage).toBeCloseTo(3233.33, 2);
       expect(state.difference.approvedQuote.quoteHash).toBe(APPROVED_HASH);
       expect(state.difference.finalQuote.quoteHash).toBe(FINAL_QUOTE_HASH);
     });

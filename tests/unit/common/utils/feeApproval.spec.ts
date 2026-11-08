@@ -20,8 +20,9 @@ const onePercentLower = reducedQuote('19700000000000', '10000000000000');
 const toleranceLower = reducedQuote('19400000000000', '10000000000000');
 const oneWeiPastToleranceLower = reducedQuote('19399999999999', '10000000000000');
 const oneWeiHigher = reducedQuote('20000000000001', '10000000000000');
-// Fees of 0.001 RBTC: the total moves by 1.9%, the fees by 97%
+// Fees of 0.001 RBTC: the total moves by 1.9%, the fees grow 33 times (+3233.33%)
 const reportedFees = reducedQuote('700000000000000', '300000000000000');
+const doubledFees = reducedQuote('40000000000000', '20000000000000');
 
 describe('requiresFeeApproval', () => {
   it('lets a final quote with the same fees replace the approved quote', () => {
@@ -72,7 +73,11 @@ describe('computeFeeDifferencePercentage', () => {
   });
 
   it('measures the fees, not the total that includes the amount', () => {
-    expect(computeFeeDifferencePercentage(approved, reportedFees)).toBe(97);
+    expect(computeFeeDifferencePercentage(approved, reportedFees)).toBeCloseTo(3233.33, 2);
+  });
+
+  it('measures the change against the approved fees, so doubled fees are 100', () => {
+    expect(computeFeeDifferencePercentage(approved, doubledFees)).toBe(100);
   });
 
   it('is 0 when both quotes have no fees', () => {
