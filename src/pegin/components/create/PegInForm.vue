@@ -27,40 +27,33 @@
           <v-row no-gutters class="my-4">
             <span class="text-body-sm">Select mode to see exact amounts</span>
           </v-row>
-          <v-row no-gutters v-if="(!flyoverIsEnabled
-                    || peginQuotes.length === 0)
-                    || !enoughAmountFlyover">
+          <v-row no-gutters v-if="fastModeState !== 'available'">
             <pegin-option-card :option-type="peginType.FLYOVER" flyover-not-available>
               <template v-slot>
-                <h4 v-if="countdown === recaptchanNewTokenTime">
+                <h4 v-if="fastModeState === 'disabled' && countdown === recaptchaNewTokenTime">
                   <span class="text-orange">Fast Mode</span> is unavailable at this time.
                 </h4>
-                <h4 v-else>
+                <h4 v-else-if="fastModeState === 'disabled'">
                   Fast mode will be <br> available in
                   <span class="text-orange">{{ countdown }} seconds.</span>
                 </h4>
-              </template>
-            </pegin-option-card>
-          </v-row>
-          <v-row no-gutters v-if="flyoverIsEnabled
-            && peginQuotes.length === 0 && enoughAmountFlyover">
-            <pegin-option-card :option-type="peginType.FLYOVER" flyover-not-available>
-              <template v-slot>
-                <h4 v-if="countdown === recaptchanNewTokenTime && enoughFlyoverLiquidity">
-                  <span class="text-orange">Fast Mode</span> no quotes available for this amount.
-                </h4>
-                <h4 v-else-if="!enoughFlyoverLiquidity">
+                <h4 v-else-if="fastModeState === 'no-liquidity'">
                   <span class="text-orange">Fast Mode</span>
                   There is not enough liquidity for this amount.
                   <a href="mailto:flyover@rootstocklabs.com?subject=Insufficient Liquidity">
                     Contact support</a> if you want to use the fast mode.
                 </h4>
+                <h4 v-else-if="fastModeState === 'no-quotes'">
+                  <span class="text-orange">Fast Mode</span> no quotes available for this amount.
+                </h4>
+                <h4 v-else-if="fastModeState === 'insufficient-funds'">
+                  <span class="text-orange">Fast Mode</span>
+                  You don't have enough funds to cover the amount including fees.
+                </h4>
               </template>
             </pegin-option-card>
           </v-row>
-          <v-row no-gutters v-else-if="countdown === recaptchanNewTokenTime
-                          && peginQuotes.length > 0"
-            v-for="(quote, index) in peginQuotes" :key="index">
+<v-row no-gutters v-else v-for="quote in peginQuotes" :key="quote.quoteHash">
             <pegin-option-card
               :option-type="peginType.FLYOVER"
               @selected-option="changeSelectedOption"
@@ -163,6 +156,13 @@ import { AcceptedQuote } from '@rsksmart/flyover-sdk';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import { useRouter } from 'vue-router';
 
+type FlyoverDisplayState =
+  | 'disabled'
+  | 'no-liquidity'
+  | 'no-quotes'
+  | 'insufficient-funds'
+  | 'available';
+
 export default defineComponent({
   name: 'PegInForm',
   props: {
@@ -209,7 +209,7 @@ export default defineComponent({
     const startCountdown = useAction('web3Session', constants.SESSION_COUNTDOWN_GRECAPTCHA_TIME);
     const revalidateAccount = useAction('web3Session', constants.SESSION_REVALIDATE_ACCOUNT);
     const countdown = useStateAttribute<number>('web3Session', 'grecaptchaCountdown');
-    const recaptchanNewTokenTime = EnvironmentAccessorService.getEnvironmentVariables()
+    const recaptchaNewTokenTime = EnvironmentAccessorService.getEnvironmentVariables()
       .grecaptchaTime;
     const toQr = ref(false);
     const router = useRouter();
@@ -232,7 +232,7 @@ export default defineComponent({
     const flyoverIsEnabled = computed(() => {
       if (props.isFlyoverAvailable) {
         if (sendingPegin.value) return true;
-        return countdown.value === recaptchanNewTokenTime;
+        return countdown.value === recaptchaNewTokenTime;
       }
       return false;
     });
@@ -244,6 +244,14 @@ export default defineComponent({
       }
       const fullAmount: SatoshiBig = providerQuote.getTotalTxAmount(selectedFee.value);
       return selectedAccountBalance.value?.gte(fullAmount);
+    });
+
+    const fastModeState = computed<FlyoverDisplayState>(() => {
+      if (!flyoverIsEnabled.value) return 'disabled';
+      if (!enoughFlyoverLiquidity.value) return 'no-liquidity';
+      if (peginQuotes.value.length === 0) return 'no-quotes';
+      if (!enoughAmountFlyover.value) return 'insufficient-funds';
+      return 'available';
     });
 
     function back() {
@@ -386,7 +394,7 @@ export default defineComponent({
           && !!flyoverPeginState.value.selectedQuoteHash
           && !!flyoverPeginState.value.rootstockRecipientAddress
           && flyoverPeginState.value.rootstockRecipientAddress !== '0x'
-          && countdown.value === recaptchanNewTokenTime;
+          && countdown.value === recaptchaNewTokenTime;
       }
 
       return false;
@@ -445,11 +453,12 @@ export default defineComponent({
       sendTx,
       flyoverIsEnabled,
       countdown,
-      recaptchanNewTokenTime,
+      recaptchaNewTokenTime,
       mdiQrcode,
       toQr,
       enoughFlyoverLiquidity,
       enoughAmountFlyover,
+      fastModeState,
     };
   },
 });
