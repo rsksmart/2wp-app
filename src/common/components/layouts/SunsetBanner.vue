@@ -1,7 +1,14 @@
 <template>
   <v-alert v-if="message" variant="outlined" type="warning" prominent
     class="sunset-banner flex-0-0 mt-4" role="alert">
-    <span class="text-break">{{ message }}</span>
+    <span class="text-break">{{ message }}
+      <a class="font-weight-bold"
+        style="text-decoration: underline"
+        target='_blank'
+        href="https://atlas.rootstock.io/">
+        Atlas.
+      </a>
+    </span>
   </v-alert>
 </template>
 
