@@ -58,6 +58,25 @@ export function validateAddress(address: string): {valid: boolean; addressType: 
   return { valid, addressType };
 }
 
+// True for an address that can receive a Fast Mode peg-out and has a valid checksum.
+// validateAddress only matches a pattern, which a half-typed address already does once
+// it is long enough.
+export function isFlyoverPegoutAddress(address: string): boolean {
+  const { valid, addressType } = validateAddress(address);
+  const allowedType = addressType === constants.BITCOIN_LEGACY_ADDRESS
+    || addressType === constants.BITCOIN_SEGWIT_ADDRESS
+    || addressType === constants.BITCOIN_NATIVE_SEGWIT_ADDRESS;
+  if (!valid || !allowedType) return false;
+  const network = EnvironmentAccessorService.getEnvironmentVariables().vueAppCoin
+    === constants.BTC_NETWORK_MAINNET ? NETWORKS.MAINNET : NETWORKS.TESTNET;
+  try {
+    bitcoin.address.toOutputScript(address, bitcoinJsNetwork(network));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function compressPublicKey(pubKey: string) {
   const { publicKey } = bitcoin.ECPair.fromPublicKey(Buffer.from(pubKey, 'hex'));
   return publicKey.toString('hex');

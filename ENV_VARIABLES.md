@@ -22,7 +22,7 @@ The value of these variables are used in **environment-variables.ts** file.
 |VUE_APP_LBC_PEGIN_ADDRESS   | `0x9270733402dc7c5730EA24268fC11039FD75E189` | Liquidity bridge contract address for the pegin flow on the flyover protocol     |
 |VUE_APP_LBC_PEGOUT_ADDRESS   | `0x9A0678742cfB567874Eb4E99DF2106BdeD78F5e4` | Liquidity bridge contract address for the pegout flow on the flyover protocol     |
 |VUE_APP_DEBUG_MODE                           | `false` | enable developer messages for debuging                                      |
-|VUE_APP_FLYOVER_PEGOUT_QUOTE_DIFF_PERCENTAGE | `2`  | Defines quote difference percentage to 2% so it requieres the user to review condition only for a difference bigger that this percentage |
+|VUE_APP_FLYOVER_PEGOUT_QUOTE_DIFF_PERCENTAGE | `2`  | Fast Mode peg-out. On Send the app fetches a final quote. Any increase in its fees (call fee plus gas fee) asks the user to approve it in the Review conditions dialog. A drop of up to this percentage of the fees the user saw goes through without asking; a bigger drop asks too. Empty or `0` falls back to 2. |
 |VUE_APP_RECAPTCHA_NEW_TOKEN_TIME             | `30`    |  Specifies the time (in seconds) to temporarily disable the flyover between new transactions. This accounts for the time required by Google reCAPTCHA to regenerate a challenge token |
 |VUE_APP_FLYOVER_PROVIDER_ID                  | `1`     | Sets up the provider id to be use for flyover status search.                |
 |VUE_APP_FLYOVER_GET_PROVIDERS_TIMEOUT        | `5000`  | Sets a timeout for calls made to get liquidity providers.                   |

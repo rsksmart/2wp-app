@@ -1,12 +1,12 @@
 import {
-  FlyoverPegoutState, QuotePegOut2WP, RootState, WeiBig,
-  ReducedQuote, PegOutTxState,
+  FlyoverPegoutState, QuotePegOut2WP, RootState, WeiBig, PegOutTxState,
 } from '@/common/types';
 import { ActionTree } from 'vuex';
 import * as constants from '@/common/store/constants';
 import { BridgeService } from '@/common/services/BridgeService';
 import {
-  getClearObjectDifference, promiseWithTimeout, ServiceError,
+  getClearQuoteFeeDifference, promiseWithTimeout, requiresFeeApproval, ServiceError,
+  toReducedQuote,
 } from '@/common/utils';
 import { FlyoverService } from '@/common/services';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
@@ -14,9 +14,10 @@ import { captureError } from '@/sentry';
 import { providers } from 'ethers';
 import { AcceptedPegoutQuote } from '@rsksmart/flyover-sdk';
 
-// Searches can overlap (the form re-searches on every input change) and finish out of
-// order, so only the most recent one is allowed to commit its quotes.
-let latestQuotesRequestId = 0;
+// Quote requests can overlap when the amount or the BTC address changes again before the
+// liquidity provider answers, and the SDK cannot cancel a request. Only the latest request
+// may store its quotes.
+let latestQuotesRequest = 0;
 
 export const actions: ActionTree<FlyoverPegoutState, RootState> = {
   [constants.FLYOVER_PEGOUT_INIT]: async (
@@ -52,9 +53,9 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
   [constants.FLYOVER_PEGOUT_GET_QUOTES]: async (
     { state, commit, dispatch },
     rskRefundAddress: string,
-  ) => {
-    latestQuotesRequestId += 1;
-    const requestId = latestQuotesRequestId;
+  ): Promise<boolean> => {
+    latestQuotesRequest += 1;
+    const request = latestQuotesRequest;
     const bridgeService = new BridgeService();
     const tempBtcAddress = await bridgeService.getFederationAddress();
     return new Promise<boolean>((resolve) => {
@@ -74,6 +75,10 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
       );
       Promise.allSettled(quotePromisesWithTimeout)
         .then((responses) => {
+          if (request !== latestQuotesRequest) {
+            resolve(false);
+            return;
+          }
           responses.forEach((response, index) => {
             if (response.status === constants.FULFILLED) {
               quotesByProvider = {
@@ -82,11 +87,8 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
               };
             }
           });
-          const isLatest = requestId === latestQuotesRequestId;
-          if (isLatest) {
-            commit(constants.FLYOVER_PEGOUT_SET_QUOTES, quotesByProvider);
-          }
-          resolve(isLatest);
+          commit(constants.FLYOVER_PEGOUT_SET_QUOTES, quotesByProvider);
+          resolve(true);
         });
     });
   },
@@ -104,8 +106,7 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
       dispatch(constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER, providerId)
         .then(() => dispatch(constants.FLYOVER_PEGOUT_GET_FINAL_QUOTE, { providerId, quoteHash }))
         .then(() => {
-          if (state.difference.percentage > EnvironmentAccessorService.getEnvironmentVariables()
-            .flyoverPegoutDiffPercentage) {
+          if (state.difference.requiresApproval) {
             return Promise.reject(new Error('Quote differences found: cannot accept quote'));
           }
           return state.flyoverService.acceptAndSendPegoutQuote(state.selectedQuoteHash);
@@ -119,7 +120,7 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
     }),
   [constants.FLYOVER_PEGOUT_ACCEPT_AND_SEND_QUOTE_WITH_CHANGED_CONDITIONS]:
     ({ state, commit }) => new Promise<void>((resolve, reject) => {
-      commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, state.difference.currentQuote.quoteHash);
+      commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, state.difference.finalQuote.quoteHash);
       state.flyoverService.acceptAndSendPegoutQuote(state.selectedQuoteHash)
         .then(({ txHash, signature }) => {
           commit(constants.FLYOVER_PEGOUT_SET_TX_HASH, txHash);
@@ -136,76 +137,62 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
     { state, commit, dispatch },
     { providerId, quoteHash },
   ) => new Promise<void>((resolve, reject) => {
-    const currentQuote = state.quotes[providerId]
+    const approvedQuote = state.quotes[providerId]
       .find((quote) => quote.quoteHash === quoteHash);
-    if (!currentQuote) {
+    if (!approvedQuote) {
       reject(new Error('Quote not found'));
+      return;
     }
-    dispatch(constants.FLYOVER_PEGOUT_GET_QUOTES, currentQuote?.quote.rskRefundAddress ?? '')
-      .then((isLatestSearch: boolean) => {
-        if (!isLatestSearch) {
-          throw new ServiceError(
+    commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE, getClearQuoteFeeDifference());
+    dispatch(constants.FLYOVER_PEGOUT_GET_QUOTES, approvedQuote.quote.rskRefundAddress)
+      .then((stored: boolean) => {
+        // A newer request replaced these quotes, so state.quotes is not the final quote.
+        if (!stored) {
+          reject(new ServiceError(
             'FlyoverPegout',
             constants.FLYOVER_PEGOUT_GET_FINAL_QUOTE,
-            'The options changed before sending. Refresh them and try again.',
-            'Final quote refresh was superseded by a newer search',
-          );
+            'The options changed while sending. Check them and press Send again.',
+            'A newer quote request replaced the final quote',
+          ));
+          return;
         }
+        // The provider may not have answered in time. Without a final quote the approved one,
+        // still in the service cache, would be sent unchecked.
         if (!state.quotes[providerId]?.length) {
-          throw new ServiceError(
+          reject(new ServiceError(
             'FlyoverPegout',
             constants.FLYOVER_PEGOUT_GET_FINAL_QUOTE,
             'No quotes are available right now. Refresh the options and try again.',
             'No quotes available from the selected provider',
-          );
+          ));
+          return;
         }
-        const reducedCurrentQuote = {
-          callFee: currentQuote?.quote.callFee,
-          gasFee: currentQuote?.quote.gasFee,
-          value: currentQuote?.quote.value,
-          quoteHash: currentQuote?.quoteHash,
-        };
+        // The SDK already rejects a quote for another amount; this keeps the app from relying
+        // on it. The amount is the user's own input, so there is nothing to approve.
+        const amountChanged = state.quotes[providerId]
+          .some((quote2wp) => !quote2wp.quote.value.eq(approvedQuote.quote.value));
+        if (amountChanged) {
+          reject(new ServiceError(
+            'FlyoverPegout',
+            constants.FLYOVER_PEGOUT_GET_FINAL_QUOTE,
+            'The new option is for a different amount. Refresh the options and try again.',
+            'Final quote value differs from the approved quote',
+          ));
+          return;
+        }
+        const reducedApprovedQuote = toReducedQuote(approvedQuote);
+        const tolerancePercentage = EnvironmentAccessorService.getEnvironmentVariables()
+          .flyoverPegoutDiffPercentage;
         state.quotes[providerId].forEach((quote2wp) => {
-          const reducedNewQuote = {
-            callFee: quote2wp.quote.callFee,
-            gasFee: quote2wp.quote.gasFee,
-            value: quote2wp.quote.value,
-            quoteHash: quote2wp.quoteHash,
-          };
-          const zeroWei = new WeiBig(0, 'wei');
-          const currentQuoteTotal = (reducedCurrentQuote.callFee ?? zeroWei)
-            .plus(reducedCurrentQuote.gasFee ?? zeroWei)
-            .plus(reducedCurrentQuote.value ?? zeroWei);
-          const newQuoteTotal = (reducedNewQuote.callFee ?? zeroWei)
-            .plus(reducedNewQuote.gasFee ?? zeroWei)
-            .plus(reducedNewQuote.value ?? zeroWei);
-          const largest = newQuoteTotal
-            .gt(currentQuoteTotal) ? newQuoteTotal : currentQuoteTotal;
-          const minor = newQuoteTotal
-            .gt(currentQuoteTotal) ? currentQuoteTotal : newQuoteTotal;
-          const percentageDifference = ((largest.safeMinus(minor)).mul('100')).div(largest.toRBTCString());
-          if (Number(percentageDifference.toRBTCString()) <= EnvironmentAccessorService
-            .getEnvironmentVariables().flyoverPegoutDiffPercentage) {
-            commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, quote2wp.quoteHash);
+          const reducedFinalQuote = toReducedQuote(quote2wp);
+          if (requiresFeeApproval(reducedApprovedQuote, reducedFinalQuote, tolerancePercentage)) {
+            commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE, {
+              requiresApproval: true,
+              approvedQuote: reducedApprovedQuote,
+              finalQuote: reducedFinalQuote,
+            });
           } else {
-            commit(
-              constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE,
-              {
-                percentage: Number(percentageDifference.toRBTCString()),
-                previousQuote: {
-                  gasFee: reducedCurrentQuote.gasFee,
-                  callFee: reducedCurrentQuote.callFee,
-                  value: reducedCurrentQuote.value,
-                  quoteHash: reducedCurrentQuote.quoteHash,
-                } as ReducedQuote,
-                currentQuote: {
-                  gasFee: reducedNewQuote.gasFee,
-                  callFee: reducedNewQuote.callFee,
-                  value: reducedNewQuote.value,
-                  quoteHash: reducedNewQuote.quoteHash,
-                } as ReducedQuote,
-              },
-            );
+            commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, quote2wp.quoteHash);
           }
         });
         resolve();
@@ -219,7 +206,7 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
     commit(constants.FLYOVER_PEGOUT_SET_SELECTED_QUOTE, quoteHash);
   },
   [constants.FLYOVER_PEGOUT_CLEAR_QUOTE_DIFFERENCES]: ({ commit }) => {
-    commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE, getClearObjectDifference());
+    commit(constants.FLYOVER_PEGOUT_SET_QUOTES_DIFFERENCE, getClearQuoteFeeDifference());
   },
   [constants.FLYOVER_PEGOUT_GET_AVAILABLE_LIQUIDITY]:
   ({ state, dispatch, commit }) => new Promise((resolve, reject) => {
@@ -259,8 +246,7 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
     dispatch(constants.FLYOVER_PEGOUT_USE_LIQUIDITY_PROVIDER, providerId)
       .then(() => dispatch(constants.FLYOVER_PEGOUT_GET_FINAL_QUOTE, { providerId, quoteHash }))
       .then(() => {
-        if (state.difference.percentage > EnvironmentAccessorService.getEnvironmentVariables()
-          .flyoverPegoutDiffPercentage) {
+        if (state.difference.requiresApproval) {
           return Promise.reject(new Error('Quote differences found: cannot accept quote'));
         }
         return state.flyoverService.acceptPegoutQuote(state.selectedQuoteHash);
