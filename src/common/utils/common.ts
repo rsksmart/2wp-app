@@ -3,12 +3,13 @@ import SatoshiBig from '@/common/types/SatoshiBig';
 import { BITCOIN_AVERAGE_FEE_LEVEL } from '@/common/store/constants';
 import {
   FlyoverPeginState,
-  FlyoverPegoutState, ObjectDifference, PegOutTxState,
-  ReducedQuote,
+  FlyoverPegoutState, QuoteFeeDifference, PegOutTxState,
+  QuotePegOut2WP, ReducedQuote,
   SessionState, WeiBig,
 } from '@/common/types';
 import { FlyoverService } from '@/common/services';
 import { markRaw } from 'vue';
+import Big from 'big.js';
 import * as constants from '@/common/store/constants';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
@@ -115,11 +116,45 @@ export const getClearReducedQuote = (): ReducedQuote => ({
   quoteHash: '',
 });
 
-export const getClearObjectDifference = (): ObjectDifference => ({
-  percentage: 0,
-  previousQuote: getClearReducedQuote(),
-  currentQuote: getClearReducedQuote(),
+// The part of a peg-out quote that the fee check and the Review conditions dialog use.
+export const toReducedQuote = (quote2wp: QuotePegOut2WP): ReducedQuote => ({
+  callFee: quote2wp.quote.callFee,
+  gasFee: quote2wp.quote.gasFee,
+  value: quote2wp.quote.value,
+  quoteHash: quote2wp.quoteHash,
 });
+
+export const getClearQuoteFeeDifference = (): QuoteFeeDifference => ({
+  requiresApproval: false,
+  approvedQuote: getClearReducedQuote(),
+  finalQuote: getClearReducedQuote(),
+});
+
+// The fees the user pays on top of the amount: the provider's call fee and the BTC gas fee.
+export const sumCallAndGasFees = (quote: ReducedQuote): WeiBig => quote.callFee.plus(quote.gasFee);
+
+// How far the final fees moved from the fees the user approved, as a percentage of the
+// approved fees. Approved fees of 0 only appear in the cleared difference, which the
+// Review conditions dialog never shows; returning 0 keeps the function safe to call on it.
+export const computeFeeDifferencePercentage = (
+  approvedQuote: ReducedQuote,
+  finalQuote: ReducedQuote,
+): number => {
+  const approvedFees = new Big(sumCallAndGasFees(approvedQuote));
+  if (approvedFees.lte(0)) return 0;
+  const finalFees = new Big(sumCallAndGasFees(finalQuote));
+  return finalFees.minus(approvedFees).abs().times(100).div(approvedFees)
+    .toNumber();
+};
+
+// The final quote may replace the quote the user picked only if its fees are not higher and
+// moved within the tolerance. Otherwise the user has to approve the new fees first.
+export const requiresFeeApproval = (
+  approvedQuote: ReducedQuote,
+  finalQuote: ReducedQuote,
+  tolerancePercentage: number,
+): boolean => sumCallAndGasFees(finalQuote).gt(sumCallAndGasFees(approvedQuote))
+  || computeFeeDifferencePercentage(approvedQuote, finalQuote) > tolerancePercentage;
 
 export const getClearFlyoverPegoutState = (): FlyoverPegoutState => ({
   amountToTransfer: new WeiBig(0, 'wei'),
@@ -130,7 +165,7 @@ export const getClearFlyoverPegoutState = (): FlyoverPegoutState => ({
   quotes: {},
   flyoverService: markRaw(new FlyoverService()),
   selectedQuoteHash: '',
-  difference: getClearObjectDifference(),
+  difference: getClearQuoteFeeDifference(),
   acceptedQuoteSignature: '',
 });
 
