@@ -11,6 +11,10 @@ import { EnvironmentAccessorService } from '@/common/services/enviroment-accesso
 import { TxFeeService } from '@/pegin/services';
 import { captureError } from '@/sentry';
 
+// Searches can overlap (the form re-searches on every input change) and finish out of
+// order, so only the most recent one is allowed to commit its quotes.
+let latestQuotesRequestId = 0;
+
 export const actions: ActionTree<FlyoverPeginState, RootState> = {
   [constants.FLYOVER_PEGIN_INIT]: ({ state, dispatch }) => new Promise((resolve, reject) => {
     state.flyoverService.initialize()
@@ -47,6 +51,8 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
     { state, commit, dispatch },
     { rootstockRecipientAddress },
   ) => {
+    latestQuotesRequestId += 1;
+    const requestId = latestQuotesRequestId;
     // The quote binds rskRefundAddress and callEoaOrContractAddress, so the connected
     // account must still be the one the wallet reports before any quote is requested.
     await dispatch(`web3Session/${constants.SESSION_REVALIDATE_ACCOUNT}`, undefined, { root: true });
@@ -60,7 +66,10 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
         ));
       });
       let quotesByProvider: Record<number, QuotePegIn2WP[]> = {};
-      Promise.allSettled(quotePromises)
+      const quotePromisesWithTimeout = quotePromises.map(
+        (promise) => promiseWithTimeout(promise, constants.FLYOVER_QUOTES_MAX_RESPONSE_TIME_IN_MS),
+      );
+      Promise.allSettled(quotePromisesWithTimeout)
         .then((responses) => {
           responses.forEach((response, index) => {
             if (response.status === constants.FULFILLED) {
@@ -70,7 +79,9 @@ export const actions: ActionTree<FlyoverPeginState, RootState> = {
               };
             }
           });
-          commit(constants.FLYOVER_PEGIN_SET_QUOTES, quotesByProvider);
+          if (requestId === latestQuotesRequestId) {
+            commit(constants.FLYOVER_PEGIN_SET_QUOTES, quotesByProvider);
+          }
           resolve();
         });
     });

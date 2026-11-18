@@ -8,9 +8,11 @@ import {
 } from '@/common/types';
 import { getClearQuoteFeeDifference, ServiceError } from '@/common/utils';
 
+const mockGetFederationAddress = jest.fn()
+  .mockResolvedValue('2MxhE499S1BkVoNN3kUbLFjFwAB2eLxZB8y');
 jest.mock('@/common/services/BridgeService', () => ({
   BridgeService: jest.fn().mockImplementation(() => ({
-    getFederationAddress: () => Promise.resolve('2MxhE499S1BkVoNN3kUbLFjFwAB2eLxZB8y'),
+    getFederationAddress: mockGetFederationAddress,
   })),
 }));
 
@@ -266,6 +268,91 @@ describe('Flyover peg-out re-quote on Send', () => {
 
       await expect(earlierRequest).resolves.toBe(false);
       expect(state.quotes[PROVIDER_ID]).toEqual([latestQuote]);
+    });
+
+    it('orders requests by invocation, not by when the federation lookup finishes', async () => {
+      setUp(sameFeesFinalQuote);
+      let answerEarlierLookup!: (address: string) => void;
+      let answerLatestLookup!: (address: string) => void;
+      mockGetFederationAddress
+        .mockReturnValueOnce(new Promise<string>((resolve) => { answerEarlierLookup = resolve; }))
+        .mockReturnValueOnce(new Promise<string>((resolve) => { answerLatestLookup = resolve; }));
+      const latestQuote = quote2wp('latest-quote-hash', '20000000000000', '12700000000000');
+      const staleQuote = quote2wp('stale-quote-hash', '20000000000000', '12600000000000');
+      const providers = [{ id: PROVIDER_ID }];
+      state.liquidityProviders = providers as unknown as typeof state.liquidityProviders;
+      state.flyoverService = {
+        getPegoutQuotes: jest.fn()
+          .mockResolvedValueOnce([latestQuote])
+          .mockResolvedValueOnce([staleQuote]),
+      } as unknown as typeof state.flyoverService;
+      const context = { state, commit, dispatch };
+
+      const earlierRequest = callAction(
+        constants.FLYOVER_PEGOUT_GET_QUOTES,
+        context,
+        RSK_REFUND_ADDRESS,
+      );
+      const latestRequest = callAction(
+        constants.FLYOVER_PEGOUT_GET_QUOTES,
+        context,
+        RSK_REFUND_ADDRESS,
+      );
+      answerLatestLookup('2N1latest');
+      await expect(latestRequest).resolves.toBe(true);
+      answerEarlierLookup('2N1earlier');
+
+      await expect(earlierRequest).resolves.toBe(false);
+      expect(state.quotes[PROVIDER_ID]).toEqual([latestQuote]);
+    });
+  });
+
+  describe('when the selected provider returns no final quote', () => {
+    it('stops Send without asking the wallet to sign the approved quote', async () => {
+      setUp(sameFeesFinalQuote);
+      dispatch.mockImplementation((name: string, payload?: unknown) => {
+        if (name === constants.FLYOVER_PEGOUT_GET_QUOTES) {
+          state.quotes = { [PROVIDER_ID]: [] };
+          return Promise.resolve(true);
+        }
+        if (name === constants.FLYOVER_PEGOUT_GET_FINAL_QUOTE) {
+          return callAction(name, { state, commit, dispatch }, payload);
+        }
+        return Promise.resolve();
+      });
+
+      await expect(callAction(
+        constants.FLYOVER_PEGOUT_ACCEPT_AND_SEND_QUOTE,
+        {
+          state, commit, dispatch, getters,
+        },
+        APPROVED_HASH,
+      )).rejects.toThrow(ServiceError);
+      expect(acceptAndSendPegoutQuote).not.toHaveBeenCalled();
+      expect(state.txHash).toBeFalsy();
+    });
+
+    it('stops Send when the provider did not answer in time', async () => {
+      setUp(sameFeesFinalQuote);
+      dispatch.mockImplementation((name: string, payload?: unknown) => {
+        if (name === constants.FLYOVER_PEGOUT_GET_QUOTES) {
+          state.quotes = {};
+          return Promise.resolve(true);
+        }
+        if (name === constants.FLYOVER_PEGOUT_GET_FINAL_QUOTE) {
+          return callAction(name, { state, commit, dispatch }, payload);
+        }
+        return Promise.resolve();
+      });
+
+      await expect(callAction(
+        constants.FLYOVER_PEGOUT_ACCEPT_AND_SEND_QUOTE,
+        {
+          state, commit, dispatch, getters,
+        },
+        APPROVED_HASH,
+      )).rejects.toThrow('No quotes are available right now');
+      expect(acceptAndSendPegoutQuote).not.toHaveBeenCalled();
     });
   });
 

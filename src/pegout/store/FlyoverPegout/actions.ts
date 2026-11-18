@@ -70,9 +70,8 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
         ));
       });
       let quotesByProvider: Record<number, QuotePegOut2WP[]> = {};
-      const MAX_RESPONSE_TIME_IN_MS = 30000;
       const quotePromisesWithTimeout = quotePromises.map(
-        (promise) => promiseWithTimeout(promise, MAX_RESPONSE_TIME_IN_MS),
+        (promise) => promiseWithTimeout(promise, constants.FLYOVER_QUOTES_MAX_RESPONSE_TIME_IN_MS),
       );
       Promise.allSettled(quotePromisesWithTimeout)
         .then((responses) => {
@@ -154,6 +153,17 @@ export const actions: ActionTree<FlyoverPegoutState, RootState> = {
             constants.FLYOVER_PEGOUT_GET_FINAL_QUOTE,
             'The options changed while sending. Check them and press Send again.',
             'A newer quote request replaced the final quote',
+          ));
+          return;
+        }
+        // The provider may not have answered in time. Without a final quote the approved one,
+        // still in the service cache, would be sent unchecked.
+        if (!state.quotes[providerId]?.length) {
+          reject(new ServiceError(
+            'FlyoverPegout',
+            constants.FLYOVER_PEGOUT_GET_FINAL_QUOTE,
+            'No quotes are available right now. Refresh the options and try again.',
+            'No quotes available from the selected provider',
           ));
           return;
         }
