@@ -9,14 +9,14 @@ export interface ReducedQuote {
     value: WeiBig;
     quoteHash: string;
 }
-export interface ObjectDifference {
-    percentage: number;
-    previousQuote: ReducedQuote;
-    currentQuote: ReducedQuote;
+export interface QuoteFeeDifference {
+    requiresApproval: boolean;
+    approvedQuote: ReducedQuote;
+    finalQuote: ReducedQuote;
 }
 
 export interface FlyoverPegoutState {
-    difference: ObjectDifference;
+    difference: QuoteFeeDifference;
     amountToTransfer: WeiBig;
     validAmount: boolean;
     btcRecipientAddress: string;

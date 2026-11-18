@@ -151,7 +151,13 @@ export default class FlyoverService {
         valueToTransfer: valueToTransfer.toWeiBigIntUnsafe(),
       })
         .then((quotes: PegoutQuote[]) => {
-          this.pegoutQuotes = quotes;
+          this.pegoutQuotes = [
+            ...this.pegoutQuotes.filter(
+              (cached: PegoutQuote) => !quotes
+                .some((q: PegoutQuote) => q.quoteHash === cached.quoteHash),
+            ),
+            ...quotes,
+          ];
           const pegoutQuotes = quotes.map((pegoutQuote: PegoutQuote) => ({
             quote: {
               ...pegoutQuote.quote,
@@ -340,7 +346,12 @@ export default class FlyoverService {
         callEoaOrContractAddress: rootstockRecipientAddress,
       })
         .then((quotes: Quote[]) => {
-          this.peginQuotes = quotes;
+          this.peginQuotes = [
+            ...this.peginQuotes.filter(
+              (cached: Quote) => !quotes.some((q: Quote) => q.quoteHash === cached.quoteHash),
+            ),
+            ...quotes,
+          ];
           const peginQuotes = quotes
             .filter((quote: Quote) => this.isValidPeginQuote(quote, {
               rootstockRecipientAddress,

@@ -2,7 +2,9 @@ import { ActionContext } from 'vuex';
 import { actions } from '@/pegin/store/FlyoverPegin/actions';
 import * as constants from '@/common/store/constants';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
-import { FlyoverPeginState, RootState, SatoshiBig } from '@/common/types';
+import {
+  FlyoverPeginState, QuotePegIn2WP, RootState, SatoshiBig,
+} from '@/common/types';
 
 type FlyoverPeginActionContext = ActionContext<FlyoverPeginState, RootState>;
 type FlyoverPeginActionHandler = (
@@ -101,5 +103,144 @@ describe(`${constants.FLYOVER_PEGIN_GET_QUOTES} — recipient revalidation`, () 
 
     expect(getPeginQuotes).toHaveBeenCalledWith(RECIPIENT, state.amountToTransfer);
     expect(commit).toHaveBeenCalledWith(constants.FLYOVER_PEGIN_SET_QUOTES, { 1: [] });
+  });
+});
+
+describe(`${constants.FLYOVER_PEGIN_GET_QUOTES} — provider response time`, () => {
+  const RESPONDING_PROVIDER_ID = 1;
+  const SILENT_PROVIDER_ID = 2;
+  const { setImmediate: realSetImmediate } = jest.requireActual<typeof import('timers')>('timers');
+  const flushPromises = () => new Promise<void>((resolve) => { realSetImmediate(resolve); });
+
+  beforeEach(() => {
+    initEnvironment();
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('stores the quotes of the providers that respond when another one does not', async () => {
+    const respondingQuote = { quoteHash: '0x01' };
+    let selectedProviderId = 0;
+    const dispatch = jest.fn().mockImplementation((name: string, providerId?: number) => {
+      if (name === constants.FLYOVER_PEGIN_USE_LIQUIDITY_PROVIDER) {
+        selectedProviderId = providerId as number;
+      }
+      return Promise.resolve(undefined);
+    });
+    const getPeginQuotes = jest.fn().mockImplementation(() => {
+      if (selectedProviderId === RESPONDING_PROVIDER_ID) {
+        return Promise.resolve([respondingQuote]);
+      }
+      return new Promise(() => { /* never settles */ });
+    });
+    const commit = jest.fn();
+    const state = {
+      liquidityProviders: [{ id: RESPONDING_PROVIDER_ID }, { id: SILENT_PROVIDER_ID }],
+      amountToTransfer: new SatoshiBig(0, 'satoshi'),
+      flyoverService: { getPeginQuotes, useLiquidityProvider: jest.fn() },
+    } as unknown as FlyoverPeginState;
+    let settled = false;
+
+    callAction(
+      constants.FLYOVER_PEGIN_GET_QUOTES,
+      { commit, dispatch, state },
+      { rootstockRecipientAddress: RECIPIENT },
+    ).then(() => { settled = true; });
+    await flushPromises();
+    jest.advanceTimersByTime(constants.FLYOVER_QUOTES_MAX_RESPONSE_TIME_IN_MS);
+    await flushPromises();
+
+    expect(getPeginQuotes).toHaveBeenCalledTimes(2);
+    expect(settled).toBe(true);
+    expect(commit).toHaveBeenCalledWith(
+      constants.FLYOVER_PEGIN_SET_QUOTES,
+      { [RESPONDING_PROVIDER_ID]: [respondingQuote] },
+    );
+  });
+});
+
+/**
+ * The form re-searches on every input change, so two searches can overlap and finish out of
+ * order. Only the most recent one may commit; an older one must not overwrite its quotes.
+ */
+describe(`${constants.FLYOVER_PEGIN_GET_QUOTES} — overlapping searches`, () => {
+  function deferred<T>() {
+    let resolve!: (value: T) => void;
+    const promise = new Promise<T>((res) => { resolve = res; });
+    return { promise, resolve };
+  }
+
+  it('does not let an older search overwrite the quotes of a newer one', async () => {
+    initEnvironment();
+    const commit = jest.fn();
+    const dispatch = jest.fn().mockResolvedValue(undefined);
+    const olderSearch = deferred<QuotePegIn2WP[]>();
+    const newerSearch = deferred<QuotePegIn2WP[]>();
+    const getPeginQuotes = jest.fn()
+      .mockReturnValueOnce(olderSearch.promise)
+      .mockReturnValueOnce(newerSearch.promise);
+    const state = {
+      liquidityProviders: [{ id: 1 }],
+      amountToTransfer: new SatoshiBig(0, 'satoshi'),
+      flyoverService: { getPeginQuotes, useLiquidityProvider: jest.fn() },
+    } as unknown as FlyoverPeginState;
+    const search = () => callAction(
+      constants.FLYOVER_PEGIN_GET_QUOTES,
+      { commit, dispatch, state },
+      { rootstockRecipientAddress: RECIPIENT },
+    );
+    const olderQuote = { quoteHash: 'older' } as unknown as QuotePegIn2WP;
+    const newerQuote = { quoteHash: 'newer' } as unknown as QuotePegIn2WP;
+
+    const older = search();
+    const newer = search();
+    newerSearch.resolve([newerQuote]);
+    await newer;
+    olderSearch.resolve([olderQuote]);
+    await older;
+
+    expect(commit).toHaveBeenCalledTimes(1);
+    expect(commit).toHaveBeenCalledWith(constants.FLYOVER_PEGIN_SET_QUOTES, { 1: [newerQuote] });
+  });
+
+  it('orders searches by invocation, not by when the account revalidation finishes', async () => {
+    initEnvironment();
+    const commit = jest.fn();
+    const olderRevalidation = deferred<void>();
+    const newerRevalidation = deferred<void>();
+    const revalidations = [olderRevalidation, newerRevalidation];
+    const dispatch = jest.fn().mockImplementation((name: string) => (
+      name === `web3Session/${constants.SESSION_REVALIDATE_ACCOUNT}`
+        ? revalidations.shift()?.promise
+        : Promise.resolve(undefined)
+    ));
+    const olderQuote = { quoteHash: 'older' } as unknown as QuotePegIn2WP;
+    const newerQuote = { quoteHash: 'newer' } as unknown as QuotePegIn2WP;
+    const getPeginQuotes = jest.fn()
+      .mockResolvedValueOnce([newerQuote])
+      .mockResolvedValueOnce([olderQuote]);
+    const state = {
+      liquidityProviders: [{ id: 1 }],
+      amountToTransfer: new SatoshiBig(0, 'satoshi'),
+      flyoverService: { getPeginQuotes, useLiquidityProvider: jest.fn() },
+    } as unknown as FlyoverPeginState;
+    const search = () => callAction(
+      constants.FLYOVER_PEGIN_GET_QUOTES,
+      { commit, dispatch, state },
+      { rootstockRecipientAddress: RECIPIENT },
+    );
+
+    const older = search();
+    const newer = search();
+    newerRevalidation.resolve();
+    await newer;
+    olderRevalidation.resolve();
+    await older;
+
+    expect(commit).toHaveBeenCalledTimes(1);
+    expect(commit).toHaveBeenCalledWith(constants.FLYOVER_PEGIN_SET_QUOTES, { 1: [newerQuote] });
   });
 });

@@ -177,10 +177,6 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
-    quoteDifference: {
-      type: Number,
-      required: false,
-    },
   },
   setup(props, context) {
     const environmentContext = EnvironmentContextProviderService.getEnvironmentContext();
