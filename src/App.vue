@@ -1,10 +1,11 @@
 <template>
   <v-app class="h-screen">
     <div class="d-flex flex-column h-100">
-      <sunset-banner />
+      <sunset-banner v-if="showStatusPage" />
       <top />
-      <div class="bg-background flex-grow-1">
-        <router-view @update:showDialog="showTermsDialog" />
+      <div class="bg-background flex-grow-1" :class="{ 'd-flex': !showStatusPage }">
+        <router-view v-if="showStatusPage" @update:showDialog="showTermsDialog" />
+        <deprecation-notice v-else-if="routerReady" />
       </div>
       <terms-dialog v-model:showDialog="showTermsAndConditions" />
       <footer-rsk class="flex-grow-0" @update:showDialog="showTermsDialog" />
@@ -20,6 +21,7 @@ import {
 import Top from '@/common/components/layouts/Top.vue';
 import FooterRsk from '@/common/components/layouts/Footer.vue';
 import SunsetBanner from '@/common/components/layouts/SunsetBanner.vue';
+import DeprecationNotice from '@/common/components/layouts/DeprecationNotice.vue';
 import TermsDialog from '@/common/components/common/TermsDialog.vue';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import * as constants from '@/common/store/constants';
@@ -28,8 +30,11 @@ import { vuetifyNonce } from '@/common/plugins/vuetify';
 import { createAppKit, useAppKitTheme } from '@reown/appkit/vue';
 import { Ethers5Adapter } from '@reown/appkit-adapter-ethers5';
 import { useTheme } from 'vuetify';
+import { useRoute, useRouter } from 'vue-router';
 import { BitcoinAdapter } from '@reown/appkit-adapter-bitcoin';
 import { getNetworks } from './common/utils/reownUtils';
+
+const STATUS_ROUTE_NAMES = ['Status', 'StatusSearch'];
 
 export default {
   name: 'App',
@@ -37,6 +42,7 @@ export default {
     Top,
     FooterRsk,
     SunsetBanner,
+    DeprecationNotice,
     TermsDialog,
   },
   setup() {
@@ -85,6 +91,13 @@ export default {
     const getFeatures = useAction('web3Session', constants.SESSION_ADD_FEATURES);
     const getBtcPrice = useAction('pegInTx', constants.PEGIN_TX_ADD_BITCOIN_PRICE);
     const showTermsAndConditions = ref(false);
+    const route = useRoute();
+    const router = useRouter();
+    const routerReady = ref(false);
+    router.isReady().then(() => { routerReady.value = true; });
+    const showStatusPage = computed(
+      () => routerReady.value && STATUS_ROUTE_NAMES.includes(route.name as string),
+    );
     const contentSecurityPolicy = computed((): string => {
       let response = '';
       response = `
@@ -148,6 +161,8 @@ export default {
     return {
       showTermsDialog,
       showTermsAndConditions,
+      showStatusPage,
+      routerReady,
     };
   },
 };
