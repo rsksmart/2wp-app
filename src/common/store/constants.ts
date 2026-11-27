@@ -409,6 +409,7 @@ export enum pegoutType {
 export const BTC_AVG_BLOCK_TIME_IN_SECONDS = 600;
 export const RSK_AVG_BLOCK_TIME_IN_SECONDS = 30;
 export const FULFILLED = 'fulfilled';
+export const FLYOVER_QUOTES_MAX_RESPONSE_TIME_IN_MS = 30000;
 
 export enum RejectedPegoutReasons {
   LOW_AMOUNT = 'LOW_AMOUNT',

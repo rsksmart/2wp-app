@@ -185,6 +185,34 @@ describe('FlyoverService', () => {
       expect(quotes).toBeInstanceOf(Array);
       expect(quotes.length).toBe(0);
     });
+
+    it('should keep earlier quotes acceptable when a later response is empty', async () => {
+      const rskRefundAddress = '0xe9a84d226bb3008f09a46096b00dd6782be4d5f2';
+      const btcAddress = 'n2y5V6LYszsrsxkMdMypL98YQxtBoLCXdc';
+      const valueToTransfer = new WeiBig('0.005', 'rbtc');
+      const stubedInstance = flyoverService.flyover as sinon.SinonStubbedInstance<Flyover>;
+      stubedInstance.acceptPegoutQuote.resolves({
+        lbcAddress: EnvironmentAccessorService.getEnvironmentVariables().lbcPegoutAddress,
+        signature: 'signature',
+      });
+
+      const [firstQuote] = await flyoverService.getPegoutQuotes(
+        rskRefundAddress,
+        btcAddress,
+        btcAddress,
+        valueToTransfer,
+      );
+      stubedInstance.getPegoutQuotes.resolves([]);
+      await flyoverService.getPegoutQuotes(
+        rskRefundAddress,
+        btcAddress,
+        btcAddress,
+        valueToTransfer,
+      );
+
+      await expect(flyoverService.acceptPegoutQuote(firstQuote.quoteHash)).resolves
+        .toHaveProperty('signature', 'signature');
+    });
   });
 
   describe('getPeginQuotes', () => {
@@ -226,6 +254,23 @@ describe('FlyoverService', () => {
 
       expect(quotes).toBeInstanceOf(Array);
       expect(quotes.length).toBe(0);
+    });
+
+    it('should keep earlier quotes acceptable when a later response is empty', async () => {
+      const rskRefundAddress = '0xe9a84d226bb3008f09a46096b00dd6782be4d5f2';
+      const valueToTransfer = new SatoshiBig('0.005', 'btc');
+      const stubedInstance = flyoverService.flyover as sinon.SinonStubbedInstance<Flyover>;
+      stubedInstance.acceptQuote.resolves({
+        bitcoinDepositAddressHash: 'bitcoinDepositAddressHash',
+        signature: 'signature',
+      });
+
+      const [firstQuote] = await flyoverService.getPeginQuotes(rskRefundAddress, valueToTransfer);
+      stubedInstance.getQuotes.resolves([]);
+      await flyoverService.getPeginQuotes(rskRefundAddress, valueToTransfer);
+
+      await expect(flyoverService.acceptPeginQuote(firstQuote.quoteHash)).resolves
+        .toHaveProperty('signature', 'signature');
     });
   });
 

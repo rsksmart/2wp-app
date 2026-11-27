@@ -1,6 +1,7 @@
 <template>
   <v-app class="h-screen">
     <div class="d-flex flex-column h-100">
+      <sunset-banner />
       <top />
       <div class="bg-background flex-grow-1">
         <router-view @update:showDialog="showTermsDialog" />
@@ -18,6 +19,7 @@ import {
 } from 'vue';
 import Top from '@/common/components/layouts/Top.vue';
 import FooterRsk from '@/common/components/layouts/Footer.vue';
+import SunsetBanner from '@/common/components/layouts/SunsetBanner.vue';
 import TermsDialog from '@/common/components/common/TermsDialog.vue';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 import * as constants from '@/common/store/constants';
@@ -34,6 +36,7 @@ export default {
   components: {
     Top,
     FooterRsk,
+    SunsetBanner,
     TermsDialog,
   },
   setup() {

@@ -1,4 +1,6 @@
-import { getBtcAddressFromSignedMessage } from '@/common/utils';
+import {
+  getBtcAddressFromSignedMessage, isFlyoverPegoutAddress, validateAddress,
+} from '@/common/utils';
 import * as constants from '@/common/store/constants';
 import { EnvironmentAccessorService } from '@/common/services/enviroment-accessor.service';
 
@@ -27,5 +29,39 @@ describe('Btc address Derivation', () => {
       const address = getBtcAddressFromSignedMessage(test.signedMessage, test.hash);
       return expect(address).toEqual(test.expectedAddress);
     });
+  });
+});
+
+describe('isFlyoverPegoutAddress', () => {
+  beforeEach(initEnvironment);
+  const legacy = 'mjb1e1MpWbPBQYSjJQRicrVipME8om3rfU';
+
+  it('accepts legacy, P2SH and native segwit testnet addresses', () => {
+    expect(isFlyoverPegoutAddress(legacy)).toBe(true);
+    expect(isFlyoverPegoutAddress('2MxhE499S1BkVoNN3kUbLFjFwAB2eLxZB8y')).toBe(true);
+    expect(isFlyoverPegoutAddress('tb1q9jj02kme6p0ye00xmaky75dwxtyepd2cyan5sw')).toBe(true);
+  });
+
+  it('rejects a half-typed address that already matches the address pattern', () => {
+    const halfTyped = legacy.slice(0, 30);
+    expect(validateAddress(halfTyped).valid).toBe(true);
+    expect(isFlyoverPegoutAddress(halfTyped)).toBe(false);
+  });
+
+  it('rejects an address with a wrong last character', () => {
+    expect(isFlyoverPegoutAddress(`${legacy.slice(0, -1)}V`)).toBe(false);
+  });
+
+  it('rejects taproot, which Fast Mode does not accept', () => {
+    expect(isFlyoverPegoutAddress('tb1pqqqqp399et2xygdj5xreqhjjvcmzhxw4aywxecjdzew6hylgvsesf3hn0c'))
+      .toBe(false);
+  });
+
+  it('rejects a mainnet address on testnet', () => {
+    expect(isFlyoverPegoutAddress('1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2')).toBe(false);
+  });
+
+  it('rejects an empty address', () => {
+    expect(isFlyoverPegoutAddress('')).toBe(false);
   });
 });
